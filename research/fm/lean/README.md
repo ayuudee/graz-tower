@@ -28,7 +28,15 @@ Read modules in roughly this order:
    Optional. This is the current Kotlin-aligned greenfield boundary for protocol, compound clearances, conditional normalization, and lifecycle/frontier reasoning.
 10. [CertifiedAtc/GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
     Optional. This is the abstract active-clearance state machine over the Kotlin-aligned model: staging, supersession, completion advancement, and conditional activation.
-11. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+11. [CertifiedAtc/GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
+    Optional. This is the proof-side resolved execution boundary aligned to Kotlin `ResolvedStep` / `ResolvedClearance`.
+12. [CertifiedAtc/GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
+    Optional. This is the proof-side world-to-resolved relation: it states what world facts justify a resolved step/clearance.
+13. [CertifiedAtc/GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
+    Optional. This evaluates structured observations against resolved steps: reached point, runway transition, circuit membership, altitude/speed, radio role/frequency, and transponder state.
+14. [CertifiedAtc/GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
+    Optional. This is the resolved active-clearance layer: managed resolved clearances, resolved completion, and active-set reconciliation.
+15. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
@@ -52,15 +60,25 @@ Read modules in roughly this order:
 - `GreenfieldModel`
   Current-shape greenfield boundary aligned to the Kotlin model:
   `ClearanceContent.Single | Compound(steps, completedSteps)`,
-  envelope-level conditions, lifecycle timing/categories, and frontier selection over the mixed step list.
+  envelope-level conditions, lifecycle timing/categories, explicit `UniqueSet`
+  state for set-like lifecycle fields, and frontier selection over the mixed
+  step list.
 - `GreenfieldLifecycle`
   Abstract lifecycle layer over `GreenfieldModel`: managed clearances, suppressed domains, admission, supersession, conditional activation, and completion advancement over abstract satisfied-step indices.
+- `GreenfieldResolved`
+  Current-shape resolved execution boundary aligned to Kotlin `ResolvedStep` / `ResolvedClearance`, with resolved points, runway facts, radio roles, and circuit joins.
+- `GreenfieldResolution`
+  Proof-side world-to-resolved relation that justifies resolved payloads from world/state facts instead of treating them as hand-assembled data.
+- `GreenfieldCompletion`
+  Structured completion-observation layer over `GreenfieldResolved`: evaluates proof-side observations against resolved step payloads while keeping unsupported families explicit.
+- `GreenfieldExecution`
+  Resolved active-clearance layer over `GreenfieldResolved` and `GreenfieldCompletion`: managed resolved clearances, resolved completion, supersession bridging, and active-set reconciliation.
 - `JointActs`
   Narrow orchestration milestone theorem for the first joint-act slice.
 
 ## Current Lean Split
 
-There are now three distinct Lean layers above the local certifiers:
+There are now seven distinct Lean layers above the local certifiers:
 
 1. `ClearanceEnvelope.lean`
    The older proof/compiler surface that still bridges into the atomic command path.
@@ -68,6 +86,14 @@ There are now three distinct Lean layers above the local certifiers:
    The new Kotlin-aligned model surface that mirrors the runtime clearance shape directly.
 3. `GreenfieldLifecycle.lean`
    The new abstract active-clearance engine over that model surface.
+4. `GreenfieldResolved.lean`
+   The new resolved-step execution boundary aligned to Kotlin compiled clearances.
+5. `GreenfieldResolution.lean`
+   The proof-side world/state relation that derives valid resolved clearances.
+6. `GreenfieldCompletion.lean`
+   The structured observation contract that evaluates proof-side facts against resolved steps.
+7. `GreenfieldExecution.lean`
+   The resolved active-clearance layer that closes the loop from admitted clearances to completion and reconciliation.
 
 That split is intentional. The Kotlin/runtime model has moved to:
 
@@ -93,6 +119,30 @@ Use `GreenfieldLifecycle.lean` when you want to:
 - study supersession and suppressed-domain semantics directly
 - model condition-pending to active activation order
 - talk about completion as abstract satisfied step indices before proving world-backed completion facts
+
+Use `GreenfieldResolved.lean` when you want to:
+
+- reason about completion against resolved points/runways/roles instead of raw instructions
+- mirror Kotlin `ResolvedStep` / `ResolvedClearance` shapes on the proof side
+- talk about backtrack far-end points, resolved route limits, and resolved circuit joins explicitly
+
+Use `GreenfieldResolution.lean` when you want to:
+
+- justify resolved steps from proof-side world facts and current state
+- connect world assumptions to `ResolvedClearance` without inventing a full extracted runtime
+- prove compatibility and step-count facts about resolved clearances
+
+Use `GreenfieldCompletion.lean` when you want to:
+
+- connect proof-side observations to resolved step completion
+- model point arrival, runway transitions, circuit membership, radio handoff, altitude/speed, and transponder completion
+- keep unsupported families explicit rather than silently approximating them
+
+Use `GreenfieldExecution.lean` when you want to:
+
+- reason about managed resolved clearances directly
+- combine resolved completion with supersession and conditional activation
+- stay aligned to the Kotlin active-clearance engine without dropping back to raw instruction semantics
 
 Use `ClearanceEnvelope.lean` when you need:
 

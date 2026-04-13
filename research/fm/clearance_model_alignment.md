@@ -23,7 +23,7 @@ The Kotlin implementation that now matters for Lean alignment is:
 
 ## Current Lean Boundary
 
-There are now three Lean layers above the local certifiers:
+There are now seven Lean layers above the local certifiers:
 
 - [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   This is the older staging/compiler surface. It still owns the partial bridge
@@ -38,6 +38,25 @@ There are now three Lean layers above the local certifiers:
   boundary. It captures managed clearances, suppressed domains, admission,
   supersession, completion advancement, and conditional activation without
   importing geometry or world resolution.
+- [GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
+  This is the proof-side resolved execution boundary aligned to Kotlin
+  `ResolvedStep` / `ResolvedClearance`. It carries the concrete facts that
+  completion actually depends on: destination points, runway transitions,
+  far-end backtrack points, resolved route limits, radio roles, and circuit
+  joins.
+- [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
+  This is the proof-side world-to-resolved relation. It states what world and
+  state facts justify a resolved step or resolved clearance, so the resolved
+  layer is no longer treated as hand-authored data.
+- [GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
+  This is the structured proof-side completion observation contract above the
+  resolved layer. It turns concrete observations like reached point,
+  runway transitions, circuit membership, radio contact, altitude/speed, and
+  transponder state into resolved step completion.
+- [GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
+  This is the resolved active-clearance layer. It combines resolved completion,
+  lifecycle status updates, supersession bridging, and conditional activation
+  over managed resolved clearances.
 
 That split is intentional. `ClearanceEnvelope.lean` is still useful, but it is
 no longer the authoritative model shape or lifecycle surface.
@@ -58,16 +77,46 @@ The current model is defined by:
   older proof-only instruction language
 - compound clearances use a mixed step list plus completed indices
 - conditional clearances are normalized into envelope-level state
+- set-like lifecycle state now uses an explicit `UniqueSet` abstraction rather
+  than raw lists with ad hoc deduplication
 - proof-frontier selection is explicit and separate from runtime timing
 
-`GreenfieldLifecycle.lean` now adds the first Lean layer for the higher-level
-runtime semantics:
+`GreenfieldLifecycle.lean` now owns the lower-level lifecycle algebra:
 
 - managed clearances with suppressed domains
 - staged admission of new clearances
 - full and partial supersession
 - abstract completion advancement over satisfied step indices
 - ordered activation of conditional clearances
+
+`GreenfieldResolved.lean` closes the previous semantic gap by introducing the
+same resolved execution surface the Kotlin runtime actually uses:
+
+- resolved taxi destinations and runway crossings
+- resolved backtrack far-end points
+- resolved route limits and airway/direct-join points
+- resolved role/frequency and circuit-join facts
+
+`GreenfieldResolution.lean` removes the biggest remaining discomfort in that
+layer:
+
+- resolved clearances can now be justified from proof-side world/state facts
+- compatibility of resolved payloads is proved from the resolution relation
+- resolved step count is tied back to the source clearance
+
+`GreenfieldCompletion.lean` now narrows completion against that resolved
+surface:
+
+- completion observations are explicit rather than opaque oracle outputs
+- supported families reduce to concrete proof-side checks over resolved payloads
+- unsupported families remain explicit as unsupported rather than being guessed
+
+`GreenfieldExecution.lean` then closes the loop:
+
+- managed resolved clearances mirror the Kotlin active set more closely
+- completion is evaluated over resolved steps, not raw instructions
+- supersession still reuses the abstract lifecycle algebra, so the lower layer
+  remains useful instead of being thrown away
 
 ## Important Deliberate Mismatch
 
@@ -93,18 +142,23 @@ The new Lean boundary is immediately useful for:
 - reasoning about `completedSteps` and frontier selection without going through
   the old compiler layer
 - making conditional-clearance normalization precise before wider theorem work
-- reasoning about active-clearance reconciliation without committing to a world
-  extraction or completion sensor model yet
+- reasoning about active-clearance reconciliation without dropping back to raw
+  instruction semantics
+- turning a substantial subset of Kotlin completion semantics into a resolved,
+  proof-side observation contract
 - giving the FM side a stable target while the Kotlin architecture settles
 
 ## Next Lean Moves
 
 The next valuable Lean steps are:
 
-1. prove stronger properties over `GreenfieldLifecycle.lean`:
+1. prove stronger properties over `GreenfieldExecution.lean`:
    activation order, suppression monotonicity, and non-interference across
    aircraft
-2. connect the abstract completion oracle to a narrower proof-side completion
-   observation contract
-3. only then decide how much of the older `ClearanceEnvelope.lean` theorem
+2. refine the unsupported observation cases that still need richer resolved
+   world facts, especially any families beyond the current completion-relevant
+   subset
+3. connect the new resolution relation more directly to any future proof-side
+   world model, instead of leaving it as an abstract relational interface
+4. only then decide how much of the older `ClearanceEnvelope.lean` theorem
    surface should be adapted or replaced

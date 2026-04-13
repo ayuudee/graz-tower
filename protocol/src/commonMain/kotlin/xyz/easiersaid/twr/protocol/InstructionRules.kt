@@ -1,6 +1,5 @@
 package xyz.easiersaid.twr.protocol
 
-@Suppress("LongMethod")
 fun instructionTiming(instruction: AtcInstruction): InstructionTiming? = when (instruction) {
     is ConditionalClearance -> instructionTiming(instruction.instruction)
 
@@ -96,7 +95,6 @@ fun instructionTiming(instruction: AtcInstruction): InstructionTiming? = when (i
     is RemainOutsideControlledAirspace -> null
 }
 
-@Suppress("LongMethod")
 fun instructionDomain(instruction: AtcInstruction): ClearanceDomain? = when (instruction) {
     is ConditionalClearance -> instructionDomain(instruction.instruction)
 
@@ -204,7 +202,6 @@ fun instructionSupersedesIn(instruction: AtcInstruction): Set<ClearanceDomain> =
         else -> buildSet { instructionDomain(instruction)?.let(::add) }
     }
 
-@Suppress("LongMethod")
 fun instructionCompletionCategory(instruction: AtcInstruction): CompletionCategory? = when (instruction) {
     is ConditionalClearance -> instructionCompletionCategory(instruction.instruction)
 
@@ -301,7 +298,6 @@ fun instructionCompletionCategory(instruction: AtcInstruction): CompletionCatego
     is RemainOutsideControlledAirspace -> null
 }
 
-@Suppress("LongMethod")
 fun instructionMayBeConditional(instruction: AtcInstruction): Boolean = when (instruction) {
     is PushbackApproved,
     is TaxiTo,

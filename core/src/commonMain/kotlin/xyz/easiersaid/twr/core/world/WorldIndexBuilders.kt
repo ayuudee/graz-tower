@@ -38,91 +38,118 @@ fun AviationWorld.deriveEntitiesByPoint(): Map<PointId, Set<EntityRef>> {
     ).mapValues { (_, refs) -> refs.toSet() }
 }
 
-@Suppress("LongMethod", "CyclomaticComplexMethod")
 private fun AviationWorld.collectEntityPointEntries(): List<Pair<PointId, EntityRef>> =
-    buildList {
-        fun addPath(path: Path, ref: EntityRef) {
-            path.points.forEach { point -> add(point to ref) }
-        }
+    collectFixEntries() +
+        aerodromes.values.flatMap(::collectAerodromeEntries) +
+        collectAirwayEntries() +
+        collectVfrRouteEntries() +
+        collectAirspaceEntries()
 
-        fun addPoint(point: PointId, ref: EntityRef) {
-            add(point to ref)
-        }
+private fun AviationWorld.collectFixEntries(): List<Pair<PointId, EntityRef>> =
+    fixes.values.map { fix -> fix.point to EntityRef.FixRef(fix.id) }
 
-        fixes.values.forEach { fix ->
-            addPoint(fix.point, EntityRef.FixRef(fix.id))
-        }
+private fun AviationWorld.collectAerodromeEntries(
+    aerodrome: Aerodrome
+): List<Pair<PointId, EntityRef>> =
+    collectRunwayEntries(aerodrome) +
+        collectTaxiwayEntries(aerodrome) +
+        collectStandEntries(aerodrome) +
+        collectApronEntries(aerodrome) +
+        collectCircuitEntries(aerodrome) +
+        collectSidEntries(aerodrome) +
+        collectStarEntries(aerodrome) +
+        collectApproachEntries(aerodrome) +
+        collectHoldingPatternEntries(aerodrome)
 
-        aerodromes.values.forEach { aerodrome ->
-            aerodrome.runways.values.forEach { runway ->
-                addPath(runway.path, EntityRef.RunwayRef(runway.id))
-            }
-            aerodrome.taxiways.values.forEach { taxiway ->
-                addPath(taxiway.path, EntityRef.TaxiwayRef(taxiway.id))
-                taxiway.holdingPoints.forEach { holdingPoint ->
-                    addPoint(holdingPoint.point, EntityRef.TaxiwayRef(taxiway.id))
-                }
-            }
-            aerodrome.stands.values.forEach { stand ->
-                addPoint(stand.point, EntityRef.StandRef(stand.id))
-            }
-            aerodrome.aprons.values.forEach { apron ->
-                apron.paths.forEach { path -> addPath(path, EntityRef.ApronRef(apron.id)) }
-            }
-            aerodrome.circuits.values.forEach { circuit ->
-                val ref = EntityRef.CircuitProcedureRef(circuit.id)
-                circuit.legs.forEach { leg -> addPath(leg.path, ref) }
-                circuit.joinProcedures.forEach { join ->
-                    addPoint(join.entryPoint, ref)
-                    join.entryPath?.let { addPath(it, ref) }
-                }
-                circuit.extendedDownwind?.let { extension ->
-                    addPath(extension.extendedPath, ref)
-                    extension.offRamps.forEach { addPath(it.path, ref) }
-                }
-                circuit.orbitPoints.forEach { orbit ->
-                    addPoint(orbit.point, ref)
-                    addPath(orbit.loop, ref)
-                }
-                circuit.reportingPoints.values.forEach { point -> addPoint(point, ref) }
-                addPath(circuit.goAroundPath, ref)
-            }
-            aerodrome.sids.values.forEach { sid ->
-                val ref = EntityRef.SidRef(sid.id)
-                sid.waypoints.forEach { waypoint -> addPoint(waypoint.point, ref) }
-                sid.transitions.values.flatten().forEach { waypoint -> addPoint(waypoint.point, ref) }
-            }
-            aerodrome.stars.values.forEach { star ->
-                val ref = EntityRef.StarRef(star.id)
-                star.waypoints.forEach { waypoint -> addPoint(waypoint.point, ref) }
-                star.transitions.values.flatten().forEach { waypoint -> addPoint(waypoint.point, ref) }
-            }
-            aerodrome.approaches.values.forEach { approach ->
-                val ref = EntityRef.ApproachRef(approach.id)
-                approach.waypoints.forEach { waypoint -> addPoint(waypoint.point, ref) }
-                approach.missedApproach.waypoints.forEach { waypoint -> addPoint(waypoint.point, ref) }
-            }
-            aerodrome.holdingPatterns.values.forEach { holdingPattern ->
-                val ref = EntityRef.HoldingPatternRef(holdingPattern.id)
-                addPath(holdingPattern.loop, ref)
-                fixes[holdingPattern.fix]?.let { fix -> addPoint(fix.point, ref) }
-            }
-        }
+private fun collectRunwayEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.runways.values.flatMap { runway ->
+        runway.path.points.map { point -> point to EntityRef.RunwayRef(runway.id) }
+    }
 
-        airways.values.forEach { airway ->
-            val ref = EntityRef.AirwayRef(airway.id)
-            airway.waypoints.forEach { waypoint -> addPoint(waypoint.point, ref) }
-        }
+private fun collectTaxiwayEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.taxiways.values.flatMap { taxiway ->
+        val ref = EntityRef.TaxiwayRef(taxiway.id)
+        taxiway.path.points.map { point -> point to ref } +
+            taxiway.holdingPoints.map { holdingPoint -> holdingPoint.point to ref }
+    }
 
-        vfrRoutes.values.forEach { route ->
-            val ref = EntityRef.VfrRouteRef(route.id)
-            route.waypoints.forEach { waypoint -> addPoint(waypoint.point, ref) }
-        }
+private fun collectStandEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.stands.values.map { stand -> stand.point to EntityRef.StandRef(stand.id) }
 
-        airspace.values.forEach { airspaceVolume ->
-            val ref = EntityRef.AirspaceVolumeRef(airspaceVolume.id)
-            airspaceVolume.points.forEach { point -> addPoint(point, ref) }
+private fun collectApronEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.aprons.values.flatMap { apron ->
+        val ref = EntityRef.ApronRef(apron.id)
+        apron.paths.flatMap { path -> path.points.map { point -> point to ref } }
+    }
+
+private fun collectCircuitEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.circuits.values.flatMap { circuit ->
+        val ref = EntityRef.CircuitProcedureRef(circuit.id)
+        val legEntries = circuit.legs.flatMap { leg ->
+            leg.path.points.map { point -> point to ref }
         }
+        val joinEntries = circuit.joinProcedures.flatMap { join ->
+            listOf(join.entryPoint to ref) +
+                (join.entryPath?.points?.map { point -> point to ref } ?: emptyList())
+        }
+        val downwindEntries = circuit.extendedDownwind?.let { extension ->
+            extension.extendedPath.points.map { point -> point to ref } +
+                extension.offRamps.flatMap { ramp -> ramp.path.points.map { point -> point to ref } }
+        } ?: emptyList()
+        val orbitEntries = circuit.orbitPoints.flatMap { orbit ->
+            listOf(orbit.point to ref) + orbit.loop.points.map { point -> point to ref }
+        }
+        val reportingEntries = circuit.reportingPoints.values.map { point -> point to ref }
+        val goAroundEntries = circuit.goAroundPath.points.map { point -> point to ref }
+        legEntries + joinEntries + downwindEntries + orbitEntries + reportingEntries + goAroundEntries
+    }
+
+private fun collectSidEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.sids.values.flatMap { sid ->
+        val ref = EntityRef.SidRef(sid.id)
+        sid.waypoints.map { waypoint -> waypoint.point to ref } +
+            sid.transitions.values.flatten().map { waypoint -> waypoint.point to ref }
+    }
+
+private fun collectStarEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.stars.values.flatMap { star ->
+        val ref = EntityRef.StarRef(star.id)
+        star.waypoints.map { waypoint -> waypoint.point to ref } +
+            star.transitions.values.flatten().map { waypoint -> waypoint.point to ref }
+    }
+
+private fun collectApproachEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
+    aerodrome.approaches.values.flatMap { approach ->
+        val ref = EntityRef.ApproachRef(approach.id)
+        approach.waypoints.map { waypoint -> waypoint.point to ref } +
+            approach.missedApproach.waypoints.map { waypoint -> waypoint.point to ref }
+    }
+
+private fun AviationWorld.collectHoldingPatternEntries(
+    aerodrome: Aerodrome
+): List<Pair<PointId, EntityRef>> =
+    aerodrome.holdingPatterns.values.flatMap { holdingPattern ->
+        val ref = EntityRef.HoldingPatternRef(holdingPattern.id)
+        holdingPattern.loop.points.map { point -> point to ref } +
+            listOfNotNull(fixes[holdingPattern.fix]?.let { fix -> fix.point to ref })
+    }
+
+private fun AviationWorld.collectAirwayEntries(): List<Pair<PointId, EntityRef>> =
+    airways.values.flatMap { airway ->
+        val ref = EntityRef.AirwayRef(airway.id)
+        airway.waypoints.map { waypoint -> waypoint.point to ref }
+    }
+
+private fun AviationWorld.collectVfrRouteEntries(): List<Pair<PointId, EntityRef>> =
+    vfrRoutes.values.flatMap { route ->
+        val ref = EntityRef.VfrRouteRef(route.id)
+        route.waypoints.map { waypoint -> waypoint.point to ref }
+    }
+
+private fun AviationWorld.collectAirspaceEntries(): List<Pair<PointId, EntityRef>> =
+    airspace.values.flatMap { airspaceVolume ->
+        val ref = EntityRef.AirspaceVolumeRef(airspaceVolume.id)
+        airspaceVolume.points.map { point -> point to ref }
     }
 
 private fun <T> PhysicalGeometry.expandSegmentValues(

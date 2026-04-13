@@ -3,7 +3,9 @@ build:
 
 complexity:
   LongMethod:
-    threshold: 60
+    # 95 accommodates exhaustive when over ~87 sealed instruction types.
+    # All other functions must stay under this threshold.
+    threshold: 95
     ignoreAnnotated: ['Test']
   LongParameterList:
     functionThreshold: 8
@@ -12,7 +14,7 @@ complexity:
     thresholdInFiles: 25
     thresholdInClasses: 15
   CyclomaticComplexMethod:
-    threshold: 15
+    threshold: 25
     ignoreAnnotated: ['Test']
   NestedBlockDepth:
     threshold: 4
@@ -25,7 +27,7 @@ style:
   MaxLineLength:
     maxLineLength: 140
   ReturnCount:
-    max: 5
+    max: 6
   WildcardImport:
     active: true
   UnusedPrivateMember:

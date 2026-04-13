@@ -244,7 +244,6 @@ private fun validateRunwayExits(aerodrome: Aerodrome): List<WorldValidationIssue
         }
     }
 
-@Suppress("LongMethod")
 private fun AviationWorld.validateProcedureAnchoring(
     aerodrome: Aerodrome
 ): List<WorldValidationIssue> {
@@ -468,7 +467,6 @@ private fun reachablePointsFrom(
 ): Set<PointId> =
     reachablePointsFrom(listOf(origin), adjacency, emptySet())
 
-@Suppress("CyclomaticComplexMethod")
 private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> =
     buildSet {
         fun addPath(path: Path) { addAll(path.geometrySegmentIds()) }

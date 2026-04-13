@@ -213,7 +213,6 @@ fun AviationWorld.resolveHoldShortOf(
     return resolveHoldingPointOnCurrentTaxiway(aerodrome, context.currentPoint, runway)
 }
 
-@Suppress("ReturnCount")
 fun AviationWorld.resolveCrossRunway(
     context: GroundResolutionContext,
     instruction: CrossRunway
@@ -241,10 +240,10 @@ fun AviationWorld.resolveCrossRunway(
         val crossingPoint = taxiway.path.points
             .intersect(runway.path.points.toSet())
             .minByOrNull { point ->
-                taxiwayPathDistance(aerodrome, taxiway.path, context.currentPoint, point) ?: Double.POSITIVE_INFINITY
+                taxiwayPathDistance(taxiway.path, context.currentPoint, point) ?: Double.POSITIVE_INFINITY
             } ?: return@mapNotNull null
 
-        val distance = taxiwayPathDistance(aerodrome, taxiway.path, context.currentPoint, crossingPoint)
+        val distance = taxiwayPathDistance(taxiway.path, context.currentPoint, crossingPoint)
             ?: return@mapNotNull null
 
         RunwayCrossingCandidate(taxiway, crossingPoint, distance)
@@ -299,7 +298,8 @@ fun AviationWorld.resolveClearedApproach(
         1 -> matches.single()
         else -> return unresolved(
             ResolutionFailureCode.AMBIGUOUS_APPROACH,
-            "Multiple ${instruction.approachType} approaches exist for runway ${instruction.runway.value} at aerodrome ${aerodrome.icao.value}"
+            "Multiple ${instruction.approachType} approaches exist for runway " +
+                "${instruction.runway.value} at aerodrome ${aerodrome.icao.value}"
         )
     }
 
@@ -436,70 +436,69 @@ private fun AviationWorld.resolveRoleFrequency(
     )
 }
 
-@Suppress("CyclomaticComplexMethod", "ReturnCount")
 private fun AviationWorld.resolveRouteSpec(
     aerodrome: Aerodrome,
     route: RouteSpec
-): ResolutionResult<ResolvedRouteSpec> {
-    return when (route) {
+): ResolutionResult<ResolvedRouteSpec> = arrow.core.raise.either {
+    when (route) {
         is RouteSpec.Direct -> {
-            val fix = fixes[route.fix] ?: return unresolved(
+            val fix = fixes[route.fix] ?: raise(ResolutionFailure(
                 ResolutionFailureCode.UNKNOWN_FIX,
                 "Unknown route fix ${route.fix.value}"
-            )
-            resolved(ResolvedRouteSpec.Direct(fix))
+            ))
+            ResolvedRouteSpec.Direct(fix)
         }
 
         is RouteSpec.Via -> {
             val routeFixes = route.fixes.map { fixId ->
-                fixes[fixId] ?: return unresolved(
+                fixes[fixId] ?: raise(ResolutionFailure(
                     ResolutionFailureCode.UNKNOWN_FIX,
                     "Unknown route fix ${fixId.value}"
-                )
+                ))
             }
-            resolved(ResolvedRouteSpec.Via(routeFixes))
+            ResolvedRouteSpec.Via(routeFixes)
         }
 
         is RouteSpec.Airway -> {
-            val airway = airways[route.airway] ?: return unresolved(
+            val airway = airways[route.airway] ?: raise(ResolutionFailure(
                 ResolutionFailureCode.UNKNOWN_AIRWAY,
                 "Unknown airway ${route.airway.value}"
-            )
-            val exitFix = fixes[route.exitFix] ?: return unresolved(
+            ))
+            val exitFix = fixes[route.exitFix] ?: raise(ResolutionFailure(
                 ResolutionFailureCode.UNKNOWN_FIX,
                 "Unknown airway exit fix ${route.exitFix.value}"
-            )
+            ))
             if (airway.waypoints.none { waypoint -> waypoint.point == exitFix.point }) {
-                return unresolved(
+                raise(ResolutionFailure(
                     ResolutionFailureCode.AIRWAY_EXIT_FIX_NOT_ON_AIRWAY,
                     "Fix ${route.exitFix.value} is not on airway ${airway.id.value}"
-                )
+                ))
             }
-            resolved(ResolvedRouteSpec.AirwaySegment(airway, exitFix))
+            ResolvedRouteSpec.AirwaySegment(airway, exitFix)
         }
 
         is RouteSpec.ViaSid -> {
-            val sid = aerodrome.sids[route.sid] ?: return unresolved(
+            val sid = aerodrome.sids[route.sid] ?: raise(ResolutionFailure(
                 ResolutionFailureCode.UNKNOWN_SID,
                 "Unknown SID ${route.sid.value} at aerodrome ${aerodrome.icao.value}"
-            )
-            resolved(ResolvedRouteSpec.SidProcedure(sid))
+            ))
+            ResolvedRouteSpec.SidProcedure(sid)
         }
 
         is RouteSpec.ViaStar -> {
-            val star = aerodrome.stars[route.star] ?: return unresolved(
+            val star = aerodrome.stars[route.star] ?: raise(ResolutionFailure(
                 ResolutionFailureCode.UNKNOWN_STAR,
                 "Unknown STAR ${route.star.value} at aerodrome ${aerodrome.icao.value}"
-            )
-            resolved(ResolvedRouteSpec.StarProcedure(star))
+            ))
+            ResolvedRouteSpec.StarProcedure(star)
         }
 
         is RouteSpec.ViaRoute -> {
-            val vfrRoute = vfrRoutes[route.route] ?: return unresolved(
+            val vfrRoute = vfrRoutes[route.route] ?: raise(ResolutionFailure(
                 ResolutionFailureCode.UNKNOWN_VFR_ROUTE,
                 "Unknown VFR route ${route.route.value}"
-            )
-            resolved(ResolvedRouteSpec.VfrRouteProcedure(vfrRoute))
+            ))
+            ResolvedRouteSpec.VfrRouteProcedure(vfrRoute)
         }
     }
 }
@@ -523,10 +522,10 @@ private fun AviationWorld.resolveHoldingPointOnCurrentTaxiway(
         val holdingPoint = taxiway.holdingPoints
             .filter { point -> point.runway == runway.id }
             .minByOrNull { point ->
-                taxiwayPathDistance(aerodrome, taxiway.path, currentPoint, point.point) ?: Double.POSITIVE_INFINITY
+                taxiwayPathDistance(taxiway.path, currentPoint, point.point) ?: Double.POSITIVE_INFINITY
             } ?: return@mapNotNull null
 
-        val distance = taxiwayPathDistance(aerodrome, taxiway.path, currentPoint, holdingPoint.point)
+        val distance = taxiwayPathDistance(taxiway.path, currentPoint, holdingPoint.point)
             ?: return@mapNotNull null
 
         HoldingPointCandidate(taxiway, holdingPoint, distance)
@@ -560,7 +559,6 @@ private fun AviationWorld.resolveHoldingPointOnCurrentTaxiway(
     )
 }
 
-@Suppress("LoopWithTooManyJumpStatements")
 private fun AviationWorld.shortestPath(
     start: PointId,
     destination: PointId,
@@ -637,9 +635,7 @@ private fun AviationWorld.buildAdjacency(
     ).mapValues { (_, neighbors) -> neighbors.toSet() }
 }
 
-@Suppress("UnusedParameter")
 private fun AviationWorld.taxiwayPathDistance(
-    aerodrome: Aerodrome,
     path: Path,
     from: PointId,
     to: PointId

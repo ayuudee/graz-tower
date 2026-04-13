@@ -311,7 +311,6 @@ private fun StructuredClearance.normalizeCompoundConditional(
     return arrow.core.Either.Right(this)
 }
 
-@Suppress("CyclomaticComplexMethod")
 private fun AviationWorld.resolveStep(
     context: ClearanceResolutionContext,
     clearance: StructuredClearance,
@@ -344,7 +343,7 @@ private fun AviationWorld.resolveStep(
         is LeaveHoldProceedDirect -> resolveDirectFixStep(stepContext, instruction.fix, state)
         is WhenAbleProceedDirect -> resolveDirectFixStep(stepContext, instruction.fix, state)
         is RejoinSidAt -> resolveDirectFixStep(stepContext, instruction.fix, state)
-        is JoinAirway -> resolveJoinAirwayStep(context, stepContext, instruction, state)
+        is JoinAirway -> resolveJoinAirwayStep(stepContext, instruction, state)
         is JoinCircuit -> resolveJoinCircuitStep(context, stepContext, instruction, state)
         else -> arrow.core.Either.Right(
             ResolvedStepWithState(
@@ -666,9 +665,7 @@ private fun AviationWorld.resolveDirectFixStep(
     )
 }
 
-@Suppress("UnusedParameter")
 private fun AviationWorld.resolveJoinAirwayStep(
-    context: ClearanceResolutionContext,
     stepContext: StepContext,
     instruction: JoinAirway,
     state: ResolutionCompilationState

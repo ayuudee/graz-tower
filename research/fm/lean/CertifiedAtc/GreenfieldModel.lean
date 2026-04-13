@@ -17,6 +17,161 @@ proof-frontier timing.
 Today it covers the clearance/lifecycle-relevant instruction subset rather
 than every controller response or runtime structure.
 -/
+structure UniqueSet (α : Type) [DecidableEq α] where
+  values : List α
+  nodup : values.Nodup
+  deriving Repr
+
+namespace UniqueSet
+
+instance {α : Type} [DecidableEq α] : DecidableEq (UniqueSet α) := by
+  intro s t
+  cases s with
+  | mk sv sn =>
+      cases t with
+      | mk tv tn =>
+          by_cases h : sv = tv
+          · apply isTrue
+            cases h
+            have hp : sn = tn := by
+              apply Subsingleton.elim
+            cases hp
+            rfl
+          · apply isFalse
+            intro hEq
+            apply h
+            cases hEq
+            rfl
+
+def empty {α : Type} [DecidableEq α] : UniqueSet α :=
+  { values := []
+    nodup := by simp }
+
+def singleton {α : Type} [DecidableEq α] (value : α) : UniqueSet α :=
+  { values := [value]
+    nodup := by simp }
+
+instance {α : Type} [DecidableEq α] : EmptyCollection (UniqueSet α) :=
+  ⟨empty⟩
+
+instance {α : Type} [DecidableEq α] : Membership α (UniqueSet α) :=
+  ⟨fun set value => value ∈ set.values⟩
+
+instance {α : Type} [DecidableEq α] (value : α) (set : UniqueSet α) :
+    Decidable (value ∈ set) := by
+  change Decidable (value ∈ set.values)
+  infer_instance
+
+def insert {α : Type} [DecidableEq α] (set : UniqueSet α) (value : α) : UniqueSet α :=
+  if h : value ∈ set.values then
+    set
+  else
+    { values := value :: set.values
+      nodup := by
+        simpa [List.nodup_cons, h] using set.nodup }
+
+def ofList {α : Type} [DecidableEq α] : List α → UniqueSet α :=
+  List.foldl insert empty
+
+def union {α : Type} [DecidableEq α] (left right : UniqueSet α) : UniqueSet α :=
+  right.values.foldl insert left
+
+def diff {α : Type} [DecidableEq α] (left right : UniqueSet α) : UniqueSet α :=
+  { values := left.values.filter (fun value => decide (value ∉ right))
+    nodup := by
+      simpa using left.nodup.filter (fun value => decide (value ∉ right)) }
+
+def inter {α : Type} [DecidableEq α] (left right : UniqueSet α) : UniqueSet α :=
+  { values := left.values.filter (fun value => decide (value ∈ right))
+    nodup := by
+      simpa using left.nodup.filter (fun value => decide (value ∈ right)) }
+
+def isEmpty {α : Type} [DecidableEq α] (set : UniqueSet α) : Bool :=
+  set.values.isEmpty
+
+def toList {α : Type} [DecidableEq α] (set : UniqueSet α) : List α :=
+  set.values
+
+theorem mem_insert_self
+    {α : Type}
+    [DecidableEq α]
+    (set : UniqueSet α)
+    (value : α) :
+    value ∈ UniqueSet.insert set value := by
+  change value ∈ (UniqueSet.insert set value).values
+  by_cases h : value ∈ set.values
+  · simp [insert, h]
+  · simp [insert, h]
+
+theorem mem_insert_of_mem
+    {α : Type}
+    [DecidableEq α]
+    {set : UniqueSet α}
+    {existing value : α}
+    (hExisting : existing ∈ set) :
+    existing ∈ UniqueSet.insert set value := by
+  change existing ∈ (UniqueSet.insert set value).values
+  by_cases h : value ∈ set.values
+  · simpa [insert, h] using hExisting
+  · simp [insert, h]
+    exact Or.inr hExisting
+
+theorem mem_union_left
+    {α : Type}
+    [DecidableEq α]
+    {left right : UniqueSet α}
+    {value : α}
+    (hMem : value ∈ left) :
+    value ∈ UniqueSet.union left right := by
+  unfold UniqueSet.union
+  induction right.values generalizing left with
+  | nil =>
+      simpa using hMem
+  | cons head tail ih =>
+      simp
+      exact ih (UniqueSet.mem_insert_of_mem hMem)
+
+theorem mem_union_right
+    {α : Type}
+    [DecidableEq α]
+    {left right : UniqueSet α}
+    {value : α}
+    (hMem : value ∈ right) :
+    value ∈ UniqueSet.union left right := by
+  change value ∈ right.values at hMem
+  unfold UniqueSet.union
+  have hPreserve :
+      ∀ {pending : List α} {seed : UniqueSet α},
+        value ∈ seed →
+          value ∈ pending.foldl UniqueSet.insert seed := by
+    intro pending
+    induction pending with
+    | nil =>
+        intro seed hSeed
+        simpa using hSeed
+    | cons head tail ih =>
+        intro seed hSeed
+        simpa using ih (seed := UniqueSet.insert seed head) (UniqueSet.mem_insert_of_mem hSeed)
+  have hFold :
+      ∀ {pending : List α} {seed : UniqueSet α},
+        value ∈ pending →
+          value ∈ pending.foldl UniqueSet.insert seed := by
+    intro pending
+    induction pending generalizing left with
+    | nil =>
+        intro seed hPending
+        cases hPending
+    | cons head tail ih =>
+        intro seed hPending
+        simp at hPending
+        rcases hPending with rfl | hTail
+        · exact hPreserve (pending := tail) (seed := UniqueSet.insert seed value)
+            (UniqueSet.mem_insert_self _ _)
+        · simpa using ih (left := left) (seed := UniqueSet.insert seed head) hTail
+  exact hFold (pending := right.values) (seed := left) hMem
+
+end UniqueSet
+
 abbrev AircraftId := EntityId
 abbrev ControllerId := AgentId
 abbrev TickNumber := Nat
@@ -29,6 +184,7 @@ abbrev AirwayId := String
 abbrev VfrRouteId := String
 abbrev HoldingPatternId := String
 abbrev ApproachId := String
+abbrev CircuitProcedureId := String
 abbrev Frequency := CertifiedAtc.Frequency
 abbrev Squawk := Nat
 abbrev Minutes := Nat
@@ -507,7 +663,7 @@ def frontierTimingRefinesRuntimeTiming (instruction : AtcInstruction) : Prop :=
 
 structure CompoundClearanceContent where
   steps : List AtcInstruction
-  completedSteps : List Nat := []
+  completedSteps : UniqueSet Nat := {}
   deriving DecidableEq, Repr
 
 inductive ClearanceContent
@@ -532,8 +688,8 @@ inductive NormalizeError
   | conditionalStepNotSupported
   deriving DecidableEq, Repr
 
-def addCompletedStep (completedSteps : List Nat) (index : Nat) : List Nat :=
-  if index ∈ completedSteps then completedSteps else completedSteps ++ [index]
+def addCompletedStep (completedSteps : UniqueSet Nat) (index : Nat) : UniqueSet Nat :=
+  UniqueSet.insert completedSteps index
 
 def enumerateFrom {α : Type} : Nat → List α → List (Nat × α)
   | _, [] => []
@@ -550,7 +706,7 @@ def structuredInstructions (clearance : StructuredClearance) : List AtcInstructi
   contentInstructions clearance.content
 
 def activeMovementStepFrom
-    (completedSteps : List Nat) :
+    (completedSteps : UniqueSet Nat) :
     List (Nat × AtcInstruction) → Option (Nat × AtcInstruction)
   | [] => none
   | (index, instruction) :: tail =>
@@ -581,18 +737,18 @@ def structuredFrontierInstructions (clearance : StructuredClearance) :
     List AtcInstruction :=
   frontierInstructions clearance.content
 
-def contentDomains : ClearanceContent → List ClearanceDomain
+def contentDomains : ClearanceContent → UniqueSet ClearanceDomain
   | .single instruction =>
       match instructionDomain? instruction with
-      | some domain => [domain]
-      | none => []
+      | some domain => UniqueSet.singleton domain
+      | none => {}
   | .compound content =>
-      (content.steps.filterMap instructionDomain?).eraseDups
+      UniqueSet.ofList (content.steps.filterMap instructionDomain?)
 
-def contentSupersedesDomains : ClearanceContent → List ClearanceDomain
-  | .single instruction => (instructionSupersedesIn instruction).eraseDups
+def contentSupersedesDomains : ClearanceContent → UniqueSet ClearanceDomain
+  | .single instruction => UniqueSet.ofList (instructionSupersedesIn instruction)
   | .compound content =>
-      (content.steps.foldr (fun instruction acc => instructionSupersedesIn instruction ++ acc) []).eraseDups
+      UniqueSet.ofList (content.steps.foldr (fun instruction acc => instructionSupersedesIn instruction ++ acc) [])
 
 def completedStep (content : CompoundClearanceContent) (index : Nat) : Prop :=
   index ∈ content.completedSteps
@@ -641,21 +797,17 @@ def normalizeConditionalEnvelope
         .ok clearance
 
 theorem mem_addCompletedStep_self
-    (completedSteps : List Nat)
+    (completedSteps : UniqueSet Nat)
     (index : Nat) :
     index ∈ addCompletedStep completedSteps index := by
-  by_cases h : index ∈ completedSteps
-  · simp [addCompletedStep, h]
-  · simp [addCompletedStep, h]
+  simpa [addCompletedStep] using UniqueSet.mem_insert_self completedSteps index
 
 theorem mem_addCompletedStep_of_mem
-    {completedSteps : List Nat}
+    {completedSteps : UniqueSet Nat}
     {existing index : Nat}
     (hExisting : existing ∈ completedSteps) :
     existing ∈ addCompletedStep completedSteps index := by
-  by_cases h : index ∈ completedSteps
-  · simp [addCompletedStep, h, hExisting]
-  · simp [addCompletedStep, h, hExisting]
+  simpa [addCompletedStep] using UniqueSet.mem_insert_of_mem hExisting
 
 theorem frontierInstructions_single
     (instruction : AtcInstruction) :
@@ -671,13 +823,14 @@ theorem frontierTimingRefinesRuntimeTiming_holds
       simp [frontierTimingRefinesRuntimeTiming, instructionFrontierTiming, instructionTiming?]
 
 theorem addCompletedStep_idempotent
-    (completedSteps : List Nat)
+    (completedSteps : UniqueSet Nat)
     (index : Nat) :
     addCompletedStep (addCompletedStep completedSteps index) index =
       addCompletedStep completedSteps index := by
-  by_cases h : index ∈ completedSteps
-  · simp [addCompletedStep, h]
-  · simp [addCompletedStep, h]
+  by_cases h : index ∈ completedSteps.values
+  · simp [addCompletedStep, UniqueSet.insert, h]
+  · have hInserted : index ∈ index :: completedSteps.values := by simp
+    simp [addCompletedStep, UniqueSet.insert, h, hInserted]
 
 theorem markStepCompleted_marks_completed
     (content : CompoundClearanceContent)

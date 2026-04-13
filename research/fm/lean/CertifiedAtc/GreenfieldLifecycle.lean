@@ -40,15 +40,15 @@ def compiledStepsFrom
 def compiledSteps (clearance : StructuredClearance) : List CompiledStep :=
   compiledStepsFrom clearance.domain (indexedSteps (structuredInstructions clearance))
 
-def clearanceCompletedSteps : StructuredClearance → List Nat
-  | { content := .single _, .. } => []
+def clearanceCompletedSteps : StructuredClearance → UniqueSet Nat
+  | { content := .single _, .. } => {}
   | { content := .compound content, .. } => content.completedSteps
 
-def clearanceStepDomains (clearance : StructuredClearance) : List ClearanceDomain :=
-  (compiledSteps clearance).map CompiledStep.domain |>.eraseDups
+def clearanceStepDomains (clearance : StructuredClearance) : UniqueSet ClearanceDomain :=
+  UniqueSet.ofList ((compiledSteps clearance).map CompiledStep.domain)
 
-def clearanceSupersedesDomains (clearance : StructuredClearance) : List ClearanceDomain :=
-  (structuredInstructions clearance).foldr (fun instruction acc => instructionSupersedesIn instruction ++ acc) [] |>.eraseDups
+def clearanceSupersedesDomains (clearance : StructuredClearance) : UniqueSet ClearanceDomain :=
+  UniqueSet.ofList ((structuredInstructions clearance).foldr (fun instruction acc => instructionSupersedesIn instruction ++ acc) [])
 
 def clearanceWithStatus (clearance : StructuredClearance) (status : CertifiedAtc.ClearanceStatus) :
     StructuredClearance :=
@@ -56,17 +56,17 @@ def clearanceWithStatus (clearance : StructuredClearance) (status : CertifiedAtc
 
 def withCompletedSteps
     (clearance : StructuredClearance)
-    (completedSteps : List Nat) :
+    (completedSteps : UniqueSet Nat) :
     StructuredClearance :=
   match clearance.content with
   | .single _ => clearance
   | .compound content =>
       { clearance with
-          content := .compound { content with completedSteps := completedSteps.eraseDups } }
+          content := .compound { content with completedSteps := completedSteps } }
 
 structure ManagedClearance where
   clearance : StructuredClearance
-  suppressedDomains : List ClearanceDomain := []
+  suppressedDomains : UniqueSet ClearanceDomain := {}
   deriving DecidableEq, Repr
 
 def ManagedClearance.source (managed : ManagedClearance) : StructuredClearance :=
@@ -78,11 +78,11 @@ def ManagedClearance.aircraft (managed : ManagedClearance) : AircraftId :=
 def ManagedClearance.status (managed : ManagedClearance) : CertifiedAtc.ClearanceStatus :=
   managed.clearance.status
 
-def ManagedClearance.stepDomains (managed : ManagedClearance) : List ClearanceDomain :=
+def ManagedClearance.stepDomains (managed : ManagedClearance) : UniqueSet ClearanceDomain :=
   clearanceStepDomains managed.clearance
 
-def ManagedClearance.effectiveDomains (managed : ManagedClearance) : List ClearanceDomain :=
-  managed.stepDomains.filter (fun domain => domain ∉ managed.suppressedDomains)
+def ManagedClearance.effectiveDomains (managed : ManagedClearance) : UniqueSet ClearanceDomain :=
+  UniqueSet.diff managed.stepDomains managed.suppressedDomains
 
 def ManagedClearance.withClearance
     (managed : ManagedClearance)
@@ -98,13 +98,13 @@ def ManagedClearance.withStatus
 
 def ManagedClearance.suppress
     (managed : ManagedClearance)
-    (domains : List ClearanceDomain) :
+    (domains : UniqueSet ClearanceDomain) :
     ManagedClearance :=
   { managed with
-      suppressedDomains := (managed.suppressedDomains ++ domains).eraseDups }
+      suppressedDomains := UniqueSet.union managed.suppressedDomains domains }
 
 def ManagedClearance.clearSuppression (managed : ManagedClearance) : ManagedClearance :=
-  { managed with suppressedDomains := [] }
+  { managed with suppressedDomains := {} }
 
 def ManagedClearance.effectiveSteps (managed : ManagedClearance) : List CompiledStep :=
   (compiledSteps managed.clearance).filter
@@ -155,18 +155,18 @@ def stageIncomingClearanceChecked
   | .error error => .error error
 
 def domainOverlap
-    (existing incoming : List ClearanceDomain) :
-    List ClearanceDomain :=
-  existing.filter (fun domain => domain ∈ incoming) |>.eraseDups
+    (existing incoming : UniqueSet ClearanceDomain) :
+    UniqueSet ClearanceDomain :=
+  UniqueSet.inter existing incoming
 
 structure PartiallySupersededClearance where
   clearance : ManagedClearance
-  suppressedDomains : List ClearanceDomain
+  suppressedDomains : UniqueSet ClearanceDomain
   deriving DecidableEq, Repr
 
 def PartiallySupersededClearance.remainingDomains
-    (entry : PartiallySupersededClearance) : List ClearanceDomain :=
-  entry.clearance.effectiveDomains.filter (fun domain => domain ∉ entry.suppressedDomains)
+    (entry : PartiallySupersededClearance) : UniqueSet ClearanceDomain :=
+  UniqueSet.diff entry.clearance.effectiveDomains entry.suppressedDomains
 
 def PartiallySupersededClearance.remainingSteps
     (entry : PartiallySupersededClearance) : List CompiledStep :=
@@ -181,7 +181,7 @@ structure SupersessionDecision where
 
 def determineSupersessionFrom
     (incoming : StructuredClearance)
-    (supersedesDomains : List ClearanceDomain) :
+    (supersedesDomains : UniqueSet ClearanceDomain) :
     List ManagedClearance →
     List ManagedClearance →
     List PartiallySupersededClearance →
@@ -309,12 +309,12 @@ structure StepCompletion where
   result : CompletionResult
   deriving DecidableEq, Repr
 
-abbrev CompletionOracle := ManagedClearance → List Nat
+abbrev CompletionOracle := ManagedClearance → UniqueSet Nat
 abbrev ConditionEvaluator := AircraftId → ConditionalPredicate → Bool
 
 def stepCompletionResult
     (managed : ManagedClearance)
-    (completedNow : List Nat)
+    (completedNow : UniqueSet Nat)
     (step : CompiledStep) :
     CompletionResult :=
   if step.domain ∈ managed.suppressedDomains then
@@ -330,16 +330,16 @@ def stepCompletionResult
           .notComplete
 
 def addCompletedSteps
-    (completedSteps : List Nat)
-    (newlyCompleted : List Nat) :
-    List Nat :=
-  newlyCompleted.foldl addCompletedStep completedSteps
+    (completedSteps : UniqueSet Nat)
+    (newlyCompleted : UniqueSet Nat) :
+    UniqueSet Nat :=
+  UniqueSet.union completedSteps newlyCompleted
 
 structure ManagedCompletionEvaluation where
   source : ManagedClearance
   updated : ManagedClearance
   stepResults : List StepCompletion
-  newlyCompletedSteps : List Nat
+  newlyCompletedSteps : UniqueSet Nat
   isComplete : Bool
   deriving DecidableEq, Repr
 
@@ -347,16 +347,17 @@ def evaluateManagedCompletion
     (managed : ManagedClearance)
     (completionOracle : CompletionOracle) :
     ManagedCompletionEvaluation :=
-  let completedNow := (completionOracle managed).eraseDups
+  let completedNow := completionOracle managed
   let steps := compiledSteps managed.clearance
   let stepResults := steps.map fun step =>
     { step := step
       result := stepCompletionResult managed completedNow step }
   let existingCompleted := clearanceCompletedSteps managed.clearance
   let newlyCompletedSteps :=
-    (stepResults.filterMap fun stepResult =>
-      if stepResult.result = .complete then some stepResult.step.index else none).filter
-        (fun index => index ∉ existingCompleted)
+    UniqueSet.ofList <|
+      (stepResults.filterMap fun stepResult =>
+        if stepResult.result = .complete then some stepResult.step.index else none).filter
+          (fun index => index ∉ existingCompleted)
   let updatedClearance :=
     match managed.clearance.content with
     | .single _ =>
@@ -401,6 +402,12 @@ def insertByIssuedAt
 def sortByIssuedAt : List ManagedClearance → List ManagedClearance
   | [] => []
   | head :: tail => insertByIssuedAt head (sortByIssuedAt tail)
+
+def IssuedAtOrdered : List ManagedClearance → Prop
+  | [] => True
+  | [_] => True
+  | first :: second :: tail =>
+      first.source.issuedAt ≤ second.source.issuedAt ∧ IssuedAtOrdered (second :: tail)
 
 structure ConditionActivation where
   before : ManagedClearance
@@ -493,7 +500,7 @@ def activatePendingFrom
 
 def reconcileClearances
     (existing : List ManagedClearance)
-    (completionOracle : CompletionOracle := fun _ => [])
+    (completionOracle : CompletionOracle := fun _ => {})
     (conditionEvaluator : ConditionEvaluator := fun _ _ => false) :
     ClearanceReconciliation :=
   let completionPass := evaluateActiveCompletions existing completionOracle
@@ -536,7 +543,7 @@ theorem admitClearance_condition_pending_has_no_supersession
 
 theorem stepCompletionResult_onActivation_complete
     (managed : ManagedClearance)
-    (completedNow : List Nat)
+    (completedNow : UniqueSet Nat)
     (step : CompiledStep)
     (hSuppressed : step.domain ∉ managed.suppressedDomains)
     (hCategory : step.completionCategory = some .onActivation) :
@@ -561,11 +568,14 @@ theorem evaluateManagedCompletion_onActivation_single_completes
         status := .active
         condition := none }
     let evaluation :=
-      evaluateManagedCompletion { clearance := clearance } (fun _ => [])
+      evaluateManagedCompletion { clearance := clearance } (fun _ => {})
     evaluation.updated.status = .completed ∧ evaluation.isComplete = true := by
-  simp [evaluateManagedCompletion, ManagedClearance.status, clearanceCompletedSteps,
-    ManagedClearance.withClearance, stepCompletionResult, clearanceWithStatus, compiledSteps, compiledStepsFrom,
-    structuredInstructions, contentInstructions, indexedSteps, enumerateFrom, hCategory]
+  cases hDomain : instructionDomain? instruction <;>
+    simp [evaluateManagedCompletion, ManagedClearance.status, clearanceCompletedSteps,
+      ManagedClearance.withClearance, stepCompletionResult, clearanceWithStatus, compiledSteps, compiledStepsFrom,
+      structuredInstructions, contentInstructions, indexedSteps, enumerateFrom, hCategory, hDomain]
+  · rfl
+  · rfl
 
 def sampleSuppressedFrequencyCompound : ManagedClearance :=
   { clearance :=
@@ -580,30 +590,168 @@ def sampleSuppressedFrequencyCompound : ManagedClearance :=
         issuedAt := 1
         status := .active
         condition := none }
-    suppressedDomains := [.frequency] }
+    suppressedDomains := UniqueSet.singleton .frequency }
 
 example :
-    (evaluateManagedCompletion sampleSuppressedFrequencyCompound (fun _ => [0])).updated.status =
+    (evaluateManagedCompletion sampleSuppressedFrequencyCompound (fun _ => UniqueSet.singleton 0)).updated.status =
       .completed := by
   native_decide
 
 example :
     clearanceCompletedSteps
-        (evaluateManagedCompletion sampleSuppressedFrequencyCompound (fun _ => [0])).updated.clearance =
-      [0] := by
+        (evaluateManagedCompletion sampleSuppressedFrequencyCompound (fun _ => UniqueSet.singleton 0)).updated.clearance =
+      UniqueSet.singleton 0 := by
   native_decide
 
 theorem mem_addCompletedSteps_of_mem
-    {completedSteps newlyCompleted : List Nat}
+    {completedSteps newlyCompleted : UniqueSet Nat}
     {index : Nat}
     (hMem : index ∈ completedSteps) :
     index ∈ addCompletedSteps completedSteps newlyCompleted := by
-  induction newlyCompleted generalizing completedSteps with
+  have hFold :
+      ∀ {pending : List Nat} {seed : UniqueSet Nat},
+        index ∈ seed →
+          index ∈ pending.foldl UniqueSet.insert seed := by
+    intro pending
+    induction pending with
+    | nil =>
+        intro seed hSeed
+        simpa using hSeed
+    | cons head tail ih =>
+        intro seed hSeed
+        simp
+        exact ih (UniqueSet.mem_insert_of_mem hSeed)
+  simpa [addCompletedSteps, UniqueSet.union] using
+    (hFold (pending := newlyCompleted.values) (seed := completedSteps) hMem)
+
+theorem insertByIssuedAt_preserves_order
+    (managed : ManagedClearance)
+    {clearances : List ManagedClearance}
+    (hOrdered : IssuedAtOrdered clearances) :
+    IssuedAtOrdered (insertByIssuedAt managed clearances) := by
+  induction clearances with
   | nil =>
-      simpa [addCompletedSteps] using hMem
+      simp [insertByIssuedAt, IssuedAtOrdered]
   | cons head tail ih =>
-      simp [addCompletedSteps]
-      exact ih (mem_addCompletedStep_of_mem hMem)
+      cases tail with
+      | nil =>
+          by_cases hInsert : managed.source.issuedAt ≤ head.source.issuedAt
+          · simp [insertByIssuedAt, IssuedAtOrdered, hInsert]
+          · have hHeadManaged : head.source.issuedAt ≤ managed.source.issuedAt := by
+              exact Nat.le_of_lt (Nat.lt_of_not_ge hInsert)
+            simp [insertByIssuedAt, IssuedAtOrdered, hInsert, hHeadManaged]
+      | cons second rest =>
+          simp [IssuedAtOrdered] at hOrdered
+          rcases hOrdered with ⟨hHeadSecond, hTail⟩
+          by_cases hInsert : managed.source.issuedAt ≤ head.source.issuedAt
+          · simp [insertByIssuedAt, IssuedAtOrdered, hInsert]
+            exact ⟨hHeadSecond, hTail⟩
+          · have hHeadManaged : head.source.issuedAt ≤ managed.source.issuedAt := by
+              exact Nat.le_of_lt (Nat.lt_of_not_ge hInsert)
+            have hInsertedTail : IssuedAtOrdered (insertByIssuedAt managed (second :: rest)) :=
+              ih hTail
+            by_cases hInsertTail : managed.source.issuedAt ≤ second.source.issuedAt
+            · simp [insertByIssuedAt, IssuedAtOrdered, hInsert, hInsertTail, hHeadManaged]
+              exact hTail
+            · simp [insertByIssuedAt, IssuedAtOrdered, hInsert, hInsertTail, hHeadSecond]
+              simpa [insertByIssuedAt, hInsertTail, IssuedAtOrdered] using hInsertedTail
+
+theorem sortByIssuedAt_ordered
+    (clearances : List ManagedClearance) :
+    IssuedAtOrdered (sortByIssuedAt clearances) := by
+  induction clearances with
+  | nil =>
+      simp [sortByIssuedAt, IssuedAtOrdered]
+  | cons head tail ih =>
+      simp [sortByIssuedAt]
+      exact insertByIssuedAt_preserves_order head ih
+
+theorem issuedAtOrdered_head_le_of_mem_tail
+    {head : ManagedClearance}
+    {tail : List ManagedClearance}
+    {managed : ManagedClearance}
+    (hOrdered : IssuedAtOrdered (head :: tail))
+    (hMem : managed ∈ tail) :
+    head.source.issuedAt ≤ managed.source.issuedAt := by
+  induction tail generalizing head with
+  | nil =>
+      cases hMem
+  | cons second rest ih =>
+      simp [IssuedAtOrdered] at hOrdered
+      rcases hOrdered with ⟨hHeadSecond, hTailOrdered⟩
+      simp at hMem
+      rcases hMem with rfl | hRest
+      · exact hHeadSecond
+      · exact Nat.le_trans hHeadSecond (ih hTailOrdered hRest)
+
+theorem issuedAtOrdered_filter
+    (clearances : List ManagedClearance)
+    (predicate : ManagedClearance → Bool)
+    (hOrdered : IssuedAtOrdered clearances) :
+    IssuedAtOrdered (clearances.filter predicate) := by
+  induction clearances with
+  | nil =>
+      simp [IssuedAtOrdered]
+  | cons head tail ih =>
+      cases tail with
+      | nil =>
+          by_cases hHead : predicate head
+          · simp [hHead, IssuedAtOrdered]
+          · simp [hHead, IssuedAtOrdered]
+      | cons second rest =>
+          simp [IssuedAtOrdered] at hOrdered
+          rcases hOrdered with ⟨hHeadSecond, hTailOrdered⟩
+          by_cases hHead : predicate head
+          · have hFilteredTailOrdered := ih hTailOrdered
+            cases hFilteredTail : List.filter predicate (second :: rest) with
+            | nil =>
+                simp [hHead, hFilteredTail, IssuedAtOrdered]
+            | cons first filteredRest =>
+                have hMemFiltered : first ∈ List.filter predicate (second :: rest) := by
+                  simp [hFilteredTail]
+                have hMemTail : first ∈ second :: rest := by
+                  have hFilterFacts :
+                      (first = second ∨ first ∈ rest) ∧ predicate first = true := by
+                    simpa using hMemFiltered
+                  simpa using hFilterFacts.1
+                have hHeadFirst :=
+                  issuedAtOrdered_head_le_of_mem_tail
+                    (head := head)
+                    (tail := second :: rest)
+                    (by exact ⟨hHeadSecond, hTailOrdered⟩)
+                    hMemTail
+                simp [hHead, hFilteredTail, IssuedAtOrdered, hHeadFirst]
+                simpa [hFilteredTail] using hFilteredTailOrdered
+          · simpa [hHead] using ih hTailOrdered
+
+theorem applyIncomingSupersessionFrom_identity_of_other_aircraft
+    (incoming : ManagedClearance)
+    (remaining updatedExisting fullySuperseded partiallySuperseded : List ManagedClearance)
+    (hOther : ∀ managed ∈ remaining, managed.aircraft ≠ incoming.aircraft) :
+    applyIncomingSupersessionFrom incoming remaining updatedExisting fullySuperseded partiallySuperseded =
+      { updatedExisting := updatedExisting.reverse ++ remaining
+        fullySuperseded := fullySuperseded.reverse
+        partiallySuperseded := partiallySuperseded.reverse } := by
+  induction remaining generalizing updatedExisting fullySuperseded partiallySuperseded with
+  | nil =>
+      simp [applyIncomingSupersessionFrom]
+  | cons head tail ih =>
+      have hHead : head.aircraft ≠ incoming.aircraft := hOther head (by simp)
+      have hTail : ∀ managed ∈ tail, managed.aircraft ≠ incoming.aircraft := by
+        intro managed hMem
+        exact hOther managed (by simp [hMem])
+      simp [applyIncomingSupersessionFrom, hHead, ih _ _ _ hTail, List.reverse_cons, List.append_assoc]
+
+theorem applyIncomingSupersession_identity_of_other_aircraft
+    (existing : List ManagedClearance)
+    (incoming : ManagedClearance)
+    (hOther : ∀ managed ∈ existing, managed.aircraft ≠ incoming.aircraft) :
+    applyIncomingSupersession existing incoming =
+      { updatedExisting := existing
+        fullySuperseded := []
+        partiallySuperseded := [] } := by
+  simpa [applyIncomingSupersession] using
+    applyIncomingSupersessionFrom_identity_of_other_aircraft incoming existing [] [] [] hOther
 
 end Greenfield
 end CertifiedAtc
