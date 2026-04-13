@@ -1,6 +1,5 @@
 package xyz.easiersaid.twr.core.world
 
-import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -49,226 +48,205 @@ data class WorldValidationReport(
         get() = issues.isEmpty()
 }
 
-fun AviationWorld.validate(): WorldValidationReport {
-    val issues = mutableListOf<WorldValidationIssue>()
+fun AviationWorld.validate(): WorldValidationReport =
+    WorldValidationReport(
+        validateGeometryReferencesAndClaims() +
+            validateAirspaceCoverage() +
+            validateFirMembership() +
+            validateGlobalNames() +
+            aerodromes.values.flatMap(::validateAerodrome)
+    )
 
-    validateGeometryReferencesAndClaims(issues)
-    validateAirspaceCoverage(issues)
-    validateFirMembership(issues)
-    validateGlobalNames(issues)
+private fun AviationWorld.validateAirspaceCoverage(): List<WorldValidationIssue> {
+    val coveredPoints = airspace.values.flatMapTo(linkedSetOf()) { volume -> volume.points }
 
-    aerodromes.values.forEach { aerodrome ->
-        validateAerodrome(aerodrome, issues)
-    }
-
-    return WorldValidationReport(issues.toList())
-}
-
-private fun AviationWorld.validateAirspaceCoverage(issues: MutableList<WorldValidationIssue>) {
-    val coveredPoints = airspace.values
-        .flatMap { volume -> volume.points }
-        .toSet()
-
-    geometry.points.keys
+    return geometry.points.keys
         .filter { point -> point !in coveredPoints }
         .sortedBy(PointId::value)
-        .forEach { point ->
-            issues += WorldValidationIssue(
+        .map { point ->
+            WorldValidationIssue(
                 WorldValidationCode.POINT_OUTSIDE_AIRSPACE,
                 "Point ${point.value} is not contained in any airspace volume"
             )
         }
 }
 
-private fun AviationWorld.validateGeometryReferencesAndClaims(
-    issues: MutableList<WorldValidationIssue>
-) {
+private fun AviationWorld.validateGeometryReferencesAndClaims(): List<WorldValidationIssue> {
     val claimedPoints = deriveEntitiesByPoint().keys
     val claimedSegments = collectClaimedSegments()
 
-    geometry.segments.keys.forEach { segment ->
-        if (segment.first !in geometry.points || segment.second !in geometry.points) {
-            issues += WorldValidationIssue(
+    val endpointIssues = geometry.segments.keys
+        .filter { segment -> segment.first !in geometry.points || segment.second !in geometry.points }
+        .map { segment ->
+            WorldValidationIssue(
                 WorldValidationCode.GEOMETRY_SEGMENT_UNKNOWN_ENDPOINT,
                 "Geometry segment ${segment.describe()} references a point missing from the geometry point map"
             )
         }
-    }
 
-    claimedPoints
+    val unknownPointIssues = claimedPoints
         .filter { point -> point !in geometry.points }
         .sortedBy(PointId::value)
-        .forEach { point ->
-            issues += WorldValidationIssue(
+        .map { point ->
+            WorldValidationIssue(
                 WorldValidationCode.UNKNOWN_GEOMETRY_POINT_REFERENCE,
                 "Entity reference point ${point.value} is missing from physical geometry"
             )
         }
 
-    claimedSegments
+    val unknownSegmentIssues = claimedSegments
         .filter { segment -> segment !in geometry.segments }
         .sortedBy(GeometrySegmentId::describe)
-        .forEach { segment ->
-            issues += WorldValidationIssue(
+        .map { segment ->
+            WorldValidationIssue(
                 WorldValidationCode.UNKNOWN_GEOMETRY_SEGMENT_REFERENCE,
                 "Entity reference segment ${segment.describe()} is missing from physical geometry"
             )
         }
 
-    geometry.points.keys
+    val orphanPointIssues = geometry.points.keys
         .filter { point -> point !in claimedPoints }
         .sortedBy(PointId::value)
-        .forEach { point ->
-            issues += WorldValidationIssue(
+        .map { point ->
+            WorldValidationIssue(
                 WorldValidationCode.ORPHAN_GEOMETRY_POINT,
                 "Geometry point ${point.value} is not claimed by any entity"
             )
         }
 
-    geometry.segments.keys
+    val orphanSegmentIssues = geometry.segments.keys
         .filter { segment -> segment !in claimedSegments }
         .sortedBy(GeometrySegmentId::describe)
-        .forEach { segment ->
-            issues += WorldValidationIssue(
+        .map { segment ->
+            WorldValidationIssue(
                 WorldValidationCode.ORPHAN_GEOMETRY_SEGMENT,
                 "Geometry segment ${segment.describe()} is not claimed by any entity"
             )
         }
+
+    return endpointIssues + unknownPointIssues + unknownSegmentIssues + orphanPointIssues + orphanSegmentIssues
 }
 
-private fun AviationWorld.validateFirMembership(issues: MutableList<WorldValidationIssue>) {
-    airspace.values.forEach { volume ->
+private fun AviationWorld.validateFirMembership(): List<WorldValidationIssue> {
+    val volumeIssues = airspace.values.mapNotNull { volume ->
         val fir = firs[volume.fir]
         when {
-            fir == null -> issues += WorldValidationIssue(
+            fir == null -> WorldValidationIssue(
                 WorldValidationCode.UNKNOWN_FIR,
                 "Airspace volume ${volume.id.value} references unknown FIR ${volume.fir.value}"
             )
 
-            volume.id !in fir.volumes -> issues += WorldValidationIssue(
+            volume.id !in fir.volumes -> WorldValidationIssue(
                 WorldValidationCode.FIR_VOLUME_MISMATCH,
                 "Airspace volume ${volume.id.value} is not listed in FIR ${fir.id.value}"
             )
+
+            else -> null
         }
     }
 
-    firs.values.forEach { fir ->
+    val firIssues = firs.values.flatMap { fir ->
         fir.volumes
             .filter { volumeId -> volumeId !in airspace }
             .sortedBy { volumeId -> volumeId.value }
-            .forEach { volumeId ->
-                issues += WorldValidationIssue(
+            .map { volumeId ->
+                WorldValidationIssue(
                     WorldValidationCode.UNKNOWN_AIRSPACE_VOLUME,
                     "FIR ${fir.id.value} references unknown airspace volume ${volumeId.value}"
                 )
             }
     }
+
+    return volumeIssues + firIssues
 }
 
-private fun AviationWorld.validateGlobalNames(issues: MutableList<WorldValidationIssue>) {
+private fun AviationWorld.validateGlobalNames(): List<WorldValidationIssue> =
     airways.values
         .groupBy { airway -> airway.name }
         .filterValues { duplicates -> duplicates.size > 1 }
-        .forEach { (name, duplicates) ->
-            issues += WorldValidationIssue(
+        .map { (name, duplicates) ->
+            WorldValidationIssue(
                 WorldValidationCode.DUPLICATE_AIRWAY_NAME,
                 "Airway name $name is duplicated across ${duplicates.map { airway -> airway.id.value }.sorted()}"
             )
         }
-}
 
-private fun AviationWorld.validateAerodrome(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
-    validateRunwayHoldingPoints(aerodrome, issues)
-    validateStandReachability(aerodrome, issues)
-    validateRunwayExits(aerodrome, issues)
-    validateProcedureAnchoring(aerodrome, issues)
-    validateSegmentOwnership(aerodrome, issues)
-    validateHoldingPatterns(aerodrome, issues)
-    validateRoleStaffing(aerodrome, issues)
-    validateReciprocalRunways(aerodrome, issues)
-    validateAerodromeNames(aerodrome, issues)
-}
+private fun AviationWorld.validateAerodrome(aerodrome: Aerodrome): List<WorldValidationIssue> =
+    validateRunwayHoldingPoints(aerodrome) +
+        validateStandReachability(aerodrome) +
+        validateRunwayExits(aerodrome) +
+        validateProcedureAnchoring(aerodrome) +
+        validateSegmentOwnership(aerodrome) +
+        validateHoldingPatterns(aerodrome) +
+        validateRoleStaffing(aerodrome) +
+        validateReciprocalRunways(aerodrome) +
+        validateAerodromeNames(aerodrome)
 
-private fun validateRunwayHoldingPoints(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
+private fun validateRunwayHoldingPoints(aerodrome: Aerodrome): List<WorldValidationIssue> {
     val runwayProtectedByHoldingPoint = aerodrome.taxiways.values
         .flatMap { taxiway -> taxiway.holdingPoints }
         .mapNotNull { holdingPoint -> holdingPoint.runway }
         .toSet()
 
-    aerodrome.runways.values
+    return aerodrome.runways.values
         .filter { runway -> runway.id !in runwayProtectedByHoldingPoint }
         .sortedBy { runway -> runway.id.value }
-        .forEach { runway ->
-            issues += WorldValidationIssue(
+        .map { runway ->
+            WorldValidationIssue(
                 WorldValidationCode.MISSING_RUNWAY_HOLDING_POINT,
                 "Aerodrome ${aerodrome.icao.value} has no holding point protecting runway ${runway.id.value}"
             )
         }
 }
 
-private fun validateStandReachability(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
+private fun validateStandReachability(aerodrome: Aerodrome): List<WorldValidationIssue> {
     val adjacency = groundAdjacency(aerodrome)
     val holdingPoints = aerodrome.taxiways.values.flatMap { taxiway -> taxiway.holdingPoints }
     val stands = aerodrome.stands.values
 
-    holdingPoints.forEach { holdingPoint ->
+    return holdingPoints.flatMap { holdingPoint ->
         val reachable = reachablePointsFrom(holdingPoint.point, adjacency)
-        stands.filter { stand -> stand.point !in reachable }
+        stands
+            .filter { stand -> stand.point !in reachable }
             .sortedBy { stand -> stand.id.value }
-            .forEach { stand ->
-                issues += WorldValidationIssue(
+            .map { stand ->
+                WorldValidationIssue(
                     WorldValidationCode.UNREACHABLE_STAND_FROM_HOLDING_POINT,
-                    "Stand ${stand.id.value} is not reachable from holding point ${holdingPoint.point.value} at aerodrome ${aerodrome.icao.value}"
+                    "Stand ${stand.id.value} is not reachable from holding point " +
+                        "${holdingPoint.point.value} at aerodrome ${aerodrome.icao.value}"
                 )
             }
     }
 }
 
-private fun validateRunwayExits(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
-    aerodrome.runways.values.forEach { runway ->
-        runway.exits.forEach { exit ->
+private fun validateRunwayExits(aerodrome: Aerodrome): List<WorldValidationIssue> =
+    aerodrome.runways.values.flatMap { runway ->
+        runway.exits.flatMap { exit ->
             val taxiway = aerodrome.taxiways[exit.taxiway]
             if (taxiway == null) {
-                issues += WorldValidationIssue(
-                    WorldValidationCode.UNKNOWN_RUNWAY_EXIT_TAXIWAY,
-                    "Runway ${runway.id.value} references unknown exit taxiway ${exit.taxiway.value}"
+                return@flatMap listOf(
+                    WorldValidationIssue(
+                        WorldValidationCode.UNKNOWN_RUNWAY_EXIT_TAXIWAY,
+                        "Runway ${runway.id.value} references unknown exit taxiway ${exit.taxiway.value}"
+                    )
                 )
-                return@forEach
             }
-
-            if (exit.point !in runway.path.points) {
-                issues += WorldValidationIssue(
+            listOfNotNull(
+                if (exit.point !in runway.path.points) WorldValidationIssue(
                     WorldValidationCode.RUNWAY_EXIT_NOT_ON_RUNWAY,
                     "Runway exit point ${exit.point.value} is not on runway ${runway.id.value}"
-                )
-            }
-
-            if (exit.point !in taxiway.path.points) {
-                issues += WorldValidationIssue(
+                ) else null,
+                if (exit.point !in taxiway.path.points) WorldValidationIssue(
                     WorldValidationCode.RUNWAY_EXIT_NOT_ON_TAXIWAY,
                     "Runway exit point ${exit.point.value} is not on taxiway ${taxiway.id.value}"
-                )
-            }
+                ) else null
+            )
         }
     }
-}
 
 private fun AviationWorld.validateProcedureAnchoring(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
+    aerodrome: Aerodrome
+): List<WorldValidationIssue> {
     val holdingFixPoints = aerodrome.holdingPatterns.values
         .mapNotNull { holdingPattern -> fixes[holdingPattern.fix]?.point }
         .toSet()
@@ -276,62 +254,69 @@ private fun AviationWorld.validateProcedureAnchoring(
         .mapNotNull { approach -> approach.waypoints.firstOrNull()?.point }
         .toSet()
 
-    aerodrome.sids.values.forEach { sid ->
+    val sidIssues = aerodrome.sids.values.mapNotNull { sid ->
         val runway = aerodrome.runways[sid.runway]
         val firstPoint = sid.waypoints.firstOrNull()?.point
         when {
-            runway == null -> issues += WorldValidationIssue(
+            runway == null -> WorldValidationIssue(
                 WorldValidationCode.SID_UNKNOWN_RUNWAY,
-                "SID ${sid.id.value} references unknown runway ${sid.runway.value} at aerodrome ${aerodrome.icao.value}"
+                "SID ${sid.id.value} references unknown runway ${sid.runway.value} " +
+                    "at aerodrome ${aerodrome.icao.value}"
             )
 
-            firstPoint != runway.threshold -> issues += WorldValidationIssue(
+            firstPoint != runway.threshold -> WorldValidationIssue(
                 WorldValidationCode.SID_NOT_AT_RUNWAY_THRESHOLD,
-                "SID ${sid.id.value} does not start at runway ${runway.id.value} threshold ${runway.threshold.value}"
+                "SID ${sid.id.value} does not start at runway ${runway.id.value} " +
+                    "threshold ${runway.threshold.value}"
             )
+
+            else -> null
         }
     }
 
-    aerodrome.stars.values.forEach { star ->
-        val terminalPoint = star.waypoints.lastOrNull()?.point ?: return@forEach
+    val starIssues = aerodrome.stars.values.mapNotNull { star ->
+        val terminalPoint = star.waypoints.lastOrNull()?.point ?: return@mapNotNull null
         if (terminalPoint !in approachEntryPoints && terminalPoint !in holdingFixPoints) {
-            issues += WorldValidationIssue(
+            WorldValidationIssue(
                 WorldValidationCode.STAR_TERMINAL_POINT_UNSHARED,
                 "STAR ${star.id.value} ends at point ${terminalPoint.value}, " +
                     "not shared with an approach/holding fix at ${aerodrome.icao.value}"
             )
-        }
+        } else null
     }
 
-    aerodrome.approaches.values.forEach { approach ->
+    val approachIssues = aerodrome.approaches.values.flatMap { approach ->
         val runway = aerodrome.runways[approach.runway]
         val lastPoint = approach.waypoints.lastOrNull()?.point
-        when {
-            runway == null -> issues += WorldValidationIssue(
-                WorldValidationCode.APPROACH_UNKNOWN_RUNWAY,
-                "Approach ${approach.id.value} references unknown runway ${approach.runway.value} at aerodrome ${aerodrome.icao.value}"
-            )
+        listOfNotNull(
+            when {
+                runway == null -> WorldValidationIssue(
+                    WorldValidationCode.APPROACH_UNKNOWN_RUNWAY,
+                    "Approach ${approach.id.value} references unknown runway " +
+                        "${approach.runway.value} at aerodrome ${aerodrome.icao.value}"
+                )
 
-            lastPoint != runway.threshold -> issues += WorldValidationIssue(
-                WorldValidationCode.APPROACH_NOT_AT_RUNWAY_THRESHOLD,
-                "Approach ${approach.id.value} does not end at runway ${runway.id.value} threshold ${runway.threshold.value}"
-            )
-        }
+                lastPoint != runway.threshold -> WorldValidationIssue(
+                    WorldValidationCode.APPROACH_NOT_AT_RUNWAY_THRESHOLD,
+                    "Approach ${approach.id.value} does not end at runway " +
+                        "${runway.id.value} threshold ${runway.threshold.value}"
+                )
 
-        if (approach.missedApproach.holdAt !in aerodrome.holdingPatterns) {
-            issues += WorldValidationIssue(
+                else -> null
+            },
+            if (approach.missedApproach.holdAt !in aerodrome.holdingPatterns) WorldValidationIssue(
                 WorldValidationCode.APPROACH_UNKNOWN_MISSED_HOLD,
-                "Approach ${approach.id.value} references unknown missed-approach hold ${approach.missedApproach.holdAt.value}"
-            )
-        }
+                "Approach ${approach.id.value} references unknown missed-approach " +
+                    "hold ${approach.missedApproach.holdAt.value}"
+            ) else null
+        )
     }
+
+    return sidIssues + starIssues + approachIssues
 }
 
-private fun validateSegmentOwnership(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
-    aerodrome.taxiways.values
+private fun validateSegmentOwnership(aerodrome: Aerodrome): List<WorldValidationIssue> {
+    val taxiwayOverlaps = aerodrome.taxiways.values
         .flatMap { taxiway ->
             taxiway.path.geometrySegmentIds().map { segment -> segment to taxiway.id.value }
         }
@@ -340,14 +325,15 @@ private fun validateSegmentOwnership(
             valueTransform = { (_, taxiwayId) -> taxiwayId }
         )
         .filterValues { owners -> owners.distinct().size > 1 }
-        .forEach { (segment, owners) ->
-            issues += WorldValidationIssue(
+        .map { (segment, owners) ->
+            WorldValidationIssue(
                 WorldValidationCode.TAXIWAY_SEGMENT_OVERLAP,
-                "Taxiway segment ${segment.describe()} is claimed by multiple taxiways ${owners.distinct().sorted()}"
+                "Taxiway segment ${segment.describe()} is claimed by " +
+                    "multiple taxiways ${owners.distinct().sorted()}"
             )
         }
 
-    aerodrome.aprons.values
+    val apronOverlaps = aerodrome.aprons.values
         .flatMap { apron ->
             apron.paths.flatMap { path ->
                 path.geometrySegmentIds().map { segment -> segment to apron.id.value }
@@ -358,111 +344,96 @@ private fun validateSegmentOwnership(
             valueTransform = { (_, apronId) -> apronId }
         )
         .filterValues { owners -> owners.distinct().size > 1 }
-        .forEach { (segment, owners) ->
-            issues += WorldValidationIssue(
+        .map { (segment, owners) ->
+            WorldValidationIssue(
                 WorldValidationCode.APRON_SEGMENT_OVERLAP,
-                "Apron segment ${segment.describe()} is claimed by multiple aprons ${owners.distinct().sorted()}"
+                "Apron segment ${segment.describe()} is claimed by " +
+                    "multiple aprons ${owners.distinct().sorted()}"
             )
         }
+
+    return taxiwayOverlaps + apronOverlaps
 }
 
 private fun AviationWorld.validateHoldingPatterns(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
-    aerodrome.holdingPatterns.values.forEach { holdingPattern ->
-        if (holdingPattern.fix !in fixes) {
-            issues += WorldValidationIssue(
+    aerodrome: Aerodrome
+): List<WorldValidationIssue> =
+    aerodrome.holdingPatterns.values.flatMap { holdingPattern ->
+        listOfNotNull(
+            if (holdingPattern.fix !in fixes) WorldValidationIssue(
                 WorldValidationCode.HOLDING_PATTERN_UNKNOWN_FIX,
                 "Holding pattern ${holdingPattern.id.value} references unknown fix ${holdingPattern.fix.value}"
-            )
-        }
-        if (holdingPattern.loop.points.first() != holdingPattern.loop.points.last()) {
-            issues += WorldValidationIssue(
+            ) else null,
+            if (holdingPattern.loop.points.first() != holdingPattern.loop.points.last()) WorldValidationIssue(
                 WorldValidationCode.HOLDING_PATTERN_NOT_CLOSED,
                 "Holding pattern ${holdingPattern.id.value} is not a closed loop"
-            )
-        }
+            ) else null
+        )
     }
-}
 
-private fun validateRoleStaffing(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
-    val staffedRoles = aerodrome.controllers.values
-        .flatten()
-        .toSet()
+private fun validateRoleStaffing(aerodrome: Aerodrome): List<WorldValidationIssue> {
+    val staffedRoles = aerodrome.controllers.values.flatten().toSet()
 
-    aerodrome.roles.keys
+    return aerodrome.roles.keys
         .filter { role -> role !in staffedRoles }
         .sortedBy(RoleName::name)
-        .forEach { role ->
-            issues += WorldValidationIssue(
+        .map { role ->
+            WorldValidationIssue(
                 WorldValidationCode.UNSTAFFED_ROLE,
                 "Aerodrome ${aerodrome.icao.value} declares role ${role.name} without an assigned controller"
             )
         }
 }
 
-private fun validateReciprocalRunways(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
+private fun validateReciprocalRunways(aerodrome: Aerodrome): List<WorldValidationIssue> {
     val checkedPairs = mutableSetOf<Pair<RunwayId, RunwayId>>()
 
-    aerodrome.runways.values.forEach { runway ->
-        val reciprocalId = runway.id.reciprocal() ?: return@forEach
-        val reciprocal = aerodrome.runways[reciprocalId] ?: return@forEach
+    return aerodrome.runways.values.mapNotNull { runway ->
+        val reciprocalId = runway.id.reciprocal() ?: return@mapNotNull null
+        val reciprocal = aerodrome.runways[reciprocalId] ?: return@mapNotNull null
         val pair = listOf(runway.id, reciprocal.id)
             .sortedBy(RunwayId::value)
             .let { ids -> ids[0] to ids[1] }
 
-        if (!checkedPairs.add(pair)) {
-            return@forEach
-        }
+        if (!checkedPairs.add(pair)) return@mapNotNull null
 
-        val sharedSegments = runway.path.segmentIds()
-            .map { segment -> GeometrySegmentId.between(segment.from, segment.to) }
-            .toSet()
-            .intersect(
-                reciprocal.path.segmentIds()
-                    .map { segment -> GeometrySegmentId.between(segment.from, segment.to) }
-                    .toSet()
-            )
+        val sharedSegments = runway.path.geometrySegmentIds().toSet()
+            .intersect(reciprocal.path.geometrySegmentIds().toSet())
 
         if (sharedSegments.isEmpty()) {
-            issues += WorldValidationIssue(
+            WorldValidationIssue(
                 WorldValidationCode.RECIPROCAL_RUNWAYS_DO_NOT_SHARE_SEGMENT,
-                "Reciprocal runways ${runway.id.value} and ${reciprocal.id.value} at aerodrome ${aerodrome.icao.value} do not share any segment"
+                "Reciprocal runways ${runway.id.value} and ${reciprocal.id.value} " +
+                    "at aerodrome ${aerodrome.icao.value} do not share any segment"
             )
-        }
+        } else null
     }
 }
 
-private fun validateAerodromeNames(
-    aerodrome: Aerodrome,
-    issues: MutableList<WorldValidationIssue>
-) {
-    aerodrome.sids.values
+private fun validateAerodromeNames(aerodrome: Aerodrome): List<WorldValidationIssue> {
+    val sidDuplicates = aerodrome.sids.values
         .groupBy { sid -> sid.name }
         .filterValues { duplicates -> duplicates.size > 1 }
-        .forEach { (name, duplicates) ->
-            issues += WorldValidationIssue(
+        .map { (name, duplicates) ->
+            WorldValidationIssue(
                 WorldValidationCode.DUPLICATE_SID_NAME,
-                "Aerodrome ${aerodrome.icao.value} has duplicate SID name $name across ${duplicates.map { sid -> sid.id.value }.sorted()}"
+                "Aerodrome ${aerodrome.icao.value} has duplicate SID name $name " +
+                    "across ${duplicates.map { sid -> sid.id.value }.sorted()}"
             )
         }
 
-    aerodrome.stars.values
+    val starDuplicates = aerodrome.stars.values
         .groupBy { star -> star.name }
         .filterValues { duplicates -> duplicates.size > 1 }
-        .forEach { (name, duplicates) ->
-            issues += WorldValidationIssue(
+        .map { (name, duplicates) ->
+            WorldValidationIssue(
                 WorldValidationCode.DUPLICATE_STAR_NAME,
-                "Aerodrome ${aerodrome.icao.value} has duplicate STAR name $name across ${duplicates.map { star -> star.id.value }.sorted()}"
+                "Aerodrome ${aerodrome.icao.value} has duplicate STAR name $name " +
+                    "across ${duplicates.map { star -> star.id.value }.sorted()}"
             )
         }
+
+    return sidDuplicates + starDuplicates
 }
 
 private fun groundAdjacency(aerodrome: Aerodrome): Map<PointId, Set<PointId>> {
@@ -481,13 +452,12 @@ private fun groundAdjacency(aerodrome: Aerodrome): Map<PointId, Set<PointId>> {
     return adjacency.mapValues { (_, points) -> points.toSet() }
 }
 
+@Suppress("LoopWithTooManyJumpStatements")
 private fun reachablePointsFrom(
     origin: PointId,
     adjacency: Map<PointId, Set<PointId>>
 ): Set<PointId> {
-    if (origin !in adjacency) {
-        return setOf(origin)
-    }
+    if (origin !in adjacency) return setOf(origin)
 
     val visited = linkedSetOf<PointId>()
     val queue = ArrayDeque<PointId>()
@@ -498,66 +468,49 @@ private fun reachablePointsFrom(
     while (queue.isNotEmpty()) {
         val current = queue.removeFirst()
         adjacency[current].orEmpty().forEach { next ->
-            if (visited.add(next)) {
-                queue += next
-            }
+            if (visited.add(next)) queue += next
         }
     }
 
     return visited
 }
 
-private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> {
-    val claimedSegments = linkedSetOf<GeometrySegmentId>()
+private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> =
+    buildSet {
+        fun addPath(path: Path) { addAll(path.geometrySegmentIds()) }
 
-    fun addPath(path: Path) {
-        claimedSegments += path.geometrySegmentIds()
-    }
-
-    aerodromes.values.forEach { aerodrome ->
-        aerodrome.runways.values.forEach { runway -> addPath(runway.path) }
-        aerodrome.taxiways.values.forEach { taxiway -> addPath(taxiway.path) }
-        aerodrome.aprons.values.forEach { apron ->
-            apron.paths.forEach(::addPath)
-        }
-        aerodrome.circuits.values.forEach { circuit ->
-            circuit.legs.forEach { leg -> addPath(leg.path) }
-            circuit.joinProcedures.mapNotNull { join -> join.entryPath }.forEach(::addPath)
-            circuit.extendedDownwind?.let { extension ->
-                addPath(extension.extendedPath)
-                extension.offRamps.forEach { offRamp -> addPath(offRamp.path) }
+        aerodromes.values.forEach { aerodrome ->
+            aerodrome.runways.values.forEach { runway -> addPath(runway.path) }
+            aerodrome.taxiways.values.forEach { taxiway -> addPath(taxiway.path) }
+            aerodrome.aprons.values.forEach { apron -> apron.paths.forEach(::addPath) }
+            aerodrome.circuits.values.forEach { circuit ->
+                circuit.legs.forEach { leg -> addPath(leg.path) }
+                circuit.joinProcedures.mapNotNull { join -> join.entryPath }.forEach(::addPath)
+                circuit.extendedDownwind?.let { extension ->
+                    addPath(extension.extendedPath)
+                    extension.offRamps.forEach { offRamp -> addPath(offRamp.path) }
+                }
+                circuit.orbitPoints.forEach { orbit -> addPath(orbit.loop) }
+                addPath(circuit.goAroundPath)
             }
-            circuit.orbitPoints.forEach { orbit -> addPath(orbit.loop) }
-            addPath(circuit.goAroundPath)
-        }
-        aerodrome.sids.values.forEach { sid ->
-            sid.waypoints.asPathOrNull()?.let(::addPath)
-            sid.transitions.values.forEach { transition ->
-                transition.asPathOrNull()?.let(::addPath)
+            aerodrome.sids.values.forEach { sid ->
+                sid.waypoints.asPathOrNull()?.let(::addPath)
+                sid.transitions.values.forEach { it.asPathOrNull()?.let(::addPath) }
             }
-        }
-        aerodrome.stars.values.forEach { star ->
-            star.waypoints.asPathOrNull()?.let(::addPath)
-            star.transitions.values.forEach { transition ->
-                transition.asPathOrNull()?.let(::addPath)
+            aerodrome.stars.values.forEach { star ->
+                star.waypoints.asPathOrNull()?.let(::addPath)
+                star.transitions.values.forEach { it.asPathOrNull()?.let(::addPath) }
             }
+            aerodrome.approaches.values.forEach { approach ->
+                approach.waypoints.asPathOrNull()?.let(::addPath)
+                approach.missedApproach.waypoints.asPathOrNull()?.let(::addPath)
+            }
+            aerodrome.holdingPatterns.values.forEach { addPath(it.loop) }
         }
-        aerodrome.approaches.values.forEach { approach ->
-            approach.waypoints.asPathOrNull()?.let(::addPath)
-            approach.missedApproach.waypoints.asPathOrNull()?.let(::addPath)
-        }
-        aerodrome.holdingPatterns.values.forEach { holdingPattern -> addPath(holdingPattern.loop) }
-    }
 
-    airways.values.forEach { airway ->
-        airway.waypoints.asPathOrNull()?.let(::addPath)
+        airways.values.forEach { airway -> airway.waypoints.asPathOrNull()?.let(::addPath) }
+        vfrRoutes.values.forEach { route -> route.waypoints.asPathOrNull()?.let(::addPath) }
     }
-    vfrRoutes.values.forEach { route ->
-        route.waypoints.asPathOrNull()?.let(::addPath)
-    }
-
-    return claimedSegments
-}
 
 private fun RunwayId.reciprocal(): RunwayId? {
     val match = RUNWAY_DESIGNATOR.matchEntire(value) ?: return null

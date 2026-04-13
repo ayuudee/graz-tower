@@ -186,6 +186,7 @@ private fun evaluateStepCompletion(
         is ResolvedStep.Plain -> evaluateGenericInstructionCompletion(step.instruction, view)
     }
 
+@Suppress("LongMethod")
 private fun evaluateGenericInstructionCompletion(
     instruction: xyz.easiersaid.twr.protocol.AtcInstruction,
     view: CompletionView

@@ -41,10 +41,63 @@ fun instructionTiming(instruction: AtcInstruction): InstructionTiming? = when (i
     is ExtendDownwind,
     is HoldAt -> InstructionTiming.PERSISTENT
 
-    else -> null
+    // Standalone instructions — not used inside compound clearances
+    is StartupApproved,
+    is PushbackApproved,
+    is PushbackFace,
+    is TaxiViaRunway,
+    is AirTaxiTo,
+    is VacateRunway,
+    is TaxiIntoHoldingBay,
+    is TaxiWithCaution,
+    is ExpediteTaxi,
+    is ReduceTaxiSpeed,
+    is GiveWayToTraffic,
+    is ClearedForTakeoff,
+    is ClearedToLand,
+    is ClearedTouchAndGo,
+    is ClearedLowApproach,
+    is GoAround,
+    is HoldPositionCancelTakeoff,
+    is StopImmediately,
+    is TakeoffImmediatelyOrVacateRunway,
+    is TakeoffImmediatelyOrHoldShort,
+    is AfterLandingVacateVia,
+    is ClearedTo,
+    is ProceedDirect,
+    is ResumeOwnNavigation,
+    is RouteAsFiled,
+    is JoinAirway,
+    is RejoinSidAt,
+    is LeaveHoldProceedDirect,
+    is WhenAbleProceedDirect,
+    is FlyHeading,
+    is TurnHeading,
+    is TurnByDegrees,
+    is ContinuePresentHeading,
+    is StopTurn,
+    is InterceptLocaliser,
+    is ClearedApproach,
+    is ContinueApproach,
+    is JoinCircuit,
+    is MakeShortApproach,
+    is MakeLongApproach,
+    is TurnBase,
+    is MakeAnotherCircuit,
+    is CommenceApproachAt,
+    is ReportWhen,
+    is ReportTrafficInSight,
+    is FollowTraffic,
+    is NumberInSequence,
+    is MaintainVisualSeparation,
+    is DivertTo,
+    is ClearedToEnterControlZone,
+    is RemainOutsideControlledAirspace -> null
 }
 
 fun instructionDomain(instruction: AtcInstruction): ClearanceDomain? = when (instruction) {
+    is ConditionalClearance -> instructionDomain(instruction.instruction)
+
     is StartupApproved,
     is PushbackApproved,
     is PushbackFace,
@@ -78,6 +131,8 @@ fun instructionDomain(instruction: AtcInstruction): ClearanceDomain? = when (ins
     is TurnBase,
     is Orbit,
     is MakeAnotherCircuit,
+    is MakeShortApproach,
+    is MakeLongApproach,
     is FollowTraffic,
     is NumberInSequence,
     is MaintainVisualSeparation -> ClearanceDomain.RUNWAY
@@ -93,6 +148,7 @@ fun instructionDomain(instruction: AtcInstruction): ClearanceDomain? = when (ins
     is WhenAbleProceedDirect,
     is ClearedApproach,
     is ContinueApproach,
+    is CommenceApproachAt,
     is FlyHeading,
     is TurnHeading,
     is TurnByDegrees,
@@ -131,22 +187,19 @@ fun instructionDomain(instruction: AtcInstruction): ClearanceDomain? = when (ins
     is ContactFrequency,
     is MonitorFrequency -> ClearanceDomain.FREQUENCY
 
-    is ConditionalClearance -> instructionDomain(instruction.instruction)
-
-    else -> null
+    // Instructions with no specific domain
+    is SetPressure,
+    is ReportWhen,
+    is ReportTrafficInSight,
+    is DivertTo -> null
 }
 
 fun instructionSupersedesIn(instruction: AtcInstruction): Set<ClearanceDomain> =
     when (instruction) {
         is ConditionalClearance -> instructionSupersedesIn(instruction.instruction)
-        else -> buildSet {
-            instructionDomain(instruction)?.let(::add)
-            when (instruction) {
-                is GoAround -> addAll(setOf(ClearanceDomain.ROUTE, ClearanceDomain.LEVEL))
-                is ClearedApproach -> add(ClearanceDomain.LEVEL)
-                else -> Unit
-            }
-        }
+        is GoAround -> setOf(ClearanceDomain.RUNWAY, ClearanceDomain.ROUTE, ClearanceDomain.LEVEL)
+        is ClearedApproach -> setOf(ClearanceDomain.ROUTE, ClearanceDomain.LEVEL)
+        else -> buildSet { instructionDomain(instruction)?.let(::add) }
     }
 
 fun instructionCompletionCategory(instruction: AtcInstruction): CompletionCategory? = when (instruction) {
@@ -205,7 +258,44 @@ fun instructionCompletionCategory(instruction: AtcInstruction): CompletionCatego
     is ExtendDownwind,
     is HoldAt -> CompletionCategory.PERSISTENT
 
-    else -> null
+    // Instructions with no modelled completion
+    is StartupApproved,
+    is PushbackApproved,
+    is PushbackFace,
+    is TaxiViaRunway,
+    is AirTaxiTo,
+    is VacateRunway,
+    is TaxiIntoHoldingBay,
+    is TaxiWithCaution,
+    is ExpediteTaxi,
+    is ReduceTaxiSpeed,
+    is GiveWayToTraffic,
+    is GoAround,
+    is HoldPositionCancelTakeoff,
+    is StopImmediately,
+    is TakeoffImmediatelyOrVacateRunway,
+    is TakeoffImmediatelyOrHoldShort,
+    is FlyHeading,
+    is TurnHeading,
+    is TurnByDegrees,
+    is ContinuePresentHeading,
+    is StopTurn,
+    is InterceptLocaliser,
+    is ClearedApproach,
+    is ContinueApproach,
+    is MakeShortApproach,
+    is MakeLongApproach,
+    is TurnBase,
+    is MakeAnotherCircuit,
+    is CommenceApproachAt,
+    is ReportWhen,
+    is ReportTrafficInSight,
+    is FollowTraffic,
+    is NumberInSequence,
+    is MaintainVisualSeparation,
+    is DivertTo,
+    is ClearedToEnterControlZone,
+    is RemainOutsideControlledAirspace -> null
 }
 
 fun instructionMayBeConditional(instruction: AtcInstruction): Boolean = when (instruction) {
@@ -218,5 +308,83 @@ fun instructionMayBeConditional(instruction: AtcInstruction): Boolean = when (in
     is BacktrackRunway,
     is LineUpAndWait -> true
 
-    else -> false
+    is ConditionalClearance,
+    is StartupApproved,
+    is PushbackFace,
+    is HoldPosition,
+    is VacateRunway,
+    is TaxiIntoHoldingBay,
+    is TaxiWithCaution,
+    is ExpediteTaxi,
+    is ReduceTaxiSpeed,
+    is GiveWayToTraffic,
+    is ClearedForTakeoff,
+    is ClearedToLand,
+    is ClearedTouchAndGo,
+    is ClearedLowApproach,
+    is GoAround,
+    is HoldPositionCancelTakeoff,
+    is StopImmediately,
+    is TakeoffImmediatelyOrVacateRunway,
+    is TakeoffImmediatelyOrHoldShort,
+    is AfterLandingVacateVia,
+    is ClearedTo,
+    is ProceedDirect,
+    is ResumeOwnNavigation,
+    is RouteAsFiled,
+    is JoinAirway,
+    is RejoinSidAt,
+    is HoldAt,
+    is LeaveHoldProceedDirect,
+    is WhenAbleProceedDirect,
+    is FlyHeading,
+    is TurnHeading,
+    is TurnByDegrees,
+    is ContinuePresentHeading,
+    is StopTurn,
+    is InterceptLocaliser,
+    is ClimbTo,
+    is DescendTo,
+    is ExpediteClimb,
+    is ExpediteDescend,
+    is MaintainLevel,
+    is StopClimbAt,
+    is StopDescentAt,
+    is MaintainAtOrAbove,
+    is MaintainAtOrBelow,
+    is AfterPassingLevelClimbTo,
+    is AfterPassingLevelDescendTo,
+    is MaintainAltitudeUntilEstablished,
+    is MaintainSpeed,
+    is ReduceSpeedTo,
+    is IncreaseSpeedTo,
+    is MinimumCleanSpeed,
+    is ResumeNormalSpeed,
+    is ClearedApproach,
+    is ContinueApproach,
+    is JoinCircuit,
+    is MakeShortApproach,
+    is MakeLongApproach,
+    is ExtendDownwind,
+    is TurnBase,
+    is Orbit,
+    is MakeAnotherCircuit,
+    is CommenceApproachAt,
+    is ReportWhen,
+    is ReportTrafficInSight,
+    is FollowTraffic,
+    is NumberInSequence,
+    is MaintainVisualSeparation,
+    is ContactFrequency,
+    is MonitorFrequency,
+    is SetSquawk,
+    is ConfirmSquawk,
+    is SquawkIdent,
+    is SquawkStandby,
+    is SquawkNormal,
+    is StopSquawk,
+    is SetPressure,
+    is DivertTo,
+    is ClearedToEnterControlZone,
+    is RemainOutsideControlledAirspace -> false
 }

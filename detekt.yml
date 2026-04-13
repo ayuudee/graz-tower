@@ -3,7 +3,7 @@ build:
 
 complexity:
   LongMethod:
-    threshold: 150
+    threshold: 100
     ignoreAnnotated: ['Test']
   LongParameterList:
     functionThreshold: 8
@@ -23,7 +23,7 @@ style:
   MagicNumber:
     active: false
   MaxLineLength:
-    maxLineLength: 160
+    maxLineLength: 150
   ReturnCount:
     max: 10
   WildcardImport:
@@ -36,6 +36,7 @@ style:
     active: true
   VarCouldBeVal:
     active: true
+
 potential-bugs:
   CastToNullableType:
     active: true

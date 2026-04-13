@@ -1,30 +1,10 @@
 package xyz.easiersaid.twr.core.world
 
-class InvalidWorldException(
-    val report: WorldValidationReport
-) : IllegalArgumentException(
-    buildString {
-        append("Invalid aviation world with ")
-        append(report.issues.size)
-        append(" issue(s)")
-        if (report.issues.isNotEmpty()) {
-            append(": ")
-            append(
-                report.issues.joinToString("; ") { issue ->
-                    "${issue.code}: ${issue.message}"
-                }
-            )
-        }
-    }
-)
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 
-fun buildValidatedWorld(world: AviationWorld): AviationWorld {
+fun buildValidatedWorld(world: AviationWorld): Either<WorldValidationReport, AviationWorld> {
     val report = world.validate()
-    if (!report.isValid) {
-        throw InvalidWorldException(report)
-    }
-    return world
+    return if (report.isValid) world.right() else report.left()
 }
-
-fun AviationWorld.requireValid(): AviationWorld =
-    buildValidatedWorld(this)

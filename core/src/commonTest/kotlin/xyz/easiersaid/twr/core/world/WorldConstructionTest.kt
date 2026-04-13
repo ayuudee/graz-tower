@@ -41,8 +41,7 @@ class WorldConstructionTest {
         val report = world.validate()
 
         assertTrue(report.isValid)
-        assertEquals(world, buildValidatedWorld(world))
-        assertEquals(world, world.requireValid())
+        assertTrue(buildValidatedWorld(world).isRight())
     }
 
     @Test
@@ -99,12 +98,12 @@ class WorldConstructionTest {
     fun buildValidatedWorldRejectsMissingHoldingPoint() {
         val invalidWorld = sampleWorldWithMissingHoldingPoint()
 
-        val error = assertFailsWith<InvalidWorldException> {
-            buildValidatedWorld(invalidWorld)
-        }
+        val result = buildValidatedWorld(invalidWorld)
 
+        assertTrue(result.isLeft())
+        val report = (result as arrow.core.Either.Left).value
         assertContains(
-            error.report.issues.map { issue -> issue.code },
+            report.issues.map { issue -> issue.code },
             WorldValidationCode.MISSING_RUNWAY_HOLDING_POINT
         )
     }
