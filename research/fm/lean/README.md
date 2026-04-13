@@ -73,6 +73,8 @@ Read modules in roughly this order:
   Structured completion-observation layer over `GreenfieldResolved`: evaluates proof-side observations against resolved step payloads while keeping unsupported families explicit.
 - `GreenfieldExecution`
   Resolved active-clearance layer over `GreenfieldResolved` and `GreenfieldCompletion`: managed resolved clearances, resolved completion, supersession bridging, and active-set reconciliation.
+  The current theorem surface also makes the unique-clearance-id assumption
+  explicit where exact resolved-set invariants depend on id-based reattachment.
 - `JointActs`
   Narrow orchestration milestone theorem for the first joint-act slice.
 
@@ -143,6 +145,8 @@ Use `GreenfieldExecution.lean` when you want to:
 - reason about managed resolved clearances directly
 - combine resolved completion with supersession and conditional activation
 - stay aligned to the Kotlin active-clearance engine without dropping back to raw instruction semantics
+- make explicit which execution properties only need lifecycle-view equality
+  and which stronger ones additionally require unique clearance ids
 
 Use `ClearanceEnvelope.lean` when you need:
 

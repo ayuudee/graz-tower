@@ -84,6 +84,12 @@ def ManagedResolvedClearance.withLifecycleView
   { resolved := managed.resolved.withSource view.clearance
     suppressedDomains := view.suppressedDomains }
 
+@[simp] theorem ManagedResolvedClearance.withLifecycleView_lifecycleView
+    (managed : ManagedResolvedClearance) :
+    managed.withLifecycleView managed.lifecycleView = managed := by
+  cases managed
+  rfl
+
 def stageIncomingResolvedClearance
     (clearance : ResolvedClearance) :
     ManagedResolvedClearance :=
@@ -96,6 +102,15 @@ def findResolvedById
     (id : ClearanceId) :
     Option ManagedResolvedClearance :=
   clearances.find? (fun managed => managed.source.id = id)
+
+def resolvedClearanceIds
+    (clearances : List ManagedResolvedClearance) :
+    List ClearanceId :=
+  clearances.map (fun managed => managed.source.id)
+
+def UniqueResolvedClearanceIds
+    (clearances : List ManagedResolvedClearance) : Prop :=
+  (resolvedClearanceIds clearances).Nodup
 
 def removeResolvedById
     (clearances : List ManagedResolvedClearance)
@@ -111,12 +126,12 @@ def pendingResolvedConditionalViews
 
 def reattachLifecycleViews
     (original : List ManagedResolvedClearance)
-    (views : List ManagedClearance) :
-    List ManagedResolvedClearance :=
-  views.filterMap fun view =>
-    match findResolvedById original view.clearance.id with
-    | some managed => some (managed.withLifecycleView view)
-    | none => none
+    : List ManagedClearance → List ManagedResolvedClearance
+  | [] => []
+  | view :: tail =>
+      match findResolvedById original view.clearance.id with
+      | some managed => managed.withLifecycleView view :: reattachLifecycleViews original tail
+      | none => reattachLifecycleViews original tail
 
 structure ResolvedSupersessionApplication where
   updatedExisting : List ManagedResolvedClearance
@@ -363,6 +378,64 @@ theorem findResolvedById_some_of_mem
         · exact ⟨head, by simp [findResolvedById, hEq]⟩
         · exact ⟨matched, by simpa [findResolvedById, hEq] using hFound⟩
 
+theorem findResolvedById_eq_some_of_mem_unique
+    {clearances : List ManagedResolvedClearance}
+    (hUnique : UniqueResolvedClearanceIds clearances)
+    {managed : ManagedResolvedClearance}
+    (hMem : managed ∈ clearances) :
+    findResolvedById clearances managed.source.id = some managed := by
+  induction clearances with
+  | nil =>
+      cases hMem
+  | cons head tail ih =>
+      simp [UniqueResolvedClearanceIds, resolvedClearanceIds] at hUnique
+      simp at hMem
+      rcases hMem with hEq | hTail
+      · subst hEq
+        simp [findResolvedById]
+      · have hManagedIdInTail : ∃ entry, entry ∈ tail ∧ entry.source.id = managed.source.id := by
+          exact ⟨managed, hTail, rfl⟩
+        have hHeadNe : head.source.id ≠ managed.source.id := by
+          intro hEq
+          rcases hManagedIdInTail with ⟨entry, hEntryMem, hEntryId⟩
+          have hEntryNe : ¬ entry.source.id = head.source.id :=
+            hUnique.1 entry hEntryMem
+          apply hEntryNe
+          calc
+            entry.source.id = managed.source.id := hEntryId
+            _ = head.source.id := hEq.symm
+        simpa [findResolvedById, hHeadNe] using ih hUnique.2 hTail
+
+theorem reattachLifecycleViews_from_subset
+    (original current : List ManagedResolvedClearance)
+    (hUnique : UniqueResolvedClearanceIds original)
+    (hSubset : ∀ managed ∈ current, managed ∈ original) :
+    reattachLifecycleViews original (current.map ManagedResolvedClearance.lifecycleView) = current := by
+  induction current with
+  | nil =>
+      simp [reattachLifecycleViews]
+  | cons head tail ih =>
+      have hHeadMem : head ∈ original := hSubset head (by simp)
+      have hHeadFind :
+          findResolvedById original head.source.id = some head :=
+        findResolvedById_eq_some_of_mem_unique hUnique hHeadMem
+      have hHeadFindView :
+          findResolvedById original head.lifecycleView.clearance.id = some head := by
+        simpa [ManagedResolvedClearance.lifecycleView, ManagedResolvedClearance.source] using hHeadFind
+      have hTailSubset : ∀ managed ∈ tail, managed ∈ original := by
+        intro managed hMem
+        exact hSubset managed (by simp [hMem])
+      unfold reattachLifecycleViews
+      simp [hHeadFindView, ih hTailSubset]
+
+theorem reattachLifecycleViews_map_lifecycleView_self
+    (original : List ManagedResolvedClearance)
+    (hUnique : UniqueResolvedClearanceIds original) :
+    reattachLifecycleViews original (original.map ManagedResolvedClearance.lifecycleView) = original := by
+  exact reattachLifecycleViews_from_subset original original hUnique (by
+    intro managed hMem
+    exact hMem)
+
 theorem reattachLifecycleViews_preserves_lifecycleViews
     (original : List ManagedResolvedClearance)
     (views : List ManagedClearance)
@@ -415,6 +488,32 @@ theorem applyIncomingResolvedSupersession_other_aircraft_lifecycleInvariant
   constructor
   · exact reattachLifecycleViews_preserves_lifecycleViews existing _ hFound
   · constructor <;> simp [reattachLifecycleViews]
+
+theorem applyIncomingResolvedSupersession_other_aircraft_invariant
+    (existing : List ManagedResolvedClearance)
+    (incoming : ManagedResolvedClearance)
+    (hUnique : UniqueResolvedClearanceIds existing)
+    (hOther : ∀ managed ∈ existing, managed.aircraft ≠ incoming.aircraft) :
+    let result := applyIncomingResolvedSupersession existing incoming
+    result.updatedExisting = existing ∧
+      result.fullySuperseded = [] ∧
+      result.partiallySuperseded = [] := by
+  have hLifecycle :
+      applyIncomingSupersession
+          (existing.map ManagedResolvedClearance.lifecycleView)
+          incoming.lifecycleView =
+        { updatedExisting := existing.map ManagedResolvedClearance.lifecycleView
+          fullySuperseded := []
+          partiallySuperseded := [] } := by
+    apply applyIncomingSupersession_identity_of_other_aircraft
+    intro managed hMem
+    simp at hMem
+    rcases hMem with ⟨resolvedManaged, hResolvedMem, rfl⟩
+    exact hOther resolvedManaged hResolvedMem
+  have hReattach :
+      reattachLifecycleViews existing (existing.map ManagedResolvedClearance.lifecycleView) = existing :=
+    reattachLifecycleViews_map_lifecycleView_self existing hUnique
+  simp [applyIncomingResolvedSupersession, hLifecycle, hReattach, reattachLifecycleViews]
 
 example :
     (evaluateResolvedCompletion

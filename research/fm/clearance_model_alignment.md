@@ -117,6 +117,9 @@ surface:
 - completion is evaluated over resolved steps, not raw instructions
 - supersession still reuses the abstract lifecycle algebra, so the lower layer
   remains useful instead of being thrown away
+- under an explicit unique-clearance-id assumption, other-aircraft supersession
+  now preserves the resolved active set exactly rather than only preserving its
+  lifecycle projection
 
 ## Important Deliberate Mismatch
 
@@ -152,13 +155,13 @@ The new Lean boundary is immediately useful for:
 
 The next valuable Lean steps are:
 
-1. prove stronger properties over `GreenfieldExecution.lean`:
-   activation order, suppression monotonicity, and non-interference across
-   aircraft
-2. refine the unsupported observation cases that still need richer resolved
+1. refine the unsupported observation cases that still need richer resolved
    world facts, especially any families beyond the current completion-relevant
    subset
-3. connect the new resolution relation more directly to any future proof-side
+2. connect the new resolution relation more directly to any future proof-side
    world model, instead of leaving it as an abstract relational interface
+3. prove wider execution properties above the now-stable resolved boundary:
+   reconciliation invariants, activation ordering through the full engine, and
+   end-to-end admission/completion facts
 4. only then decide how much of the older `ClearanceEnvelope.lean` theorem
    surface should be adapted or replaced
