@@ -315,6 +315,9 @@ inductive AtcInstruction
   | clearedLowApproach (target : AircraftId) (runway : RunwayId)
   | goAround (target : AircraftId)
   | afterLandingVacateVia (target : AircraftId) (exit : PointId)
+  | reportDownwind (target : AircraftId)
+  | reportFinal (target : AircraftId)
+  | proceed (target : AircraftId)
   | clearedTo (target : AircraftId) (clearanceLimit : FixId)
       (route : Option RouteSpec := none)
   | proceedDirect (target : AircraftId) (fix : FixId)
@@ -381,6 +384,9 @@ def instructionTarget : AtcInstruction → AircraftId
   | .clearedLowApproach target _ => target
   | .goAround target => target
   | .afterLandingVacateVia target _ => target
+  | .reportDownwind target => target
+  | .reportFinal target => target
+  | .proceed target => target
   | .clearedTo target _ _ => target
   | .proceedDirect target _ => target
   | .resumeOwnNavigation target => target
@@ -507,6 +513,9 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .clearedLowApproach _ _ => some .runway
   | .goAround _ => some .runway
   | .afterLandingVacateVia _ _ => some .runway
+  | .reportDownwind _ => none
+  | .reportFinal _ => none
+  | .proceed _ => none
   | .clearedTo _ _ _ => some .route
   | .proceedDirect _ _ => some .route
   | .resumeOwnNavigation _ => some .route
@@ -550,7 +559,7 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
 
 def instructionSupersedesIn : AtcInstruction → List ClearanceDomain
   | .conditionalClearance _ _ instruction => instructionSupersedesIn instruction
-  | .goAround _ => [.runway, .route, .level]
+  | .goAround _ => [.runway, .route, .level, .speed]
   | .clearedApproach _ _ _ _ => [.route, .level]
   | instruction =>
       match instructionDomain? instruction with

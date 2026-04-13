@@ -218,5 +218,11 @@ def ResolvedClearance.withSource
     ResolvedClearance :=
   { clearance with source := source }
 
+@[simp] theorem ResolvedClearance.withSource_allStepsCompatible
+    (clearance : ResolvedClearance)
+    (source : StructuredClearance) :
+    (clearance.withSource source).allStepsCompatible = clearance.allStepsCompatible := by
+  rfl
+
 end Greenfield
 end CertifiedAtc

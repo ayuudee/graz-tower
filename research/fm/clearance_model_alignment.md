@@ -23,7 +23,7 @@ The Kotlin implementation that now matters for Lean alignment is:
 
 ## Current Lean Boundary
 
-There are now seven Lean layers above the local certifiers:
+There are now eight Lean layers above the local certifiers:
 
 - [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   This is the older staging/compiler surface. It still owns the partial bridge
@@ -57,6 +57,10 @@ There are now seven Lean layers above the local certifiers:
   This is the resolved active-clearance layer. It combines resolved completion,
   lifecycle status updates, supersession bridging, and conditional activation
   over managed resolved clearances.
+- [GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
+  This is the reachable active-set layer above execution. It packages fresh
+  admission and reconciliation into a reusable `ReachableResolvedSet`
+  predicate and derives `WellFormedResolvedSet` from reachability.
 
 That split is intentional. `ClearanceEnvelope.lean` is still useful, but it is
 no longer the authoritative model shape or lifecycle surface.
@@ -103,6 +107,9 @@ layer:
 - resolved clearances can now be justified from proof-side world/state facts
 - compatibility of resolved payloads is proved from the resolution relation
 - resolved step count is tied back to the source clearance
+- a finite `ConcreteResolutionWorld` now bridges list-backed proof data into
+  that relation, so the world layer is no longer only an abstract predicate
+  interface
 
 `GreenfieldCompletion.lean` now narrows completion against that resolved
 surface:
@@ -120,6 +127,24 @@ surface:
 - under an explicit unique-clearance-id assumption, other-aircraft supersession
   now preserves the resolved active set exactly rather than only preserving its
   lifecycle projection
+- admission and reconciliation now also have first concrete execution theorems:
+  condition-pending clearances do not supersede, active other-aircraft
+  admissions append cleanly under nonterminal/unique-id assumptions, and a
+  false condition evaluator yields no activation-side mutation
+- activation is now explicitly status-gated in both Kotlin and Lean: a
+  clearance superseded earlier in the same pass cannot be reactivated later
+  from the stale pending-id list
+- the resolved execution layer now also preserves unique clearance ids through
+  fresh admission, conditional activation, and whole-engine reconciliation
+- the resolved execution layer now also preserves resolved-step compatibility
+  through completion, conditional activation, admission, and whole-engine
+  reconciliation
+- a reachable active-set layer now sits above execution, so later proofs can
+  assume reachability and recover well-formedness instead of re-threading fresh
+  ids and compatibility side conditions manually
+- Lean reconciliation now matches the Kotlin runtime shape more closely at the
+  terminal boundary: `terminalClearances` come from the final working set
+  directly, while `fullySuperseded` remains a separate report channel
 
 ## Important Deliberate Mismatch
 
@@ -159,9 +184,9 @@ The next valuable Lean steps are:
    world facts, especially any families beyond the current completion-relevant
    subset
 2. connect the new resolution relation more directly to any future proof-side
-   world model, instead of leaving it as an abstract relational interface
+   world model beyond the current finite `ConcreteResolutionWorld` bridge
 3. prove wider execution properties above the now-stable resolved boundary:
-   reconciliation invariants, activation ordering through the full engine, and
-   end-to-end admission/completion facts
+   activation ordering through the full engine, stronger reachability theorems,
+   and broader end-to-end admission/completion facts
 4. only then decide how much of the older `ClearanceEnvelope.lean` theorem
    surface should be adapted or replaced

@@ -188,3 +188,25 @@ The next proof work should assume:
   boundary
 - sequencing and clearance-limit work can continue against this boundary
   without waiting for repo-specific translators
+
+## Current FM Status
+
+This note is no longer prose-only for the scoped `Safety-complete (N₀)`
+surface.
+
+[ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+now mechanizes a scoped extraction boundary with theorem-bearing:
+
+- deterministic extraction into `ClearanceCompileView`, certifier-local views,
+  and `OrchestrationEnv`
+- no-invented-id results for extracted runway, taxiway, and role/frequency
+  data
+- in-scope reference preservation for runway, taxiway, and role/frequency
+  references
+- runway/surface operational bridge facts and authority/lifecycle preservation
+
+What remains open here is still the broader route-bearing world:
+
+- procedure-heavy reference preservation beyond the scoped surface
+- clearance-limit / holding-pattern preservation
+- dynamic entity lifecycle semantics

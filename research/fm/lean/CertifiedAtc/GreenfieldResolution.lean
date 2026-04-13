@@ -24,6 +24,103 @@ structure ResolutionWorld where
   roleFrequency : RoleName → Frequency → Prop
   circuitJoin : CircuitDirection → JoinType → Option RunwayId → CircuitProcedureId → Level → Prop
 
+structure ConcreteTaxiRoute where
+  start : PointId
+  destination : PointId
+  path : List PointId
+  deriving DecidableEq, Repr
+
+structure ConcreteHoldingPatternBinding where
+  hold : HoldSpec
+  pattern : HoldingPatternId
+  fix : FixId
+  deriving DecidableEq, Repr
+
+structure ConcreteApproachBinding where
+  approachType : ApproachType
+  runway : RunwayId
+  circlingRunway : Option RunwayId
+  approach : ApproachId
+  deriving DecidableEq, Repr
+
+structure ConcreteCircuitJoinBinding where
+  direction : CircuitDirection
+  joinType : JoinType
+  runway : Option RunwayId
+  circuit : CircuitProcedureId
+  altitude : Level
+  deriving DecidableEq, Repr
+
+structure ConcreteResolutionWorld where
+  taxiRoutes : List ConcreteTaxiRoute := []
+  runwayHoldingPoints : List (RunwayId × PointId) := []
+  runwayCrossingPoints : List (RunwayId × PointId) := []
+  runwayFarEnds : List (RunwayId × PointId) := []
+  fixPoints : List (FixId × PointId) := []
+  holdingPatterns : List ConcreteHoldingPatternBinding := []
+  approaches : List ConcreteApproachBinding := []
+  roleFrequencies : List (RoleName × Frequency) := []
+  circuitJoins : List ConcreteCircuitJoinBinding := []
+  deriving Repr
+
+def ConcreteResolutionWorld.toResolutionWorld
+    (world : ConcreteResolutionWorld) : ResolutionWorld :=
+  { taxiRoute := fun start destination path =>
+      { start := start, destination := destination, path := path } ∈ world.taxiRoutes
+    holdingPointForRunway := fun runway point =>
+      (runway, point) ∈ world.runwayHoldingPoints
+    crossingPointForRunway := fun runway point =>
+      (runway, point) ∈ world.runwayCrossingPoints
+    farEndPointForRunway := fun runway point =>
+      (runway, point) ∈ world.runwayFarEnds
+    fixPoint := fun fix point =>
+      (fix, point) ∈ world.fixPoints
+    holdingPatternFor := fun hold pattern fix =>
+      { hold := hold, pattern := pattern, fix := fix } ∈ world.holdingPatterns
+    approachFor := fun approachType runway circlingRunway approach =>
+      { approachType := approachType, runway := runway, circlingRunway := circlingRunway, approach := approach } ∈ world.approaches
+    roleFrequency := fun role frequency =>
+      (role, frequency) ∈ world.roleFrequencies
+    circuitJoin := fun direction joinType runway circuit altitude =>
+      { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈ world.circuitJoins }
+
+theorem ConcreteResolutionWorld.mem_taxiRoute
+    {world : ConcreteResolutionWorld}
+    {start destination : PointId}
+    {path : List PointId}
+    (hMem : { start := start, destination := destination, path := path } ∈ world.taxiRoutes) :
+    world.toResolutionWorld.taxiRoute start destination path := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_fixPoint
+    {world : ConcreteResolutionWorld}
+    {fix : FixId}
+    {point : PointId}
+    (hMem : (fix, point) ∈ world.fixPoints) :
+    world.toResolutionWorld.fixPoint fix point := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_roleFrequency
+    {world : ConcreteResolutionWorld}
+    {role : RoleName}
+    {frequency : Frequency}
+    (hMem : (role, frequency) ∈ world.roleFrequencies) :
+    world.toResolutionWorld.roleFrequency role frequency := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_circuitJoin
+    {world : ConcreteResolutionWorld}
+    {direction : CircuitDirection}
+    {joinType : JoinType}
+    {runway : Option RunwayId}
+    {circuit : CircuitProcedureId}
+    {altitude : Level}
+    (hMem :
+      { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈
+        world.circuitJoins) :
+    world.toResolutionWorld.circuitJoin direction joinType runway circuit altitude := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
 structure ResolutionState where
   currentPoint : Option PointId := none
   deriving DecidableEq, Repr
@@ -576,27 +673,29 @@ theorem resolvesClearance_completedSteps_preserved
   simp [ResolvedClearance.completedSteps] at hSource ⊢
   cases clearance <;> cases hSource <;> rfl
 
+def sampleConcreteResolutionWorld : ConcreteResolutionWorld :=
+  { taxiRoutes :=
+      [{ start := "A1", destination := "HP-27", path := ["A1", "A2", "HP-27"] }]
+    runwayHoldingPoints :=
+      [("27", "HP-27")]
+    runwayCrossingPoints :=
+      [("27", "X-27")]
+    runwayFarEnds :=
+      [("27", "RWY27-FAR")]
+    fixPoints :=
+      [("HOLD", "P-HOLD"), ("JOIN", "P-JOIN")]
+    holdingPatterns :=
+      [{ hold := .published "HOLD", pattern := "HOLD-PTN", fix := "HOLD" }]
+    approaches :=
+      [{ approachType := .ils, runway := "27", circlingRunway := none, approach := "ILS27" }]
+    roleFrequencies :=
+      [(.approach, "129.550")]
+    circuitJoins :=
+      [{ direction := .leftHand, joinType := .downwind, runway := some "27",
+         circuit := "CIRCUIT-27-LH", altitude := .altitudeFeet 1200 }] }
+
 def sampleResolutionWorld : ResolutionWorld :=
-  { taxiRoute := fun start destination path =>
-      start = "A1" ∧ destination = "HP-27" ∧ path = ["A1", "A2", "HP-27"]
-    holdingPointForRunway := fun runway point =>
-      runway = "27" ∧ point = "HP-27"
-    crossingPointForRunway := fun runway point =>
-      runway = "27" ∧ point = "X-27"
-    farEndPointForRunway := fun runway point =>
-      runway = "27" ∧ point = "RWY27-FAR"
-    fixPoint := fun fix point =>
-      (fix = "HOLD" ∧ point = "P-HOLD") ∨
-      (fix = "JOIN" ∧ point = "P-JOIN")
-    holdingPatternFor := fun hold pattern fix =>
-      hold = .published "HOLD" ∧ pattern = "HOLD-PTN" ∧ fix = "HOLD"
-    approachFor := fun approachType runway circlingRunway approach =>
-      approachType = .ils ∧ runway = "27" ∧ circlingRunway = none ∧ approach = "ILS27"
-    roleFrequency := fun role frequency =>
-      role = .approach ∧ frequency = "129.550"
-    circuitJoin := fun direction joinType runway circuit altitude =>
-      direction = .leftHand ∧ joinType = .downwind ∧ runway = some "27" ∧
-        circuit = "CIRCUIT-27-LH" ∧ altitude = .altitudeFeet 1200 }
+  sampleConcreteResolutionWorld.toResolutionWorld
 
 def sampleResolvedRouteFrequencyFromWorld : ResolvedClearance :=
   { source :=
@@ -637,11 +736,19 @@ example :
       anyWrappedConditionalStep, allStepsMayBeConditional]
   · apply ResolvesSteps.cons
     · apply ResolvesIndexedStep.route
-      simp [sampleResolutionWorld]
+      exact sampleConcreteResolutionWorld.mem_fixPoint (by simp [sampleConcreteResolutionWorld])
     · apply ResolvesSteps.cons
       · apply ResolvesIndexedStep.contactFrequencyImplicit
-        simp [sampleResolutionWorld]
+        exact sampleConcreteResolutionWorld.mem_roleFrequency (by simp [sampleConcreteResolutionWorld])
       · simpa using ResolvesSteps.nil sampleResolutionWorld {} .route
+
+example :
+    sampleResolutionWorld.fixPoint "HOLD" "P-HOLD" := by
+  exact sampleConcreteResolutionWorld.mem_fixPoint (by simp [sampleConcreteResolutionWorld])
+
+example :
+    sampleResolutionWorld.roleFrequency .approach "129.550" := by
+  exact sampleConcreteResolutionWorld.mem_roleFrequency (by simp [sampleConcreteResolutionWorld])
 
 end Greenfield
 end CertifiedAtc

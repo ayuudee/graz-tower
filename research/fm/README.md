@@ -67,6 +67,14 @@ As of April 12, 2026:
   [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md),
   including the requirement that authority data extract as explicit role grants
   plus controller-role assignments
+- the scoped `Safety-complete (N₀)` extraction boundary is now theorem-bearing
+  in
+  [ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean):
+  extracted compile-view facts are proved not to invent ids, in-scope
+  runway/taxiway/role references are proved preserved, the runway/surface
+  operational bridge back into the certifier-local views is proved, and
+  extracted authority data now implies `controllerHasAuthorityGrant` and
+  `instructionIssuerAuthorized`
 - the narrowed instruction-level authority surface is now recorded in
   [instruction_authority_contract.md](/home/andrew/dev/projects/twr/research2/instruction_authority_contract.md),
   with a conservative Lean mapping for the currently authority-resolved
@@ -76,32 +84,56 @@ As of April 12, 2026:
   which introduces the greenfield instruction vocabulary, compound frontier
   selection, and a partial compiler back into the existing atomic certified
   path for the currently supported slice
-- repo-local world-to-compile-view and world-to-certifier-view translators do
-  not exist yet, and implementing them here is no longer the default next move
+- the scoped greenfield theorem surface is now explicitly packaged in
+  [ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean):
+  greenfield-side authority mapping for the scoped surface, a no-partial-
+  issuance theorem for compound surface envelopes, theorem-bearing conditional
+  surface-compound normalization, and a scoped reachability wrapper over the
+  resolved execution layer
+- the final scoped issuing-layer theorem package now exists in
+  [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean):
+  a theorem-bearing bridge into the older atomic certified path, plus routing,
+  plan-instantiation, peer-coverage, compatibility, authority-gated issuance,
+  non-bypass, and issuance soundness for the scoped `Safety-complete (N₀)`
+  surface
+- the reachable-state safety layer above that final issuing boundary now exists
+  in
+  [ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean):
+  scoped world/state well-formedness, preservation of the nominal / runway /
+  surface / air / interface invariant package through issuance, a reachable
+  issued-state relation, and issued-step separation soundness for the scoped
+  separation-certified surface
+- the scoped air-modifier claim is now narrowed honestly to the variants that
+  the current local air/separation proof story can actually carry: knot speed
+  targets only
+- a full route-bearing proof-authoritative extraction contract does not exist
+  yet; the current theorem-bearing extraction module is intentionally scoped to
+  the `Safety-complete (N₀)` surface
 - surface kernel over a concrete surface graph: implemented and proved locally
 - air kernel over a concrete airborne graph: implemented and proved locally
 - separation layer: concrete local checker plus explicit Lean targets for
   `H_sep`, non-certified-command neutrality, stepwise boundary sufficiency, and
   `Viable_sep`; a conservative neutral-command slice and a partial generated
   continuation set are now wired through the current air-state model, including
-  a conservative hold-current-path case and a real speed-reduction act; the
-  full brief surface is still not covered
+  a conservative hold-current-path case and a real speed-reduction act;
+  [ScopedSeparation.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
+  now also exposes `ScopedSeparationBoundarySufficiencyTheorem` and
+  `ScopedViableSepTheorem`, and
+  [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+  now proves `viable_sep_of_capableApproval_equivIssuedScenario`; that local
+  theorem is now consumed by
+  `ScopedIssuedScenarioViableSepTheorem` in `ScopedSeparation`, so the scoped
+  nominal separation bar is closed
 - optional orchestration layer: partial composition proof exists, but it is not
   the primary success criterion
 - code refinement and enforcement: not started
 
 The default critical path is now:
 
-- continue against the now-partially-frozen greenfield-derived proof boundary,
-  especially the extraction contract from overlay-entity `AviationWorld` into
-  proof-local views
-- resolve the greenfield clearance semantics that block stronger Lean theorems:
-  compound admission and timing, completion categories, supersession
-  granularity, step-transition semantics, the remaining instruction-level
-  authority mapping, and clearance-limit/holding-pattern invariants
-- then widen sequencing, separation, and command coverage through that
-  stabilized boundary rather than continuing to prove against the wrong
-  long-term interface
+- the scoped nominal programme is now `Safety-complete (N₀)`
+- the next work is the full-brief degraded/emergency layer in Milestone 7
+- do not widen the nominal scoped command surface unless that later work
+  forces it
 
 ## Reading Order
 
@@ -116,11 +148,16 @@ For a new human or AI agent, start here:
 7. [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
 8. [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
 9. [milestones.md](/home/andrew/dev/projects/twr/research2/milestones.md)
-10. [certifier_interfaces.md](/home/andrew/dev/projects/twr/research2/certifier_interfaces.md)
-11. [canonical_theorem.md](/home/andrew/dev/projects/twr/research2/canonical_theorem.md)
+10. [completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md)
+    Shortest path from the current state to `Safety-complete (N₀)` and then to
+    full-brief closure.
+11. [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+    Exact theorem-target inventory for the scoped `Safety-complete (N₀)` claim.
+12. [certifier_interfaces.md](/home/andrew/dev/projects/twr/research2/certifier_interfaces.md)
+13. [canonical_theorem.md](/home/andrew/dev/projects/twr/research2/canonical_theorem.md)
    Optional. Read this only if you are working on the single-issuer
    composition layer.
-12. [lean/README.md](/home/andrew/dev/projects/twr/research2/lean/README.md)
+14. [lean/README.md](/home/andrew/dev/projects/twr/research2/lean/README.md)
 
 Then go to the specific Lean module you need.
 
@@ -152,6 +189,11 @@ Then go to the specific Lean module you need.
   Why a concrete airport is not part of the proof foundation.
 - [milestones.md](/home/andrew/dev/projects/twr/research2/milestones.md)
   Nine-phase roadmap and current execution status.
+- [completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md)
+  Shortest-path completion plan from the current FM state to
+  `Safety-complete (N₀)`.
+- [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+  Exact scoped theorem target for `Safety-complete (N₀)`.
 - [PROJECT_STATUS.md](/home/andrew/dev/projects/twr/research2/PROJECT_STATUS.md)
   Current theorem inventory, proof debt, and next work.
 - [AGENT_GUIDE.md](/home/andrew/dev/projects/twr/research2/AGENT_GUIDE.md)
@@ -175,6 +217,23 @@ The Lean project is organized as:
   Concrete local air-path checker with local soundness theorem.
 - [SeparationChecker.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SeparationChecker.lean)
   Concrete pairwise separation checker with a local soundness theorem.
+- [ScopedSeparation.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
+  Scoped `Safety-complete (N₀)` separation theorem package over the current
+  certifier and orchestration surfaces.
+- [ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+  Scoped extraction boundary from proof-side world facts into
+  `ClearanceCompileView`, certifier-local views, and issuer-authority facts.
+- [ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+  Scoped greenfield theorem package for `Safety-complete (N₀)`: scoped
+  authority mapping, no-partial-issuance for surface compounds, and the bridge
+  into the resolved execution/reachability layer.
+- [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+  Final scoped issuing layer above extraction and greenfield execution:
+  honest greenfield-to-atomic bridging plus the Milestone 5 theorem package.
+- [ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+  Reachable-state safety layer above the scoped issuing boundary:
+  state preservation for nominal/runway/surface/air/interface invariants plus
+  issued-step separation soundness.
 - [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
   Optional orchestration / composition layer, including plan instantiation,
   compatibility, peer coverage, and a partial issuance path.

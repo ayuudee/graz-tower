@@ -106,6 +106,39 @@ def ManagedClearance.suppress
 def ManagedClearance.clearSuppression (managed : ManagedClearance) : ManagedClearance :=
   { managed with suppressedDomains := {} }
 
+def clearanceIds
+    (clearances : List ManagedClearance) :
+    List ClearanceId :=
+  clearances.map (fun managed => managed.source.id)
+
+def UniqueClearanceIds
+    (clearances : List ManagedClearance) : Prop :=
+  (clearanceIds clearances).Nodup
+
+@[simp] theorem ManagedClearance.withClearance_source_id
+    (managed : ManagedClearance)
+    (clearance : StructuredClearance) :
+    (managed.withClearance clearance).source.id = clearance.id := by
+  rfl
+
+@[simp] theorem ManagedClearance.withStatus_source_id
+    (managed : ManagedClearance)
+    (status : CertifiedAtc.ClearanceStatus) :
+    (managed.withStatus status).source.id = managed.source.id := by
+  cases managed
+  rfl
+
+@[simp] theorem ManagedClearance.suppress_source_id
+    (managed : ManagedClearance)
+    (domains : UniqueSet ClearanceDomain) :
+    (managed.suppress domains).source.id = managed.source.id := by
+  rfl
+
+@[simp] theorem ManagedClearance.clearSuppression_source_id
+    (managed : ManagedClearance) :
+    managed.clearSuppression.source.id = managed.source.id := by
+  rfl
+
 def ManagedClearance.effectiveSteps (managed : ManagedClearance) : List CompiledStep :=
   (compiledSteps managed.clearance).filter
     (fun step => step.domain ∉ managed.suppressedDomains)
@@ -464,39 +497,39 @@ def activatePendingFrom
     List ConditionActivation →
     List ManagedClearance →
     List ManagedClearance →
-    List ManagedClearance →
     ClearanceReconciliation
-  | [], working, activations, terminalSeed, fullySuperseded, partiallySuperseded =>
+  | [], working, activations, fullySuperseded, partiallySuperseded =>
       let clearances := working.filter (fun managed => !(statusTerminal managed.status))
-      let terminalClearances :=
-        (terminalSeed ++ working.filter (fun managed => statusTerminal managed.status)).eraseDups
+      let terminalClearances := working.filter (fun managed => statusTerminal managed.status)
       { clearances := clearances
         terminalClearances := terminalClearances
         completionEvaluations := []
         activatedClearances := activations.reverse
         fullySuperseded := fullySuperseded.reverse
         partiallySuperseded := partiallySuperseded.reverse }
-  | clearanceId :: tail, working, activations, terminalSeed, fullySuperseded, partiallySuperseded =>
+  | clearanceId :: tail, working, activations, fullySuperseded, partiallySuperseded =>
       match findById working clearanceId with
       | none =>
-          activatePendingFrom conditionEvaluator tail working activations terminalSeed fullySuperseded partiallySuperseded
+          activatePendingFrom conditionEvaluator tail working activations fullySuperseded partiallySuperseded
       | some current =>
-          match current.source.condition with
-          | none =>
-              activatePendingFrom conditionEvaluator tail working activations terminalSeed fullySuperseded partiallySuperseded
-          | some condition =>
-              if !(conditionEvaluator current.aircraft condition) then
-                activatePendingFrom conditionEvaluator tail working activations terminalSeed fullySuperseded partiallySuperseded
-              else
-                let activated := current.withStatus .active
-                let others := removeById working activated.source.id
-                let supersession := applyIncomingSupersession others activated
-                let nextWorking := supersession.updatedExisting ++ [activated]
-                activatePendingFrom conditionEvaluator tail nextWorking
-                  ({ before := current, after := activated } :: activations)
-                  terminalSeed
-                  (supersession.fullySuperseded ++ fullySuperseded)
-                  (supersession.partiallySuperseded ++ partiallySuperseded)
+          if current.status ≠ .conditionPending then
+            activatePendingFrom conditionEvaluator tail working activations fullySuperseded partiallySuperseded
+          else
+            match current.source.condition with
+            | none =>
+                activatePendingFrom conditionEvaluator tail working activations fullySuperseded partiallySuperseded
+            | some condition =>
+                if !(conditionEvaluator current.aircraft condition) then
+                  activatePendingFrom conditionEvaluator tail working activations fullySuperseded partiallySuperseded
+                else
+                  let activated := current.withStatus .active
+                  let others := removeById working activated.source.id
+                  let supersession := applyIncomingSupersession others activated
+                  let nextWorking := supersession.updatedExisting ++ [activated]
+                  activatePendingFrom conditionEvaluator tail nextWorking
+                    ({ before := current, after := activated } :: activations)
+                    (supersession.fullySuperseded ++ fullySuperseded)
+                    (supersession.partiallySuperseded ++ partiallySuperseded)
 
 def reconcileClearances
     (existing : List ManagedClearance)
@@ -507,7 +540,7 @@ def reconcileClearances
   let working := completionPass.1
   let completionEvaluations := completionPass.2
   let activations :=
-    activatePendingFrom conditionEvaluator (pendingConditionalIds working) working [] [] [] []
+    activatePendingFrom conditionEvaluator (pendingConditionalIds working) working [] [] []
   { activations with completionEvaluations := completionEvaluations }
 
 theorem stageIncomingClearance_condition_pending
@@ -752,6 +785,58 @@ theorem applyIncomingSupersession_identity_of_other_aircraft
         partiallySuperseded := [] } := by
   simpa [applyIncomingSupersession] using
     applyIncomingSupersessionFrom_identity_of_other_aircraft incoming existing [] [] [] hOther
+
+theorem applyIncomingSupersessionFrom_updatedExisting_ids
+    (incoming : ManagedClearance)
+    (remaining updatedExisting fullySuperseded partiallySuperseded : List ManagedClearance) :
+    clearanceIds
+        (applyIncomingSupersessionFrom incoming remaining updatedExisting fullySuperseded partiallySuperseded).updatedExisting =
+      clearanceIds (updatedExisting.reverse ++ remaining) := by
+  induction remaining generalizing updatedExisting fullySuperseded partiallySuperseded with
+  | nil =>
+      simp [applyIncomingSupersessionFrom, clearanceIds]
+  | cons head tail ih =>
+      by_cases hSkip : statusSupersedable head.status = false ∨ head.aircraft ≠ incoming.aircraft
+      · simpa [applyIncomingSupersessionFrom, hSkip, clearanceIds, List.reverse_cons, List.append_assoc] using
+          (ih (head :: updatedExisting) fullySuperseded partiallySuperseded)
+      · let overlap := domainOverlap head.effectiveDomains (clearanceSupersedesDomains incoming.clearance)
+        by_cases hEmpty : overlap.isEmpty = true
+        · simpa [applyIncomingSupersessionFrom, hSkip, overlap, hEmpty, clearanceIds, List.reverse_cons, List.append_assoc] using
+            (ih (head :: updatedExisting) fullySuperseded partiallySuperseded)
+        · by_cases hFull : overlap = head.effectiveDomains
+          · have hHeadNotEmpty : head.effectiveDomains.isEmpty = false := by
+              cases hState : head.effectiveDomains.isEmpty with
+              | false =>
+                  rfl
+              | true =>
+                  have hOverlapEmpty : overlap.isEmpty = true := by
+                    simp [hFull, hState]
+                  exact False.elim (hEmpty hOverlapEmpty)
+            simpa [applyIncomingSupersessionFrom, hSkip, overlap, hHeadNotEmpty, hFull, clearanceIds,
+              List.reverse_cons, List.append_assoc] using
+              (ih (head.clearSuppression.withStatus .superseded :: updatedExisting)
+                (head.clearSuppression.withStatus .superseded :: fullySuperseded)
+                partiallySuperseded)
+          · simpa [applyIncomingSupersessionFrom, hSkip, overlap, hEmpty, hFull, clearanceIds,
+              List.reverse_cons, List.append_assoc] using
+              (ih (head.suppress overlap :: updatedExisting)
+                fullySuperseded
+                (head.suppress overlap :: partiallySuperseded))
+
+theorem applyIncomingSupersession_updatedExisting_ids
+    (existing : List ManagedClearance)
+    (incoming : ManagedClearance) :
+    clearanceIds (applyIncomingSupersession existing incoming).updatedExisting =
+      clearanceIds existing := by
+  simpa [applyIncomingSupersession] using
+    applyIncomingSupersessionFrom_updatedExisting_ids incoming existing [] [] []
+
+theorem applyIncomingSupersession_preserves_unique_ids
+    (existing : List ManagedClearance)
+    (incoming : ManagedClearance)
+    (hUnique : UniqueClearanceIds existing) :
+    UniqueClearanceIds (applyIncomingSupersession existing incoming).updatedExisting := by
+  simpa [UniqueClearanceIds, applyIncomingSupersession_updatedExisting_ids] using hUnique
 
 end Greenfield
 end CertifiedAtc

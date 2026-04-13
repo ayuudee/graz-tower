@@ -406,14 +406,22 @@ def activatePathSuccessorState
     (current : AirborneState) (firstEdge : AirEdgeId) : AirborneState :=
   { current with
       edge := firstEdge
-      longitudinal := { permille := 0 }
+      longitudinal :=
+        if firstEdge = current.edge then
+          current.longitudinal
+        else
+          { permille := 0 }
       phaseTag := "path-active" }
 
 def activateMissedApproachSuccessorState
     (current : AirborneState) (firstEdge : AirEdgeId) : AirborneState :=
   { current with
       edge := firstEdge
-      longitudinal := { permille := 0 }
+      longitudinal :=
+        if firstEdge = current.edge then
+          current.longitudinal
+        else
+          { permille := 0 }
       phaseTag := "missed-approach" }
 
 def airProposalEffect (graph : AirGraph) : AirProposal → AirEffect

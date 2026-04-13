@@ -125,3 +125,25 @@ larger than this alignment step:
   checks and theorem statements
 - widen the clearance-envelope sequencing story above the current frontier
   compiler so compound clearances are proved at the right layer
+
+## Current FM Status
+
+For the scoped `Safety-complete (N₀)` surface, this alignment is now
+theorem-bearing rather than only aspirational.
+
+[ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+now proves the scoped bridge from proof-side world facts into:
+
+- `ClearanceCompileView`
+- runway / surface / air certifier-local views
+- issuer-authority facts consumed by `instructionIssuerAuthorized`
+
+It also proves the concrete cross-layer facts the scoped surface needs:
+
+- runway references stay known to the runway kernel
+- taxiway segments and holding-point context stay backed by the surface graph
+- extracted authority/staffing facts imply the existing compile-view authority
+  checks
+
+The still-open part is the broader future-project world, not the scoped
+surface bridge itself.
