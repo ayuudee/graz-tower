@@ -3,7 +3,7 @@
 This file describes the optional composition theorem for the single-issuer
 variant of the split-kernel architecture.
 
-It is not the minimum success criterion for `research2`.
+It is not the minimum success criterion for `research/fm`.
 
 The primary deliverables are:
 
@@ -30,7 +30,7 @@ If orchestration issues a command, then:
 In Lean this statement currently lives as:
 
 - `CanonicalTopLevelTheorem` in
-  [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
+  [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
 
 ## What Is Already Proved
 
@@ -94,7 +94,7 @@ There are also orchestration-level statements that are still only declared:
 
 ## Interpretation
 
-`research2` should now be read as:
+`research/fm` should now be read as:
 
 - the split architecture is real
 - the local certifiers are the main proof deliverable

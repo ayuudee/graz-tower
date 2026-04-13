@@ -1,14 +1,23 @@
 # Clearance Envelope Contract
 
 This note narrows
-[clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
-into the smaller clearance subset that `research2` should currently treat as
-proof-authoritative.
+[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+into the smaller clearance subset that the legacy
+[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+bridge still treats as proof-authoritative.
 
 The purpose is not to replace the greenfield design. It is to say which part of
-that design is already coherent enough to drive Lean work, which part is
-currently excluded on purpose, and which invariants the future project should
-carry forward.
+that design the older staging compiler still justifies, which part is currently
+excluded on purpose, and which invariants the future project should carry
+forward.
+
+The project-authoritative greenfield model is now the `steps + completedSteps`
+shape in
+[ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+and
+[GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean).
+This document records the older `ClearanceEnvelope.lean` frontier/compiler
+surface, not the final runtime shape.
 
 ## Scope
 
@@ -22,9 +31,10 @@ It does not change the split-kernel claim:
 
 ## Settled Decisions
 
-### 1. Sequential indexing is over sequential steps only
+### 1. Sequential indexing is over sequential steps only in the legacy bridge
 
-The proof-side compound shape is:
+For the legacy `ClearanceEnvelope.lean` bridge, the proof-side compound shape
+is:
 
 - `immediateSteps`
 - `sequentialSteps`
@@ -33,11 +43,16 @@ The proof-side compound shape is:
 This resolves the mixed-index ambiguity from the greenfield draft. `nextSequential`
 indexes only `sequentialSteps`, never the full mixed instruction list.
 
-That is already reflected in:
+The current authoritative model instead keeps a single `steps` list plus
+`completedSteps`; the frontier is derived from that shape rather than stored as
+separate immediate/sequential buckets.
 
-- [ClearanceContent.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/ClearanceContent.kt)
-- [InstructionTiming.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/rules/InstructionTiming.kt)
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+That split is now reflected across:
+
+- [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+- [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
+- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 
 ### 2. Every instruction has an explicit timing class
 
@@ -53,7 +68,7 @@ to sequence it yet.
 
 Current timing classification:
 
-- `sequential`: `TaxiVia`, `CrossRunway`, `HoldShortOf`, `BacktrackRunway`,
+- `sequential`: `TaxiTo`, `CrossRunway`, `HoldShortOf`, `BacktrackRunway`,
   `LineUpAndWait`
 - `immediate`: `ClimbTo`, `DescendTo`, `ReduceSpeedTo`, `SquawkCode`,
   `ContactFrequency`, `MonitorFrequency`
@@ -76,19 +91,19 @@ The current proof subset should treat surface compounds conservatively.
 
 The intended normal form is:
 
-1. a `TaxiVia` leg moves to the next decision point
+1. a `TaxiTo` leg moves to the next decision point
 2. a discrete runway act happens there if needed
-3. another `TaxiVia` leg resumes after that act
+3. another `TaxiTo` leg resumes after that act
 4. the envelope ends at a terminal fence such as `HoldShortOf`
 
 The important restriction is:
 
-- no `TaxiVia` step may silently span a runway crossing that is also modeled as
+- no `TaxiTo` step may silently span a runway crossing that is also modeled as
   a separate `CrossRunway` step
 
 So the proof-friendly form of a taxi route with a runway crossing is not
-"one long TaxiVia plus CrossRunway later." It is "TaxiVia to the crossing
-entry, then CrossRunway, then TaxiVia onward."
+"one long TaxiTo plus CrossRunway later." It is "TaxiTo to the crossing
+entry, then CrossRunway, then TaxiTo onward."
 
 This is deliberately narrower than natural-language phraseology. It keeps the
 clearance envelope aligned with the certifier ownership boundary.
@@ -147,7 +162,7 @@ So "limit fix exists" is not enough. The proof-relevant invariant is
 The greenfield draft's `PilotIntent` is too lossy to be the proof-authoritative
 boundary for route-bearing instructions.
 
-For `research2`, the safer claim is:
+For `research/fm`, the safer claim is:
 
 - clearances are the proof boundary
 - intent is a derived execution cache used by pilot logic and physics
@@ -232,4 +247,4 @@ It should inherit:
   first strong envelope theorem
 - the clearance-limit continuation invariant
 
-That is the narrower claim that `research2` can justify today.
+That is the narrower claim that `research/fm` can justify today.

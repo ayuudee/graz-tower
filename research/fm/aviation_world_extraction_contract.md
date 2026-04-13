@@ -2,8 +2,8 @@
 
 This note freezes the stable part of the extraction boundary from the
 greenfield
-[AviationWorld](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
-into the proof-local views used by `research2`.
+[AviationWorld](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+into the proof-local views used by `research/fm`.
 
 It is not a repo-specific adapter plan. It is the narrower contract that a
 future-project implementation should satisfy before the proofs are refined into
@@ -11,8 +11,8 @@ runtime code.
 
 The source inputs remain:
 
-- [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
-- [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
+- [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+- [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
 
 ## Boundary Shape
 
@@ -108,7 +108,7 @@ reconstructing it from controller ids or phraseology.
 ### 5. Lifecycle stability for referenced entities
 
 The extraction boundary must support the clearance-level invariant from
-[clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md):
+[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md):
 if a live clearance references an entity, that entity must remain extractable
 for the clearance lifecycle unless the clearance is superseded or cancelled.
 

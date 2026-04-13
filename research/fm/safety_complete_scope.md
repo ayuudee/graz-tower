@@ -10,6 +10,10 @@ Its job is to freeze the exact theorem target for
 
 This is the shortest-path scope, not the largest interesting scope.
 
+The next widening target above this closed scoped claim is defined separately
+in
+[route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md).
+
 ## Purpose
 
 The project already has more modeled command families than it can currently
@@ -206,7 +210,7 @@ At the greenfield boundary, the scoped `Safety-complete (N₀)` families should
 be read as:
 
 - surface movement envelope subset:
-  `TaxiVia`, `CrossRunway`, `HoldShortOf`, `LineUpAndWait`
+  `TaxiTo`, `CrossRunway`, `HoldShortOf`, `LineUpAndWait`
 - runway/air joint acts:
   `ClearedForTakeoff`, `ClearedToLand`, `ClearedTouchAndGo`, `GoAround`
 - airborne scalar modifiers:

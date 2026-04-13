@@ -1,10 +1,10 @@
 # Instruction Authority Contract
 
 This note narrows the greenfield authority story into the smaller instruction
-subset that `research2` should currently treat as authority-resolved.
+subset that `research/fm` should currently treat as authority-resolved.
 
 It builds on
-[aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md).
+[aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md).
 That note freezes the **shape** of the authority payload. This note freezes the
 current **instruction-to-grant mapping** that is justified strongly enough to
 drive Lean work now.
@@ -25,7 +25,7 @@ It is a conservative proof contract:
 
 The following instruction families are now treated as authority-resolved:
 
-- `TaxiVia` -> `(taxiway, taxi)`
+- `TaxiTo` -> `(taxiway, taxi)`
 - `CrossRunway` -> `(runway, cross)`
 - `BacktrackRunway` -> `(runway, backtrack)`
 - `LineUpAndWait` -> `(runway, lineUp)`
@@ -39,7 +39,7 @@ The following instruction families are now treated as authority-resolved:
 - `HoldAt` -> `(holdingPattern, hold)`
 
 These mappings are now mirrored in
-[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 through `instructionRequiredAuthorityGrant?`.
 
 ## Why These Are Safe To Freeze
@@ -102,12 +102,12 @@ The current Lean rule should remain conservative:
   by the current proof-side checker
 
 That is not a product claim that the instruction is forbidden forever.
-It is a proof claim that `research2` has not justified the mapping yet.
+It is a proof claim that `research/fm` has not justified the mapping yet.
 
 ## Current Lean Surface
 
 The current authority scaffold in
-[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 now provides:
 
 - `instructionRequiredAuthorityGrant?`

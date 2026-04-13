@@ -1,6 +1,6 @@
 # `M₀` And Why It Is Still Not The Foundation
 
-`M₀` is still not part of the proof foundation for `research2`.
+`M₀` is still not part of the proof foundation for `research/fm`.
 
 That remains deliberate.
 

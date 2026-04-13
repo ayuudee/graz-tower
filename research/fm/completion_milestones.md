@@ -490,9 +490,7 @@ The scoped programme is now complete.
 
 The next work, if desired, is optional scope widening:
 
-- enrich the mode monitor from an abstract assessment output to a more concrete
-  observation/failure model
-- replace conservative fallback overlay actions with richer certified
-  operational emergency behaviour
-- widen the scoped surface toward the broader route-bearing and greenfield
-  model
+- the default widening track is now the route-bearing surface defined in
+  [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+- richer mode-monitor or fallback semantics are secondary widening work, not
+  the default next move

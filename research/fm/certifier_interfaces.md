@@ -4,7 +4,7 @@ This document records the interface boundary between the local kernels and the
 orchestration layer.
 
 The signatures are authoritative only insofar as they match the Lean modules in
-`research2/lean`.
+`research/fm/lean`.
 
 ## Two Valid Consumption Modes
 
@@ -21,12 +21,12 @@ integration work.
 
 The split currently lives across these modules:
 
-- [RunwayKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/RunwayKernel.lean)
-- [SurfaceKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SurfaceKernel.lean)
-- [AirKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/AirKernel.lean)
-- [SeparationChecker.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SeparationChecker.lean)
-- [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [RunwayKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RunwayKernel.lean)
+- [SurfaceKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
+- [AirKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/AirKernel.lean)
+- [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+- [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 
 ## Local Kernel Signatures
 
@@ -59,23 +59,26 @@ The intended long-term integration boundary is now:
 
 Relevant files:
 
-- [ClearanceCompileView.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/ClearanceCompileView.kt)
-- [CertifierViews.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/CertifierViews.kt)
-- [StructuredClearance.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/StructuredClearance.kt)
-- [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
-- [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
-- [clearance_model_alignment.md](/home/andrew/dev/projects/twr/research2/clearance_model_alignment.md)
-- [certifier_view_alignment.md](/home/andrew/dev/projects/twr/research2/certifier_view_alignment.md)
-- [greenfield_alignment.md](/home/andrew/dev/projects/twr/research2/greenfield_alignment.md)
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md)
+- [Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
+- [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+- [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
+- [WorldModel.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt)
+- [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+- [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+- [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+- [clearance_model_alignment.md](/home/andrew/dev/projects/twr2/research/fm/clearance_model_alignment.md)
+- [certifier_view_alignment.md](/home/andrew/dev/projects/twr2/research/fm/certifier_view_alignment.md)
+- [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
+- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
 
 The current Kotlin boundary types in this repo are best read as a staging
-mirror of the `greenfield/` design. The next job is to freeze the extraction
+mirror of the `docs/design/` design. The next job is to freeze the extraction
 contract that a future-project implementation must satisfy, not to implement
 adapters against the current repo's world model by default. The current Lean
 modules are still the authoritative proof boundary, and
-`ClearanceEnvelope.lean` is the present bridge from the greenfield clearance
-model back into the atomic certified path.
+`GreenfieldModel.lean` is now the authoritative current-shape clearance model
+while `ClearanceEnvelope.lean` remains the legacy bridge from the greenfield
+clearance subset back into the atomic certified path.
 
 ## Ownership Boundary
 
@@ -114,7 +117,7 @@ More specifically:
   `CrossRunway`, `LineUpAndWait`, a conservative `JoinCircuit` path, and
   `ReduceSpeedTo`
 - `compileClearanceCommand` in
-  [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+  [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   now compiles greenfield entity-referenced instructions into the older atomic
   Lean `Command` language
 - `compile_clearance_instruction` now compiles that greenfield instruction
@@ -124,8 +127,8 @@ More specifically:
   active sequential step, preserving the selected frontier shape
 - `TaxiTo` currently compiles through a conservative node-route to
   directed-segment projection in orchestration rather than a richer path model
-- greenfield `TaxiVia` currently reaches that same path through the new
-  compiler boundary
+- greenfield `TaxiTo` currently reaches that same path through the new compiler
+  boundary
 - `CrossRunway` currently compiles through a concrete joint runway+surface
   path from a current hold-point segment onto its protected successor segment
 - `LineUpAndWait` currently reuses that same protected-entry joint path with a
