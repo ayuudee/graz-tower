@@ -38,6 +38,7 @@ fun AviationWorld.deriveEntitiesByPoint(): Map<PointId, Set<EntityRef>> {
     ).mapValues { (_, refs) -> refs.toSet() }
 }
 
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 private fun AviationWorld.collectEntityPointEntries(): List<Pair<PointId, EntityRef>> =
     buildList {
         fun addPath(path: Path, ref: EntityRef) {

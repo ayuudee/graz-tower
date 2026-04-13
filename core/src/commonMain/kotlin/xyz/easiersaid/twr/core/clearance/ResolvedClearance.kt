@@ -311,6 +311,7 @@ private fun StructuredClearance.normalizeCompoundConditional(
     return arrow.core.Either.Right(this)
 }
 
+@Suppress("CyclomaticComplexMethod")
 private fun AviationWorld.resolveStep(
     context: ClearanceResolutionContext,
     clearance: StructuredClearance,

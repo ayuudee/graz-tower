@@ -116,6 +116,7 @@ fun evaluateCompletion(
     )
 }
 
+@Suppress("CyclomaticComplexMethod")
 private fun evaluateStepCompletion(
     step: ResolvedStep,
     view: CompletionView

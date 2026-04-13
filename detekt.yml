@@ -3,19 +3,19 @@ build:
 
 complexity:
   LongMethod:
-    threshold: 100
+    threshold: 60
     ignoreAnnotated: ['Test']
   LongParameterList:
     functionThreshold: 8
     constructorThreshold: 12
   TooManyFunctions:
-    thresholdInFiles: 30
-    thresholdInClasses: 20
+    thresholdInFiles: 25
+    thresholdInClasses: 15
   CyclomaticComplexMethod:
-    threshold: 65
+    threshold: 15
     ignoreAnnotated: ['Test']
   NestedBlockDepth:
-    threshold: 5
+    threshold: 4
 
 style:
   ForbiddenComment:
@@ -23,9 +23,9 @@ style:
   MagicNumber:
     active: false
   MaxLineLength:
-    maxLineLength: 150
+    maxLineLength: 140
   ReturnCount:
-    max: 10
+    max: 5
   WildcardImport:
     active: true
   UnusedPrivateMember:

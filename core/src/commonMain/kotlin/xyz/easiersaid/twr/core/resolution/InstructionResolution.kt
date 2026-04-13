@@ -213,6 +213,7 @@ fun AviationWorld.resolveHoldShortOf(
     return resolveHoldingPointOnCurrentTaxiway(aerodrome, context.currentPoint, runway)
 }
 
+@Suppress("ReturnCount")
 fun AviationWorld.resolveCrossRunway(
     context: GroundResolutionContext,
     instruction: CrossRunway
@@ -435,6 +436,7 @@ private fun AviationWorld.resolveRoleFrequency(
     )
 }
 
+@Suppress("CyclomaticComplexMethod", "ReturnCount")
 private fun AviationWorld.resolveRouteSpec(
     aerodrome: Aerodrome,
     route: RouteSpec
