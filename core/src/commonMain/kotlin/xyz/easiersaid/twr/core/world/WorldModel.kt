@@ -2,17 +2,26 @@ package xyz.easiersaid.twr.core.world
 
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.ApronId
+import xyz.easiersaid.twr.protocol.AirspaceVolumeId
+import xyz.easiersaid.twr.protocol.AirwayId
+import xyz.easiersaid.twr.protocol.ApproachId
 import xyz.easiersaid.twr.protocol.AuthorityEntityType
 import xyz.easiersaid.twr.protocol.AuthorityOperation
+import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.FirId
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.HoldingPatternId
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SidId
 import xyz.easiersaid.twr.protocol.StandId
+import xyz.easiersaid.twr.protocol.StarId
 import xyz.easiersaid.twr.protocol.TaxiwayId
+import xyz.easiersaid.twr.protocol.VfrRouteId
 
 data class Meters(val value: Double) {
     init {
@@ -136,7 +145,8 @@ data class Apron(
 data class Fix(
     val id: FixId,
     val point: PointId,
-    val name: String
+    val name: String,
+    val type: FixType = FixType.WAYPOINT
 )
 
 data class AuthorityGrant(
@@ -210,12 +220,21 @@ data class Aerodrome(
     val runways: Map<RunwayId, Runway> = emptyMap(),
     val taxiways: Map<TaxiwayId, Taxiway> = emptyMap(),
     val stands: Map<StandId, Stand> = emptyMap(),
-    val aprons: Map<ApronId, Apron> = emptyMap()
+    val aprons: Map<ApronId, Apron> = emptyMap(),
+    val circuits: Map<CircuitProcedureId, CircuitProcedure> = emptyMap(),
+    val sids: Map<SidId, Sid> = emptyMap(),
+    val stars: Map<StarId, Star> = emptyMap(),
+    val approaches: Map<ApproachId, InstrumentApproach> = emptyMap(),
+    val holdingPatterns: Map<HoldingPatternId, HoldingPattern> = emptyMap()
 )
 
 data class AviationWorld(
     val fixes: Map<FixId, Fix> = emptyMap(),
-    val aerodromes: Map<AerodromeId, Aerodrome> = emptyMap()
+    val aerodromes: Map<AerodromeId, Aerodrome> = emptyMap(),
+    val airways: Map<AirwayId, Airway> = emptyMap(),
+    val vfrRoutes: Map<VfrRouteId, VfrRoute> = emptyMap(),
+    val airspace: Map<AirspaceVolumeId, AirspaceVolume> = emptyMap(),
+    val firs: Map<FirId, FlightInformationRegion> = emptyMap()
 )
 
 sealed interface EntityRef {
@@ -224,6 +243,14 @@ sealed interface EntityRef {
     data class StandRef(val id: StandId) : EntityRef
     data class ApronRef(val id: ApronId) : EntityRef
     data class FixRef(val id: FixId) : EntityRef
+    data class CircuitProcedureRef(val id: CircuitProcedureId) : EntityRef
+    data class HoldingPatternRef(val id: HoldingPatternId) : EntityRef
+    data class SidRef(val id: SidId) : EntityRef
+    data class StarRef(val id: StarId) : EntityRef
+    data class ApproachRef(val id: ApproachId) : EntityRef
+    data class AirwayRef(val id: AirwayId) : EntityRef
+    data class VfrRouteRef(val id: VfrRouteId) : EntityRef
+    data class AirspaceVolumeRef(val id: AirspaceVolumeId) : EntityRef
 }
 
 data class WorldIndex(
