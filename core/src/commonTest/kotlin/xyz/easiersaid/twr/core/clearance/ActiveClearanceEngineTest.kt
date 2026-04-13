@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.core.clearance
 
+import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -122,7 +123,7 @@ class ActiveClearanceEngineTest {
                     id = "DEP-COMPOUND",
                     domain = ClearanceDomain.ROUTE,
                     content = ClearanceContent.Compound(
-                        steps = listOf(
+                        steps = arrow.core.nonEmptyListOf(
                             ClearedTo(
                                 target = TEST_AIRCRAFT,
                                 clearanceLimit = FixId("HOLD"),
@@ -198,8 +199,5 @@ private fun structuredClearance(
         status = status
     )
 
-private fun ResolutionResult<ResolvedClearance>.requireResolved(): ResolvedClearance =
-    when (this) {
-        is ResolutionResult.Resolved -> value
-        is ResolutionResult.Unresolved -> error("Expected resolved clearance, got ${failure.code}: ${failure.message}")
-    }
+private fun <T> ResolutionResult<T>.requireResolved(): T =
+    getOrElse { failure -> error("Expected resolved, got ${failure.code}: ${failure.message}") }

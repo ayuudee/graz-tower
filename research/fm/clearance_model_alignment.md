@@ -1,141 +1,110 @@
 # Clearance Model Alignment
 
-This note records how `research2` now relates to the greenfield clearance model.
+This note records how the current FM work relates to the greenfield clearance
+model now implemented in Kotlin.
 
-As of April 12, 2026, the product-authoritative clearance and world-model docs
-for future-project work are
-[clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
-and
-[path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md).
-The Kotlin boundary types in this repo are still useful, but they should now be
-read as a staging mirror rather than as the frozen API of the next project.
+## Authoritative Sources
 
-The important split is:
+The product-authoritative model lives in:
 
-1. `AviationWorld`
-2. `ClearanceCompileView`
-3. `CertifierViews`
-4. local Lean certifiers
-5. optional Lean orchestration and clearance-envelope layer
+- [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+- [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
 
-The old direct world-to-certifier framing is no longer enough once clearances are
-entity-referenced and may be compound.
+The Kotlin implementation that now matters for Lean alignment is:
 
-## Current Boundary
+- [Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
+- [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+- [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
+- [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+- [ResolvedClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ResolvedClearance.kt)
+- [CompletionEvaluation.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/CompletionEvaluation.kt)
+- [SupersessionEngine.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/SupersessionEngine.kt)
+- [ActiveClearanceEngine.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ActiveClearanceEngine.kt)
 
-The current Kotlin boundary pieces are now:
+## Current Lean Boundary
 
-- [Instruction.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/Instruction.kt)
-- [ProcedureRef.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/ProcedureRef.kt)
-- [ClearanceContent.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/ClearanceContent.kt)
-- [ClearanceCompileView.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/ClearanceCompileView.kt)
-- [CertifierViews.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/CertifierViews.kt)
-- [StructuredClearance.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/StructuredClearance.kt)
+There are now three Lean layers above the local certifiers:
 
-The current Lean boundary pieces are now:
+- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+  This is the older staging/compiler surface. It still owns the partial bridge
+  back into the atomic certified command path and the theorem work that already
+  sits above that bridge.
+- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+  This is the current Kotlin-aligned clearance/lifecycle boundary. It mirrors
+  the modern model shape directly rather than translating it into the older
+  proof-side envelope first.
+- [GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
+  This is the abstract active-clearance state machine above the current model
+  boundary. It captures managed clearances, suppressed domains, admission,
+  supersession, completion advancement, and conditional activation without
+  importing geometry or world resolution.
 
-- [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+That split is intentional. `ClearanceEnvelope.lean` is still useful, but it is
+no longer the authoritative model shape or lifecycle surface.
 
 ## What Changed
 
-### App-Level Instructions
+The current model is defined by:
 
-The app-facing instruction language now follows the greenfield direction:
+- typed entity and procedure references
+- `ClearanceContent.Single | Compound(steps, completedSteps)`
+- envelope-level `condition`
+- explicit `InstructionTiming`, `CompletionCategory`, and supersession rules
+- active-clearance reconciliation over completion and supersession
 
-- `TaxiVia`, not `TaxiTo`
-- `JoinCircuit` by circuit-procedure id
-- `ContactFrequency` and `MonitorFrequency` by role
-- `ClearedTo` by `ProcedureRef` plus optional clearance limit
-- `ClearedApproach` by approach id
-- `HoldAt` by holding-pattern id
+`GreenfieldModel.lean` now mirrors that shape directly:
 
-These are entity-referenced instructions. They are not the same thing as the
-current atomic Lean `Command`.
+- the instruction/rule vocabulary follows the Kotlin surface rather than the
+  older proof-only instruction language
+- compound clearances use a mixed step list plus completed indices
+- conditional clearances are normalized into envelope-level state
+- proof-frontier selection is explicit and separate from runtime timing
 
-### Compound Clearance Shape
+`GreenfieldLifecycle.lean` now adds the first Lean layer for the higher-level
+runtime semantics:
 
-The app boundary now has explicit compound-clearance structure through
-`ClearanceContent.Compound`, split into:
+- managed clearances with suppressed domains
+- staged admission of new clearances
+- full and partial supersession
+- abstract completion advancement over satisfied step indices
+- ordered activation of conditional clearances
 
-- `immediateSteps`
-- `sequentialSteps`
-- `nextSequential`
+## Important Deliberate Mismatch
 
-This is intentional. It avoids the ambiguous single mixed-index `currentStep`
-shape from the draft.
+`GreenfieldModel.lean` keeps two timing notions:
 
-The narrower proof-side contract for what is actually admitted into that
-compound surface now lives in
-[clearance_envelope_contract.md](/home/andrew/dev/projects/twr/research2/clearance_envelope_contract.md).
+1. runtime timing
+   `sequential | immediate | persistent`
+2. proof-frontier timing
+   `movement | immediate | standalone`
 
-### Compile Layer
+That is deliberate.
 
-`ClearanceCompileView` is the new middle layer. It keeps exactly the overlay
-entity and AIP facts needed to compile greenfield clearances into atomic
-certifier work:
+The Kotlin/runtime model treats instructions like `HoldShortOf`,
+`LineUpAndWait`, and `HoldAt` as persistent lifecycle steps. The proof side
+still needs a frontier notion that can talk about movement-style sequencing for
+the admitted subset. Those are related, but they are not identical.
 
-- taxiways and holding points
-- runways and exits
-- circuits, approaches, holding patterns
-- route procedures and fixes
-- role/frequency and handoff data
+## Immediate Value
 
-It is richer than `CertifierViews` and narrower than the full world model.
-Inside this repo, it is best read as a staging shape for proof exploration
-rather than as the final extraction contract of the next codebase.
+The new Lean boundary is immediately useful for:
 
-### Lean Envelope Layer
+- proving lifecycle/helper lemmas over the actual Kotlin clearance shape
+- reasoning about `completedSteps` and frontier selection without going through
+  the old compiler layer
+- making conditional-clearance normalization precise before wider theorem work
+- reasoning about active-clearance reconciliation without committing to a world
+  extraction or completion sensor model yet
+- giving the FM side a stable target while the Kotlin architecture settles
 
-`ClearanceEnvelope.lean` now introduces the proof-side scaffolding for:
+## Next Lean Moves
 
-- entity-referenced clearance instructions
-- procedure references
-- explicit `sequential | immediate | standalone` instruction timing
-  classification
-- compound frontier selection
-- a partial compiler from greenfield instructions into the current atomic
-  `CertificationPlan` path
-- compiled-frontier signatures above atomic `CertificationPlan`
+The next valuable Lean steps are:
 
-This module does not replace the current local kernels or atomic orchestration
-path. It sits above them.
-
-## What Has Not Changed Yet
-
-- the local kernels are still atomic
-- `Interfaces.lean` still certifies one atomic `CommandProposal` at a time
-- the current proved orchestration slice is still fundamentally expressed in
-  the older atomic command language
-- the new compiler only gets the greenfield boundary back to the current
-  supported atomic slice; it does not yet replace that slice
-- the structural extraction contract from overlay-entity `AviationWorld` into
-  future-project proof views is now recorded in
-  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md),
-  but the full semantic contract above it is not complete yet
-- translators into the current repo's `ClearanceCompileView` and
-  `CertifierViews` do not exist, but implementing them here is no longer the
-  default next step
-- several greenfield clearance semantics that materially affect theorem shape
-  are still unsettled: which instructions are admitted in compounds, how mixed
-  timing works, what counts as completion for non-self-completing instructions,
-  how step transitions change pilot behavior, how issuer authority maps onto
-  instruction families, and what the clearance-limit invariant requires from
-  the world model
-- no envelope-level theorem about monotone sequencing, no-skipping, or
-  no-partial-issuance exists yet
-
-## Immediate Next Step
-
-The next structural move is to finish the proof boundary above the current
-partial compiler against the greenfield docs:
-
-- use
-  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md)
-  as the stable structural contract that a future-project `AviationWorld` must
-  satisfy for the certifier-local views
-- turn the open greenfield clearance semantics into explicit proof-side
-  decisions
-- make sequencing a first-class theorem above `compile_frontier`
-- then widen command coverage and separation through that stabilized path rather
-  than continuing to prove directly against the older atomic interface
+1. prove stronger properties over `GreenfieldLifecycle.lean`:
+   activation order, suppression monotonicity, and non-interference across
+   aircraft
+2. connect the abstract completion oracle to a narrower proof-side completion
+   observation contract
+3. only then decide how much of the older `ClearanceEnvelope.lean` theorem
+   surface should be adapted or replaced

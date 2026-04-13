@@ -1,37 +1,40 @@
 # Lean Project Guide
 
-This is the standalone Lean 4 project for `research2`.
+This is the standalone Lean 4 project for the FM work inside `twr2`.
 
 ## Build
 
 From the repository root:
 
 ```bash
-nix-shell -p lean4 --run 'cd research2/lean && lake build'
+nix-shell -p lean4 --run 'cd research/fm/lean && lake build'
 ```
 
 ## Module Order
 
 Read modules in roughly this order:
 
-1. [CertifiedAtc/Core.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Core.lean)
-2. [CertifiedAtc/CommandCatalog.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/CommandCatalog.lean)
-3. [CertifiedAtc/RunwayKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/RunwayKernel.lean)
-4. [CertifiedAtc/SurfaceKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SurfaceKernel.lean)
-5. [CertifiedAtc/AirKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/AirKernel.lean)
-6. [CertifiedAtc/SeparationChecker.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SeparationChecker.lean)
-7. [CertifiedAtc/Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
-   Optional. Read this when you are working on the composition layer.
-8. [CertifiedAtc/ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
-   Optional. Read this when you are working on the greenfield clearance and
-   sequencing boundary.
-9. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/JointActs.lean)
-   Optional. This is a narrow orchestration milestone module.
+1. [CertifiedAtc/Core.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Core.lean)
+2. [CertifiedAtc/CommandCatalog.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/CommandCatalog.lean)
+3. [CertifiedAtc/RunwayKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RunwayKernel.lean)
+4. [CertifiedAtc/SurfaceKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
+5. [CertifiedAtc/AirKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/AirKernel.lean)
+6. [CertifiedAtc/SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+7. [CertifiedAtc/Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+   Optional. This is the existing atomic orchestration layer.
+8. [CertifiedAtc/ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+   Optional. This is the older greenfield-to-atomic staging compiler and theorem surface.
+9. [CertifiedAtc/GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+   Optional. This is the current Kotlin-aligned greenfield boundary for protocol, compound clearances, conditional normalization, and lifecycle/frontier reasoning.
+10. [CertifiedAtc/GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
+    Optional. This is the abstract active-clearance state machine over the Kotlin-aligned model: staging, supersession, completion advancement, and conditional activation.
+11. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+    Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
 
 - `Core`
-  Shared vocabulary, base identifiers, common structures.
+  Shared vocabulary, base identifiers, atomic command language, and common structures.
 - `CommandCatalog`
   Static command classes and plan-template routing contract.
 - `RunwayKernel`
@@ -43,78 +46,55 @@ Read modules in roughly this order:
 - `SeparationChecker`
   Concrete local pairwise separation checker with a local soundness theorem.
 - `Interfaces`
-  Optional orchestration / composition layer: plan instantiation, approval
-  collection, compatibility, peer coverage, and issuance path.
+  Optional orchestration/composition layer over the existing atomic command path.
 - `ClearanceEnvelope`
-  Greenfield clearance vocabulary, explicit
-  `sequential | immediate | standalone` timing, compound frontier selection,
-  and partial compiler into the current atomic certified path.
+  Legacy greenfield staging layer: its own instruction surface, explicit frontier shape, and partial compiler back into the atomic certified path.
+- `GreenfieldModel`
+  Current-shape greenfield boundary aligned to the Kotlin model:
+  `ClearanceContent.Single | Compound(steps, completedSteps)`,
+  envelope-level conditions, lifecycle timing/categories, and frontier selection over the mixed step list.
+- `GreenfieldLifecycle`
+  Abstract lifecycle layer over `GreenfieldModel`: managed clearances, suppressed domains, admission, supersession, conditional activation, and completion advancement over abstract satisfied-step indices.
 - `JointActs`
   Narrow orchestration milestone theorem for the first joint-act slice.
 
-## Current Proof Shape
+## Current Lean Split
 
-The primary stack is:
+There are now three distinct Lean layers above the local certifiers:
 
-1. prove local kernels independently
-2. expose explicit local guarantees and ownership boundaries
-3. let higher-level systems consume those guarantees directly if they want to
+1. `ClearanceEnvelope.lean`
+   The older proof/compiler surface that still bridges into the atomic command path.
+2. `GreenfieldModel.lean`
+   The new Kotlin-aligned model surface that mirrors the runtime clearance shape directly.
+3. `GreenfieldLifecycle.lean`
+   The new abstract active-clearance engine over that model surface.
 
-The optional composition stack is:
+That split is intentional. The Kotlin/runtime model has moved to:
 
-1. instantiate orchestration plans against current state
-2. bundle required local approvals
-3. run narrow compatibility
-4. issue only through orchestration, if a single issuing layer is actually part
-   of the desired architecture
+- typed entity/procedure references
+- `steps + completedSteps`
+- envelope-level conditional state
+- lifecycle timing and completion categories
 
-The new greenfield clearance stack above that is:
+The old envelope module is still useful for the existing theorem work, but it is no longer the authoritative model shape.
 
-1. compile entity-referenced instructions and compound frontiers against
-   `ClearanceCompileView`
-2. map them back into the current atomic certified path
-3. eventually replace that bridge with the greenfield-derived extraction
-   boundary that the next project will implement, together with a full
-   sequencing theorem
+## Immediate Use
 
-The primary stack is already real for runway, surface, air, and the current
-pairwise separation checker. The optional composition stack is partially real
-for a limited runway/air slice.
+Use `GreenfieldModel.lean` when you want to:
 
-## Known Open Areas
+- reason about the current Kotlin clearance shape directly
+- normalize conditional clearances at the envelope level
+- talk about compound frontier selection over `completedSteps`
+- prove lifecycle/helper lemmas without first translating into the older staging compiler surface
 
-- the brief-level local separation obligations around neutrality, boundary
-  sufficiency, and horizon viability are now represented as Lean targets, but
-  only partially connected to concrete command families and continuation-set
-  generation; the remaining gap is mostly typed-command-surface coverage rather
-  than the continuation set itself
-- `ClearanceEnvelope.lean` now has a partial compiler back into the atomic
-  certification path, and the structural extraction contract from the
-  greenfield `AviationWorld` is now recorded in
-  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md);
-  the remaining gap is the semantics above that contract, not repo-local
-  translators
-- the narrowed instruction-level authority mapping is now recorded in
-  [instruction_authority_contract.md](/home/andrew/dev/projects/twr/research2/instruction_authority_contract.md),
-  and the Lean envelope layer now has a conservative issuer-authorization
-  checker for the resolved subset, including frontier-level authorization above
-  the current envelope compiler surface and authorization-aware compile seams
-  for frontier, content, and structured-clearance compilation that reduce to
-  the existing compiler when authorization succeeds and prove frontier-level
-  authorization when checked compilation succeeds
-- the narrowed envelope theorem surface is now recorded in
-  [clearance_envelope_contract.md](/home/andrew/dev/projects/twr/research2/clearance_envelope_contract.md),
-  including the current explicit `standalone` exclusion and the now-packaged
-  movement-envelope theorem surface for the admitted sequential subset
-- the compound-clearance sequencing theorem is still open above the current
-  frontier compiler, along with several greenfield clearance semantics that
-  should be settled before the theorem is widened much further: compound
-  admission and timing, completion categories, step-transition effects,
-  supersession granularity, the remaining instruction-level authority mapping,
-  and
-  clearance-limit/holding-pattern invariants
-- `Interfaces.lean` still contains the stated-but-unproved
-  `CanonicalTopLevelTheorem`
-- plan instantiation is still only widened through a partial
-  runway/surface/air slice
-  for the optional composition layer
+Use `GreenfieldLifecycle.lean` when you want to:
+
+- reason about active-clearance set evolution without importing geometry
+- study supersession and suppressed-domain semantics directly
+- model condition-pending to active activation order
+- talk about completion as abstract satisfied step indices before proving world-backed completion facts
+
+Use `ClearanceEnvelope.lean` when you need:
+
+- the existing compiler path into the atomic certified stack
+- the older frontier/sequencing theorem surface that already sits above that compiler

@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.protocol
 
+import arrow.core.NonEmptyList
+
 enum class ClearanceStatus {
     ISSUED,
     READBACK_PENDING,
@@ -7,7 +9,18 @@ enum class ClearanceStatus {
     ACTIVE,
     COMPLETED,
     SUPERSEDED,
-    CANCELLED
+    CANCELLED;
+
+    val isTerminal: Boolean
+        get() = this in TERMINAL_STATUSES
+
+    val isSupersedable: Boolean
+        get() = this in SUPERSEDABLE_STATUSES
+
+    companion object {
+        private val TERMINAL_STATUSES = setOf(COMPLETED, SUPERSEDED, CANCELLED)
+        private val SUPERSEDABLE_STATUSES = setOf(ISSUED, READBACK_PENDING, CONDITION_PENDING, ACTIVE)
+    }
 }
 
 enum class ClearanceDomain {
@@ -40,11 +53,7 @@ sealed interface ClearanceContent {
     ) : ClearanceContent
 
     data class Compound(
-        val steps: List<AtcInstruction>,
+        val steps: NonEmptyList<AtcInstruction>,
         val completedSteps: Set<Int> = emptySet()
-    ) : ClearanceContent {
-        init {
-            require(steps.isNotEmpty()) { "Compound clearance must contain at least one step" }
-        }
-    }
+    ) : ClearanceContent
 }

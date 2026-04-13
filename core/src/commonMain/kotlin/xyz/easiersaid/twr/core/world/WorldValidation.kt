@@ -297,7 +297,8 @@ private fun AviationWorld.validateProcedureAnchoring(
         if (terminalPoint !in approachEntryPoints && terminalPoint !in holdingFixPoints) {
             issues += WorldValidationIssue(
                 WorldValidationCode.STAR_TERMINAL_POINT_UNSHARED,
-                "STAR ${star.id.value} ends at point ${terminalPoint.value}, which is not shared with an approach entry point or holding fix at aerodrome ${aerodrome.icao.value}"
+                "STAR ${star.id.value} ends at point ${terminalPoint.value}, " +
+                    "not shared with an approach/holding fix at ${aerodrome.icao.value}"
             )
         }
     }

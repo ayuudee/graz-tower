@@ -80,10 +80,7 @@ data class ResolutionFailure(
     val message: String
 )
 
-sealed interface ResolutionResult<out T> {
-    data class Resolved<T>(val value: T) : ResolutionResult<T>
-    data class Unresolved(val failure: ResolutionFailure) : ResolutionResult<Nothing>
-}
+typealias ResolutionResult<T> = arrow.core.Either<ResolutionFailure, T>
 
 data class ResolvedTaxiRoute(
     val aerodrome: Aerodrome,
@@ -334,8 +331,8 @@ fun AviationWorld.resolveClearedTo(
     }
 
     return when (resolvedRoute) {
-        is ResolutionResult.Unresolved -> resolvedRoute
-        is ResolutionResult.Resolved -> resolved(
+        is arrow.core.Either.Left -> resolvedRoute
+        is arrow.core.Either.Right -> resolved(
             ResolvedRouteClearance(
                 aerodrome = aerodrome,
                 clearanceLimit = clearanceLimit,
@@ -557,6 +554,7 @@ private fun AviationWorld.resolveHoldingPointOnCurrentTaxiway(
     )
 }
 
+@Suppress("LoopWithTooManyJumpStatements")
 private fun AviationWorld.shortestPath(
     start: PointId,
     destination: PointId,
@@ -626,6 +624,7 @@ private fun AviationWorld.shortestPath(
     return route.asReversed()
 }
 
+@Suppress("UnusedParameter")
 private fun AviationWorld.taxiwayPathDistance(
     aerodrome: Aerodrome,
     path: Path,
@@ -659,14 +658,14 @@ private fun AviationWorld.taxiwayPathDistance(
 private fun AviationWorld.aerodrome(id: AerodromeId): Aerodrome? =
     aerodromes[id]
 
-private fun <T> resolved(value: T): ResolutionResult.Resolved<T> =
-    ResolutionResult.Resolved(value)
+private fun <T> resolved(value: T): ResolutionResult<T> =
+    arrow.core.Either.Right(value)
 
 private fun unresolved(
     code: ResolutionFailureCode,
     message: String
-): ResolutionResult.Unresolved =
-    ResolutionResult.Unresolved(ResolutionFailure(code, message))
+): ResolutionResult<Nothing> =
+    arrow.core.Either.Left(ResolutionFailure(code, message))
 
 private data class HoldingPointCandidate(
     val taxiway: Taxiway,

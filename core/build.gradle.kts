@@ -9,6 +9,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":protocol"))
+                implementation(libs.arrow.core)
             }
         }
         commonTest {

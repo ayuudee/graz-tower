@@ -220,8 +220,8 @@ fun AviationWorld.resolveClearance(
     clearance: StructuredClearance
 ): ResolutionResult<ResolvedClearance> {
     val normalizedClearance = when (val normalized = clearance.normalizeConditionalEnvelope()) {
-        is ResolutionResult.Unresolved -> return normalized
-        is ResolutionResult.Resolved -> normalized.value
+        is arrow.core.Either.Left -> return normalized
+        is arrow.core.Either.Right -> normalized.value
     }
 
     val steps = when (val content = normalizedClearance.content) {
@@ -234,15 +234,15 @@ fun AviationWorld.resolveClearance(
 
     steps.forEachIndexed { index, instruction ->
         when (val resolved = resolveStep(context, normalizedClearance, index, instruction, state)) {
-            is ResolutionResult.Unresolved -> return resolved
-            is ResolutionResult.Resolved -> {
+            is arrow.core.Either.Left -> return resolved
+            is arrow.core.Either.Right -> {
                 resolvedSteps += resolved.value.step
                 state = resolved.value.state
             }
         }
     }
 
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         ResolvedClearance(
             source = normalizedClearance,
             steps = resolvedSteps.toList()
@@ -293,7 +293,7 @@ private fun StructuredClearance.normalizeSingleConditional(
         )
     }
 
-    return ResolutionResult.Resolved(normalizedClearance)
+    return arrow.core.Either.Right(normalizedClearance)
 }
 
 private fun StructuredClearance.normalizeCompoundConditional(
@@ -315,7 +315,7 @@ private fun StructuredClearance.normalizeCompoundConditional(
             )
         }
     }
-    return ResolutionResult.Resolved(this)
+    return arrow.core.Either.Right(this)
 }
 
 private fun AviationWorld.resolveStep(
@@ -352,7 +352,7 @@ private fun AviationWorld.resolveStep(
         is RejoinSidAt -> resolveDirectFixStep(stepContext, instruction.fix, state)
         is JoinAirway -> resolveJoinAirwayStep(context, stepContext, instruction, state)
         is JoinCircuit -> resolveJoinCircuitStep(context, stepContext, instruction, state)
-        else -> ResolutionResult.Resolved(
+        else -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.Plain(
                     index = stepContext.index,
@@ -384,11 +384,11 @@ private fun AviationWorld.resolveTaxiStep(
             instruction = instruction
         )
     ) {
-        is ResolutionResult.Unresolved -> return result
-        is ResolutionResult.Resolved -> result.value
+        is arrow.core.Either.Left -> return result
+        is arrow.core.Either.Right -> result.value
     }
 
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         ResolvedStepWithState(
             step = ResolvedStep.Taxi(
                 index = stepContext.index,
@@ -423,8 +423,8 @@ private fun AviationWorld.resolveHoldShortStep(
             context = GroundResolutionContext(context.aerodromeId, currentPoint),
             instruction = instruction
         )) {
-            is ResolutionResult.Unresolved -> return result
-            is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+            is arrow.core.Either.Left -> return result
+            is arrow.core.Either.Right -> arrow.core.Either.Right(
                 RouteLocatedHoldingPoint(
                     resolved = result.value,
                     routeIndex = state.activeTaxiRoute?.cursorIndex ?: -1
@@ -434,8 +434,8 @@ private fun AviationWorld.resolveHoldShortStep(
     }
 
     return when (resolvedHoldingPoint) {
-        is ResolutionResult.Unresolved -> resolvedHoldingPoint
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> resolvedHoldingPoint
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.HoldShort(
                     index = stepContext.index,
@@ -471,8 +471,8 @@ private fun AviationWorld.resolveCrossingStep(
             context = GroundResolutionContext(context.aerodromeId, currentPoint),
             instruction = instruction
         )) {
-            is ResolutionResult.Unresolved -> return result
-            is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+            is arrow.core.Either.Left -> return result
+            is arrow.core.Either.Right -> arrow.core.Either.Right(
                 RouteLocatedCrossing(
                     resolved = result.value,
                     routeIndex = state.activeTaxiRoute?.cursorIndex ?: -1
@@ -482,8 +482,8 @@ private fun AviationWorld.resolveCrossingStep(
     }
 
     return when (resolvedCrossing) {
-        is ResolutionResult.Unresolved -> resolvedCrossing
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> resolvedCrossing
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.Crossing(
                     index = stepContext.index,
@@ -509,8 +509,8 @@ private fun AviationWorld.resolveRouteStep(
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
     when (val result = resolveClearedTo(AerodromeResolutionContext(context.aerodromeId), instruction)) {
-        is ResolutionResult.Unresolved -> result
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> result
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.Route(
                     index = stepContext.index,
@@ -540,7 +540,7 @@ private fun AviationWorld.resolveBacktrackStep(
         "Unknown runway ${instruction.runway.value} at aerodrome ${aerodrome.icao.value}"
     )
 
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         ResolvedStepWithState(
             step = ResolvedStep.Backtrack(
                 index = stepContext.index,
@@ -563,8 +563,8 @@ private fun AviationWorld.resolveHoldingStep(
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
     when (val result = resolveHoldAt(AerodromeResolutionContext(context.aerodromeId), instruction)) {
-        is ResolutionResult.Unresolved -> result
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> result
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.Holding(
                     index = stepContext.index,
@@ -586,8 +586,8 @@ private fun AviationWorld.resolveApproachStep(
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
     when (val result = resolveClearedApproach(AerodromeResolutionContext(context.aerodromeId), instruction)) {
-        is ResolutionResult.Unresolved -> result
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> result
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.Approach(
                     index = stepContext.index,
@@ -609,8 +609,8 @@ private fun AviationWorld.resolveContactFrequencyStep(
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
     when (val result = resolveContactFrequency(AerodromeResolutionContext(context.aerodromeId), instruction)) {
-        is ResolutionResult.Unresolved -> result
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> result
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.FrequencyChange(
                     index = stepContext.index,
@@ -632,8 +632,8 @@ private fun AviationWorld.resolveMonitorFrequencyStep(
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
     when (val result = resolveMonitorFrequency(AerodromeResolutionContext(context.aerodromeId), instruction)) {
-        is ResolutionResult.Unresolved -> result
-        is ResolutionResult.Resolved -> ResolutionResult.Resolved(
+        is arrow.core.Either.Left -> result
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.FrequencyChange(
                     index = stepContext.index,
@@ -657,7 +657,7 @@ private fun AviationWorld.resolveDirectFixStep(
         ResolutionFailureCode.UNKNOWN_FIX,
         "Unknown fix ${fixId.value}"
     )
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         ResolvedStepWithState(
             step = ResolvedStep.DirectFix(
                 index = stepContext.index,
@@ -672,6 +672,7 @@ private fun AviationWorld.resolveDirectFixStep(
     )
 }
 
+@Suppress("UnusedParameter")
 private fun AviationWorld.resolveJoinAirwayStep(
     context: ClearanceResolutionContext,
     stepContext: StepContext,
@@ -692,7 +693,7 @@ private fun AviationWorld.resolveJoinAirwayStep(
             "Join fix ${instruction.joinFix.value} is not on airway ${airway.id.value}"
         )
     }
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         ResolvedStepWithState(
             step = ResolvedStep.AirwayJoin(
                 index = stepContext.index,
@@ -737,7 +738,7 @@ private fun AviationWorld.resolveJoinCircuitStep(
         )
     }
 
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         ResolvedStepWithState(
             step = ResolvedStep.CircuitJoinStep(
                 index = stepContext.index,
@@ -799,7 +800,7 @@ private fun AviationWorld.resolveHoldingPointOnActiveTaxiRoute(
         )
     }
 
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         RouteLocatedHoldingPoint(
             resolved = ResolvedHoldingPoint(
                 aerodrome = aerodrome,
@@ -850,7 +851,7 @@ private fun AviationWorld.resolveCrossingOnActiveTaxiRoute(
     }
 
     val bestCandidate = candidates.minByOrNull { candidate -> candidate.routeIndex }!!
-    return ResolutionResult.Resolved(
+    return arrow.core.Either.Right(
         RouteLocatedCrossing(
             resolved = ResolvedRunwayCrossing(
                 aerodrome = aerodrome,
@@ -892,8 +893,8 @@ private fun <T> List<T>.indexOfFirstAfter(
 private fun unresolved(
     code: ResolutionFailureCode,
     message: String
-): ResolutionResult.Unresolved =
-    ResolutionResult.Unresolved(ResolutionFailure(code, message))
+): ResolutionResult<Nothing> =
+    arrow.core.Either.Left(ResolutionFailure(code, message))
 
 private data class StepContext(
     val index: Int,

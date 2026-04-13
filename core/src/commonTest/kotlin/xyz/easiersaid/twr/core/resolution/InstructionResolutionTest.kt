@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.core.resolution
 
+import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -151,7 +152,4 @@ class InstructionResolutionTest {
 }
 
 private fun <T> ResolutionResult<T>.requireResolved(): T =
-    when (this) {
-        is ResolutionResult.Resolved -> value
-        is ResolutionResult.Unresolved -> error("Expected resolved result, got ${failure.code}: ${failure.message}")
-    }
+    getOrElse { failure -> error("Expected resolved, got ${failure.code}: ${failure.message}") }

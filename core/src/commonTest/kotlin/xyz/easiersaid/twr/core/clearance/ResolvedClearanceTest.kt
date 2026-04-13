@@ -1,8 +1,10 @@
 package xyz.easiersaid.twr.core.clearance
 
+import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import xyz.easiersaid.twr.core.resolution.ResolutionFailureCode
 import xyz.easiersaid.twr.core.resolution.ResolutionResult
 import xyz.easiersaid.twr.core.world.FixtureIds
@@ -110,7 +112,7 @@ class ResolvedClearanceTest {
             id = ClearanceId("CLR-CONDITIONAL-COMPOUND"),
             aircraft = AircraftId("TEST123"),
             content = ClearanceContent.Compound(
-                steps = listOf(
+                steps = arrow.core.nonEmptyListOf(
                     ConditionalClearance(
                         target = AircraftId("TEST123"),
                         condition = ConditionalPredicate.BehindTraffic(
@@ -141,8 +143,9 @@ class ResolvedClearanceTest {
             clearance = clearance
         )
 
-        val unresolved = assertIs<ResolutionResult.Unresolved>(result)
-        assertEquals(ResolutionFailureCode.CONDITIONAL_STEP_NOT_SUPPORTED, unresolved.failure.code)
+        assertTrue(result.isLeft())
+        val unresolved = (result as arrow.core.Either.Left).value
+        assertEquals(ResolutionFailureCode.CONDITIONAL_STEP_NOT_SUPPORTED, unresolved.code)
     }
 
     @Test
@@ -175,8 +178,9 @@ class ResolvedClearanceTest {
             clearance = clearance
         )
 
-        val unresolved = assertIs<ResolutionResult.Unresolved>(result)
-        assertEquals(ResolutionFailureCode.CONDITIONAL_INSTRUCTION_NOT_ALLOWED, unresolved.failure.code)
+        assertTrue(result.isLeft())
+        val unresolved = (result as arrow.core.Either.Left).value
+        assertEquals(ResolutionFailureCode.CONDITIONAL_INSTRUCTION_NOT_ALLOWED, unresolved.code)
     }
 
     @Test
@@ -186,7 +190,7 @@ class ResolvedClearanceTest {
             id = ClearanceId("CLR-TAXI"),
             aircraft = AircraftId("TEST123"),
             content = ClearanceContent.Compound(
-                steps = listOf(
+                steps = arrow.core.nonEmptyListOf(
                     TaxiTo(
                         target = AircraftId("TEST123"),
                         destination = FixtureIds.holdShort27,
@@ -250,7 +254,7 @@ class ResolvedClearanceTest {
             id = ClearanceId("CLR-DEP"),
             aircraft = AircraftId("TEST123"),
             content = ClearanceContent.Compound(
-                steps = listOf(
+                steps = arrow.core.nonEmptyListOf(
                     ClearedTo(
                         target = AircraftId("TEST123"),
                         clearanceLimit = FixId("HOLD"),
@@ -305,8 +309,9 @@ class ResolvedClearanceTest {
             clearance = clearance
         )
 
-        val unresolved = assertIs<ResolutionResult.Unresolved>(result)
-        assertEquals(ResolutionFailureCode.MISSING_CURRENT_POINT, unresolved.failure.code)
+        assertTrue(result.isLeft())
+        val unresolved = (result as arrow.core.Either.Left).value
+        assertEquals(ResolutionFailureCode.MISSING_CURRENT_POINT, unresolved.code)
     }
 
     @Test
@@ -333,8 +338,9 @@ class ResolvedClearanceTest {
             clearance = clearance
         )
 
-        val unresolved = assertIs<ResolutionResult.Unresolved>(result)
-        assertEquals(ResolutionFailureCode.AIRWAY_JOIN_FIX_NOT_ON_AIRWAY, unresolved.failure.code)
+        assertTrue(result.isLeft())
+        val unresolved = (result as arrow.core.Either.Left).value
+        assertEquals(ResolutionFailureCode.AIRWAY_JOIN_FIX_NOT_ON_AIRWAY, unresolved.code)
     }
 
     @Test
@@ -365,8 +371,5 @@ class ResolvedClearanceTest {
     }
 }
 
-private fun ResolutionResult<ResolvedClearance>.requireResolved(): ResolvedClearance =
-    when (this) {
-        is ResolutionResult.Resolved -> value
-        is ResolutionResult.Unresolved -> error("Expected resolved clearance, got ${failure.code}: ${failure.message}")
-    }
+private fun <T> ResolutionResult<T>.requireResolved(): T =
+    getOrElse { failure -> error("Expected resolved, got ${failure.code}: ${failure.message}") }

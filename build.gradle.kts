@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform") version "2.1.0" apply false
     kotlin("jvm") version "2.1.0" apply false
+    alias(libs.plugins.detekt)
 }
 
 allprojects {
@@ -16,4 +17,18 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(files("$rootDir/detekt.yml"))
+    parallel = true
+    source.setFrom(
+        subprojects.flatMap { project ->
+            listOf(
+                "${project.projectDir}/src/commonMain/kotlin",
+                "${project.projectDir}/src/jvmMain/kotlin"
+            )
+        }
+    )
 }

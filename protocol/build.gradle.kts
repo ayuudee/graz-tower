@@ -6,7 +6,11 @@ kotlin {
     jvm()
 
     sourceSets {
-        commonMain {}
+        commonMain {
+            dependencies {
+                api(libs.arrow.core)
+            }
+        }
         commonTest {
             dependencies {
                 implementation(kotlin("test"))

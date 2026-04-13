@@ -1,0 +1,64 @@
+build:
+  maxIssues: 0
+
+complexity:
+  LongMethod:
+    threshold: 150
+    ignoreAnnotated: ['Test']
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 12
+  TooManyFunctions:
+    thresholdInFiles: 30
+    thresholdInClasses: 20
+  CyclomaticComplexMethod:
+    threshold: 65
+    ignoreAnnotated: ['Test']
+  NestedBlockDepth:
+    threshold: 5
+
+style:
+  ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    maxLineLength: 160
+  ReturnCount:
+    max: 10
+  WildcardImport:
+    active: true
+  UnusedPrivateMember:
+    active: true
+  UnnecessaryAbstractClass:
+    active: true
+  DataClassShouldBeImmutable:
+    active: true
+  VarCouldBeVal:
+    active: true
+potential-bugs:
+  CastToNullableType:
+    active: true
+  UnnecessaryNotNullOperator:
+    active: true
+  UselessPostfixExpression:
+    active: true
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+  TooGenericExceptionThrown:
+    active: true
+  SwallowedException:
+    active: true
+
+naming:
+  MatchingDeclarationName:
+    active: false
+  FunctionNaming:
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+  ClassNaming:
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  VariableNaming:
+    variablePattern: '[a-z][a-zA-Z0-9]*'
+    privateVariablePattern: '[a-z_][a-zA-Z0-9]*'
