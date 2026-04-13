@@ -1,0 +1,2701 @@
+Page 8
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, taxi to the flying club,
+via A1 cross runway 24
+report vacated
+Taxi to the flying club,
+via A1 cross runway 24,
+Wilco, G-CD
+
+G-CD, runway vacated
+
+G-CD
+NOTES:
+1 Instruction to report vacated may be omitted when aerodrome control
+has continuous sight of the aircraft crossing.
+2 F
+ or helicopters the phrase “Air-taxi....” may be used in place of
+“Taxi....”.
+4.13
+
+May 2016
+
+Controllers are not to instruct aircraft or vehicles to cross illuminated
+red stop-bars used at runway and intermediate taxiway holding
+positions. The aerodrome operator may decide, on the grounds of
+safety, that inoperable stop-bars and associated taxiways be withdrawn
+from service and alternative routes used where practicable. On the
+occasions when the withdrawal of inoperable stop-bars is not possible
+and the stop-bars cannot be readily suppressed, under exceptional
+circumstances, an aircraft may be instructed to cross such an
+illuminated stop-bar.
+G-CD stop-bar
+unserviceable, cross red
+stop-bar at A1
+
+Cross red stop-bar at
+A1, G-CD
+
+G-CD stop-bar
+unserviceable, cross red
+stop-bar, via A1 line up
+runway 24
+
+Cross red stop-bar, via
+A1 line up runway 24,
+G-CD
+
+Page 9
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.14
+
+4.15
+
+If the instructions given to surface traffic involve crossing a runway in
+use, clearance to cross should normally be withheld until no confliction
+exists. However, to achieve greater efficiency of operation, clearance to
+cross may be given subject to aircraft, which are landing or taking off.
+The conditional clearance shall contain sufficient information to enable
+the pilot of the taxiing aircraft or vehicle driver to identify the other
+traffic and should be related to one movement only.
+BIGJET 347, behind the
+landing A320, via Bravo 1
+cross runway 26, behind,
+report vacated
+
+Behind the landing
+A320, via Bravo 1 cross
+runway 26 behind,
+wilco, BIGJET 347
+
+G-CD behind the landing
+PA28, cross runway 28
+behind, report vacated
+
+Behind the landing PA
+28, cross runway 28
+behind, wilco, G-CD
+
+When a clearance to cross a runway in use is issued, a report vacated
+instruction shall be included. However, this instruction may be omitted
+when the controller has continuous sight of the aircraft or vehicle
+crossing.
+G-CD, behind the departing
+Seneca, via Kilo 4 cross
+runway 02 behind
+
+4.16
+
+May 2016
+
+Behind the departing
+Seneca, via Kilo 4 cross
+runway 02 behind,
+G-CD
+
+When passing taxi instructions that will position an aircraft to cross a
+runway the controller may, optionally, insert the phrase ‘hold short of’
+prior to the runway designator. This phrase is intended to reinforce the
+need to stop at the holding point.
+BIGJET 347, taxi holding
+point C3, hold short of
+runway 36
+
+Taxi holding point C3
+hold short of runway
+36, BIGJET 347
+
+BIGJET 347, cross runway
+36, taxi holding point A1,
+hold short of runway 09
+
+Cross runway 36, taxi
+holding point A1, hold
+short of runway 09,
+BIGJET 347
+
+Page 10
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.17
+
+Where an ATIS broadcast is established the controller does not need to
+pass departure information to the pilot when giving taxi instructions. He
+will, however, check that the aircraft is in possession of the latest QNH.
+BIGJET 347,
+information Bravo,
+QNH 1020 request taxi
+
+BIGJET 347, now
+information Charlie, new
+QNH 1021, after the B747
+passing left to right taxi
+holding point A1 runway 28
+QNH 1021, after B747
+left to right taxi holding
+point A1 runway 28,
+BIGJET 347
+
+Pre-Departure Manoeuvring
+4.18
+
+Meticulous care has been taken to ensure that the phraseology
+which is to be employed during the pre-departure manoeuvres
+cannot be interpreted as a take-off clearance or instruction to enter
+the runway. This is to avoid any misunderstanding in the granting or
+acknowledgement of take-off clearances (and indeed any instruction
+to use the runway i.e. Line-up) and the serious consequences that
+could result. In addition, any instruction to use a runway shall include
+the designator of the runway. When passing the clearance, the runway
+designator should be stated first, i.e. (Callsign) Runway 06, cleared for
+take-off.
+
+4.19
+
+At busy aerodromes with a separate ground and tower function, aircraft
+are usually transferred to the tower frequency at or approaching the
+holding point.
+BIGJET 347, contact Tower
+118.9
+
+4.20
+
+It may be necessary for the controller to instruct the pilot to hold at a
+specified holding point. Where appropriate the controller should include
+the reason for the instruction.
+BIGJET 347, hold at Bravo 2
+
+May 2016
+
+Tower 118.9,
+BIGJET 347
+
+Hold at Bravo 2,
+BIGJET 347
+
+Page 11
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+BIGJET 347, hold at Bravo 1,
+2 aircraft to depart before
+you from runway 20
+4.21
+
+Hold at Bravo 1,
+BIGJET 347
+
+Many types of aircraft carry out engine checks prior to departure and are
+not always ready for take-off when they reach the holding point.
+G-CD, report ready for
+departure
+G-CD, ready for
+departure
+
+Wilco, G-CD
+
+G-CD, line up runway 28
+
+Runway 28 line up,
+G-CD
+4.22
+
+Air Traffic controllers may ask if a pilot can accept an intersection
+departure.
+G-CD advise able to depart
+from runway 28 intersection
+C2
+
+4.23
+
+A pilot may request an intersection departure.
+G-ABCD, request
+departure from runway
+28, intersection C2
+
+4.24
+
+When line-up will take place at a position other than for a full-length
+runway departure the intermediate ‘Holding Point’ designator shall
+be included in the line-up instruction. Controllers may include the
+runway ‘Holding Point’ designator in any other line-up instruction when
+considered necessary.
+G-CD, ready for
+departure
+
+May 2016
+
+G-CD, via C2 line-up
+runway 28
+
+Page 12
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Via C2 line-up runway
+28, G-CD
+4.25
+
+Information on the Take-Off Run Available (TORA) (pronounced TORAH) from the intersection shall be issued when requested by a pilot or
+whenever deemed necessary by the controller.
+G-CD TORA runway 28 from
+intersection C2 1800 metres
+
+4.26
+
+For reason of expedition, a controller may wish to line-up an aircraft for
+departure before conditions allow take-off.
+BIGJET 347, via holding
+point A1 line-up and wait
+runway 26, one aircraft to
+depart before you from
+holding point A2
+
+Via holding point A1
+line-up and wait runway
+26, number two for
+departure, BIGJET 347
+
+Take-Off Clearance
+4.27
+
+Except in cases of emergency, messages will not be transmitted to an
+aircraft in the process of taking off or in the final stages of an approach
+and landing.
+
+4.28
+
+Controllers will use the following phraseology for take off.
+G-CD, cleared for take-off
+
+Cleared for take-off,
+G-CD
+
+	NOTE: The surface wind will be passed if there is a significant
+difference to that already passed.
+4.29
+
+May 2016
+
+The averaging period for wind observations is two minutes for reports
+used at an aerodrome for take-off and landing and for wind indicators
+in air traffic service units. The instantaneous surface wind should be
+available to be given to pilots on request particularly at aerodromes
+supporting primarily the operations of aircraft whose maximum total
+weight authorised is 5,700 kg or less. When a pilot requests the
+instantaneous surface wind, the word “instant” is to be inserted to
+indicate that the wind being reported is not the two minute average.
+
+Page 13
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, request instant
+wind
+
+G-CD, instant wind 270 7
+
+4.30
+
+A take-off clearance shall be issued separately from any other clearance
+message.
+
+4.31
+
+For traffic reasons a controller may consider it necessary for an aircraft
+to take off without any delay. Therefore, when given the instruction
+‘cleared for immediate take- off’, the pilot is expected to act as follows:
+1. At the holding point: taxi immediately on to the runway and
+commence take-off without stopping the aircraft.
+2. If already lined up on the runway: take-off without delay. Should
+an immediate take-off not be possible, the pilot is to advise the
+controller.
+
+4.32
+
+May 2016
+
+BIGJET 347, runway 28
+cleared for immediate takeoff
+
+Runway 28 cleared for
+immediate take-off,
+BIGJET 347
+
+G-CD, Piper Cub 2 miles on
+final approach. Runway 28
+cleared for immediate takeoff wind 240 8 knots
+
+Runway 28 cleared for
+immediate take-off,
+G-CD
+
+For reason of expedition a controller may wish to line-up an aircraft for
+departure before conditions allow take-off.
+BIGJET 347, line-up and wait
+Runway 26 – vehicle
+crossing upwind end of
+runway
+
+Line-up and wait
+Runway 26, BIGJET 347
+
+BIGJET 347, runway 26
+cleared for take-off
+
+Runway 26 cleared for
+take-off, BIGJET 347
+
+Page 14
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.33
+
+In poor visibility the controller may prefix the clearance with the runway
+designator and request the pilot to report when airborne.
+Runway 28 cleared for
+take-off. Wilco, BIGJET
+347
+
+BIGJET 347, runway 28
+cleared for take-off report
+airborne
+
+BIGJET 347, airborne
+
+BIGJET 347, contact Radar
+121.750
+Radar 121.750, BIGJET
+347
+4.34
+
+Conditional clearances are only to be provided subject to conditions
+specified by the relevant authority. Military controllers do not apply
+conditional clearances. Conditional phrases will not be used for
+movements affecting the active runway(s), except when the aircraft
+or vehicles concerned are seen by the controller and pilot. Conditional
+clearances are to relate to one movement only and, in the case of
+landing traffic, this must be the first aircraft on approach. A conditional
+instruction shall be given as follows:
+1.
+2.
+3.
+4.
+5.
+
+callsign;
+the condition;
+identification of subject of the condition;
+the clearance;
+reiteration of the condition.
+BIGJET 347, behind the
+landing DC9, line up Runway
+26 behind
+
+Behind the landing DC9,
+line up Runway 26
+behind, BIGJET 347
+
+BIGJET 347, behind the
+departing DC9, line up
+Runway 26 behind
+
+May 2016
+
+Page 15
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.35
+
+If a conditional clearance has been issued in respect of a landing aircraft
+the stop-bar must not be deselected until the landing aircraft has passed
+the position at which the vehicle or aircraft will enter the runway. For
+aircraft departing from the same runway holding position, when a
+conditional line-up clearance has been issued to a succeeding departing
+aircraft, the illuminated red stop-bar may remain deselected provided
+that it will be the next movement on that runway.
+
+4.36
+
+In addition, any instruction to use a runway shall include the designator
+of the runway. When passing the clearance, the runway deisgnator
+should be stated first, i.e. (Callsign) runway 06, cleared for take-off. See
+also 10.15.
+BIGJET 347, runway 09 left
+cleared for take-off
+
+4.37
+
+An Omnidirectional Departure procedure is designed on the basis that
+an aircraft maintains runway direction until it reaches such a height that
+it can make a turn in any direction and maintain the prescribed obstacle
+clearance.
+BIGJET 347 Omnidirectional
+Departure runway 27 on
+track REVTU climb Flight
+Level 80
+
+4.38
+
+May 2016
+
+Runway 09 left cleared
+for take-off, BIGJET 347
+
+Omnidirectional
+Departure runway 27 on
+track REVTU climb
+Flight Level 80
+BIGJET 347
+
+Local departure instructions may be given prior to the take-off clearance.
+Such instructions are normally given to ensure separation between
+aircraft operating in the vicinity of the aerodrome.
+BIGJET 347, after departure
+track extended centre line
+
+After departure track
+extended centre line,
+BIGJET 347
+
+BIGET 347, after departure
+climb straight ahead
+
+After departure climb
+straight ahead, BIGJET
+347
+
+Page 16
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.39
+
+BIGJET 347, after departure
+fly heading 240 degrees,
+climb to altitude 6000 feet
+
+After departure fly
+heading 240 degrees,
+climb to altitude 6000
+feet, BIGJET 347
+
+G-CD, after departure right
+hand circuit
+
+After departure right
+hand circuit, G-CD
+
+G-CD, after departure track
+270 degrees from Borton
+until reaching altitude 3000
+feet before setting course
+
+After departure track
+270 degrees from
+Borton until reaching
+altitude 3000 feet
+before setting course,
+G-CD
+
+Revised clearances and post departure instructions for aircraft on the
+runway or at the holding position shall be prefixed with an instruction to
+hold position.
+BIGJET 347, Hold position,
+after departure climb
+straight ahead to altitude
+2500 feet QNH 1014 before
+turning right
+
+BIGJET 347, Holding,
+after departure climb
+straight ahead to
+altitude 2500 feet, QNH
+1014 before turning
+right.
+BIGJET 347, runway 26
+cleared for take-off
+Runway 26 cleared for
+take-off, BIGJET 347
+
+G-CD, after departure
+request right turn
+
+G-CD, Hold position, right
+turn approved
+G-CD, Holding, right
+turn approved
+
+May 2016
+
+Page 17
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, runway 26 cleared for
+take-off
+Runway 26 cleared for
+take-off, G-CD
+4.40
+
+4.41
+
+Due to unexpected traffic developments or a departing aircraft taking
+longer to take-off than anticipated, it is occasionally necessary to rescind
+the take-off clearance or quickly free the runway for landing traffic.
+BIGJET 347, runway 26
+take-off immediately or
+vacate runway
+
+Taking-off, runway 26
+BIGJET 347
+
+BIGJET 347, runway 26
+take-off immediately or hold
+short of runway
+
+Holding, BIGJET 347
+
+When an aircraft is about to take-off or has commenced the take-off
+roll, and it is necessary that the aircraft should abandon take-off, the
+aircraft will be instructed to cancel take-off or stop immediately; these
+instructions will be repeated.
+G-CD, hold position, cancel
+take-off I say again cancel
+take-off, acknowledge
+BIGJET 347, stop
+immediately I say again,
+BIGJET 347, stop
+immediately, acknowledge
+
+Holding, G-CD
+
+Stopping, BIGJET 347
+
+	
+NOTE: Military procedures for cancelled take-offs appear in Chapter 10.
+4.42
+
+May 2016
+
+When a pilot abandons take-off he should, as soon as practicable,
+inform the tower that he is doing so. Likewise, as soon as practicable,
+he should inform the tower of the reasons for abandoning take-off if
+applicable, and request further manoeuvring instructions.
+
+Page 18
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+
+
+BIGJET 347, stopping
+
+
+
+BIGJET 347
+
+BIGJET 347, request
+backtrack for another
+departure
+BIGJET 347, runway 26
+backtrack approved
+4.43
+
+Requests for circuit-joining instructions should be made in sufficient
+time for a planned entry into the circuit taking other traffic into
+account. Where ATIS is established, receipt of the broadcast should be
+acknowledged in the initial call to an aerodrome. When the traffic circuit
+is a right-hand pattern it shall be specified. A left- hand pattern need not
+be specified although it is essential to do so when the circuit direction
+is variable.
+Walden Tower,
+G-ABCD, request join
+
+G-ABCD, Walden Tower,
+pass your message
+
+G-ABCD, T67 10 miles
+south altitude 2500 feet
+Wessex 1008
+
+G-CD, join righthand
+downwind runway 27 height
+1000 feet QFE 1006
+Join righthand
+downwind runway 27
+height 1000 feet QFE
+1006, G-CD
+
+4.44
+
+In some circumstances, an aircraft may be instructed to complete a
+standard overhead join.
+G-CD, join overhead runway
+20 height 2000 feet QFE
+997 hectopascals, report
+aerodrome in sight
+
+May 2016
+
+Join overhead runway
+20 height 2000 feet
+QFE 997 hectopascals,
+wilco, G-CD
+
+Page 19
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.45
+
+Depending on prevailing traffic conditions and the direction from which
+an aircraft is arriving, it may be possible to make a straight-in approach.
+Walden Tower,
+G-ABCD, request join
+
+G-ABCD, Walden Tower,
+pass your message
+
+G-ABCD, T67 10 miles
+south altitude 2500 feet
+Wessex 1008 request
+straight in approach
+runway 34
+
+G-CD, make straight in
+approach runway 34 wind
+260 degrees 5 knots QFE
+1006 report final
+
+Make straight in
+approach runway 34
+QFE 1006. Wilco, G-CD
+4.46
+
+Pilots will receive traffic information prior to joining the traffic circuit.
+ATS personnel will, as a minimum, take into consideration the
+prevailing visibility, traffic situation, local procedures and the type of join
+being conducted to determine the timing and content of such traffic
+information.
+G-CD, traffic is a Cherokee
+upwind and a Tomahawk
+late downwind
+
+Roger, G-CD
+
+Traffic in sight, G-CD
+
+4.47
+
+May 2016
+
+G-CD, you are number 3,
+number 2 is a Cherokee
+upwind
+
+Roger, G-CD
+
+G-CD, circuit clear
+
+G-CD
+
+The pilot having joined the traffic circuit makes routine reports as
+required by local procedures.
+
+Page 20
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, downwind
+
+G-CD, number 2 follow the
+Cherokee on base
+Number 2, Cherokee in
+sight, G-CD
+
+G-CD, base
+
+G-CD
+
+G-CD, final
+
+G-CD, runway 34 cleared to
+land wind 270 7
+Runway 34 cleared to
+land, G-CD
+
+4.48
+
+4.49
+
+May 2016
+
+Where necessary the controller may instruct the pilot to report at a
+specified position.
+G-CD, report overhead
+
+Wilco, G-CD
+
+G-CD, report downwind
+
+Wilco, G-CD
+
+G-CD, report long final
+
+Wilco, G-CD
+
+G-CD, report base
+
+Wilco, G-CD
+
+It may be necessary in order to co-ordinate traffic in the circuit, to
+issue a pilot his number in the sequence along with the position of the
+preceding aircraft and delaying action if necessary.
+
+Page 21
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, extend downwind
+number 2, number 1 is a
+Cherokee left-hand
+downwind
+
+Extend downwind,
+number 2, G-CD
+
+G-CD, number 2, follow the
+Cherokee ahead
+
+Follow Cherokee ahead,
+G-CD
+
+G-CD, for spacing orbit right
+number 2, number 1 is a
+Cherokee on final, report
+again on base
+4.50
+
+Orbit right, wilco, G-CD
+
+In order to save taxiing time when flying training in the traffic circuit
+pilots may wish to carry out a ‘touch and go’, i.e. the aircraft lands,
+continues rolling and takes-off, without stopping.
+G-CD, downwind touch
+and go
+
+G-CD, report final
+
+G-CD, final
+
+G-CD, runway 34 cleared
+touch and go surface wind
+calm
+Runway 34 cleared
+touch and go, G-CD
+or,
+G-CD, unable to approve
+due traffic, make full stop
+landing runway 34 cleared
+to land, surface wind calm
+
+May 2016
+
+Page 22
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Runway 34 cleared to
+land, G-CD
+4.51
+
+It is helpful for circuit management purposes if a controller is informed
+when an aircraft which has been engaged in multiple approaches is on
+his last circuit.
+G-CD, downwind to
+land
+
+G-CD, report final
+
+Final Approach and Landing
+4.52
+
+A ‘final’ report is made when an aircraft has turned onto final approach.
+If the turn on is made at a distance greater than 4 NM from touchdown
+a ‘long final’ report is made. The landing/touch and go/low approach
+clearance will include the runway designation.
+G-CD, final
+
+G-CD, runway 34 cleared to
+land surface wind 270 7
+Runway 34 cleared to
+land, G-CD
+
+BIGJET 347, long final
+
+BIGJET 347, report final
+surface wind 260 18
+
+Wilco, BIGJET 347
+
+BIGJET 347, final
+
+BIGJET 347, runway 28
+cleared to land, wind 270 20
+
+May 2016
+
+Page 23
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Runway 28 cleared to
+land, BIGJET 347
+	
+NOTE 1:	Military phraseology for a gear check appears in Chapter 10.
+	NOTE 2:	Where established, an ‘outer marker’ instead of a ‘final’
+report may be made.
+4.53
+
+Where a controller cancels a landing clearance but feels that a landing
+clearance will be re-issued in good time for the aircraft to make a safe
+landing, he should, if time permits, give the reason for cancelling the
+landing clearance.
+BIGJET 347, continue
+approach, cancel landing
+clearance (reason),
+acknowledge
+
+4.54
+
+Landing clearance
+cancelled, continuing
+approach, BIGJET 347
+
+If available, the instantaneous surface wind should be provided to the
+pilot on request.
+G-CD, runway 13 cleared to land,
+instant surface wind 270 15
+
+4.55
+
+The runway may be obstructed when the aircraft makes its ‘final’ report
+at 4 NM or less from touchdown but is expected to be available in good
+time for the aircraft to make a safe landing. On these occasions, the
+controller will delay landing clearance.
+G-CD, final
+
+G-CD, continue approach,
+wind 270 5
+Continue approach,
+G-CD
+
+4.56
+
+May 2016
+
+The controller may or may not explain why the landing clearance has
+been delayed but the instruction to ‘continue’ IS NOT an invitation to
+land and the pilot must wait for landing clearance or initiate a missed
+approach.
+
+Page 24
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.57
+
+A landing aircraft may be permitted to touch down before a preceding
+landing aircraft has vacated the runway provided that:
+1. the runway is long enough to allow safe separation between the
+two aircraft and there is no evidence to indicate that braking may be
+adversely affected;
+2. it is during daylight hours;
+3. the preceding landing aircraft is not required to backtrack in order to
+vacate the runway;
+4. the controller is satisfied that the landing aircraft will be able to see
+the preceding aircraft which has landed, clearly and continuously,
+until it has vacated the runway; and
+5. the pilot of the following aircraft is warned. (Responsibility for
+ensuring adequate separation rests with the pilot of the following
+aircraft.
+BIGJET 347, runway 28,
+land after the B737, wind
+calm
+
+Runway 28 land after
+the B737, BIGJET 347
+
+4.58
+
+Military phraseology for clearances with an occupied runway is shown in
+Chapter 10.
+
+4.59
+
+A pilot may request to fly past the control tower or other observation
+point for the purpose of visual inspection from the ground.
+G-CD, request low pass
+
+4.60
+
+G-CD, runway 34 cleared
+low pass
+
+If the low pass is made for the purpose of observing the undercarriage,
+one of the following replies could be used to describe its condition but
+these examples are not exhaustive:
+1. landing gear appears down;
+2. right (or left, or nose) wheel appears up (or down);
+3. wheels appear up;
+4. right (or left, or nose) wheel does not appear up (or down).
+
+4.61
+
+May 2016
+
+A pilot may request permission to make a low approach along the
+runway, without intending to land.
+Page 25
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, request low
+approach
+
+G-CD, runway 34 cleared
+low approach
+
+4.62
+
+If the runway in use is occupied by aircraft or vehicles, an approaching
+aircraft may be cleared to carry out a low approach which includes a
+descent not below a specified height or altitude. The minimum height or
+altitude is defined in regulatory documentation and/or local instructions
+as appropriate. In such circumstances, the pilot is to be informed of the
+aircraft or vehicles on the runway.
+
+4.63
+
+The following example assumes an aircraft operating on QNH.
+BIGJET 347, request
+low approach
+
+BIGJET 347, runway 05, not
+below altitude (number)
+feet, vehicle on runway,
+cleared low approach
+
+Runway 05 not below
+altitude (number) feet,
+BIGJET 347 cleared low
+approach
+4.64
+
+Where the aircraft is known to be operating on QFE, the instruction is
+as follows.
+BIGJET 347, request
+low approach
+
+BIGJET 347, runway 05 not
+below height (number) feet,
+vehicle on runway, cleared
+low approach
+Runway 05 not below
+height (number) feet,
+BIGJET 347 cleared low
+approach
+
+Missed Approach
+4.65
+
+May 2016
+
+Instructions to carry out a missed approach may be given to avert an
+unsafe situation. When a missed approach is initiated cockpit workload
+is inevitably high. Any transmissions to aircraft going around shall be
+brief and kept to a minimum.
+Page 26
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+BIGJET 347, go around I say
+again go around,
+acknowledge
+
+Going around, BIGJET
+347
+
+4.66
+
+An aircraft on an instrument approach is to carry out the published
+missed approach procedure and an aircraft operating VFR is to continue
+into the normal traffic circuit unless instructions are issued to the
+contrary.
+
+4.67
+
+In the event of missed approach being initiated by the pilot, the phrase
+‘going around’ shall be used.
+
+G-CD, going around
+4.68
+
+G-CD, Roger
+
+Missed Approach Phraseology used by military controllers is shown in
+Chapter 10.
+
+Runway Vacating and Communicating after Landing
+4.69
+
+Unless absolutely necessary, controllers will not give taxi instructions to
+pilots until the landing roll is complete. Unless otherwise advised, pilots
+should remain on tower frequency until the runway is vacated.
+BIGJET 347, vacate left
+
+Vacate left, BIGJET 347
+
+BIGJET 347, when vacated
+contact Ground 118.350
+
+When vacated Ground
+118.350, BIGJET 347
+Kennington Ground,
+BIGJET 347, runway
+vacated
+BIGJET 347, Kennington
+Ground, taxi to Stand 27 via
+taxiway Alpha
+
+May 2016
+
+Page 27
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Taxi to Stand 27 via
+taxiway Alpha,
+BIGJET 347
+G-CD, taxi to the end, report
+runway vacated
+
+Taxi to the end, Wilco,
+G-CD
+
+G-CD, runway vacated
+
+G-CD, give way to the
+Cherokee on taxiway Alpha,
+taxi to the flying club
+Give way to the
+Cherokee on taxiway
+Alpha, taxi to the flying
+club, G-CD
+
+Essential Aerodrome Information
+4.70
+
+Essential Aerodrome Information is information regarding the
+manoeuvring area and its associated facilities which is necessary to
+ensure the safe operation of aircraft. Essential Aerodrome Information is
+passed to aircraft whenever possible prior to start-up or taxi and prior to
+the commencement of final approach.
+BIGJET 347, caution construction
+work at the end of Stand 37
+... caution work in progress ahead
+north side of taxiway Alpha
+... caution centre line taxiway lighting
+unserviceable
+... caution PAPIs runway 27
+unserviceable
+
+May 2016
+
+Page 28
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+... caution large flock of birds north
+of runway 27 near centre taxiway
+... Message from the aerodrome
+operator, rescue and fire facilities
+reduced to category (number)
+
+Arrestor Systems at Military Aerodromes
+4.71
+
+Phraseology describing arrestor systems at military aerodromes appears
+in Chapter 10.
+
+Aerodrome Flight Information Service Phraseology
+Introduction
+4.72
+
+Concise and unambiguous phraseology used at the correct time is
+vital to the smooth, safe and expeditious running of an aerodrome
+and associated ATZ. It is not only the means by which instructions
+and information are passed but it also assists pilots in maintaining an
+awareness of other traffic in their vicinity, particularly in poor visibility
+conditions.
+
+4.73
+
+Messages will not be transmitted to an aircraft during take-off, the last
+part of final approach or the landing roll, unless it is necessary for safety
+reasons, because it will be distracting to the pilot at a time when the
+cockpit workload is often at its highest.
+
+4.74
+
+Local procedures vary from aerodrome to aerodrome and it is
+impossible to give examples to cover every situation which may arise at
+the multiplicity of different types of aerodrome. Information in addition
+to that shown in the examples, e.g. time checks, etc. may be provided
+as necessary.
+
+Type of Service
+
+May 2016
+
+4.75
+
+As described in Chapter 2 the type of service provided at an aerodrome
+falls into one of three categories. In this section the examples are
+confined to those used by Flight Information Service Officers (FISOs).
+
+4.76
+
+Whilst the RTF procedures used by air traffic controllers form the main
+content of this publication it should be noted that the phraseology used
+by Aerodrome Flight Information Service Officers (AFISOs) is different
+Page 29
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+from that used by controllers. An AFISO provides advice and information
+useful for the safe and efficient conduct of flights in the Aerodrome
+Traffic Zone. From the information received pilots will be able to decide
+the appropriate course of action to be taken to ensure the safety of flight.
+Generally, the AFISO is not permitted to issue instructions or advice to
+pilots of his own volition. However, in granting or refusing permission
+under Rule 40 and 41 of the Rules of the Air, AFISOs are permitted to
+pass instructions to vehicles and personnel operating on the manoeuvring
+area and information and instructions to aircraft moving on the apron and
+specific parts of the manoeuvring area. Elsewhere on the manoeuvring
+area and at all times in the air, information only shall be passed to pilots.
+Further details on the passing of instructions by AFISOs are contained in
+CAP 797 Flight Information Service Officer Manual.
+
+May 2016
+
+4.77
+
+AFISOs are also permitted to pass messages on behalf of other
+agencies and instructions from the aerodrome operator. If they do so,
+they will include the name of the agency so that pilots will be aware that
+the message comes from a legitimate source, e.g. ‘Wrayton Control
+clears you to join ...’.
+
+4.78
+
+With the exception of issuing instructions to aircraft on the ground,
+AFISOs are reminded that the service they provide is an information
+service relating to the ATZ and aerodrome. They must ensure that the
+information given to pilots is distinct and unambiguous, as pilots will use
+this information for the safe and efficient conduct of their flights.
+
+4.79
+
+An AFISO may request pilots to make position reports e.g.downwind,
+final etc. These requests do not have the status of instructions,
+although it is expected that most pilots will comply.
+
+4.80
+
+From the instructions and information provided by the AFISO to aircraft
+on the appropriate areas of the aerodrome, the pilot will be able to
+determine if it is safe to taxi. From the information provided by the
+AFISO, the pilot will determine if it is safe to land, take-off or transit
+the ATZ. AFISOs are not permitted to refuse entry into the ATZ when
+requested by a pilot. The aerodrome authority may decide that they
+will not permit an aircraft to land at their aerodrome and request that
+the AFISO pass this message on. Such a message must be prefixed:
+‘Message from the aerodrome authority...’ AFISOs may not issue such
+messages of their own volition.
+
+Page 30
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+AFIS Phraseology for Ground Movement, Take-Off, Landing and
+Transit
+4.81
+
+RTF messages transmitted on aviation VHF frequencies should normally
+comprise callsign and text as described earlier in this document.
+
+4.82
+
+In order that the phraseology listed below should be readily discernible,
+callsigns have been omitted. All phraseology shall be used in conjunction
+with callsigns (aircraft, ground vehicle, FIS or other) as appropriate
+and provisions for the compilation of RTF messages, callsigns and
+procedures are contained Chapter 2 of this CAP.
+
+4.83
+
+Ground movement instructions are similar for aircraft, vehicles and
+tractors towing aircraft but the operative word in the message is ‘taxi’,
+‘proceed’ and ‘tow’ respectively.
+
+4.84
+
+The text of messages should be composed from standard speech
+abbreviations and the standard phrases listed on the following pages.
+One or more phrases may be used but all items in a phrase are to be
+included. The list of phrases in Table 1 below is not intended to be
+exhaustive. Words in parentheses indicate that specific information,
+such as a level, a place or a time, etc., must be inserted to complete
+the phrase, or alternatively that optional phrases may be used. Words
+in square parentheses indicate optional additional words or information
+that may be necessary in specific instances.
+
+Table 1
+Phraseology
+Traffic information
+
+TRAFFIC (information);
+NO REPORTED TRAFFIC;
+[FURTHER] TRAFFIC (direction) BOUND (type of
+aircraft) (level) ESTIMATED (or OVER) (significant
+point) AT (time);
+TRAFFIC IS (classification) UNMANNED FREE
+BALLOON(S) WAS [or ESTIMATED] OVER (place)
+AT (time) REPORTED (level(s)) [or LEVEL
+UNKNOWN] MOVING (direction) (other pertinent
+information, if any).
+
+May 2016
+
+Page 31
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+Meteorological
+conditions
+
+[SURFACE] or [INSTANT] WIND (direction and
+speed) [(units)];
+WIND AT (level) (number) DEGREES (number)
+KNOTS;
+NOTE: Wind is always expressed by giving the
+mean direction and speed and any significant
+variations thereof.
+VISIBILITY (distance) (units) [direction];
+PRESENT WEATHER (details);
+CLOUD (amount, [(type)] and height of base) (units)
+(or SKY CLEAR);
+CAVOK;
+NOTE: CAVOK pronounced CAV-O-KAY
+TEMPERATURE [MINUS] (number) (and/or
+DEWPOINT [MINUS] (number));
+QNH (number) [Hectopascals];
+QFE (number) [Hectopascals].
+NOTE: For all transmissions, the word ‘hectopascal’
+shall be appended to figures when transmitting a
+pressure setting below 1000 hPa, or in cases where
+confusion or ambiguity may result.
+AT (time) A DEPARTING/ARRIVING (a/c type)
+REPORTED WINDSHEAR AT (altitude). AIRSPEED
+LOSS/GAIN (number) KNOTS, STRONG LEFT/
+RIGHT DRIFT.
+
+May 2016
+
+Page 32
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+Additional reports
+... to request a report at
+a specified place or
+distance
+
+REPORT PASSING (significant point);
+REPORT (distance) MILES (GNSS or DME) FROM
+(name of DME station) (or significant point);
+REPORT PASSING (three digits) RADIAL (name of
+VOR) VOR.
+
+... to request a report of
+present position
+
+REPORT (GNSS or DME) DISTANCE FROM
+(significant point) or (name of DME station);
+REPORT POSITION.
+
+Aerodrome information
+
+[(location)] RUNWAY SURFACE CONDITION
+RUNWAY (designator) (condition);
+LANDING SURFACE (condition);
+CAUTION CONSTRUCTION WORK (location);
+CAUTION (specify reasons) RIGHT (or LEFT), (or
+BOTH SIDES) OF RUNWAY [designator];
+CAUTION WORK IN PROGRESS (or
+OBSTRUCTION) (position and any necessary
+advice);
+UNOFFICIAL OBSERVATION FROM THE TOWER
+(weather information);
+UNOFFICIAL OBSERVATION FROM A PILOT’S
+REPORT (weather information).
+
+Operational status of
+visual and non-visual
+aids
+
+(specify visual or non-visual aid) RUNWAY
+(designator) (description of deficiency);
+(type) LIGHTING (unserviceability);
+TAXIWAY LIGHTING (description of deficiency);
+(type of visual approach slope indicator) RUNWAY
+(designator) (description of deficiency).
+
+Identification of aircraft
+
+May 2016
+
+SHOW LANDING LIGHTS.
+
+Page 33
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+Acknowledgement by
+visual means
+
+ACKNOWLEDGE BY MOVING AILERONS (or
+RUDDER);
+ACKNOWLEDGE BY ROCKING WINGS;
+ACKNOWLEDGE BY FLASHING LANDING LIGHTS.
+
+Starting procedures
+…at aerodrome where
+AFIS can issue start up
+
+START UP APPROVED;
+
+…at aerodrome where
+AFIS cannot issue start
+up, AFIS replies
+
+START UP AT OWN DISCRETION (local information)
+
+Taxi
+
+[[GIVE WAY TO] or [FOLLOW] (details)] TAXI
+HOLDING POINT [(name)] RUNWAY (designator)
+[VIA TAXIWAY (name)];
+
+START UP AT (time).
+
+EXPECT DEPARTURE (time). START UP AT OWN
+DISCRETION.
+
+HOLD POSITION;
+CROSS RUNWAY (designator) [REPORT VACATED];
+BACKTRACK RUNWAY (designator) [REPORT
+VACATED].
+
+May 2016
+
+Relaying Clearance
+
+(ATC unit) CLEARS (details of clearance).
+
+Relaying advisory
+information
+
+(ATC unit) ADVISES (details).
+
+Confirmation or
+otherwise of the
+readback of clearance
+
+[THAT IS CORRECT] or [I SAY AGAIN] or [NEGATIVE
+I SAY AGAIN] as appropriate.
+
+Relaying frequency
+instructions
+
+[AFTER PASSING (level)] CONTACT/FREECALL
+(instructions).
+
+Page 34
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+Take-off
+
+REPORT READY;
+DO YOU REQUIRE TO BACKTRACK THE RUNWAY?;
+[Traffic (details)] [no reported traffic] BACKTRACK
+RUNWAY (designator) REPORT (LINED UP or
+LINING UP);
+[Traffic (details)] [no reported traffic] RUNWAY
+(designator);
+REPORT LINING UP;
+This is a request for a pilot to report the act of
+entering the runway for departure;
+[Traffic (details)] [no reported traffic] RUNWAY
+(designator) REPORT LINED UP;
+This is a request for a pilot to report when lined up
+on the runway in the take-off direction;
+HOLD POSITION;
+[Traffic (details)] [no reported traffic] RUNWAY
+(designator) TAKE OFF AT YOUR DISCRETION,
+[SURFACE or INSTANT] WIND (direction and speed)
+[(units)].
+
+After take-off
+
+REPORT AIRBORNE.
+
+…to request airborne
+time
+
+May 2016
+
+Aircraft wishes to enter
+the ATZ for landing
+
+RUNWAY (designator) LEFT/RIGHT HAND CIRCUIT,
+QFE or QNH (number) [hPa] [traffic information and
+essential aerodrome information as required].
+
+Aircraft wishes to
+transit the ATZ
+
+(traffic and aerodrome information), REPORT
+ENTERING/ OVERHEAD/ LEAVING THE ATZ;
+
+Page 35
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+In the circuit
+
+REPORT (DOWNWIND/BASE/FINAL or LONG
+FINAL);
+NOTE: The report “Long Final” is made when aircraft
+turn on to final approach at a distance greater than 4nm
+from touchdown or when an aircraft on a straight in
+approach is 8nm from touchdown. In both cases a report
+“Final” is required at 4nm from touchdown;
+
+TRAFFIC (details);
+(Number ahead), [(Further information)], REPORT
+FINAL.
+NOTE: Examples of [(further information)] includes but is
+not limited to: (aircraft type); ON/TURNING BASE; ON/
+TURNING FINAL; FINAL TO (Intentions).
+
+RUNWAY (designator) LAND/TOUCH AND GO AT
+YOUR DISCRETION, [SURFACE or INSTANT WIND]
+(direction and speed) [(units)];
+RUNWAY (designator) OCCUPIED, TRAFFIC
+(details);
+LOW APPROACH AND GO AROUND AT YOUR
+DISCRETION, [SURFACE or INSTANT WIND]
+(direction and speed) [(units)].
+Formations
+
+*(Callsign) ONE FINAL
+RUNWAY (designator) LAND AT YOUR
+DISCRETION,
+*(Callsign) TWO FINAL
+RUNWAY (designator) LAND AT YOUR
+DISCRETION.
+* Denotes pilot transmission for context.
+
+May 2016
+
+Page 36
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+RNAV(GNSS)
+Instrument Approach
+Procedure
+
+REPORT INITIAL APPROACH FIX
+(Waypoint identification) RUNWAY (designator).
+RNAV APPROACHES AT (Unit) ARE ONLY
+AVAILABLE TO AUTHORISED OPERATORS.
+REQUEST YOUR INTENTIONS.
+REPORT ESTABLISHED ON FINAL APPROACH
+TRACK.
+REPORT (number) MILES FROM FINAL
+APPROACH FIX.
+TRAFFIC IS A (Aircraft type) ([shortly going to
+commence] / [has commenced]) AN RNAV
+APPROACH RUNWAY (designator).
+REPORT FINAL APPROACH FIX.
+HOLD YOUR POSITION, TRAFFIC IS A (aircraft type)
+ON AN RNAV APPROACH RUNWAY (designator).
+[EXPECT DEPARTURE AFTER ([aircraft type] /
+[aircraft callsign])].
+
+…when pilot requests
+visual inspection of
+landing gear
+
+LANDING GEAR APPEARS DOWN;
+RIGHT (or LEFT, or NOSE) WHEEL APPEARS UP (or
+DOWN);
+WHEELS APPEAR UP;
+RIGHT (or LEFT, or NOSE) WHEEL DOES NOT
+APPEAR UP (or DOWN).
+
+May 2016
+
+…wake turbulence
+
+CAUTION WAKE TURBULENCE [FROM ARRIVING
+or DEPARTING (type of aircraft)].
+
+…jet blast on apron or
+taxiway
+
+CAUTION JET BLAST.
+
+…propeller-driven
+aircraft slipstream
+
+CAUTION SLIPSTREAM.
+
+Page 37
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+Runway vacating and
+communications after
+landing
+
+BACKTRACK RUNWAY (designator) [REPORT
+VACATED] TAXI [VIA (designator)] TO STAND
+(designator);
+TAXI [VIA (designator)] TO THE APRON
+
+Helicopter operations
+
+HOVER
+When necessary to instruct a helicopter to hold
+position whilst airborne in ground effect, waiting to
+proceed.
+HOLD POSITION
+When necessary to instruct a helicopter to hold
+position whilst ground taxiing.
+[GIVE WAY TO or FOLLOW (details)] AIR TAXI
+HOLDING POINT [(name)] RUNWAY (designator)
+[VIA TAXIWAY (name)];
+[GIVE WAY TO or FOLLOW (details)] GROUND TAXI
+HOLDING POINT [(name)] RUNWAY (designator)
+[VIA TAXIWAY (name)];
+RUNWAY (designator) TAKE OFF AT YOUR
+DISCRETION, [SURFACE or INSTANT] WIND
+(direction and speed) [(units)];
+(Designated point) TAKE OFF AT YOUR
+DISCRETION, [SURFACE or INSTANT] WIND
+(direction and speed) [(units)];
+INSTANT] WIND (direction and speed) [(units)];
+RUNWAY (designator) LAND AT YOUR
+DISCRETION, [SURFACE or INSTANT] WIND
+(direction and speed) [(units)]
+(Designated point) LAND AT YOUR DISCRETION,
+[SURFACE or INSTANT] WIND (direction and speed)
+[(units)].
+
+May 2016
+
+Page 38
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+VEHICLE/TUG TRAFFIC
+Regards phraseology
+for the movement of
+vehicles and tugs
+towing aircraft on the
+manoeuvring area, the
+operative word in the
+messages shown is
+‘PROCEED’ and ‘TOW’
+respectively.
+
+PROCEED/TOW APPROVED TO HOLDING POINT
+[designator] VIA [specific route to be followed]
+RUNWAY [(designator)] or;
+PROCEED/TOW APPROVED HOLD SHORT OF
+RUNWAY (designator) or;
+PROCEED/TOW APPROVED CROSS RUNWAY
+[(designator)];
+TAKE (or TURN) FIRST (or SECOND etc.) LEFT (or
+RIGHT);
+PROCEED/TOW APPROVED VIA (identification of
+taxiway);
+PROCEED/TOW APPROVED VIA RUNWAY
+(designator);
+PROCEED/TOW APPROVED TO TERMINAL (or
+other location, e.g. General Aviation Area);
+PROCEED/TOW APPROVED STRAIGHT AHEAD;
+PROCEED/TOW APPROVED WITH CAUTION;
+GIVE WAY TO (description of traffic);
+FOLLOW (description of traffic);
+VACATE RUNWAY (designator);
+EXPEDITE [reason];
+[Caution] PROCEED SLOWER [reason];
+
+May 2016
+
+Page 39
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Phraseology
+Regards phraseology
+for the movement of
+vehicles and tugs
+towing aircraft on the
+manoeuvring area, the
+operative word in the
+messages shown is
+‘PROCEED’ and ‘TOW’
+respectively.
+
+HOLD POSITION;
+
+To cross a runway –
+vehicles
+
+CROSS RUNWAY (designator) [REPORT VACATED];
+
+HOLD (distance) FROM (position);
+HOLD SHORT OF (position).
+NOTE: The procedure words ROGER and WILCO are
+insufficient acknowledgement of the instructions HOLD,
+HOLD POSITION and HOLD SHORT OF (position). In
+each case the acknowledgement shall be by the
+phraseology HOLDING or HOLDING SHORT, as
+appropriate.
+
+EXPEDITE CROSS RUNWAY (designator) TRAFFIC
+(aircraft type) (distance) MILES FINAL;
+NOTE 1: If the AFIS unit is unable to see the crossing
+vehicle/ person (e.g. night, low visibility), the instruction
+should always be accompanied by a request to report
+when the runway has been vacated.
+NOTE 2: The driver will, when requested, report
+“RUNWAY VACATED” when the vehicle is beyond the
+relevant runway holding position.
+
+May 2016
+
+Page 40
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.85
+
+Examples of typical FISO/Pilot RTF exchanges are detailed below.
+G-ABCD, request taxi
+
+G-CD, taxi holding point C2,
+runway 06 via taxiway C,
+surface wind 060 10 knots,
+QNH 998 hectopascals, left
+hand circuit
+Roger, taxi holding point
+C2, runway 06 via
+taxiway C, QNH 998
+hectopascals, G-CD
+
+at the holding point...
+G-CD, C2 Ready for
+departure
+
+G-CD, Hold position
+
+Holding, G-CD
+
+May 2016
+
+G-CD, runway 06 take-off at
+your discretion, surface
+wind 270 degrees 15 knots
+
+Runway 06 taking off,
+G-CD
+
+G-CD, Traffic is a Cessna 172
+base leg, runway 06 take off
+at your discretion, surface
+wind 270 15
+
+Runway 06 taking off,
+G-CD
+
+G-CD, Via C2 runway 06
+take-off at your discretion,
+surface wind 270 15
+
+Via C2 runway 06 taking
+off, G-CD
+
+G-CD, Do you require to
+backtrack the runway?
+
+Affirm, G-CD
+
+Page 41
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+G-CD, Traffic is a Cessna 172
+base leg, via C2 back track
+runway 06 report lined up
+
+Via C2 back track
+runway 06 report linedup, G-CD
+
+G-CD lined up
+
+G-CD, runway 06 take off at
+your discretion, surface
+wind 270 15
+
+Runway 06 taking off,
+G-CD
+
+G-CD, Report downwind
+In the circuit...
+G-CD, Downwind to
+land
+
+G-CD, Roger, one ahead is
+a C172 right base, report
+final
+
+Wilco, G-CD
+
+G-CD, Final
+
+G-CD, Roger, Cessna 172
+ahead on final
+
+Roger, G-CD
+
+May 2016
+
+Page 42
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+When the runway is available...
+G-CD, runway 06. land at
+your discretion wind 250, 8
+knots
+
+G-CD runway occupied*,
+(State reason)
+
+G-CD Roger runway 06,
+(Landing/Going Around)
+
+G-CD Roger,
+Continuing/Going
+Around)
+
+* Aircraft are not permitted to land on an occupied runway (ANO Section
+2: Schedule 1: Section 4: 14 (2) Landing and take-off
+G-CD, runway 06, touch and
+go at your discretion, wind
+250, 8 knots
+
+G-CD Roger runway 06,
+touch and go
+
+After landing...
+G-CD, after the Cessna 172
+taxiing right to left, taxi to
+the aero club, via taxiway
+Charlie
+
+Roger, after the Cessna
+172, taxi to the aero
+club, via taxiway
+Charlie, G-CD
+
+RNAV (GNSS) Instrument Approach Procedures
+4.86
+
+Pilot interpreted RNAV (GNSS) instrument approach procedures
+(IAP) are available for use by suitably equipped aircraft and approved
+operators at certain aerodromes. The phraseology to be used is
+illustrated in the following examples.
+
+Initial Call
+4.87
+
+Requests to fly the RNAV (GNSS) IAP should be made using the initial
+approach fix and runway designator.
+G-ABCD, request RNAV
+approach [via BEMBO],
+Runway 27
+
+May 2016
+
+G -ABCD, Walden
+Information roger, report
+Initial Approach Fix
+(Waypoint identification)
+Runway 27
+
+Page 43
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.88
+
+In circumstances where an operator is not approved to conduct RNAV
+(GNSS) IAPs, the AFISO will request the pilot’s intentions.
+G-ABCD, request RNAV
+approach [via BEMBO],
+Runway 27
+
+G -ABCD, Walden
+Information RNAV
+approaches at Walden are
+only available to authorised
+operators. Request your
+intentions
+
+Position Reporting
+4.89
+
+For traffic sequencing and to aid situational awareness, AFISOs may
+request the pilot to report when established on final approach track or to
+report at any other relevant point in the procedure, as shown below.
+G-CD, report established on
+final approach track
+
+G-CD, report 2 miles from
+final approach fix
+
+Traffic Information
+4.90
+
+AFISOs will provide traffic information on approved aircraft conducting
+an RNAV (GNSS) IAP.
+G-EFGH, Walden
+Information, traffic is a
+Cherokee ([shortly going to
+commence] / [has
+commenced]) an RNAV
+approach Runway 27
+
+May 2016
+
+Page 44
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Final Approach Fix
+4.91
+
+AFISOs will request the pilot to report at the final approach fix.
+G--CD, report final approach
+fix
+
+G-CD, wilco
+
+G-CD, final approach fix
+[Runway 27]
+
+G-CD,G-CD, final
+[Runway 27]
+
+Inbound / Outbound Aircraft Interaction
+4.92
+
+In certain circumstances, the AFISO may be required to hold the
+departing aircraft on the ground to enable the aircraft conducting
+the RNAV (GNSS) IAP to complete the approach safely. In these
+circumstances, the AFISO may advise the aircraft intending to depart
+when they can expect to depart.
+G-EFGH, Walden
+Information, hold your
+position, traffic is a
+Cherokee on an RNAV
+approach Runway 27.
+Expect departure after
+([aircraft type] / [aircraft
+callsign])
+
+Reporting GNSS Problems
+4.93
+
+May 2016
+
+Phraseology related to problems with GNSS is contained in paragraphs
+6.54 and 6.55.
+
+Page 45
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Aerodrome Phraseology for Helicopters
+Introduction
+4.94
+
+Rotary-wing flight characteristics mean that helicopter operations at
+aerodromes can differ significantly from fixed-wing operations. This
+section describes standard phraseology and procedures to address
+the different requirements for helicopter lifting, taxiing, taking-off and
+landing (including the approach and departure phases), particularly
+at aerodromes where rotary-wing and fixed-wing operations are
+integrated.
+
+4.95
+
+Standard phraseology should be used in all situations for which it is
+specified. When standardised phraseology cannot serve an intended
+transmission, plain language should be used. The use of plain language
+may further assist when describing rotary- wing aircraft manoeuvres.
+Care should be exercised to ensure that all parties involved achieve clear
+understanding.
+
+4.96
+
+The phraseology described in this section is intended for general use.
+However, the examples of taxiing phraseology describe communications
+specific to aerodromes at which ATC or AFIS is provided. Phraseology
+examples for take-off and landing are specific to communications at
+aerodromes with ATC.
+
+Helicopter Callsigns
+4.97
+
+Aircraft callsigns to be used are described in Chapter 2. Provision is
+made for the name of the aircraft manufacturer, or the aircraft model,
+to be used before the aircraft registration (in full or abbreviated form). If
+considered appropriate, the pilot or ATSU may replace manufacturer’s
+name or aircraft model with the term ‘Helicopter’ where this may
+benefit the ATSU or other aircraft.
+
+Table 2
+Full callsign
+
+Abbreviation
+
+Helicopter G-ABCD
+
+Helicopter CD
+
+Helicopter Phraseology for Taxiing
+4.98
+
+May 2016
+
+These procedures are for helicopters taxiing for departure, or after
+landing, or for general manouevring on the aerodrome. Phraseology and
+
+Page 46
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+procedures for specific manouevring on the aerodrome, for example for
+training purposes, should be described in local procedures.
+4.99
+
+The term ‘LIFT’ shall describe a manoeuvre where the helicopter gets
+airborne and enters a ‘HOVER’.
+
+4.100
+
+‘HOVER’ describes a manoeuvre where the helicopter holds position
+whilst airborne in ground effect, waiting to proceed. Hover allows spot/
+axial turns (i.e. about the central axis of the helicopter). When required,
+further instructions should subsequently be transmitted to permit the
+helicopter to proceed.
+
+4.101
+
+The term ‘AIR TAXI’ shall be used when it is necessary for a helicopter
+to proceed at a slow speed above the surface, normally below 20 knots
+and in ground effect (ICAO).
+
+4.102
+
+The instruction ‘GROUND TAXI’ shall be used for the movement of a
+helicopter, in contact with the surface of the aerodrome, under its own
+power. This could be required for a helicopter fitted with wheels, to
+reduce rotor downwash (ICAO).
+
+4.103
+
+An instruction to ‘TAXI’ leaves the pilot free to select the most
+appropriate method, either ground taxi or air taxi. Pilots and controllers
+should use the term AIR TAXI or GROUND TAXI when required to
+differentiate between air taxiing and ground taxiing (for helicopters
+equipped with wheels).
+NOTE 1:	Air taxiing helicopters at aerodromes where ATC and AFIS
+are provided will be issued with detailed taxi routes and
+instructions as appropriate to prevent collisions with other
+aircraft and vehicles. Helicopters are expected to follow
+procedures/routes on aerodromes appropriate to aeroplanes
+unless otherwise authorised.
+NOTE 2:	ATC and AFIS units will normally avoid issuing instructions
+that result in taxiing helicopters coming into close proximity
+with small aircraft or helicopters and will normally give
+consideration to the effect of turbulence from taxiing
+helicopters on arriving and departing light aircraft (ICAO).
+
+May 2016
+
+4.104
+
+For a helicopter taxiing, the instruction ‘HOLD’ shall indicate a
+requirement to come to a standstill.
+
+4.105
+
+A helicopter air taxiing and instructed to ‘HOLD’, may hold in the hover
+or may touch down and hold on the ground at the pilot’s discretion.
+
+Page 47
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+If touch down is not authorised, a helicopter may be instructed by the
+ATSU to ‘HOLD IN THE HOVER’.
+4.106
+
+A helicopter ground taxiing and instructed to ‘HOLD’ shall hold on
+the ground, unless a hover manoeuvre is specifically authorised or
+requested by the ATS unit.
+
+4.107
+
+ATC and AFIS will normally avoid issuing a frequency change instruction
+to a single- pilot helicopter hovering or air taxiing. If required and
+whenever possible, control instructions from the next ATS unit will be
+relayed until the pilot is able to change frequency (ICAO).
+
+Helicopter Phraseology for Take-Off and Landing (ATC only)
+
+May 2016
+
+4.108
+
+At aerodromes, helicopter take-offs and landings may not be restricted
+to designated runways or landing areas. With appropriate permission
+helicopters may take-off and land at any location on the aerodrome.
+At aerodromes with an air traffic control service, all movements are
+subject to the permission of the ATC unit.
+
+4.109
+
+At aerodromes with air traffic control service, when helicopters land or
+take-off on the manoeuvring area, and within sight of the VCR the terms
+‘CLEARED TO LAND’ and ‘CLEARED FOR TAKE-OFF’ followed by the
+position from where they are authorised to take off from (ICAO PANS
+ATM 12.3.4.11 i), i.e. ‘CLEARED TO LAND AT...’ ‘CLEARED TO TAKE-OFF
+FROM...’, shall be used to authorise the manoeuvres.
+
+4.110
+
+At aerodromes with air traffic control service, when helicopters land
+or take-off at locations not on the manoeuvring area (e.g. apron,
+maintenance area, sites adjacent the aerodrome), or locations not in
+sight of the VCR, or unlit locations at night, the appropriate phrase
+‘LAND AT YOUR DISCRETION’ or ‘TAKE-OFF AT YOUR DISCRETION’
+shall be used to authorise the manoeuvres. Relevant traffic information
+on other aircraft (airborne or on the ground) shall also be passed and the
+name of the designated landing/departure point/area should be stated.
+
+4.111
+
+The term ‘TOUCH DOWN’ shall be used to describe an aircraft
+(helicopter or fixed- wing) coming into contact with the surface in
+accordance with normal operation. A clearance to land leaves the pilot
+of a helicopter free to either enter a low hover, or to touch down, as
+appropriate.
+
+Page 48
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Helicopter Hover Phraseology Examples (ATC and AFIS only)
+Borton Tower, G-ABCD,
+request lift
+
+G-ABCD, Borton Tower, lift
+and hover, surface wind 040
+degrees 6 knots
+
+Helicopter Taxiing Phraseology Examples (ATC and AFIS only)
+4.112
+
+Taxi Instruction
+Borton Tower, G-ABCD,
+request TAXI for
+departure runway 06
+
+G-ABCD, Borton Tower,
+TAXI holding point H1,
+runway 06, via taxiway Golf,
+QNH 997 hectopascals
+Taxi holding point H1
+runway 06 via taxiway
+Golf, QNH 997
+hectopascals G-ABCD
+NOTE: The use of ‘taxi’ indicates
+the pilot is free to air taxi or
+ground taxi at his/her discretion
+
+4.113
+
+Air Taxi Instruction (if required)
+Borton Tower, G-ABCD,
+request Air Taxi for
+departure runway 06
+
+G-CD, Borton, Air Taxi
+holding point H1, runway
+06, via taxiway Golf, QNH
+997 hectopascals
+Air Taxi holding point H1
+runway 06 via taxiway
+Golf, QNH 997
+hectopascals, G-CD
+
+Ground Taxi Instruction (if required)
+Borton Tower, G-ABCD,
+request ground taxi for
+departure runway 06
+
+May 2016
+
+G-ABCD, Borton Tower,
+ground taxi holding point H1
+runway 06 via taxiway Golf
+
+Page 49
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Helicopter Take-Off and Landing Phraseology Examples (ATC only)
+4.114
+
+Take-off on the Runway
+G-CD, ready for
+departure
+
+G-CD, Runway 06, Cleared
+for take-off
+Cleared for take-off,
+G-CD
+
+4.115
+
+Landing on the Runway
+G-CD, final runway 06
+
+G-CD, Runway 06, Cleared
+to land, surface wind 060 10
+
+Cleared to land, G-CD
+4.116
+
+Take-off from a designated Helicopter Landing Area on the Manoeuvring
+Area
+G-CD, ‘Area Whiskey’
+ready for departure
+
+G-CD, ‘Area Whiskey’
+Cleared for take-off
+’Area Whiskey’ cleared
+for take-off, G-CD
+
+4.117
+
+Landing at a designated Helicopter Landing Area on the Manoeuvring
+Area.
+Borton Tower G-ABCD,
+at the Power Station to
+land ‘Area Whiskey’
+
+Helicopter CD, Borton,
+runway 06 in use, QNH 997
+hectopascals, ‘Area
+Whiskey’ Cleared to land,
+surface wind 060 10
+Runway 06 in use, QNH
+997 hectopascals. ‘Area
+Whiskey’ cleared to
+land, G-CD
+
+May 2016
+
+Page 50
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+4.118
+
+Take-off from the Apron (or location not on the Manoeuvring Area) for a
+Direct Departure (i.e. not following the visual circuit for departure).
+Borton Tower,
+Helicopter G-ABCD,
+beside the south side
+hangars ready for direct
+departure to Walden
+
+Helicopter CD, Borton,
+direct departure, surface
+wind 060 10, QNH 997
+hectopascals, no reported
+traffic, Take-off at your
+discretion
+Taking-off, departing
+direct, QNH 997
+hectopascals,
+Helicopter CD
+
+4.119
+
+Direct Arrival to the Apron (or location not on the Manoeuvring Area) for
+Landing.
+Borton Tower,
+Helicopter G-ABCD, 5
+miles east inbound to
+land Eastern Apron
+
+Helicopter CD, Borton, route
+to the eastern apron via the
+Power Station, report at the
+Power Station wind 060 10
+QNH 997 hectopascals,
+runway 06 in use
+Route to Eastern Apron
+via the Power Station,
+wilco, QNH 997
+hectopascals, runway
+06 in use, Helicopter
+CD
+
+Helicopter CD, at the
+Power Station
+
+Helicopter CD, traffic is a
+C172 taxiing from Stand 8
+for taxiway B, eastern apron
+land at your discretion,
+surface wind 060 10
+Roger, Landing Eastern
+Apron, Helicopter CD
+
+May 2016
+
+Page 51
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Aerodrome Phraseology for Vehicles (ATC and AFIS only)
+Introduction
+4.120
+
+The expeditious movement of vehicles plays an essential supporting
+role in the operation of an aerodrome. Whenever possible the areas
+in which vehicles and aircraft operate are segregated. However, there
+are many occasions when vehicles need to move on the manoeuvring
+area either for maintenance purposes or in direct support of aircraft
+operations.
+
+4.121
+
+Procedures governing the movement of vehicles vary widely from
+aerodrome to aerodrome, but certain factors to be taken into account
+when driving on an aerodrome are common to all:
+1. In general, aircraft are by no means as manoeuvrable as ground
+vehicles;
+2. The visibility from an aircraft cockpit for ground movement purposes
+is often restricted compared with a vehicle.
+
+4.122
+
+Therefore when vehicles are operating in close proximity to aircraft,
+drivers should be extremely vigilant and comply with Rule 42/43 of the
+Rules of the Air and, if applicable, ATC instructions.
+
+4.123
+
+Correct RTF operating technique must be observed by all users. For
+all vehicles on the movement area, it is important that a continuous
+listening watch is maintained, not only in case of further instructions or
+information from the tower, but also so that drivers can be aware of the
+movements, and intended movements, of other traffic thereby reducing
+the risk of confliction.
+
+4.124
+
+The examples that follow are applicable to air traffic controllers
+and FISOs at aerodromes only. Air/Ground Communication
+Service operators are not to pass instructions and must use the
+phraseology they would use for the movement of aircraft on the
+aerodrome.
+
+Movement Instructions
+4.125
+
+May 2016
+
+Drivers on first call should state the ground station they are calling,
+identify themselves by their vehicle call sign and state their position
+and intended destination. Where the planned route includes crossing a
+runway, this should be included in the initial call.
+
+Page 52
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Metro Ground Works
+21, stand 27 request
+proceed to work in
+progress taxiway Hotel
+
+Works 21, proceed to
+taxiway Hotel via Kilo and
+Alpha
+
+Proceed to taxiway
+Hotel via Kilo and Alpha,
+Works 21
+Metro Ground, Works
+3, stand 27 request
+proceed to work in
+progress on taxiway
+Hotel, via runway 34
+
+Works 3, via Alpha 1 and
+Charlie 1 cross runway 34,
+proceed to taxiway Hotel
+
+Via Alpha 1 and Charlie
+1 cross runway 34,
+proceed to taxiway
+Hotel, Works 3
+4.126
+
+If the controller is too busy he will reply ‘standby’. This means that the
+driver should wait until the controller calls back. The driver shall not
+proceed until permission is given.
+
+4.127
+
+When there is conflicting traffic the controller may reply ‘hold position’.
+This means that the driver shall not proceed until the controller calls
+back with permission. All other replies should contain a clearly defined
+point to which the driver may proceed; this may or may not be the
+intended destination. If it is not the intended destination drivers must
+stop at this point and further permission shall be requested.
+Tels 5, by the control
+tower request proceed
+to hangar 3
+
+Tels 5, hold position
+
+Holding, Tels 5
+
+May 2016
+
+Page 53
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Tels 5, at Charlie 8
+request proceed to
+hangar 3
+
+Tels 5, proceed holding point
+Charlie 1 runway 14, via
+Alpha and Bravo
+Proceed holding point
+Charlie 1 runway 14,
+Tels 5, via Alpha and
+Bravo
+
+NOTE: The vehicle has only been cleared as far as the holding position
+to await runway crossing clearance and permission to proceed to hangar
+3.
+4.128
+
+The controller/FISO may include the instruction ‘hold short’ to reinforce
+the point beyond which the vehicle may not proceed.
+Tels 5, by the control
+tower request proceed
+to hangar 3
+
+Tels 5, proceed holding point
+Charlie 1, hold short of
+runway 14
+Proceed holding point
+Charlie 1, hold short of
+runway 14, Tels 5
+
+4.129
+
+Permission to proceed on the apron may include instructions to ensure
+safe operations.
+Tug 5, stand 21 request
+proceed to stand 26
+
+Tug 5, after the BIGJET BAe
+146 on your right has
+passed, proceed to stand
+26, caution jet blast
+After the BAe 146 has
+passed proceed stand
+26, Tug 5
+
+Checker 1, caution work in
+progress north side of
+taxiway Hotel
+
+May 2016
+
+Roger, Checker 1
+
+Page 54
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Fire 1, report your position
+
+Fire 1, taxiway Bravo by
+the maintenance hangar
+
+To Cross a Runway
+4.130
+
+Drivers should note carefully the position to which they may proceed,
+particularly where the intended route involves crossing a runway.
+Some aerodromes may have procedures that will allow vehicles to
+proceed to a holding point on the movement area and then request
+runway crossing instructions. Under no circumstances shall a driver
+cross a runway unless positive permission has been given and
+acknowledged. A runway vacated report should not be made until the
+vehicle (and tow) is clear of the designated runway area.
+
+4.131
+
+In order to prevent runway incursions, when an ATS Unit issues an
+instruction to cross a runway, the appropriate holding point designator
+shall be included in the instruction. A vehicle driver should query any
+instruction that identifies a holding point designator inconsistent with
+the vehicle location, or the driver’s request, before proceeding onto the
+runway.
+Ops 1, on the Southern
+Apron request proceed
+to Northern Apron, via
+runway 27
+
+Ops 1, proceed holding
+point Alpha 2 via Alpha
+and Bravo hold short of
+runway 27
+Proceed holding point
+Alpha 2 via Alpha and
+Bravo hold short of
+runway 27, Ops 1
+
+Ops 1, holding point
+Alpha 2 runway 27
+request cross
+
+Ops 1, via Alpha 2 and
+Charlie 2 cross runway 27,
+report vacated
+Via Alpha 2 and Charlie
+2, cross runway 27,
+wilco, Ops 1
+
+May 2016
+
+Page 55
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+
+Ops 1, runway 27
+vacated
+
+Ops 1, proceed to Northern
+Apron
+Proceed to Northern
+Apron, Ops 1
+
+4.132
+
+Where it is not possible for the controller to issue permission to cross
+the runway, alternative instructions may be given.
+Ops 1, on the Southern
+Apron request proceed
+to Northern Apron via
+runway 27
+
+Ops 1, negative, proceed to
+Northern Apron via
+Perimeter Road
+
+Proceed to Northern
+Apron via Perimeter
+Road, Ops 1
+4.133
+
+Positive permission must be given and acknowledged before a vehicle
+driver enters a runway to carry out a specialised task.
+Checker 1, holding point
+Charlie 1 request enter
+runway 05 for surface
+inspection
+
+Checker 1, via holding point
+Charlie 1 enter runway 05,
+report vacated
+
+Via holding point Charlie
+1 enter runway 05,
+wilco, Checker 1
+
+May 2016
+
+Page 56
+
+CAP 413
+
+Chapter 4: Aerodrome Phraseology
+

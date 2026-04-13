@@ -1,0 +1,127 @@
+# Certifier View Alignment
+
+This note records the intended boundary between the richer app/world model and
+the Lean certifier kernels.
+
+The source-of-truth world is the overlay-entity design in
+[path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md),
+with envelope semantics from
+[clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md).
+The proof side should not consume that whole world directly. It should consume
+compiled projections that keep only the facts the certifiers and
+clearance-envelope layer actually use.
+
+The current Kotlin staging shapes for that boundary are:
+
+- [ClearanceCompileView.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/ClearanceCompileView.kt)
+- [CertifierViews.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/CertifierViews.kt)
+- [StructuredClearance.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/StructuredClearance.kt)
+
+The current Lean-side clearance boundary is:
+
+- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [clearance_model_alignment.md](/home/andrew/dev/projects/twr/research2/clearance_model_alignment.md)
+
+## View Split
+
+The compiled proof boundary is now explicitly split into two layers:
+
+- `ClearanceCompileView`
+- `CertifierViews`
+
+`CertifierViews` are explicitly split into:
+
+- `RunwayCertifierView`
+- `SurfaceCertifierView`
+- `AirCertifierView`
+- `SeparationCertifierView`
+
+This is intentional. The local Lean kernels already have that split, so the
+certifier-view boundary should match it rather than force one giant integration
+model into the proofs. `ClearanceCompileView` sits above that split and keeps
+the extra entity, procedure, and communications data needed to compile
+greenfield clearances before dropping down into certifier-local views.
+
+The projection keeps:
+
+- explicit directed adjacency
+- explicit hold-point and protected-entry structure
+- explicit runway commitment conflict structure
+- explicit air branches, junctions, guard points, and altitude bands
+- explicit separation track identity
+- explicit compiled procedure slices for circuits, holding patterns, and
+  approaches where orchestration will need them
+
+The projection drops:
+
+- geometry detail not used by the certifiers
+- phraseology-only naming concerns except where needed for command routing
+- staffing/controller assignment detail
+- general world indexing and runtime cache concerns
+
+## Lean Delta
+
+To stay at the current proof milestone while moving toward this compiled-view
+boundary, only one Lean seam needed to change immediately.
+
+### Runway
+
+No structural change was required. The current runway kernel already wants a
+narrow local environment plus commitment conflict kinds.
+
+### Surface
+
+No structural change was required. The current surface kernel already consumes a
+directed segment graph with hold points and protected-entry checks.
+
+### Air
+
+One field was added to the air graph:
+
+- `AirEdge.separationTrack`
+
+That is the proof-friendly counterpart of the compiled separation-track identity
+in the new view model.
+
+### Separation
+
+The separation layer previously synthesized `trackId` from the aircraft id. That
+was a placeholder and not a defensible long-term projection boundary.
+
+The separation projection now consumes track identity from the air graph:
+
+- `toSeparationEntityState` now takes `AirGraph`
+- `selectSeparationPeers` now takes `AirGraph`
+- `Interfaces.lean` now passes the full air graph into the separation scenario
+  builder
+
+This keeps the project at the same proof milestone while making the intended
+compiled-view boundary more honest.
+
+## Still Open
+
+The extraction contract from the richer greenfield `AviationWorld` into
+proof-local views is now structurally frozen in
+[aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md),
+including explicit authority payload, but the instruction-level and dynamic
+semantics above that contract are still open.
+
+The current repo's translators into `ClearanceCompileView` and then into
+`CertifierViews` do not exist yet, but implementing them here is no longer the
+default next move.
+
+The partial Lean compiler from `ClearanceCompileView` into the existing atomic
+certified path now exists, but it should now be read as proof scaffold rather
+than as the end-state architecture.
+
+The next integration work after that structural extraction contract is still
+larger than this alignment step:
+
+- use compiled circuit procedures to replace the current conservative
+  `JoinCircuit` path
+- use compiled holding-pattern views to support `HoldAt` honestly
+- use compiled approach and missed-approach views to widen the current air slice
+- turn the new role/entity authority scaffold into actual issuer-authority
+  checks and theorem statements
+- widen the clearance-envelope sequencing story above the current frontier
+  compiler so compound clearances are proved at the right layer

@@ -1,0 +1,399 @@
+# Project Status
+
+Last updated: April 12, 2026
+
+This file is the current execution status for `research2`.
+
+## Executive Summary
+
+`research2` is no longer just an architecture sketch.
+
+It now contains:
+
+- a frozen split-kernel contract
+- a greenfield clearance boundary scaffold above the old atomic command layer
+- a product-authoritative future-project input in
+  [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
+  and
+  [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md),
+  with the current repo's Kotlin boundary files acting as a staging mirror
+- a concrete proved runway kernel
+- a concrete proved surface kernel with one validation graph
+- a concrete proved air-path kernel with one validation graph
+- a concrete proved separation checker
+- an optional partial atomic orchestration slice for:
+  hold-short-of, taxi-to, takeoff, landing, touch-and-go, go-around,
+  join-circuit, extend-downwind, continue-approach, reduce-speed-to, climb,
+  descend, cleared-approach, and cross-controlled-airspace
+
+It does not yet contain:
+
+- a complete proof-authoritative extraction contract from overlay-entity
+  `AviationWorld` into future-project proof views; the structural
+  entity/procedure/authority split is now frozen, but instruction-level and
+  lifecycle semantics above it are not
+- settled proof-side answers for several greenfield clearance semantics that
+  materially affect theorem shape: compound admission and timing, completion
+  categories, step-transition effects, supersession granularity,
+  clearance-limit/holding-pattern invariants, and instruction-level authority
+  mapping
+- an envelope-level theorem for monotone sequencing or no-partial-issuance
+- the full local separation story described in the brief wired through
+  concrete non-certified command semantics and generated continuation sets
+- complete coverage for every separation-relevant command family
+- the optional full issuance theorem for a single-issuer architecture
+
+## Delivered Proof Artifacts
+
+### Runway
+
+- `runway_certify` is concrete
+- local soundness is proved by `RunwayKernelMilestone1Theorem`
+
+Source:
+
+- [RunwayKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/RunwayKernel.lean)
+
+### Surface
+
+- `surface_certify` is concrete
+- local soundness is proved by `SurfaceKernelSoundnessTheorem`
+- a concrete validation graph is included
+- `TestAerodromeProtectedEntryApproved` proves one protected-entry approval path
+
+Source:
+
+- [SurfaceKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SurfaceKernel.lean)
+
+### Optional Composition Layer
+
+- `instantiate_plan` is concrete for the current partial
+  runway/surface/air command slice
+- the surface kernel is now wired through orchestration for `HoldShortOf` and
+  `TaxiTo`
+- `TaxiTo` currently uses a conservative node-route to directed-segment
+  projection over the present surface graph model
+- `CrossRunway` now compiles through a concrete joint runway+surface path:
+  runway protection uses `protectedForCrossing`, and the surface move enters a
+  protected successor segment from the current hold-point segment
+- `LineUpAndWait` now compiles through that same protected-entry surface path,
+  but with a `.lineUpAndWait` runway commitment instead
+- narrow compatibility is concrete
+- `SeparationCoverageTheorem` is proved for the current instantiated slice
+- `NonBypassTheorem` is proved
+- `JointActsMilestone2Theorem` is proved
+
+Source:
+
+- [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
+- [JointActs.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/JointActs.lean)
+
+### Greenfield Clearance Boundary
+
+- the app-facing instruction surface is now entity-referenced on the Kotlin
+  side
+- explicit compound-clearance content now exists with separate immediate and
+  sequential step lists
+- the future-project world and clearance model now lives in
+  [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
+  and
+  [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md),
+  and the Kotlin boundary types in this repo should be read as a staging mirror
+  of that direction
+- `ClearanceCompileView` now exists as the middle layer between the rich world
+  model and proof-friendly certifier inputs
+- the structural extraction contract from `AviationWorld` into
+  `ClearanceCompileView` / `CertifierViews` is now recorded in
+  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md)
+- `ClearanceEnvelope.lean` now defines matching proof-side greenfield
+  instructions, procedure references, compound frontier selection, and
+  structured-clearance scaffolding
+- Kotlin and Lean staging compile views now include explicit authority payload:
+  role-authority grants and controller-role assignments
+- a narrowed instruction-level authority contract is now recorded in
+  [instruction_authority_contract.md](/home/andrew/dev/projects/twr/research2/instruction_authority_contract.md)
+- `instructionRequiredAuthorityGrant?`, `instructionIssuerAuthorized`,
+  `compoundClearanceIssuerAuthorized`, and
+  `structuredClearanceIssuerAuthorized` now exist for the currently
+  authority-resolved instruction subset
+- that authority surface now also has frontier-level checks aligned with the
+  existing envelope compiler shape via
+  `compoundClearanceFrontierIssuerAuthorized` and
+  `structuredClearanceFrontierIssuerAuthorized`
+- the envelope layer now has authorization-aware compile seams via
+  `compile_clearance_instruction_as_issuer`, `compile_frontier_as_issuer`,
+  `compile_clearance_content_frontier_as_issuer`, and
+  `compile_structured_clearance_frontier_as_issuer`
+- whole-clearance authorization now implies frontier authorization for compound
+  and structured clearances
+- for authorized frontiers, the checked compiler now reduces back to the
+  existing unchecked compiler via
+  `compile_frontier_as_issuer_eq_compile_frontier_of_authorized`,
+  `compile_clearance_content_frontier_as_issuer_eq_compile_clearance_content_frontier_of_authorized`,
+  and
+  `compile_structured_clearance_frontier_as_issuer_eq_compile_structured_clearance_frontier_of_authorized`
+- successful checked frontier / content / structured-clearance compilation now
+  also implies frontier authorization rather than only preserving frontier
+  shape, with the top-level packaged result stated by
+  `compile_structured_clearance_frontier_as_issuer_ok_authorized_and_matches`
+- proof-side step timing is now explicit across the whole greenfield
+  instruction surface via `InstructionStepTiming`
+- `instructionCompoundTiming?_none_iff_standalone` and
+  `instructionCompoundTiming?_isSome_iff_not_standalone` now make that timing
+  split explicit at the proof boundary
+- the current proof contract now makes the `standalone` exclusion explicit:
+  route-bearing and open-ended instructions such as `ClearedTo`,
+  `JoinCircuit`, `ClearedApproach`, and `HoldAt` are not yet admitted into the
+  current compound theorem surface
+- `StepCompletionObservation` and
+  `instructionSatisfiedByObservation` now define an explicit completion model
+  for the admitted sequential surface subset
+- `compileClearanceCommand` is concrete for the current greenfield instruction
+  surface
+- `compile_clearance_instruction` is concrete and compiles greenfield
+  instructions into the existing atomic `instantiate_plan` path
+- `compile_frontier` is concrete for the current frontier shape
+- `compile_frontier_ok_matches` proves that compiled frontiers preserve the
+  selected immediate-plus-active-sequential instruction frontier
+- one-step sequencing lemmas now exist above that frontier shape:
+  `advanceSequentialStep_never_retreats`,
+  `advanceSequentialStep_advances_by_at_most_one`,
+  `advanceSequentialStep_preservesWellFormed`,
+  `activeSequentialStep_after_advance_eq_nextIndex`, and
+  `frontierInstructions_after_advance`
+- observation-driven advancement now exists for the admitted sequential subset:
+  satisfied observations advance at most one step and shift the active
+  frontier, while unsatisfied observations preserve the current frontier, via
+  `advanceSequentialStepOnObservation_never_retreats`,
+  `advanceSequentialStepOnObservation_advances_by_at_most_one`,
+  `advanceSequentialStepOnObservation_preservesWellFormed`,
+  `activeSequentialStep_after_satisfied_observation_eq_nextIndex`,
+  `frontierInstructions_after_satisfied_observation`, and
+  `frontierInstructions_after_unsatisfied_observation`
+- those observation lemmas are now also packaged into a stronger
+  movement-envelope theorem surface for the admitted subset:
+  `advanceSequentialStepOnObservation_no_skipping`,
+  `advanceSequentialStepOnObservation_frontier_preserved_or_shifted`, and
+  `advanceSequentialStepOnObservation_movementEnvelope`
+- the checked structured-clearance seam now lifts that package for compound
+  content via
+  `compile_structured_clearance_frontier_as_issuer_ok_compound_movementEnvelope`
+
+Source:
+
+- [Instruction.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/Instruction.kt)
+- [ProcedureRef.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/ProcedureRef.kt)
+- [ClearanceContent.kt](/home/andrew/dev/projects/twr/protocol/src/commonMain/kotlin/dev/twr/protocol/types/ClearanceContent.kt)
+- [ClearanceCompileView.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/ClearanceCompileView.kt)
+- [StructuredClearance.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/StructuredClearance.kt)
+- [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
+- [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
+- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [clearance_model_alignment.md](/home/andrew/dev/projects/twr/research2/clearance_model_alignment.md)
+- [greenfield_alignment.md](/home/andrew/dev/projects/twr/research2/greenfield_alignment.md)
+- [clearance_envelope_contract.md](/home/andrew/dev/projects/twr/research2/clearance_envelope_contract.md)
+- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md)
+- [instruction_authority_contract.md](/home/andrew/dev/projects/twr/research2/instruction_authority_contract.md)
+
+### Air
+
+- `air_certify` is concrete
+- local soundness is proved by `AirKernelSoundnessTheorem`
+- a concrete airborne validation graph is included
+- a real `reduceSpeedMax` air act now exists and is proved locally
+
+Source:
+
+- [AirKernel.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/AirKernel.lean)
+
+Validation artifacts:
+
+- `TestAirGraph`
+- `TestAirState`
+- `TestAirBranchProposal`
+- `TestAirSpeedReductionProposal`
+
+### Separation
+
+- `separation_check` is concrete
+- local soundness is proved by `SeparationCheckerSoundnessTheorem`
+- `H_sep` is explicit in Lean
+- `SeparationNeutralTransition` is defined
+- `SeparationBoundarySufficiencyTheorem` is proved for the current local
+  step model
+- `Viable_sep` and continuation kinds are defined
+- `toSeparationEntityState` and `selectSeparationPeers` now live in the
+  separation module rather than in orchestration
+- separation projection now takes stable track identity from `AirGraph` rather
+  than synthesizing `trackId` from the aircraft id
+- a conservative concrete neutral-command slice is wired for
+  `ReportDownwind`, `ReportFinal`, `Proceed`, `ContactFrequency`,
+  `MonitorFrequency`, and `SquawkCode`
+- a partial generated continuation set is wired through `air_certify` for
+  continue-current-path, hold-current-path, speed-reduction,
+  reserved-branch-choice, and recovery-path candidates
+
+Source:
+
+- [SeparationChecker.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SeparationChecker.lean)
+- [certifier_view_alignment.md](/home/andrew/dev/projects/twr/research2/certifier_view_alignment.md)
+
+## Open Proof Debt
+
+### Kernel-Local Gaps
+
+Still incomplete relative to the brief:
+
+- [brief_v4.md](/home/andrew/dev/projects/twr/research2/brief_v4.md)
+- [SeparationChecker.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/SeparationChecker.lean)
+
+Current local gap:
+
+- the concrete separation checker now has explicit Lean targets for
+  non-certified-command neutrality, boundary sufficiency, and
+  `Viable_sep`-style horizon viability
+- those targets are now partially connected to concrete command families and to
+  a generated continuation set over the air-state model
+- the remaining gap is coverage: the current neutral-command slice is
+  conservative, and many non-certified command families still have no explicit
+  neutrality proof story
+- the current hold-current-path case is conservative and collapses onto the
+  same state-preserving `continueOnEdge` proposal in the present air model
+- the generated continuation set now has concrete representatives for the
+  continuation classes named in the brief within the current air model
+
+### Optional Composition Gaps
+
+Still incomplete in:
+
+- [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
+
+Current limitation:
+
+- concrete separation instantiation and peer coverage are only wired through the
+  currently supported runway/air separation commands, not the full
+  separation-relevant command surface
+
+### Greenfield Boundary Gaps
+
+Still incomplete in:
+
+- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [ClearanceCompileView.kt](/home/andrew/dev/projects/twr/core/src/commonMain/kotlin/dev/twr/core/model/ClearanceCompileView.kt)
+
+Current limitation:
+
+- the compiler currently sits above the old atomic command layer rather than
+  replacing it
+- only the subset already supported by `instantiate_plan` currently yields
+  certified plans through the greenfield compiler
+- the current Kotlin `ClearanceCompileView` / `CertifierViews` shapes are only
+  a staging mirror; the structural extraction contract from the overlay-entity
+  `AviationWorld` is now explicit, but the final future-project runtime API is
+  still not frozen
+- `TaxiVia`, `JoinCircuit`, `ClearedTo`, `ClearedApproach`, and `HoldAt`
+  now compile into the older atomic command vocabulary, but some of those
+  atomic commands still do not have a current certified plan path
+- the greenfield clearance docs still leave several proof-relevant semantics
+  open or contested: compound admission and timing for `ClearedTo`,
+  completion taxonomy for non-self-completing instructions, mixed-concern
+  supersession granularity, step-transition effects inside compounds,
+  the remaining instruction-level authority mapping, and the
+  clearance-limit/holding-pattern invariant
+- the current narrowed contract deliberately keeps many of those instructions in
+  the `standalone` bucket, but the stronger theorems that would widen them back
+  into compounds are still open
+- compound sequencing now has a stronger packaged movement-envelope theorem for
+  no-skipping over realized step completions in the admitted subset, but not
+  yet no-partial-issuance or widened route-bearing compounds
+
+### Optional Full Orchestration Theorem
+
+Still open in:
+
+- [Interfaces.lean](/home/andrew/dev/projects/twr/research2/lean/CertifiedAtc/Interfaces.lean)
+
+Current stated-but-unproved targets:
+
+- `CanonicalTopLevelTheorem`
+
+## What Another Agent Should Assume
+
+- the split architecture is stable
+- the product-authoritative world and clearance docs for future-project work
+  are now
+  [path-network-design.md](/home/andrew/dev/projects/twr/greenfield/path-network-design.md)
+  and
+  [clearance-model-design.md](/home/andrew/dev/projects/twr/greenfield/clearance-model-design.md)
+- the new target integration boundary is
+  `AviationWorld -> ClearanceCompileView -> CertifierViews -> atomic Lean kernels`,
+  with `ClearanceEnvelope.lean` above the atomic path
+- runway ownership is settled
+- surface ownership is settled
+- air ownership is settled and concrete
+- separation ownership is settled and concrete for the current local checker,
+  with boundary and viability targets now partially wired to concrete command
+  and continuation semantics, and with separation-local projection and peer
+  selection now living in the separation module
+- orchestration exists as an optional composition layer, not the only source of
+  value in the project
+- the old atomic command interface is no longer the only boundary that matters;
+  the greenfield clearance compiler path exists as a proof scaffold, but the
+  future-project extraction contract should be taken from `greenfield/` rather
+  than from the current repo's `WorldState` model, with the structural portion
+  now recorded in
+  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md)
+
+## Recommended Next Task
+
+The default next engineering task is:
+
+1. turn the
+   [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr/research2/aviation_world_extraction_contract.md)
+   note into actual theorem-bearing boundary checks and helper lemmas
+2. widen the partial authority surface in
+   [instruction_authority_contract.md](/home/andrew/dev/projects/twr/research2/instruction_authority_contract.md)
+   only where the mapping is semantically justified
+3. settle the remaining greenfield clearance semantics that materially affect
+   Lean shape: compound admission and timing, completion categories,
+   step-transition semantics, supersession granularity, and clearance-limit
+   behavior
+4. make the clearance-envelope sequencing story real above the current frontier
+   compiler for that stabilized subset
+5. only then decide what translators or runtime boundary types belong in code
+
+That sequence preserves the split-kernel architecture and keeps the project
+focused on the long-term product boundary instead of accumulating proof work on
+the current repo's staging model.
+
+## Product Framing
+
+What can honestly be said now:
+
+- the proof artifact contains concrete local certifiers for runway, surface,
+  air-path, and pairwise separation, each with an explicit boundary
+- there is now a partial proof-side path from the greenfield clearance model
+  back into those atomic certifiers, rather than only a theorem-only atomic
+  command vocabulary
+- a higher-level system could consume those local guarantees without first
+  requiring one giant whole-system theorem
+- there is also a partial orchestration experiment showing one way to compose a
+  subset of those guarantees, but that is not the primary value claim
+
+What still cannot be said:
+
+- this is not a certifiable ATC product
+- this is not a complete command surface
+- this is not evidence that the full separation boundary story from the brief
+  has been proved
+- this is not evidence that a production system or simulator integration is
+  ready, whether with or without central orchestration
+
+What the next phase is working toward:
+
+- freezing the greenfield-derived extraction boundary that a future project can
+  implement without inheriting the current repo's provisional runtime model
+- making compound clearance sequencing a first-class proof object above the
+  atomic local certifiers
+- only then widening the remaining local separation and command-surface gaps
+  through that more stable boundary
