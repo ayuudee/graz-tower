@@ -168,25 +168,29 @@ fun AviationWorld.resolveTaxiTo(
         )
     }
 
-    val fullRoute = mutableListOf(context.currentPoint)
-    var legStart = context.currentPoint
-    checkpoints.forEach { checkpoint ->
-        val leg = shortestPath(
-            start = legStart,
-            destination = checkpoint,
-            allowedSurfaces = setOf(SurfaceType.GROUND)
-        ) ?: return unresolved(
-            ResolutionFailureCode.PATH_NOT_FOUND,
-            "No ground path from ${legStart.value} to ${checkpoint.value} at aerodrome ${aerodrome.icao.value}"
-        )
-        fullRoute += leg.drop(1)
-        legStart = checkpoint
+    val fullRoute = arrow.core.raise.either<ResolutionFailure, List<PointId>> {
+        checkpoints.fold(listOf(context.currentPoint)) { routeSoFar, checkpoint ->
+            val legStart = routeSoFar.last()
+            val leg = shortestPath(
+                start = legStart,
+                destination = checkpoint,
+                allowedSurfaces = setOf(SurfaceType.GROUND)
+            ) ?: raise(ResolutionFailure(
+                ResolutionFailureCode.PATH_NOT_FOUND,
+                "No ground path from ${legStart.value} to ${checkpoint.value} at aerodrome ${aerodrome.icao.value}"
+            ))
+            routeSoFar + leg.drop(1)
+        }
+    }
+    val resolvedRoute = when (fullRoute) {
+        is arrow.core.Either.Left -> return fullRoute
+        is arrow.core.Either.Right -> fullRoute.value
     }
 
     return resolved(
         ResolvedTaxiRoute(
             aerodrome = aerodrome,
-            points = fullRoute,
+            points = resolvedRoute,
             destination = instruction.destination,
             via = instruction.via
         )
@@ -560,68 +564,75 @@ private fun AviationWorld.shortestPath(
     destination: PointId,
     allowedSurfaces: Set<SurfaceType>
 ): List<PointId>? {
-    if (start == destination) {
-        return listOf(start)
+    if (start == destination) return listOf(start)
+
+    val adjacency = buildAdjacency(allowedSurfaces)
+    if (start !in adjacency || destination !in adjacency) return null
+
+    val initialDistances = adjacency.keys.associateWith { point ->
+        if (point == start) 0.0 else Double.POSITIVE_INFINITY
+    }
+    val initialPrevious = mapOf<PointId, PointId?>(start to null)
+
+    val result = dijkstra(
+        adjacency = adjacency,
+        destination = destination,
+        unvisited = adjacency.keys,
+        distances = initialDistances,
+        previous = initialPrevious
+    )
+
+    return result[destination]?.let { reconstructPath(destination, result) }
+}
+
+private tailrec fun AviationWorld.dijkstra(
+    adjacency: Map<PointId, Set<PointId>>,
+    destination: PointId,
+    unvisited: Set<PointId>,
+    distances: Map<PointId, Double>,
+    previous: Map<PointId, PointId?>
+): Map<PointId, PointId?> {
+    if (unvisited.isEmpty()) return previous
+    val current = unvisited.minByOrNull { distances.getValue(it) } ?: return previous
+    if (distances.getValue(current) == Double.POSITIVE_INFINITY) return previous
+    if (current == destination) return previous
+
+    val neighbors = adjacency.getValue(current).filter { it in unvisited }
+    val currentDist = distances.getValue(current)
+
+    val updates = neighbors.mapNotNull { neighbor ->
+        val segmentLength = geometry.segments[GeometrySegmentId.between(current, neighbor)]
+            ?.length?.value ?: return@mapNotNull null
+        val candidateDist = currentDist + segmentLength
+        if (candidateDist < distances.getValue(neighbor)) {
+            neighbor to candidateDist
+        } else null
     }
 
-    val adjacency = buildMap<PointId, MutableList<PointId>> {
-        geometry.segments.forEach { (segmentId, segment) ->
-            if (segment.surface !in allowedSurfaces) {
-                return@forEach
-            }
-            getOrPut(segmentId.first) { mutableListOf() }.add(segmentId.second)
-            getOrPut(segmentId.second) { mutableListOf() }.add(segmentId.first)
+    val newDistances = distances + updates.map { (point, dist) -> point to dist }
+    val newPrevious = previous + updates.map { (point, _) -> point to (current as? PointId) }
+
+    return dijkstra(adjacency, destination, unvisited - current, newDistances, newPrevious)
+}
+
+private fun reconstructPath(
+    destination: PointId,
+    previous: Map<PointId, PointId?>
+): List<PointId> = generateSequence(destination) { previous[it] }.toList().asReversed()
+
+private fun AviationWorld.buildAdjacency(
+    allowedSurfaces: Set<SurfaceType>
+): Map<PointId, Set<PointId>> {
+    val edges = geometry.segments
+        .filter { (_, segment) -> segment.surface in allowedSurfaces }
+        .keys
+        .flatMap { segmentId ->
+            listOf(segmentId.first to segmentId.second, segmentId.second to segmentId.first)
         }
-    }
-    if (start !in adjacency || destination !in adjacency) {
-        return null
-    }
-
-    val points = adjacency.keys.toMutableSet()
-    val distances = points.associateWith { Double.POSITIVE_INFINITY }.toMutableMap()
-    val previous = mutableMapOf<PointId, PointId?>()
-    distances[start] = 0.0
-    previous[start] = null
-
-    val unvisited = points.toMutableSet()
-    while (unvisited.isNotEmpty()) {
-        val current = unvisited.minByOrNull { point -> distances.getValue(point) } ?: break
-        if (distances.getValue(current) == Double.POSITIVE_INFINITY) {
-            break
-        }
-        if (current == destination) {
-            break
-        }
-
-        unvisited.remove(current)
-
-        adjacency.getValue(current).forEach { neighbor ->
-            if (neighbor !in unvisited) {
-                return@forEach
-            }
-            val segmentLength = geometry.segments[GeometrySegmentId.between(current, neighbor)]
-                ?.length
-                ?.value
-                ?: return@forEach
-            val candidateDistance = distances.getValue(current) + segmentLength
-            if (candidateDistance < distances.getValue(neighbor)) {
-                distances[neighbor] = candidateDistance
-                previous[neighbor] = current
-            }
-        }
-    }
-
-    if (destination !in previous) {
-        return null
-    }
-
-    val route = mutableListOf<PointId>()
-    var current: PointId? = destination
-    while (current != null) {
-        route += current
-        current = previous[current]
-    }
-    return route.asReversed()
+    return edges.groupBy(
+        keySelector = { (from, _) -> from },
+        valueTransform = { (_, to) -> to }
+    ).mapValues { (_, neighbors) -> neighbors.toSet() }
 }
 
 @Suppress("UnusedParameter")

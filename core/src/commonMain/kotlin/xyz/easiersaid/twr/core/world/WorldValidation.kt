@@ -58,7 +58,7 @@ fun AviationWorld.validate(): WorldValidationReport =
     )
 
 private fun AviationWorld.validateAirspaceCoverage(): List<WorldValidationIssue> {
-    val coveredPoints = airspace.values.flatMapTo(linkedSetOf()) { volume -> volume.points }
+    val coveredPoints = airspace.values.flatMap { volume -> volume.points }.toSet()
 
     return geometry.points.keys
         .filter { point -> point !in coveredPoints }
@@ -386,17 +386,15 @@ private fun validateRoleStaffing(aerodrome: Aerodrome): List<WorldValidationIssu
 }
 
 private fun validateReciprocalRunways(aerodrome: Aerodrome): List<WorldValidationIssue> {
-    val checkedPairs = mutableSetOf<Pair<RunwayId, RunwayId>>()
-
-    return aerodrome.runways.values.mapNotNull { runway ->
+    val reciprocalPairs = aerodrome.runways.values.mapNotNull { runway ->
         val reciprocalId = runway.id.reciprocal() ?: return@mapNotNull null
         val reciprocal = aerodrome.runways[reciprocalId] ?: return@mapNotNull null
-        val pair = listOf(runway.id, reciprocal.id)
-            .sortedBy(RunwayId::value)
-            .let { ids -> ids[0] to ids[1] }
+        val pair = listOf(runway.id, reciprocal.id).sortedBy(RunwayId::value)
+        Triple(pair[0], pair[1], runway to reciprocal)
+    }.distinctBy { (first, second, _) -> first to second }
 
-        if (!checkedPairs.add(pair)) return@mapNotNull null
-
+    return reciprocalPairs.mapNotNull { (_, _, runways) ->
+        val (runway, reciprocal) = runways
         val sharedSegments = runway.path.geometrySegmentIds().toSet()
             .intersect(reciprocal.path.geometrySegmentIds().toSet())
 
@@ -437,43 +435,37 @@ private fun validateAerodromeNames(aerodrome: Aerodrome): List<WorldValidationIs
 }
 
 private fun groundAdjacency(aerodrome: Aerodrome): Map<PointId, Set<PointId>> {
-    val adjacency = linkedMapOf<PointId, MutableSet<PointId>>()
-
-    fun addPath(path: Path) {
-        path.segmentIds().forEach { segment ->
-            adjacency.getOrPut(segment.from) { linkedSetOf() }.add(segment.to)
-            adjacency.getOrPut(segment.to) { linkedSetOf() }.add(segment.from)
+    val allPaths = aerodrome.taxiways.values.map { it.path } +
+        aerodrome.aprons.values.flatMap { it.paths }
+    val edges = allPaths.flatMap { path ->
+        path.segmentIds().flatMap { segment ->
+            listOf(segment.from to segment.to, segment.to to segment.from)
         }
     }
-
-    aerodrome.taxiways.values.forEach { taxiway -> addPath(taxiway.path) }
-    aerodrome.aprons.values.forEach { apron -> apron.paths.forEach(::addPath) }
-
-    return adjacency.mapValues { (_, points) -> points.toSet() }
+    return edges.groupBy(
+        keySelector = { (from, _) -> from },
+        valueTransform = { (_, to) -> to }
+    ).mapValues { (_, neighbors) -> neighbors.toSet() }
 }
 
-@Suppress("LoopWithTooManyJumpStatements")
+private tailrec fun reachablePointsFrom(
+    frontier: List<PointId>,
+    adjacency: Map<PointId, Set<PointId>>,
+    visited: Set<PointId> = emptySet()
+): Set<PointId> {
+    if (frontier.isEmpty()) return visited
+    val nextVisited = visited + frontier
+    val nextFrontier = frontier.flatMap { point ->
+        adjacency[point].orEmpty().filter { it !in nextVisited }
+    }.distinct()
+    return reachablePointsFrom(nextFrontier, adjacency, nextVisited)
+}
+
 private fun reachablePointsFrom(
     origin: PointId,
     adjacency: Map<PointId, Set<PointId>>
-): Set<PointId> {
-    if (origin !in adjacency) return setOf(origin)
-
-    val visited = linkedSetOf<PointId>()
-    val queue = ArrayDeque<PointId>()
-
-    visited += origin
-    queue += origin
-
-    while (queue.isNotEmpty()) {
-        val current = queue.removeFirst()
-        adjacency[current].orEmpty().forEach { next ->
-            if (visited.add(next)) queue += next
-        }
-    }
-
-    return visited
-}
+): Set<PointId> =
+    reachablePointsFrom(listOf(origin), adjacency, emptySet())
 
 private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> =
     buildSet {
@@ -495,11 +487,11 @@ private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> =
             }
             aerodrome.sids.values.forEach { sid ->
                 sid.waypoints.asPathOrNull()?.let(::addPath)
-                sid.transitions.values.forEach { it.asPathOrNull()?.let(::addPath) }
+                sid.transitions.values.forEach { transition -> transition.asPathOrNull()?.let(::addPath) }
             }
             aerodrome.stars.values.forEach { star ->
                 star.waypoints.asPathOrNull()?.let(::addPath)
-                star.transitions.values.forEach { it.asPathOrNull()?.let(::addPath) }
+                star.transitions.values.forEach { transition -> transition.asPathOrNull()?.let(::addPath) }
             }
             aerodrome.approaches.values.forEach { approach ->
                 approach.waypoints.asPathOrNull()?.let(::addPath)

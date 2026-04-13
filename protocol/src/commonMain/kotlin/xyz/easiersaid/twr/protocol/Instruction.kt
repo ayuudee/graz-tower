@@ -30,40 +30,67 @@ package xyz.easiersaid.twr.protocol
 @JvmInline value class ControllerId(val value: String)
 @JvmInline value class Callsign(val value: String)
 
-data class Frequency(val mhz: String) {
-    init {
-        require(mhz.isNotBlank()) { "Frequency must not be blank" }
-        val freq = mhz.toDoubleOrNull()
-        require(freq != null && freq >= 118.0 && freq <= 137.0) {
-            "Frequency must be in VHF airband range (118.000–136.975 MHz)"
+@ConsistentCopyVisibility
+data class Frequency private constructor(val mhz: String) {
+    companion object {
+        operator fun invoke(mhz: String): arrow.core.Either<String, Frequency> {
+            if (mhz.isBlank()) return arrow.core.Either.Left("Frequency must not be blank")
+            val freq = mhz.toDoubleOrNull()
+                ?: return arrow.core.Either.Left("Frequency must be numeric: $mhz")
+            if (freq < 118.0 || freq > 137.0)
+                return arrow.core.Either.Left("Frequency must be in VHF airband range (118.000–136.975 MHz): $mhz")
+            return arrow.core.Either.Right(Frequency(mhz))
         }
+
+        fun unsafe(mhz: String): Frequency = invoke(mhz).fold({ error(it) }, { it })
     }
 }
 
-data class Heading(val degrees: Int) {
-    init {
-        require(degrees in 1..360) { "Heading must be in 1..360" }
+@ConsistentCopyVisibility
+data class Heading private constructor(val degrees: Int) {
+    companion object {
+        operator fun invoke(degrees: Int): arrow.core.Either<String, Heading> =
+            if (degrees in 1..360) arrow.core.Either.Right(Heading(degrees))
+            else arrow.core.Either.Left("Heading must be in 1..360: $degrees")
+
+        fun unsafe(degrees: Int): Heading = invoke(degrees).fold({ error(it) }, { it })
     }
 }
 
-data class Squawk(val code: Int) {
-    init {
-        require(code in 0..7777) { "Squawk must be in 0..7777" }
-        require(code.toString().padStart(4, '0').all { it in '0'..'7' }) {
-            "Each digit of a squawk code must be 0–7 (octal)"
+@ConsistentCopyVisibility
+data class Squawk private constructor(val code: Int) {
+    companion object {
+        operator fun invoke(code: Int): arrow.core.Either<String, Squawk> {
+            if (code !in 0..7777)
+                return arrow.core.Either.Left("Squawk must be in 0..7777: $code")
+            if (!code.toString().padStart(4, '0').all { it in '0'..'7' })
+                return arrow.core.Either.Left("Each digit of a squawk code must be 0–7 (octal): $code")
+            return arrow.core.Either.Right(Squawk(code))
         }
+
+        fun unsafe(code: Int): Squawk = invoke(code).fold({ error(it) }, { it })
     }
 }
 
-data class Knots(val value: Int) {
-    init {
-        require(value > 0) { "Speed must be positive" }
+@ConsistentCopyVisibility
+data class Knots private constructor(val value: Int) {
+    companion object {
+        operator fun invoke(value: Int): arrow.core.Either<String, Knots> =
+            if (value > 0) arrow.core.Either.Right(Knots(value))
+            else arrow.core.Either.Left("Speed must be positive: $value")
+
+        fun unsafe(value: Int): Knots = invoke(value).fold({ error(it) }, { it })
     }
 }
 
-data class Mach(val value: Double) {
-    init {
-        require(value > 0.0 && value < 1.0) { "Mach must be in (0.0, 1.0)" }
+@ConsistentCopyVisibility
+data class Mach private constructor(val value: Double) {
+    companion object {
+        operator fun invoke(value: Double): arrow.core.Either<String, Mach> =
+            if (value > 0.0 && value < 1.0) arrow.core.Either.Right(Mach(value))
+            else arrow.core.Either.Left("Mach must be in (0.0, 1.0): $value")
+
+        fun unsafe(value: Double): Mach = invoke(value).fold({ error(it) }, { it })
     }
 }
 

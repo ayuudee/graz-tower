@@ -132,7 +132,7 @@ class CompletionEvaluationTest {
                 transitionHistory = emptySet(),
                 radioState = RadioState(
                     currentRole = RoleName.APPROACH,
-                    currentFrequency = Frequency("120.100"),
+                    currentFrequency = Frequency.unsafe("120.100"),
                     lastContactRole = RoleName.APPROACH
                 )
             )
@@ -161,7 +161,7 @@ class CompletionEvaluationTest {
                 content = ClearanceContent.Single(
                     MaintainSpeed(
                         target = TEST_AIRCRAFT,
-                        speed = Speed.InKnots(Knots(180))
+                        speed = Speed.InKnots(Knots.unsafe(180))
                     )
                 )
             )
@@ -174,7 +174,7 @@ class CompletionEvaluationTest {
                 content = ClearanceContent.Single(
                     ReduceSpeedTo(
                         target = TEST_AIRCRAFT,
-                        speed = Speed.InKnots(Knots(180))
+                        speed = Speed.InKnots(Knots.unsafe(180))
                     )
                 )
             )
@@ -183,11 +183,11 @@ class CompletionEvaluationTest {
         val fastView = CompletionView(
             position = FixtureIds.holdFixPoint,
             entities = emptySet(),
-            speed = Speed.InKnots(Knots(220)),
+            speed = Speed.InKnots(Knots.unsafe(220)),
             onGround = false
         )
-        val targetView = fastView.copy(speed = Speed.InKnots(Knots(180)))
-        val slowView = fastView.copy(speed = Speed.InKnots(Knots(170)))
+        val targetView = fastView.copy(speed = Speed.InKnots(Knots.unsafe(180)))
+        val slowView = fastView.copy(speed = Speed.InKnots(Knots.unsafe(170)))
 
         assertEquals(
             CompletionResult.NOT_COMPLETE,
@@ -389,7 +389,7 @@ class CompletionEvaluationTest {
                 content = ClearanceContent.Single(
                     ConfirmSquawk(
                         target = TEST_AIRCRAFT,
-                        squawk = Squawk(4521)
+                        squawk = Squawk.unsafe(4521)
                     )
                 )
             )
@@ -445,7 +445,7 @@ class CompletionEvaluationTest {
             position = FixtureIds.holdFixPoint,
             entities = emptySet(),
             onGround = false,
-            transponderCode = Squawk(4521),
+            transponderCode = Squawk.unsafe(4521),
             transponderMode = TransponderMode.NORMAL,
             transponderIdentActive = true
         )

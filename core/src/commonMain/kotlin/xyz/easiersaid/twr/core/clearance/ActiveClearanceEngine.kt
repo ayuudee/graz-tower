@@ -72,7 +72,7 @@ data class ClearanceReconciliation(
 
 fun stageIncomingClearance(clearance: ResolvedClearance): ManagedClearance {
     val nextStatus = when {
-        clearance.source.status.isTerminal() -> clearance.source.status
+        clearance.source.status.isTerminal -> clearance.source.status
         clearance.source.condition != null -> ClearanceStatus.CONDITION_PENDING
         clearance.source.status in setOf(
             ClearanceStatus.ISSUED,
@@ -103,8 +103,8 @@ fun admitClearance(
     }
 
     val allClearances = supersession.updatedExisting + stagedIncoming
-    val clearances = allClearances.filterNot { managed -> managed.status.isTerminal() }
-    val terminalClearances = allClearances.filter { managed -> managed.status.isTerminal() }
+    val clearances = allClearances.filterNot { managed -> managed.status.isTerminal }
+    val terminalClearances = allClearances.filter { managed -> managed.status.isTerminal }
 
     return ClearanceAdmission(
         incoming = stagedIncoming,
@@ -120,124 +120,111 @@ fun reconcileClearances(
     completionViews: Map<AircraftId, CompletionView>,
     conditionEvaluator: ConditionEvaluator = { _, _ -> false }
 ): ClearanceReconciliation {
-    val completionEvaluations = mutableListOf<ManagedCompletionEvaluation>()
-    var working = existing.map { managed ->
+    // Phase 1: Evaluate completions for active clearances
+    val completionResults = existing.map { managed ->
         if (managed.status != ClearanceStatus.ACTIVE) {
-            managed
+            Pair(managed, null as CompletionEvaluation?)
         } else {
             val view = completionViews[managed.aircraft]
             if (view == null) {
-                managed
+                Pair(managed, null)
             } else {
                 val evaluation = evaluateCompletion(
                     clearance = managed.clearance,
                     view = view,
                     suppressedDomains = managed.suppressedDomains
                 )
-                completionEvaluations += ManagedCompletionEvaluation(managed, evaluation)
-                managed.withClearance(evaluation.updated)
+                Pair(managed.withClearance(evaluation.updated), evaluation)
             }
         }
     }
 
-    val activations = mutableListOf<ConditionActivation>()
-    val fullySuperseded = mutableListOf<ManagedClearance>()
-    val partiallySuperseded = mutableListOf<ManagedClearance>()
+    val completionEvaluations = completionResults.mapNotNull { (managed, evaluation) ->
+        evaluation?.let { ManagedCompletionEvaluation(managed, it) }
+    }
+    val afterCompletion = completionResults.map { (managed, _) -> managed }
 
-    val pendingIds = working
+    // Phase 2: Activate pending conditions via fold
+    val pendingIds = afterCompletion
         .filter { managed -> managed.status == ClearanceStatus.CONDITION_PENDING && managed.source.condition != null }
         .sortedBy { managed -> managed.source.issuedAt.value }
         .map { managed -> managed.source.id }
 
-    pendingIds.forEach { clearanceId ->
-        val current = working.findById(clearanceId) ?: return@forEach
-        val condition = current.source.condition ?: return@forEach
-        if (!conditionEvaluator(current.aircraft, condition)) {
-            return@forEach
-        }
+    data class ActivationAcc(
+        val working: List<ManagedClearance>,
+        val activations: List<ConditionActivation> = emptyList(),
+        val fullySuperseded: List<ManagedClearance> = emptyList(),
+        val partiallySuperseded: List<ManagedClearance> = emptyList()
+    )
+
+    val activationResult = pendingIds.fold(ActivationAcc(working = afterCompletion)) { acc, clearanceId ->
+        val current = acc.working.findById(clearanceId) ?: return@fold acc
+        val condition = current.source.condition ?: return@fold acc
+        if (!conditionEvaluator(current.aircraft, condition)) return@fold acc
 
         val activated = current.withStatus(ClearanceStatus.ACTIVE)
-        val others = working.filterNot { managed -> managed.source.id == activated.source.id }
+        val others = acc.working.filterNot { managed -> managed.source.id == activated.source.id }
         val supersession = applyIncomingSupersession(others, activated)
-        activations += ConditionActivation(before = current, after = activated)
-        fullySuperseded += supersession.fullySuperseded
-        partiallySuperseded += supersession.partiallySuperseded
-        working = supersession.updatedExisting + activated
+
+        acc.copy(
+            working = supersession.updatedExisting + activated,
+            activations = acc.activations + ConditionActivation(before = current, after = activated),
+            fullySuperseded = acc.fullySuperseded + supersession.fullySuperseded,
+            partiallySuperseded = acc.partiallySuperseded + supersession.partiallySuperseded
+        )
     }
 
-    val clearances = working.filterNot { managed -> managed.status.isTerminal() }
-    val terminalClearances = working.filter { managed -> managed.status.isTerminal() }
+    val clearances = activationResult.working.filterNot { managed -> managed.status.isTerminal }
+    val terminalClearances = activationResult.working.filter { managed -> managed.status.isTerminal }
 
     return ClearanceReconciliation(
         clearances = clearances,
         terminalClearances = terminalClearances,
         completionEvaluations = completionEvaluations,
-        activatedClearances = activations,
-        fullySuperseded = fullySuperseded,
-        partiallySuperseded = partiallySuperseded
+        activatedClearances = activationResult.activations,
+        fullySuperseded = activationResult.fullySuperseded,
+        partiallySuperseded = activationResult.partiallySuperseded
     )
 }
 
 private data class SupersessionApplication(
-    val updatedExisting: List<ManagedClearance>,
-    val fullySuperseded: List<ManagedClearance>,
-    val partiallySuperseded: List<ManagedClearance>
+    val updatedExisting: List<ManagedClearance> = emptyList(),
+    val fullySuperseded: List<ManagedClearance> = emptyList(),
+    val partiallySuperseded: List<ManagedClearance> = emptyList()
 )
 
 private fun applyIncomingSupersession(
     existing: List<ManagedClearance>,
     incoming: ManagedClearance
 ): SupersessionApplication {
-    val updatedExisting = mutableListOf<ManagedClearance>()
-    val fullySuperseded = mutableListOf<ManagedClearance>()
-    val partiallySuperseded = mutableListOf<ManagedClearance>()
-
-    existing.forEach { managed ->
-        if (!managed.status.isSupersedable() || managed.aircraft != incoming.aircraft) {
-            updatedExisting += managed
-            return@forEach
+    val result = existing.fold(SupersessionApplication()) { acc, managed ->
+        if (!managed.status.isSupersedable || managed.aircraft != incoming.aircraft) {
+            return@fold acc.copy(updatedExisting = acc.updatedExisting + managed)
         }
 
         val overlap = managed.effectiveDomains intersect incoming.clearance.supersedesDomains
         when {
-            overlap.isEmpty() -> updatedExisting += managed
+            overlap.isEmpty() -> acc.copy(updatedExisting = acc.updatedExisting + managed)
             overlap == managed.effectiveDomains -> {
-                val superseded = managed
-                    .clearSuppression()
-                    .withStatus(ClearanceStatus.SUPERSEDED)
-                updatedExisting += superseded
-                fullySuperseded += superseded
+                val superseded = managed.clearSuppression().withStatus(ClearanceStatus.SUPERSEDED)
+                acc.copy(
+                    updatedExisting = acc.updatedExisting + superseded,
+                    fullySuperseded = acc.fullySuperseded + superseded
+                )
             }
 
             else -> {
                 val suppressed = managed.suppress(overlap)
-                updatedExisting += suppressed
-                partiallySuperseded += suppressed
+                acc.copy(
+                    updatedExisting = acc.updatedExisting + suppressed,
+                    partiallySuperseded = acc.partiallySuperseded + suppressed
+                )
             }
         }
     }
-
-    return SupersessionApplication(
-        updatedExisting = updatedExisting,
-        fullySuperseded = fullySuperseded,
-        partiallySuperseded = partiallySuperseded
-    )
+    return result
 }
 
 private fun List<ManagedClearance>.findById(id: ClearanceId): ManagedClearance? =
     firstOrNull { managed -> managed.source.id == id }
 
-private fun ClearanceStatus.isTerminal(): Boolean =
-    this in setOf(
-        ClearanceStatus.COMPLETED,
-        ClearanceStatus.SUPERSEDED,
-        ClearanceStatus.CANCELLED
-    )
-
-private fun ClearanceStatus.isSupersedable(): Boolean =
-    this in setOf(
-        ClearanceStatus.ISSUED,
-        ClearanceStatus.READBACK_PENDING,
-        ClearanceStatus.CONDITION_PENDING,
-        ClearanceStatus.ACTIVE
-    )

@@ -1,7 +1,6 @@
 package xyz.easiersaid.twr.core.clearance
 
 import xyz.easiersaid.twr.protocol.ClearanceDomain
-import xyz.easiersaid.twr.protocol.ClearanceStatus
 
 data class PartiallySupersededClearance(
     val clearance: ResolvedClearance,
@@ -21,44 +20,40 @@ data class SupersessionDecision(
     val unaffected: List<ResolvedClearance>
 )
 
+private data class SupersessionAccumulator(
+    val fullySuperseded: List<ResolvedClearance> = emptyList(),
+    val partiallySuperseded: List<PartiallySupersededClearance> = emptyList(),
+    val unaffected: List<ResolvedClearance> = emptyList()
+)
+
 fun determineSupersession(
     incoming: ResolvedClearance,
     existing: Iterable<ResolvedClearance>
 ): SupersessionDecision {
     val supersedesDomains = incoming.supersedesDomains
-    val fullySuperseded = mutableListOf<ResolvedClearance>()
-    val partiallySuperseded = mutableListOf<PartiallySupersededClearance>()
-    val unaffected = mutableListOf<ResolvedClearance>()
 
-    existing.forEach { clearance ->
-        if (!clearance.isSupersedable() || clearance.source.aircraft != incoming.source.aircraft) {
-            unaffected += clearance
-            return@forEach
+    val result = existing.fold(SupersessionAccumulator()) { acc, clearance ->
+        if (!clearance.source.status.isSupersedable || clearance.source.aircraft != incoming.source.aircraft) {
+            return@fold acc.copy(unaffected = acc.unaffected + clearance)
         }
 
         val overlap = clearance.stepDomains intersect supersedesDomains
         when {
-            overlap.isEmpty() -> unaffected += clearance
-            overlap == clearance.stepDomains -> fullySuperseded += clearance
-            else -> partiallySuperseded += PartiallySupersededClearance(
-                clearance = clearance,
-                suppressedDomains = overlap
+            overlap.isEmpty() -> acc.copy(unaffected = acc.unaffected + clearance)
+            overlap == clearance.stepDomains -> acc.copy(fullySuperseded = acc.fullySuperseded + clearance)
+            else -> acc.copy(
+                partiallySuperseded = acc.partiallySuperseded + PartiallySupersededClearance(
+                    clearance = clearance,
+                    suppressedDomains = overlap
+                )
             )
         }
     }
 
     return SupersessionDecision(
         incoming = incoming,
-        fullySuperseded = fullySuperseded,
-        partiallySuperseded = partiallySuperseded,
-        unaffected = unaffected
+        fullySuperseded = result.fullySuperseded,
+        partiallySuperseded = result.partiallySuperseded,
+        unaffected = result.unaffected
     )
 }
-
-private fun ResolvedClearance.isSupersedable(): Boolean =
-    source.status in setOf(
-        ClearanceStatus.ISSUED,
-        ClearanceStatus.READBACK_PENDING,
-        ClearanceStatus.CONDITION_PENDING,
-        ClearanceStatus.ACTIVE
-    )

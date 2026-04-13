@@ -201,12 +201,12 @@ data class ResolvedClearance(
         get() = sequentialSteps.firstOrNull { step -> step.index !in completedSteps }
 
     val supersedesDomains: Set<ClearanceDomain>
-        get() = steps.flatMapTo(linkedSetOf()) { step ->
+        get() = steps.flatMap { step ->
             instructionSupersedesIn(step.instruction)
-        }
+        }.toSet()
 
     val stepDomains: Set<ClearanceDomain>
-        get() = steps.mapTo(linkedSetOf()) { step -> step.domain }
+        get() = steps.map { step -> step.domain }.toSet()
 
     fun effectiveSteps(suppressedDomains: Set<ClearanceDomain> = emptySet()): List<ResolvedStep> =
         steps.filter { step -> step.domain !in suppressedDomains }
@@ -229,25 +229,18 @@ fun AviationWorld.resolveClearance(
         is ClearanceContent.Compound -> content.steps
     }
 
-    val resolvedSteps = mutableListOf<ResolvedStep>()
-    var state = ResolutionCompilationState(currentPoint = context.currentPoint)
+    val initialState = ResolutionCompilationState(currentPoint = context.currentPoint)
 
-    steps.forEachIndexed { index, instruction ->
-        when (val resolved = resolveStep(context, normalizedClearance, index, instruction, state)) {
-            is arrow.core.Either.Left -> return resolved
-            is arrow.core.Either.Right -> {
-                resolvedSteps += resolved.value.step
-                state = resolved.value.state
-            }
+    return arrow.core.raise.either {
+        val compiled = steps.foldIndexed(Pair(emptyList<ResolvedStep>(), initialState)) { index, (resolvedSoFar, state), instruction ->
+            val result = resolveStep(context, normalizedClearance, index, instruction, state).bind()
+            Pair(resolvedSoFar + result.step, result.state)
         }
-    }
-
-    return arrow.core.Either.Right(
         ResolvedClearance(
             source = normalizedClearance,
-            steps = resolvedSteps.toList()
+            steps = compiled.first
         )
-    )
+    }
 }
 
 private fun StructuredClearance.normalizeConditionalEnvelope(): ResolutionResult<StructuredClearance> =

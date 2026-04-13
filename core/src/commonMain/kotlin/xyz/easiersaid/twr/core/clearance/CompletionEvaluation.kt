@@ -68,7 +68,8 @@ fun evaluateCompletion(
     }
     val newlyCompletedSteps = stepResults
         .filter { stepCompletion -> stepCompletion.result == CompletionResult.COMPLETE }
-        .mapTo(linkedSetOf()) { stepCompletion -> stepCompletion.step.index }
+        .map { stepCompletion -> stepCompletion.step.index }
+        .toSet()
         .minus(clearance.completedSteps)
 
     val updatedSource = when (val content = clearance.source.content) {

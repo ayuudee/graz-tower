@@ -262,7 +262,7 @@ internal fun sampleWorld(): AviationWorld {
             )
         ),
         legTime = xyz.easiersaid.twr.protocol.Minutes(1),
-        maxSpeed = Knots(200),
+        maxSpeed = Knots.unsafe(200),
         altitude = Level.AltitudeFeet(3000),
         stackSeparation = Feet(1000)
     )
@@ -661,13 +661,13 @@ internal fun role(
         name = name,
         authorities = authorities.toSet(),
         frequency = when (name) {
-            RoleName.GROUND -> Frequency("121.800")
-            RoleName.TOWER -> Frequency("118.500")
-            RoleName.APPROACH -> Frequency("120.100")
-            RoleName.CLEARANCE_DELIVERY -> Frequency("121.600")
-            RoleName.DEPARTURE -> Frequency("124.500")
-            RoleName.AREA_CONTROL -> Frequency("128.300")
-            RoleName.AFIS -> Frequency("122.200")
+            RoleName.GROUND -> Frequency.unsafe("121.800")
+            RoleName.TOWER -> Frequency.unsafe("118.500")
+            RoleName.APPROACH -> Frequency.unsafe("120.100")
+            RoleName.CLEARANCE_DELIVERY -> Frequency.unsafe("121.600")
+            RoleName.DEPARTURE -> Frequency.unsafe("124.500")
+            RoleName.AREA_CONTROL -> Frequency.unsafe("128.300")
+            RoleName.AFIS -> Frequency.unsafe("122.200")
         }
     )
 
