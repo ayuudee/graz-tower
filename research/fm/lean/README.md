@@ -58,7 +58,11 @@ Read modules in roughly this order:
     Optional. This is the reachable-state safety layer above the scoped
     issuing boundary: state-preservation for nominal/runway/surface/air/interface
     invariants plus issued-step separation soundness.
-21. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+21. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+    Optional. This is the scoped full-brief mode layer: assumption assessment,
+    strongest-justified fallback, nominal guarantee withdrawal, concrete
+    fallback vocabulary, and reachable mode-aware preservation.
+22. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
@@ -140,12 +144,16 @@ Read modules in roughly this order:
   well-formedness, component-preserving approval collection, issuance
   preservation of nominal/runway/surface/air/interface invariants, reachable
   issued-state semantics, and issued-step separation soundness.
+- `ScopedModes`
+  Scoped full-brief mode layer: abstract assessment output, strongest-justified
+  regime selection, conservative fallback commands, mode-aware issuance, and
+  reachable full-brief guarantees.
 - `JointActs`
   Narrow orchestration milestone theorem for the first joint-act slice.
 
 ## Current Lean Split
 
-There are now twelve distinct Lean layers above the local certifiers:
+There are now thirteen distinct Lean layers above the local certifiers:
 
 1. `ClearanceEnvelope.lean`
    The older proof/compiler surface that still bridges into the atomic command path.
@@ -176,6 +184,10 @@ There are now twelve distinct Lean layers above the local certifiers:
    The reachable-state safety layer above the scoped issuing boundary:
    preserved nominal/kernel/interface invariants, reachable issued-state
    semantics, and issued-step separation soundness.
+13. `ScopedModes.lean`
+   The full-brief mode layer above scoped nominal safety: abstract assessment,
+   strongest-justified fallback, conservative fallback command semantics, and
+   reachable full-brief guarantees.
 
 That split is intentional. The Kotlin/runtime model has moved to:
 

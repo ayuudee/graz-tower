@@ -40,13 +40,15 @@ It does not yet contain:
 - an envelope-level theorem for monotone sequencing or no-partial-issuance
 - the full broad-scope separation story described in the brief beyond the
   current scoped nominal surface
-- the degraded/emergency mode layer needed for `Full-brief complete`
+- richer route-bearing and operationally detailed mode semantics beyond the
+  current conservative scoped full-brief layer
 
 Scoped nominal status:
 
 - `Safety-complete (N₀)` is now closed for the scoped surface in
   [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
-- the remaining FM completion path is Milestone 7: degraded/emergency modes
+- `Full-brief complete` is now also closed for that same scoped surface
+- remaining FM work is now optional widening, not milestone-critical closure
 
 ## Delivered Proof Artifacts
 
@@ -338,6 +340,23 @@ Current local status:
   same state-preserving `continueOnEdge` proposal in the present air model
 - the generated continuation set now has concrete representatives for the
   continuation classes named in the brief within the current air model
+
+### Mode Layer
+
+- [ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+  now provides the full-brief mode layer over the scoped nominal issuer
+- assumption assessment is explicit via `AssumptionAssessment`
+- strongest-justified regime selection is proved via `selectedMode_strongest`
+- nominal guarantee withdrawal is proved via
+  `enterAssessedMode_withdraws_nominal`
+- degraded/emergency command vocabulary is concrete via `FallbackCommand`
+- the mode-aware top layer is `issueWithAssessment`
+- reachable scoped mode states preserve the full-brief guarantee package via
+  `ReachableScopedModeState_preserves_fullBrief` and
+  `FullBriefFallbackTheorem`
+- this layer is intentionally conservative: the monitor is abstract and
+  fallback commands update a theorem-bearing overlay rather than richer local
+  certifier state
 
 ### Optional Composition Gaps
 

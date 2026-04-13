@@ -124,16 +124,23 @@ As of April 12, 2026:
   theorem is now consumed by
   `ScopedIssuedScenarioViableSepTheorem` in `ScopedSeparation`, so the scoped
   nominal separation bar is closed
+- [ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+  now closes the full-brief mode layer for the same scoped surface: abstract
+  assumption assessment, strongest-justified regime selection, nominal
+  guarantee withdrawal, a concrete fallback command vocabulary, and reachable
+  full-brief preservation over the mode-aware top layer
 - optional orchestration layer: partial composition proof exists, but it is not
   the primary success criterion
 - code refinement and enforcement: not started
 
 The default critical path is now:
 
-- the scoped nominal programme is now `Safety-complete (N₀)`
-- the next work is the full-brief degraded/emergency layer in Milestone 7
-- do not widen the nominal scoped command surface unless that later work
-  forces it
+- the scoped programme is now both `Safety-complete (N₀)` and
+  `Full-brief complete`
+- further work is optional scope widening, not completion-critical milestone
+  work
+- the two obvious widening directions are richer mode semantics and broader
+  route-bearing proof scope
 
 ## Reading Order
 

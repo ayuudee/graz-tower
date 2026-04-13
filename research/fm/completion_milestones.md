@@ -15,7 +15,7 @@ Current status:
 
 - `Safety-complete (N₀)` is now achieved for the scoped surface defined in
   [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
-- `Full-brief complete` is still not achieved
+- `Full-brief complete` is now also achieved for that same scoped surface
 
 ## Completion Bars
 
@@ -58,7 +58,7 @@ remaining brief-level mode obligations are also proved:
 - guarantee withdrawal when assumptions fail
 - fallback to the strongest justified remaining regime
 
-Do not block `Safety-complete (N₀)` on this second bar.
+For the current narrowed programme, this second bar is now also closed.
 
 ## Starting Point
 
@@ -72,13 +72,14 @@ As of now, the project already has:
 - a partial older atomic orchestration slice with non-bypass and a first joint
   theorem
 
-The main remaining work is not basic modeling anymore.
-It is proof closure:
+The main milestone work is now closed for the scoped surface.
 
-- finish the remaining local separation obligations
-- mechanize the extraction boundary
-- close the remaining greenfield semantics that still affect theorem shape
-- prove the final top issuing layer above the greenfield boundary
+What remains after completion is optional follow-on work:
+
+- widen the theorem surface beyond the current scoped command families
+- replace conservative mode-overlay semantics with richer operational mode
+  semantics if the product needs them
+- widen extraction and proof coverage toward the broader route-bearing model
 
 ## Shortest-Path Rules
 
@@ -430,7 +431,7 @@ Exit condition:
 
 ### Milestone 7: Add The Full-Brief Mode Layer
 
-Status: `not_started`
+Status: `complete`
 
 Purpose:
 close the remaining brief-level obligations after nominal safety is already
@@ -442,6 +443,30 @@ Work:
 - prove guarantee withdrawal when assumptions fail
 - prove fallback to the strongest justified remaining regime
 - integrate those mode transitions into the top issuing layer
+
+Delivered:
+
+- [ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+  now provides the full-brief mode layer above the scoped nominal issuer
+- `AssumptionAssessment`, `selectedMode`, and `selectedMode_strongest` make
+  regime assessment and strongest-justified fallback explicit
+- `enterAssessedMode_withdraws_nominal` proves nominal guarantees are withdrawn
+  once the assessment is non-nominal
+- a concrete degraded/emergency fallback vocabulary now exists as
+  `FallbackCommand`
+- `issueWithAssessment` integrates nominal issuance and fallback issuance into
+  one theorem-bearing mode-aware top layer
+- `ReachableScopedModeState_preserves_fullBrief` and
+  `FullBriefFallbackTheorem` close the scoped full-brief preservation story
+
+Scope note:
+
+- the mode monitor remains abstract at this layer; only the assessment output
+  is modeled
+- fallback commands use a conservative overlay semantics rather than richer
+  operational state changes
+- this is intentional for the shortest honest path: the theorem claim is now
+  closed without pretending richer emergency automation than has been proved
 
 Exit condition:
 
@@ -461,14 +486,13 @@ These are real temptations, but they are not on the shortest path.
 
 ## Immediate Next Move
 
-Treat the scoped nominal programme as closed and move to Milestone 7.
+The scoped programme is now complete.
 
-The next concrete deliverable should be the first full-brief mode layer:
+The next work, if desired, is optional scope widening:
 
-- formalize degraded-mode invariant families
-- formalize emergency-mode invariant families
-- prove guarantee withdrawal when assumptions fail
-- prove fallback to the strongest justified remaining regime
-
-Do not widen the nominal scoped command surface while doing that unless a
-full-brief theorem demonstrably forces it.
+- enrich the mode monitor from an abstract assessment output to a more concrete
+  observation/failure model
+- replace conservative fallback overlay actions with richer certified
+  operational emergency behaviour
+- widen the scoped surface toward the broader route-bearing and greenfield
+  model

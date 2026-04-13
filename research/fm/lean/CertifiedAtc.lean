@@ -12,6 +12,7 @@ import CertifiedAtc.ClearanceEnvelope
 import CertifiedAtc.ScopedGreenfield
 import CertifiedAtc.ScopedIssuance
 import CertifiedAtc.ScopedSafety
+import CertifiedAtc.ScopedModes
 import CertifiedAtc.GreenfieldModel
 import CertifiedAtc.GreenfieldLifecycle
 import CertifiedAtc.GreenfieldResolved
