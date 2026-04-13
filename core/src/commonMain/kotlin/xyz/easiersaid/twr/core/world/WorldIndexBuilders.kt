@@ -5,6 +5,21 @@ import xyz.easiersaid.twr.protocol.PointId
 fun Path.segmentIds(): List<SegmentId> =
     points.zipWithNext(::SegmentId)
 
+fun Path.geometrySegmentIds(): List<GeometrySegmentId> =
+    segmentIds().map { segment ->
+        GeometrySegmentId.between(segment.from, segment.to)
+    }
+
+fun AviationWorld.buildWorldIndex(): WorldIndex =
+    WorldIndex(
+        positions = geometry.points,
+        adjacency = deriveAdjacency(),
+        surfaceBySegment = geometry.expandSegmentValues { segment -> segment.surface },
+        lengthBySegment = geometry.expandSegmentValues { segment -> segment.length },
+        widthBySegment = geometry.expandSegmentValues { segment -> segment.width },
+        entitiesByPoint = deriveEntitiesByPoint()
+    )
+
 fun AviationWorld.deriveAdjacency(): Map<PointId, Set<PointId>> {
     val adjacency = linkedMapOf<PointId, MutableSet<PointId>>()
 
@@ -13,13 +28,9 @@ fun AviationWorld.deriveAdjacency(): Map<PointId, Set<PointId>> {
         adjacency.getOrPut(to) { linkedSetOf() }.add(from)
     }
 
-    fun addPath(path: Path) {
-        path.segmentIds().forEach { segment ->
-            addEdge(segment.from, segment.to)
-        }
+    geometry.segments.keys.forEach { segment ->
+        addEdge(segment.first, segment.second)
     }
-
-    allPaths().forEach(::addPath)
 
     return adjacency.mapValues { (_, points) -> points.toSet() }
 }
@@ -113,51 +124,14 @@ fun AviationWorld.deriveEntitiesByPoint(): Map<PointId, Set<EntityRef>> {
     return entities.mapValues { (_, refs) -> refs.toSet() }
 }
 
-private fun AviationWorld.allPaths(): Sequence<Path> =
-    sequence {
-        aerodromes.values.forEach { aerodrome ->
-            aerodrome.runways.values.forEach { runway -> yield(runway.path) }
-            aerodrome.taxiways.values.forEach { taxiway -> yield(taxiway.path) }
-            aerodrome.aprons.values.forEach { apron ->
-                apron.paths.forEach { path -> yield(path) }
+private fun <T> PhysicalGeometry.expandSegmentValues(
+    valueSelector: (SegmentGeometry) -> T
+): Map<SegmentId, T> =
+    buildMap {
+        segments.forEach { (segmentId, geometry) ->
+            val value = valueSelector(geometry)
+            segmentId.directedIds().forEach { directed ->
+                put(directed, value)
             }
-            aerodrome.circuits.values.forEach { circuit ->
-                circuit.legs.forEach { leg -> yield(leg.path) }
-                circuit.joinProcedures.mapNotNull { it.entryPath }.forEach { path -> yield(path) }
-                circuit.extendedDownwind?.let { extension ->
-                    yield(extension.extendedPath)
-                    extension.offRamps.forEach { offRamp -> yield(offRamp.path) }
-                }
-                circuit.orbitPoints.forEach { orbit -> yield(orbit.loop) }
-                yield(circuit.goAroundPath)
-            }
-            aerodrome.sids.values.forEach { sid ->
-                sid.waypoints.asPathOrNull()?.let { path -> yield(path) }
-                sid.transitions.values.forEach { transition ->
-                    transition.asPathOrNull()?.let { path -> yield(path) }
-                }
-            }
-            aerodrome.stars.values.forEach { star ->
-                star.waypoints.asPathOrNull()?.let { path -> yield(path) }
-                star.transitions.values.forEach { transition ->
-                    transition.asPathOrNull()?.let { path -> yield(path) }
-                }
-            }
-            aerodrome.approaches.values.forEach { approach ->
-                approach.waypoints.asPathOrNull()?.let { path -> yield(path) }
-                approach.missedApproach.waypoints.asPathOrNull()?.let { path -> yield(path) }
-            }
-            aerodrome.holdingPatterns.values.forEach { holdingPattern -> yield(holdingPattern.loop) }
         }
-        airways.values.forEach { airway ->
-            airway.waypoints.asPathOrNull()?.let { path -> yield(path) }
-        }
-        vfrRoutes.values.forEach { route ->
-            route.waypoints.asPathOrNull()?.let { path -> yield(path) }
-        }
-    }
-
-private fun List<Waypoint>.asPathOrNull(): Path? =
-    takeIf { it.size >= 2 }?.let { waypoints ->
-        Path(waypoints.map { waypoint -> waypoint.point })
     }

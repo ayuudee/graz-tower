@@ -58,6 +58,36 @@ data class SegmentId(
     val to: PointId
 )
 
+@ConsistentCopyVisibility
+data class GeometrySegmentId private constructor(
+    val first: PointId,
+    val second: PointId
+) {
+    init {
+        require(first != second) { "Geometry segments must connect two distinct points" }
+    }
+
+    companion object {
+        fun between(a: PointId, b: PointId): GeometrySegmentId {
+            require(a != b) { "Geometry segments must connect two distinct points" }
+            return if (a.value <= b.value) {
+                GeometrySegmentId(a, b)
+            } else {
+                GeometrySegmentId(b, a)
+            }
+        }
+    }
+
+    fun directedIds(): Set<SegmentId> =
+        setOf(
+            SegmentId(first, second),
+            SegmentId(second, first)
+        )
+
+    fun describe(): String =
+        "${first.value}<->${second.value}"
+}
+
 sealed interface SegmentShape {
     data object Straight : SegmentShape
     data class Arc(val radius: Meters) : SegmentShape
@@ -68,6 +98,23 @@ enum class SurfaceType {
     RUNWAY,
     SKY
 }
+
+data class SegmentGeometry(
+    val length: Meters,
+    val width: Meters,
+    val shape: SegmentShape = SegmentShape.Straight,
+    val surface: SurfaceType
+) {
+    init {
+        require(length.value > 0.0) { "Segment length must be > 0" }
+        require(width.value > 0.0) { "Segment width must be > 0" }
+    }
+}
+
+data class PhysicalGeometry(
+    val points: Map<PointId, Position> = emptyMap(),
+    val segments: Map<GeometrySegmentId, SegmentGeometry> = emptyMap()
+)
 
 data class Path(
     val points: List<PointId>
@@ -140,6 +187,13 @@ data class Apron(
         require(paths.isNotEmpty()) { "Apron must contain at least one path" }
         require(capacity == null || capacity >= 0) { "Apron capacity must be >= 0 when present" }
     }
+}
+
+enum class FixType {
+    WAYPOINT,
+    VOR,
+    NDB,
+    MARKER
 }
 
 data class Fix(
@@ -229,6 +283,7 @@ data class Aerodrome(
 )
 
 data class AviationWorld(
+    val geometry: PhysicalGeometry = PhysicalGeometry(),
     val fixes: Map<FixId, Fix> = emptyMap(),
     val aerodromes: Map<AerodromeId, Aerodrome> = emptyMap(),
     val airways: Map<AirwayId, Airway> = emptyMap(),

@@ -23,13 +23,6 @@ import xyz.easiersaid.twr.protocol.StarId
 import xyz.easiersaid.twr.protocol.TurnDirection
 import xyz.easiersaid.twr.protocol.VfrRouteId
 
-enum class FixType {
-    WAYPOINT,
-    VOR,
-    NDB,
-    MARKER
-}
-
 sealed interface AltitudeBoundary {
     data object Surface : AltitudeBoundary
     data class AtLevel(val level: Level) : AltitudeBoundary
@@ -271,3 +264,8 @@ data class FlightInformationRegion(
         require(volumes.isNotEmpty()) { "FIR must contain at least one airspace volume" }
     }
 }
+
+internal fun List<Waypoint>.asPathOrNull(): Path? =
+    takeIf { it.size >= 2 }?.let { waypoints ->
+        Path(waypoints.map { waypoint -> waypoint.point })
+    }

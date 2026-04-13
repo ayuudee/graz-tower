@@ -6,6 +6,11 @@ import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 
 enum class WorldValidationCode {
+    ORPHAN_GEOMETRY_POINT,
+    ORPHAN_GEOMETRY_SEGMENT,
+    GEOMETRY_SEGMENT_UNKNOWN_ENDPOINT,
+    UNKNOWN_GEOMETRY_POINT_REFERENCE,
+    UNKNOWN_GEOMETRY_SEGMENT_REFERENCE,
     POINT_OUTSIDE_AIRSPACE,
     UNKNOWN_FIR,
     FIR_VOLUME_MISMATCH,
@@ -47,6 +52,7 @@ data class WorldValidationReport(
 fun AviationWorld.validate(): WorldValidationReport {
     val issues = mutableListOf<WorldValidationIssue>()
 
+    validateGeometryReferencesAndClaims(issues)
     validateAirspaceCoverage(issues)
     validateFirMembership(issues)
     validateGlobalNames(issues)
@@ -63,13 +69,69 @@ private fun AviationWorld.validateAirspaceCoverage(issues: MutableList<WorldVali
         .flatMap { volume -> volume.points }
         .toSet()
 
-    deriveEntitiesByPoint().keys
+    geometry.points.keys
         .filter { point -> point !in coveredPoints }
         .sortedBy(PointId::value)
         .forEach { point ->
             issues += WorldValidationIssue(
                 WorldValidationCode.POINT_OUTSIDE_AIRSPACE,
                 "Point ${point.value} is not contained in any airspace volume"
+            )
+        }
+}
+
+private fun AviationWorld.validateGeometryReferencesAndClaims(
+    issues: MutableList<WorldValidationIssue>
+) {
+    val claimedPoints = deriveEntitiesByPoint().keys
+    val claimedSegments = collectClaimedSegments()
+
+    geometry.segments.keys.forEach { segment ->
+        if (segment.first !in geometry.points || segment.second !in geometry.points) {
+            issues += WorldValidationIssue(
+                WorldValidationCode.GEOMETRY_SEGMENT_UNKNOWN_ENDPOINT,
+                "Geometry segment ${segment.describe()} references a point missing from the geometry point map"
+            )
+        }
+    }
+
+    claimedPoints
+        .filter { point -> point !in geometry.points }
+        .sortedBy(PointId::value)
+        .forEach { point ->
+            issues += WorldValidationIssue(
+                WorldValidationCode.UNKNOWN_GEOMETRY_POINT_REFERENCE,
+                "Entity reference point ${point.value} is missing from physical geometry"
+            )
+        }
+
+    claimedSegments
+        .filter { segment -> segment !in geometry.segments }
+        .sortedBy(GeometrySegmentId::describe)
+        .forEach { segment ->
+            issues += WorldValidationIssue(
+                WorldValidationCode.UNKNOWN_GEOMETRY_SEGMENT_REFERENCE,
+                "Entity reference segment ${segment.describe()} is missing from physical geometry"
+            )
+        }
+
+    geometry.points.keys
+        .filter { point -> point !in claimedPoints }
+        .sortedBy(PointId::value)
+        .forEach { point ->
+            issues += WorldValidationIssue(
+                WorldValidationCode.ORPHAN_GEOMETRY_POINT,
+                "Geometry point ${point.value} is not claimed by any entity"
+            )
+        }
+
+    geometry.segments.keys
+        .filter { segment -> segment !in claimedSegments }
+        .sortedBy(GeometrySegmentId::describe)
+        .forEach { segment ->
+            issues += WorldValidationIssue(
+                WorldValidationCode.ORPHAN_GEOMETRY_SEGMENT,
+                "Geometry segment ${segment.describe()} is not claimed by any entity"
             )
         }
 }
@@ -270,7 +332,7 @@ private fun validateSegmentOwnership(
 ) {
     aerodrome.taxiways.values
         .flatMap { taxiway ->
-            taxiway.path.segmentIds().map { segment -> undirectedSegment(segment) to taxiway.id.value }
+            taxiway.path.geometrySegmentIds().map { segment -> segment to taxiway.id.value }
         }
         .groupBy(
             keySelector = { (segment, _) -> segment },
@@ -287,7 +349,7 @@ private fun validateSegmentOwnership(
     aerodrome.aprons.values
         .flatMap { apron ->
             apron.paths.flatMap { path ->
-                path.segmentIds().map { segment -> undirectedSegment(segment) to apron.id.value }
+                path.geometrySegmentIds().map { segment -> segment to apron.id.value }
             }
         }
         .groupBy(
@@ -360,9 +422,13 @@ private fun validateReciprocalRunways(
         }
 
         val sharedSegments = runway.path.segmentIds()
-            .map(::undirectedSegment)
+            .map { segment -> GeometrySegmentId.between(segment.from, segment.to) }
             .toSet()
-            .intersect(reciprocal.path.segmentIds().map(::undirectedSegment).toSet())
+            .intersect(
+                reciprocal.path.segmentIds()
+                    .map { segment -> GeometrySegmentId.between(segment.from, segment.to) }
+                    .toSet()
+            )
 
         if (sharedSegments.isEmpty()) {
             issues += WorldValidationIssue(
@@ -440,20 +506,57 @@ private fun reachablePointsFrom(
     return visited
 }
 
-private data class UndirectedSegment(
-    val first: PointId,
-    val second: PointId
-) {
-    fun describe(): String =
-        "${first.value}<->${second.value}"
-}
+private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> {
+    val claimedSegments = linkedSetOf<GeometrySegmentId>()
 
-private fun undirectedSegment(segment: SegmentId): UndirectedSegment =
-    if (segment.from.value <= segment.to.value) {
-        UndirectedSegment(segment.from, segment.to)
-    } else {
-        UndirectedSegment(segment.to, segment.from)
+    fun addPath(path: Path) {
+        claimedSegments += path.geometrySegmentIds()
     }
+
+    aerodromes.values.forEach { aerodrome ->
+        aerodrome.runways.values.forEach { runway -> addPath(runway.path) }
+        aerodrome.taxiways.values.forEach { taxiway -> addPath(taxiway.path) }
+        aerodrome.aprons.values.forEach { apron ->
+            apron.paths.forEach(::addPath)
+        }
+        aerodrome.circuits.values.forEach { circuit ->
+            circuit.legs.forEach { leg -> addPath(leg.path) }
+            circuit.joinProcedures.mapNotNull { join -> join.entryPath }.forEach(::addPath)
+            circuit.extendedDownwind?.let { extension ->
+                addPath(extension.extendedPath)
+                extension.offRamps.forEach { offRamp -> addPath(offRamp.path) }
+            }
+            circuit.orbitPoints.forEach { orbit -> addPath(orbit.loop) }
+            addPath(circuit.goAroundPath)
+        }
+        aerodrome.sids.values.forEach { sid ->
+            sid.waypoints.asPathOrNull()?.let(::addPath)
+            sid.transitions.values.forEach { transition ->
+                transition.asPathOrNull()?.let(::addPath)
+            }
+        }
+        aerodrome.stars.values.forEach { star ->
+            star.waypoints.asPathOrNull()?.let(::addPath)
+            star.transitions.values.forEach { transition ->
+                transition.asPathOrNull()?.let(::addPath)
+            }
+        }
+        aerodrome.approaches.values.forEach { approach ->
+            approach.waypoints.asPathOrNull()?.let(::addPath)
+            approach.missedApproach.waypoints.asPathOrNull()?.let(::addPath)
+        }
+        aerodrome.holdingPatterns.values.forEach { holdingPattern -> addPath(holdingPattern.loop) }
+    }
+
+    airways.values.forEach { airway ->
+        airway.waypoints.asPathOrNull()?.let(::addPath)
+    }
+    vfrRoutes.values.forEach { route ->
+        route.waypoints.asPathOrNull()?.let(::addPath)
+    }
+
+    return claimedSegments
+}
 
 private fun RunwayId.reciprocal(): RunwayId? {
     val match = RUNWAY_DESIGNATOR.matchEntire(value) ?: return null
