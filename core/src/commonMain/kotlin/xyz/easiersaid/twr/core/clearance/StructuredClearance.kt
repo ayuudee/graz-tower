@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.core.clearance
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.ApproachComponent
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
@@ -16,6 +17,7 @@ import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.Squawk
 import xyz.easiersaid.twr.protocol.TickNumber
+import xyz.easiersaid.twr.protocol.TransponderMode
 
 data class StructuredClearance(
     val id: ClearanceId,
@@ -47,8 +49,11 @@ data class CompletionView(
     val speed: Speed? = null,
     val onGround: Boolean,
     val transitionHistory: Set<EntityRef> = emptySet(),
+    val establishedApproachComponents: Set<ApproachComponent> = emptySet(),
     val radioState: RadioState = RadioState(),
-    val transponderCode: Squawk? = null
+    val transponderCode: Squawk? = null,
+    val transponderMode: TransponderMode? = null,
+    val transponderIdentActive: Boolean = false
 )
 
 fun isCompoundComplete(content: ClearanceContent.Compound, isPersistent: (AtcInstruction) -> Boolean): Boolean =

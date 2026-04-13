@@ -25,14 +25,17 @@ import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.CircuitProcedure
 import xyz.easiersaid.twr.core.world.Fix
 import xyz.easiersaid.twr.core.world.HoldingPoint
+import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.Taxiway
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.ClearedApproach
 import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.CompletionCategory
+import xyz.easiersaid.twr.protocol.ConditionalClearance
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.HoldShortOf
@@ -47,9 +50,9 @@ import xyz.easiersaid.twr.protocol.ProceedDirect
 import xyz.easiersaid.twr.protocol.RejoinSidAt
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.WhenAbleProceedDirect
-import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.instructionCompletionCategory
 import xyz.easiersaid.twr.protocol.instructionDomain
+import xyz.easiersaid.twr.protocol.instructionMayBeConditional
 import xyz.easiersaid.twr.protocol.instructionSupersedesIn
 import xyz.easiersaid.twr.protocol.instructionTiming
 
@@ -90,6 +93,16 @@ sealed interface ResolvedStep {
         override val domain: ClearanceDomain,
         override val completionCategory: CompletionCategory?,
         val crossing: ResolvedRunwayCrossing
+    ) : ResolvedStep
+
+    data class Backtrack(
+        override val index: Int,
+        override val instruction: BacktrackRunway,
+        override val timing: InstructionTiming?,
+        override val domain: ClearanceDomain,
+        override val completionCategory: CompletionCategory?,
+        val runway: Runway,
+        val farEndPoint: PointId
     ) : ResolvedStep
 
     data class Route(
@@ -206,7 +219,12 @@ fun AviationWorld.resolveClearance(
     context: ClearanceResolutionContext,
     clearance: StructuredClearance
 ): ResolutionResult<ResolvedClearance> {
-    val steps = when (val content = clearance.content) {
+    val normalizedClearance = when (val normalized = clearance.normalizeConditionalEnvelope()) {
+        is ResolutionResult.Unresolved -> return normalized
+        is ResolutionResult.Resolved -> normalized.value
+    }
+
+    val steps = when (val content = normalizedClearance.content) {
         is ClearanceContent.Single -> listOf(content.instruction)
         is ClearanceContent.Compound -> content.steps
     }
@@ -215,7 +233,7 @@ fun AviationWorld.resolveClearance(
     var state = ResolutionCompilationState(currentPoint = context.currentPoint)
 
     steps.forEachIndexed { index, instruction ->
-        when (val resolved = resolveStep(context, clearance, index, instruction, state)) {
+        when (val resolved = resolveStep(context, normalizedClearance, index, instruction, state)) {
             is ResolutionResult.Unresolved -> return resolved
             is ResolutionResult.Resolved -> {
                 resolvedSteps += resolved.value.step
@@ -226,10 +244,78 @@ fun AviationWorld.resolveClearance(
 
     return ResolutionResult.Resolved(
         ResolvedClearance(
-            source = clearance,
+            source = normalizedClearance,
             steps = resolvedSteps.toList()
         )
     )
+}
+
+private fun StructuredClearance.normalizeConditionalEnvelope(): ResolutionResult<StructuredClearance> =
+    when (val content = content) {
+        is ClearanceContent.Single -> normalizeSingleConditional(content)
+        is ClearanceContent.Compound -> normalizeCompoundConditional(content)
+    }
+
+private fun StructuredClearance.normalizeSingleConditional(
+    content: ClearanceContent.Single
+): ResolutionResult<StructuredClearance> {
+    val normalizedClearance = when (val instruction = content.instruction) {
+        is ConditionalClearance -> {
+            if (condition != null && condition != instruction.condition) {
+                return unresolved(
+                    ResolutionFailureCode.MULTIPLE_CONDITIONS_NOT_SUPPORTED,
+                    "Clearance ${id.value} carries multiple conditional predicates"
+                )
+            }
+            if (!instructionMayBeConditional(instruction.instruction)) {
+                return unresolved(
+                    ResolutionFailureCode.CONDITIONAL_INSTRUCTION_NOT_ALLOWED,
+                    "Conditional clearances may only wrap supported surface instructions"
+                )
+            }
+            copy(
+                content = ClearanceContent.Single(instruction.instruction),
+                condition = condition ?: instruction.condition
+            )
+        }
+
+        else -> this
+    }
+
+    val unwrappedInstruction = when (val normalizedContent = normalizedClearance.content) {
+        is ClearanceContent.Single -> normalizedContent.instruction
+        is ClearanceContent.Compound -> error("Single conditional normalization must produce single content")
+    }
+    if (normalizedClearance.condition != null && !instructionMayBeConditional(unwrappedInstruction)) {
+        return unresolved(
+            ResolutionFailureCode.CONDITIONAL_INSTRUCTION_NOT_ALLOWED,
+            "Conditional clearances may only wrap supported surface instructions"
+        )
+    }
+
+    return ResolutionResult.Resolved(normalizedClearance)
+}
+
+private fun StructuredClearance.normalizeCompoundConditional(
+    content: ClearanceContent.Compound
+): ResolutionResult<StructuredClearance> {
+    val wrappedStepIndex = content.steps.indexOfFirst { step -> step is ConditionalClearance }
+    if (wrappedStepIndex != -1) {
+        return unresolved(
+            ResolutionFailureCode.CONDITIONAL_STEP_NOT_SUPPORTED,
+            "Conditional step ${wrappedStepIndex + 1} in clearance ${id.value} is not supported; split the clearance envelope instead"
+        )
+    }
+    if (condition != null) {
+        val invalidStep = content.steps.firstOrNull { step -> !instructionMayBeConditional(step) }
+        if (invalidStep != null) {
+            return unresolved(
+                ResolutionFailureCode.CONDITIONAL_INSTRUCTION_NOT_ALLOWED,
+                "Conditional compound clearances may only contain supported surface instructions"
+            )
+        }
+    }
+    return ResolutionResult.Resolved(this)
 }
 
 private fun AviationWorld.resolveStep(
@@ -254,6 +340,7 @@ private fun AviationWorld.resolveStep(
         is TaxiTo -> resolveTaxiStep(context, stepContext, instruction, state)
         is HoldShortOf -> resolveHoldShortStep(context, stepContext, instruction, state)
         is CrossRunway -> resolveCrossingStep(context, stepContext, instruction, state)
+        is BacktrackRunway -> resolveBacktrackStep(context, stepContext, instruction, state)
         is ClearedTo -> resolveRouteStep(context, stepContext, instruction, state)
         is HoldAt -> resolveHoldingStep(context, stepContext, instruction, state)
         is ClearedApproach -> resolveApproachStep(context, stepContext, instruction, state)
@@ -437,6 +524,37 @@ private fun AviationWorld.resolveRouteStep(
             )
         )
     }
+
+private fun AviationWorld.resolveBacktrackStep(
+    context: ClearanceResolutionContext,
+    stepContext: StepContext,
+    instruction: BacktrackRunway,
+    state: ResolutionCompilationState
+): ResolutionResult<ResolvedStepWithState> {
+    val aerodrome = aerodromes[context.aerodromeId] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AERODROME,
+        "Unknown aerodrome ${context.aerodromeId.value}"
+    )
+    val runway = aerodrome.runways[instruction.runway] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_RUNWAY,
+        "Unknown runway ${instruction.runway.value} at aerodrome ${aerodrome.icao.value}"
+    )
+
+    return ResolutionResult.Resolved(
+        ResolvedStepWithState(
+            step = ResolvedStep.Backtrack(
+                index = stepContext.index,
+                instruction = instruction,
+                timing = stepContext.timing,
+                domain = stepContext.domain,
+                completionCategory = stepContext.completionCategory,
+                runway = runway,
+                farEndPoint = runway.path.points.last()
+            ),
+            state = state
+        )
+    )
+}
 
 private fun AviationWorld.resolveHoldingStep(
     context: ClearanceResolutionContext,

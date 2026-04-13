@@ -1,12 +1,18 @@
 package xyz.easiersaid.twr.core.clearance
 
 import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
+import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
+import xyz.easiersaid.twr.protocol.AfterPassingLevelDescendTo
+import xyz.easiersaid.twr.protocol.ApproachComponent
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedLowApproach
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ClimbTo
 import xyz.easiersaid.twr.protocol.ClearanceContent
+import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.CompletionCategory
 import xyz.easiersaid.twr.protocol.DescendTo
@@ -15,9 +21,21 @@ import xyz.easiersaid.twr.protocol.ExpediteDescend
 import xyz.easiersaid.twr.protocol.IncreaseSpeedTo
 import xyz.easiersaid.twr.protocol.JoinCircuit
 import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.MaintainAtOrAbove
+import xyz.easiersaid.twr.protocol.MaintainAtOrBelow
+import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
+import xyz.easiersaid.twr.protocol.MaintainLevel
 import xyz.easiersaid.twr.protocol.MaintainSpeed
 import xyz.easiersaid.twr.protocol.ReduceSpeedTo
+import xyz.easiersaid.twr.protocol.ConfirmSquawk
 import xyz.easiersaid.twr.protocol.Speed
+import xyz.easiersaid.twr.protocol.StopClimbAt
+import xyz.easiersaid.twr.protocol.StopDescentAt
+import xyz.easiersaid.twr.protocol.StopSquawk
+import xyz.easiersaid.twr.protocol.SquawkIdent
+import xyz.easiersaid.twr.protocol.SquawkNormal
+import xyz.easiersaid.twr.protocol.SquawkStandby
+import xyz.easiersaid.twr.protocol.instructionDomain
 
 data class StepCompletion(
     val step: ResolvedStep,
@@ -37,10 +55,16 @@ data class CompletionEvaluation(
 
 fun evaluateCompletion(
     clearance: ResolvedClearance,
-    view: CompletionView
+    view: CompletionView,
+    suppressedDomains: Set<ClearanceDomain> = emptySet()
 ): CompletionEvaluation {
     val stepResults = clearance.steps.map { step ->
-        StepCompletion(step, evaluateStepCompletion(step, view))
+        val result = if (step.domain in suppressedDomains) {
+            CompletionResult.NOT_APPLICABLE
+        } else {
+            evaluateStepCompletion(step, view)
+        }
+        StepCompletion(step, result)
     }
     val newlyCompletedSteps = stepResults
         .filter { stepCompletion -> stepCompletion.result == CompletionResult.COMPLETE }
@@ -62,9 +86,13 @@ fun evaluateCompletion(
             val updatedContent = content.copy(
                 completedSteps = content.completedSteps + newlyCompletedSteps
             )
-            val isComplete = isCompoundComplete(updatedContent) { instruction ->
-                instruction.completionCategory() == CompletionCategory.PERSISTENT
-            }
+            val isComplete = updatedContent.steps.withIndex()
+                .filterNot { (index, instruction) ->
+                    val domain = instructionDomain(instruction) ?: clearance.source.domain
+                    domain in suppressedDomains ||
+                        instruction.completionCategory() == CompletionCategory.PERSISTENT
+                }
+                .all { (index, _) -> index in updatedContent.completedSteps }
             val nextStatus = if (isComplete) {
                 ClearanceStatus.COMPLETED
             } else {
@@ -104,6 +132,12 @@ private fun evaluateStepCompletion(
             runway = step.crossing.runway.id,
             view = view
         )
+
+        is ResolvedStep.Backtrack -> if (view.position == step.farEndPoint) {
+            CompletionResult.COMPLETE
+        } else {
+            CompletionResult.NOT_COMPLETE
+        }
 
         is ResolvedStep.Route -> if (view.position == step.clearance.clearanceLimit.point) {
             CompletionResult.COMPLETE
@@ -187,6 +221,54 @@ private fun evaluateGenericInstructionCompletion(
                 CompletionResult.NOT_COMPLETE
             }
 
+            is MaintainLevel -> if (view.altitude.matches(instruction.level)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is StopClimbAt -> if (view.altitude.matches(instruction.level)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is StopDescentAt -> if (view.altitude.matches(instruction.level)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is MaintainAtOrAbove -> if (view.altitude.isAtOrAbove(instruction.minimumLevel)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is MaintainAtOrBelow -> if (view.altitude.isAtOrBelow(instruction.maximumLevel)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is AfterPassingLevelClimbTo -> if (view.altitude.isAtOrAbove(instruction.climbTo)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is AfterPassingLevelDescendTo -> if (view.altitude.isAtOrBelow(instruction.descendTo)) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is MaintainAltitudeUntilEstablished -> if (instruction.on in view.establishedApproachComponents) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
             is MaintainSpeed -> if (view.speed.matches(instruction.speed)) {
                 CompletionResult.COMPLETE
             } else {
@@ -205,6 +287,36 @@ private fun evaluateGenericInstructionCompletion(
                 CompletionResult.NOT_COMPLETE
             }
 
+            is ConfirmSquawk -> if (view.transponderCode == instruction.squawk) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is SquawkIdent -> if (view.transponderIdentActive) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is SquawkStandby -> if (view.transponderMode == xyz.easiersaid.twr.protocol.TransponderMode.STANDBY) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is SquawkNormal -> if (view.transponderMode == instruction.mode) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
+            is StopSquawk -> if (view.transponderMode != instruction.mode) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
+
             is ClearedForTakeoff -> if (!view.onGround) {
                 CompletionResult.COMPLETE
             } else {
@@ -212,6 +324,15 @@ private fun evaluateGenericInstructionCompletion(
             }
 
             is ClearedToLand -> evaluateRunwayTransitionCompletion(instruction.runway, view)
+
+            is ClearedLowApproach -> {
+                val runwayRef = EntityRef.RunwayRef(instruction.runway)
+                if (!view.onGround && runwayRef in view.transitionHistory && runwayRef !in view.entities) {
+                    CompletionResult.COMPLETE
+                } else {
+                    CompletionResult.NOT_COMPLETE
+                }
+            }
 
             is ClearedTouchAndGo -> {
                 val runwayRef = EntityRef.RunwayRef(instruction.runway)
@@ -223,15 +344,16 @@ private fun evaluateGenericInstructionCompletion(
             }
 
             is BacktrackRunway -> {
-                val runwayRef = EntityRef.RunwayRef(instruction.runway)
-                if (runwayRef in view.entities && runwayRef in view.transitionHistory) {
-                    CompletionResult.COMPLETE
-                } else {
-                    CompletionResult.NOT_COMPLETE
-                }
+                CompletionResult.NOT_COMPLETE
             }
 
             is JoinCircuit -> CompletionResult.NOT_COMPLETE
+
+            is AfterLandingVacateVia -> if (view.position == instruction.exit) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_COMPLETE
+            }
 
             else -> CompletionResult.NOT_COMPLETE
         }
@@ -260,6 +382,11 @@ private fun Level?.isAtOrAbove(target: Level): Boolean =
 private fun Level?.isAtOrBelow(target: Level): Boolean =
     comparableFeetOrNull(this)?.let { current ->
         comparableFeet(target)?.let { targetFeet -> current <= targetFeet }
+    } ?: false
+
+private fun Level?.matches(target: Level): Boolean =
+    comparableFeetOrNull(this)?.let { current ->
+        comparableFeet(target)?.let { targetFeet -> current == targetFeet }
     } ?: false
 
 private fun Speed?.matches(target: Speed): Boolean =

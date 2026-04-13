@@ -1,11 +1,18 @@
 package xyz.easiersaid.twr.protocol
 
 fun instructionTiming(instruction: AtcInstruction): InstructionTiming? = when (instruction) {
+    is ConditionalClearance -> instructionTiming(instruction.instruction)
+
     is TaxiTo,
     is CrossRunway,
     is BacktrackRunway -> InstructionTiming.SEQUENTIAL
 
     is SetSquawk,
+    is ConfirmSquawk,
+    is SquawkIdent,
+    is SquawkStandby,
+    is SquawkNormal,
+    is StopSquawk,
     is SetPressure,
     is ClimbTo,
     is DescendTo,
@@ -18,6 +25,7 @@ fun instructionTiming(instruction: AtcInstruction): InstructionTiming? = when (i
     is MaintainAtOrBelow,
     is AfterPassingLevelClimbTo,
     is AfterPassingLevelDescendTo,
+    is MaintainAltitudeUntilEstablished,
     is MaintainSpeed,
     is ReduceSpeedTo,
     is IncreaseSpeedTo,
@@ -128,32 +136,64 @@ fun instructionDomain(instruction: AtcInstruction): ClearanceDomain? = when (ins
     else -> null
 }
 
-fun instructionSupersedesIn(instruction: AtcInstruction): Set<ClearanceDomain> = buildSet {
-    instructionDomain(instruction)?.let(::add)
+fun instructionSupersedesIn(instruction: AtcInstruction): Set<ClearanceDomain> =
     when (instruction) {
-        is GoAround -> addAll(setOf(ClearanceDomain.ROUTE, ClearanceDomain.LEVEL))
-        is ClearedApproach -> add(ClearanceDomain.LEVEL)
-        else -> Unit
+        is ConditionalClearance -> instructionSupersedesIn(instruction.instruction)
+        else -> buildSet {
+            instructionDomain(instruction)?.let(::add)
+            when (instruction) {
+                is GoAround -> addAll(setOf(ClearanceDomain.ROUTE, ClearanceDomain.LEVEL))
+                is ClearedApproach -> add(ClearanceDomain.LEVEL)
+                else -> Unit
+            }
+        }
     }
-}
 
 fun instructionCompletionCategory(instruction: AtcInstruction): CompletionCategory? = when (instruction) {
+    is ConditionalClearance -> instructionCompletionCategory(instruction.instruction)
+
     is TaxiTo,
     is CrossRunway,
     is BacktrackRunway,
     is ClearedForTakeoff,
     is ClearedToLand,
     is ClearedTouchAndGo,
+    is ClearedLowApproach,
+    is AfterLandingVacateVia,
     is ClearedTo,
+    is ProceedDirect,
+    is JoinAirway,
+    is RejoinSidAt,
+    is LeaveHoldProceedDirect,
+    is WhenAbleProceedDirect,
     is ClimbTo,
     is DescendTo,
+    is ExpediteClimb,
+    is ExpediteDescend,
+    is MaintainLevel,
+    is StopClimbAt,
+    is StopDescentAt,
+    is MaintainAtOrAbove,
+    is MaintainAtOrBelow,
+    is AfterPassingLevelClimbTo,
+    is AfterPassingLevelDescendTo,
+    is MaintainAltitudeUntilEstablished,
     is MaintainSpeed,
     is ReduceSpeedTo,
     is IncreaseSpeedTo,
+    is ConfirmSquawk,
+    is SquawkIdent,
+    is SquawkStandby,
+    is SquawkNormal,
+    is StopSquawk,
     is JoinCircuit -> CompletionCategory.SELF_COMPLETING
 
     is SetSquawk,
-    is SetPressure -> CompletionCategory.ON_ACTIVATION
+    is SetPressure,
+    is ResumeOwnNavigation,
+    is RouteAsFiled,
+    is MinimumCleanSpeed,
+    is ResumeNormalSpeed -> CompletionCategory.ON_ACTIVATION
 
     is ContactFrequency,
     is MonitorFrequency -> CompletionCategory.EXTERNAL_EVENT

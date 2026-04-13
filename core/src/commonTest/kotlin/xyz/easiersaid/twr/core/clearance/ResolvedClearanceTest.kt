@@ -13,8 +13,12 @@ import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.ContactFrequency
+import xyz.easiersaid.twr.protocol.ConditionalClearance
+import xyz.easiersaid.twr.protocol.ConditionalPredicate
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.ClearedTo
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.HoldShortOf
@@ -22,6 +26,8 @@ import xyz.easiersaid.twr.protocol.JoinAirway
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TrafficAction
+import xyz.easiersaid.twr.protocol.TrafficRef
 import xyz.easiersaid.twr.protocol.TickNumber
 
 class ResolvedClearanceTest {
@@ -55,6 +61,122 @@ class ResolvedClearanceTest {
         assertEquals("118.500", step.frequency.instructedFrequency.mhz)
         assertEquals(1, resolved.immediateSteps.size)
         assertEquals(setOf(ClearanceDomain.FREQUENCY), resolved.supersedesDomains)
+    }
+
+    @Test
+    fun resolvesConditionalTaxiClearanceIntoEnvelopeCondition() {
+        val world = sampleWorld()
+        val condition = ConditionalPredicate.AfterTraffic(
+            traffic = TrafficRef.ByDescription("landing 737"),
+            action = TrafficAction.LANDING
+        )
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-CONDITIONAL-TAXI"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                ConditionalClearance(
+                    target = AircraftId("TEST123"),
+                    condition = condition,
+                    instruction = TaxiTo(
+                        target = AircraftId("TEST123"),
+                        destination = FixtureIds.holdShort09,
+                        via = listOf(FixtureIds.apronJunction)
+                    )
+                )
+            ),
+            domain = ClearanceDomain.GROUND,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(1),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentPoint = FixtureIds.standPoint
+            ),
+            clearance = clearance
+        ).requireResolved()
+
+        assertEquals(condition, resolved.source.condition)
+        assertIs<TaxiTo>((resolved.source.content as ClearanceContent.Single).instruction)
+        assertIs<ResolvedStep.Taxi>(resolved.steps.single())
+    }
+
+    @Test
+    fun rejectsConditionalCompoundSteps() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-CONDITIONAL-COMPOUND"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Compound(
+                steps = listOf(
+                    ConditionalClearance(
+                        target = AircraftId("TEST123"),
+                        condition = ConditionalPredicate.BehindTraffic(
+                            TrafficRef.ByDescription("departing A320")
+                        ),
+                        instruction = CrossRunway(
+                            target = AircraftId("TEST123"),
+                            runway = FixtureIds.runway09
+                        )
+                    ),
+                    HoldShortOf(
+                        target = AircraftId("TEST123"),
+                        runway = FixtureIds.runway27
+                    )
+                )
+            ),
+            domain = ClearanceDomain.GROUND,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(1),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val result = world.resolveClearance(
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentPoint = FixtureIds.holdShort09
+            ),
+            clearance = clearance
+        )
+
+        val unresolved = assertIs<ResolutionResult.Unresolved>(result)
+        assertEquals(ResolutionFailureCode.CONDITIONAL_STEP_NOT_SUPPORTED, unresolved.failure.code)
+    }
+
+    @Test
+    fun rejectsConditionalNonSurfaceInstructions() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-CONDITIONAL-TAKEOFF"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                ConditionalClearance(
+                    target = AircraftId("TEST123"),
+                    condition = ConditionalPredicate.AfterTraffic(
+                        traffic = TrafficRef.ByDescription("landing 737"),
+                        action = TrafficAction.LANDING
+                    ),
+                    instruction = ClearedForTakeoff(
+                        target = AircraftId("TEST123"),
+                        runway = FixtureIds.runway09
+                    )
+                )
+            ),
+            domain = ClearanceDomain.RUNWAY,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(1),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val result = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        )
+
+        val unresolved = assertIs<ResolutionResult.Unresolved>(result)
+        assertEquals(ResolutionFailureCode.CONDITIONAL_INSTRUCTION_NOT_ALLOWED, unresolved.failure.code)
     }
 
     @Test
@@ -213,6 +335,33 @@ class ResolvedClearanceTest {
 
         val unresolved = assertIs<ResolutionResult.Unresolved>(result)
         assertEquals(ResolutionFailureCode.AIRWAY_JOIN_FIX_NOT_ON_AIRWAY, unresolved.failure.code)
+    }
+
+    @Test
+    fun resolvesBacktrackIntoFarEndRunwayStep() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-BACKTRACK"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                BacktrackRunway(
+                    target = AircraftId("TEST123"),
+                    runway = FixtureIds.runway09
+                )
+            ),
+            domain = ClearanceDomain.GROUND,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(6),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        ).requireResolved()
+
+        val step = assertIs<ResolvedStep.Backtrack>(resolved.steps.single())
+        assertEquals(FixtureIds.runway27Threshold, step.farEndPoint)
     }
 }
 

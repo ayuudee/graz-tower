@@ -15,17 +15,31 @@ import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
+import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
+import xyz.easiersaid.twr.protocol.ApproachComponent
+import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.MaintainSpeed
+import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
+import xyz.easiersaid.twr.protocol.MaintainLevel
 import xyz.easiersaid.twr.protocol.ReduceSpeedTo
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
+import xyz.easiersaid.twr.protocol.ConfirmSquawk
 import xyz.easiersaid.twr.protocol.Speed
+import xyz.easiersaid.twr.protocol.Squawk
+import xyz.easiersaid.twr.protocol.SquawkIdent
+import xyz.easiersaid.twr.protocol.SquawkNormal
+import xyz.easiersaid.twr.protocol.SquawkStandby
+import xyz.easiersaid.twr.protocol.StopSquawk
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TickNumber
+import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.TransponderMode
 
 class CompletionEvaluationTest {
 
@@ -193,6 +207,267 @@ class CompletionEvaluationTest {
         assertEquals(
             CompletionResult.COMPLETE,
             evaluateCompletion(reduce, slowView).stepResults.single().result
+        )
+    }
+
+    @Test
+    fun levelCompletionHandlesMaintainAndAfterPassingInstructions() {
+        val world = sampleWorld()
+        val maintain = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-MAINTAIN-LEVEL",
+                domain = ClearanceDomain.LEVEL,
+                content = ClearanceContent.Single(
+                    MaintainLevel(
+                        target = TEST_AIRCRAFT,
+                        level = Level.AltitudeFeet(5000)
+                    )
+                )
+            )
+        ).requireResolved()
+        val afterPassing = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-AFTER-PASSING",
+                domain = ClearanceDomain.LEVEL,
+                content = ClearanceContent.Single(
+                    AfterPassingLevelClimbTo(
+                        target = TEST_AIRCRAFT,
+                        afterPassing = Level.AltitudeFeet(3000),
+                        climbTo = Level.AltitudeFeet(5000)
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val lowView = CompletionView(
+            position = FixtureIds.holdFixPoint,
+            entities = emptySet(),
+            altitude = Level.AltitudeFeet(4500),
+            onGround = false
+        )
+        val targetView = lowView.copy(altitude = Level.AltitudeFeet(5000))
+
+        assertEquals(
+            CompletionResult.NOT_COMPLETE,
+            evaluateCompletion(maintain, lowView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(maintain, targetView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.NOT_COMPLETE,
+            evaluateCompletion(afterPassing, lowView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(afterPassing, targetView).stepResults.single().result
+        )
+    }
+
+    @Test
+    fun vacateViaCompletesAtAssignedExitPoint() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-VACATE-VIA",
+                domain = ClearanceDomain.RUNWAY,
+                content = ClearanceContent.Single(
+                    AfterLandingVacateVia(
+                        target = TEST_AIRCRAFT,
+                        exit = FixtureIds.runwayMid
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val evaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runwayMid,
+                entities = setOf(EntityRef.RunwayRef(FixtureIds.runway09)),
+                onGround = true
+            )
+        )
+
+        assertEquals(CompletionResult.COMPLETE, evaluation.stepResults.single().result)
+        assertEquals(ClearanceStatus.COMPLETED, evaluation.updated.source.status)
+    }
+
+    @Test
+    fun backtrackCompletesAtFarRunwayEnd() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-BACKTRACK",
+                domain = ClearanceDomain.GROUND,
+                content = ClearanceContent.Single(
+                    BacktrackRunway(
+                        target = TEST_AIRCRAFT,
+                        runway = FixtureIds.runway09
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val beforeEnd = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runwayMid,
+                entities = setOf(EntityRef.RunwayRef(FixtureIds.runway09)),
+                onGround = true
+            )
+        )
+        val atFarEnd = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runway27Threshold,
+                entities = setOf(EntityRef.RunwayRef(FixtureIds.runway09)),
+                onGround = true
+            )
+        )
+
+        assertEquals(CompletionResult.NOT_COMPLETE, beforeEnd.stepResults.single().result)
+        assertEquals(CompletionResult.COMPLETE, atFarEnd.stepResults.single().result)
+    }
+
+    @Test
+    fun maintainAltitudeUntilEstablishedCompletesOnApproachCapture() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-MAINTAIN-UNTIL-ESTABLISHED",
+                domain = ClearanceDomain.LEVEL,
+                content = ClearanceContent.Single(
+                    MaintainAltitudeUntilEstablished(
+                        target = TEST_AIRCRAFT,
+                        level = Level.AltitudeFeet(3000),
+                        on = ApproachComponent.LOCALISER
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val notEstablished = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.fafPoint,
+                entities = setOf(EntityRef.ApproachRef(FixtureIds.approach)),
+                altitude = Level.AltitudeFeet(3000),
+                onGround = false
+            )
+        )
+        val established = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.fafPoint,
+                entities = setOf(EntityRef.ApproachRef(FixtureIds.approach)),
+                altitude = Level.AltitudeFeet(3000),
+                onGround = false,
+                establishedApproachComponents = setOf(ApproachComponent.LOCALISER)
+            )
+        )
+
+        assertEquals(CompletionResult.NOT_COMPLETE, notEstablished.stepResults.single().result)
+        assertEquals(CompletionResult.COMPLETE, established.stepResults.single().result)
+    }
+
+    @Test
+    fun surveillanceInstructionsCompleteFromTransponderState() {
+        val world = sampleWorld()
+        val confirm = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-CONFIRM-SQUAWK",
+                domain = ClearanceDomain.SQUAWK,
+                content = ClearanceContent.Single(
+                    ConfirmSquawk(
+                        target = TEST_AIRCRAFT,
+                        squawk = Squawk(4521)
+                    )
+                )
+            )
+        ).requireResolved()
+        val ident = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-SQUAWK-IDENT",
+                domain = ClearanceDomain.SQUAWK,
+                content = ClearanceContent.Single(
+                    SquawkIdent(target = TEST_AIRCRAFT)
+                )
+            )
+        ).requireResolved()
+        val normal = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-SQUAWK-NORMAL",
+                domain = ClearanceDomain.SQUAWK,
+                content = ClearanceContent.Single(
+                    SquawkNormal(
+                        target = TEST_AIRCRAFT,
+                        mode = TransponderMode.NORMAL
+                    )
+                )
+            )
+        ).requireResolved()
+        val standby = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-SQUAWK-STANDBY",
+                domain = ClearanceDomain.SQUAWK,
+                content = ClearanceContent.Single(
+                    SquawkStandby(target = TEST_AIRCRAFT)
+                )
+            )
+        ).requireResolved()
+        val stopCharlie = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-STOP-CHARLIE",
+                domain = ClearanceDomain.SQUAWK,
+                content = ClearanceContent.Single(
+                    StopSquawk(
+                        target = TEST_AIRCRAFT,
+                        mode = TransponderMode.CHARLIE
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val transponderView = CompletionView(
+            position = FixtureIds.holdFixPoint,
+            entities = emptySet(),
+            onGround = false,
+            transponderCode = Squawk(4521),
+            transponderMode = TransponderMode.NORMAL,
+            transponderIdentActive = true
+        )
+
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(confirm, transponderView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(ident, transponderView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(normal, transponderView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.NOT_COMPLETE,
+            evaluateCompletion(standby, transponderView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(stopCharlie, transponderView).stepResults.single().result
         )
     }
 }
