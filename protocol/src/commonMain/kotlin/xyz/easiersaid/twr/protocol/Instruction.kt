@@ -9,9 +9,24 @@ package xyz.easiersaid.twr.protocol
 // -----------------------------------------------------------------------------
 
 @JvmInline value class AircraftId(val value: String)
+@JvmInline value class ClearanceId(val value: String)
+@JvmInline value class TickNumber(val value: Long)
 @JvmInline value class RunwayId(val value: String)
-@JvmInline value class NodeId(val value: String)
-@JvmInline value class AirspaceId(val value: String)
+@JvmInline value class PointId(val value: String)
+@JvmInline value class TaxiwayId(val value: String)
+@JvmInline value class StandId(val value: String)
+@JvmInline value class ApronId(val value: String)
+@JvmInline value class CircuitProcedureId(val value: String)
+@JvmInline value class FixId(val value: String)
+@JvmInline value class SidId(val value: String)
+@JvmInline value class AirwayId(val value: String)
+@JvmInline value class StarId(val value: String)
+@JvmInline value class VfrRouteId(val value: String)
+@JvmInline value class HoldingPatternId(val value: String)
+@JvmInline value class ApproachId(val value: String)
+@JvmInline value class AerodromeId(val value: String)
+@JvmInline value class AirspaceVolumeId(val value: String)
+@JvmInline value class FirId(val value: String)
 @JvmInline value class ControllerId(val value: String)
 @JvmInline value class Callsign(val value: String)
 
@@ -123,6 +138,16 @@ enum class TurnDirection { LEFT, RIGHT }
 enum class OrbitDirection { LEFT, RIGHT }
 enum class CircuitDirection { LEFT_HAND, RIGHT_HAND }
 
+enum class RoleName {
+    CLEARANCE_DELIVERY,
+    GROUND,
+    TOWER,
+    APPROACH,
+    DEPARTURE,
+    AREA_CONTROL,
+    AFIS
+}
+
 enum class JoinType {
     STRAIGHT_IN,
     BASE,
@@ -182,22 +207,23 @@ sealed interface TrafficRef {
 }
 
 sealed interface RouteSpec {
-    data class Direct(val fix: NodeId) : RouteSpec
-    data class Via(val points: List<NodeId>) : RouteSpec {
+    data class Direct(val fix: FixId) : RouteSpec
+    data class Via(val fixes: List<FixId>) : RouteSpec {
         init {
-            require(points.isNotEmpty()) { "Via route must not be empty" }
+            require(fixes.isNotEmpty()) { "Via route must not be empty" }
         }
     }
 
-    data class Airway(val designator: String, val exitFix: NodeId) : RouteSpec
-    data class ViaSid(val designator: String) : RouteSpec
-    data class ViaStar(val designator: String) : RouteSpec
+    data class Airway(val airway: AirwayId, val exitFix: FixId) : RouteSpec
+    data class ViaSid(val sid: SidId) : RouteSpec
+    data class ViaStar(val star: StarId) : RouteSpec
+    data class ViaRoute(val route: VfrRouteId) : RouteSpec
 }
 
 sealed interface HoldSpec {
-    data class Published(val fix: NodeId) : HoldSpec
+    data class Published(val fix: FixId) : HoldSpec
     data class InboundTrack(
-        val fix: NodeId,
+        val fix: FixId,
         val inboundDegreesMagnetic: Int,
         val turnDirection: TurnDirection,
         val legTime: Minutes? = null,
@@ -294,20 +320,20 @@ data class PushbackFace(
 
 data class TaxiTo(
     override val target: AircraftId,
-    val destination: NodeId,
-    val via: List<NodeId> = emptyList()
+    val destination: PointId,
+    val via: List<PointId> = emptyList()
 ) : GroundInstruction
 
 data class TaxiViaRunway(
     override val target: AircraftId,
     val runway: RunwayId,
-    val destination: NodeId? = null
+    val destination: PointId? = null
 ) : GroundInstruction
 
 data class AirTaxiTo(
     override val target: AircraftId,
-    val destination: NodeId,
-    val via: List<NodeId> = emptyList()
+    val destination: PointId,
+    val via: List<PointId> = emptyList()
 ) : GroundInstruction
 
 data class HoldPosition(
@@ -332,7 +358,7 @@ data class BacktrackRunway(
 data class VacateRunway(
     override val target: AircraftId,
     val direction: TurnDirection? = null,
-    val via: NodeId? = null
+    val via: PointId? = null
 ) : GroundInstruction
 
 data class TaxiIntoHoldingBay(
@@ -415,7 +441,7 @@ data class TakeoffImmediatelyOrHoldShort(
 
 data class AfterLandingVacateVia(
     override val target: AircraftId,
-    val exit: NodeId
+    val exit: PointId
 ) : RunwayInstruction
 
 // -----------------------------------------------------------------------------
@@ -424,13 +450,13 @@ data class AfterLandingVacateVia(
 
 data class ClearedTo(
     override val target: AircraftId,
-    val clearanceLimit: NodeId,
+    val clearanceLimit: FixId,
     val route: RouteSpec? = null
 ) : Clearance, RouteInstruction
 
 data class ProceedDirect(
     override val target: AircraftId,
-    val fix: NodeId
+    val fix: FixId
 ) : RouteInstruction
 
 data class ResumeOwnNavigation(
@@ -443,13 +469,13 @@ data class RouteAsFiled(
 
 data class JoinAirway(
     override val target: AircraftId,
-    val airway: String,
-    val joinFix: NodeId
+    val airway: AirwayId,
+    val joinFix: FixId
 ) : RouteInstruction
 
 data class RejoinSidAt(
     override val target: AircraftId,
-    val fix: NodeId
+    val fix: FixId
 ) : RouteInstruction
 
 data class HoldAt(
@@ -460,7 +486,7 @@ data class HoldAt(
 
 data class LeaveHoldProceedDirect(
     override val target: AircraftId,
-    val fix: NodeId
+    val fix: FixId
 ) : RouteInstruction
 
 // -----------------------------------------------------------------------------
@@ -504,7 +530,7 @@ data class InterceptLocaliser(
 
 data class WhenAbleProceedDirect(
     override val target: AircraftId,
-    val fix: NodeId
+    val fix: FixId
 ) : VectorInstruction, RouteInstruction
 
 // -----------------------------------------------------------------------------
@@ -678,7 +704,7 @@ sealed interface ReportEvent {
     data class PassingLevel(val level: Level) : ReportEvent
     data class LeavingLevel(val level: Level) : ReportEvent
     data class DistanceDme(val distance: DmeDistanceNm) : ReportEvent
-    data class OverFix(val fix: NodeId) : ReportEvent
+    data class OverFix(val fix: FixId) : ReportEvent
 }
 
 data class ReportWhen(
@@ -721,13 +747,13 @@ data class MaintainVisualSeparation(
 
 data class ContactFrequency(
     override val target: AircraftId,
-    val controller: ControllerId,
+    val role: RoleName,
     val frequency: Frequency? = null
 ) : FrequencyInstruction
 
 data class MonitorFrequency(
     override val target: AircraftId,
-    val controller: ControllerId,
+    val role: RoleName,
     val frequency: Frequency? = null
 ) : FrequencyInstruction
 
@@ -778,7 +804,7 @@ data class SetPressure(
 
 data class DivertTo(
     override val target: AircraftId,
-    val aerodrome: NodeId
+    val aerodrome: AerodromeId
 ) : EmergencyInstruction
 
 // -----------------------------------------------------------------------------
@@ -787,14 +813,14 @@ data class DivertTo(
 
 data class ClearedToEnterControlZone(
     override val target: AircraftId,
-    val airspace: AirspaceId,
+    val airspace: AirspaceVolumeId,
     val route: RouteSpec? = null,
     val levelRestriction: Level? = null
 ) : Clearance
 
 data class RemainOutsideControlledAirspace(
     override val target: AircraftId,
-    val airspace: AirspaceId
+    val airspace: AirspaceVolumeId
 ) : AtcInstruction
 
 // -----------------------------------------------------------------------------

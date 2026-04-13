@@ -42,7 +42,7 @@ data class RunwayReadback(val runway: RunwayId) : AtomicReadback
 data class SquawkReadback(val squawk: Squawk) : AtomicReadback
 data class FrequencyReadback(
     val frequency: Frequency,
-    val controller: ControllerId? = null
+    val role: RoleName? = null
 ) : AtomicReadback
 data class PressureSettingReadback(val pressure: PressureSetting) : AtomicReadback
 data class HoldShortReadback(val runway: RunwayId) : AtomicReadback
@@ -58,8 +58,8 @@ data class LineUpReadback(val runway: RunwayId) : AtomicReadback
 data class CrossRunwayReadback(val runway: RunwayId) : AtomicReadback
 data class BacktrackReadback(val runway: RunwayId) : AtomicReadback
 data class TaxiRouteReadback(
-    val destination: NodeId,
-    val via: List<NodeId> = emptyList()
+    val destination: PointId,
+    val via: List<PointId> = emptyList()
 ) : AtomicReadback
 data class HoldReadback(val hold: HoldSpec) : AtomicReadback
 data class FreeTextReadback(val text: String) : AtomicReadback
@@ -70,7 +70,7 @@ sealed interface ReadbackCondition
 
 data class PassingLevelCondition(val level: Level) : ReadbackCondition
 data object WhenAbleCondition : ReadbackCondition
-data class AfterFixCondition(val fix: NodeId) : ReadbackCondition
+data class AfterFixCondition(val fix: FixId) : ReadbackCondition
 data class AfterTrafficCondition(
     val traffic: TrafficRef,
     val action: TrafficAction
@@ -83,7 +83,7 @@ data class AtLevelCondition(val level: Level) : ReadbackCondition
 // -----------------------------------------------------------------------------
 
 data class InitialContact(
-    val stationCalled: ControllerId,
+    val stationCalled: RoleName,
     val aircraftType: String? = null,
     val position: String? = null,
     val level: Level? = null,
@@ -104,7 +104,7 @@ sealed interface RequestType
 data class RequestClimb(val level: Level) : RequestType
 data class RequestDescent(val level: Level) : RequestType
 
-data class RequestDirect(val fix: NodeId) : RequestType
+data class RequestDirect(val fix: FixId) : RequestType
 data class RequestRoute(val route: RouteSpec) : RequestType
 
 data class RequestApproach(
@@ -215,7 +215,7 @@ enum class EmergencyType {
 }
 
 data class EmergencyDetails(
-    val stationAddressed: ControllerId? = null,
+    val stationAddressed: RoleName? = null,
     val aircraftType: String? = null,
     val nature: String,
     val intentions: String? = null,
