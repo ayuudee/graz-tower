@@ -25,6 +25,10 @@ It now contains:
   hold-short-of, taxi-to, takeoff, landing, touch-and-go, go-around,
   join-circuit, extend-downwind, continue-approach, reduce-speed-to, climb,
   descend, cleared-approach, and cross-controlled-airspace
+- a first honest route-bearing widening increment above the closed scoped
+  programme: resolved semantics for `ClearedTo`, `HoldAt`, `ClearedApproach`,
+  and `JoinCircuit`, plus theorem-bearing legacy-bridge issuance for
+  `ClearedApproach` and the legacy-supported `JoinCircuit` subset
 
 It does not yet contain:
 
@@ -40,8 +44,12 @@ It does not yet contain:
 - an envelope-level theorem for monotone sequencing or no-partial-issuance
 - the full broad-scope separation story described in the brief beyond the
   current scoped nominal surface
-- richer route-bearing and operationally detailed mode semantics beyond the
-  current conservative scoped full-brief layer
+- a full theorem-bearing route-bearing package across all four Phase A
+  widening families; the current route-bearing widening increment stops at
+  resolved semantics for all four and legacy-bridge issuance only for
+  `ClearedApproach` plus legacy-supported `JoinCircuit`
+- richer operationally detailed mode semantics beyond the current conservative
+  scoped full-brief layer
 
 Scoped nominal status:
 
@@ -165,10 +173,11 @@ Source:
 - `instructionCompoundTiming?_none_iff_standalone` and
   `instructionCompoundTiming?_isSome_iff_not_standalone` now make that timing
   split explicit at the proof boundary
-- the current proof contract now makes the `standalone` exclusion explicit:
-  route-bearing and open-ended instructions such as `ClearedTo`,
-  `JoinCircuit`, `ClearedApproach`, and `HoldAt` are not yet admitted into the
-  current compound theorem surface
+- the older frontier/compiler contract still makes the `standalone` exclusion
+  explicit: route-bearing and open-ended instructions such as `ClearedTo`,
+  `JoinCircuit`, `ClearedApproach`, and `HoldAt` are not admitted into that
+  older compound theorem surface directly; the widened route-bearing work now
+  lives above it in `GreenfieldRouteBearing.lean`
 - `StepCompletionObservation` and
   `instructionSatisfiedByObservation` now define an explicit completion model
   for the admitted sequential surface subset
@@ -218,6 +227,25 @@ Source:
 - the scoped greenfield safety surface is now narrowed honestly at the
   air-modifier boundary: only knot speed targets remain in the current
   `Safety-complete (N₀)` claim
+- [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+  now packages the first honest route-bearing widening increment above the closed
+  scoped programme:
+  route-bearing-core classification,
+  proof that all four Phase A families require specific resolution,
+  resolved-side authority mapping where a concrete entity is identified, and
+  truthful resolved completion/execution facts for `ClearedTo`, `HoldAt`,
+  `ClearedApproach`, and `JoinCircuit`
+- [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+  now adds theorem-bearing legacy-bridge issuance for the route-bearing pair
+  the older atomic path can honestly carry:
+  `ClearedApproach`, and `JoinCircuit` only when the greenfield join type maps
+  back into the legacy subset (`downwind`, `base`, `straightIn`)
+- `ClearedTo` and `HoldAt` therefore remain widened only at the resolved
+  boundary today; they are not yet admitted through the older atomic issuance
+  layer
+- `ClearedApproach` is now route-bearing-resolved and issuance-bridgeable, but
+  it still has no modeled completion in the current Kotlin/Lean execution
+  layer
 - [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
   now owns the final scoped issuing-layer theorem package above the greenfield
   boundary:
@@ -390,8 +418,9 @@ Current limitation:
   `AviationWorld` is now explicit, but the final future-project runtime API is
   still not frozen
 - `TaxiTo`, `JoinCircuit`, `ClearedTo`, `ClearedApproach`, and `HoldAt`
-  now compile into the older atomic command vocabulary, but some of those
-  atomic commands still do not have a current certified plan path
+  now compile into the older atomic command vocabulary, but theorem-bearing
+  widened issuance is currently honest only for `ClearedApproach` and the
+  legacy-supported `JoinCircuit` subset
 - the greenfield clearance docs still leave several proof-relevant semantics
   open or contested: compound admission and timing for `ClearedTo`,
   completion taxonomy for non-self-completing instructions, mixed-concern
@@ -441,21 +470,29 @@ Current stated-but-unproved targets:
   than from the current repo's runtime staging model, with the structural
   portion now recorded in
   [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+- the route-bearing widening is now real but partial:
+  `GreenfieldRouteBearing.lean` gives truthful resolved semantics for
+  `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`, while
+  `BridgeableRouteBearingIssuance.lean` currently widens theorem-bearing
+  issuance only for `ClearedApproach` and legacy-supported `JoinCircuit`
 
 ## Recommended Next Task
 
 The default next engineering task is now optional widening rather than
 milestone-critical closure:
 
-1. widen the route-bearing proof surface above the current scoped nominal claim
+1. continue the route-bearing proof surface widening above the current scoped
+   nominal claim
    using
    [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
-   as the guardrail, starting with the extraction and resolved-semantics
-   prerequisites for `ClearedTo`, `ClearedApproach`, `HoldAt`, and
-   `JoinCircuit`
-2. or replace the conservative mode-overlay semantics with richer degraded /
+   as the guardrail, starting from the delivered first slice:
+   resolved semantics for all four Phase A families and bridgeable issuance for
+   `ClearedApproach` plus legacy-supported `JoinCircuit`
+2. next, either widen theorem-bearing issuance for `ClearedTo` / `HoldAt` or
+   add honest resolved completion semantics for `ClearedApproach`
+3. or replace the conservative mode-overlay semantics with richer degraded /
    emergency operational semantics if the product needs them
-3. keep the current scoped surface stable unless a widening theorem forces a
+4. keep the current scoped surface stable unless a widening theorem forces a
    model change
 
 That sequence preserves the split-kernel architecture and keeps the project
@@ -488,8 +525,11 @@ What still cannot be said:
 What the next phase is working toward:
 
 - widening the extraction boundary from the scoped runway/taxiway/role subset
-  to the route-bearing procedure subset
-- making route-bearing resolution and completion theorem-bearing above the
-  current greenfield/runtime boundary
-- then widening issuance and reachable-state safety to cover the Phase A
-  route-bearing families without regressing the already-closed scoped claim
+  toward the route-bearing procedure subset
+- finishing the first widened route-bearing track by moving beyond the current
+  delivered slice:
+  truthful resolved semantics for all four Phase A families and bridgeable
+  issuance for `ClearedApproach` plus legacy-supported `JoinCircuit`
+- then widening issuance and reachable-state safety further for `ClearedTo`
+  and `HoldAt`, or adding richer route-bearing completion, without regressing
+  the already-closed scoped claim

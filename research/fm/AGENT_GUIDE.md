@@ -75,12 +75,20 @@ Then open the specific Lean module for the phase you are changing.
   records the narrower theorem surface that follows from that split
 - the scoped surface is now both `Safety-complete (N₀)` and `Full-brief
   complete`
+- the first route-bearing widening increment is now real:
+  `GreenfieldRouteBearing.lean` gives truthful resolved semantics for
+  `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`, and
+  `BridgeableRouteBearingIssuance.lean` widens theorem-bearing issuance only
+  for `ClearedApproach` plus legacy-supported `JoinCircuit`
 - the remaining FM work is now optional widening, not milestone-critical
   closure
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
-proved just because the scoped surface is closed, and do not talk as if the
-optional full-orchestration theorem is the default goal unless the user says so.
+proved just because the scoped surface is closed. The current route-bearing
+widening is real but partial. Do not talk as if `ClearedTo` and `HoldAt`
+already have theorem-bearing issuance just because they now have truthful
+resolved semantics. Also do not talk as if the optional full-orchestration
+theorem is the default goal unless the user says so.
 
 ## Build Command
 
@@ -150,5 +158,10 @@ Unless the user says otherwise, the next default task in `research/fm` is:
 - keep the scoped surface stable and honest
 - choose one widening direction at a time:
   route-bearing proof scope or richer operational mode semantics
+- if staying on the route-bearing track, start from the delivered first slice
+  rather than redoing it:
+  resolved semantics are already in place for the Phase A families, and the
+  next honest work is either `ClearedTo` / `HoldAt` issuance or
+  `ClearedApproach` completion
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

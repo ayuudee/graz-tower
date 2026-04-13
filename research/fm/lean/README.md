@@ -45,24 +45,32 @@ Read modules in roughly this order:
     Optional. This is the resolved active-clearance layer: managed resolved clearances, resolved completion, and active-set reconciliation.
 17. [CertifiedAtc/GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
     Optional. This packages execution preservation results into a reachable active-set boundary.
-18. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+18. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+    Optional. This is the first route-bearing widening layer above the closed
+    scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
+    `ClearedApproach`, and `JoinCircuit`.
+19. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+    Optional. This is the first widened issuing layer for the route-bearing
+    track: theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
+    legacy-supported `JoinCircuit`.
+20. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
     Optional. This is the scoped greenfield theorem package for
     `Safety-complete (N₀)`: scoped authority mapping, no-partial-issuance for
     surface compounds, conditional surface-envelope normalization, and the
     reachability wrapper into the resolved execution layer.
-19. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+21. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
     Optional. This is the final scoped issuing layer for `Safety-complete (N₀)`:
     the theorem-bearing bridge into the older atomic certified path, plus the
     routing/instantiation/coverage/authority/non-bypass/issuance package.
-20. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+22. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
     Optional. This is the reachable-state safety layer above the scoped
     issuing boundary: state-preservation for nominal/runway/surface/air/interface
     invariants plus issued-step separation soundness.
-21. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+23. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
     Optional. This is the scoped full-brief mode layer: assumption assessment,
     strongest-justified fallback, nominal guarantee withdrawal, concrete
     fallback vocabulary, and reachable mode-aware preservation.
-22. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+24. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
@@ -129,6 +137,16 @@ Read modules in roughly this order:
   Reachable active-set layer above `GreenfieldExecution`: packages fresh
   admission and reconciliation preservation into a reusable `ReachableResolvedSet`
   boundary and exposes well-formedness as a derived invariant.
+- `GreenfieldRouteBearing`
+  First route-bearing widening layer above the closed scoped programme:
+  route-bearing-core classification, proof that all Phase A families need
+  specific resolution, resolved-side authority mapping where a concrete entity
+  is identified, and truthful resolved execution/completion facts for
+  `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`.
+- `BridgeableRouteBearingIssuance`
+  First widened issuing layer for the route-bearing track: theorem-bearing
+  legacy-bridge issuance for `ClearedApproach` and for `JoinCircuit` only when
+  its greenfield join type maps back into the legacy atomic subset.
 - `ScopedGreenfield`
   Scoped greenfield theorem package for `Safety-complete (N₀)`: exact scoped
   instruction surface, scoped authority mapping, movement-envelope frontier
@@ -153,7 +171,7 @@ Read modules in roughly this order:
 
 ## Current Lean Split
 
-There are now thirteen distinct Lean layers above the local certifiers:
+There are now fifteen distinct Lean layers above the local certifiers:
 
 1. `ClearanceEnvelope.lean`
    The older proof/compiler surface that still bridges into the atomic command path.
@@ -174,17 +192,25 @@ There are now thirteen distinct Lean layers above the local certifiers:
    The resolved active-clearance layer that closes the loop from admitted clearances to completion and reconciliation.
 9. `GreenfieldReachability.lean`
    The reachable active-set layer that packages execution preservation into a reusable invariant boundary.
-10. `ScopedGreenfield.lean`
+10. `GreenfieldRouteBearing.lean`
+   The first widened route-bearing layer above the closed scoped programme:
+   truthful resolved semantics for `ClearedTo`, `HoldAt`,
+   `ClearedApproach`, and `JoinCircuit`.
+11. `BridgeableRouteBearingIssuance.lean`
+   The first widened issuing layer for the route-bearing track:
+   theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
+   legacy-supported `JoinCircuit`.
+12. `ScopedGreenfield.lean`
    The scoped `Safety-complete (N₀)` theorem package above the greenfield model
    and execution layers.
-11. `ScopedIssuance.lean`
+13. `ScopedIssuance.lean`
    The final scoped issuing layer above extraction and greenfield execution:
    bridge into the old certified path plus the Milestone 5 theorem package.
-12. `ScopedSafety.lean`
+14. `ScopedSafety.lean`
    The reachable-state safety layer above the scoped issuing boundary:
    preserved nominal/kernel/interface invariants, reachable issued-state
    semantics, and issued-step separation soundness.
-13. `ScopedModes.lean`
+15. `ScopedModes.lean`
    The full-brief mode layer above scoped nominal safety: abstract assessment,
    strongest-justified fallback, conservative fallback command semantics, and
    reachable full-brief guarantees.
@@ -213,6 +239,23 @@ Use `GreenfieldLifecycle.lean` when you want to:
 - study supersession and suppressed-domain semantics directly
 - model condition-pending to active activation order
 - talk about completion as abstract satisfied step indices before proving world-backed completion facts
+
+Use `GreenfieldRouteBearing.lean` when you want to:
+
+- reason honestly about the widened route-bearing core at the resolved boundary
+- talk about `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`
+  without pretending they already share one top-level issuance path
+- distinguish between resolved completion that is already modeled and route-
+  bearing families that are resolved but still completion-open
+
+Use `BridgeableRouteBearingIssuance.lean` when you want to:
+
+- reason about the first honest widened issuing layer above the scoped claim
+- prove issuance results for `ClearedApproach`
+- prove issuance results for `JoinCircuit` only when the join type is still in
+  the legacy atomic subset
+- avoid over-claiming that `ClearedTo` or `HoldAt` already have a theorem-
+  bearing legacy bridge
 
 Use `ScopedExtraction.lean` when you want to:
 

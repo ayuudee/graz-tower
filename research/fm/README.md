@@ -109,6 +109,21 @@ As of April 13, 2026:
 - the scoped air-modifier claim is now narrowed honestly to the variants that
   the current local air/separation proof story can actually carry: knot speed
   targets only
+- the initial route-bearing widening increment now exists above the closed scoped
+  programme:
+  [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+  packages truthful resolved-side semantics for `ClearedTo`, `HoldAt`,
+  `ClearedApproach`, and `JoinCircuit`, including the fact that all four need
+  specific resolution, that `ClearedTo` / `HoldAt` / `JoinCircuit` already
+  have honest resolved execution or completion facts, and that
+  `ClearedApproach` is resolved but still has no modeled completion
+- the first widened issuing-layer increment also now exists in
+  [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean):
+  theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
+  `JoinCircuit` only where the join type still lives in the older atomic
+  subset (`downwind`, `base`, `straightIn`)
+- `ClearedTo` and `HoldAt` are therefore widened only at the resolved boundary
+  today; they are not yet carried through the older atomic issuance path
 - a full route-bearing proof-authoritative extraction contract does not exist
   yet; the current theorem-bearing extraction module is intentionally scoped to
   the `Safety-complete (N₀)` surface
@@ -144,6 +159,9 @@ The default critical path is now:
   work
 - the active widening track is the route-bearing proof surface defined in
   [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+- the first route-bearing widening increment is now delivered: full resolved
+  semantics for the route-bearing core, and honest legacy-bridge issuance only
+  for `ClearedApproach` plus the legacy-supported `JoinCircuit` subset
 - richer mode semantics remain a secondary widening direction, not the default
   next task
 
@@ -239,6 +257,31 @@ The Lean project is organized as:
 - [ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
   Scoped extraction boundary from proof-side world facts into
   `ClearanceCompileView`, certifier-local views, and issuer-authority facts.
+- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+  Current Kotlin-aligned greenfield model surface:
+  `steps + completedSteps`, envelope-level conditions, lifecycle categories,
+  and frontier selection.
+- [GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
+  Abstract active-clearance lifecycle layer over the current greenfield model.
+- [GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
+  Proof-side resolved execution boundary aligned to Kotlin `ResolvedStep` /
+  `ResolvedClearance`.
+- [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
+  Proof-side world-to-resolved relation for the current execution boundary.
+- [GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
+  Structured completion-observation layer over resolved steps.
+- [GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
+  Resolved active-clearance execution and reconciliation layer.
+- [GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
+  Reachable active-set package above the resolved execution layer.
+- [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+  First widened route-bearing layer above the closed scoped programme:
+  truthful resolved-side semantics for `ClearedTo`, `HoldAt`,
+  `ClearedApproach`, and `JoinCircuit`.
+- [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+  Honest legacy-bridge issuance only for the route-bearing families the older
+  atomic path can already carry: `ClearedApproach` plus legacy-supported
+  `JoinCircuit`.
 - [ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
   Scoped greenfield theorem package for `Safety-complete (N₀)`: scoped
   authority mapping, no-partial-issuance for surface compounds, and the bridge

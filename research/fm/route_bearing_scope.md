@@ -25,6 +25,23 @@ The next widening track should therefore optimize for:
 
 This note is the guardrail for that widening work.
 
+## Current Delivered Increment
+
+As of April 13, 2026, the first honest widening increment is now in place.
+
+- [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+  gives truthful resolved-side semantics for all four Phase A families:
+  `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`
+- [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+  adds theorem-bearing legacy-bridge issuance only for the route-bearing pair
+  that the older atomic path can already carry honestly:
+  `ClearedApproach`, and `JoinCircuit` only when the join type maps back into
+  the legacy subset (`downwind`, `base`, `straightIn`)
+- `ClearedTo` and `HoldAt` therefore remain widened only at the resolved
+  boundary today
+- `ClearedApproach` is route-bearing-resolved and issuance-bridgeable, but it
+  still has no modeled completion in the current Kotlin/Lean execution layer
+
 ## Widening Principles
 
 ### 1. Widen one semantic cluster at a time
@@ -41,6 +58,9 @@ The next cluster is:
 
 These are the smallest meaningful set that makes the route-bearing model
 useful without forcing every remaining airborne family in at the same time.
+
+That remains the full target set, but the currently delivered widening increment is
+only the first honest part of it.
 
 ### 2. Preserve the current scoped claim
 
@@ -181,6 +201,14 @@ Do the widening in this order:
 5. widen the issuing layer and reachable-state safety package
 
 Do not start with the top theorem. Start with the route-bearing data path.
+
+Current status against that order:
+
+- step 2 is now closed for the Phase A families at the resolved boundary
+- step 5 is partially closed only for the bridgeable pair:
+  `ClearedApproach` and legacy-supported `JoinCircuit`
+- extraction widening, full Phase A issuance, and honest `ClearedApproach`
+  completion are still open
 
 ## Definition Of Done For This Track
 
