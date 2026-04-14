@@ -14,10 +14,36 @@ This bridge is intentionally honest and partial:
   clearance-limit fix -> clearance-limit point
 - `HoldAt` is bridged for published holds
 - `ClearedApproach` is bridged for non-circling approaches
-
-`JoinCircuit` is not bridged here yet, because the extracted circuit source
-still does not carry explicit join-entry support facts.
+- `JoinCircuit` is bridged only when the extracted circuit source carries an
+  explicit supported join procedure
 -/
+
+def scopedCircuitJoinBinding
+    (circuit : ScopedCircuitSource)
+    (join : ScopedCircuitJoinSource)
+    (runway : Option RunwayId) : ConcreteCircuitJoinBinding :=
+  { direction := greenfieldCircuitDirection circuit.direction
+    joinType := join.type
+    runway := runway
+    circuit := circuit.id
+    altitude := circuit.altitude }
+
+def circuitJoinBindingsFor
+    (circuit : ScopedCircuitSource) : List ScopedCircuitJoinSource → List ConcreteCircuitJoinBinding
+  | [] => []
+  | join :: tail =>
+      scopedCircuitJoinBinding circuit join (some circuit.runway) ::
+        scopedCircuitJoinBinding circuit join none ::
+        circuitJoinBindingsFor circuit tail
+
+def circuitJoinBindings
+    (circuit : ScopedCircuitSource) : List ConcreteCircuitJoinBinding :=
+  circuitJoinBindingsFor circuit circuit.joinProcedures
+
+def worldCircuitJoinBindings : List ScopedCircuitSource → List ConcreteCircuitJoinBinding
+  | [] => []
+  | circuit :: tail =>
+      circuitJoinBindings circuit ++ worldCircuitJoinBindings tail
 
 def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ConcreteResolutionWorld :=
@@ -33,7 +59,9 @@ def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
         { approachType := approach.kind
           runway := approach.runway
           circlingRunway := none
-          approach := approach.id } }
+          approach := approach.id }
+    circuitJoins :=
+      worldCircuitJoinBindings world.circuits }
 
 def RouteBearingScopedAviationWorld.toResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ResolutionWorld :=
@@ -85,6 +113,67 @@ theorem RouteBearingScopedAviationWorld.mem_nonCirclingApproach_of_mem
     RouteBearingScopedAviationWorld.toConcreteResolutionWorld,
     ConcreteResolutionWorld.toResolutionWorld] using hMap
 
+theorem RouteBearingScopedAviationWorld.mem_circuitJoin_of_mem
+    {world : RouteBearingScopedAviationWorld}
+    {circuit : ScopedCircuitSource}
+    {join : ScopedCircuitJoinSource}
+    {runway : Option RunwayId}
+    (hCircuitMem : circuit ∈ world.circuits)
+    (hJoinMem : join ∈ circuit.joinProcedures)
+    (hRunway : runway = none ∨ runway = some circuit.runway) :
+    (RouteBearingScopedAviationWorld.toResolutionWorld world).circuitJoin
+      (greenfieldCircuitDirection circuit.direction)
+      join.type
+      runway
+      circuit.id
+      circuit.altitude := by
+  have hInner :
+      scopedCircuitJoinBinding circuit join runway ∈ circuitJoinBindings circuit := by
+    unfold circuitJoinBindings
+    have hInnerFor :
+        ∀ joins : List ScopedCircuitJoinSource,
+          join ∈ joins →
+            scopedCircuitJoinBinding circuit join runway ∈
+              circuitJoinBindingsFor circuit joins := by
+      intro joins hMem
+      induction joins with
+      | nil =>
+          cases hMem
+      | cons head tail ih =>
+          simp [circuitJoinBindingsFor] at hMem ⊢
+          rcases hMem with hEq | hTail
+          · subst head
+            cases hRunway with
+            | inl hNone =>
+                simp [scopedCircuitJoinBinding, hNone]
+            | inr hSome =>
+                simp [scopedCircuitJoinBinding, hSome]
+          · exact Or.inr (Or.inr (ih hTail))
+    exact hInnerFor circuit.joinProcedures hJoinMem
+  have hOuter :
+      scopedCircuitJoinBinding circuit join runway ∈
+        (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world).circuitJoins := by
+    unfold RouteBearingScopedAviationWorld.toConcreteResolutionWorld
+    have hOuterFor :
+        ∀ circuits : List ScopedCircuitSource,
+          circuit ∈ circuits →
+            scopedCircuitJoinBinding circuit join runway ∈
+              worldCircuitJoinBindings circuits := by
+      intro circuits hMem
+      induction circuits with
+      | nil =>
+          cases hMem
+      | cons head tail ih =>
+          simp [worldCircuitJoinBindings] at hMem ⊢
+          rcases hMem with hEq | hTail
+          · subst head
+            exact Or.inl hInner
+          · exact Or.inr (ih hTail)
+    exact hOuterFor world.circuits hCircuitMem
+  simpa [RouteBearingScopedAviationWorld.toResolutionWorld,
+    RouteBearingScopedAviationWorld.toConcreteResolutionWorld,
+    ConcreteResolutionWorld.toResolutionWorld, scopedCircuitJoinBinding] using hOuter
+
 def RouteBearingInstructionResolutionReady
     (world : RouteBearingScopedAviationWorld) : AtcInstruction → Prop
   | .clearedTo _ clearanceLimit _ =>
@@ -94,6 +183,11 @@ def RouteBearingInstructionResolutionReady
   | .clearedApproach _ approachType runway none =>
       ∃ approach ∈ world.approaches,
         approach.kind = approachType ∧ approach.runway = runway
+  | .joinCircuit _ direction joinType runway =>
+      ∃ circuit ∈ world.circuits,
+        direction = greenfieldCircuitDirection circuit.direction ∧
+        (∃ join ∈ circuit.joinProcedures, joinType = join.type) ∧
+        (runway = none ∨ runway = some circuit.runway)
   | _ => False
 
 def singletonResolvedClearance
@@ -221,6 +315,46 @@ theorem resolvesIndexedNonCirclingClearedApproach_of_ready
   exact
     RouteBearingScopedAviationWorld.mem_nonCirclingApproach_of_mem
       (world := world) hMem
+
+theorem resolvesIndexedJoinCircuit_of_ready
+    {world : RouteBearingScopedAviationWorld}
+    {state : ResolutionState}
+    {index : Nat}
+    {target : AircraftId}
+    {direction : CircuitDirection}
+    {joinType : JoinType}
+    {runway : Option RunwayId}
+    (hReady :
+      RouteBearingInstructionResolutionReady world
+        (.joinCircuit target direction joinType runway)) :
+    ∃ step,
+      ResolvesIndexedStep
+        (RouteBearingScopedAviationWorld.toResolutionWorld world)
+        state
+        .runway
+        index
+        (.joinCircuit target direction joinType runway)
+        step
+        state := by
+  rcases hReady with ⟨circuit, hCircuitMem, hDirEq, hJoin, hRunway⟩
+  rcases hJoin with ⟨join, hJoinMem, hJoinEq⟩
+  subst direction
+  subst joinType
+  refine ⟨compileResolvedStep
+      index
+      .runway
+      (.joinCircuit target (greenfieldCircuitDirection circuit.direction) join.type runway)
+      (.circuitJoin { circuit := circuit.id, altitude := circuit.altitude })
+      (by simp [resolutionCompatible]), ?_⟩
+  apply ResolvesIndexedStep.joinCircuit
+  exact
+    RouteBearingScopedAviationWorld.mem_circuitJoin_of_mem
+      (world := world)
+      (circuit := circuit)
+      (join := join)
+      hCircuitMem
+      hJoinMem
+      hRunway
 
 theorem resolvesSingleClearedToClearance_of_ready
     {world : RouteBearingScopedAviationWorld}
@@ -358,6 +492,58 @@ theorem resolvesSingleNonCirclingClearedApproachClearance_of_ready
         clearance.domain
         0
         (.clearedApproach target approachType runway none)
+        step
+        initialState := by
+    simpa [hDomain] using hStep
+  have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
+    cases clearance with
+    | mk id aircraft content domain issuedBy issuedAt status condition =>
+        dsimp at hContent hCondition
+        subst content
+        subst condition
+        simp [normalizeConditionalEnvelope, instructionMayBeConditional]
+  refine ⟨singletonResolvedClearance clearance step, ?_⟩
+  exact resolvesSingleInstructionClearance
+    hNormalized
+    hContent
+    hDomainStep
+    hStepAtDomain
+
+theorem resolvesSingleJoinCircuitClearance_of_ready
+    {world : RouteBearingScopedAviationWorld}
+    {initialState : ResolutionState}
+    {clearance : StructuredClearance}
+    {target : AircraftId}
+    {direction : CircuitDirection}
+    {joinType : JoinType}
+    {runway : Option RunwayId}
+    (hReady :
+      RouteBearingInstructionResolutionReady world
+        (.joinCircuit target direction joinType runway))
+    (hContent :
+      clearance.content = .single (.joinCircuit target direction joinType runway))
+    (hDomain : clearance.domain = .runway)
+    (hCondition : clearance.condition = none) :
+    ∃ resolved,
+      ResolvesClearance
+        (RouteBearingScopedAviationWorld.toResolutionWorld world)
+        initialState
+        clearance
+        resolved
+        initialState := by
+  rcases resolvesIndexedJoinCircuit_of_ready
+      (world := world) (state := initialState) (index := 0) hReady with ⟨step, hStep⟩
+  have hStepDomain : step.domain = .runway := by
+    cases hStep <;> simp [compileResolvedStep, instructionDomain?]
+  have hDomainStep : clearance.domain = step.domain := by
+    simpa [hStepDomain] using hDomain
+  have hStepAtDomain :
+      ResolvesIndexedStep
+        (RouteBearingScopedAviationWorld.toResolutionWorld world)
+        initialState
+        clearance.domain
+        0
+        (.joinCircuit target direction joinType runway)
         step
         initialState := by
     simpa [hDomain] using hStep

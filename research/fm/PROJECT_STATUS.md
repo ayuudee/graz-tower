@@ -28,15 +28,31 @@ It now contains:
 - a first honest route-bearing widening increment above the closed scoped
   programme: resolved semantics for `ClearedTo`, `HoldAt`, `ClearedApproach`,
   and `JoinCircuit`, a first theorem-bearing procedure-bearing extraction
-  increment, a theorem-bearing extraction-to-resolution bridge for
-  `ClearedTo`, published `HoldAt`, and non-circling `ClearedApproach`, a
-  greenfield admission layer for that same bridged subset, plus theorem-
-  bearing legacy-bridge issuance for `ClearedApproach` and the legacy-
-  supported `JoinCircuit` subset
-- the next honest route-bearing gap is now narrower: `JoinCircuit` still lacks
-  the extracted join-entry support facts needed for a theorem-bearing bridge
-  into resolved execution, and `ClearedApproach` still lacks honest
-  completion semantics
+  increment, a theorem-bearing extraction-to-resolution bridge for the full
+  Phase A surface, a current-shape greenfield admission / issuance layer for
+  that same surface, a first current-shape compound issuance layer for one
+  leading route-bearing step plus immediate adjuncts, a current-shape
+  lifecycle layer for that surface, a current-shape supersession layer for
+  that surface, a current-shape source-level closure theorem for that surface,
+  plus theorem-bearing legacy-bridge issuance for
+  `ClearedApproach` and the legacy-supported `JoinCircuit` subset
+- the semantic-alignment gate for the next greenfield widening step is now
+  closed too: Lean now matches the current Kotlin metadata for `JoinCircuit`,
+  `ExtendDownwind`, and `Orbit`, and the current persistent-only-compound
+  consequence is now explicit in theorem-bearing execution regressions rather
+  than being only an implicit engine artifact
+- the first route-adjacent widening increment above Phase A is now in place as
+  three small closed current-shape single-step slices:
+  `ContinueApproach`, `ExtendDownwind`, and `Orbit` each now have
+  source-level issuance into `ReachableResolvedSet`, explicit current
+  lifecycle behavior, and one explicit supersession / engine-consequence
+  theorem
+- the next honest route-bearing gap is now a branch choice rather than a
+  structural blocker: on the greenfield path, the live work is widening beyond
+  the current one-primary-plus-immediate-adjunct compound surface and beyond
+  the newly closed single-step slices for `ContinueApproach`,
+  `ExtendDownwind`, and `Orbit`; the older atomic closure for
+  `ClearedTo` / `HoldAt` remains optional and separate
 
 It does not yet contain:
 
@@ -53,12 +69,17 @@ It does not yet contain:
 - the full broad-scope separation story described in the brief beyond the
   current scoped nominal surface
 - a full theorem-bearing route-bearing package across all four Phase A
-  widening families; the current route-bearing widening state stops at
+  widening families; the current route-bearing widening state now includes
   resolved semantics for all four, a first theorem-bearing procedure-bearing
-  extraction increment, an extraction-to-resolution bridge plus greenfield
-  admission for `ClearedTo`, published `HoldAt`, and non-circling
-  `ClearedApproach`, and legacy-bridge issuance only for `ClearedApproach`
-  plus legacy-supported `JoinCircuit`
+  extraction increment, an extraction-to-resolution bridge, current-shape
+  greenfield issuance for the full Phase A surface, a current-shape lifecycle
+  and supersession package, a current-shape source-level closure theorem, and
+  legacy-bridge issuance only for
+  `ClearedApproach` plus legacy-supported `JoinCircuit`
+- widened current-shape compound/authority packaging for the newly delivered
+  `ContinueApproach`, `ExtendDownwind`, and `Orbit` slices; those families are
+  now closed only as small single-step slices, not as a broader theorem
+  package
 - richer operationally detailed mode semantics beyond the current conservative
   scoped full-brief layer
 
@@ -266,9 +287,36 @@ Source:
 - `ClearedTo` and `HoldAt` therefore now have theorem-bearing resolved and
   extraction surfaces, but they are not yet admitted through the older atomic
   issuance layer
-- `ClearedApproach` is now route-bearing-resolved and issuance-bridgeable, but
-  it still has no modeled completion in the current Kotlin/Lean execution
+- `ClearedApproach` is now route-bearing-resolved and issuance-bridgeable, and
+  it remains intentionally non-completing in the current Kotlin/Lean execution
   layer
+- [GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
+  now widens the current-shape theorem-bearing surface from single-step
+  route-bearing clearances to one-leading-route-bearing-step compounds with
+  immediate adjunct tails:
+  whole-clearance resolution, admission soundness, authority-gated issuance,
+  and explicit preservation of the non-completing `ClearedApproach` semantics
+- [GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+  now closes the current-shape execution behavior for that same surface:
+  `ClearedTo` compounds complete on resolved limit plus adjunct completion,
+  single-step `HoldAt` remains active, `HoldAt` compounds complete once their
+  non-persistent adjuncts complete, single-step and compound
+  `ClearedApproach` remain active, and `JoinCircuit` compounds complete on
+  circuit-membership / altitude plus adjunct completion
+- [GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+  now closes the first route-bearing supersession consequences on the current
+  greenfield engine:
+  frequency updates partially supersede mixed route/frequency compounds
+  without destroying the route-bearing step, `GoAround` fully supersedes
+  active approach compounds, and the current modeled `HoldAt` behavior after
+  frequency supersession is explicit rather than implicit
+- [GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
+  now packages that whole current-shape Phase A surface behind one source-level
+  theorem boundary:
+  if a source `StructuredClearance` is in the currently supported Phase A
+  route-bearing surface and satisfies the current authority / readiness
+  conditions, then there exists a resolved clearance that admits into
+  `ReachableResolvedSet`
 - [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
   now owns the final scoped issuing-layer theorem package above the greenfield
   boundary:
@@ -498,9 +546,15 @@ Current stated-but-unproved targets:
   `GreenfieldRouteBearing.lean` gives truthful resolved semantics for
   `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`,
   `RouteBearingExtraction.lean` gives the first theorem-bearing
-  procedure-bearing extraction increment for that same track, while
+  procedure-bearing extraction increment for that same track,
+  `RouteBearingResolutionBridge.lean` and
+  `GreenfieldRouteBearingAdmission.lean` now carry the full Phase A surface to
+  current-shape greenfield issuance,
+  `GreenfieldRouteBearingCompound.lean` widens that to one-leading-step
+  compounds with immediate adjunct tails, while
   `BridgeableRouteBearingIssuance.lean` currently widens theorem-bearing
-  issuance only for `ClearedApproach` and legacy-supported `JoinCircuit`
+  legacy issuance only for `ClearedApproach` and legacy-supported
+  `JoinCircuit`
 
 ## Recommended Next Task
 
@@ -512,10 +566,14 @@ milestone-critical closure:
    using
    [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
    as the guardrail, starting from the delivered first slice:
-   resolved semantics for all four Phase A families and bridgeable issuance for
+   resolved semantics, procedure-bearing extraction, extraction-to-resolution
+   bridge, current-shape greenfield issuance for the full Phase A surface,
+   one-leading-step compound issuance, and bridgeable issuance for
    `ClearedApproach` plus legacy-supported `JoinCircuit`
-2. next, either widen theorem-bearing issuance for `ClearedTo` / `HoldAt` or
-   add honest resolved completion semantics for `ClearedApproach`
+2. next, decide whether to widen theorem-bearing issuance for `ClearedTo` /
+   `HoldAt` through the older atomic path, or to keep the widening track on
+   the current-shape greenfield boundary and widen beyond the current compound
+   surface instead
 3. or replace the conservative mode-overlay semantics with richer degraded /
    emergency operational semantics if the product needs them
 4. keep the current scoped surface stable unless a widening theorem forces a
@@ -554,8 +612,10 @@ What the next phase is working toward:
   toward the route-bearing procedure subset
 - finishing the first widened route-bearing track by moving beyond the current
   delivered slice:
-  truthful resolved semantics for all four Phase A families and bridgeable
-  issuance for `ClearedApproach` plus legacy-supported `JoinCircuit`
-- then widening issuance and reachable-state safety further for `ClearedTo`
-  and `HoldAt`, or adding richer route-bearing completion, without regressing
-  the already-closed scoped claim
+  truthful resolved semantics, procedure-bearing extraction, extraction-to-
+  resolution bridge, current-shape greenfield issuance for the full Phase A
+  surface, and compound packaging for one-leading-step route-bearing
+  clearances
+- then either widening legacy issuance further for `ClearedTo` and `HoldAt`,
+  or widening beyond the current compound surface, without regressing the
+  already-closed scoped claim

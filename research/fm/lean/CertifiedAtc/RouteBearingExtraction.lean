@@ -30,13 +30,25 @@ def legacyApproachTypeString : Greenfield.ApproachType → String
   | .visual => "VISUAL"
   | .par => "PAR"
 
+def greenfieldCircuitDirection : CircuitDirection → Greenfield.CircuitDirection
+  | .left => .leftHand
+  | .right => .rightHand
+
+structure ScopedCircuitJoinSource where
+  type : Greenfield.JoinType
+  entryPoint : PointId
+  entryPath : Option (List PointId) := none
+  deriving DecidableEq, Repr
+
 structure ScopedCircuitSource where
   id : CircuitProcedureId
   runway : RunwayId
   direction : CircuitDirection
+  altitude : Greenfield.Level
   legs : List CompileCircuitLegView
   altitudeFt : Int
   reportingPoints : List CompileReportingPointView := []
+  joinProcedures : List ScopedCircuitJoinSource := []
   extendedDownwind : Option CompileExtendedDownwindView := none
   deriving DecidableEq, Repr
 

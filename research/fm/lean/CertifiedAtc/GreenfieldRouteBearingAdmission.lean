@@ -15,20 +15,23 @@ current-shape greenfield story for the bridged route-bearing subset:
 - `ClearedTo`
 - published `HoldAt`
 - non-circling `ClearedApproach`
+- `JoinCircuit`
 
 For that subset, the widened extracted world now yields resolved clearances,
 those clearances can be admitted into the reachable resolved set, and the
 authority-gated side of the story is explicit against the widened compile view.
-
-`JoinCircuit` is still excluded here until the extracted circuit surface grows
-the join-entry facts needed for an honest extraction-to-resolution bridge.
 -/
 
 def GreenfieldRouteBearingAdmissibleInstruction : AtcInstruction → Prop
   | .clearedTo _ _ _ => True
   | .holdAt _ (.published _) _ => True
   | .clearedApproach _ _ _ none => True
+  | .joinCircuit _ _ _ _ => True
   | _ => False
+
+def greenfieldRouteBearingAdmissibleDomain : AtcInstruction → ClearanceDomain
+  | .joinCircuit _ _ _ _ => .runway
+  | _ => .route
 
 def greenfieldRouteBearingRequiredAuthorityGrant? :
     AtcInstruction → Option CompileAuthorityGrantView
@@ -38,6 +41,8 @@ def greenfieldRouteBearingRequiredAuthorityGrant? :
       some { entityType := .holdingPattern, operation := .hold }
   | .clearedApproach _ _ _ none =>
       some { entityType := .instrumentApproach, operation := .approachClearance }
+  | .joinCircuit _ _ _ _ =>
+      some { entityType := .circuitProcedure, operation := .circuit }
   | _ =>
       none
 
@@ -88,7 +93,7 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
     (hIssued : GreenfieldRouteBearingAdmissibleInstruction instruction)
     (hReady : RouteBearingInstructionResolutionReady world instruction)
     (hContent : clearance.content = .single instruction)
-    (hDomain : clearance.domain = .route)
+    (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain instruction)
     (hCondition : clearance.condition = none) :
     ∃ resolved,
       ResolvesClearance
@@ -108,7 +113,7 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
         (route := route)
         hReady
         hContent
-        hDomain
+        (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
         hCondition
   | holdAt target hold efc =>
       cases hold with
@@ -122,7 +127,7 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
             (efc := efc)
             hReady
             hContent
-            hDomain
+            (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
             hCondition
       | inboundTrack fixId inboundDegreesMagnetic turnDirection legTime legDistance =>
           cases hIssued
@@ -138,10 +143,23 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
             (runway := runway)
             hReady
             hContent
-            hDomain
+            (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
             hCondition
       | some circlingRunway =>
           cases hIssued
+  | joinCircuit target direction joinType runway =>
+      exact resolvesSingleJoinCircuitClearance_of_ready
+        (world := world)
+        (initialState := initialState)
+        (clearance := clearance)
+        (target := target)
+        (direction := direction)
+        (joinType := joinType)
+        (runway := runway)
+        hReady
+        hContent
+        (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
+        hCondition
   | _ =>
       cases hIssued
 
@@ -156,7 +174,7 @@ theorem GreenfieldRouteBearingAdmissionSoundnessTheorem
     (hIssued : GreenfieldRouteBearingAdmissibleInstruction instruction)
     (hReady : RouteBearingInstructionResolutionReady world instruction)
     (hContent : clearance.content = .single instruction)
-    (hDomain : clearance.domain = .route)
+    (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain instruction)
     (hCondition : clearance.condition = none) :
     ∃ resolved,
       ResolvesClearance
@@ -181,6 +199,71 @@ theorem GreenfieldRouteBearingAdmissionSoundnessTheorem
     simpa [hResolve.sourceEq] using hFresh
   refine ⟨resolved, hResolve, ?_⟩
   exact ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve
+
+theorem GreenfieldRouteBearingCurrentShapeIssuanceTheorem
+    {world : RouteBearingScopedAviationWorld}
+    {existing : List ManagedResolvedClearance}
+    {initialState : ResolutionState}
+    {clearance : StructuredClearance}
+    {instruction : AtcInstruction}
+    (hWf : RouteBearingExtractionWellFormed world)
+    (hReach : ReachableResolvedSet existing)
+    (hFresh : clearance.id ∉ resolvedClearanceIds existing)
+    (hIssued : GreenfieldRouteBearingAdmissibleInstruction instruction)
+    (hReady : RouteBearingInstructionResolutionReady world instruction)
+    (hContent : clearance.content = .single instruction)
+    (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain instruction)
+    (hCondition : clearance.condition = none)
+    (hAuthority :
+      match greenfieldRouteBearingRequiredAuthorityGrant? instruction with
+      | none => True
+      | some grant =>
+          WorldControllerHasGrant world.toScopedAviationWorld clearance.issuedBy grant) :
+    ∃ resolved,
+      greenfieldRouteBearingIssuerAuthorized
+        (extractRouteBearingCompileView world)
+        clearance.issuedBy
+        instruction = true ∧
+      ResolvesClearance
+        (RouteBearingScopedAviationWorld.toResolutionWorld world)
+        initialState
+        clearance
+        resolved
+        initialState ∧
+      ReachableResolvedSet
+        (admitResolvedClearance existing resolved).clearances := by
+  have hAuthorized :
+      greenfieldRouteBearingIssuerAuthorized
+        (extractRouteBearingCompileView world)
+        clearance.issuedBy
+        instruction = true := by
+    cases hMapped : greenfieldRouteBearingRequiredAuthorityGrant? instruction with
+    | none =>
+        exact greenfieldRouteBearingIssuerAuthorized_eq_true_of_unmapped hMapped
+    | some grant =>
+        exact
+          GreenfieldRouteBearingAuthorityGatedAdmissionTheorem
+            (world := world)
+            (controller := clearance.issuedBy)
+            (instruction := instruction)
+            (grant := grant)
+            hWf
+            hMapped
+            (by simpa [hMapped] using hAuthority)
+  rcases GreenfieldRouteBearingAdmissionSoundnessTheorem
+      (world := world)
+      (existing := existing)
+      (initialState := initialState)
+      (clearance := clearance)
+      (instruction := instruction)
+      hReach
+      hFresh
+      hIssued
+      hReady
+      hContent
+      hDomain
+      hCondition with ⟨resolved, hResolve, hReachResolved⟩
+  exact ⟨resolved, hAuthorized, hResolve, hReachResolved⟩
 
 end Greenfield
 end CertifiedAtc

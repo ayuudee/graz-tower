@@ -526,10 +526,10 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .leaveHoldProceedDirect _ _ => some .route
   | .whenAbleProceedDirect _ _ => some .route
   | .clearedApproach _ _ _ _ => some .route
-  | .joinCircuit _ _ _ _ => some .runway
+  | .joinCircuit _ _ _ _ => none
   | .continueApproach _ => some .route
-  | .extendDownwind _ => some .runway
-  | .orbit _ _ => some .runway
+  | .extendDownwind _ => none
+  | .orbit _ _ => none
   | .climbTo _ _ => some .level
   | .descendTo _ _ => some .level
   | .expediteClimb _ _ => some .level

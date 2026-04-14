@@ -82,17 +82,31 @@ Then open the specific Lean module for the phase you are changing.
   procedure-bearing extraction increment for that track, with
   `ClearedApproach` kinds still constrained to the closed greenfield
   `ApproachType` model, while
-  `BridgeableRouteBearingIssuance.lean` widens theorem-bearing issuance only
-  for `ClearedApproach` plus legacy-supported `JoinCircuit`
+  `RouteBearingResolutionBridge.lean`,
+  `GreenfieldRouteBearingAdmission.lean`, and
+  `GreenfieldRouteBearingCompound.lean`,
+  `GreenfieldRouteBearingLifecycle.lean`, and
+  `GreenfieldRouteBearingSupersession.lean` now carry that same Phase A
+  surface through the current-shape greenfield
+  resolution/admission/issuance/execution path, while
+  `BridgeableRouteBearingIssuance.lean` widens theorem-bearing legacy
+  issuance only for `ClearedApproach` plus legacy-supported `JoinCircuit`;
+  `GreenfieldRouteBearingCurrentShape.lean` now packages that whole current-
+  shape Phase A surface behind one source-level theorem boundary
 - the remaining FM work is now optional widening, not milestone-critical
   closure
+- the next greenfield widening seam is no longer just Phase A route-bearing:
+  the semantic-alignment gate for `JoinCircuit` / `ExtendDownwind` / `Orbit`
+  is now closed, and `ContinueApproach`, `ExtendDownwind`, and `Orbit` each
+  now have a small current-shape single-step theorem slice
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing
 widening is real but partial. Do not talk as if `ClearedTo` and `HoldAt`
-already have theorem-bearing issuance just because they now have truthful
-resolved semantics. Also do not talk as if the optional full-orchestration
-theorem is the default goal unless the user says so.
+already have a theorem-bearing legacy atomic bridge just because they now have
+truthful resolved semantics and current-shape greenfield issuance. Also do not
+talk as if the optional full-orchestration theorem is the default goal unless
+the user says so.
 
 ## Build Command
 
@@ -165,9 +179,17 @@ Unless the user says otherwise, the next default task in `research/fm` is:
 - if staying on the route-bearing track, start from the delivered first slice
   rather than redoing it:
   resolved semantics, the first procedure-bearing extraction increment, the
-  extraction-to-resolution bridge for the current bridged subset, and the
-  first greenfield admission layer are already in place for the route-bearing
-  track; the next honest work is to extend that bridge/admission surface to
-  `JoinCircuit` before widening `ClearedApproach` completion
+  extraction-to-resolution bridge, the first greenfield admission /
+  current-shape issuance layer, the first route-bearing compound issuance
+  layer, and the first current-shape lifecycle / supersession layers are
+  already in place for the full Phase A route-bearing surface, and
+  `GreenfieldRouteBearingCurrentShape.lean` now packages that surface at one
+  source-level theorem boundary;
+  `ContinueApproach`, `ExtendDownwind`, and `Orbit` now also have small
+  current-shape single-step theorem slices on top of that surface;
+  the next honest work on the greenfield path is therefore no longer
+  structural bridge work, is not `ClearedApproach` completion, and is not
+  basic closure for those three families, because the current model already
+  fixes their present single-step behavior
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

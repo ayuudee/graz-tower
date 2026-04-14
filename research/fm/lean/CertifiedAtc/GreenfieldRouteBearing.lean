@@ -54,11 +54,11 @@ theorem bridgeableLegacyRouteBearingInstruction_requiresSpecificResolution
       (by cases instruction <;> simp [BridgeableLegacyRouteBearingInstruction,
         RouteBearingCoreInstruction] at hRoute ⊢)
 
-theorem routeBearingCoreInstruction_domain_route_or_runway
+theorem routeBearingCoreInstruction_metadataDomain_route_or_none
     {instruction : AtcInstruction}
     (hRoute : RouteBearingCoreInstruction instruction) :
     instructionDomain? instruction = some .route ∨
-      instructionDomain? instruction = some .runway := by
+      instructionDomain? instruction = none := by
   cases instruction <;>
     simp [RouteBearingCoreInstruction, instructionDomain?] at hRoute ⊢
 
