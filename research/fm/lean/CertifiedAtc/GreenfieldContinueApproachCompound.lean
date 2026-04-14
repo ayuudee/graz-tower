@@ -13,9 +13,11 @@ This widens the already-closed single-step slice just one notch:
 - zero or more immediate adjunct instructions already understood by the
   current greenfield engine
 
-It intentionally does not add new authority claims. The primary instruction
+This module itself does not add new authority claims. The primary instruction
 still resolves as a plain route-domain step, and the tail reuses the existing
-immediate-adjunct surface from the route-bearing compound layer.
+immediate-adjunct surface from the route-bearing compound layer. Current-shape
+authority closure for the delivered Phase B surface now lives separately in
+`GreenfieldRouteAdjacentAuthority`.
 -/
 
 def ContinueApproachCompoundReady

@@ -102,7 +102,30 @@ Then open the specific Lean module for the phase you are changing.
   through a first narrow compound package and the shared null-domain /
   source-domain-supplied helper story frozen for `ExtendDownwind` / `Orbit`;
   `GreenfieldRouteAdjacentCurrentShape.lean` now packages that delivered
-  Phase B set behind one source-level current-shape theorem boundary
+  Phase B set behind one source-level current-shape theorem boundary, and
+  `GreenfieldRouteAdjacentAuthority.lean` now closes the current-shape
+  authority layer for the same delivered Phase B families
+- the current Kotlin airspace-clearance family now also has a first honest
+  greenfield widening slice in
+  `GreenfieldAirspaceCurrentShape.lean`:
+  `RemainOutsideControlledAirspace`,
+  `ClearedToEnterControlZone`, and `SpecialVfrClearance` now exist on the
+  Lean boundary with Kotlin-aligned metadata, single-step current-shape
+  issuance, explicit current lifecycle/supersession regressions, and
+  conservative `airspaceVolume / airspaceTransit` authority
+  `GreenfieldAirspaceCompound.lean` now widens that same family one step
+  further:
+  `ClearedToEnterControlZone` and `SpecialVfrClearance` now have a first
+  narrow current-shape compound slice over immediate adjuncts, and
+  `GreenfieldAirspaceDeliveredCurrentShape.lean` now packages the delivered
+  airspace family behind one source-level current-shape theorem boundary
+  `GreenfieldRadioCurrentShape.lean` now also closes a small current-shape
+  radio package for `ContactFrequency` and `MonitorFrequency`, including
+  conservative radio-role authority plus explicit/implicit frequency
+  resolution
+  `GreenfieldBacktrackCurrentShape.lean` now also closes a small current-shape
+  `BacktrackRunway` package with runway/backtrack authority and resolved
+  far-end-point completion
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing
@@ -192,12 +215,19 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   `ContinueApproach`, `ExtendDownwind`, and `Orbit` now also have small
   current-shape theorem slices on top of that surface, and all three are now
   widened through a narrow compound slice, with the delivered Phase B set now
+  also packaged behind one source-level current-shape theorem boundary and
+  closed through a current-shape authority layer;
+  the current Kotlin airspace-clearance family also now has a first
+  single-step current-shape package in `GreenfieldAirspaceCurrentShape.lean`,
+  and its two persistent families now also have a first narrow compound slice
+  in `GreenfieldAirspaceCompound.lean`, with the delivered airspace family now
   also packaged behind one source-level current-shape theorem boundary;
   the next honest work on the greenfield path is therefore no longer
   structural bridge work, is not `ClearedApproach` completion, and is not
   basic current-shape compound closure for `ContinueApproach`,
   `ExtendDownwind`, or `Orbit`;
-  the live gap is instead broader authority work on the Phase B families,
-  wider execution packaging, or a shift to a new narrow family
+  the live gap is instead wider execution packaging beyond those slices,
+  widening the airspace-clearance family beyond its current narrow slice, or a
+  shift to a new narrow family
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

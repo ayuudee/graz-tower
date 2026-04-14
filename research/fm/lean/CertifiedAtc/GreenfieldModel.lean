@@ -185,6 +185,7 @@ abbrev VfrRouteId := String
 abbrev HoldingPatternId := String
 abbrev ApproachId := String
 abbrev CircuitProcedureId := String
+abbrev AirspaceVolumeId := String
 abbrev Frequency := CertifiedAtc.Frequency
 abbrev Squawk := Nat
 abbrev Minutes := Nat
@@ -354,6 +355,19 @@ inductive AtcInstruction
   | continueApproach (target : AircraftId)
   | extendDownwind (target : AircraftId)
   | orbit (target : AircraftId) (direction : OrbitDirection)
+  | clearedToEnterControlZone
+      (target : AircraftId)
+      (airspace : AirspaceVolumeId)
+      (route : Option RouteSpec := none)
+      (levelRestriction : Option Level := none)
+  | remainOutsideControlledAirspace
+      (target : AircraftId)
+      (airspace : AirspaceVolumeId)
+  | specialVfrClearance
+      (target : AircraftId)
+      (airspace : AirspaceVolumeId)
+      (route : Option RouteSpec := none)
+      (levelRestriction : Option Level := none)
   | contactFrequency (target : AircraftId) (role : RoleName)
       (frequency : Option Frequency := none)
   | monitorFrequency (target : AircraftId) (role : RoleName)
@@ -418,6 +432,9 @@ def instructionTarget : AtcInstruction → AircraftId
   | .continueApproach target => target
   | .extendDownwind target => target
   | .orbit target _ => target
+  | .clearedToEnterControlZone target _ _ _ => target
+  | .remainOutsideControlledAirspace target _ => target
+  | .specialVfrClearance target _ _ _ => target
   | .contactFrequency target _ _ => target
   | .monitorFrequency target _ _ => target
   | .setSquawk target _ => target
@@ -494,6 +511,8 @@ def instructionTiming? : AtcInstruction → Option InstructionTiming
   | .lineUpAndWait _ _ => some .persistent
   | .orbit _ _ => some .persistent
   | .extendDownwind _ => some .persistent
+  | .clearedToEnterControlZone _ _ _ _ => some .persistent
+  | .specialVfrClearance _ _ _ _ => some .persistent
   | .holdAt _ _ _ => some .persistent
   | _ => none
 
@@ -530,6 +549,9 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .continueApproach _ => some .route
   | .extendDownwind _ => none
   | .orbit _ _ => none
+  | .clearedToEnterControlZone _ _ _ _ => some .route
+  | .remainOutsideControlledAirspace _ _ => some .route
+  | .specialVfrClearance _ _ _ _ => some .route
   | .climbTo _ _ => some .level
   | .descendTo _ _ => some .level
   | .expediteClimb _ _ => some .level
@@ -616,6 +638,8 @@ def instructionCompletionCategory? : AtcInstruction → Option CompletionCategor
   | .lineUpAndWait _ _ => some .persistent
   | .orbit _ _ => some .persistent
   | .extendDownwind _ => some .persistent
+  | .clearedToEnterControlZone _ _ _ _ => some .persistent
+  | .specialVfrClearance _ _ _ _ => some .persistent
   | .holdAt _ _ _ => some .persistent
   | _ => none
 

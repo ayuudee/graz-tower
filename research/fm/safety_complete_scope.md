@@ -167,8 +167,8 @@ This is the shortest-path justification for each exclusion class.
 These are not excluded because they are unimportant.
 They are excluded because they do not need to be on the shortest path to close
 the runway/surface/separation safety package, and in the case of
-`BacktrackRunway` the greenfield/runtime semantics are ahead of the current
-older certified-path theorem surface.
+`BacktrackRunway` they sit outside the shortest-path scoped claim even though
+the current-shape greenfield/runtime slice is now closed separately.
 
 ### Route-bearing, circuit, or open-ended airborne families
 
@@ -222,7 +222,8 @@ be read as:
 Important:
 
 - `BacktrackRunway` remains modeled and useful, but it is not part of the
-  shortest-path completion claim
+  shortest-path completion claim; it now has a separate small current-shape
+  greenfield closure outside the scoped nominal bar
 - route-bearing and open-ended clearances remain outside the scoped claim until
   their semantics are proved strongly enough to support top-level safety
   theorems

@@ -222,7 +222,7 @@ class CompletionEvaluationTest {
                 content = ClearanceContent.Single(
                     MaintainLevel(
                         target = TEST_AIRCRAFT,
-                        level = Level.AltitudeFeet(5000)
+                        level = Level.AltitudeFeet.unsafe(5000)
                     )
                 )
             )
@@ -235,8 +235,8 @@ class CompletionEvaluationTest {
                 content = ClearanceContent.Single(
                     AfterPassingLevelClimbTo(
                         target = TEST_AIRCRAFT,
-                        afterPassing = Level.AltitudeFeet(3000),
-                        climbTo = Level.AltitudeFeet(5000)
+                        afterPassing = Level.AltitudeFeet.unsafe(3000),
+                        climbTo = Level.AltitudeFeet.unsafe(5000)
                     )
                 )
             )
@@ -245,10 +245,10 @@ class CompletionEvaluationTest {
         val lowView = CompletionView(
             position = FixtureIds.holdFixPoint,
             entities = emptySet(),
-            altitude = Level.AltitudeFeet(4500),
+            altitude = Level.AltitudeFeet.unsafe(4500),
             onGround = false
         )
-        val targetView = lowView.copy(altitude = Level.AltitudeFeet(5000))
+        val targetView = lowView.copy(altitude = Level.AltitudeFeet.unsafe(5000))
 
         assertEquals(
             CompletionResult.NOT_COMPLETE,
@@ -334,6 +334,8 @@ class CompletionEvaluationTest {
 
         assertEquals(CompletionResult.NOT_COMPLETE, beforeEnd.stepResults.single().result)
         assertEquals(CompletionResult.COMPLETE, atFarEnd.stepResults.single().result)
+        assertEquals(ClearanceStatus.COMPLETED, atFarEnd.updated.source.status)
+        assertEquals(true, atFarEnd.isComplete)
     }
 
     @Test
@@ -347,7 +349,7 @@ class CompletionEvaluationTest {
                 content = ClearanceContent.Single(
                     MaintainAltitudeUntilEstablished(
                         target = TEST_AIRCRAFT,
-                        level = Level.AltitudeFeet(3000),
+                        level = Level.AltitudeFeet.unsafe(3000),
                         on = ApproachComponent.LOCALISER
                     )
                 )
@@ -359,7 +361,7 @@ class CompletionEvaluationTest {
             view = CompletionView(
                 position = FixtureIds.fafPoint,
                 entities = setOf(EntityRef.ApproachRef(FixtureIds.approach)),
-                altitude = Level.AltitudeFeet(3000),
+                altitude = Level.AltitudeFeet.unsafe(3000),
                 onGround = false
             )
         )
@@ -368,7 +370,7 @@ class CompletionEvaluationTest {
             view = CompletionView(
                 position = FixtureIds.fafPoint,
                 entities = setOf(EntityRef.ApproachRef(FixtureIds.approach)),
-                altitude = Level.AltitudeFeet(3000),
+                altitude = Level.AltitudeFeet.unsafe(3000),
                 onGround = false,
                 establishedApproachComponents = setOf(ApproachComponent.LOCALISER)
             )

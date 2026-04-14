@@ -9,7 +9,9 @@ Current-shape compound closure for `Orbit`.
 
 This is the same source-domain-supplied persistent-plain pattern as
 `ExtendDownwind`: one leading `Orbit` plus immediate adjunct tails, no new
-authority claim, and explicit current engine consequences.
+authority claim in this module, and explicit current engine consequences.
+Current-shape authority closure for the delivered Phase B surface now lives
+separately in `GreenfieldRouteAdjacentAuthority`.
 -/
 
 inductive OrbitCompoundCurrentShapeIssuable

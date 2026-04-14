@@ -133,6 +133,15 @@ As of April 14, 2026, the first honest widening increment is now in place.
   these delivered slices package source-level issuance into
   `ReachableResolvedSet`, explicit current lifecycle behavior, and explicit
   supersession / engine-consequence theorems for the currently modeled cases
+- [GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
+  now closes the current-shape authority layer for that delivered Phase B
+  surface:
+  `ContinueApproach` is mapped conservatively to
+  `(instrumentApproach, sequence)` on the current type-level role model,
+  while `ExtendDownwind` and `Orbit` map to
+  `(circuitProcedure, circuit)`;
+  the delivered Phase B single-step and narrow-compound slices now therefore
+  also have authority-gated issuance on the current greenfield boundary
 - legacy atomic issuance remains partial:
   `ClearedApproach` and only the legacy-supported `JoinCircuit` subset are
   still the only route-bearing families carried through the older atomic path
@@ -140,12 +149,14 @@ As of April 14, 2026, the first honest widening increment is now in place.
   the current Kotlin/Lean model intentionally leaves it active until
   superseded, so it is not a live widening gap
 - if we stay on the greenfield path, the current live widening gap is now no
-  longer Phase A closure work:
+  longer Phase A closure work and no longer current-shape authority closure
+  for the delivered Phase B families:
   it is widening beyond the now-closed current-shape Phase A core, beyond the
   one-primary-plus-immediate-adjunct compound surface, beyond the newly closed
   current-shape compound slices for `ContinueApproach`, `ExtendDownwind`, and
-  `Orbit`, and beyond the newly closed source-level Phase B packaging theorem,
-  while keeping the next execution semantics honest
+  `Orbit`, beyond the newly closed source-level Phase B packaging theorem,
+  and beyond the newly closed current-shape Phase B authority layer, while
+  keeping the next execution semantics honest
 - the remaining legacy-atomic closure for `ClearedTo` / `HoldAt` is now a
   separate optional branch, not the default next step
   This is a real choice, not just missing packaging:
@@ -255,12 +266,16 @@ Current delivered state:
 - `Orbit` now has the same closure shape as `ExtendDownwind`:
   single-step plus a narrow current-shape compound slice over immediate
   adjuncts.
+- the delivered Phase B surface now also has a current-shape authority layer:
+  `ContinueApproach` is treated conservatively as
+  `(instrumentApproach, sequence)` on the current type-level role model,
+  while `ExtendDownwind` and `Orbit` are treated as
+  `(circuitProcedure, circuit)`.
 
 What remains open for Phase B is no longer basic current-shape compound
-closure for these three families. It is now broader authority resolution for
-the still-unmapped Phase B families, wider execution packaging beyond these
-delivered slices, or widening a different family such as
-`CrossControlledAirspace`.
+closure or current-shape authority closure for these three families. It is
+now wider execution packaging beyond these delivered slices, or widening a
+different family such as the current Kotlin airspace-clearance surface.
 
 ### Phase C: Deferred Coordination/Airspace Families
 

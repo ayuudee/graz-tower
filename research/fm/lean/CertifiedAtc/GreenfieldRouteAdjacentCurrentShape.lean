@@ -9,17 +9,18 @@ namespace Greenfield
 `GreenfieldRouteAdjacentCurrentShape` packages the delivered Phase B
 route-adjacent surface behind one source-level theorem boundary.
 
-Unlike Phase A, this package is intentionally authority-light. The delivered
-families here are still current-shape execution slices, not authority-closed
-greenfield issuers. What this module does package is the current reusable
-claim:
+This package remains intentionally authority-light even though the delivered
+Phase B surface now also has a separate current-shape authority layer in
+`GreenfieldRouteAdjacentAuthority`. What this module packages is the current
+reusable execution-side claim:
 
 - the source clearance lies in the presently delivered Phase B surface
 - therefore there exists a resolved clearance that admits into
   `ReachableResolvedSet`
 
-That gives the widening track one honest closure point for the whole delivered
-Phase B set before any later authority or richer execution work.
+That gives the widening track one honest execution-side closure point for the
+whole delivered Phase B set before any later widening beyond the current
+slices.
 -/
 
 inductive GreenfieldRouteAdjacentCurrentShapeIssuable

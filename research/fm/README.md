@@ -197,6 +197,44 @@ As of April 14, 2026:
   together these packages cover source-level issuance into
   `ReachableResolvedSet`, current lifecycle behavior, and explicit current
   supersession / engine-consequence theorems
+- [GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
+  now closes the current-shape authority layer for that delivered Phase B
+  set:
+  `ContinueApproach` is treated conservatively as
+  `(instrumentApproach, sequence)` on the current type-level role model,
+  while `ExtendDownwind` and `Orbit` map to
+  `(circuitProcedure, circuit)`;
+  the delivered Phase B slices now therefore also have authority-gated
+  issuance on the current greenfield boundary
+- the next current-Kotlin-family widening increment is now also in place:
+  [GreenfieldAirspaceCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceCurrentShape.lean)
+  and
+  [GreenfieldAirspaceCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceCompound.lean)
+  now close the first honest current-shape airspace-clearance slice:
+  `RemainOutsideControlledAirspace` now has a single-step package, and
+  `ClearedToEnterControlZone` / `SpecialVfrClearance` now have both a
+  single-step package and a first narrow compound slice over immediate
+  adjuncts;
+  these instructions now exist on the greenfield Lean boundary with Kotlin-
+  aligned metadata, resolve as plain route-domain steps, have explicit current
+  lifecycle/supersession regressions, and use a conservative type-level
+  authority mapping to `(airspaceVolume, airspaceTransit)`
+- [GreenfieldAirspaceDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceDeliveredCurrentShape.lean)
+  now packages that delivered airspace-clearance slice behind one source-level
+  current-shape theorem boundary, including a unified authority-gated issuance
+  theorem over the already-delivered single-step and narrow-compound cases
+- [GreenfieldRadioCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRadioCurrentShape.lean)
+  now closes a small current-shape radio package for
+  `ContactFrequency` and `MonitorFrequency`:
+  source-level single-step admission, conservative
+  `(radioRole, contact)` / `(radioRole, monitor)` authority, explicit and
+  implicit frequency resolution, and theorem-bearing lifecycle/supersession
+  regressions
+- [GreenfieldBacktrackCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
+  now closes a small current-shape `BacktrackRunway` package:
+  source-level single-step issuance, conservative `(runway, backtrack)`
+  authority, resolved far-end-point completion, and theorem-bearing terminal
+  behavior after reconciliation
 - a full route-bearing proof-authoritative extraction contract still does not
   exist yet; the new route-bearing extraction increment is real, but it is
   still a first procedure-bearing slice rather than the full Phase A
@@ -236,12 +274,32 @@ The default critical path is now:
 - the current route-bearing / route-adjacent widening state now has a closed
   Phase A greenfield surface plus small current-shape compound slices for
   `ContinueApproach`, `ExtendDownwind`, and `Orbit`, with one source-level
-  current-shape theorem packaging that delivered Phase B set
+  current-shape theorem packaging for that delivered Phase B set plus a
+  current-shape authority layer for the same families
+- the current Kotlin airspace-clearance family now also has a first honest
+  greenfield slice:
+  `RemainOutsideControlledAirspace` is covered as a small single-step package,
+  while `ClearedToEnterControlZone` and `SpecialVfrClearance` are now widened
+  through a first narrow current-shape compound slice, and the delivered
+  family is now packaged behind one source-level current-shape theorem
+  boundary;
+  no world-backed airspace-entry resolution is claimed yet
+- the current Kotlin radio family now also has a small closed current-shape
+  slice:
+  `ContactFrequency` and `MonitorFrequency` now have a single-step packaged
+  theorem surface with explicit/implicit frequency resolution, conservative
+  radio-role authority, and current lifecycle/supersession behavior
+- `BacktrackRunway` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/backtrack authority, and resolved far-end-point
+  completion are now theorem-bearing
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
-  widen authority on the Phase B families, shift to a new narrow family, or
-  carry
+  widen execution beyond the delivered Phase B slices, widen the airspace-
+  clearance family beyond its current narrow slice, widen the new radio slice
+  beyond single-step packaging, widen `BacktrackRunway` beyond its current
+  single-step package, shift to a new narrow family, or carry
   `ClearedTo` / `HoldAt` through the older atomic path
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every

@@ -27,20 +27,36 @@ The following instruction families are now treated as authority-resolved:
 
 - `TaxiTo` -> `(taxiway, taxi)`
 - `CrossRunway` -> `(runway, cross)`
-- `BacktrackRunway` -> `(runway, backtrack)`
+- `BacktrackRunway` -> `(runway, backtrack)` on the current-shape backtrack
+  boundary
 - `LineUpAndWait` -> `(runway, lineUp)`
 - `ClearedForTakeoff` -> `(runway, takeoff)`
 - `ClearedToLand` -> `(runway, land)`
 - `ClearedTouchAndGo` -> `(runway, touchAndGo)`
 - `JoinCircuit` -> `(circuitProcedure, circuit)`
+- `ExtendDownwind` -> `(circuitProcedure, circuit)` on the current-shape
+  route-adjacent boundary
+- `Orbit` -> `(circuitProcedure, circuit)` on the current-shape
+  route-adjacent boundary
+- `ContinueApproach` -> `(instrumentApproach, sequence)` on the current-shape
+  route-adjacent boundary
+- `RemainOutsideControlledAirspace` -> `(airspaceVolume, airspaceTransit)` on
+  the current-shape airspace-clearance boundary
+- `ClearedToEnterControlZone` -> `(airspaceVolume, airspaceTransit)` on the
+  current-shape airspace-clearance boundary
+- `SpecialVfrClearance` -> `(airspaceVolume, airspaceTransit)` on the current-
+  shape airspace-clearance boundary
 - `ContactFrequency` -> `(radioRole, contact)`
 - `MonitorFrequency` -> `(radioRole, monitor)`
 - `ClearedApproach` -> `(instrumentApproach, approachClearance)`
 - `HoldAt` -> `(holdingPattern, hold)`
 
-These mappings are now mirrored in
+The longstanding envelope-facing subset is mirrored in
 [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
-through `instructionRequiredAuthorityGrant?`.
+through `instructionRequiredAuthorityGrant?`, and the delivered current-shape
+Phase B route-adjacent mappings are mirrored in
+[GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
+for the delivered current-shape Phase B route-adjacent surface.
 
 ## Why These Are Safe To Freeze
 
@@ -49,6 +65,13 @@ These instruction families line up directly with the greenfield role model:
 - taxi movement on taxiways
 - runway crossing and runway-use operations
 - circuit-procedure control
+- current-shape circuit-sequencing instructions that stay on the tower-side
+  circuit family
+- current-shape `ContinueApproach` as approach sequencing on the present
+  approach family, still at the same type-level authority granularity used
+  elsewhere in the greenfield model
+- current-shape controlled-airspace entry / restriction instructions over the
+  existing type-level `airspaceVolume / airspaceTransit` authority family
 - approach clearance over approach entities
 - holding-pattern control
 - radio role / handoff style instructions
@@ -65,11 +88,8 @@ authority-mapping layer:
 - `HoldPosition`
 - `HoldShortOf`
 - `GoAround`
-- `Orbit`
-- `ExtendDownwind`
 - `ReportDownwind`
 - `ReportFinal`
-- `ContinueApproach`
 - `Proceed`
 - `ClearedTo`
 - `ClimbTo`
@@ -147,7 +167,8 @@ The next authority increment should not be "map every remaining instruction."
 
 It should be:
 
-1. prove small issuer-authorization lemmas above the current resolved subset
-2. decide the right authority families for the unresolved airspace / route /
-   coordination instructions
-3. only then widen the mapping surface
+1. keep the current-shape Phase B authority mappings stable and aligned to the
+   Kotlin model
+2. decide the right authority families for the still-unresolved airspace /
+   route / coordination instructions
+3. only then widen the mapping surface again

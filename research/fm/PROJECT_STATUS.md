@@ -52,6 +52,44 @@ It now contains:
   together they now have source-level issuance into `ReachableResolvedSet`,
   explicit current lifecycle behavior, and explicit supersession /
   engine-consequence theorems for the currently modeled cases
+- `GreenfieldRouteAdjacentAuthority.lean` now closes the current-shape
+  authority layer for that delivered Phase B surface:
+  `ContinueApproach` is treated conservatively as
+  `(instrumentApproach, sequence)` on the current type-level role model,
+  while `ExtendDownwind` and `Orbit` map to
+  `(circuitProcedure, circuit)`;
+  the delivered Phase B single-step and narrow-compound slices now therefore
+  also have authority-gated issuance on the current greenfield boundary
+- `GreenfieldAirspaceCurrentShape.lean` now closes the first honest widening
+  slice for the current Kotlin airspace-clearance family:
+  `RemainOutsideControlledAirspace`,
+  `ClearedToEnterControlZone`, and `SpecialVfrClearance` now exist on the
+  greenfield Lean boundary with Kotlin-aligned metadata, a small single-step
+  current-shape issuance package, explicit current lifecycle/supersession
+  regressions, and conservative type-level authority mapping to
+  `(airspaceVolume, airspaceTransit)`
+- `GreenfieldAirspaceCompound.lean` now widens that same family one step
+  further on the current-shape boundary:
+  `ClearedToEnterControlZone` and `SpecialVfrClearance` now have a first
+  narrow compound slice over immediate adjuncts, with whole-clearance
+  admission, authority-gated issuance, and explicit current engine
+  consequences for adjunct completion and frequency supersession
+- `GreenfieldAirspaceDeliveredCurrentShape.lean` now packages that delivered
+  airspace family behind one source-level current-shape theorem boundary,
+  so the single-step `RemainOutsideControlledAirspace` slice and the narrow
+  compound `ClearedToEnterControlZone` / `SpecialVfrClearance` slice now have
+  one packaged reachable/authorized issuance surface
+- `GreenfieldRadioCurrentShape.lean` now closes a small current-shape radio
+  package for `ContactFrequency` and `MonitorFrequency`:
+  source-level single-step admission, conservative
+  `(radioRole, contact)` / `(radioRole, monitor)` authority, explicit and
+  implicit frequency resolution, and theorem-bearing lifecycle/supersession
+  regressions
+- `GreenfieldBacktrackCurrentShape.lean` now closes a small current-shape
+  `BacktrackRunway` package:
+  source-level single-step issuance, conservative
+  `(runway, backtrack)` authority, resolved far-end-point completion, and
+  terminal behavior on reconciliation
 - the next honest route-bearing gap is now a branch choice rather than a
   structural blocker: on the greenfield path, the live work is widening beyond
   the current one-primary-plus-immediate-adjunct compound surface and beyond
@@ -68,8 +106,9 @@ It does not yet contain:
 - settled proof-side answers for several greenfield clearance semantics that
   materially affect theorem shape: compound admission and timing, completion
   categories, step-transition effects, supersession granularity,
-  clearance-limit/holding-pattern invariants, and instruction-level authority
-  mapping
+  clearance-limit/holding-pattern invariants, and the remaining unresolved
+  instruction-level authority mapping beyond the now-delivered Phase B
+  current-shape layer
 - an envelope-level theorem for monotone sequencing or no-partial-issuance
 - the full broad-scope separation story described in the brief beyond the
   current scoped nominal surface
@@ -78,10 +117,23 @@ It does not yet contain:
   but full extraction closure, broader authority closure, and legacy-bridge
   closure remain incomplete, with legacy-bridge issuance still limited to
   `ClearedApproach` plus legacy-supported `JoinCircuit`
+- a widened current-shape airspace-clearance package beyond the now-delivered
+  narrow slice; the delivered family is now source-level packaged, but the
+  current Lean/runtime-aligned story does not yet claim world-backed
+  airspace-entry resolution, broader compound widening, or richer airspace
+  lifecycle semantics
+- a widened current-shape radio package beyond the now-delivered single-step
+  slice; the delivered radio family is now source-level packaged and
+  authority-closed, but it is not yet widened through compound or broader
+  coordination semantics
+- a widened current-shape `BacktrackRunway` package beyond the now-delivered
+  single-step slice; the current backtrack story is now closed on the
+  greenfield boundary, but it is not yet widened into a broader ground-
+  movement package
 - widened current-shape compound/authority packaging for the newly delivered
-  Phase B families beyond their current narrow compound slices, especially at
-  the still-unresolved authority layer; the delivered Phase B surface is now
-  source-level packaged, but not authority-closed
+  Phase B families beyond their current narrow compound slices; the delivered
+  Phase B surface is now source-level packaged and current-shape
+  authority-closed, but not yet widened beyond those slices
 - richer operationally detailed mode semantics beyond the current conservative
   scoped full-brief layer
 

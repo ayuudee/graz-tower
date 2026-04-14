@@ -9,7 +9,8 @@ Current-shape compound closure for `ExtendDownwind`.
 
 This widens the single-step slice to one leading `ExtendDownwind` plus
 immediate adjunct tails, while keeping the current source-domain-supplied
-semantics explicit and authority intentionally unresolved.
+semantics explicit. Current-shape authority closure for the delivered Phase B
+surface now lives separately in `GreenfieldRouteAdjacentAuthority`.
 -/
 
 inductive ExtendDownwindCompoundCurrentShapeIssuable
