@@ -177,12 +177,26 @@ As of April 14, 2026:
   metadata at the instruction layer, the current persistent-only-compound
   consequence is explicit rather than implicit, and
   [GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean),
+  [GreenfieldContinueApproachCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean),
   [GreenfieldExtendDownwind.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean),
+  [GreenfieldExtendDownwindCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean),
   and
-  [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean)
-  now each provide a closed current-shape single-step theorem slice:
-  source-level issuance into `ReachableResolvedSet`, current lifecycle
-  behavior, and one explicit supersession / engine-consequence theorem
+  [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean),
+  [GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean),
+  with
+  [GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
+  freezing the shared source-domain-supplied convention for the
+  metadata-domain-less persistent families, and
+  [GreenfieldRouteAdjacentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean)
+  packaging the whole delivered Phase B set behind one source-level
+  current-shape theorem boundary
+  now provide the first small closed Phase B slices:
+  `ContinueApproach` now has a single-step slice plus a narrow current-shape
+  compound slice, and `ExtendDownwind` / `Orbit` now each also have a narrow
+  current-shape compound slice on top of their single-step slice;
+  together these packages cover source-level issuance into
+  `ReachableResolvedSet`, current lifecycle behavior, and explicit current
+  supersession / engine-consequence theorems
 - a full route-bearing proof-authoritative extraction contract still does not
   exist yet; the new route-bearing extraction increment is real, but it is
   still a first procedure-bearing slice rather than the full Phase A
@@ -220,13 +234,15 @@ The default critical path is now:
 - the active widening track is the route-bearing proof surface defined in
   [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
 - the current route-bearing / route-adjacent widening state now has a closed
-  Phase A greenfield surface plus three additional small single-step
-  current-shape slices for `ContinueApproach`, `ExtendDownwind`, and `Orbit`
+  Phase A greenfield surface plus small current-shape compound slices for
+  `ContinueApproach`, `ExtendDownwind`, and `Orbit`, with one source-level
+  current-shape theorem packaging that delivered Phase B set
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
-  `ContinueApproach` / `ExtendDownwind` / `Orbit`; it is to decide how far to
-  widen those newly delivered slices on the greenfield boundary, or whether to
-  carry `ClearedTo` / `HoldAt` through the older atomic path
+  `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
+  widen authority on the Phase B families, shift to a new narrow family, or
+  carry
+  `ClearedTo` / `HoldAt` through the older atomic path
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

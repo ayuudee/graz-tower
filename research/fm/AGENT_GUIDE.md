@@ -98,7 +98,11 @@ Then open the specific Lean module for the phase you are changing.
 - the next greenfield widening seam is no longer just Phase A route-bearing:
   the semantic-alignment gate for `JoinCircuit` / `ExtendDownwind` / `Orbit`
   is now closed, and `ContinueApproach`, `ExtendDownwind`, and `Orbit` each
-  now have a small current-shape single-step theorem slice
+  now have a small current-shape theorem slice, with all three now widened
+  through a first narrow compound package and the shared null-domain /
+  source-domain-supplied helper story frozen for `ExtendDownwind` / `Orbit`;
+  `GreenfieldRouteAdjacentCurrentShape.lean` now packages that delivered
+  Phase B set behind one source-level current-shape theorem boundary
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing
@@ -186,10 +190,14 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   `GreenfieldRouteBearingCurrentShape.lean` now packages that surface at one
   source-level theorem boundary;
   `ContinueApproach`, `ExtendDownwind`, and `Orbit` now also have small
-  current-shape single-step theorem slices on top of that surface;
+  current-shape theorem slices on top of that surface, and all three are now
+  widened through a narrow compound slice, with the delivered Phase B set now
+  also packaged behind one source-level current-shape theorem boundary;
   the next honest work on the greenfield path is therefore no longer
   structural bridge work, is not `ClearedApproach` completion, and is not
-  basic closure for those three families, because the current model already
-  fixes their present single-step behavior
+  basic current-shape compound closure for `ContinueApproach`,
+  `ExtendDownwind`, or `Orbit`;
+  the live gap is instead broader authority work on the Phase B families,
+  wider execution packaging, or a shift to a new narrow family
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

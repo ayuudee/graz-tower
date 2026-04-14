@@ -111,13 +111,28 @@ As of April 14, 2026, the first honest widening increment is now in place.
 - the first honest Phase B increment is now also delivered on the same
   greenfield boundary:
   [GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean),
+  [GreenfieldContinueApproachCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean),
   [GreenfieldExtendDownwind.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean),
+  [GreenfieldExtendDownwindCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean),
   and
-  [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean)
-  now each give a small current-shape single-step theorem package:
-  source-level issuance into `ReachableResolvedSet`, explicit current
-  lifecycle behavior, and one explicit supersession / engine-consequence
-  theorem per family
+  [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean),
+  [GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean),
+  with
+  [GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
+  freezing the shared null-domain / source-domain-supplied persistent-plain
+  convention used by `ExtendDownwind` and `Orbit`, and
+  [GreenfieldRouteAdjacentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean)
+  packaging the whole currently delivered Phase B surface behind one
+  source-level current-shape theorem boundary
+  now give the first small current-shape Phase B closures:
+  `ContinueApproach` now has both a single-step theorem slice and a narrow
+  compound slice for one leading `ContinueApproach` plus immediate adjuncts,
+  and `ExtendDownwind` / `Orbit` now each have both a single-step theorem
+  slice and a narrow compound slice over the same immediate-adjunct tail
+  family;
+  these delivered slices package source-level issuance into
+  `ReachableResolvedSet`, explicit current lifecycle behavior, and explicit
+  supersession / engine-consequence theorems for the currently modeled cases
 - legacy atomic issuance remains partial:
   `ClearedApproach` and only the legacy-supported `JoinCircuit` subset are
   still the only route-bearing families carried through the older atomic path
@@ -127,9 +142,10 @@ As of April 14, 2026, the first honest widening increment is now in place.
 - if we stay on the greenfield path, the current live widening gap is now no
   longer Phase A closure work:
   it is widening beyond the now-closed current-shape Phase A core, beyond the
-  one-primary-plus-immediate-adjunct compound surface, and beyond the newly
-  closed single-step slices for `ContinueApproach`, `ExtendDownwind`, and
-  `Orbit`, while keeping the next execution semantics honest
+  one-primary-plus-immediate-adjunct compound surface, beyond the newly closed
+  current-shape compound slices for `ContinueApproach`, `ExtendDownwind`, and
+  `Orbit`, and beyond the newly closed source-level Phase B packaging theorem,
+  while keeping the next execution semantics honest
 - the remaining legacy-atomic closure for `ClearedTo` / `HoldAt` is now a
   separate optional branch, not the default next step
   This is a real choice, not just missing packaging:
@@ -224,19 +240,27 @@ greenfield boundary.
 
 Current delivered state:
 
-- `ContinueApproach` now has a closed current-shape single-step slice:
-  source-level issuance, active lifecycle, and explicit `GoAround`
-  supersession.
-- `ExtendDownwind` now has a closed current-shape single-step slice:
+- `ContinueApproach` now has a closed current-shape single-step slice plus a
+  first narrow current-shape compound slice:
+  source-level issuance, active lifecycle, explicit `GoAround`
+  supersession, and explicit current behavior for one leading
+  `ContinueApproach` plus immediate adjuncts.
+- `ExtendDownwind` now has a closed current-shape single-step slice plus a
+  first narrow current-shape compound slice:
   source-level issuance, active lifecycle, explicit non-supersession by a
-  frequency update, and an explicit proof of the current persistent-only
-  compound terminalization behavior after frequency suppression.
-- `Orbit` now has the same current-shape single-step closure shape as
-  `ExtendDownwind`.
+  frequency update, and explicit current behavior for one leading
+  `ExtendDownwind` plus immediate adjuncts, including the current
+  persistent-only compound terminalization behavior after frequency
+  suppression.
+- `Orbit` now has the same closure shape as `ExtendDownwind`:
+  single-step plus a narrow current-shape compound slice over immediate
+  adjuncts.
 
-What remains open for Phase B is not basic single-step honesty. It is later
-compound widening, authority resolution, or wider execution packaging beyond
-those small delivered slices.
+What remains open for Phase B is no longer basic current-shape compound
+closure for these three families. It is now broader authority resolution for
+the still-unmapped Phase B families, wider execution packaging beyond these
+delivered slices, or widening a different family such as
+`CrossControlledAirspace`.
 
 ### Phase C: Deferred Coordination/Airspace Families
 

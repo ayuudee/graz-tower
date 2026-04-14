@@ -42,16 +42,21 @@ It now contains:
   consequence is now explicit in theorem-bearing execution regressions rather
   than being only an implicit engine artifact
 - the first route-adjacent widening increment above Phase A is now in place as
-  three small closed current-shape single-step slices:
-  `ContinueApproach`, `ExtendDownwind`, and `Orbit` each now have
-  source-level issuance into `ReachableResolvedSet`, explicit current
-  lifecycle behavior, and one explicit supersession / engine-consequence
-  theorem
+  a small set of closed current-shape Phase B slices:
+  `ContinueApproach`, `ExtendDownwind`, and `Orbit` now each have a
+  single-step slice plus a narrow current-shape compound slice, with
+  `GreenfieldSourceDomainPersistentPlain.lean` freezing the shared null-domain
+  / source-domain-supplied helper story for the latter two, and
+  `GreenfieldRouteAdjacentCurrentShape.lean` packaging the delivered Phase B
+  surface behind one source-level current-shape theorem boundary;
+  together they now have source-level issuance into `ReachableResolvedSet`,
+  explicit current lifecycle behavior, and explicit supersession /
+  engine-consequence theorems for the currently modeled cases
 - the next honest route-bearing gap is now a branch choice rather than a
   structural blocker: on the greenfield path, the live work is widening beyond
   the current one-primary-plus-immediate-adjunct compound surface and beyond
-  the newly closed single-step slices for `ContinueApproach`,
-  `ExtendDownwind`, and `Orbit`; the older atomic closure for
+  the newly closed small current-shape compound slices for the current
+  Phase B families; the older atomic closure for
   `ClearedTo` / `HoldAt` remains optional and separate
 
 It does not yet contain:
@@ -68,18 +73,15 @@ It does not yet contain:
 - an envelope-level theorem for monotone sequencing or no-partial-issuance
 - the full broad-scope separation story described in the brief beyond the
   current scoped nominal surface
-- a full theorem-bearing route-bearing package across all four Phase A
-  widening families; the current route-bearing widening state now includes
-  resolved semantics for all four, a first theorem-bearing procedure-bearing
-  extraction increment, an extraction-to-resolution bridge, current-shape
-  greenfield issuance for the full Phase A surface, a current-shape lifecycle
-  and supersession package, a current-shape source-level closure theorem, and
-  legacy-bridge issuance only for
+- a full route-bearing package beyond the closed current-shape Phase A
+  surface; Phase A itself is now closed on the current greenfield boundary,
+  but full extraction closure, broader authority closure, and legacy-bridge
+  closure remain incomplete, with legacy-bridge issuance still limited to
   `ClearedApproach` plus legacy-supported `JoinCircuit`
 - widened current-shape compound/authority packaging for the newly delivered
-  `ContinueApproach`, `ExtendDownwind`, and `Orbit` slices; those families are
-  now closed only as small single-step slices, not as a broader theorem
-  package
+  Phase B families beyond their current narrow compound slices, especially at
+  the still-unresolved authority layer; the delivered Phase B surface is now
+  source-level packaged, but not authority-closed
 - richer operationally detailed mode semantics beyond the current conservative
   scoped full-brief layer
 

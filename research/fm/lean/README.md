@@ -63,29 +63,46 @@ Read modules in roughly this order:
     Optional. This closes the current-shape single-step `ContinueApproach`
     slice: source-level issuance, active lifecycle, and explicit `GoAround`
     supersession.
-22. [CertifiedAtc/GreenfieldExtendDownwind.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean)
+22. [CertifiedAtc/GreenfieldContinueApproachCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean)
+    Optional. This widens `ContinueApproach` one step further on the current
+    greenfield boundary: one leading `ContinueApproach` plus immediate adjunct
+    tails, with explicit lifecycle and supersession consequences.
+23. [CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
+    Optional. This freezes the shared helper for metadata-domain-less
+    persistent plain instructions whose runtime domain comes from the source
+    clearance.
+24. [CertifiedAtc/GreenfieldExtendDownwind.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean)
     Optional. This closes the current-shape single-step `ExtendDownwind`
     slice and makes the current persistent-only compound consequence explicit.
-23. [CertifiedAtc/GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean)
+25. [CertifiedAtc/GreenfieldExtendDownwindCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean)
+    Optional. This widens `ExtendDownwind` through a first narrow current-shape
+    compound slice over immediate adjunct tails.
+26. [CertifiedAtc/GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean)
     Optional. This closes the current-shape single-step `Orbit` slice and
     makes the same persistent-only compound consequence explicit.
-24. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+27. [CertifiedAtc/GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean)
+    Optional. This widens `Orbit` through the same narrow current-shape
+    compound slice shape as `ExtendDownwind`.
+28. [CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean)
+    Optional. This packages the delivered Phase B route-adjacent surface
+    behind one source-level current-shape theorem boundary.
+29. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
     Optional. This is the first route-bearing widening layer above the closed
     scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
     `ClearedApproach`, and `JoinCircuit`.
-25. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+30. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
     Optional. This is the first current-shape route-bearing admission layer:
     authority-gated admission, resolved-clearance existence, and packaged
     current-shape issuance for the full bridged Phase A surface.
-26. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
+31. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
     Optional. This widens the current-shape route-bearing surface from
     single-step clearances to one leading Phase A route-bearing step plus
     immediate adjunct tails.
-27. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+32. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
     Optional. This closes the current-shape lifecycle behavior for the widened
     route-bearing surface: what completes, what stays active, and what goes
     terminal through reconciliation.
-28. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+33. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
     Optional. This closes the first route-bearing supersession consequences on
     the current greenfield engine: partial frequency supersession, full
     `GoAround` supersession, and the currently modeled `HoldAt` consequence.
@@ -198,14 +215,28 @@ Read modules in roughly this order:
 - `GreenfieldContinueApproach`
   Small current-shape closure for single-step `ContinueApproach`: source-level
   issuance, active lifecycle, and explicit `GoAround` supersession.
+- `GreenfieldContinueApproachCompound`
+  Narrow current-shape compound widening for `ContinueApproach`: one leading
+  `ContinueApproach` plus immediate adjuncts, with explicit active-state and
+  supersession consequences.
+- `GreenfieldSourceDomainPersistentPlain`
+  Shared helper for the metadata-domain-less persistent families whose runtime
+  domain is supplied by the source clearance.
 - `GreenfieldExtendDownwind`
   Small current-shape closure for single-step `ExtendDownwind`: source-level
   issuance, active lifecycle, and explicit proof of the present
   persistent-only compound consequence.
+- `GreenfieldExtendDownwindCompound`
+  Narrow current-shape compound widening for `ExtendDownwind`.
 - `GreenfieldOrbit`
   Small current-shape closure for single-step `Orbit`: source-level issuance,
   active lifecycle, and the same explicit persistent-only compound
   consequence.
+- `GreenfieldOrbitCompound`
+  Narrow current-shape compound widening for `Orbit`.
+- `GreenfieldRouteAdjacentCurrentShape`
+  Source-level current-shape packaging for the delivered Phase B
+  route-adjacent surface.
 - `GreenfieldRouteBearing`
   First route-bearing widening layer above the closed scoped programme:
   route-bearing-core classification, proof that all Phase A families need
@@ -291,17 +322,27 @@ There are now twenty-six distinct Lean layers above the local certifiers:
    stay plain at the resolved boundary.
 10. `GreenfieldContinueApproach.lean`
    Small current-shape single-step closure for `ContinueApproach`.
-11. `GreenfieldExtendDownwind.lean`
+11. `GreenfieldContinueApproachCompound.lean`
+   Small current-shape compound closure for `ContinueApproach`.
+12. `GreenfieldSourceDomainPersistentPlain.lean`
+   Shared helper for metadata-domain-less persistent current-shape families.
+13. `GreenfieldExtendDownwind.lean`
    Small current-shape single-step closure for `ExtendDownwind`.
-12. `GreenfieldOrbit.lean`
+14. `GreenfieldExtendDownwindCompound.lean`
+   Small current-shape compound closure for `ExtendDownwind`.
+15. `GreenfieldOrbit.lean`
    Small current-shape single-step closure for `Orbit`.
-13. `GreenfieldCompletion.lean`
+16. `GreenfieldOrbitCompound.lean`
+   Small current-shape compound closure for `Orbit`.
+17. `GreenfieldRouteAdjacentCurrentShape.lean`
+   Source-level current-shape packaging for the delivered Phase B surface.
+18. `GreenfieldCompletion.lean`
    The structured observation contract that evaluates proof-side facts against resolved steps.
-14. `GreenfieldExecution.lean`
+19. `GreenfieldExecution.lean`
    The resolved active-clearance layer that closes the loop from admitted clearances to completion and reconciliation.
-15. `GreenfieldReachability.lean`
+20. `GreenfieldReachability.lean`
    The reachable active-set layer that packages execution preservation into a reusable invariant boundary.
-16. `GreenfieldRouteBearing.lean`
+21. `GreenfieldRouteBearing.lean`
    The first widened route-bearing layer above the closed scoped programme:
    truthful resolved semantics for `ClearedTo`, `HoldAt`,
    `ClearedApproach`, and `JoinCircuit`.

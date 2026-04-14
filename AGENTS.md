@@ -39,6 +39,11 @@ docs/       Design documents and standards
 wiki/       Shared knowledge base — domain knowledge, data sources, design decisions
 ```
 
+# FM Notes
+
+- When changing `research/fm`, keep `research/fm/README.md`, `research/fm/PROJECT_STATUS.md`, and the active scope note aligned with the actual theorem status.
+- Prefer widening FM by small closed slices on the current-shape greenfield boundary; treat older atomic/legacy bridge work as opt-in, not the default path.
+
 # Wiki
 
 The `wiki/` directory is a shared knowledge base maintained by both human and AI contributors.
