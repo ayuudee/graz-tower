@@ -160,12 +160,21 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldTransponderDeliveredCurrentShape.lean` now packages the
   delivered current-shape transponder family behind one source-level theorem
   boundary
+  `GreenfieldCommunicationsCompound.lean` now closes the first narrow
+  current-shape communications/surveillance compound slice over those
+  delivered radio and transponder families, and
+  `GreenfieldCommunicationsDeliveredCurrentShape.lean` now packages that
+  delivered phase-2 communications/surveillance surface behind one source-
+  level theorem boundary
   `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
   current-shape runway-operation family behind one source-level theorem
   boundary
   phase 1 is now closed under the frozen widening rule:
   do not reopen families in that bucket unless runtime semantics themselves
   change
+  phase 2 is now also closed under that same frozen widening rule:
+  do not reopen the delivered communications/surveillance families unless
+  their runtime semantics themselves change
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing
@@ -242,7 +251,8 @@ Unless the user says otherwise, the next default task in `research/fm` is:
 
 - keep the scoped surface stable and honest
 - choose one widening direction at a time:
-  route-bearing proof scope or richer operational mode semantics
+  deeper route-bearing work, broader current-shape family widening, or richer
+  operational mode semantics
 - if staying on the route-bearing track, start from the delivered first slice
   rather than redoing it:
   resolved semantics, the first procedure-bearing extraction increment, the
@@ -265,7 +275,8 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   the next honest work on the greenfield path is therefore no longer
   structural bridge work, is not `ClearedApproach` completion, and is not
   basic current-shape compound closure for `ContinueApproach`,
-  `ExtendDownwind`, or `Orbit`;
+  `ExtendDownwind`, or `Orbit`, and is also no longer basic
+  communications/surveillance widening;
   the live gap is instead wider execution packaging beyond those slices,
   widening the airspace-clearance family beyond its current narrow slice, or a
   shift to a new narrow family

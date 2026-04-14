@@ -142,51 +142,57 @@ Read modules in roughly this order:
 48. [CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
     Optional. This packages the delivered current-shape transponder family
     behind one source-level theorem boundary.
-49. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+49. [CertifiedAtc/GreenfieldCommunicationsCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsCompound.lean)
+    Optional. This widens the delivered radio and transponder families through
+    a first narrow mixed current-shape compound slice.
+50. [CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean)
+    Optional. This packages the delivered phase-2 communications/surveillance
+    surface behind one source-level theorem boundary.
+51. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
     Optional. This is the first route-bearing widening layer above the closed
     scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
     `ClearedApproach`, and `JoinCircuit`.
-50. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+52. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
     Optional. This is the first current-shape route-bearing admission layer:
     authority-gated admission, resolved-clearance existence, and packaged
     current-shape issuance for the full bridged Phase A surface.
-51. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
+53. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
     Optional. This widens the current-shape route-bearing surface from
     single-step clearances to one leading Phase A route-bearing step plus
     immediate adjunct tails.
-52. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+54. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
     Optional. This closes the current-shape lifecycle behavior for the widened
     route-bearing surface: what completes, what stays active, and what goes
     terminal through reconciliation.
-53. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+55. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
     Optional. This closes the first route-bearing supersession consequences on
     the current greenfield engine: partial frequency supersession, full
     `GoAround` supersession, and the currently modeled `HoldAt` consequence.
-54. [CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
+56. [CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
     Optional. This packages the whole current-shape Phase A route-bearing
     surface behind one source-level theorem boundary.
-55. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+57. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
     Optional. This is the first widened issuing layer for the route-bearing
     track: theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
     legacy-supported `JoinCircuit`.
-56. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+58. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
     Optional. This is the scoped greenfield theorem package for
     `Safety-complete (N₀)`: scoped authority mapping, no-partial-issuance for
     surface compounds, conditional surface-envelope normalization, and the
     reachability wrapper into the resolved execution layer.
-57. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+59. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
     Optional. This is the final scoped issuing layer for `Safety-complete (N₀)`:
     the theorem-bearing bridge into the older atomic certified path, plus the
     routing/instantiation/coverage/authority/non-bypass/issuance package.
-58. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+60. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
     Optional. This is the reachable-state safety layer above the scoped
     issuing boundary: state-preservation for nominal/runway/surface/air/interface
     invariants plus issued-step separation soundness.
-59. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+61. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
     Optional. This is the scoped full-brief mode layer: assumption assessment,
     strongest-justified fallback, nominal guarantee withdrawal, concrete
     fallback vocabulary, and reachable mode-aware preservation.
-60. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+62. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
@@ -311,6 +317,14 @@ Read modules in roughly this order:
 - `GreenfieldRadioCurrentShape`
   Source-level current-shape packaging for the delivered radio family:
   `ContactFrequency` and `MonitorFrequency`.
+- `GreenfieldCommunicationsCompound`
+  First narrow mixed current-shape compound layer for the delivered
+  communications/surveillance families:
+  one leading radio/transponder instruction plus immediate tails from those
+  same delivered families.
+- `GreenfieldCommunicationsDeliveredCurrentShape`
+  Source-level current-shape packaging for the delivered phase-2
+  communications/surveillance surface.
 - `GreenfieldBacktrackCurrentShape`
   Source-level current-shape packaging for the delivered `BacktrackRunway`
   slice.

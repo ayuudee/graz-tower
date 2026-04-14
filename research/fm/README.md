@@ -266,6 +266,16 @@ As of April 14, 2026:
   the already-delivered single-step slices for `SetSquawk`,
   `ConfirmSquawk`, `SquawkIdent`, `SquawkStandby`, `SquawkNormal`, and
   `StopSquawk`
+- [GreenfieldCommunicationsCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsCompound.lean)
+  now closes the first narrow current-shape communications/surveillance
+  compound slice over those delivered radio and transponder families:
+  one leading communication/surveillance instruction plus immediate tails
+  from the same delivered families, with whole-clearance admission,
+  authority-gated issuance, and explicit current completion/supersession
+  consequences
+- [GreenfieldCommunicationsDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean)
+  now packages that delivered phase-2 communications/surveillance surface
+  behind one source-level current-shape theorem boundary
 - [GreenfieldBacktrackCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
   now closes a small current-shape `BacktrackRunway` package:
   source-level single-step issuance, conservative `(runway, backtrack)`
@@ -349,8 +359,11 @@ The default critical path is now:
   `Full-brief complete`
 - further work is optional scope widening, not completion-critical milestone
   work
-- the active widening track is the route-bearing proof surface defined in
+- the active widening method is now incremental small closed slices on the
+  greenfield boundary; the route-bearing proof surface defined in
   [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+  remains the main route-centric widening track, but it is no longer the only
+  live widening branch
 - the current route-bearing / route-adjacent widening state now has a closed
   Phase A greenfield surface plus small current-shape compound slices for
   `ContinueApproach`, `ExtendDownwind`, and `Orbit`, with one source-level
@@ -369,6 +382,12 @@ The default critical path is now:
   `ContactFrequency` and `MonitorFrequency` now have a single-step packaged
   theorem surface with explicit/implicit frequency resolution, conservative
   radio-role authority, and current lifecycle/supersession behavior
+- the delivered radio plus transponder/surveillance families are now also
+  widened through a first narrow communications/surveillance compound layer:
+  one leading communication/surveillance instruction plus immediate tails
+  from those same delivered families now has a packaged current-shape
+  reachable/authorized issuance surface and explicit current
+  completion/supersession regressions
 - `BacktrackRunway` now also has a small closed current-shape slice on the
   greenfield boundary:
   single-step issuance, runway/backtrack authority, and resolved far-end-point
@@ -413,12 +432,18 @@ The default critical path is now:
   every family whose Kotlin semantics are already stable, whose conservative
   authority family is frozen, and whose proof surface does not require new
   world-resolution theory is now theorem-bearing on the greenfield boundary
+- the phase-2 communications/surveillance widening closure is now also
+  complete under that same frozen rule:
+  the already-delivered radio and transponder/surveillance families are now
+  widened through their first narrow mixed current-shape compound/package
+  surface, still without introducing new world-resolution theory
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
   widen execution beyond the delivered Phase B slices, widen the airspace-
-  clearance family beyond its current narrow slice, widen the new radio slice
-  beyond single-step packaging, widen `BacktrackRunway` beyond its current
+  clearance family beyond its current narrow slice, widen the delivered
+  communications/surveillance package beyond its current narrow compound
+  surface, widen `BacktrackRunway` beyond its current
   single-step package, widen the packaged runway-operation family into a
   broader runway package, or shift to a new narrow family, or carry
   `ClearedTo` / `HoldAt` through the older atomic path
@@ -448,7 +473,7 @@ For a new human or AI agent, start here:
 11. [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
     Exact theorem-target inventory for the scoped `Safety-complete (N₀)` claim.
 12. [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
-    Exact next widening target above the scoped completed claim.
+    Exact widening target for the route-bearing proof surface.
 13. [certifier_interfaces.md](/home/andrew/dev/projects/twr2/research/fm/certifier_interfaces.md)
 14. [canonical_theorem.md](/home/andrew/dev/projects/twr2/research/fm/canonical_theorem.md)
    Optional. Read this only if you are working on the single-issuer

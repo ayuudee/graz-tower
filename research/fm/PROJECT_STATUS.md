@@ -120,6 +120,16 @@ It now contains:
   boundary, with unified authority-gated issuance over the already-delivered
   single-step slices for `SetSquawk`, `ConfirmSquawk`, `SquawkIdent`,
   `SquawkStandby`, `SquawkNormal`, and `StopSquawk`
+- `GreenfieldCommunicationsCompound.lean` now closes the first narrow
+  current-shape communications/surveillance compound slice over the delivered
+  radio and transponder families:
+  one leading communication/surveillance instruction plus immediate tails
+  from those same delivered families now has whole-clearance resolution,
+  admission, authority-gated issuance, and explicit current
+  completion/supersession consequences
+- `GreenfieldCommunicationsDeliveredCurrentShape.lean` now packages that
+  delivered phase-2 communications/surveillance surface behind one
+  source-level current-shape theorem boundary
 - `GreenfieldBacktrackCurrentShape.lean` now closes a small current-shape
   `BacktrackRunway` package:
   source-level single-step issuance, conservative
@@ -169,6 +179,11 @@ It now contains:
   every family whose Kotlin semantics are already stable, whose conservative
   authority family is frozen, and whose proof surface does not require new
   world-resolution theory is now theorem-bearing on the greenfield boundary
+- the phase-2 communications/surveillance widening closure is now also
+  complete under that same frozen rule:
+  the already-delivered radio and transponder/surveillance families are now
+  widened through their first narrow mixed current-shape compound/package
+  layer, still without introducing new world-resolution theory
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -204,10 +219,11 @@ It does not yet contain:
   current Lean/runtime-aligned story does not yet claim world-backed
   airspace-entry resolution, broader compound widening, or richer airspace
   lifecycle semantics
-- a widened current-shape radio package beyond the now-delivered single-step
-  slice; the delivered radio family is now source-level packaged and
-  authority-closed, but it is not yet widened through compound or broader
-  coordination semantics
+- a widened current-shape communications/surveillance package beyond the now-
+  delivered narrow compound slice; the delivered radio and
+  transponder/surveillance families are now source-level packaged through
+  their first mixed current-shape compound layer, but they are not yet
+  widened through broader coordination or surveillance semantics
 - a widened current-shape `BacktrackRunway` package beyond the now-delivered
   single-step slice; the current backtrack story is now closed on the
   greenfield boundary, but it is not yet widened into a broader ground-

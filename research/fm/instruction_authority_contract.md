@@ -50,18 +50,18 @@ The following instruction families are now treated as authority-resolved:
   shape airspace-clearance boundary
 - `ContactFrequency` -> `(radioRole, contact)`
 - `MonitorFrequency` -> `(radioRole, monitor)`
-- `SetSquawk` -> `(radioRole, squawk)` on the current-shape transponder
-  boundary
-- `ConfirmSquawk` -> `(radioRole, squawk)` on the current-shape transponder
-  boundary
-- `SquawkIdent` -> `(radioRole, squawk)` on the current-shape transponder
-  boundary
-- `SquawkStandby` -> `(radioRole, squawk)` on the current-shape transponder
-  boundary
-- `SquawkNormal` -> `(radioRole, squawk)` on the current-shape transponder
-  boundary
-- `StopSquawk` -> `(radioRole, squawk)` on the current-shape transponder
-  boundary
+- `SetSquawk` -> `(radioRole, squawk)` on the delivered current-shape
+  communications/surveillance boundary
+- `ConfirmSquawk` -> `(radioRole, squawk)` on the delivered current-shape
+  communications/surveillance boundary
+- `SquawkIdent` -> `(radioRole, squawk)` on the delivered current-shape
+  communications/surveillance boundary
+- `SquawkStandby` -> `(radioRole, squawk)` on the delivered current-shape
+  communications/surveillance boundary
+- `SquawkNormal` -> `(radioRole, squawk)` on the delivered current-shape
+  communications/surveillance boundary
+- `StopSquawk` -> `(radioRole, squawk)` on the delivered current-shape
+  communications/surveillance boundary
 - `ClearedApproach` -> `(instrumentApproach, approachClearance)`
 - `HoldAt` -> `(holdingPattern, hold)`
 
