@@ -3,13 +3,14 @@ import CertifiedAtc.GreenfieldTakeoffCurrentShape
 import CertifiedAtc.GreenfieldLandingCurrentShape
 import CertifiedAtc.GreenfieldTouchAndGoCurrentShape
 import CertifiedAtc.GreenfieldLowApproachCurrentShape
+import CertifiedAtc.GreenfieldGoAroundCurrentShape
 
 namespace CertifiedAtc
 namespace Greenfield
 
 /--
 `GreenfieldRunwayDeliveredCurrentShape` packages the delivered current-shape
-runway-clearance surface behind one source-level theorem boundary.
+runway-operation surface behind one source-level theorem boundary.
 
 The delivered slice is:
 
@@ -18,6 +19,7 @@ The delivered slice is:
 - single-step `ClearedToLand`
 - single-step `ClearedTouchAndGo`
 - single-step `ClearedLowApproach`
+- single-step `GoAround`
 
 This module does not widen the broader runway family. It packages the already-
 delivered single-step current-shape slices so later widening can start from one
@@ -30,6 +32,7 @@ def GreenfieldRunwayDeliveredCurrentShapeInstruction : AtcInstruction → Prop
   | .clearedToLand _ _ => True
   | .clearedTouchAndGo _ _ => True
   | .clearedLowApproach _ _ => True
+  | .goAround _ => True
   | _ => False
 
 def runwayDeliveredCurrentShapeInstructionRequiredAuthorityGrant? :
@@ -39,6 +42,7 @@ def runwayDeliveredCurrentShapeInstructionRequiredAuthorityGrant? :
   | .clearedToLand _ _ => some currentShapeLandingAuthorityGrant
   | .clearedTouchAndGo _ _ => some currentShapeTouchAndGoAuthorityGrant
   | .clearedLowApproach _ _ => some currentShapeLowApproachAuthorityGrant
+  | .goAround _ => some currentShapeGoAroundAuthorityGrant
   | _ => none
 
 def runwayDeliveredCurrentShapeInstructionIssuerAuthorized
@@ -145,6 +149,10 @@ inductive GreenfieldRunwayDeliveredCurrentShapeIssuable :
       {clearance : StructuredClearance}
       (hIssuable : LowApproachCurrentShapeIssuable clearance) :
       GreenfieldRunwayDeliveredCurrentShapeIssuable clearance
+  | goAround
+      {clearance : StructuredClearance}
+      (hIssuable : GoAroundCurrentShapeIssuable clearance) :
+      GreenfieldRunwayDeliveredCurrentShapeIssuable clearance
 
 theorem GreenfieldRunwayDeliveredCurrentShapeReachableIssuanceTheorem
     {world : ResolutionWorld}
@@ -207,6 +215,16 @@ theorem GreenfieldRunwayDeliveredCurrentShapeReachableIssuanceTheorem
   | lowApproach hSingle =>
       exact
         LowApproachCurrentShapeIssuanceTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hSingle
+  | goAround hSingle =>
+      exact
+        GoAroundCurrentShapeIssuanceTheorem
           (world := world)
           (existing := existing)
           (initialState := initialState)

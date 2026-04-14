@@ -143,8 +143,20 @@ Then open the specific Lean module for the phase you are changing.
   shape `ClearedLowApproach` package with runway/low-approach authority,
   runway-transition-and-exit completion, and explicit conditional lifecycle
   behavior
+  `GreenfieldGoAroundCurrentShape.lean` now also closes a small current-shape
+  `GoAround` package with runway/go-around authority and explicit active
+  lifecycle behavior
+  `GreenfieldSetSquawkCurrentShape.lean` now also closes a small current-
+  shape `SetSquawk` package with radio-role/squawk authority and explicit
+  on-activation completion
+  `GreenfieldConfirmSquawkCurrentShape.lean` now also closes a small current-
+  shape `ConfirmSquawk` package with radio-role/squawk authority and
+  explicit matching-code completion
+  `GreenfieldTransponderDeliveredCurrentShape.lean` now packages the
+  delivered current-shape transponder family behind one source-level theorem
+  boundary
   `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
-  current-shape runway-clearance family behind one source-level theorem
+  current-shape runway-operation family behind one source-level theorem
   boundary
 
 Do not talk as if broad route-bearing or richer operational mode semantics are

@@ -85,6 +85,20 @@ It now contains:
   `(radioRole, contact)` / `(radioRole, monitor)` authority, explicit and
   implicit frequency resolution, and theorem-bearing lifecycle/supersession
   regressions
+- `GreenfieldSetSquawkCurrentShape.lean` now closes a small current-shape
+  `SetSquawk` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit on-activation completion, and frequency
+  non-supersession regressions
+- `GreenfieldConfirmSquawkCurrentShape.lean` now closes a small current-shape
+  `ConfirmSquawk` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit matching-code completion, and frequency
+  non-supersession regressions
+- `GreenfieldTransponderDeliveredCurrentShape.lean` now packages the
+  delivered current-shape transponder family behind one source-level theorem
+  boundary, with unified authority-gated issuance over the already-delivered
+  single-step slices for `SetSquawk` and `ConfirmSquawk`
 - `GreenfieldBacktrackCurrentShape.lean` now closes a small current-shape
   `BacktrackRunway` package:
   source-level single-step issuance, conservative
@@ -119,11 +133,16 @@ It now contains:
   `(runway, lowApproach)` authority, runway-transition-and-exit completion,
   explicit conditional staging/activation, and theorem-bearing `GoAround`
   plus frequency supersession regressions
+- `GreenfieldGoAroundCurrentShape.lean` now closes a small current-shape
+  `GoAround` package:
+  source-level single-step issuance, conservative `(runway, goAround)`
+  authority, explicit active lifecycle behavior, theorem-bearing landing
+  supersession, and frequency non-supersession regressions
 - `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
-  current-shape runway-clearance family behind one source-level theorem
+  current-shape runway-operation family behind one source-level theorem
   boundary, with unified authority-gated issuance over the already-delivered
   single-step slices for `LineUpAndWait`, `ClearedForTakeoff`,
-  `ClearedToLand`, `ClearedTouchAndGo`, and `ClearedLowApproach`
+  `ClearedToLand`, `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround`
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -187,8 +206,12 @@ It does not yet contain:
   delivered single-step slice; the current low-approach story is now closed
   on the greenfield boundary, but it is not yet widened into a broader
   runway-operation package
-- a widened packaged runway-clearance family beyond the now-delivered
-  single-step slices; the current runway-clearance story is now source-level
+- a widened current-shape `GoAround` package beyond the now-delivered
+  single-step slice; the current go-around story is now closed on the
+  greenfield boundary, but it is not yet widened into a broader runway-
+  operation package
+- a widened packaged runway-operation family beyond the now-delivered
+  single-step slices; the current runway-operation story is now source-level
   packaged on the greenfield boundary, but it is not yet widened into a
   broader runway-operations package
 - widened current-shape compound/authority packaging for the newly delivered

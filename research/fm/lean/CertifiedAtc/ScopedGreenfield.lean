@@ -105,7 +105,7 @@ def scopedInstructionRequiredAuthorityGrant? :
   | .clearedTouchAndGo _ _ =>
       some { entityType := .runway, operation := .touchAndGo }
   | .goAround _ =>
-      some { entityType := .runway, operation := .land }
+      some { entityType := .runway, operation := .goAround }
   | .reduceSpeedTo _ _ =>
       some { entityType := .airspaceVolume, operation := .speed }
   | .climbTo _ _ =>

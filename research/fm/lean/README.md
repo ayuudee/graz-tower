@@ -119,14 +119,24 @@ Read modules in roughly this order:
 39. [CertifiedAtc/GreenfieldLowApproachCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLowApproachCurrentShape.lean)
     Optional. This closes the delivered current-shape `ClearedLowApproach`
     package.
-40. [CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
-    Optional. This packages the delivered current-shape runway-clearance
+40. [CertifiedAtc/GreenfieldGoAroundCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGoAroundCurrentShape.lean)
+    Optional. This closes the delivered current-shape `GoAround` package.
+41. [CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
+    Optional. This packages the delivered current-shape runway-operation
     family behind one source-level theorem boundary.
-41. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+42. [CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean)
+    Optional. This closes the delivered current-shape `SetSquawk` package.
+43. [CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean)
+    Optional. This closes the delivered current-shape `ConfirmSquawk`
+    package.
+44. [CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
+    Optional. This packages the delivered current-shape transponder family
+    behind one source-level theorem boundary.
+45. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
     Optional. This is the first route-bearing widening layer above the closed
     scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
     `ClearedApproach`, and `JoinCircuit`.
-42. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+46. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
     Optional. This is the first current-shape route-bearing admission layer:
     authority-gated admission, resolved-clearance existence, and packaged
     current-shape issuance for the full bridged Phase A surface.
@@ -309,9 +319,18 @@ Read modules in roughly this order:
 - `GreenfieldLowApproachCurrentShape`
   Source-level current-shape packaging for the delivered
   `ClearedLowApproach` slice.
+- `GreenfieldGoAroundCurrentShape`
+  Source-level current-shape packaging for the delivered `GoAround` slice.
 - `GreenfieldRunwayDeliveredCurrentShape`
-  Source-level current-shape packaging for the delivered runway-clearance
+  Source-level current-shape packaging for the delivered runway-operation
   family.
+- `GreenfieldSetSquawkCurrentShape`
+  Source-level current-shape packaging for the delivered `SetSquawk` slice.
+- `GreenfieldConfirmSquawkCurrentShape`
+  Source-level current-shape packaging for the delivered `ConfirmSquawk`
+  slice.
+- `GreenfieldTransponderDeliveredCurrentShape`
+  Source-level current-shape packaging for the delivered transponder family.
 - `GreenfieldRouteBearing`
   First route-bearing widening layer above the closed scoped programme:
   route-bearing-core classification, proof that all Phase A families need

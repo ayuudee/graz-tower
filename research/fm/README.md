@@ -230,6 +230,21 @@ As of April 14, 2026:
   `(radioRole, contact)` / `(radioRole, monitor)` authority, explicit and
   implicit frequency resolution, and theorem-bearing lifecycle/supersession
   regressions
+- [GreenfieldSetSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean)
+  now closes a small current-shape `SetSquawk` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit on-activation completion, and frequency
+  non-supersession behavior
+- [GreenfieldConfirmSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean)
+  now closes a small current-shape `ConfirmSquawk` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit matching-code completion, and frequency
+  non-supersession behavior
+- [GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
+  now packages the delivered current-shape transponder family behind one
+  source-level theorem boundary, with unified authority-gated issuance over
+  the already-delivered single-step slices for `SetSquawk` and
+  `ConfirmSquawk`
 - [GreenfieldBacktrackCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
   now closes a small current-shape `BacktrackRunway` package:
   source-level single-step issuance, conservative `(runway, backtrack)`
@@ -264,12 +279,17 @@ As of April 14, 2026:
   authority, runway-transition-and-exit completion, explicit conditional
   staging/activation, and theorem-bearing `GoAround` supersession plus
   frequency non-supersession behavior
+- [GreenfieldGoAroundCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGoAroundCurrentShape.lean)
+  now closes a small current-shape `GoAround` package:
+  source-level single-step issuance, conservative `(runway, goAround)`
+  authority, explicit active lifecycle behavior, theorem-bearing landing
+  supersession, and frequency non-supersession behavior
 - [GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
-  now packages the delivered current-shape runway-clearance family behind one
+  now packages the delivered current-shape runway-operation family behind one
   source-level theorem boundary, with unified authority-gated issuance over
   the already-delivered single-step slices for `LineUpAndWait`,
-  `ClearedForTakeoff`, `ClearedToLand`, `ClearedTouchAndGo`, and
-  `ClearedLowApproach`
+  `ClearedForTakeoff`, `ClearedToLand`, `ClearedTouchAndGo`,
+  `ClearedLowApproach`, and `GoAround`
 - [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   now aligns `instructionMayBeConditional` with the current Kotlin runway-
   clearance metadata for `ClearedForTakeoff`, `ClearedToLand`,
@@ -357,18 +377,23 @@ The default critical path is now:
   single-step issuance, runway/low-approach authority, runway-transition-
   and-exit completion, explicit conditional staging/activation, and current
   `GoAround` / frequency supersession behavior are now theorem-bearing
-- the delivered current-shape runway-clearance family is now also packaged
+- `GoAround` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/go-around authority, explicit active lifecycle
+  behavior, and current landing / frequency supersession behavior are now
+  theorem-bearing
+- the delivered current-shape runway-operation family is now also packaged
   behind one source-level theorem boundary:
   `LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
-  `ClearedTouchAndGo`, and `ClearedLowApproach` now have one unified
-  current-shape reachable/authorized issuance surface
+  `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround` now have one
+  unified current-shape reachable/authorized issuance surface
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
   widen execution beyond the delivered Phase B slices, widen the airspace-
   clearance family beyond its current narrow slice, widen the new radio slice
   beyond single-step packaging, widen `BacktrackRunway` beyond its current
-  single-step package, widen the packaged runway-clearance family into a
+  single-step package, widen the packaged runway-operation family into a
   broader runway package, or shift to a new narrow family, or carry
   `ClearedTo` / `HoldAt` through the older atomic path
   That is a real design/proof choice, not just missing routine packaging:

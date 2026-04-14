@@ -32,6 +32,7 @@ The following instruction families are now treated as authority-resolved:
 - `LineUpAndWait` -> `(runway, lineUp)`
 - `ClearedForTakeoff` -> `(runway, takeoff)`
 - `ClearedToLand` -> `(runway, land)`
+- `GoAround` -> `(runway, goAround)` on the current-shape runway boundary
 - `ClearedLowApproach` -> `(runway, lowApproach)`
 - `ClearedTouchAndGo` -> `(runway, touchAndGo)`
 - `JoinCircuit` -> `(circuitProcedure, circuit)`
@@ -49,6 +50,10 @@ The following instruction families are now treated as authority-resolved:
   shape airspace-clearance boundary
 - `ContactFrequency` -> `(radioRole, contact)`
 - `MonitorFrequency` -> `(radioRole, monitor)`
+- `SetSquawk` -> `(radioRole, squawk)` on the current-shape transponder
+  boundary
+- `ConfirmSquawk` -> `(radioRole, squawk)` on the current-shape transponder
+  boundary
 - `ClearedApproach` -> `(instrumentApproach, approachClearance)`
 - `HoldAt` -> `(holdingPattern, hold)`
 
@@ -88,7 +93,6 @@ authority-mapping layer:
 - `StartupApproved`
 - `HoldPosition`
 - `HoldShortOf`
-- `GoAround`
 - `ReportDownwind`
 - `ReportFinal`
 - `Proceed`

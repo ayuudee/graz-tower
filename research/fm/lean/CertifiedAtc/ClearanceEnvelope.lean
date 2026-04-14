@@ -388,6 +388,7 @@ inductive CompileAuthorityOperation
   | lineUp
   | takeoff
   | land
+  | goAround
   | lowApproach
   | touchAndGo
   | circuit
@@ -666,6 +667,8 @@ def instructionRequiredAuthorityGrant? :
       some { entityType := .runway, operation := .land }
   | .clearedTouchAndGo _ _ =>
       some { entityType := .runway, operation := .touchAndGo }
+  | .goAround _ =>
+      some { entityType := .runway, operation := .goAround }
   | .joinCircuit _ _ _ =>
       some { entityType := .circuitProcedure, operation := .circuit }
   | .contactFrequency _ _ _ =>
