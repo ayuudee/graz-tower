@@ -61,6 +61,16 @@ def ScopedSurfaceMovementInstruction : AtcInstruction → Prop
   | .lineUpAndWait _ _ => True
   | _ => False
 
+def ScopedConditionalInstruction : AtcInstruction → Prop
+  | .taxiTo _ _ _ => True
+  | .holdShortOf _ _ => True
+  | .crossRunway _ _ => True
+  | .lineUpAndWait _ _ => True
+  | .clearedForTakeoff _ _ => True
+  | .clearedToLand _ _ => True
+  | .clearedTouchAndGo _ _ => True
+  | _ => False
+
 def ScopedAuthorityMappedInstruction : AtcInstruction → Prop
   | .taxiTo _ _ _ => True
   | .holdShortOf _ _ => True
@@ -137,14 +147,22 @@ theorem scopedSurfaceMovementInstruction_mayBeConditional
   cases instruction <;>
     simp [ScopedSurfaceMovementInstruction, instructionMayBeConditional] at hScoped ⊢
 
-theorem scopedSafetyInstruction_conditional_iff_surfaceMovement
+theorem scopedConditionalInstruction_mayBeConditional
+    {instruction : AtcInstruction}
+    (hScoped : ScopedConditionalInstruction instruction) :
+    instructionMayBeConditional instruction = true := by
+  cases instruction <;>
+    simp [ScopedConditionalInstruction, instructionMayBeConditional] at hScoped ⊢
+
+theorem scopedSafetyInstruction_conditional_iff_scopedConditional
     {instruction : AtcInstruction}
     (hScoped : ScopedSafetyInstruction instruction) :
     instructionMayBeConditional instruction = true ↔
-      ScopedSurfaceMovementInstruction instruction := by
+      ScopedConditionalInstruction instruction := by
   cases instruction <;> simp [ScopedSafetyInstruction,
     ScopedCertifiedInstruction, ScopedNeutralInstruction,
-    ScopedSurfaceMovementInstruction, instructionMayBeConditional] at hScoped ⊢
+    ScopedConditionalInstruction,
+    instructionMayBeConditional] at hScoped ⊢
 
 theorem instructionSupersedesIn_goAround_scoped
     (target : AircraftId) :

@@ -651,6 +651,10 @@ def instructionMayBeConditional : AtcInstruction → Bool
   | .crossRunway _ _ => true
   | .backtrackRunway _ _ => true
   | .lineUpAndWait _ _ => true
+  | .clearedForTakeoff _ _ => true
+  | .clearedToLand _ _ => true
+  | .clearedTouchAndGo _ _ => true
+  | .clearedLowApproach _ _ => true
   | _ => false
 
 def instructionFrontierTiming : AtcInstruction → FrontierTiming

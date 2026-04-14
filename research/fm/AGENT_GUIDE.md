@@ -126,6 +126,23 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldBacktrackCurrentShape.lean` now also closes a small current-shape
   `BacktrackRunway` package with runway/backtrack authority and resolved
   far-end-point completion
+  `GreenfieldLineUpAndWaitCurrentShape.lean` now also closes a small current-
+  shape `LineUpAndWait` package with runway/line-up authority plus explicit
+  active and conditional lifecycle behavior
+  `GreenfieldTakeoffCurrentShape.lean` now also closes a small current-shape
+  `ClearedForTakeoff` package with runway/takeoff authority, airborne
+  completion, and explicit conditional lifecycle behavior
+  `GreenfieldLandingCurrentShape.lean` now also closes a small current-shape
+  `ClearedToLand` package with runway/land authority, runway-vacation
+  completion, and explicit conditional lifecycle behavior
+  `GreenfieldTouchAndGoCurrentShape.lean` now also closes a small current-
+  shape `ClearedTouchAndGo` package with runway/touch-and-go authority,
+  runway-transition airborne completion, and explicit conditional lifecycle
+  behavior
+  `GreenfieldLowApproachCurrentShape.lean` now also closes a small current-
+  shape `ClearedLowApproach` package with runway/low-approach authority,
+  runway-transition-and-exit completion, and explicit conditional lifecycle
+  behavior
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing

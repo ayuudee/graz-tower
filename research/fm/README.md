@@ -235,6 +235,39 @@ As of April 14, 2026:
   source-level single-step issuance, conservative `(runway, backtrack)`
   authority, resolved far-end-point completion, and theorem-bearing terminal
   behavior after reconciliation
+- [GreenfieldLineUpAndWaitCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLineUpAndWaitCurrentShape.lean)
+  now closes a small current-shape `LineUpAndWait` package:
+  source-level single-step issuance, conservative `(runway, lineUp)`
+  authority, explicit active and conditional lifecycle behavior, and
+  theorem-bearing runway/frequency supersession regressions
+- [GreenfieldTakeoffCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTakeoffCurrentShape.lean)
+  now closes a small current-shape `ClearedForTakeoff` package:
+  source-level single-step issuance, conservative `(runway, takeoff)`
+  authority, explicit airborne completion, explicit conditional
+  staging/activation, and theorem-bearing frequency non-supersession
+  behavior
+- [GreenfieldLandingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLandingCurrentShape.lean)
+  now closes a small current-shape `ClearedToLand` package:
+  source-level single-step issuance, conservative `(runway, land)` authority,
+  runway-vacation completion, explicit conditional staging/activation, and
+  theorem-bearing `GoAround` supersession plus frequency non-supersession
+  behavior
+- [GreenfieldTouchAndGoCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTouchAndGoCurrentShape.lean)
+  now closes a small current-shape `ClearedTouchAndGo` package:
+  source-level single-step issuance, conservative `(runway, touchAndGo)`
+  authority, runway-transition airborne completion, explicit conditional
+  staging/activation, and theorem-bearing `GoAround` supersession plus
+  frequency non-supersession behavior
+- [GreenfieldLowApproachCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLowApproachCurrentShape.lean)
+  now closes a small current-shape `ClearedLowApproach` package:
+  source-level single-step issuance, conservative `(runway, lowApproach)`
+  authority, runway-transition-and-exit completion, explicit conditional
+  staging/activation, and theorem-bearing `GoAround` supersession plus
+  frequency non-supersession behavior
+- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+  now aligns `instructionMayBeConditional` with the current Kotlin runway-
+  clearance metadata for `ClearedForTakeoff`, `ClearedToLand`,
+  `ClearedTouchAndGo`, and `ClearedLowApproach`
 - a full route-bearing proof-authoritative extraction contract still does not
   exist yet; the new route-bearing extraction increment is real, but it is
   still a first procedure-bearing slice rather than the full Phase A
@@ -293,14 +326,42 @@ The default critical path is now:
   greenfield boundary:
   single-step issuance, runway/backtrack authority, and resolved far-end-point
   completion are now theorem-bearing
+- `LineUpAndWait` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/line-up authority, explicit conditional
+  staging/activation, and current runway/frequency supersession behavior are
+  now theorem-bearing
+- `ClearedForTakeoff` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/takeoff authority, airborne completion,
+  explicit conditional staging/activation, and current frequency
+  non-supersession behavior are now theorem-bearing
+- `ClearedToLand` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/land authority, runway-vacation completion,
+  explicit conditional staging/activation, and current `GoAround` /
+  frequency supersession behavior are now theorem-bearing
+- `ClearedTouchAndGo` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/touch-and-go authority, runway-transition
+  airborne completion, explicit conditional staging/activation, and current
+  `GoAround` / frequency supersession behavior are now theorem-bearing
+- `ClearedLowApproach` now also has a small closed current-shape slice on the
+  greenfield boundary:
+  single-step issuance, runway/low-approach authority, runway-transition-
+  and-exit completion, explicit conditional staging/activation, and current
+  `GoAround` / frequency supersession behavior are now theorem-bearing
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
   widen execution beyond the delivered Phase B slices, widen the airspace-
   clearance family beyond its current narrow slice, widen the new radio slice
   beyond single-step packaging, widen `BacktrackRunway` beyond its current
-  single-step package, shift to a new narrow family, or carry
-  `ClearedTo` / `HoldAt` through the older atomic path
+  single-step package, widen the delivered runway-clearance family
+  (`LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
+  `ClearedTouchAndGo`, `ClearedLowApproach`) into a broader runway package, or
+  shift to a new narrow family, or carry `ClearedTo` / `HoldAt` through the
+  older atomic path
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

@@ -32,6 +32,7 @@ The following instruction families are now treated as authority-resolved:
 - `LineUpAndWait` -> `(runway, lineUp)`
 - `ClearedForTakeoff` -> `(runway, takeoff)`
 - `ClearedToLand` -> `(runway, land)`
+- `ClearedLowApproach` -> `(runway, lowApproach)`
 - `ClearedTouchAndGo` -> `(runway, touchAndGo)`
 - `JoinCircuit` -> `(circuitProcedure, circuit)`
 - `ExtendDownwind` -> `(circuitProcedure, circuit)` on the current-shape

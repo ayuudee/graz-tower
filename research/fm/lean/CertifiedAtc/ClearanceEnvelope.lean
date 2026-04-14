@@ -388,6 +388,7 @@ inductive CompileAuthorityOperation
   | lineUp
   | takeoff
   | land
+  | lowApproach
   | touchAndGo
   | circuit
   | sequence

@@ -90,6 +90,38 @@ It now contains:
   source-level single-step issuance, conservative
   `(runway, backtrack)` authority, resolved far-end-point completion, and
   terminal behavior on reconciliation
+- `GreenfieldLineUpAndWaitCurrentShape.lean` now closes a small current-shape
+  `LineUpAndWait` package:
+  source-level single-step issuance, conservative
+  `(runway, lineUp)` authority, explicit active and conditional lifecycle
+  behavior, and theorem-bearing runway/frequency supersession regressions
+- `GreenfieldTakeoffCurrentShape.lean` now closes a small current-shape
+  `ClearedForTakeoff` package:
+  source-level single-step issuance, conservative
+  `(runway, takeoff)` authority, explicit airborne completion, explicit
+  conditional staging/activation, and theorem-bearing frequency
+  non-supersession behavior
+- `GreenfieldLandingCurrentShape.lean` now closes a small current-shape
+  `ClearedToLand` package:
+  source-level single-step issuance, conservative
+  `(runway, land)` authority, runway-vacation completion, explicit
+  conditional staging/activation, and theorem-bearing `GoAround` plus
+  frequency supersession regressions
+- `GreenfieldTouchAndGoCurrentShape.lean` now closes a small current-shape
+  `ClearedTouchAndGo` package:
+  source-level single-step issuance, conservative
+  `(runway, touchAndGo)` authority, runway-transition airborne completion,
+  explicit conditional staging/activation, and theorem-bearing `GoAround`
+  plus frequency supersession regressions
+- `GreenfieldLowApproachCurrentShape.lean` now closes a small current-shape
+  `ClearedLowApproach` package:
+  source-level single-step issuance, conservative
+  `(runway, lowApproach)` authority, runway-transition-and-exit completion,
+  explicit conditional staging/activation, and theorem-bearing `GoAround`
+  plus frequency supersession regressions
+- `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
+  clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
+  `ClearedTouchAndGo`, and `ClearedLowApproach`
 - the next honest route-bearing gap is now a branch choice rather than a
   structural blocker: on the greenfield path, the live work is widening beyond
   the current one-primary-plus-immediate-adjunct compound surface and beyond
@@ -130,6 +162,26 @@ It does not yet contain:
   single-step slice; the current backtrack story is now closed on the
   greenfield boundary, but it is not yet widened into a broader ground-
   movement package
+- a widened current-shape `LineUpAndWait` package beyond the now-delivered
+  single-step slice; the current line-up story is now closed on the
+  greenfield boundary, but it is not yet widened into a broader runway-
+  operation package
+- a widened current-shape `ClearedForTakeoff` package beyond the now-delivered
+  single-step slice; the current takeoff story is now closed on the
+  greenfield boundary, but it is not yet widened into a broader runway-
+  operation package
+- a widened current-shape `ClearedToLand` package beyond the now-delivered
+  single-step slice; the current landing story is now closed on the
+  greenfield boundary, but it is not yet widened into a broader runway-
+  operation package
+- a widened current-shape `ClearedTouchAndGo` package beyond the now-delivered
+  single-step slice; the current touch-and-go story is now closed on the
+  greenfield boundary, but it is not yet widened into a broader runway-
+  operation package
+- a widened current-shape `ClearedLowApproach` package beyond the now-
+  delivered single-step slice; the current low-approach story is now closed
+  on the greenfield boundary, but it is not yet widened into a broader
+  runway-operation package
 - widened current-shape compound/authority packaging for the newly delivered
   Phase B families beyond their current narrow compound slices; the delivered
   Phase B surface is now source-level packaged and current-shape
