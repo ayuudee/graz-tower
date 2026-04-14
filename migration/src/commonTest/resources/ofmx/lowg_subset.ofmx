@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OFMX-Snapshot version="0.1" effective="2026-04-01T22:49:10Z" origin="test-subset" created="2026-04-01T22:49:10Z" namespace="test">
+  <Ahp>
+    <AhpUid mid="035ccc42-cbb2-7f50-7014-5f4887b480c2" region="LOVV">
+      <codeId>LOWG</codeId>
+    </AhpUid>
+    <OrgUid mid="cd99c817-9f02-252e-98f7-f206b381943a" region="LOVV">
+      <txtName>LOVV</txtName>
+    </OrgUid>
+    <txtName>GRAZ</txtName>
+    <codeIcao>LOWG</codeIcao>
+    <codeIata>GRZ</codeIata>
+    <codeType>AD</codeType>
+    <geoLat>46.99305556N</geoLat>
+    <geoLong>015.43916667E</geoLong>
+    <codeDatum>WGE</codeDatum>
+    <valElev>1120</valElev>
+    <uomDistVer>FT</uomDistVer>
+    <txtNameCitySer>GRAZ</txtNameCitySer>
+    <valMagVar>5</valMagVar>
+    <valTransitionAlt>10000</valTransitionAlt>
+    <uomTransitionAlt>FT</uomTransitionAlt>
+  </Ahp>
+  <Rwy>
+    <RwyUid mid="44ef6fc4-0f9d-52a7-e158-e9cc73c448e0">
+      <AhpUid mid="035ccc42-cbb2-7f50-7014-5f4887b480c2" region="LOVV">
+        <codeId>LOWG</codeId>
+      </AhpUid>
+      <txtDesig>16C/34C</txtDesig>
+    </RwyUid>
+    <valLen>3000</valLen>
+    <valWid>45</valWid>
+    <uomDimRwy>M</uomDimRwy>
+    <codeComposition>ASPH</codeComposition>
+    <codePreparation>PAVED</codePreparation>
+    <valPcnClass>61</valPcnClass>
+    <codePcnPavementType>F</codePcnPavementType>
+    <codePcnPavementSubgrade>B</codePcnPavementSubgrade>
+  </Rwy>
+  <Rdn>
+    <RdnUid mid="rdn-16c-mid">
+      <RwyUid mid="44ef6fc4-0f9d-52a7-e158-e9cc73c448e0">
+        <AhpUid mid="035ccc42-cbb2-7f50-7014-5f4887b480c2" region="LOVV">
+          <codeId>LOWG</codeId>
+        </AhpUid>
+        <txtDesig>16C/34C</txtDesig>
+      </RwyUid>
+      <txtDesig>16C</txtDesig>
+    </RdnUid>
+    <geoLat>47.00429124N</geoLat>
+    <geoLong>015.43599041E</geoLong>
+    <valTrueBrg>169</valTrueBrg>
+    <valMagBrg>164</valMagBrg>
+  </Rdn>
+  <Ase>
+    <AseUid mid="ase-lowg-ctr" region="LOVV">
+      <codeType>CTR</codeType>
+      <codeId>LOWG</codeId>
+    </AseUid>
+    <txtName>GRAZ CTR</txtName>
+    <codeDistVerUpper>STD</codeDistVerUpper>
+    <valDistVerUpper>75</valDistVerUpper>
+    <uomDistVerUpper>FL</uomDistVerUpper>
+    <codeDistVerLower>HEI</codeDistVerLower>
+    <valDistVerLower>0</valDistVerLower>
+    <uomDistVerLower>FT</uomDistVerLower>
+  </Ase>
+  <Abd>
+    <AbdUid mid="abd-lowg-ctr">
+      <AseUid mid="ase-lowg-ctr" region="LOVV">
+        <codeType>CTR</codeType>
+        <codeId>LOWG</codeId>
+      </AseUid>
+    </AbdUid>
+    <Avx>
+      <codeType>GRC</codeType>
+      <geoLat>47.10000000N</geoLat>
+      <geoLong>015.30000000E</geoLong>
+      <codeDatum>WGE</codeDatum>
+    </Avx>
+    <Avx>
+      <codeType>GRC</codeType>
+      <geoLat>47.10000000N</geoLat>
+      <geoLong>015.60000000E</geoLong>
+      <codeDatum>WGE</codeDatum>
+    </Avx>
+    <Avx>
+      <codeType>GRC</codeType>
+      <geoLat>46.90000000N</geoLat>
+      <geoLong>015.60000000E</geoLong>
+      <codeDatum>WGE</codeDatum>
+    </Avx>
+    <Avx>
+      <codeType>GRC</codeType>
+      <geoLat>46.90000000N</geoLat>
+      <geoLong>015.30000000E</geoLong>
+      <codeDatum>WGE</codeDatum>
+    </Avx>
+  </Abd>
+  <Dpn>
+    <DpnUid mid="dpn-graz-nord" region="LOVV">
+      <codeId>GRAZ-NORD</codeId>
+      <geoLat>47.10000000N</geoLat>
+      <geoLong>015.45000000E</geoLong>
+    </DpnUid>
+    <AhpUidAssoc mid="035ccc42-cbb2-7f50-7014-5f4887b480c2" region="LOVV">
+      <codeId>LOWG</codeId>
+    </AhpUidAssoc>
+    <codeDatum>WGE</codeDatum>
+    <codeType>VFR-MRP</codeType>
+    <txtName>GRAZ NORD</txtName>
+  </Dpn>
+  <Uni>
+    <UniUid mid="uni-graz-twr" region="LOVV">
+      <txtName>GRAZ</txtName>
+      <codeType>TWR</codeType>
+    </UniUid>
+    <OrgUid mid="org-lovv" region="LOVV">
+      <txtName>LOVV</txtName>
+    </OrgUid>
+    <AhpUid mid="035ccc42-cbb2-7f50-7014-5f4887b480c2" region="LOVV">
+      <codeId>LOWG</codeId>
+    </AhpUid>
+    <codeClass>ICAO</codeClass>
+  </Uni>
+  <Ser>
+    <SerUid mid="ser-graz-twr">
+      <UniUid mid="uni-graz-twr" region="LOVV">
+        <txtName>GRAZ</txtName>
+        <codeType>TWR</codeType>
+      </UniUid>
+      <codeType>TWR</codeType>
+      <noSeq>0</noSeq>
+    </SerUid>
+  </Ser>
+  <Fqy>
+    <FqyUid mid="fqy-graz-twr">
+      <SerUid mid="ser-graz-twr">
+        <UniUid mid="uni-graz-twr" region="LOVV">
+          <txtName>GRAZ</txtName>
+          <codeType>TWR</codeType>
+        </UniUid>
+        <codeType>TWR</codeType>
+        <noSeq>0</noSeq>
+      </SerUid>
+      <valFreqTrans>118.200</valFreqTrans>
+    </FqyUid>
+    <uomFreq>MHZ</uomFreq>
+    <codeType>STD</codeType>
+    <Cdl>
+      <txtCallSign>GRAZ TOWER</txtCallSign>
+      <codeLang>EN</codeLang>
+    </Cdl>
+  </Fqy>
+  <Sae>
+    <SaeUid mid="sae-graz-twr-ctr">
+      <SerUid mid="ser-graz-twr">
+        <UniUid mid="uni-graz-twr" region="LOVV">
+          <txtName>GRAZ</txtName>
+          <codeType>TWR</codeType>
+        </UniUid>
+        <codeType>TWR</codeType>
+        <noSeq>0</noSeq>
+      </SerUid>
+      <AseUid mid="ase-lowg-ctr" region="LOVV">
+        <codeType>CTR</codeType>
+        <codeId>LOWG</codeId>
+      </AseUid>
+    </SaeUid>
+  </Sae>
+</OFMX-Snapshot>
