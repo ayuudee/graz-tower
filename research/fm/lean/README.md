@@ -129,54 +129,64 @@ Read modules in roughly this order:
 43. [CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean)
     Optional. This closes the delivered current-shape `ConfirmSquawk`
     package.
-44. [CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
+44. [CertifiedAtc/GreenfieldSquawkIdentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkIdentCurrentShape.lean)
+    Optional. This closes the delivered current-shape `SquawkIdent` package.
+45. [CertifiedAtc/GreenfieldSquawkStandbyCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkStandbyCurrentShape.lean)
+    Optional. This closes the delivered current-shape `SquawkStandby`
+    package.
+46. [CertifiedAtc/GreenfieldSquawkNormalCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkNormalCurrentShape.lean)
+    Optional. This closes the delivered current-shape `SquawkNormal`
+    package.
+47. [CertifiedAtc/GreenfieldStopSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldStopSquawkCurrentShape.lean)
+    Optional. This closes the delivered current-shape `StopSquawk` package.
+48. [CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
     Optional. This packages the delivered current-shape transponder family
     behind one source-level theorem boundary.
-45. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+49. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
     Optional. This is the first route-bearing widening layer above the closed
     scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
     `ClearedApproach`, and `JoinCircuit`.
-46. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+50. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
     Optional. This is the first current-shape route-bearing admission layer:
     authority-gated admission, resolved-clearance existence, and packaged
     current-shape issuance for the full bridged Phase A surface.
-43. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
+51. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
     Optional. This widens the current-shape route-bearing surface from
     single-step clearances to one leading Phase A route-bearing step plus
     immediate adjunct tails.
-44. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+52. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
     Optional. This closes the current-shape lifecycle behavior for the widened
     route-bearing surface: what completes, what stays active, and what goes
     terminal through reconciliation.
-45. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+53. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
     Optional. This closes the first route-bearing supersession consequences on
     the current greenfield engine: partial frequency supersession, full
     `GoAround` supersession, and the currently modeled `HoldAt` consequence.
-46. [CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
+54. [CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
     Optional. This packages the whole current-shape Phase A route-bearing
     surface behind one source-level theorem boundary.
-47. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+55. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
     Optional. This is the first widened issuing layer for the route-bearing
     track: theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
     legacy-supported `JoinCircuit`.
-48. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+56. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
     Optional. This is the scoped greenfield theorem package for
     `Safety-complete (N₀)`: scoped authority mapping, no-partial-issuance for
     surface compounds, conditional surface-envelope normalization, and the
     reachability wrapper into the resolved execution layer.
-49. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+57. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
     Optional. This is the final scoped issuing layer for `Safety-complete (N₀)`:
     the theorem-bearing bridge into the older atomic certified path, plus the
     routing/instantiation/coverage/authority/non-bypass/issuance package.
-50. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+58. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
     Optional. This is the reachable-state safety layer above the scoped
     issuing boundary: state-preservation for nominal/runway/surface/air/interface
     invariants plus issued-step separation soundness.
-51. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+59. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
     Optional. This is the scoped full-brief mode layer: assumption assessment,
     strongest-justified fallback, nominal guarantee withdrawal, concrete
     fallback vocabulary, and reachable mode-aware preservation.
-52. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+60. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
@@ -328,6 +338,18 @@ Read modules in roughly this order:
   Source-level current-shape packaging for the delivered `SetSquawk` slice.
 - `GreenfieldConfirmSquawkCurrentShape`
   Source-level current-shape packaging for the delivered `ConfirmSquawk`
+  slice.
+- `GreenfieldSquawkIdentCurrentShape`
+  Source-level current-shape packaging for the delivered `SquawkIdent`
+  slice.
+- `GreenfieldSquawkStandbyCurrentShape`
+  Source-level current-shape packaging for the delivered `SquawkStandby`
+  slice.
+- `GreenfieldSquawkNormalCurrentShape`
+  Source-level current-shape packaging for the delivered `SquawkNormal`
+  slice.
+- `GreenfieldStopSquawkCurrentShape`
+  Source-level current-shape packaging for the delivered `StopSquawk`
   slice.
 - `GreenfieldTransponderDeliveredCurrentShape`
   Source-level current-shape packaging for the delivered transponder family.

@@ -54,6 +54,14 @@ The following instruction families are now treated as authority-resolved:
   boundary
 - `ConfirmSquawk` -> `(radioRole, squawk)` on the current-shape transponder
   boundary
+- `SquawkIdent` -> `(radioRole, squawk)` on the current-shape transponder
+  boundary
+- `SquawkStandby` -> `(radioRole, squawk)` on the current-shape transponder
+  boundary
+- `SquawkNormal` -> `(radioRole, squawk)` on the current-shape transponder
+  boundary
+- `StopSquawk` -> `(radioRole, squawk)` on the current-shape transponder
+  boundary
 - `ClearedApproach` -> `(instrumentApproach, approachClearance)`
 - `HoldAt` -> `(holdingPattern, hold)`
 
@@ -100,7 +108,6 @@ authority-mapping layer:
 - `ClimbTo`
 - `DescendTo`
 - `ReduceSpeedTo`
-- `SquawkCode`
 - `CrossControlledAirspace`
 
 The reason is not "these instructions have no authority semantics."
@@ -114,8 +121,8 @@ Examples:
   sequencing authority contract rather than to one route entity family
 - `HoldShortOf` is operationally simple but its authority story still sits at an
   awkward boundary between taxiway movement and runway-adjacent protection
-- `SquawkCode` and `CrossControlledAirspace` likely belong to a broader
-  coordination/airspace authority layer that is not yet narrowed enough here
+- `CrossControlledAirspace` likely belongs to a broader coordination/airspace
+  authority layer that is not yet narrowed enough here
 
 ## Conservative Lean Rule
 

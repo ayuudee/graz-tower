@@ -95,10 +95,31 @@ It now contains:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit matching-code completion, and frequency
   non-supersession regressions
+- `GreenfieldSquawkIdentCurrentShape.lean` now closes a small current-shape
+  `SquawkIdent` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit ident-activation completion, and frequency
+  non-supersession regressions
+- `GreenfieldSquawkStandbyCurrentShape.lean` now closes a small current-shape
+  `SquawkStandby` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit standby-mode completion, and frequency
+  non-supersession regressions
+- `GreenfieldSquawkNormalCurrentShape.lean` now closes a small current-shape
+  `SquawkNormal` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit matching-mode completion, and frequency
+  non-supersession regressions
+- `GreenfieldStopSquawkCurrentShape.lean` now closes a small current-shape
+  `StopSquawk` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit mode-change completion, and frequency
+  non-supersession regressions
 - `GreenfieldTransponderDeliveredCurrentShape.lean` now packages the
   delivered current-shape transponder family behind one source-level theorem
   boundary, with unified authority-gated issuance over the already-delivered
-  single-step slices for `SetSquawk` and `ConfirmSquawk`
+  single-step slices for `SetSquawk`, `ConfirmSquawk`, `SquawkIdent`,
+  `SquawkStandby`, `SquawkNormal`, and `StopSquawk`
 - `GreenfieldBacktrackCurrentShape.lean` now closes a small current-shape
   `BacktrackRunway` package:
   source-level single-step issuance, conservative
@@ -143,6 +164,11 @@ It now contains:
   boundary, with unified authority-gated issuance over the already-delivered
   single-step slices for `LineUpAndWait`, `ClearedForTakeoff`,
   `ClearedToLand`, `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround`
+- the phase-1 current-shape parity closure is now complete under the frozen
+  widening rule:
+  every family whose Kotlin semantics are already stable, whose conservative
+  authority family is frozen, and whose proof surface does not require new
+  world-resolution theory is now theorem-bearing on the greenfield boundary
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`

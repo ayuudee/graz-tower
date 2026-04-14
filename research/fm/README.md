@@ -240,11 +240,32 @@ As of April 14, 2026:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit matching-code completion, and frequency
   non-supersession behavior
+- [GreenfieldSquawkIdentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkIdentCurrentShape.lean)
+  now closes a small current-shape `SquawkIdent` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit ident-activation completion, and frequency
+  non-supersession behavior
+- [GreenfieldSquawkStandbyCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkStandbyCurrentShape.lean)
+  now closes a small current-shape `SquawkStandby` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit standby-mode completion, and frequency
+  non-supersession behavior
+- [GreenfieldSquawkNormalCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkNormalCurrentShape.lean)
+  now closes a small current-shape `SquawkNormal` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit matching-mode completion, and frequency
+  non-supersession behavior
+- [GreenfieldStopSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldStopSquawkCurrentShape.lean)
+  now closes a small current-shape `StopSquawk` package:
+  source-level single-step issuance, conservative `(radioRole, squawk)`
+  authority, explicit mode-change completion, and frequency
+  non-supersession behavior
 - [GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
   now packages the delivered current-shape transponder family behind one
   source-level theorem boundary, with unified authority-gated issuance over
-  the already-delivered single-step slices for `SetSquawk` and
-  `ConfirmSquawk`
+  the already-delivered single-step slices for `SetSquawk`,
+  `ConfirmSquawk`, `SquawkIdent`, `SquawkStandby`, `SquawkNormal`, and
+  `StopSquawk`
 - [GreenfieldBacktrackCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
   now closes a small current-shape `BacktrackRunway` package:
   source-level single-step issuance, conservative `(runway, backtrack)`
@@ -387,6 +408,11 @@ The default critical path is now:
   `LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround` now have one
   unified current-shape reachable/authorized issuance surface
+- the phase-1 current-shape parity closure is now complete under the frozen
+  rule used for this widening programme:
+  every family whose Kotlin semantics are already stable, whose conservative
+  authority family is frozen, and whose proof surface does not require new
+  world-resolution theory is now theorem-bearing on the greenfield boundary
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to

@@ -152,12 +152,20 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldConfirmSquawkCurrentShape.lean` now also closes a small current-
   shape `ConfirmSquawk` package with radio-role/squawk authority and
   explicit matching-code completion
+  `GreenfieldSquawkIdentCurrentShape.lean`,
+  `GreenfieldSquawkStandbyCurrentShape.lean`,
+  `GreenfieldSquawkNormalCurrentShape.lean`, and
+  `GreenfieldStopSquawkCurrentShape.lean` now close the remaining delivered
+  current-shape transponder slices
   `GreenfieldTransponderDeliveredCurrentShape.lean` now packages the
   delivered current-shape transponder family behind one source-level theorem
   boundary
   `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
   current-shape runway-operation family behind one source-level theorem
   boundary
+  phase 1 is now closed under the frozen widening rule:
+  do not reopen families in that bucket unless runtime semantics themselves
+  change
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing

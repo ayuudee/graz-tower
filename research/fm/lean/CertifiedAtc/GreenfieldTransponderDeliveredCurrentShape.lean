@@ -1,5 +1,9 @@
 import CertifiedAtc.GreenfieldSetSquawkCurrentShape
 import CertifiedAtc.GreenfieldConfirmSquawkCurrentShape
+import CertifiedAtc.GreenfieldSquawkIdentCurrentShape
+import CertifiedAtc.GreenfieldSquawkStandbyCurrentShape
+import CertifiedAtc.GreenfieldSquawkNormalCurrentShape
+import CertifiedAtc.GreenfieldStopSquawkCurrentShape
 
 namespace CertifiedAtc
 namespace Greenfield
@@ -12,6 +16,10 @@ The delivered slice is:
 
 - single-step `SetSquawk`
 - single-step `ConfirmSquawk`
+- single-step `SquawkIdent`
+- single-step `SquawkStandby`
+- single-step `SquawkNormal`
+- single-step `StopSquawk`
 
 This module does not widen the broader surveillance family. It packages the
 already-delivered single-step current-shape slices so later widening can start
@@ -21,12 +29,20 @@ from one honest closure point.
 def GreenfieldTransponderDeliveredCurrentShapeInstruction : AtcInstruction → Prop
   | .setSquawk _ _ => True
   | .confirmSquawk _ _ => True
+  | .squawkIdent _ => True
+  | .squawkStandby _ => True
+  | .squawkNormal _ _ => True
+  | .stopSquawk _ _ => True
   | _ => False
 
 def transponderDeliveredCurrentShapeInstructionRequiredAuthorityGrant? :
     AtcInstruction → Option CompileAuthorityGrantView
   | .setSquawk _ _ => some currentShapeSetSquawkAuthorityGrant
   | .confirmSquawk _ _ => some currentShapeConfirmSquawkAuthorityGrant
+  | .squawkIdent _ => some currentShapeSquawkIdentAuthorityGrant
+  | .squawkStandby _ => some currentShapeSquawkStandbyAuthorityGrant
+  | .squawkNormal _ _ => some currentShapeSquawkNormalAuthorityGrant
+  | .stopSquawk _ _ => some currentShapeStopSquawkAuthorityGrant
   | _ => none
 
 def transponderDeliveredCurrentShapeInstructionIssuerAuthorized
@@ -121,6 +137,22 @@ inductive GreenfieldTransponderDeliveredCurrentShapeIssuable :
       {clearance : StructuredClearance}
       (hIssuable : ConfirmSquawkCurrentShapeIssuable clearance) :
       GreenfieldTransponderDeliveredCurrentShapeIssuable clearance
+  | squawkIdent
+      {clearance : StructuredClearance}
+      (hIssuable : SquawkIdentCurrentShapeIssuable clearance) :
+      GreenfieldTransponderDeliveredCurrentShapeIssuable clearance
+  | squawkStandby
+      {clearance : StructuredClearance}
+      (hIssuable : SquawkStandbyCurrentShapeIssuable clearance) :
+      GreenfieldTransponderDeliveredCurrentShapeIssuable clearance
+  | squawkNormal
+      {clearance : StructuredClearance}
+      (hIssuable : SquawkNormalCurrentShapeIssuable clearance) :
+      GreenfieldTransponderDeliveredCurrentShapeIssuable clearance
+  | stopSquawk
+      {clearance : StructuredClearance}
+      (hIssuable : StopSquawkCurrentShapeIssuable clearance) :
+      GreenfieldTransponderDeliveredCurrentShapeIssuable clearance
 
 theorem GreenfieldTransponderDeliveredCurrentShapeReachableIssuanceTheorem
     {world : ResolutionWorld}
@@ -153,6 +185,46 @@ theorem GreenfieldTransponderDeliveredCurrentShapeReachableIssuanceTheorem
   | confirmSquawk hSingle =>
       exact
         ConfirmSquawkCurrentShapeIssuanceTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hSingle
+  | squawkIdent hSingle =>
+      exact
+        SquawkIdentCurrentShapeIssuanceTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hSingle
+  | squawkStandby hSingle =>
+      exact
+        SquawkStandbyCurrentShapeIssuanceTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hSingle
+  | squawkNormal hSingle =>
+      exact
+        SquawkNormalCurrentShapeIssuanceTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hSingle
+  | stopSquawk hSingle =>
+      exact
+        StopSquawkCurrentShapeIssuanceTheorem
           (world := world)
           (existing := existing)
           (initialState := initialState)
