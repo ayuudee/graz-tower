@@ -119,6 +119,11 @@ It now contains:
   `(runway, lowApproach)` authority, runway-transition-and-exit completion,
   explicit conditional staging/activation, and theorem-bearing `GoAround`
   plus frequency supersession regressions
+- `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
+  current-shape runway-clearance family behind one source-level theorem
+  boundary, with unified authority-gated issuance over the already-delivered
+  single-step slices for `LineUpAndWait`, `ClearedForTakeoff`,
+  `ClearedToLand`, `ClearedTouchAndGo`, and `ClearedLowApproach`
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -182,6 +187,10 @@ It does not yet contain:
   delivered single-step slice; the current low-approach story is now closed
   on the greenfield boundary, but it is not yet widened into a broader
   runway-operation package
+- a widened packaged runway-clearance family beyond the now-delivered
+  single-step slices; the current runway-clearance story is now source-level
+  packaged on the greenfield boundary, but it is not yet widened into a
+  broader runway-operations package
 - widened current-shape compound/authority packaging for the newly delivered
   Phase B families beyond their current narrow compound slices; the delivered
   Phase B surface is now source-level packaged and current-shape

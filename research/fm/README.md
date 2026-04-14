@@ -264,6 +264,12 @@ As of April 14, 2026:
   authority, runway-transition-and-exit completion, explicit conditional
   staging/activation, and theorem-bearing `GoAround` supersession plus
   frequency non-supersession behavior
+- [GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
+  now packages the delivered current-shape runway-clearance family behind one
+  source-level theorem boundary, with unified authority-gated issuance over
+  the already-delivered single-step slices for `LineUpAndWait`,
+  `ClearedForTakeoff`, `ClearedToLand`, `ClearedTouchAndGo`, and
+  `ClearedLowApproach`
 - [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   now aligns `instructionMayBeConditional` with the current Kotlin runway-
   clearance metadata for `ClearedForTakeoff`, `ClearedToLand`,
@@ -351,17 +357,20 @@ The default critical path is now:
   single-step issuance, runway/low-approach authority, runway-transition-
   and-exit completion, explicit conditional staging/activation, and current
   `GoAround` / frequency supersession behavior are now theorem-bearing
+- the delivered current-shape runway-clearance family is now also packaged
+  behind one source-level theorem boundary:
+  `LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
+  `ClearedTouchAndGo`, and `ClearedLowApproach` now have one unified
+  current-shape reachable/authorized issuance surface
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
   widen execution beyond the delivered Phase B slices, widen the airspace-
   clearance family beyond its current narrow slice, widen the new radio slice
   beyond single-step packaging, widen `BacktrackRunway` beyond its current
-  single-step package, widen the delivered runway-clearance family
-  (`LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
-  `ClearedTouchAndGo`, `ClearedLowApproach`) into a broader runway package, or
-  shift to a new narrow family, or carry `ClearedTo` / `HoldAt` through the
-  older atomic path
+  single-step package, widen the packaged runway-clearance family into a
+  broader runway package, or shift to a new narrow family, or carry
+  `ClearedTo` / `HoldAt` through the older atomic path
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

@@ -119,51 +119,54 @@ Read modules in roughly this order:
 39. [CertifiedAtc/GreenfieldLowApproachCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLowApproachCurrentShape.lean)
     Optional. This closes the delivered current-shape `ClearedLowApproach`
     package.
-40. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+40. [CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
+    Optional. This packages the delivered current-shape runway-clearance
+    family behind one source-level theorem boundary.
+41. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
     Optional. This is the first route-bearing widening layer above the closed
     scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
     `ClearedApproach`, and `JoinCircuit`.
-41. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+42. [CertifiedAtc/GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
     Optional. This is the first current-shape route-bearing admission layer:
     authority-gated admission, resolved-clearance existence, and packaged
     current-shape issuance for the full bridged Phase A surface.
-42. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
+43. [CertifiedAtc/GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
     Optional. This widens the current-shape route-bearing surface from
     single-step clearances to one leading Phase A route-bearing step plus
     immediate adjunct tails.
-43. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+44. [CertifiedAtc/GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
     Optional. This closes the current-shape lifecycle behavior for the widened
     route-bearing surface: what completes, what stays active, and what goes
     terminal through reconciliation.
-44. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+45. [CertifiedAtc/GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
     Optional. This closes the first route-bearing supersession consequences on
     the current greenfield engine: partial frequency supersession, full
     `GoAround` supersession, and the currently modeled `HoldAt` consequence.
-45. [CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
+46. [CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
     Optional. This packages the whole current-shape Phase A route-bearing
     surface behind one source-level theorem boundary.
-46. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+47. [CertifiedAtc/BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
     Optional. This is the first widened issuing layer for the route-bearing
     track: theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
     legacy-supported `JoinCircuit`.
-47. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+48. [CertifiedAtc/ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
     Optional. This is the scoped greenfield theorem package for
     `Safety-complete (N₀)`: scoped authority mapping, no-partial-issuance for
     surface compounds, conditional surface-envelope normalization, and the
     reachability wrapper into the resolved execution layer.
-48. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+49. [CertifiedAtc/ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
     Optional. This is the final scoped issuing layer for `Safety-complete (N₀)`:
     the theorem-bearing bridge into the older atomic certified path, plus the
     routing/instantiation/coverage/authority/non-bypass/issuance package.
-49. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+50. [CertifiedAtc/ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
     Optional. This is the reachable-state safety layer above the scoped
     issuing boundary: state-preservation for nominal/runway/surface/air/interface
     invariants plus issued-step separation soundness.
-50. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+51. [CertifiedAtc/ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
     Optional. This is the scoped full-brief mode layer: assumption assessment,
     strongest-justified fallback, nominal guarantee withdrawal, concrete
     fallback vocabulary, and reachable mode-aware preservation.
-51. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+52. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
 
 ## What Each Module Owns
@@ -306,6 +309,9 @@ Read modules in roughly this order:
 - `GreenfieldLowApproachCurrentShape`
   Source-level current-shape packaging for the delivered
   `ClearedLowApproach` slice.
+- `GreenfieldRunwayDeliveredCurrentShape`
+  Source-level current-shape packaging for the delivered runway-clearance
+  family.
 - `GreenfieldRouteBearing`
   First route-bearing widening layer above the closed scoped programme:
   route-bearing-core classification, proof that all Phase A families need

@@ -143,6 +143,9 @@ Then open the specific Lean module for the phase you are changing.
   shape `ClearedLowApproach` package with runway/low-approach authority,
   runway-transition-and-exit completion, and explicit conditional lifecycle
   behavior
+  `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
+  current-shape runway-clearance family behind one source-level theorem
+  boundary
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing
