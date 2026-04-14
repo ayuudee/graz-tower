@@ -78,6 +78,10 @@ Then open the specific Lean module for the phase you are changing.
 - the first route-bearing widening increment is now real:
   `GreenfieldRouteBearing.lean` gives truthful resolved semantics for
   `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`, and
+  `RouteBearingExtraction.lean` now gives the first theorem-bearing
+  procedure-bearing extraction increment for that track, with
+  `ClearedApproach` kinds still constrained to the closed greenfield
+  `ApproachType` model, while
   `BridgeableRouteBearingIssuance.lean` widens theorem-bearing issuance only
   for `ClearedApproach` plus legacy-supported `JoinCircuit`
 - the remaining FM work is now optional widening, not milestone-critical
@@ -160,8 +164,10 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   route-bearing proof scope or richer operational mode semantics
 - if staying on the route-bearing track, start from the delivered first slice
   rather than redoing it:
-  resolved semantics are already in place for the Phase A families, and the
-  next honest work is either `ClearedTo` / `HoldAt` issuance or
-  `ClearedApproach` completion
+  resolved semantics, the first procedure-bearing extraction increment, the
+  extraction-to-resolution bridge for the current bridged subset, and the
+  first greenfield admission layer are already in place for the route-bearing
+  track; the next honest work is to extend that bridge/admission surface to
+  `JoinCircuit` before widening `ClearedApproach` completion
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

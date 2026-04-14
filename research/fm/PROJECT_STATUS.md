@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: April 13, 2026
+Last updated: April 14, 2026
 
 This file is the current execution status for `research/fm`.
 
@@ -27,8 +27,16 @@ It now contains:
   descend, cleared-approach, and cross-controlled-airspace
 - a first honest route-bearing widening increment above the closed scoped
   programme: resolved semantics for `ClearedTo`, `HoldAt`, `ClearedApproach`,
-  and `JoinCircuit`, plus theorem-bearing legacy-bridge issuance for
-  `ClearedApproach` and the legacy-supported `JoinCircuit` subset
+  and `JoinCircuit`, a first theorem-bearing procedure-bearing extraction
+  increment, a theorem-bearing extraction-to-resolution bridge for
+  `ClearedTo`, published `HoldAt`, and non-circling `ClearedApproach`, a
+  greenfield admission layer for that same bridged subset, plus theorem-
+  bearing legacy-bridge issuance for `ClearedApproach` and the legacy-
+  supported `JoinCircuit` subset
+- the next honest route-bearing gap is now narrower: `JoinCircuit` still lacks
+  the extracted join-entry support facts needed for a theorem-bearing bridge
+  into resolved execution, and `ClearedApproach` still lacks honest
+  completion semantics
 
 It does not yet contain:
 
@@ -45,9 +53,12 @@ It does not yet contain:
 - the full broad-scope separation story described in the brief beyond the
   current scoped nominal surface
 - a full theorem-bearing route-bearing package across all four Phase A
-  widening families; the current route-bearing widening increment stops at
-  resolved semantics for all four and legacy-bridge issuance only for
-  `ClearedApproach` plus legacy-supported `JoinCircuit`
+  widening families; the current route-bearing widening state stops at
+  resolved semantics for all four, a first theorem-bearing procedure-bearing
+  extraction increment, an extraction-to-resolution bridge plus greenfield
+  admission for `ClearedTo`, published `HoldAt`, and non-circling
+  `ClearedApproach`, and legacy-bridge issuance only for `ClearedApproach`
+  plus legacy-supported `JoinCircuit`
 - richer operationally detailed mode semantics beyond the current conservative
   scoped full-brief layer
 
@@ -240,9 +251,21 @@ Source:
   the older atomic path can honestly carry:
   `ClearedApproach`, and `JoinCircuit` only when the greenfield join type maps
   back into the legacy subset (`downwind`, `base`, `straightIn`)
-- `ClearedTo` and `HoldAt` therefore remain widened only at the resolved
-  boundary today; they are not yet admitted through the older atomic issuance
-  layer
+- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+  now adds the first theorem-bearing procedure-bearing extraction increment
+  above `ScopedExtraction`:
+  widened source-world data for circuits, holding patterns, approaches, SIDs,
+  airways, STARs, VFR routes, and fixes;
+  origin/no-invented-id lemmas for the widened compile-view data;
+  route-bearing reference preservation into `ClearanceCompileView`; and
+  compile-success theorems for compile-ready widened instructions, including
+  `ClearedTo` with a supported clearance limit;
+  `ClearedApproach` source kinds are now also constrained to the closed
+  greenfield `ApproachType` model and bridged to legacy strings only at
+  compile-view emission
+- `ClearedTo` and `HoldAt` therefore now have theorem-bearing resolved and
+  extraction surfaces, but they are not yet admitted through the older atomic
+  issuance layer
 - `ClearedApproach` is now route-bearing-resolved and issuance-bridgeable, but
   it still has no modeled completion in the current Kotlin/Lean execution
   layer
@@ -282,6 +305,7 @@ Source:
 - [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
 - [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
 - [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
 
 ### Air
 
@@ -472,7 +496,9 @@ Current stated-but-unproved targets:
   [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
 - the route-bearing widening is now real but partial:
   `GreenfieldRouteBearing.lean` gives truthful resolved semantics for
-  `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`, while
+  `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`,
+  `RouteBearingExtraction.lean` gives the first theorem-bearing
+  procedure-bearing extraction increment for that same track, while
   `BridgeableRouteBearingIssuance.lean` currently widens theorem-bearing
   issuance only for `ClearedApproach` and legacy-supported `JoinCircuit`
 

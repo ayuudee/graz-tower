@@ -3,7 +3,7 @@
 `research/fm` is the proof-authoritative research spike for the split
 certification architecture described in [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md).
 
-As of April 13, 2026, the product-authoritative world and clearance design for
+As of April 14, 2026, the product-authoritative world and clearance design for
 the next project lives in
 [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
 and
@@ -40,7 +40,7 @@ Read `research/fm` in this order of importance:
 
 ## Current Status
 
-As of April 13, 2026:
+As of April 14, 2026:
 
 - architecture contract: frozen
 - generic runway kernel: implemented and proved locally
@@ -122,11 +122,31 @@ As of April 13, 2026:
   theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
   `JoinCircuit` only where the join type still lives in the older atomic
   subset (`downwind`, `base`, `straightIn`)
-- `ClearedTo` and `HoldAt` are therefore widened only at the resolved boundary
-  today; they are not yet carried through the older atomic issuance path
-- a full route-bearing proof-authoritative extraction contract does not exist
-  yet; the current theorem-bearing extraction module is intentionally scoped to
-  the `Safety-complete (N₀)` surface
+- a first theorem-bearing procedure-bearing extraction increment now also
+  exists in
+  [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean):
+  route-bearing ids are proved preserved into widened compile views, the
+  extracted procedure-bearing sources are proved not to invent ids, and
+  compile-ready widened route-bearing instructions are proved to compile
+  through the extracted `ClearanceCompileView`, including limit-supported
+  `ClearedTo`; `ClearedApproach` source kinds now stay aligned to the closed
+  greenfield `ApproachType` model and are bridged to legacy strings only at
+  compile-view emission
+- `ClearedTo` and `HoldAt` therefore now have theorem-bearing resolved and
+  extraction surfaces, but they are not yet carried through the older atomic
+  issuance path
+- the next honest route-bearing proof seam is now narrower:
+  `ClearedTo`, published `HoldAt`, and non-circling `ClearedApproach` now have
+  a theorem-bearing extraction-to-resolution bridge in
+  [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean),
+  plus a greenfield admission layer in
+  [GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean);
+  the remaining structural gap is now `JoinCircuit`, and the remaining major
+  semantic gap is honest `ClearedApproach` completion
+- a full route-bearing proof-authoritative extraction contract still does not
+  exist yet; the new route-bearing extraction increment is real, but it is
+  still a first procedure-bearing slice rather than the full Phase A
+  extraction closure
 - surface kernel over a concrete surface graph: implemented and proved locally
 - air kernel over a concrete airborne graph: implemented and proved locally
 - separation layer: concrete local checker plus explicit Lean targets for
@@ -159,9 +179,15 @@ The default critical path is now:
   work
 - the active widening track is the route-bearing proof surface defined in
   [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
-- the first route-bearing widening increment is now delivered: full resolved
-  semantics for the route-bearing core, and honest legacy-bridge issuance only
-  for `ClearedApproach` plus the legacy-supported `JoinCircuit` subset
+- the current route-bearing widening state now has five delivered pieces:
+  full resolved semantics for the route-bearing core, a first theorem-bearing
+  procedure-bearing extraction increment, an extraction-to-resolution bridge
+  for the current bridged subset, a greenfield admission layer for that same
+  subset, and honest legacy-bridge issuance only for `ClearedApproach` plus
+  the legacy-supported `JoinCircuit` subset
+- the immediate next widening step is now to extend the extracted-world bridge
+  and greenfield admission surface to `JoinCircuit`, rather than widening
+  `ClearedApproach` completion first
 - richer mode semantics remain a secondary widening direction, not the default
   next task
 
@@ -278,6 +304,11 @@ The Lean project is organized as:
   First widened route-bearing layer above the closed scoped programme:
   truthful resolved-side semantics for `ClearedTo`, `HoldAt`,
   `ClearedApproach`, and `JoinCircuit`.
+- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+  First widened procedure-bearing extraction layer above the scoped
+  extraction boundary: widened source world, route-bearing reference
+  preservation, and compile-success theorems for compile-ready widened
+  instructions through `ClearanceCompileView`.
 - [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
   Honest legacy-bridge issuance only for the route-bearing families the older
   atomic path can already carry: `ClearedApproach` plus legacy-supported

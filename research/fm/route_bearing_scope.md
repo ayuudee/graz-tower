@@ -1,6 +1,6 @@
 # Route-Bearing Widening Scope
 
-Last updated: April 13, 2026
+Last updated: April 14, 2026
 
 This document defines the next widening track after the scoped
 `Safety-complete (N₀)` and `Full-brief complete` closures.
@@ -27,7 +27,7 @@ This note is the guardrail for that widening work.
 
 ## Current Delivered Increment
 
-As of April 13, 2026, the first honest widening increment is now in place.
+As of April 14, 2026, the first honest widening increment is now in place.
 
 - [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
   gives truthful resolved-side semantics for all four Phase A families:
@@ -37,10 +37,35 @@ As of April 13, 2026, the first honest widening increment is now in place.
   that the older atomic path can already carry honestly:
   `ClearedApproach`, and `JoinCircuit` only when the join type maps back into
   the legacy subset (`downwind`, `base`, `straightIn`)
-- `ClearedTo` and `HoldAt` therefore remain widened only at the resolved
-  boundary today
+- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+  adds the first theorem-bearing procedure-bearing extraction increment:
+  widened source-world extraction for fixes, holds, approaches, SIDs, airways,
+  STARs, VFR routes, and circuit procedures; route-bearing reference
+  preservation into `ClearanceCompileView`; and compile-success theorems for
+  compile-ready widened instructions, including supported-limit `ClearedTo`;
+  `ClearedApproach` source kinds stay aligned to the closed greenfield
+  `ApproachType` model and are bridged to legacy strings only at compile-view
+  emission
+- `ClearedTo` and `HoldAt` therefore now have theorem-bearing resolved and
+  extraction surfaces today, but still not theorem-bearing issuance
+- [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
+  now closes the missing extraction-to-resolution seam for the current
+  bridgeable subset:
+  `ClearedTo`, published `HoldAt`, and non-circling `ClearedApproach`
+- [GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+  now packages the first honest greenfield admission layer for that same
+  bridged subset:
+  authority-gated admission over the widened compile view, resolved-clearance
+  existence from extracted world data, and admission soundness into
+  `ReachableResolvedSet`
+- `ClearedTo` and published `HoldAt` therefore now have theorem-bearing
+  resolved, extraction, bridge, and greenfield-admission surfaces today, but
+  still not theorem-bearing legacy atomic issuance
 - `ClearedApproach` is route-bearing-resolved and issuance-bridgeable, but it
   still has no modeled completion in the current Kotlin/Lean execution layer
+- the next explicit structural gap is now `JoinCircuit`: extracted circuit data
+  still lacks the join-entry support facts needed to bridge it into the
+  resolved execution world
 
 ## Widening Principles
 
@@ -168,7 +193,26 @@ the Kotlin runtime:
 - resolved holding pattern for `HoldAt`
 - resolved circuit membership target for `JoinCircuit`
 
-### 3. Completion
+### 3. Extraction-to-Resolution Bridge
+
+The widening also needs an explicit theorem-bearing bridge from extracted
+procedure-bearing world data into the resolved execution world.
+
+That bridge should prove, at minimum:
+
+- extracted fix data justifies the resolved clearance-limit fact for
+  `ClearedTo`
+- extracted holding-pattern data justifies the resolved holding fact for
+  `HoldAt`
+- extracted approach data justifies the resolved approach fact for
+  `ClearedApproach`
+- extracted circuit data eventually justifies the resolved circuit-join fact
+  for `JoinCircuit`
+
+Do not treat extraction theorems and resolved semantics as an end-to-end
+closure until this bridge exists.
+
+### 4. Completion
 
 The widening needs honest completion observations for:
 
@@ -181,7 +225,7 @@ If any of those need a stronger observation contract than the current
 completion layer provides, that contract should be widened explicitly rather
 than approximated.
 
-### 4. Authority and Issuance
+### 5. Authority and Issuance
 
 The widening must add:
 
@@ -196,19 +240,30 @@ Do the widening in this order:
 
 1. widen extraction for route-bearing references
 2. widen resolved-step semantics for the Phase A families
-3. widen completion observations only as much as those resolved steps need
-4. widen greenfield/execution packaging
-5. widen the issuing layer and reachable-state safety package
+3. prove the extraction-to-resolution bridge
+4. widen completion observations only as much as those resolved steps need
+5. widen greenfield/execution packaging
+6. widen the issuing layer and reachable-state safety package
 
 Do not start with the top theorem. Start with the route-bearing data path.
 
 Current status against that order:
 
+- step 1 now has a first theorem-bearing procedure-bearing increment via
+  `RouteBearingExtraction.lean`, but the full Phase A extraction closure is
+  still open
 - step 2 is now closed for the Phase A families at the resolved boundary
-- step 5 is partially closed only for the bridgeable pair:
+- step 3 is now closed for `ClearedTo`, published `HoldAt`, and non-circling
+  `ClearedApproach` via `RouteBearingResolutionBridge.lean`; `JoinCircuit`
+  remains open at this step
+- step 5 is now partially closed for that same bridged subset via
+  `GreenfieldRouteBearingAdmission.lean`
+- step 6 is partially closed in two different ways:
+  greenfield admission for the bridged subset, and legacy-bridge issuance only
+  for the bridgeable pair
   `ClearedApproach` and legacy-supported `JoinCircuit`
-- extraction widening, full Phase A issuance, and honest `ClearedApproach`
-  completion are still open
+- the current live widening gap is the route-bearing circuit bridge, followed
+  by honest `ClearedApproach` completion and the remaining issuance closure
 
 ## Definition Of Done For This Track
 

@@ -7,6 +7,8 @@ import CertifiedAtc.SeparationChecker
 import CertifiedAtc.Interfaces
 import CertifiedAtc.ScopedSeparation
 import CertifiedAtc.ScopedExtraction
+import CertifiedAtc.RouteBearingExtraction
+import CertifiedAtc.RouteBearingResolutionBridge
 import CertifiedAtc.JointActs
 import CertifiedAtc.ClearanceEnvelope
 import CertifiedAtc.ScopedGreenfield
@@ -21,4 +23,5 @@ import CertifiedAtc.GreenfieldCompletion
 import CertifiedAtc.GreenfieldExecution
 import CertifiedAtc.GreenfieldReachability
 import CertifiedAtc.GreenfieldRouteBearing
+import CertifiedAtc.GreenfieldRouteBearingAdmission
 import CertifiedAtc.BridgeableRouteBearingIssuance
