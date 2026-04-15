@@ -57,6 +57,78 @@ def worldAirwayPointBindings
   | [] => []
   | airway :: tail => airwayPointBindings airway ++ worldAirwayPointBindings tail
 
+def greenfieldRoleName? : CertifiedAtc.RoleName → Option RoleName
+  | "CLEARANCE_DELIVERY" => some .clearanceDelivery
+  | "GROUND" => some .ground
+  | "TOWER" => some .tower
+  | "APPROACH" => some .approach
+  | "DEPARTURE" => some .departure
+  | "AREA_CONTROL" => some .areaControl
+  | "AFIS" => some .afis
+  | "clearanceDelivery" => some .clearanceDelivery
+  | "ground" => some .ground
+  | "tower" => some .tower
+  | "approach" => some .approach
+  | "departure" => some .departure
+  | "areaControl" => some .areaControl
+  | "afis" => some .afis
+  | _ => none
+
+def scopedHandoffBinding?
+    (handoff : CompileHandoffView) : Option ConcretePublishedHandoffBinding := do
+  let fromRole <- greenfieldRoleName? handoff.fromRole
+  let toRole <- greenfieldRoleName? handoff.toRole
+  pure
+    { fromRole := fromRole
+      toRole := toRole
+      action :=
+        match handoff.action with
+        | .contact => .contact
+        | .monitor => .monitor
+      location :=
+        match handoff.location with
+        | .holdingPoint point => .holdingPoint point
+        | .boundaryFix fix => .boundaryFix fix
+        | .airborne => .airborne }
+
+def scopedHandoffBindings
+    (handoffs : List CompileHandoffView) : List ConcretePublishedHandoffBinding :=
+  handoffs.filterMap scopedHandoffBinding?
+
+def scopedHandoffAction
+    (handoff : CompileHandoffView) : ResolvedPublishedHandoffAction :=
+  match handoff.action with
+  | .contact => .contact
+  | .monitor => .monitor
+
+def scopedHandoffPoint
+    (handoff : CompileHandoffView) : ResolvedPublishedHandoffPoint :=
+  match handoff.location with
+  | .holdingPoint point => .holdingPoint point
+  | .boundaryFix fix => .boundaryFix fix
+  | .airborne => .airborne
+
+def scopedResolvedHandoff?
+    (handoff : CompileHandoffView) : Option (RoleName × RoleName × ResolvedPublishedHandoffAction × ResolvedPublishedHandoffPoint) := do
+  let fromRole <- greenfieldRoleName? handoff.fromRole
+  let toRole <- greenfieldRoleName? handoff.toRole
+  pure (fromRole, toRole, scopedHandoffAction handoff, scopedHandoffPoint handoff)
+
+def scopedHandoffBinding
+    (handoff : CompileHandoffView)
+    (fromRole toRole : RoleName) : ConcretePublishedHandoffBinding :=
+  { fromRole := fromRole
+    toRole := toRole
+    action :=
+      match handoff.action with
+      | .contact => .contact
+      | .monitor => .monitor
+    location :=
+      match handoff.location with
+      | .holdingPoint point => .holdingPoint point
+      | .boundaryFix fix => .boundaryFix fix
+      | .airborne => .airborne }
+
 def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ConcreteResolutionWorld :=
   { fixPoints :=
@@ -74,6 +146,8 @@ def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
           runway := approach.runway
           circlingRunway := none
           approach := approach.id }
+    publishedHandoffs :=
+      scopedHandoffBindings world.handoffs
     airspaceVolumes :=
       world.airspaceVolumes.map fun airspace =>
         { airspace := airspace.id
@@ -676,6 +750,32 @@ theorem RouteBearingScopedAviationWorld.mem_airspaceVolume_of_mem
   simpa [RouteBearingScopedAviationWorld.toResolutionWorld,
     RouteBearingScopedAviationWorld.toConcreteResolutionWorld,
     ConcreteResolutionWorld.toResolutionWorld] using hMap
+
+theorem RouteBearingScopedAviationWorld.mem_publishedHandoff_of_mem
+    {world : RouteBearingScopedAviationWorld}
+    {handoff : CompileHandoffView}
+    {fromRole toRole : RoleName}
+    (hFrom : greenfieldRoleName? handoff.fromRole = some fromRole)
+    (hTo : greenfieldRoleName? handoff.toRole = some toRole)
+    (hMem : handoff ∈ world.handoffs) :
+    (RouteBearingScopedAviationWorld.toResolutionWorld world).publishedHandoff
+      fromRole
+      toRole
+      (scopedHandoffAction handoff)
+      (scopedHandoffPoint handoff) := by
+  have hMap :
+      scopedHandoffBinding handoff fromRole toRole ∈
+        (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world).publishedHandoffs := by
+    have hFilter :
+        scopedHandoffBinding? handoff =
+          some (scopedHandoffBinding handoff fromRole toRole) := by
+      simp [scopedHandoffBinding?, scopedHandoffBinding, hFrom, hTo]
+    unfold RouteBearingScopedAviationWorld.toConcreteResolutionWorld scopedHandoffBindings
+    exact List.mem_filterMap.mpr ⟨handoff, hMem, hFilter⟩
+  simpa [RouteBearingScopedAviationWorld.toResolutionWorld,
+    RouteBearingScopedAviationWorld.toConcreteResolutionWorld,
+    ConcreteResolutionWorld.toResolutionWorld, scopedHandoffBindings, scopedHandoffBinding,
+    scopedHandoffAction, scopedHandoffPoint] using hMap
 
 def RouteBearingInstructionResolutionReady
     (world : RouteBearingScopedAviationWorld) : AtcInstruction → Prop

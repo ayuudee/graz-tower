@@ -98,6 +98,11 @@ through `instructionRequiredAuthorityGrant?`, and the delivered current-shape
 Phase B route-adjacent mappings are mirrored in
 [GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
 for the delivered current-shape Phase B route-adjacent surface.
+
+On the published-handoff jurisdiction branch, `ContactFrequency` and
+`MonitorFrequency` keep those same `(radioRole, contact|monitor)` grants.
+Published handoffs add world-backed readiness and completion facts, not a new
+authority family.
 The delivered broader ground/surface movement mappings are now mirrored in
 [GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean)
 for the current graph-backed ground branch.
@@ -211,6 +216,6 @@ It should be:
    Kotlin model
 2. keep the delivered route/vector-control and air-modifier mappings aligned to
    the Kotlin model and parity inventory
-3. decide the right authority families for the still-unresolved airspace /
-   route / coordination instructions
+3. decide the right authority families for the still-unresolved route /
+   coordination instructions
 4. only then widen the mapping surface again

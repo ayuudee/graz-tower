@@ -10,8 +10,10 @@ import xyz.easiersaid.twr.core.world.Fix
 import xyz.easiersaid.twr.core.world.GeometrySegmentId
 import xyz.easiersaid.twr.core.world.HoldingPattern
 import xyz.easiersaid.twr.core.world.HoldingPoint
+import xyz.easiersaid.twr.core.world.HandoffStep
 import xyz.easiersaid.twr.core.world.InstrumentApproach
 import xyz.easiersaid.twr.core.world.Path
+import xyz.easiersaid.twr.core.world.PilotHandoffAction
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.Sid
 import xyz.easiersaid.twr.core.world.Star
@@ -42,7 +44,11 @@ import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnDirection
 
 data class AerodromeResolutionContext(
-    val aerodromeId: AerodromeId
+    val aerodromeId: AerodromeId,
+    val currentRole: RoleName? = null,
+    val currentPoint: PointId? = null,
+    val currentFix: FixId? = null,
+    val onGround: Boolean? = null
 )
 
 data class GroundResolutionContext(
@@ -77,6 +83,7 @@ enum class ResolutionFailureCode {
     AIRSPACE_ROUTE_DOES_NOT_INTERACT,
     AIRWAY_EXIT_FIX_NOT_ON_AIRWAY,
     AIRWAY_JOIN_FIX_NOT_ON_AIRWAY,
+    AMBIGUOUS_PUBLISHED_HANDOFF,
     CONDITIONAL_STEP_NOT_SUPPORTED,
     CONDITIONAL_INSTRUCTION_NOT_ALLOWED,
     MULTIPLE_CONDITIONS_NOT_SUPPORTED,
@@ -215,7 +222,8 @@ data class ResolvedRoleFrequency(
     val roleName: RoleName,
     val role: AerodromeRole,
     val publishedFrequency: Frequency,
-    val instructedFrequency: Frequency
+    val instructedFrequency: Frequency,
+    val publishedHandoff: HandoffStep? = null
 )
 
 enum class ResolvedVectorKind {
@@ -522,13 +530,13 @@ fun AviationWorld.resolveContactFrequency(
     context: AerodromeResolutionContext,
     instruction: ContactFrequency
 ): ResolutionResult<ResolvedRoleFrequency> =
-    resolveRoleFrequency(context, instruction.role, instruction.frequency)
+    resolveRoleFrequency(context, instruction.role, instruction.frequency, PilotHandoffAction.CONTACT)
 
 fun AviationWorld.resolveMonitorFrequency(
     context: AerodromeResolutionContext,
     instruction: MonitorFrequency
 ): ResolutionResult<ResolvedRoleFrequency> =
-    resolveRoleFrequency(context, instruction.role, instruction.frequency)
+    resolveRoleFrequency(context, instruction.role, instruction.frequency, PilotHandoffAction.MONITOR)
 
 fun AviationWorld.resolveRemainOutsideControlledAirspace(
     context: AerodromeResolutionContext,
@@ -566,7 +574,8 @@ fun AviationWorld.resolveSpecialVfrClearance(
 private fun AviationWorld.resolveRoleFrequency(
     context: AerodromeResolutionContext,
     roleName: RoleName,
-    explicitFrequency: Frequency?
+    explicitFrequency: Frequency?,
+    handoffAction: PilotHandoffAction
 ): ResolutionResult<ResolvedRoleFrequency> {
     val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
         ResolutionFailureCode.UNKNOWN_AERODROME,
@@ -576,6 +585,17 @@ private fun AviationWorld.resolveRoleFrequency(
         ResolutionFailureCode.UNKNOWN_ROLE,
         "Aerodrome ${aerodrome.icao.value} does not declare role ${roleName.name}"
     )
+    val publishedHandoff = when (
+        val result = resolvePublishedHandoff(
+            aerodrome = aerodrome,
+            context = context,
+            targetRole = roleName,
+            handoffAction = handoffAction
+        )
+    ) {
+        is arrow.core.Either.Left -> return result
+        is arrow.core.Either.Right -> result.value
+    }
 
     return resolved(
         ResolvedRoleFrequency(
@@ -583,10 +603,55 @@ private fun AviationWorld.resolveRoleFrequency(
             roleName = roleName,
             role = role,
             publishedFrequency = role.frequency,
-            instructedFrequency = explicitFrequency ?: role.frequency
+            instructedFrequency = explicitFrequency ?: role.frequency,
+            publishedHandoff = publishedHandoff
         )
     )
 }
+
+private fun resolvePublishedHandoff(
+    aerodrome: Aerodrome,
+    context: AerodromeResolutionContext,
+    targetRole: RoleName,
+    handoffAction: PilotHandoffAction
+): ResolutionResult<HandoffStep?> {
+    val currentRole = context.currentRole ?: return resolved(null)
+    val candidates = aerodrome.aip.handoffSequence.filter { step ->
+        step.from == currentRole &&
+            step.to == targetRole &&
+            step.pilotAction == handoffAction
+    }
+    if (candidates.isEmpty()) {
+        return resolved(null)
+    }
+    if (candidates.size == 1) {
+        return resolved(candidates.single())
+    }
+
+    val matchingContext = candidates.filter { step -> handoffMatchesContext(step, context) }
+    return when (matchingContext.size) {
+        1 -> resolved(matchingContext.single())
+        else -> unresolved(
+            ResolutionFailureCode.AMBIGUOUS_PUBLISHED_HANDOFF,
+            "Aerodrome ${aerodrome.icao.value} declares multiple ${handoffAction.name.lowercase()} handoffs from ${currentRole.name} to ${targetRole.name} without enough context to disambiguate"
+        )
+    }
+}
+
+private fun handoffMatchesContext(
+    handoff: HandoffStep,
+    context: AerodromeResolutionContext
+): Boolean =
+    when (handoff.at.kind) {
+        xyz.easiersaid.twr.core.world.HandoffPointKind.HOLDING_POINT ->
+            handoff.at.point != null && handoff.at.point == context.currentPoint
+
+        xyz.easiersaid.twr.core.world.HandoffPointKind.BOUNDARY_FIX ->
+            handoff.at.fix != null && handoff.at.fix == context.currentFix
+
+        xyz.easiersaid.twr.core.world.HandoffPointKind.AIRBORNE ->
+            context.onGround == false
+    }
 
 private fun AviationWorld.resolveAirspaceInstruction(
     context: AerodromeResolutionContext,

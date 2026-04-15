@@ -271,15 +271,23 @@ As of April 15, 2026:
   `ConfirmSquawk`, `SquawkIdent`, `SquawkStandby`, `SquawkNormal`, and
   `StopSquawk`
 - [GreenfieldCommunicationsCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsCompound.lean)
-  now closes the first narrow current-shape communications/surveillance
-  compound slice over those delivered radio and transponder families:
-  one leading communication/surveillance instruction plus immediate tails
-  from the same delivered families, with whole-clearance admission,
-  authority-gated issuance, and explicit current completion/supersession
-  consequences
+  now carries the explicit current lifecycle/supersession consequences for the
+  delivered communications/surveillance compound layer on the current
+  immediate radio/transponder model:
+  mixed radio/transponder compounds, partial frequency-vs-squawk
+  supersession, and the current completion/terminalization behavior after
+  suppression
 - [GreenfieldCommunicationsDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean)
-  now packages that delivered phase-2 communications/surveillance surface
-  behind one source-level current-shape theorem boundary
+  now packages the delivered communications/surveillance surface behind one
+  source-level current-shape theorem boundary, and
+  [GreenfieldCommunicationsExpandedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsExpandedCurrentShape.lean)
+  now packages the broadened branch closure for the current immediate
+  radio/transponder model
+- [GreenfieldRadioJurisdictionWorldBacked.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRadioJurisdictionWorldBacked.lean)
+  now closes the first world-backed published-handoff jurisdiction slice for
+  `ContactFrequency` and `MonitorFrequency`, and
+  [GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean)
+  now packages that branch behind one reachable / authorized theorem surface
 - [GreenfieldBacktrackCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
   now closes a small current-shape `BacktrackRunway` package:
   source-level single-step issuance, conservative `(runway, backtrack)`
@@ -397,11 +405,17 @@ The default critical path is now:
   theorem surface with explicit/implicit frequency resolution, conservative
   radio-role authority, and current lifecycle/supersession behavior
 - the delivered radio plus transponder/surveillance families are now also
-  widened through a first narrow communications/surveillance compound layer:
-  one leading communication/surveillance instruction plus immediate tails
-  from those same delivered families now has a packaged current-shape
-  reachable/authorized issuance surface and explicit current
-  completion/supersession regressions
+  closed as a broader current-shape communications/surveillance branch on the
+  current immediate radio/transponder model:
+  singles, mixed compounds, explicit lifecycle/completion, and partial/full
+  frequency-vs-squawk supersession now all have a packaged reachable /
+  authorized theorem surface
+- above that delivered branch, the current radio family now also has a
+  world-backed published-handoff jurisdiction slice:
+  `ContactFrequency` and `MonitorFrequency` now resolve and complete against
+  published `handoffSequence` facts at holding points, boundary fixes, and
+  airborne transitions, and that branch is now packaged behind one reachable /
+  authorized theorem surface too
 - `BacktrackRunway` now also has a small closed current-shape slice on the
   greenfield boundary:
   single-step issuance, runway/backtrack authority, and resolved far-end-point
@@ -501,8 +515,9 @@ The default critical path is now:
 - the phase-2 communications/surveillance widening closure is now also
   complete under that same frozen rule:
   the already-delivered radio and transponder/surveillance families are now
-  widened through their first narrow mixed current-shape compound/package
-  surface, still without introducing new world-resolution theory
+  closed on the current immediate radio/transponder model, including mixed
+  compounds and explicit lifecycle/supersession behavior, still without
+  introducing new world-resolution theory
 - the phase-3 runway widening closure is now also complete under that same
   frozen rule:
   the delivered runway-operation family is now widened through a first narrow
@@ -545,11 +560,11 @@ The default critical path is now:
   have packaged source-level issuance plus authority-gated issuance on the
   current explicit ground-progress model: traversed points, reached holding
   points, crossed runways, and stopped-on-ground state
-- the next default FM work is no longer broader ground / surface movement, and
-  it is no longer the delivered-branch refinement / drift-control branch
-  either; the next deliberate widening choices are now broader
-  communications/surveillance semantics or the next genuinely semantic branch
-  beyond the current models
+- the next default FM work is no longer broader ground / surface movement,
+  delivered-branch refinement / drift-control, or broader
+  communications/surveillance semantics on the current immediate +
+  published-handoff model either; the next deliberate widening choices are
+  now genuinely semantic branches beyond the current models
 - richer mode semantics remain a secondary widening direction, not the default
   next task
 
@@ -606,7 +621,7 @@ Then go to the specific Lean module you need.
   Narrowed instruction-to-authority mapping for the currently stable subset.
 - [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
   Frozen Kotlin-to-Lean parity inventory for the delivered FM surface, plus
-  drift-control rules and the recommended next widening branch.
+  drift-control rules and the current open widening branches.
 - [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
   How `research/fm` should now relate to the product-authoritative
   `docs/design/` specs and the future project boundary.

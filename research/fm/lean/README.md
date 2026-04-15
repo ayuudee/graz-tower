@@ -23,9 +23,8 @@ The delivered-branch refinement / drift-control closure is now in place.
   changes
 - there is no longer one automatic low-risk widening branch of exactly the
   same shape
-- choose the next deliberate widening branch between broader
-  communications/surveillance semantics and the next genuinely semantic
-  branch beyond the current models
+- choose the next deliberate widening branch as a genuinely semantic branch
+  beyond the current models
 
 ## Module Order
 
@@ -173,11 +172,19 @@ Read modules in roughly this order:
     Optional. This packages the delivered current-shape transponder family
     behind one source-level theorem boundary.
 49. [CertifiedAtc/GreenfieldCommunicationsCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsCompound.lean)
-    Optional. This widens the delivered radio and transponder families through
-    a first narrow mixed current-shape compound slice.
+    Optional. This closes the delivered communications/surveillance compound
+    seam on the current immediate radio/transponder model.
 50. [CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean)
-    Optional. This packages the delivered phase-2 communications/surveillance
-    surface behind one source-level theorem boundary.
+    Optional. This packages the delivered communications/surveillance surface
+    behind one source-level theorem boundary.
+    See also
+    [CertifiedAtc/GreenfieldCommunicationsExpandedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsExpandedCurrentShape.lean)
+    for the broadened current-shape branch closure on the current immediate
+    radio/transponder model,
+    [CertifiedAtc/GreenfieldRadioJurisdictionWorldBacked.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRadioJurisdictionWorldBacked.lean)
+    for the first world-backed published-handoff radio widening, and
+    [CertifiedAtc/GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean)
+    for the packaged current communications/jurisdiction branch.
 51. [CertifiedAtc/GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
     Optional. This is the first route-bearing widening layer above the closed
     scoped programme: truthful resolved semantics for `ClearedTo`, `HoldAt`,
@@ -408,13 +415,21 @@ Read modules in roughly this order:
   Source-level current-shape packaging for the delivered radio family:
   `ContactFrequency` and `MonitorFrequency`.
 - `GreenfieldCommunicationsCompound`
-  First narrow mixed current-shape compound layer for the delivered
-  communications/surveillance families:
-  one leading radio/transponder instruction plus immediate tails from those
-  same delivered families.
+  Explicit current lifecycle/supersession consequences for the delivered
+  communications/surveillance compound seam on the current immediate
+  radio/transponder model.
 - `GreenfieldCommunicationsDeliveredCurrentShape`
-  Source-level current-shape packaging for the delivered phase-2
+  Source-level current-shape packaging for the delivered
   communications/surveillance surface.
+- `GreenfieldCommunicationsExpandedCurrentShape`
+  Packaged current-shape closure for the broadened delivered
+  communications/surveillance branch.
+- `GreenfieldRadioJurisdictionWorldBacked`
+  World-backed published-handoff radio semantics for `ContactFrequency` and
+  `MonitorFrequency` on the current handoff-sequence model.
+- `GreenfieldCommunicationsJurisdictionDeliveredCurrentShape`
+  Packaged reachable/authorized theorem surface for the current
+  communications/jurisdiction widening branch.
 - `GreenfieldBacktrackCurrentShape`
   Source-level current-shape packaging for the delivered `BacktrackRunway`
   slice.

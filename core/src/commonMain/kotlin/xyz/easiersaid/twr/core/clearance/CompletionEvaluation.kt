@@ -1,6 +1,8 @@
 package xyz.easiersaid.twr.core.clearance
 
 import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.core.world.HandoffPointKind
+import xyz.easiersaid.twr.core.world.HandoffStep
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
 import xyz.easiersaid.twr.protocol.AfterPassingLevelDescendTo
@@ -167,11 +169,11 @@ private fun evaluateStepCompletion(
 
         is ResolvedStep.FrequencyChange -> {
             val radioState = view.radioState
-            if (
+            val observedRoleChange =
                 radioState.currentRole == step.frequency.roleName ||
                 radioState.lastContactRole == step.frequency.roleName ||
                 radioState.currentFrequency == step.frequency.instructedFrequency
-            ) {
+            if (observedRoleChange && publishedHandoffSatisfied(step.frequency.publishedHandoff, view)) {
                 CompletionResult.COMPLETE
             } else {
                 CompletionResult.NOT_COMPLETE
@@ -245,6 +247,23 @@ private fun evaluateAirspaceCompletion(
         else -> CompletionResult.NOT_COMPLETE
     }
 }
+
+private fun publishedHandoffSatisfied(
+    handoff: HandoffStep?,
+    view: CompletionView
+): Boolean =
+    when (handoff?.at?.kind) {
+        null -> true
+
+        HandoffPointKind.HOLDING_POINT ->
+            handoff.at.point?.let { point -> groundPointReached(point, view) } == true
+
+        HandoffPointKind.BOUNDARY_FIX ->
+            handoff.at.fix?.let { fix -> fix in view.reachedFixes } == true
+
+        HandoffPointKind.AIRBORNE ->
+            !view.onGround
+    }
 
 private data class AirspaceObservationState(
     val inside: Boolean,

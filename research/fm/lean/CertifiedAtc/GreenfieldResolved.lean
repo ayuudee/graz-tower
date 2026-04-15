@@ -57,9 +57,28 @@ structure ResolvedApproachClearance where
   missedApproachHoldingPattern : HoldingPatternId
   deriving DecidableEq, Repr
 
+inductive ResolvedPublishedHandoffAction
+  | contact
+  | monitor
+  deriving DecidableEq, Repr
+
+inductive ResolvedPublishedHandoffPoint
+  | holdingPoint (point : PointId)
+  | boundaryFix (fix : FixId)
+  | airborne
+  deriving DecidableEq, Repr
+
+structure ResolvedPublishedHandoff where
+  fromRole : RoleName
+  toRole : RoleName
+  action : ResolvedPublishedHandoffAction
+  location : ResolvedPublishedHandoffPoint
+  deriving DecidableEq, Repr
+
 structure ResolvedRoleFrequency where
   roleName : RoleName
   instructedFrequency : Option Frequency := none
+  publishedHandoff : Option ResolvedPublishedHandoff := none
   deriving DecidableEq, Repr
 
 structure ResolvedDirectFix where

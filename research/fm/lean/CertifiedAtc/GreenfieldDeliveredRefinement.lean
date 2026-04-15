@@ -10,7 +10,8 @@ import CertifiedAtc.GreenfieldRouteBearingCompound
 import CertifiedAtc.GreenfieldAirspaceWorldBackedDeliveredCurrentShape
 import CertifiedAtc.GreenfieldRadioCurrentShape
 import CertifiedAtc.GreenfieldTransponderDeliveredCurrentShape
-import CertifiedAtc.GreenfieldCommunicationsDeliveredCurrentShape
+import CertifiedAtc.GreenfieldCommunicationsExpandedCurrentShape
+import CertifiedAtc.GreenfieldCommunicationsJurisdictionDeliveredCurrentShape
 import CertifiedAtc.GreenfieldRunwayDeliveredCurrentShape
 import CertifiedAtc.GreenfieldRunwayExpandedCurrentShape
 
@@ -50,6 +51,7 @@ inductive DeliveredBranch where
   | radio
   | transponder
   | communications
+  | communicationsJurisdiction
   | runwayDelivered
   | runwayExpanded
   deriving DecidableEq, Repr
@@ -65,6 +67,7 @@ def deliveredBranchClosureKind : DeliveredBranch → DeliveredClosureKind
   | .radio => .currentShapeComplete
   | .transponder => .currentShapeComplete
   | .communications => .currentShapeComplete
+  | .communicationsJurisdiction => .worldBackedComplete
   | .runwayDelivered => .currentShapeComplete
   | .runwayExpanded => .currentShapeComplete
 
@@ -88,6 +91,8 @@ def deliveredBranchClosureKind : DeliveredBranch → DeliveredClosureKind
     deliveredBranchClosureKind .transponder = .currentShapeComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_communications :
     deliveredBranchClosureKind .communications = .currentShapeComplete := rfl
+@[simp] theorem deliveredBranchClosureKind_communicationsJurisdiction :
+    deliveredBranchClosureKind .communicationsJurisdiction = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_runwayDelivered :
     deliveredBranchClosureKind .runwayDelivered = .currentShapeComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_runwayExpanded :
@@ -150,8 +155,17 @@ abbrev TransponderDeliveredReachableRefinementTheorem :=
 abbrev TransponderDeliveredAuthorizedRefinementTheorem :=
   @GreenfieldTransponderDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
+abbrev CommunicationsDeliveredReachableRefinementTheorem :=
+  @GreenfieldCommunicationsExpandedCurrentShapeReachableIssuanceTheorem
+
 abbrev CommunicationsDeliveredAuthorizedRefinementTheorem :=
-  @GreenfieldCommunicationsDeliveredCurrentShapeAuthorizedIssuanceTheorem
+  @GreenfieldCommunicationsExpandedCurrentShapeAuthorizedIssuanceTheorem
+
+abbrev CommunicationsJurisdictionDeliveredReachableRefinementTheorem :=
+  @GreenfieldCommunicationsJurisdictionDeliveredCurrentShapeReachableIssuanceTheorem
+
+abbrev CommunicationsJurisdictionDeliveredAuthorizedRefinementTheorem :=
+  @GreenfieldCommunicationsJurisdictionDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev RunwayDeliveredReachableRefinementTheorem :=
   @GreenfieldRunwayDeliveredCurrentShapeReachableIssuanceTheorem

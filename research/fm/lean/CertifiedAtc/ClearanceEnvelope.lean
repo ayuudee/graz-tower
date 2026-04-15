@@ -357,10 +357,22 @@ structure CompileRoleFrequencyView where
   frequency : Frequency
   deriving DecidableEq, Repr
 
+inductive CompileHandoffAction
+  | contact
+  | monitor
+  deriving DecidableEq, Repr
+
+inductive CompileHandoffPointView
+  | holdingPoint (point : PointId)
+  | boundaryFix (fix : FixId)
+  | airborne
+  deriving DecidableEq, Repr
+
 structure CompileHandoffView where
   fromRole : RoleName
   toRole : RoleName
-  atPoint : Option PointId := none
+  action : CompileHandoffAction
+  location : CompileHandoffPointView
   deriving DecidableEq, Repr
 
 inductive CompileAuthorityEntityType

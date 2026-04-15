@@ -183,12 +183,17 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldTransponderDeliveredCurrentShape.lean` now packages the
   delivered current-shape transponder family behind one source-level theorem
   boundary
-  `GreenfieldCommunicationsCompound.lean` now closes the first narrow
-  current-shape communications/surveillance compound slice over those
-  delivered radio and transponder families, and
-  `GreenfieldCommunicationsDeliveredCurrentShape.lean` now packages that
-  delivered phase-2 communications/surveillance surface behind one source-
-  level theorem boundary
+  `GreenfieldCommunicationsCompound.lean` now closes the delivered
+  communications/surveillance compound seam on the current immediate
+  radio/transponder model, and
+  `GreenfieldCommunicationsDeliveredCurrentShape.lean` plus
+  `GreenfieldCommunicationsExpandedCurrentShape.lean` now package the
+  broadened current-shape branch behind one source-level theorem boundary
+  `GreenfieldRadioJurisdictionWorldBacked.lean` now closes the first
+  world-backed published-handoff jurisdiction slice for `ContactFrequency`
+  and `MonitorFrequency`, and
+  `GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean` now
+  packages that branch behind one reachable/authorized theorem surface
   `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
   current-shape runway-operation family behind one source-level theorem
   boundary
@@ -210,6 +215,10 @@ Then open the specific Lean module for the phase you are changing.
   phase 2 is now also closed under that same frozen widening rule:
   do not reopen the delivered communications/surveillance families unless
   their runtime semantics themselves change
+  the published-handoff communications/jurisdiction slice is now also closed
+  on the current model:
+  do not reopen it unless the runtime handoff/jurisdiction semantics
+  themselves change
   phase 3 is now also closed under that same frozen widening rule:
   do not reopen the delivered runway family unless runway runtime semantics
   themselves change
@@ -312,18 +321,17 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   the delivered Phase B route-adjacent branch,
   the current graph-backed point-set + transition airspace branch,
   the delivered communications/surveillance surface,
+  the published-handoff communications/jurisdiction branch,
   the broadened current-shape runway surface,
   the current graph-backed broader ground / surface branch,
   and the delivered-branch refinement / drift-control branch
 - the next widening branch is now a deliberate choice, not an automatic
   default:
-  prefer one branch at a time between broader
-  communications/surveillance semantics and the next genuinely semantic
-  branch beyond the current models
+  prefer one genuinely semantic branch at a time beyond the current models
 - after that branch, choose one widening direction at a time:
-  broader communications/surveillance, deeper route-bearing beyond the
-  current graph-backed published-procedure model, richer airspace beyond the
-  current graph-backed point-set + transition model, richer heading-progress
+  deeper route-bearing beyond the current graph-backed published-procedure
+  model, richer airspace beyond the current graph-backed point-set +
+  transition model, richer heading-progress
   semantics beyond the current explicit observed-turn-progress model, or
   richer operational mode semantics
 - widen extraction, greenfield semantics, and issuing-layer theorems together

@@ -33,8 +33,10 @@ import xyz.easiersaid.twr.protocol.JoinCircuit
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
+import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnByDegrees
@@ -44,7 +46,10 @@ import xyz.easiersaid.twr.protocol.instructionSupersedesIn
 data class ClearanceResolutionContext(
     val aerodromeId: AerodromeId,
     val currentPoint: PointId? = null,
-    val currentHeading: xyz.easiersaid.twr.protocol.Heading? = null
+    val currentHeading: xyz.easiersaid.twr.protocol.Heading? = null,
+    val currentRole: RoleName? = null,
+    val currentFix: FixId? = null,
+    val onGround: Boolean? = null
 )
 
 sealed interface ResolvedStep {

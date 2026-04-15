@@ -376,7 +376,8 @@ theorem resolvesRouteControlPrimary_of_ready
           (turnDirection := direction)
           (degrees := degrees)
           (headingDegreesMagnetic := currentHeading)
-          (currentPoint := initialState.currentPoint))
+          (state := initialState)
+          hCurrentHeading)
   | continuePresentHeading target =>
       rcases hStateReady with ⟨currentHeading, hCurrentHeading⟩
       have hInitialHeadingState :
@@ -403,7 +404,8 @@ theorem resolvesRouteControlPrimary_of_ready
           (index := 0)
           (target := target)
           (headingDegreesMagnetic := currentHeading)
-          (currentPoint := initialState.currentPoint))
+          (state := initialState)
+          hCurrentHeading)
   | stopTurn target =>
       rcases resolvesIndexedPlainInstruction
           (world := world)

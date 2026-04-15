@@ -120,16 +120,22 @@ It now contains:
   boundary, with unified authority-gated issuance over the already-delivered
   single-step slices for `SetSquawk`, `ConfirmSquawk`, `SquawkIdent`,
   `SquawkStandby`, `SquawkNormal`, and `StopSquawk`
-- `GreenfieldCommunicationsCompound.lean` now closes the first narrow
-  current-shape communications/surveillance compound slice over the delivered
-  radio and transponder families:
-  one leading communication/surveillance instruction plus immediate tails
-  from those same delivered families now has whole-clearance resolution,
+- `GreenfieldCommunicationsCompound.lean` now closes the delivered
+  communications/surveillance compound seam on the current immediate
+  radio/transponder model:
+  mixed radio/transponder compounds now have whole-clearance resolution,
   admission, authority-gated issuance, and explicit current
   completion/supersession consequences
 - `GreenfieldCommunicationsDeliveredCurrentShape.lean` now packages that
-  delivered phase-2 communications/surveillance surface behind one
-  source-level current-shape theorem boundary
+  delivered communications/surveillance surface behind one source-level
+  current-shape theorem boundary, and
+  `GreenfieldCommunicationsExpandedCurrentShape.lean` now packages the
+  broadened branch closure for the current immediate radio/transponder model
+- `GreenfieldRadioJurisdictionWorldBacked.lean` now closes the first
+  world-backed published-handoff jurisdiction slice for `ContactFrequency`
+  and `MonitorFrequency`, and
+  `GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean` now
+  packages that branch behind one reachable/authorized theorem surface
 - `GreenfieldBacktrackCurrentShape.lean` now closes a small current-shape
   `BacktrackRunway` package:
   source-level single-step issuance, conservative
@@ -199,8 +205,9 @@ It now contains:
 - the phase-2 communications/surveillance widening closure is now also
   complete under that same frozen rule:
   the already-delivered radio and transponder/surveillance families are now
-  widened through their first narrow mixed current-shape compound/package
-  layer, still without introducing new world-resolution theory
+  closed on the current immediate radio/transponder model, including mixed
+  compounds and explicit lifecycle/supersession behavior, still without
+  introducing new world-resolution theory
 - `GreenfieldAirspaceExpandedCompound.lean` now closes the missing narrow
   compound slice for `RemainOutsideControlledAirspace`, so all three current
   Kotlin airspace-clearance families now have both a single-step slice and a
@@ -306,11 +313,10 @@ It does not yet contain:
   semantics, denser route/airspace interaction semantics, or broader
   world-backed lifecycle semantics beyond the current point-set +
   transition-based model
-- a widened current-shape communications/surveillance package beyond the now-
-  delivered narrow compound slice; the delivered radio and
-  transponder/surveillance families are now source-level packaged through
-  their first mixed current-shape compound layer, but they are not yet
-  widened through broader coordination or surveillance semantics
+- richer communications/surveillance semantics beyond the current immediate
+  radio/transponder + published-handoff model; the delivered immediate branch
+  and the published-handoff jurisdiction branch are now closed, but broader
+  coordination/jurisdiction/surveillance semantics are still open
 - a widened current-shape runway family beyond the now-delivered first narrow
   compound slice; the broadened family now packages the delivered
   runway-operation singles, the first narrow runway-operation compounds, and
@@ -811,7 +817,6 @@ movement; that branch is now closed for the current graph-backed model.
    whenever metadata, authority, completion, supersession, or family status
    changes
 2. choose one branch at a time:
-   broader communications / surveillance semantics, or
    the next genuinely semantic branch beyond the current models
 3. keep the currently closed scoped, current-shape, and world-backed branches
    stable while doing that work
@@ -847,7 +852,8 @@ What the next phase is working toward:
 
 - using the now-frozen Kotlin-to-Lean parity/refinement boundary as a guardrail
   for the next widening branch
-- moving the greenfield proof surface into broader ground / surface movement,
-  starting with `TaxiTo`, `HoldShortOf`, and `CrossRunway`
+- choosing one genuinely semantic branch beyond the current delivered models,
+  rather than reopening already-closed scoped, current-shape, world-backed,
+  or refinement branches
 - keeping the already-closed scoped, current-shape, and world-backed branches
   stable while that widening happens

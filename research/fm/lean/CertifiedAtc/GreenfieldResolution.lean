@@ -29,6 +29,8 @@ structure ResolutionWorld where
   approachThreshold : ApproachId → PointId → Prop
   approachMissedApproach : ApproachId → HoldingPatternId → List PointId → Prop
   roleFrequency : RoleName → Frequency → Prop
+  publishedHandoff :
+    RoleName → RoleName → ResolvedPublishedHandoffAction → ResolvedPublishedHandoffPoint → Prop
   circuitJoin : CircuitDirection → JoinType → Option RunwayId → CircuitProcedureId → Level → Prop
   circuitJoinEntry : CircuitProcedureId → JoinType → PointId → List PointId → Prop
   circuitProcedurePoints : CircuitProcedureId → List PointId → Prop
@@ -98,6 +100,13 @@ structure ConcreteAirspaceVolumeBinding where
   points : List PointId
   deriving DecidableEq, Repr
 
+structure ConcretePublishedHandoffBinding where
+  fromRole : RoleName
+  toRole : RoleName
+  action : ResolvedPublishedHandoffAction
+  location : ResolvedPublishedHandoffPoint
+  deriving DecidableEq, Repr
+
 structure ConcreteResolutionWorld where
   taxiRoutes : List ConcreteTaxiRoute := []
   runwayHoldingPoints : List (RunwayId × PointId) := []
@@ -111,6 +120,7 @@ structure ConcreteResolutionWorld where
   approaches : List ConcreteApproachBinding := []
   approachWorlds : List ConcreteApproachWorldBinding := []
   roleFrequencies : List (RoleName × Frequency) := []
+  publishedHandoffs : List ConcretePublishedHandoffBinding := []
   circuitJoins : List ConcreteCircuitJoinBinding := []
   circuitJoinPaths : List ConcreteCircuitJoinPathBinding := []
   airspaceVolumes : List ConcreteAirspaceVolumeBinding := []
@@ -154,6 +164,8 @@ def ConcreteResolutionWorld.toResolutionWorld
         binding.missedApproachPoints = points
     roleFrequency := fun role frequency =>
       (role, frequency) ∈ world.roleFrequencies
+    publishedHandoff := fun fromRole toRole action location =>
+      { fromRole := fromRole, toRole := toRole, action := action, location := location } ∈ world.publishedHandoffs
     circuitJoin := fun direction joinType runway circuit altitude =>
       { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈ world.circuitJoins
     circuitJoinEntry := fun circuit joinType entryPoint entryPathPoints =>
@@ -201,6 +213,17 @@ theorem ConcreteResolutionWorld.mem_roleFrequency
     world.toResolutionWorld.roleFrequency role frequency := by
   simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
 
+theorem ConcreteResolutionWorld.mem_publishedHandoff
+    {world : ConcreteResolutionWorld}
+    {fromRole toRole : RoleName}
+    {action : ResolvedPublishedHandoffAction}
+    {location : ResolvedPublishedHandoffPoint}
+    (hMem :
+      { fromRole := fromRole, toRole := toRole, action := action, location := location } ∈
+        world.publishedHandoffs) :
+    world.toResolutionWorld.publishedHandoff fromRole toRole action location := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
 theorem ConcreteResolutionWorld.mem_circuitJoin
     {world : ConcreteResolutionWorld}
     {direction : CircuitDirection}
@@ -234,7 +257,18 @@ def turnedHeadingDegrees (current : Nat) (direction : TurnDirection) (degrees : 
 structure ResolutionState where
   currentPoint : Option PointId := none
   currentHeadingDegreesMagnetic : Option Nat := none
+  currentRole : Option RoleName := none
+  currentFix : Option FixId := none
+  onGround : Option Bool := none
   deriving DecidableEq, Repr
+
+def publishedHandoffPointMatchesState
+    (point : ResolvedPublishedHandoffPoint)
+    (state : ResolutionState) : Prop :=
+  match point with
+  | .holdingPoint holdingPoint => state.currentPoint = some holdingPoint
+  | .boundaryFix fix => state.currentFix = some fix
+  | .airborne => state.onGround = some false
 
 inductive ResolvesIndexedStep :
     ResolutionWorld →
@@ -384,10 +418,11 @@ inductive ResolvesIndexedStep :
       (index : Nat)
       (target : AircraftId)
       (headingDegreesMagnetic : Nat)
-      (currentPoint : Option PointId) :
+      (state : ResolutionState)
+      (hHeading : state.currentHeadingDegreesMagnetic = some headingDegreesMagnetic) :
       ResolvesIndexedStep
         world
-        { currentPoint := currentPoint, currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+        state
         fallbackDomain
         index
         (.continuePresentHeading target)
@@ -400,7 +435,7 @@ inductive ResolvesIndexedStep :
               targetHeadingDegreesMagnetic := some headingDegreesMagnetic
               capturedHeadingDegreesMagnetic := some headingDegreesMagnetic })
           (by simp [resolutionCompatible]))
-        { currentPoint := currentPoint, currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+        { state with currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
   | turnByDegrees
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)
@@ -409,10 +444,11 @@ inductive ResolvesIndexedStep :
       (turnDirection : TurnDirection)
       (degrees : Nat)
       (headingDegreesMagnetic : Nat)
-      (currentPoint : Option PointId) :
+      (state : ResolutionState)
+      (hHeading : state.currentHeadingDegreesMagnetic = some headingDegreesMagnetic) :
       ResolvesIndexedStep
         world
-        { currentPoint := currentPoint, currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+        state
         fallbackDomain
         index
         (.turnByDegrees target turnDirection degrees)
@@ -427,8 +463,8 @@ inductive ResolvesIndexedStep :
               turnDegrees := some degrees
               capturedHeadingDegreesMagnetic := some headingDegreesMagnetic })
           (by simp [resolutionCompatible]))
-        { currentPoint := currentPoint
-          currentHeadingDegreesMagnetic := some (turnedHeadingDegrees headingDegreesMagnetic turnDirection degrees) }
+        { state with
+            currentHeadingDegreesMagnetic := some (turnedHeadingDegrees headingDegreesMagnetic turnDirection degrees) }
   | route
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)
@@ -579,6 +615,71 @@ inductive ResolvesIndexedStep :
           (.frequencyChange { roleName := role, instructedFrequency := some frequency })
           (by simp [resolutionCompatible]))
         state
+  | contactFrequencyExplicitPublished
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (fromRole role : RoleName)
+      (frequency : Frequency)
+      (handoffPoint : ResolvedPublishedHandoffPoint)
+      (state : ResolutionState)
+      (hRole : state.currentRole = some fromRole)
+      (hHandoff : world.publishedHandoff fromRole role .contact handoffPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.contactFrequency target role (some frequency))
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.contactFrequency target role (some frequency))
+          (.frequencyChange
+            { roleName := role
+              instructedFrequency := some frequency
+              publishedHandoff :=
+                some
+                  { fromRole := fromRole
+                    toRole := role
+                    action := .contact
+                    location := handoffPoint } })
+          (by simp [resolutionCompatible]))
+        state
+  | contactFrequencyImplicitPublished
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (fromRole role : RoleName)
+      (frequency : Frequency)
+      (handoffPoint : ResolvedPublishedHandoffPoint)
+      (state : ResolutionState)
+      (hFrequency : world.roleFrequency role frequency)
+      (hRole : state.currentRole = some fromRole)
+      (hHandoff : world.publishedHandoff fromRole role .contact handoffPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.contactFrequency target role none)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.contactFrequency target role none)
+          (.frequencyChange
+            { roleName := role
+              instructedFrequency := some frequency
+              publishedHandoff :=
+                some
+                  { fromRole := fromRole
+                    toRole := role
+                    action := .contact
+                    location := handoffPoint } })
+          (by simp [resolutionCompatible]))
+        state
   | remainOutsideControlledAirspace
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)
@@ -727,6 +828,71 @@ inductive ResolvesIndexedStep :
           fallbackDomain
           (.monitorFrequency target role none)
           (.frequencyChange { roleName := role, instructedFrequency := some frequency })
+          (by simp [resolutionCompatible]))
+        state
+  | monitorFrequencyExplicitPublished
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (fromRole role : RoleName)
+      (frequency : Frequency)
+      (handoffPoint : ResolvedPublishedHandoffPoint)
+      (state : ResolutionState)
+      (hRole : state.currentRole = some fromRole)
+      (hHandoff : world.publishedHandoff fromRole role .monitor handoffPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.monitorFrequency target role (some frequency))
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.monitorFrequency target role (some frequency))
+          (.frequencyChange
+            { roleName := role
+              instructedFrequency := some frequency
+              publishedHandoff :=
+                some
+                  { fromRole := fromRole
+                    toRole := role
+                    action := .monitor
+                    location := handoffPoint } })
+          (by simp [resolutionCompatible]))
+        state
+  | monitorFrequencyImplicitPublished
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (fromRole role : RoleName)
+      (frequency : Frequency)
+      (handoffPoint : ResolvedPublishedHandoffPoint)
+      (state : ResolutionState)
+      (hFrequency : world.roleFrequency role frequency)
+      (hRole : state.currentRole = some fromRole)
+      (hHandoff : world.publishedHandoff fromRole role .monitor handoffPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.monitorFrequency target role none)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.monitorFrequency target role none)
+          (.frequencyChange
+            { roleName := role
+              instructedFrequency := some frequency
+              publishedHandoff :=
+                some
+                  { fromRole := fromRole
+                    toRole := role
+                    action := .monitor
+                    location := handoffPoint } })
           (by simp [resolutionCompatible]))
         state
   | proceedDirect

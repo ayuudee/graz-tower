@@ -78,6 +78,17 @@ def airspaceExited
   airspace.airspace ∈ observation.airspaceTransitions &&
     !(airspaceInside airspace observation)
 
+def publishedHandoffSatisfied
+    (handoff : Option ResolvedPublishedHandoff)
+    (observation : CompletionObservation) : Bool :=
+  match handoff with
+  | none => true
+  | some handoff =>
+      match handoff.location with
+      | .holdingPoint point => groundPointReached point observation
+      | .boundaryFix fix => fix ∈ observation.reachedFixes
+      | .airborne => !observation.onGround
+
 def comparableFeet : Level → Int
   | .flightLevel fl => Int.ofNat fl * 100
   | .altitudeFeet feet => feet
@@ -272,11 +283,12 @@ def observedResolvedStepCompletion?
             .notComplete
     | .frequencyChange frequency =>
         some <|
-          if observation.currentRole = some frequency.roleName ||
+          if (observation.currentRole = some frequency.roleName ||
               observation.lastContactRole = some frequency.roleName ||
               (match frequency.instructedFrequency with
               | some frequency => observation.currentFrequency = some frequency
-              | none => false) then
+              | none => false)) &&
+              publishedHandoffSatisfied frequency.publishedHandoff observation then
             .complete
           else
             .notComplete

@@ -690,11 +690,12 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
                 (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
                 (fallbackDomain := .route)
                 (index := 0)
-                (target := target)
-                (turnDirection := direction)
-                (degrees := degrees)
-                (headingDegreesMagnetic := currentHeading)
-                (currentPoint := initialState.currentPoint))
+              (target := target)
+              (turnDirection := direction)
+              (degrees := degrees)
+              (headingDegreesMagnetic := currentHeading)
+              (state := initialState)
+              hCurrentHeading)
           have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
             simp [normalizeConditionalEnvelope, hContent, hCondition]
           have hResolve :
@@ -749,10 +750,11 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
               (ResolvesIndexedStep.continuePresentHeading
                 (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
                 (fallbackDomain := .route)
-                (index := 0)
-                (target := target)
-                (headingDegreesMagnetic := currentHeading)
-                (currentPoint := initialState.currentPoint))
+              (index := 0)
+              (target := target)
+              (headingDegreesMagnetic := currentHeading)
+              (state := initialState)
+              hCurrentHeading)
           have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
             simp [normalizeConditionalEnvelope, hContent, hCondition]
           have hResolve :

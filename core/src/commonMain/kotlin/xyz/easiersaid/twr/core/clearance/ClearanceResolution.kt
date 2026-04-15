@@ -577,7 +577,16 @@ private fun AviationWorld.resolveContactFrequencyStep(
     instruction: ContactFrequency,
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
-    when (val result = resolveContactFrequency(AerodromeResolutionContext(context.aerodromeId), instruction)) {
+    when (val result = resolveContactFrequency(
+        AerodromeResolutionContext(
+            aerodromeId = context.aerodromeId,
+            currentRole = context.currentRole,
+            currentPoint = context.currentPoint,
+            currentFix = context.currentFix,
+            onGround = context.onGround
+        ),
+        instruction
+    )) {
         is arrow.core.Either.Left -> result
         is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
@@ -600,7 +609,16 @@ private fun AviationWorld.resolveMonitorFrequencyStep(
     instruction: MonitorFrequency,
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> =
-    when (val result = resolveMonitorFrequency(AerodromeResolutionContext(context.aerodromeId), instruction)) {
+    when (val result = resolveMonitorFrequency(
+        AerodromeResolutionContext(
+            aerodromeId = context.aerodromeId,
+            currentRole = context.currentRole,
+            currentPoint = context.currentPoint,
+            currentFix = context.currentFix,
+            onGround = context.onGround
+        ),
+        instruction
+    )) {
         is arrow.core.Either.Left -> result
         is arrow.core.Either.Right -> arrow.core.Either.Right(
             ResolvedStepWithState(
