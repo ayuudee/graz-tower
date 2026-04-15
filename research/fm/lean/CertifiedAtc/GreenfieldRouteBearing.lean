@@ -17,8 +17,9 @@ current truthful state at the resolved boundary:
 - all four require specific resolution
 - route, holding, and circuit-join steps already have honest resolved
   execution/completion stories
-- `ClearedApproach` is resolved and supersession-relevant, but its completion is
-  not yet modeled in the current Kotlin/Lean execution layer
+- `ClearedApproach` is now also resolved against concrete published approach /
+  missed-approach facts, and completes on landing or published missed-approach
+  hold entry in the current world-backed model
 - authority is only well-defined at the resolved payload layer for the
   instructions whose payload identifies a concrete entity
 
@@ -104,7 +105,11 @@ def sampleResolvedRouteStep : ResolvedStep :=
     0
     .route
     (.clearedTo "TEST123" "HOLD" (some (.viaSid "SID1")))
-    (.route { clearanceLimitFix := "HOLD", clearanceLimitPoint := "P-HOLD" })
+    (.route
+      { clearanceLimitFix := "HOLD"
+        clearanceLimitPoint := "P-HOLD"
+        routePoints := ["RWY27", "SID-EXIT", "P-HOLD"]
+        clearanceLimitHoldingPattern := some "HOLD-PTN" })
     (by native_decide)
 
 def sampleResolvedHoldingStep : ResolvedStep :=
@@ -112,7 +117,11 @@ def sampleResolvedHoldingStep : ResolvedStep :=
     0
     .route
     (.holdAt "TEST123" (.published "HOLD") (some "1200Z"))
-    (.holding { holdingPattern := "HOLD-PTN", fix := "HOLD" })
+    (.holding
+      { holdingPattern := "HOLD-PTN"
+        fix := "HOLD"
+        fixPoint := "P-HOLD"
+        loopPoints := ["P-HOLD", "P-HOLD-1", "P-HOLD-2", "P-HOLD"] })
     (by native_decide)
 
 def sampleResolvedApproachStep : ResolvedStep :=
@@ -120,7 +129,13 @@ def sampleResolvedApproachStep : ResolvedStep :=
     0
     .route
     (.clearedApproach "TEST123" .ils "27" none)
-    (.approach { approach := "ILS27", runway := "27" })
+    (.approach
+      { approach := "ILS27"
+        runway := "27"
+        waypointPoints := ["IAF-27", "FAF-27", "RWY27"]
+        thresholdPoint := "RWY27"
+        missedApproachPoints := ["RWY27", "MA-1", "P-HOLD"]
+        missedApproachHoldingPattern := "HOLD-PTN" })
     (by native_decide)
 
 def sampleResolvedCircuitJoinStep : ResolvedStep :=
@@ -128,13 +143,25 @@ def sampleResolvedCircuitJoinStep : ResolvedStep :=
     0
     .runway
     (.joinCircuit "TEST123" .leftHand .downwind (some "27"))
-    (.circuitJoin { circuit := "CIRCUIT-27-LH", altitude := .altitudeFeet 1200 })
+    (.circuitJoin
+      { circuit := "CIRCUIT-27-LH"
+        altitude := .altitudeFeet 1200
+        entryPoint := "CROSSWIND"
+        entryPathPoints := ["JOIN-ENTRY", "CROSSWIND"]
+        circuitPoints := ["RWY27", "UPWIND", "CROSSWIND", "DOWNWIND", "BASE", "RWY27"] })
     (by native_decide)
 
 def sampleRouteBearingObservation : CompletionObservation :=
   { position := some "P-HOLD"
     activeCircuits := UniqueSet.singleton "CIRCUIT-27-LH"
     altitude := some (.altitudeFeet 1200) }
+
+def sampleRouteBearingLandingObservation : CompletionObservation :=
+  { onGround := true
+    runwayTransitions := UniqueSet.singleton "27" }
+
+def sampleRouteBearingMissedHoldObservation : CompletionObservation :=
+  { activeHoldingPatterns := UniqueSet.singleton "HOLD-PTN" }
 
 example :
     observedResolvedStepCompletion? sampleRouteBearingObservation sampleResolvedRouteStep =
@@ -153,15 +180,28 @@ example :
 
 example :
     observedResolvedStepCompletion? sampleRouteBearingObservation sampleResolvedApproachStep =
-      none := by
+      some .notComplete := by
   native_decide
 
-theorem resolvedApproachStep_completion_unmodelled
+example :
+    observedResolvedStepCompletion? sampleRouteBearingLandingObservation sampleResolvedApproachStep =
+      some .complete := by
+  native_decide
+
+example :
+    observedResolvedStepCompletion? sampleRouteBearingMissedHoldObservation sampleResolvedApproachStep =
+      some .complete := by
+  native_decide
+
+theorem resolvedApproachStep_stays_incomplete_without_landing_or_missed_hold
     (observation : CompletionObservation) :
-    observedResolvedStepCompletion? observation sampleResolvedApproachStep = none := by
+    observation.onGround = false →
+    "HOLD-PTN" ∉ observation.activeHoldingPatterns →
+    observedResolvedStepCompletion? observation sampleResolvedApproachStep = some .notComplete := by
+  intro hGround hHold
   simp [sampleResolvedApproachStep, observedResolvedStepCompletion?,
-    observedInstructionCompletion?, ResolvedStep.isCompatible,
-    compileResolvedStep, resolutionCompatible]
+    ResolvedStep.isCompatible, compileResolvedStep, resolutionCompatible,
+    hGround, hHold]
 
 example :
     sampleResolvedApproachStep.completionCategory = none := by
@@ -201,7 +241,11 @@ def sampleResolvedHoldingFromWorld : ResolvedClearance :=
           0
           .route
           (.holdAt "TEST123" (.published "HOLD") none)
-          (.holding { holdingPattern := "HOLD-PTN", fix := "HOLD" })
+          (.holding
+            { holdingPattern := "HOLD-PTN"
+              fix := "HOLD"
+              fixPoint := "P-HOLD"
+              loopPoints := ["P-HOLD", "P-HOLD-1", "P-HOLD-2", "P-HOLD"] })
           (by native_decide) ] }
 
 example :
@@ -215,8 +259,12 @@ example :
   · simp [sampleResolvedHoldingFromWorld, normalizeConditionalEnvelope]
   · apply ResolvesSteps.cons
     · apply ResolvesIndexedStep.holding
-      simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
-        ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
     · simpa using ResolvesSteps.nil sampleResolutionWorld {} .route
 
 def sampleResolvedApproachFromWorld : ResolvedClearance :=
@@ -234,7 +282,13 @@ def sampleResolvedApproachFromWorld : ResolvedClearance :=
           0
           .route
           (.clearedApproach "TEST123" .ils "27" none)
-          (.approach { approach := "ILS27", runway := "27" })
+          (.approach
+            { approach := "ILS27"
+              runway := "27"
+              waypointPoints := ["IAF-27", "FAF-27", "RWY27"]
+              thresholdPoint := "RWY27"
+              missedApproachPoints := ["RWY27", "MA-1", "P-HOLD"]
+              missedApproachHoldingPattern := "HOLD-PTN" })
           (by native_decide) ] }
 
 example :
@@ -248,8 +302,14 @@ example :
   · simp [sampleResolvedApproachFromWorld, normalizeConditionalEnvelope]
   · apply ResolvesSteps.cons
     · apply ResolvesIndexedStep.approach
-      simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
-        ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
     · simpa using ResolvesSteps.nil sampleResolutionWorld {} .route
 
 def sampleResolvedCircuitJoinFromWorld : ResolvedClearance :=
@@ -267,7 +327,12 @@ def sampleResolvedCircuitJoinFromWorld : ResolvedClearance :=
           0
           .runway
           (.joinCircuit "TEST123" .leftHand .downwind (some "27"))
-          (.circuitJoin { circuit := "CIRCUIT-27-LH", altitude := .altitudeFeet 1200 })
+          (.circuitJoin
+            { circuit := "CIRCUIT-27-LH"
+              altitude := .altitudeFeet 1200
+              entryPoint := "CROSSWIND"
+              entryPathPoints := ["JOIN-ENTRY", "CROSSWIND"]
+              circuitPoints := ["RWY27", "UPWIND", "CROSSWIND", "DOWNWIND", "BASE", "RWY27"] })
           (by native_decide) ] }
 
 example :
@@ -281,8 +346,12 @@ example :
   · simp [sampleResolvedCircuitJoinFromWorld, normalizeConditionalEnvelope]
   · apply ResolvesSteps.cons
     · apply ResolvesIndexedStep.joinCircuit
-      simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
-        ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
+          ConcreteResolutionWorld.toResolutionWorld]
     · simpa using ResolvesSteps.nil sampleResolutionWorld {} .runway
 
 end Greenfield

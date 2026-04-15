@@ -17,6 +17,7 @@ Movement and procedure completion now runs against resolved step payloads.
 structure CompletionObservation where
   position : Option PointId := none
   activeCircuits : UniqueSet CircuitProcedureId := {}
+  activeHoldingPatterns : UniqueSet HoldingPatternId := {}
   reachedFixes : UniqueSet FixId := {}
   onGround : Bool := false
   runwayTransitions : UniqueSet RunwayId := {}
@@ -213,11 +214,24 @@ def observedResolvedStepCompletion?
     | .backtrack backtrack =>
         some <| if observation.position = some backtrack.farEndPoint then .complete else .notComplete
     | .route clearance =>
-        some <| if observation.position = some clearance.clearanceLimitPoint then .complete else .notComplete
+        some <|
+          if observation.position = some clearance.clearanceLimitPoint ||
+              clearance.clearanceLimitFix ∈ observation.reachedFixes ||
+              match clearance.clearanceLimitHoldingPattern with
+              | some holdingPattern => holdingPattern ∈ observation.activeHoldingPatterns
+              | none => false then
+            .complete
+          else
+            .notComplete
     | .holding _ =>
         some .notApplicable
-    | .approach _ =>
-        observedInstructionCompletion? step.instruction observation
+    | .approach approach =>
+        some <|
+          if (observation.onGround && approach.runway ∈ observation.runwayTransitions) ||
+              approach.missedApproachHoldingPattern ∈ observation.activeHoldingPatterns then
+            .complete
+          else
+            .notComplete
     | .frequencyChange frequency =>
         some <|
           if observation.currentRole = some frequency.roleName ||
@@ -303,7 +317,11 @@ def sampleResolvedRouteFrequency : ResolvedClearance :=
           0
           .route
           (.clearedTo "TEST123" "HOLD" (some (.viaSid "SID1")))
-          (.route { clearanceLimitFix := "HOLD", clearanceLimitPoint := "P-HOLD" })
+          (.route
+            { clearanceLimitFix := "HOLD"
+              clearanceLimitPoint := "P-HOLD"
+              routePoints := ["RWY27", "SID-EXIT", "P-HOLD"]
+              clearanceLimitHoldingPattern := some "HOLD-PTN" })
           (by native_decide)
       , compileResolvedStep
           1
@@ -327,7 +345,12 @@ def sampleResolvedCircuitJoin : ResolvedStep :=
     0
     .runway
     (.joinCircuit "TEST123" .leftHand .downwind (some "27"))
-    (.circuitJoin { circuit := "CIRCUIT-27-LH", altitude := .altitudeFeet 1200 })
+    (.circuitJoin
+      { circuit := "CIRCUIT-27-LH"
+        altitude := .altitudeFeet 1200
+        entryPoint := "CROSSWIND"
+        entryPathPoints := ["JOIN-ENTRY", "CROSSWIND"]
+        circuitPoints := ["RWY27", "UPWIND", "CROSSWIND", "DOWNWIND", "BASE", "RWY27"] })
     (by native_decide)
 
 def sampleResolvedCircuitObservation : CompletionObservation :=

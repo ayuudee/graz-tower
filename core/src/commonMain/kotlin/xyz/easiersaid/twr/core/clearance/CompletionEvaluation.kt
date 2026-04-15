@@ -147,15 +147,11 @@ private fun evaluateStepCompletion(
             CompletionResult.NOT_COMPLETE
         }
 
-        is ResolvedStep.Route -> if (view.position == step.clearance.clearanceLimit.point) {
-            CompletionResult.COMPLETE
-        } else {
-            CompletionResult.NOT_COMPLETE
-        }
+        is ResolvedStep.Route -> evaluateRouteCompletion(step, view)
 
         is ResolvedStep.Holding -> CompletionResult.NOT_APPLICABLE
 
-        is ResolvedStep.Approach -> evaluateGenericInstructionCompletion(step.instruction, view)
+        is ResolvedStep.Approach -> evaluateApproachCompletion(step, view)
 
         is ResolvedStep.Airspace -> evaluateAirspaceCompletion(step, view)
 
@@ -185,8 +181,8 @@ private fun evaluateStepCompletion(
         }
 
         is ResolvedStep.CircuitJoinStep -> {
-            val circuitRef = EntityRef.CircuitProcedureRef(step.circuit.id)
-            if (circuitRef in view.entities && view.altitude == step.circuit.altitude) {
+            val circuitRef = EntityRef.CircuitProcedureRef(step.join.circuit.id)
+            if (circuitRef in view.entities && view.altitude == step.join.circuit.altitude) {
                 CompletionResult.COMPLETE
             } else {
                 CompletionResult.NOT_COMPLETE
@@ -242,6 +238,36 @@ private fun observeAirspaceState(
         entered = transitioned && inside,
         exited = transitioned && !inside,
         landed = view.onGround
+    )
+}
+
+private fun evaluateRouteCompletion(
+    step: ResolvedStep.Route,
+    view: CompletionView
+): CompletionResult {
+    val limitFixRef = EntityRef.FixRef(step.clearance.clearanceLimit.id)
+    val holdingPatternSatisfied = step.clearance.clearanceLimitHoldingPattern?.let { holdingPattern ->
+        EntityRef.HoldingPatternRef(holdingPattern.id) in view.entities
+    } ?: false
+    return completionOf(
+        view.position == step.clearance.clearanceLimit.point ||
+            limitFixRef in view.entities ||
+            step.clearance.clearanceLimit.id in view.reachedFixes ||
+            holdingPatternSatisfied
+    )
+}
+
+private fun evaluateApproachCompletion(
+    step: ResolvedStep.Approach,
+    view: CompletionView
+): CompletionResult {
+    val runwayRef = EntityRef.RunwayRef(step.approach.approach.runway)
+    val missedApproachHoldRef =
+        EntityRef.HoldingPatternRef(step.approach.missedApproachHoldingPattern.id)
+    val landedOnApproachRunway =
+        view.onGround && (runwayRef in view.transitionHistory || runwayRef in view.entities)
+    return completionOf(
+        landedOnApproachRunway || missedApproachHoldRef in view.entities
     )
 }
 

@@ -6,6 +6,7 @@ import xyz.easiersaid.twr.core.resolution.ResolutionFailure
 import xyz.easiersaid.twr.core.resolution.ResolutionFailureCode
 import xyz.easiersaid.twr.core.resolution.ResolutionResult
 import xyz.easiersaid.twr.core.resolution.ResolvedAirspaceInstruction
+import xyz.easiersaid.twr.core.resolution.ResolvedCircuitJoinInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedHoldingPoint
 import xyz.easiersaid.twr.core.resolution.ResolvedRunwayCrossing
 import xyz.easiersaid.twr.core.resolution.ResolvedTaxiRoute
@@ -627,6 +628,27 @@ private fun AviationWorld.resolveJoinCircuitStep(
             "Multiple circuit procedures match ${instruction.circuitDirection} ${instruction.joinType} at aerodrome ${aerodrome.icao.value}"
         )
     }
+    val matchingJoins = circuit.joinProcedures.filter { join -> join.type == instruction.joinType }
+    val join = when (matchingJoins.size) {
+        0 -> return unresolved(
+            ResolutionFailureCode.UNKNOWN_CIRCUIT_PROCEDURE,
+            "Circuit ${circuit.id.value} does not define a ${instruction.joinType} join at aerodrome ${aerodrome.icao.value}"
+        )
+
+        1 -> matchingJoins.single()
+        else -> return unresolved(
+            ResolutionFailureCode.AMBIGUOUS_CIRCUIT_PROCEDURE,
+            "Circuit ${circuit.id.value} defines multiple ${instruction.joinType} joins at aerodrome ${aerodrome.icao.value}"
+        )
+    }
+    val joinPayload = ResolvedCircuitJoinInstruction(
+        aerodrome = aerodrome,
+        circuit = circuit,
+        join = join,
+        joinEntryPoint = join.entryPoint,
+        joinPathPoints = join.entryPath?.points ?: listOf(join.entryPoint),
+        circuitPoints = circuit.points()
+    )
 
     return arrow.core.Either.Right(
         ResolvedStepWithState(
@@ -636,7 +658,7 @@ private fun AviationWorld.resolveJoinCircuitStep(
                 timing = stepContext.timing,
                 domain = stepContext.domain,
                 completionCategory = stepContext.completionCategory,
-                circuit = circuit
+                join = joinPayload
             ),
             state = state
         )
@@ -808,6 +830,15 @@ private fun <T> List<T>.indexOfFirstAfter(
     }
     return null
 }
+
+private fun xyz.easiersaid.twr.core.world.CircuitProcedure.points(): List<PointId> =
+    legs.foldIndexed(emptyList()) { index, points, leg ->
+        if (index == 0) {
+            points + leg.path.points
+        } else {
+            points + leg.path.points.drop(1)
+        }
+    }
 
 private fun unresolved(
     code: ResolutionFailureCode,

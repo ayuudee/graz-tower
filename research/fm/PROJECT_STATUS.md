@@ -238,9 +238,9 @@ It now contains:
   `ClearedTouchAndGo`, and `ClearedLowApproach`
 - the next honest route-bearing gap is now a branch choice rather than a
   structural blocker: on the greenfield path, the live work is widening beyond
-  the current one-primary-plus-immediate-adjunct compound surface and beyond
-  the newly closed small current-shape compound slices for the current
-  Phase B families; the older atomic closure for
+  the current graph-backed published-procedure + one-primary-plus-immediate-
+  adjunct compound surface and beyond the newly closed small current-shape
+  compound slices for the current Phase B families; the older atomic closure for
   `ClearedTo` / `HoldAt` remains optional and separate
 
 It does not yet contain:
@@ -495,21 +495,25 @@ Source:
   extraction surfaces, but they are not yet admitted through the older atomic
   issuance layer
 - `ClearedApproach` is now route-bearing-resolved and issuance-bridgeable, and
-  it remains intentionally non-completing in the current Kotlin/Lean execution
-  layer
+  it now completes on landing or published missed-approach-hold entry in the
+  current Kotlin/Lean execution layer
 - [GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
   now widens the current-shape theorem-bearing surface from single-step
   route-bearing clearances to one-leading-route-bearing-step compounds with
   immediate adjunct tails:
   whole-clearance resolution, admission soundness, authority-gated issuance,
-  and explicit preservation of the non-completing `ClearedApproach` semantics
+  and the current world-backed approach-lifecycle boundary, where the primary
+  step can complete on landing or missed-hold entry but non-persistent
+  adjuncts still have to complete before the whole compound terminals
 - [GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
   now closes the current-shape execution behavior for that same surface:
   `ClearedTo` compounds complete on resolved limit plus adjunct completion,
   single-step `HoldAt` remains active, `HoldAt` compounds complete once their
-  non-persistent adjuncts complete, single-step and compound
-  `ClearedApproach` remain active, and `JoinCircuit` compounds complete on
-  circuit-membership / altitude plus adjunct completion
+  non-persistent adjuncts complete, single-step `ClearedApproach` completes on
+  landing or missed-hold entry, compound `ClearedApproach` clearances complete
+  when that primary event and any remaining adjunct completions all occur, and
+  `JoinCircuit` compounds complete on circuit-membership / altitude plus
+  adjunct completion
 - [GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
   now closes the first route-bearing supersession consequences on the current
   greenfield engine:
@@ -779,8 +783,8 @@ milestone-critical closure:
    `ClearedApproach` plus legacy-supported `JoinCircuit`
 2. next, decide whether to widen theorem-bearing issuance for `ClearedTo` /
    `HoldAt` through the older atomic path, or to keep the widening track on
-   the current-shape greenfield boundary and widen beyond the current compound
-   surface instead
+   the current graph-backed published-procedure boundary and widen beyond the
+   current compound surface instead
 3. or replace the conservative mode-overlay semantics with richer degraded /
    emergency operational semantics if the product needs them
 4. keep the current scoped surface stable unless a widening theorem forces a

@@ -433,8 +433,8 @@ Read modules in roughly this order:
 - `GreenfieldRouteBearingCompound`
   First current-shape route-bearing compound layer:
   one leading Phase A route-bearing step plus immediate adjunct tails,
-  whole-clearance resolution/admission/issuance, and explicit preservation of
-  non-completing `ClearedApproach` semantics.
+  whole-clearance resolution/admission/issuance, and the current world-backed
+  approach-lifecycle boundary for compounds.
 - `GreenfieldRouteBearingLifecycle`
   First current-shape route-bearing lifecycle layer:
   theorem-bearing completion / active-state behavior for the widened
@@ -549,8 +549,8 @@ There are now twenty-six distinct Lean layers above the local certifiers:
 29. `GreenfieldRouteBearingCompound.lean`
    The first route-bearing compound layer above that admission boundary:
    one leading Phase A route-bearing step plus immediate adjunct tails,
-   whole-clearance resolution/admission/issuance, and explicit non-completing
-   `ClearedApproach` semantics.
+   whole-clearance resolution/admission/issuance, and the current
+   world-backed `ClearedApproach` compound lifecycle boundary.
 30. `GreenfieldRouteBearingLifecycle.lean`
    The first current-shape route-bearing lifecycle layer:
    theorem-bearing completion, active-state, and terminal-state behavior for
@@ -613,8 +613,9 @@ Use `GreenfieldRouteBearing.lean` when you want to:
 - talk about `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`
   without pretending they already share one top-level issuance path
 - distinguish between route-bearing families that already have resolved
-  completion facts and `ClearedApproach`, which is intentionally resolved but
-  non-completing in the current model
+  completion facts and `ClearedApproach`, which now completes on landing or
+  published missed-approach-hold entry in the current graph-backed
+  published-procedure model
 
 Use `RouteBearingResolutionBridge.lean` when you want to:
 
@@ -637,8 +638,10 @@ Use `GreenfieldRouteBearingCompound.lean` when you want to:
   tails
 - prove whole-clearance resolution/admission/issuance for current-shape
   route-bearing compounds
-- keep `ClearedApproach` explicitly non-completing while widening compound
-  packaging
+- keep the current world-backed `ClearedApproach` compound boundary honest:
+  the primary step can complete on landing / missed-hold entry, but any
+  non-persistent adjuncts still have to complete before the whole compound
+  terminals
 
 Use `GreenfieldRouteBearingLifecycle.lean` when you want to:
 

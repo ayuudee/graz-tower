@@ -37,16 +37,24 @@ structure ResolvedBacktrack where
 structure ResolvedRouteClearance where
   clearanceLimitFix : FixId
   clearanceLimitPoint : PointId
+  routePoints : List PointId := []
+  clearanceLimitHoldingPattern : Option HoldingPatternId := none
   deriving DecidableEq, Repr
 
 structure ResolvedHoldingInstruction where
   holdingPattern : HoldingPatternId
   fix : FixId
+  fixPoint : PointId
+  loopPoints : List PointId := []
   deriving DecidableEq, Repr
 
 structure ResolvedApproachClearance where
   approach : ApproachId
   runway : RunwayId
+  waypointPoints : List PointId := []
+  thresholdPoint : PointId
+  missedApproachPoints : List PointId := []
+  missedApproachHoldingPattern : HoldingPatternId
   deriving DecidableEq, Repr
 
 structure ResolvedRoleFrequency where
@@ -68,6 +76,9 @@ structure ResolvedAirwayJoin where
 structure ResolvedCircuitJoin where
   circuit : CircuitProcedureId
   altitude : Level
+  entryPoint : PointId
+  entryPathPoints : List PointId := []
+  circuitPoints : List PointId := []
   deriving DecidableEq, Repr
 
 structure ResolvedAirspaceInstruction where

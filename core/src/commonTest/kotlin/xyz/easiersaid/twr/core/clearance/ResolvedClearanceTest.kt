@@ -10,6 +10,9 @@ import xyz.easiersaid.twr.core.resolution.ResolutionResult
 import xyz.easiersaid.twr.core.world.FixtureIds
 import xyz.easiersaid.twr.core.world.sampleWorld
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ApproachType
+import xyz.easiersaid.twr.protocol.CircuitDirection
+import xyz.easiersaid.twr.protocol.ClearedApproach
 import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
@@ -27,7 +30,11 @@ import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.FixId
+import xyz.easiersaid.twr.protocol.HoldAt
+import xyz.easiersaid.twr.protocol.HoldSpec
 import xyz.easiersaid.twr.protocol.HoldShortOf
+import xyz.easiersaid.twr.protocol.JoinCircuit
+import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.JoinAirway
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
@@ -289,6 +296,159 @@ class ResolvedClearanceTest {
         assertEquals(RoleName.APPROACH, frequency.frequency.roleName)
         assertEquals(listOf(1), resolved.immediateSteps.map { step -> step.index })
         assertEquals(setOf(ClearanceDomain.ROUTE, ClearanceDomain.FREQUENCY), resolved.supersedesDomains)
+    }
+
+    @Test
+    fun resolvesClearedToWithPublishedProcedurePointsAndLimitHoldingPattern() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = StructuredClearance(
+                id = ClearanceId("CLR-ROUTE-WORLD-BACKED"),
+                aircraft = AircraftId("TEST123"),
+                content = ClearanceContent.Single(
+                    ClearedTo(
+                        target = AircraftId("TEST123"),
+                        clearanceLimit = FixId("HOLD"),
+                        route = RouteSpec.ViaSid(FixtureIds.sid)
+                    )
+                ),
+                domain = ClearanceDomain.ROUTE,
+                issuedBy = ControllerId("CTRL-1"),
+                issuedAt = TickNumber(3),
+                status = ClearanceStatus.ACTIVE
+            )
+        ).requireResolved()
+
+        val route = assertIs<ResolvedStep.Route>(resolved.steps.single())
+        assertEquals(
+            listOf(
+                FixtureIds.runway09Threshold,
+                FixtureIds.sidExit,
+                FixtureIds.holdFixPoint
+            ),
+            route.clearance.routePoints
+        )
+        assertEquals(FixtureIds.hold, route.clearance.clearanceLimitHoldingPattern?.id)
+    }
+
+    @Test
+    fun resolvesHoldAtWithPublishedFixPointAndHoldingLoop() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = StructuredClearance(
+                id = ClearanceId("CLR-HOLD-WORLD-BACKED"),
+                aircraft = AircraftId("TEST123"),
+                content = ClearanceContent.Single(
+                    HoldAt(
+                        target = AircraftId("TEST123"),
+                        hold = HoldSpec.Published(FixId("HOLD"))
+                    )
+                ),
+                domain = ClearanceDomain.ROUTE,
+                issuedBy = ControllerId("CTRL-1"),
+                issuedAt = TickNumber(3),
+                status = ClearanceStatus.ACTIVE
+            )
+        ).requireResolved()
+
+        val hold = assertIs<ResolvedStep.Holding>(resolved.steps.single())
+        assertEquals(FixtureIds.holdFixPoint, hold.holding.fixPoint)
+        assertEquals(
+            listOf(
+                FixtureIds.holdFixPoint,
+                FixtureIds.holdLoopOne,
+                FixtureIds.holdLoopTwo,
+                FixtureIds.holdFixPoint
+            ),
+            hold.holding.loopPoints
+        )
+    }
+
+    @Test
+    fun resolvesApproachWithWorldBackedMissedApproachFacts() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = StructuredClearance(
+                id = ClearanceId("CLR-APPROACH-WORLD-BACKED"),
+                aircraft = AircraftId("TEST123"),
+                content = ClearanceContent.Single(
+                    ClearedApproach(
+                        target = AircraftId("TEST123"),
+                        approachType = ApproachType.ILS,
+                        runway = FixtureIds.runway09
+                    )
+                ),
+                domain = ClearanceDomain.ROUTE,
+                issuedBy = ControllerId("CTRL-1"),
+                issuedAt = TickNumber(3),
+                status = ClearanceStatus.ACTIVE
+            )
+        ).requireResolved()
+
+        val approach = assertIs<ResolvedStep.Approach>(resolved.steps.single())
+        assertEquals(
+            listOf(
+                FixtureIds.iafPoint,
+                FixtureIds.fafPoint,
+                FixtureIds.runway09Threshold
+            ),
+            approach.approach.waypointPoints
+        )
+        assertEquals(FixtureIds.runway09Threshold, approach.approach.thresholdPoint)
+        assertEquals(
+            listOf(
+                FixtureIds.runway09Threshold,
+                FixtureIds.goAroundClimb,
+                FixtureIds.holdFixPoint
+            ),
+            approach.approach.missedApproachPoints
+        )
+        assertEquals(FixtureIds.hold, approach.approach.missedApproachHoldingPattern.id)
+    }
+
+    @Test
+    fun resolvesJoinCircuitWithJoinEntryPathAndCircuitLoop() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = StructuredClearance(
+                id = ClearanceId("CLR-JOIN-CIRCUIT-WORLD-BACKED"),
+                aircraft = AircraftId("TEST123"),
+                content = ClearanceContent.Single(
+                    JoinCircuit(
+                        target = AircraftId("TEST123"),
+                        circuitDirection = CircuitDirection.LEFT_HAND,
+                        joinType = JoinType.DOWNWIND,
+                        runway = FixtureIds.runway09
+                    )
+                ),
+                domain = ClearanceDomain.RUNWAY,
+                issuedBy = ControllerId("CTRL-1"),
+                issuedAt = TickNumber(3),
+                status = ClearanceStatus.ACTIVE
+            )
+        ).requireResolved()
+
+        val join = assertIs<ResolvedStep.CircuitJoinStep>(resolved.steps.single())
+        assertEquals(FixtureIds.crosswindEnd, join.join.joinEntryPoint)
+        assertEquals(
+            listOf(FixtureIds.joinEntry, FixtureIds.crosswindEnd),
+            join.join.joinPathPoints
+        )
+        assertEquals(
+            listOf(
+                FixtureIds.runway09Threshold,
+                FixtureIds.upwindEnd,
+                FixtureIds.crosswindEnd,
+                FixtureIds.downwindEnd,
+                FixtureIds.baseTurn,
+                FixtureIds.runway09Threshold
+            ),
+            join.join.circuitPoints
+        )
     }
 
     @Test

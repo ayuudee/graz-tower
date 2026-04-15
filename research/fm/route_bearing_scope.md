@@ -1,6 +1,6 @@
 # Route-Bearing Widening Scope
 
-Last updated: April 14, 2026
+Last updated: April 15, 2026
 
 This document defines the next widening track after the scoped
 `Safety-complete (N₀)` and `Full-brief complete` closures.
@@ -67,14 +67,16 @@ As of April 14, 2026, the first honest widening increment is now in place.
   clearances to a narrow but useful compound family:
   one leading Phase A route-bearing step plus zero or more immediate adjunct
   instructions; it packages whole-clearance resolution, admission soundness,
-  authority-gated issuance, and keeps `ClearedApproach` explicitly
-  non-completing rather than inventing a completion rule
+  authority-gated issuance, and freezes the current world-backed approach
+  lifecycle boundary rather than inventing richer progression semantics
 - [GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
   now closes the current-shape execution behavior for that same surface:
   `ClearedTo` compounds complete on resolved limit plus adjunct completion,
   single-step `HoldAt` remains active, `HoldAt` compounds complete once their
-  non-persistent adjuncts complete, single-step and compound
-  `ClearedApproach` remain active, and `JoinCircuit` compounds complete on
+  non-persistent adjuncts complete, single-step `ClearedApproach` completes on
+  landing or missed-approach-hold entry, compound `ClearedApproach`
+  clearances follow the current engine rule that any non-persistent adjuncts
+  must also complete, and `JoinCircuit` compounds complete on
   circuit-membership / altitude plus adjunct completion
 - [GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
   now closes the first route-bearing supersession consequences on the current
@@ -94,9 +96,9 @@ As of April 14, 2026, the first honest widening increment is now in place.
   extraction, extraction-to-resolution bridge, single-step current-shape
   greenfield issuance, a first compound current-shape issuance layer, and a
   first theorem-bearing lifecycle / supersession package on that same
-  current-shape boundary
+  current graph-backed published-procedure boundary
 - the first route-bearing widening slice is therefore now closed on the
-  current-shape greenfield boundary
+  current graph-backed published-procedure boundary
 - the semantic-alignment gate for the next widening step is also now closed:
   Lean now matches the current Kotlin metadata for `JoinCircuit`,
   `ExtendDownwind`, and `Orbit` at the instruction layer
@@ -146,8 +148,10 @@ As of April 14, 2026, the first honest widening increment is now in place.
   `ClearedApproach` and only the legacy-supported `JoinCircuit` subset are
   still the only route-bearing families carried through the older atomic path
 - `ClearedApproach` completion is now treated honestly:
-  the current Kotlin/Lean model intentionally leaves it active until
-  superseded, so it is not a live widening gap
+  the current Kotlin/Lean model now completes the single-step clearance on
+  landing or missed-approach-hold entry, while compound approach clearances
+  remain active until any non-persistent adjuncts also complete, so it is not
+  a live widening gap
 - if we stay on the greenfield path, the current live widening gap is now no
   longer Phase A closure work and no longer current-shape authority closure
   for the delivered Phase B families:
@@ -402,8 +406,9 @@ Current status against that order:
 - the current-shape greenfield Phase A slice is now also packaged end to end by
   `GreenfieldRouteBearingCurrentShape.lean`
 - `ClearedApproach` completion is not part of the live gap:
-  it is intentionally unmodeled and non-completing in the current runtime/FM
-  surface
+  it is now modeled on the current graph-backed published-procedure surface,
+  with landing / missed-hold completion for the primary step and current-engine
+  adjunct completion rules for compounds
 - if we stay on the greenfield path, the current live widening gap is now
   later widening beyond:
   the now-closed current one-primary-plus-immediate-adjunct Phase A surface,
@@ -423,6 +428,6 @@ The first route-bearing widening slice is closed when:
 - the widened claim is stated explicitly in the FM docs
 - the already-closed scoped surface remains unchanged and valid
 
-That bar is now met on the current-shape greenfield boundary.
+That bar is now met on the current graph-backed published-procedure boundary.
 The remaining live work is optional legacy closure or later widening, not
 Phase A closure itself.

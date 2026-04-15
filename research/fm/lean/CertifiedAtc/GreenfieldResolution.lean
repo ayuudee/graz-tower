@@ -20,10 +20,17 @@ structure ResolutionWorld where
   farEndPointForRunway : RunwayId → PointId → Prop
   fixPoint : FixId → PointId → Prop
   routeSpecPoints : RouteSpec → List PointId → Prop
+  routeClearancePoints : RouteSpec → FixId → List PointId → Prop
   holdingPatternFor : HoldSpec → HoldingPatternId → FixId → Prop
+  holdingPatternLoop : HoldingPatternId → List PointId → Prop
   approachFor : ApproachType → RunwayId → Option RunwayId → ApproachId → Prop
+  approachWaypoints : ApproachId → List PointId → Prop
+  approachThreshold : ApproachId → PointId → Prop
+  approachMissedApproach : ApproachId → HoldingPatternId → List PointId → Prop
   roleFrequency : RoleName → Frequency → Prop
   circuitJoin : CircuitDirection → JoinType → Option RunwayId → CircuitProcedureId → Level → Prop
+  circuitJoinEntry : CircuitProcedureId → JoinType → PointId → List PointId → Prop
+  circuitProcedurePoints : CircuitProcedureId → List PointId → Prop
   airspaceVolume : AirspaceVolumeId → List PointId → Prop
 
 structure ConcreteTaxiRoute where
@@ -38,11 +45,30 @@ structure ConcreteHoldingPatternBinding where
   fix : FixId
   deriving DecidableEq, Repr
 
+structure ConcreteHoldingPatternLoopBinding where
+  pattern : HoldingPatternId
+  points : List PointId
+  deriving DecidableEq, Repr
+
 structure ConcreteApproachBinding where
   approachType : ApproachType
   runway : RunwayId
   circlingRunway : Option RunwayId
   approach : ApproachId
+  deriving DecidableEq, Repr
+
+structure ConcreteApproachWorldBinding where
+  approach : ApproachId
+  waypoints : List PointId
+  threshold : PointId
+  missedApproachHold : HoldingPatternId
+  missedApproachPoints : List PointId
+  deriving DecidableEq, Repr
+
+structure ConcreteRouteClearanceBinding where
+  route : RouteSpec
+  clearanceLimit : FixId
+  points : List PointId
   deriving DecidableEq, Repr
 
 structure ConcreteCircuitJoinBinding where
@@ -51,6 +77,14 @@ structure ConcreteCircuitJoinBinding where
   runway : Option RunwayId
   circuit : CircuitProcedureId
   altitude : Level
+  deriving DecidableEq, Repr
+
+structure ConcreteCircuitJoinPathBinding where
+  circuit : CircuitProcedureId
+  joinType : JoinType
+  entryPoint : PointId
+  entryPathPoints : List PointId
+  circuitPoints : List PointId
   deriving DecidableEq, Repr
 
 structure ConcreteAirspaceVolumeBinding where
@@ -64,10 +98,14 @@ structure ConcreteResolutionWorld where
   runwayCrossingPoints : List (RunwayId × PointId) := []
   runwayFarEnds : List (RunwayId × PointId) := []
   fixPoints : List (FixId × PointId) := []
+  routeClearanceBindings : List ConcreteRouteClearanceBinding := []
   holdingPatterns : List ConcreteHoldingPatternBinding := []
+  holdingPatternLoops : List ConcreteHoldingPatternLoopBinding := []
   approaches : List ConcreteApproachBinding := []
+  approachWorlds : List ConcreteApproachWorldBinding := []
   roleFrequencies : List (RoleName × Frequency) := []
   circuitJoins : List ConcreteCircuitJoinBinding := []
+  circuitJoinPaths : List ConcreteCircuitJoinPathBinding := []
   airspaceVolumes : List ConcreteAirspaceVolumeBinding := []
   deriving Repr
 
@@ -84,14 +122,41 @@ def ConcreteResolutionWorld.toResolutionWorld
     fixPoint := fun fix point =>
       (fix, point) ∈ world.fixPoints
     routeSpecPoints := fun _ _ => False
+    routeClearancePoints := fun route clearanceLimit points =>
+      { route := route, clearanceLimit := clearanceLimit, points := points } ∈ world.routeClearanceBindings
     holdingPatternFor := fun hold pattern fix =>
       { hold := hold, pattern := pattern, fix := fix } ∈ world.holdingPatterns
+    holdingPatternLoop := fun pattern points =>
+      { pattern := pattern, points := points } ∈ world.holdingPatternLoops
     approachFor := fun approachType runway circlingRunway approach =>
       { approachType := approachType, runway := runway, circlingRunway := circlingRunway, approach := approach } ∈ world.approaches
+    approachWaypoints := fun approach points =>
+      ∃ binding ∈ world.approachWorlds,
+        binding.approach = approach ∧
+        binding.waypoints = points
+    approachThreshold := fun approach threshold =>
+      ∃ binding ∈ world.approachWorlds,
+        binding.approach = approach ∧
+        binding.threshold = threshold
+    approachMissedApproach := fun approach holdingPattern points =>
+      ∃ binding ∈ world.approachWorlds,
+        binding.approach = approach ∧
+        binding.missedApproachHold = holdingPattern ∧
+        binding.missedApproachPoints = points
     roleFrequency := fun role frequency =>
       (role, frequency) ∈ world.roleFrequencies
     circuitJoin := fun direction joinType runway circuit altitude =>
       { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈ world.circuitJoins
+    circuitJoinEntry := fun circuit joinType entryPoint entryPathPoints =>
+      ∃ binding ∈ world.circuitJoinPaths,
+        binding.circuit = circuit ∧
+        binding.joinType = joinType ∧
+        binding.entryPoint = entryPoint ∧
+        binding.entryPathPoints = entryPathPoints
+    circuitProcedurePoints := fun circuit points =>
+      ∃ binding ∈ world.circuitJoinPaths,
+        binding.circuit = circuit ∧
+        binding.circuitPoints = points
     airspaceVolume := fun airspace points =>
       { airspace := airspace, points := points } ∈ world.airspaceVolumes }
 
@@ -248,8 +313,19 @@ inductive ResolvesIndexedStep :
       (clearanceLimitFix : FixId)
       (route : Option RouteSpec)
       (point : PointId)
+      (routePoints : List PointId)
+      (clearanceLimitHoldingPattern : Option HoldingPatternId)
       (state : ResolutionState)
-      (hPoint : world.fixPoint clearanceLimitFix point) :
+      (hPoint : world.fixPoint clearanceLimitFix point)
+      (hRoutePoints :
+        match route with
+        | some routeSpec => world.routeClearancePoints routeSpec clearanceLimitFix routePoints
+        | none => routePoints = [point])
+      (hHolding :
+        match clearanceLimitHoldingPattern with
+        | some holdingPattern =>
+            world.holdingPatternFor (.published clearanceLimitFix) holdingPattern clearanceLimitFix
+        | none => True) :
       ResolvesIndexedStep
         world
         state
@@ -260,7 +336,11 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.clearedTo target clearanceLimitFix route)
-          (.route { clearanceLimitFix := clearanceLimitFix, clearanceLimitPoint := point })
+          (.route
+            { clearanceLimitFix := clearanceLimitFix
+              clearanceLimitPoint := point
+              routePoints := routePoints
+              clearanceLimitHoldingPattern := clearanceLimitHoldingPattern })
           (by simp [resolutionCompatible]))
         state
   | holding
@@ -272,8 +352,12 @@ inductive ResolvesIndexedStep :
       (efc : Option String)
       (pattern : HoldingPatternId)
       (fix : FixId)
+      (fixPoint : PointId)
+      (loopPoints : List PointId)
       (state : ResolutionState)
-      (hPattern : world.holdingPatternFor hold pattern fix) :
+      (hPattern : world.holdingPatternFor hold pattern fix)
+      (hFixPoint : world.fixPoint fix fixPoint)
+      (hLoop : world.holdingPatternLoop pattern loopPoints) :
       ResolvesIndexedStep
         world
         state
@@ -284,7 +368,11 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.holdAt target hold efc)
-          (.holding { holdingPattern := pattern, fix := fix })
+          (.holding
+            { holdingPattern := pattern
+              fix := fix
+              fixPoint := fixPoint
+              loopPoints := loopPoints })
           (by simp [resolutionCompatible]))
         state
   | approach
@@ -296,8 +384,15 @@ inductive ResolvesIndexedStep :
       (runway : RunwayId)
       (circlingRunway : Option RunwayId)
       (approach : ApproachId)
+      (waypointPoints : List PointId)
+      (thresholdPoint : PointId)
+      (missedApproachHoldingPattern : HoldingPatternId)
+      (missedApproachPoints : List PointId)
       (state : ResolutionState)
-      (hApproach : world.approachFor approachType runway circlingRunway approach) :
+      (hApproach : world.approachFor approachType runway circlingRunway approach)
+      (hWaypoints : world.approachWaypoints approach waypointPoints)
+      (hThreshold : world.approachThreshold approach thresholdPoint)
+      (hMissed : world.approachMissedApproach approach missedApproachHoldingPattern missedApproachPoints) :
       ResolvesIndexedStep
         world
         state
@@ -308,7 +403,13 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.clearedApproach target approachType runway circlingRunway)
-          (.approach { approach := approach, runway := runway })
+          (.approach
+            { approach := approach
+              runway := runway
+              waypointPoints := waypointPoints
+              thresholdPoint := thresholdPoint
+              missedApproachPoints := missedApproachPoints
+              missedApproachHoldingPattern := missedApproachHoldingPattern })
           (by simp [resolutionCompatible]))
         state
   | contactFrequencyExplicit
@@ -625,8 +726,13 @@ inductive ResolvesIndexedStep :
       (runway : Option RunwayId)
       (circuit : CircuitProcedureId)
       (altitude : Level)
+      (entryPoint : PointId)
+      (entryPathPoints : List PointId)
+      (circuitPoints : List PointId)
       (state : ResolutionState)
-      (hCircuit : world.circuitJoin direction joinType runway circuit altitude) :
+      (hCircuit : world.circuitJoin direction joinType runway circuit altitude)
+      (hEntry : world.circuitJoinEntry circuit joinType entryPoint entryPathPoints)
+      (hPoints : world.circuitProcedurePoints circuit circuitPoints) :
       ResolvesIndexedStep
         world
         state
@@ -637,7 +743,12 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.joinCircuit target direction joinType runway)
-          (.circuitJoin { circuit := circuit, altitude := altitude })
+          (.circuitJoin
+            { circuit := circuit
+              altitude := altitude
+              entryPoint := entryPoint
+              entryPathPoints := entryPathPoints
+              circuitPoints := circuitPoints })
           (by simp [resolutionCompatible]))
         state
   | plain
@@ -810,15 +921,31 @@ def sampleConcreteResolutionWorld : ConcreteResolutionWorld :=
       [("27", "RWY27-FAR")]
     fixPoints :=
       [("HOLD", "P-HOLD"), ("JOIN", "P-JOIN")]
+    routeClearanceBindings :=
+      [{ route := .viaSid "SID1", clearanceLimit := "HOLD", points := ["RWY27", "SID-EXIT", "P-HOLD"] }]
     holdingPatterns :=
       [{ hold := .published "HOLD", pattern := "HOLD-PTN", fix := "HOLD" }]
+    holdingPatternLoops :=
+      [{ pattern := "HOLD-PTN", points := ["P-HOLD", "P-HOLD-1", "P-HOLD-2", "P-HOLD"] }]
     approaches :=
       [{ approachType := .ils, runway := "27", circlingRunway := none, approach := "ILS27" }]
+    approachWorlds :=
+      [{ approach := "ILS27"
+         waypoints := ["IAF-27", "FAF-27", "RWY27"]
+         threshold := "RWY27"
+         missedApproachHold := "HOLD-PTN"
+         missedApproachPoints := ["RWY27", "MA-1", "P-HOLD"] }]
     roleFrequencies :=
       [(.approach, "129.550")]
     circuitJoins :=
       [{ direction := .leftHand, joinType := .downwind, runway := some "27",
-         circuit := "CIRCUIT-27-LH", altitude := .altitudeFeet 1200 }] }
+         circuit := "CIRCUIT-27-LH", altitude := .altitudeFeet 1200 }]
+    circuitJoinPaths :=
+      [{ circuit := "CIRCUIT-27-LH"
+         joinType := .downwind
+         entryPoint := "CROSSWIND"
+         entryPathPoints := ["JOIN-ENTRY", "CROSSWIND"]
+         circuitPoints := ["RWY27", "UPWIND", "CROSSWIND", "DOWNWIND", "BASE", "RWY27"] }] }
 
 def sampleResolutionWorld : ResolutionWorld :=
   sampleConcreteResolutionWorld.toResolutionWorld
@@ -841,7 +968,11 @@ def sampleResolvedRouteFrequencyFromWorld : ResolvedClearance :=
           0
           .route
           (.clearedTo "TEST123" "HOLD" (some (.viaSid "SID1")))
-          (.route { clearanceLimitFix := "HOLD", clearanceLimitPoint := "P-HOLD" })
+          (.route
+            { clearanceLimitFix := "HOLD"
+              clearanceLimitPoint := "P-HOLD"
+              routePoints := ["RWY27", "SID-EXIT", "P-HOLD"]
+              clearanceLimitHoldingPattern := some "HOLD-PTN" })
           (by native_decide)
       , compileResolvedStep
           1
@@ -862,7 +993,9 @@ example :
       anyWrappedConditionalStep, allStepsMayBeConditional]
   · apply ResolvesSteps.cons
     · apply ResolvesIndexedStep.route
-      exact sampleConcreteResolutionWorld.mem_fixPoint (by simp [sampleConcreteResolutionWorld])
+      · exact sampleConcreteResolutionWorld.mem_fixPoint (by simp [sampleConcreteResolutionWorld])
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld, ConcreteResolutionWorld.toResolutionWorld]
+      · simp [sampleResolutionWorld, sampleConcreteResolutionWorld, ConcreteResolutionWorld.toResolutionWorld]
     · apply ResolvesSteps.cons
       · apply ResolvesIndexedStep.contactFrequencyImplicit
         exact sampleConcreteResolutionWorld.mem_roleFrequency (by simp [sampleConcreteResolutionWorld])

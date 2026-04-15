@@ -87,7 +87,7 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldRouteBearingCompound.lean`,
   `GreenfieldRouteBearingLifecycle.lean`, and
   `GreenfieldRouteBearingSupersession.lean` now carry that same Phase A
-  surface through the current-shape greenfield
+  surface through the current graph-backed published-procedure
   resolution/admission/issuance/execution path, while
   `BridgeableRouteBearingIssuance.lean` widens theorem-bearing legacy
   issuance only for `ClearedApproach` plus legacy-supported `JoinCircuit`;
@@ -295,7 +295,8 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   layer, and the first current-shape lifecycle / supersession layers are
   already in place for the full Phase A route-bearing surface, and
   `GreenfieldRouteBearingCurrentShape.lean` now packages that surface at one
-  source-level theorem boundary;
+  source-level theorem boundary on the current graph-backed
+  published-procedure model;
   `ContinueApproach`, `ExtendDownwind`, and `Orbit` now also have small
   current-shape theorem slices on top of that surface, and all three are now
   widened through a narrow compound slice, with the delivered Phase B set now

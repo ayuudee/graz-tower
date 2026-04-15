@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.core.clearance
 
 import xyz.easiersaid.twr.core.resolution.ResolvedApproachClearance
 import xyz.easiersaid.twr.core.resolution.ResolvedAirspaceInstruction
+import xyz.easiersaid.twr.core.resolution.ResolvedCircuitJoinInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedHoldingInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedHoldingPoint
 import xyz.easiersaid.twr.core.resolution.ResolvedRoleFrequency
@@ -162,7 +163,7 @@ sealed interface ResolvedStep {
         override val timing: InstructionTiming?,
         override val domain: ClearanceDomain,
         override val completionCategory: CompletionCategory?,
-        val circuit: CircuitProcedure
+        val join: ResolvedCircuitJoinInstruction
     ) : ResolvedStep
 
     data class Plain(

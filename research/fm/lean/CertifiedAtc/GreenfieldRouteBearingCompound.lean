@@ -25,8 +25,10 @@ while staying honest about the current model:
   plain immediate instructions
 - the result is a whole-clearance resolved admission theorem, not a legacy
   atomic-bridge theorem
-- `ClearedApproach` still does not complete; it simply remains part of the
-  active resolved clearance until superseded
+- world-backed `ClearedApproach` completion is now modeled in the execution
+  layer; this compound module is about admission and structure, while the
+  lifecycle consequences of landing / missed-approach-hold events live in
+  `GreenfieldRouteBearingLifecycle`
 -/
 
 def RouteBearingImmediateAdjunctReady
@@ -302,6 +304,7 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
     {state : ResolutionState}
     {index : Nat}
     {instruction : AtcInstruction}
+    (hWf : RouteBearingExtractionWellFormed world)
     (hPrimary : GreenfieldRouteBearingAdmissibleInstruction instruction)
     (hReady : RouteBearingInstructionResolutionReady world instruction) :
     ∃ step,
@@ -323,6 +326,7 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
           (target := target)
           (clearanceLimit := clearanceLimit)
           (route := route)
+          hWf
           hReady
   | holdAt target hold efc =>
       cases hold with
@@ -349,6 +353,7 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
               (target := target)
               (approachType := approachType)
               (runway := runway)
+              hWf
               hReady
       | some circling =>
           cases hPrimary
@@ -362,6 +367,7 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
           (direction := direction)
           (joinType := joinType)
           (runway := runway)
+          hWf
           hReady
   | _ =>
       cases hPrimary
@@ -684,6 +690,7 @@ theorem resolvesGreenfieldRouteBearingCompoundClearance_of_ready
     {content : CompoundClearanceContent}
     {primary : AtcInstruction}
     {tail : List AtcInstruction}
+    (hWf : RouteBearingExtractionWellFormed world)
     (hContent : clearance.content = .compound content)
     (hSteps : content.steps = primary :: tail)
     (hReady : GreenfieldRouteBearingCompoundReady world primary tail)
@@ -704,6 +711,7 @@ theorem resolvesGreenfieldRouteBearingCompoundClearance_of_ready
       (state := initialState)
       (index := 0)
       (instruction := primary)
+      hWf
       hPrimary
       hPrimaryReady with ⟨primaryStep, hPrimaryStep⟩
   rcases resolvesRouteBearingImmediateAdjunctTail_of_ready
@@ -762,6 +770,7 @@ theorem GreenfieldRouteBearingCompoundAdmissionSoundnessTheorem
     {content : CompoundClearanceContent}
     {primary : AtcInstruction}
     {tail : List AtcInstruction}
+    (hWf : RouteBearingExtractionWellFormed world)
     (hReach : ReachableResolvedSet existing)
     (hFresh : clearance.id ∉ resolvedClearanceIds existing)
     (hContent : clearance.content = .compound content)
@@ -785,6 +794,7 @@ theorem GreenfieldRouteBearingCompoundAdmissionSoundnessTheorem
       (content := content)
       (primary := primary)
       (tail := tail)
+      hWf
       hContent
       hSteps
       hReady
@@ -845,6 +855,7 @@ theorem GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
       (content := content)
       (primary := primary)
       (tail := tail)
+      hWf
       hReach
       hFresh
       hContent

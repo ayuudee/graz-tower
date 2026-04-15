@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.ConditionalPredicate
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.PointId
@@ -45,6 +46,7 @@ enum class CompletionResult {
 data class CompletionView(
     val position: PointId,
     val entities: Set<EntityRef>,
+    val reachedFixes: Set<FixId> = emptySet(),
     val altitude: Level? = null,
     val speed: Speed? = null,
     val onGround: Boolean,

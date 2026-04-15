@@ -116,8 +116,10 @@ As of April 15, 2026:
   `ClearedApproach`, and `JoinCircuit`, including the fact that all four need
   specific resolution, that `ClearedTo` / `HoldAt` / `JoinCircuit` already
   have honest resolved execution or completion facts, and that
-  `ClearedApproach` is resolved and intentionally non-completing in the
-  current model
+  `ClearedApproach` is resolved against concrete published approach /
+  missed-approach facts and completes on landing or published
+  missed-approach-hold entry in the current graph-backed published-procedure
+  model
 - the first widened issuing-layer increment also now exists in
   [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean):
   theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
@@ -153,7 +155,7 @@ As of April 15, 2026:
   `ReachableResolvedSet`
 - the next honest route-bearing proof seam is now a choice:
   if we stay on the greenfield path, the Phase A core is now closed on the
-  current-shape greenfield boundary:
+  current graph-backed published-procedure boundary:
   it has a theorem-bearing extraction-to-resolution
   bridge in
   [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean),
@@ -165,12 +167,14 @@ As of April 15, 2026:
   `GreenfieldRouteBearingLifecycle.lean` and
   `GreenfieldRouteBearingSupersession.lean`,
   with `GreenfieldRouteBearingCurrentShape.lean` packaging that surface at one
-  source-level theorem boundary;
+  source-level theorem boundary under extracted-world well-formedness;
   `ClearedApproach` completion is no longer treated as a gap because the
-  current Kotlin/Lean model intentionally leaves it active until superseded;
-  the default live gap is now widening beyond the current
-  one-primary-plus-immediate-adjunct compound surface rather than legacy
-  bridge work
+  current Kotlin/Lean model now completes it on landing or
+  missed-approach-hold entry, while compound approach clearances still obey
+  the current engine rule that any non-persistent adjuncts must also complete;
+  the default live gap is now widening beyond the current graph-backed
+  published-procedure + one-primary-plus-immediate-adjunct compound surface
+  rather than legacy bridge work
 - the next small widening increment above that Phase A surface is now also in
   place on the greenfield boundary:
   `JoinCircuit`, `ExtendDownwind`, and `Orbit` now match the current Kotlin

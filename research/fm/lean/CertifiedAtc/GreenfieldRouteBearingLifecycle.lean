@@ -14,7 +14,8 @@ aspirational future surface:
   immediate adjuncts complete
 - single-step `HoldAt` remains active because the holding step is persistent
 - `HoldAt` compounds complete once their non-persistent adjuncts complete
-- `ClearedApproach` remains active even after immediate adjunct completion
+- `ClearedApproach` stays active under establishment-only observations and only
+  completes on landing or missed-approach-hold entry
 - `JoinCircuit` compounds complete once circuit membership/altitude and their
   immediate adjuncts complete
 -/
@@ -50,7 +51,11 @@ def sampleResolvedHoldContact : ResolvedClearance :=
           0
           .route
           (.holdAt "TEST123" (.published "HOLD") (some "1200Z"))
-          (.holding { holdingPattern := "HOLD-PTN", fix := "HOLD" })
+          (.holding
+            { holdingPattern := "HOLD-PTN"
+              fix := "HOLD"
+              fixPoint := "P-HOLD"
+              loopPoints := ["P-HOLD", "P-HOLD-1", "P-HOLD-2", "P-HOLD"] })
           (by native_decide)
       , compileResolvedStep
           1
@@ -113,6 +118,17 @@ def sampleManagedResolvedApproachEstablished : ManagedResolvedClearance :=
 
 def sampleApproachEstablishedObservation : CompletionObservation :=
   { establishedApproachComponents := UniqueSet.singleton .localiser }
+
+def sampleApproachLandingObservation : CompletionObservation :=
+  { onGround := true
+    runwayTransitions := UniqueSet.singleton "27" }
+
+def sampleApproachMissedHoldObservation : CompletionObservation :=
+  { activeHoldingPatterns := UniqueSet.singleton "HOLD-PTN" }
+
+def sampleApproachMissedHoldEstablishedObservation : CompletionObservation :=
+  { establishedApproachComponents := UniqueSet.singleton .localiser
+    activeHoldingPatterns := UniqueSet.singleton "HOLD-PTN" }
 
 def sampleResolvedJoinCircuitMonitor : ResolvedClearance :=
   { source :=
@@ -208,6 +224,24 @@ theorem singleClearedApproach_remains_active :
       evaluation.newlyCompletedSteps = ({} : UniqueSet Nat) := by
   native_decide
 
+theorem singleClearedApproach_completes_on_landing :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedSingleApproach
+        sampleApproachLandingObservation
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
+theorem singleClearedApproach_completes_on_missed_hold :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedSingleApproach
+        sampleApproachMissedHoldObservation
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
 theorem sampleResolvedApproachEstablished_requiredCompletionStepIndices :
     sampleManagedResolvedApproachEstablished.requiredCompletionStepIndices = [0, 1] := by
   native_decide
@@ -221,6 +255,33 @@ theorem sampleResolvedApproachEstablished_remains_active_after_adjunct_completio
       evaluation.newlyCompletedSteps = UniqueSet.singleton 1 := by
   native_decide
 
+theorem sampleResolvedApproachEstablished_landing_only_leaves_adjunct_outstanding :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedApproachEstablished
+        sampleApproachLandingObservation
+    evaluation.updated.status = .active ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
+theorem sampleResolvedApproachEstablished_missed_hold_only_leaves_adjunct_outstanding :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedApproachEstablished
+        sampleApproachMissedHoldObservation
+    evaluation.updated.status = .active ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
+theorem sampleResolvedApproachEstablished_completes_on_missed_hold_and_adjunct :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedApproachEstablished
+        sampleApproachMissedHoldEstablishedObservation
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.ofList [0, 1] := by
+  native_decide
+
 theorem sampleResolvedApproachEstablished_reconcile_stays_active :
     let reconciliation :=
       reconcileResolvedClearances
@@ -229,6 +290,26 @@ theorem sampleResolvedApproachEstablished_reconcile_stays_active :
         (fun _ _ => false)
     resolvedClearanceIds reconciliation.clearances = ["CLR-APP-EST"] ∧
       resolvedClearanceIds reconciliation.terminalClearances = [] := by
+  native_decide
+
+theorem sampleResolvedApproachEstablished_reconcile_landing_stays_active :
+    let reconciliation :=
+      reconcileResolvedClearances
+        [sampleManagedResolvedApproachEstablished]
+        sampleApproachLandingObservation
+        (fun _ _ => false)
+    resolvedClearanceIds reconciliation.clearances = ["CLR-APP-EST"] ∧
+      resolvedClearanceIds reconciliation.terminalClearances = [] := by
+  native_decide
+
+theorem sampleResolvedApproachEstablished_reconcile_missed_hold_and_adjunct_terminals :
+    let reconciliation :=
+      reconcileResolvedClearances
+        [sampleManagedResolvedApproachEstablished]
+        sampleApproachMissedHoldEstablishedObservation
+        (fun _ _ => false)
+    resolvedClearanceIds reconciliation.clearances = [] ∧
+      resolvedClearanceIds reconciliation.terminalClearances = ["CLR-APP-EST"] := by
   native_decide
 
 theorem sampleResolvedJoinCircuitMonitor_requiredCompletionStepIndices :

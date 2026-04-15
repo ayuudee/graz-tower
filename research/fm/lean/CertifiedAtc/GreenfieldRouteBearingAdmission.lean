@@ -90,6 +90,7 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
     {initialState : ResolutionState}
     {clearance : StructuredClearance}
     {instruction : AtcInstruction}
+    (hWf : RouteBearingExtractionWellFormed world)
     (hIssued : GreenfieldRouteBearingAdmissibleInstruction instruction)
     (hReady : RouteBearingInstructionResolutionReady world instruction)
     (hContent : clearance.content = .single instruction)
@@ -104,17 +105,18 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
         initialState := by
   cases instruction with
   | clearedTo target clearanceLimit route =>
-      exact resolvesSingleClearedToClearance_of_ready
-        (world := world)
-        (initialState := initialState)
-        (clearance := clearance)
-        (target := target)
-        (clearanceLimit := clearanceLimit)
-        (route := route)
-        hReady
-        hContent
-        (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
-        hCondition
+          exact resolvesSingleClearedToClearance_of_ready
+            (world := world)
+            (initialState := initialState)
+            (clearance := clearance)
+            (target := target)
+            (clearanceLimit := clearanceLimit)
+            (route := route)
+            hWf
+            hReady
+            hContent
+            (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
+            hCondition
   | holdAt target hold efc =>
       cases hold with
       | published fixId =>
@@ -141,6 +143,7 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
             (target := target)
             (approachType := approachType)
             (runway := runway)
+            hWf
             hReady
             hContent
             (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
@@ -156,6 +159,7 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
         (direction := direction)
         (joinType := joinType)
         (runway := runway)
+        hWf
         hReady
         hContent
         (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
@@ -169,6 +173,7 @@ theorem GreenfieldRouteBearingAdmissionSoundnessTheorem
     {initialState : ResolutionState}
     {clearance : StructuredClearance}
     {instruction : AtcInstruction}
+    (hWf : RouteBearingExtractionWellFormed world)
     (hReach : ReachableResolvedSet existing)
     (hFresh : clearance.id ∉ resolvedClearanceIds existing)
     (hIssued : GreenfieldRouteBearingAdmissibleInstruction instruction)
@@ -190,6 +195,7 @@ theorem GreenfieldRouteBearingAdmissionSoundnessTheorem
       (initialState := initialState)
       (clearance := clearance)
       (instruction := instruction)
+      hWf
       hIssued
       hReady
       hContent
@@ -256,6 +262,7 @@ theorem GreenfieldRouteBearingCurrentShapeIssuanceTheorem
       (initialState := initialState)
       (clearance := clearance)
       (instruction := instruction)
+      hWf
       hReach
       hFresh
       hIssued

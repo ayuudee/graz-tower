@@ -8,10 +8,12 @@ import xyz.easiersaid.twr.core.resolution.ResolutionResult
 import xyz.easiersaid.twr.core.world.FixtureIds
 import xyz.easiersaid.twr.core.world.sampleWorld
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ApproachType
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
+import xyz.easiersaid.twr.protocol.ClearedApproach
 import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ConditionalClearance
@@ -507,6 +509,45 @@ class ActiveClearanceEngineTest {
         assertTrue(
             reconciled.terminalClearances.any { managed ->
                 managed.source.id.value == "ENTER-CTR-SINGLE" &&
+                    managed.status == ClearanceStatus.COMPLETED
+            }
+        )
+    }
+
+    @Test
+    fun worldBackedApproachTerminalsOnMissedApproachHold() {
+        val world = sampleWorld()
+        val existing = stageIncomingClearance(
+            world.resolveClearance(
+                context = ClearanceResolutionContext(FixtureIds.aerodrome),
+                clearance = structuredClearance(
+                    id = "APPROACH-WORLD-BACKED",
+                    domain = ClearanceDomain.ROUTE,
+                    content = ClearanceContent.Single(
+                        ClearedApproach(
+                            target = TEST_AIRCRAFT,
+                            approachType = ApproachType.ILS,
+                            runway = FixtureIds.runway09
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+
+        val reconciled = reconcileClearances(
+            existing = listOf(existing),
+            completionViews = mapOf(
+                TEST_AIRCRAFT to CompletionView(
+                    position = FixtureIds.holdFixPoint,
+                    entities = setOf(xyz.easiersaid.twr.core.world.EntityRef.HoldingPatternRef(FixtureIds.hold)),
+                    onGround = false
+                )
+            )
+        )
+
+        assertTrue(
+            reconciled.terminalClearances.any { managed ->
+                managed.source.id.value == "APPROACH-WORLD-BACKED" &&
                     managed.status == ClearanceStatus.COMPLETED
             }
         )

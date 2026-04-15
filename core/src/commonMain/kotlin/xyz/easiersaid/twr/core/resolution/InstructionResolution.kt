@@ -113,7 +113,11 @@ data class ResolvedRunwayCrossing(
 data class ResolvedApproachClearance(
     val aerodrome: Aerodrome,
     val approach: InstrumentApproach,
-    val circlingRunway: Runway? = null
+    val circlingRunway: Runway? = null,
+    val waypointPoints: List<PointId>,
+    val thresholdPoint: PointId,
+    val missedApproachPoints: List<PointId>,
+    val missedApproachHoldingPattern: HoldingPattern
 )
 
 sealed interface ResolvedRouteSpec {
@@ -132,15 +136,28 @@ sealed interface ResolvedRouteSpec {
 data class ResolvedRouteClearance(
     val aerodrome: Aerodrome,
     val clearanceLimit: Fix,
-    val route: ResolvedRouteSpec?
+    val route: ResolvedRouteSpec?,
+    val routePoints: List<PointId>,
+    val clearanceLimitHoldingPattern: HoldingPattern? = null
 )
 
 data class ResolvedHoldingInstruction(
     val aerodrome: Aerodrome,
     val fix: Fix,
     val holdingPattern: HoldingPattern,
+    val fixPoint: PointId,
+    val loopPoints: List<PointId>,
     val hold: HoldSpec,
     val expectFurtherClearanceAt: String? = null
+)
+
+data class ResolvedCircuitJoinInstruction(
+    val aerodrome: Aerodrome,
+    val circuit: CircuitProcedure,
+    val join: xyz.easiersaid.twr.core.world.CircuitJoin,
+    val joinEntryPoint: PointId,
+    val joinPathPoints: List<PointId>,
+    val circuitPoints: List<PointId>
 )
 
 data class ResolvedAirspaceInstruction(
@@ -357,18 +374,31 @@ fun AviationWorld.resolveClearedApproach(
         )
     }
 
+    val runway = aerodrome.runways[approach.runway] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_RUNWAY,
+        "Unknown runway ${approach.runway.value} at aerodrome ${aerodrome.icao.value}"
+    )
     val circlingRunway = instruction.circlingRunway?.let { runwayId ->
         aerodrome.runways[runwayId] ?: return unresolved(
             ResolutionFailureCode.UNKNOWN_CIRCLING_RUNWAY,
             "Unknown circling runway ${runwayId.value} at aerodrome ${aerodrome.icao.value}"
         )
     }
+    val missedApproachHoldingPattern = aerodrome.holdingPatterns[approach.missedApproach.holdAt]
+        ?: return unresolved(
+            ResolutionFailureCode.UNKNOWN_HOLDING_PATTERN,
+            "Missed-approach holding pattern ${approach.missedApproach.holdAt.value} is not defined at aerodrome ${aerodrome.icao.value}"
+        )
 
     return resolved(
         ResolvedApproachClearance(
             aerodrome = aerodrome,
             approach = approach,
-            circlingRunway = circlingRunway
+            circlingRunway = circlingRunway,
+            waypointPoints = approach.waypoints.map { waypoint -> waypoint.point },
+            thresholdPoint = runway.threshold,
+            missedApproachPoints = approach.missedApproach.waypoints.map { waypoint -> waypoint.point },
+            missedApproachHoldingPattern = missedApproachHoldingPattern
         )
     )
 }
@@ -388,14 +418,27 @@ fun AviationWorld.resolveClearedTo(
     val resolvedRoute = instruction.route?.let { route ->
         resolveRouteSpec(aerodrome, route)
     }
+    val routePoints = when (resolvedRoute) {
+        is arrow.core.Either.Left -> return resolvedRoute
+        is arrow.core.Either.Right -> routePointsForClearance(
+            aerodrome = aerodrome,
+            route = resolvedRoute.value,
+            clearanceLimit = clearanceLimit
+        )
+
+        null -> listOf(clearanceLimit.point)
+    }
+    val clearanceLimitHoldingPattern = aerodrome.holdingPatterns.values
+        .singleOrNull { holdingPattern -> holdingPattern.fix == clearanceLimit.id }
 
     return when (resolvedRoute) {
-        is arrow.core.Either.Left -> resolvedRoute
         is arrow.core.Either.Right -> resolved(
             ResolvedRouteClearance(
                 aerodrome = aerodrome,
                 clearanceLimit = clearanceLimit,
-                route = resolvedRoute.value
+                route = resolvedRoute.value,
+                routePoints = routePoints,
+                clearanceLimitHoldingPattern = clearanceLimitHoldingPattern
             )
         )
 
@@ -403,7 +446,9 @@ fun AviationWorld.resolveClearedTo(
             ResolvedRouteClearance(
                 aerodrome = aerodrome,
                 clearanceLimit = clearanceLimit,
-                route = null
+                route = null,
+                routePoints = routePoints,
+                clearanceLimitHoldingPattern = clearanceLimitHoldingPattern
             )
         )
     }
@@ -447,6 +492,8 @@ fun AviationWorld.resolveHoldAt(
             aerodrome = aerodrome,
             fix = fix,
             holdingPattern = holdingPattern,
+            fixPoint = fix.point,
+            loopPoints = holdingPattern.loop.points,
             hold = instruction.hold,
             expectFurtherClearanceAt = instruction.expectFurtherClearanceAt
         )
@@ -606,6 +653,22 @@ private fun resolveAirspaceRouteInteraction(
     )
 }
 
+private fun AviationWorld.routePointsForClearance(
+    aerodrome: Aerodrome,
+    route: ResolvedRouteSpec,
+    clearanceLimit: Fix
+): List<PointId> =
+    when (route) {
+        is ResolvedRouteSpec.Direct -> listOf(route.fix.point)
+        is ResolvedRouteSpec.Via -> route.fixes.map { fix -> fix.point }
+        is ResolvedRouteSpec.AirwaySegment -> route.routePoints()
+        is ResolvedRouteSpec.SidProcedure ->
+            route.sid.publishedPointsTo(clearanceLimit.point)
+        is ResolvedRouteSpec.StarProcedure ->
+            route.star.publishedPointsTo(clearanceLimit.point)
+        is ResolvedRouteSpec.VfrRouteProcedure -> route.route.waypoints.map { waypoint -> waypoint.point }
+    }
+
 private fun ResolvedRouteSpec.routePoints(): List<PointId> =
     when (this) {
         is ResolvedRouteSpec.Direct -> listOf(fix.point)
@@ -618,6 +681,49 @@ private fun ResolvedRouteSpec.routePoints(): List<PointId> =
         is ResolvedRouteSpec.StarProcedure -> star.waypoints.map { waypoint -> waypoint.point }
         is ResolvedRouteSpec.VfrRouteProcedure -> route.waypoints.map { waypoint -> waypoint.point }
     }
+
+private fun Sid.publishedPointsTo(limitPoint: PointId): List<PointId> {
+    val trunkPoints = waypoints.map { waypoint -> waypoint.point }
+    if (limitPoint in trunkPoints) {
+        return trunkPoints.take(trunkPoints.indexOf(limitPoint) + 1)
+    }
+
+    val transition = transitions.values.firstOrNull { transitionWaypoints ->
+        transitionWaypoints.any { waypoint -> waypoint.point == limitPoint }
+    } ?: return trunkPoints
+
+    return trunkPoints.connectedWithTransition(transition.map { waypoint -> waypoint.point }, limitPoint)
+}
+
+private fun Star.publishedPointsTo(limitPoint: PointId): List<PointId> {
+    val trunkPoints = waypoints.map { waypoint -> waypoint.point }
+    if (limitPoint in trunkPoints) {
+        return trunkPoints.take(trunkPoints.indexOf(limitPoint) + 1)
+    }
+
+    val transition = transitions.values.firstOrNull { transitionWaypoints ->
+        transitionWaypoints.any { waypoint -> waypoint.point == limitPoint }
+    } ?: return trunkPoints
+
+    return trunkPoints.connectedWithTransition(transition.map { waypoint -> waypoint.point }, limitPoint)
+}
+
+private fun List<PointId>.connectedWithTransition(
+    transition: List<PointId>,
+    limitPoint: PointId
+): List<PointId> {
+    if (transition.isEmpty()) return this
+    val connectionIndex = indexOf(transition.first())
+    if (connectionIndex == -1) {
+        return this
+    }
+    val truncatedTransition = if (limitPoint in transition) {
+        transition.take(transition.indexOf(limitPoint) + 1)
+    } else {
+        transition
+    }
+    return take(connectionIndex + 1) + truncatedTransition.drop(1)
+}
 
 private fun AviationWorld.resolveRouteSpec(
     aerodrome: Aerodrome,

@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.ClearedTo
+import xyz.easiersaid.twr.protocol.ClearedApproach
 import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
@@ -20,10 +21,14 @@ import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
 import xyz.easiersaid.twr.protocol.ApproachComponent
+import xyz.easiersaid.twr.protocol.ApproachType
 import xyz.easiersaid.twr.protocol.BacktrackRunway
+import xyz.easiersaid.twr.protocol.CircuitDirection
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.HoldShortOf
+import xyz.easiersaid.twr.protocol.JoinCircuit
+import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.MaintainSpeed
 import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
@@ -149,6 +154,123 @@ class CompletionEvaluationTest {
             evaluation.stepResults.map { stepResult -> stepResult.result }
         )
         assertEquals(setOf(0, 1), evaluation.completedSteps)
+        assertEquals(ClearanceStatus.COMPLETED, evaluation.updated.source.status)
+    }
+
+    @Test
+    fun routeClearanceCompletesOnReachedFixOrHoldingPatternEntry() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ROUTE-WORLD-BACKED",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    ClearedTo(
+                        target = TEST_AIRCRAFT,
+                        clearanceLimit = FixId("HOLD"),
+                        route = RouteSpec.ViaSid(FixtureIds.sid)
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val reachedFix = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.sidExit,
+                entities = emptySet(),
+                reachedFixes = setOf(FixId("HOLD")),
+                onGround = false
+            )
+        )
+        val enteredHold = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.holdFixPoint,
+                entities = setOf(EntityRef.HoldingPatternRef(FixtureIds.hold)),
+                onGround = false
+            )
+        )
+
+        assertEquals(CompletionResult.COMPLETE, reachedFix.stepResults.single().result)
+        assertEquals(ClearanceStatus.COMPLETED, reachedFix.updated.source.status)
+        assertEquals(CompletionResult.COMPLETE, enteredHold.stepResults.single().result)
+        assertEquals(ClearanceStatus.COMPLETED, enteredHold.updated.source.status)
+    }
+
+    @Test
+    fun approachCompletesOnLandingOrMissedApproachHold() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-APPROACH-WORLD-BACKED",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    ClearedApproach(
+                        target = TEST_AIRCRAFT,
+                        approachType = ApproachType.ILS,
+                        runway = FixtureIds.runway09
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val landed = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runway09Threshold,
+                entities = setOf(EntityRef.RunwayRef(FixtureIds.runway09)),
+                onGround = true,
+                transitionHistory = setOf(EntityRef.RunwayRef(FixtureIds.runway09))
+            )
+        )
+        val enteredMissedHold = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.holdFixPoint,
+                entities = setOf(EntityRef.HoldingPatternRef(FixtureIds.hold)),
+                onGround = false
+            )
+        )
+
+        assertEquals(CompletionResult.COMPLETE, landed.stepResults.single().result)
+        assertEquals(ClearanceStatus.COMPLETED, landed.updated.source.status)
+        assertEquals(CompletionResult.COMPLETE, enteredMissedHold.stepResults.single().result)
+        assertEquals(ClearanceStatus.COMPLETED, enteredMissedHold.updated.source.status)
+    }
+
+    @Test
+    fun joinCircuitCompletesOnCircuitMembershipAndAltitude() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-JOIN-CIRCUIT",
+                domain = ClearanceDomain.RUNWAY,
+                content = ClearanceContent.Single(
+                    JoinCircuit(
+                        target = TEST_AIRCRAFT,
+                        circuitDirection = CircuitDirection.LEFT_HAND,
+                        joinType = JoinType.DOWNWIND,
+                        runway = FixtureIds.runway09
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val evaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.crosswindEnd,
+                entities = setOf(EntityRef.CircuitProcedureRef(FixtureIds.circuit09)),
+                altitude = Level.AltitudeFeet.unsafe(1800),
+                onGround = false
+            )
+        )
+
+        assertEquals(CompletionResult.COMPLETE, evaluation.stepResults.single().result)
         assertEquals(ClearanceStatus.COMPLETED, evaluation.updated.source.status)
     }
 

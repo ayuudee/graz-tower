@@ -12,12 +12,14 @@ module turns that into one source-level predicate over `StructuredClearance`
 plus one end-to-end theorem:
 
 - the clearance is in the currently supported Phase A route-bearing surface
-- authority and resolution readiness hold for that source clearance
+- extracted-world well-formedness, authority, and resolution readiness hold
+  for that source clearance
 - therefore there exists a resolved clearance that can be admitted into the
   reachable resolved set
 
-This is the cleanest current-shape closure point before any future widening
-past the one-primary-plus-immediate-adjunct compound surface.
+This is the cleanest current-shape closure point for the current graph-backed
+published-procedure model before any future widening past the
+one-primary-plus-immediate-adjunct compound surface.
 -/
 
 inductive GreenfieldRouteBearingCurrentShapeIssuable

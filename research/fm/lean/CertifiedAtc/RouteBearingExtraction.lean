@@ -108,6 +108,7 @@ structure ScopedSidSource where
   id : SidId
   runway : RunwayId
   waypoints : List CompileWaypointView
+  transitions : List (List CompileWaypointView) := []
   connectsTo : Option AirwayId := none
   deriving DecidableEq, Repr
 
@@ -133,6 +134,7 @@ def ScopedAirwaySource.toCompileView
 structure ScopedStarSource where
   id : StarId
   waypoints : List CompileWaypointView
+  transitions : List (List CompileWaypointView) := []
   connectsTo : Option ApproachId := none
   deriving DecidableEq, Repr
 
