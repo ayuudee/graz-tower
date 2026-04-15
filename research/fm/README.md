@@ -153,28 +153,28 @@ As of April 15, 2026:
   route-bearing surface and satisfies the present authority / readiness
   conditions, then there exists a resolved clearance that admits into
   `ReachableResolvedSet`
-- the next honest route-bearing proof seam is now a choice:
-  if we stay on the greenfield path, the Phase A core is now closed on the
-  current graph-backed published-procedure boundary:
-  it has a theorem-bearing extraction-to-resolution
-  bridge in
+- the next honest route-bearing proof seam is now optional rather than the
+  default next task:
+  on the greenfield path, the Phase A core is closed on the current
+  graph-backed published-procedure boundary:
+  it has a theorem-bearing extraction-to-resolution bridge in
   [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean),
-  plus a greenfield admission / current-shape issuance layer in
+  a greenfield admission / current-shape issuance layer in
   [GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean),
   a first compound current-shape issuance layer in
   [GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean),
-  and current-shape lifecycle / supersession layers in
+  current-shape lifecycle / supersession layers in
   `GreenfieldRouteBearingLifecycle.lean` and
   `GreenfieldRouteBearingSupersession.lean`,
-  with `GreenfieldRouteBearingCurrentShape.lean` packaging that surface at one
+  and `GreenfieldRouteBearingCurrentShape.lean` packages that surface at one
   source-level theorem boundary under extracted-world well-formedness;
   `ClearedApproach` completion is no longer treated as a gap because the
   current Kotlin/Lean model now completes it on landing or
   missed-approach-hold entry, while compound approach clearances still obey
   the current engine rule that any non-persistent adjuncts must also complete;
-  the default live gap is now widening beyond the current graph-backed
-  published-procedure + one-primary-plus-immediate-adjunct compound surface
-  rather than legacy bridge work
+  any widening beyond the current graph-backed published-procedure +
+  one-primary-plus-immediate-adjunct compound surface is now a deliberate
+  future branch, not the default continuation
 - the next small widening increment above that Phase A surface is now also in
   place on the greenfield boundary:
   `JoinCircuit`, `ExtendDownwind`, and `Orbit` now match the current Kotlin
@@ -480,7 +480,13 @@ The default critical path is now:
   rule used for this widening programme:
   every family whose Kotlin semantics are already stable, whose conservative
   authority family is frozen, and whose proof surface does not require new
-  world-resolution theory is now theorem-bearing on the greenfield boundary
+  world-resolution theory is now theorem-bearing on the greenfield boundary;
+  this now explicitly includes the delivered route/vector-control subset in
+  [GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean)
+  and the delivered air-modifier/admin subset in
+  [GreenfieldAirModifierCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirModifierCurrentShape.lean),
+  while `TurnByDegrees` remains intentionally open because heading-progress
+  semantics are not yet frozen on the current engine/proof boundary
 - the phase-2 communications/surveillance widening closure is now also
   complete under that same frozen rule:
   the already-delivered radio and transponder/surveillance families are now
@@ -498,22 +504,26 @@ The default critical path is now:
   source-level current-shape theorem boundary; above that, the first
   world-backed airspace layer is now theorem-bearing through its single-step
   and first narrow-compound slices
-- the immediate next widening step is no longer structural bridge work, no
-  longer approach-completion work, and no longer basic closure for
-  `ContinueApproach`, `ExtendDownwind`, or `Orbit`;
-  it is now to decide whether to widen execution beyond the delivered Phase B
-  slices, widen communications/surveillance beyond the delivered narrow
-  compound surface, widen the broader ground-movement family on the greenfield
-  boundary, settle authority for the modifier/pressure families, or carry
-  `ClearedTo` / `HoldAt` through the older atomic path, or deepen the new
-  world-backed airspace layer beyond the now-closed graph-backed branch into
-  richer geometric/polygonal semantics, denser route/airspace interaction
-  semantics, and broader lifecycle than the current point-set +
-  entry/exit/landing model
-  That is a real design/proof choice, not just missing routine packaging:
-  current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
-  field on the older envelope/compiler surface, and the legacy compiler path
-  also reintroduces state-dependent plan-instantiation obligations
+- the parity / refinement / drift-control branch is now frozen in
+  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md):
+  the delivered families are now classified as scoped-core complete,
+  current-shape complete, world-backed complete on the current model, or
+  intentionally open, and the load-bearing drift seams are recorded for
+  metadata, authority, completion, and supersession
+- the delivered broader ground / surface movement branch is now also closed:
+  [GroundMovementResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GroundMovementResolutionBridge.lean),
+  [GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
+  and
+  [GreenfieldGroundMovementDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean)
+  now close the current graph-backed ground branch:
+  world-backed `TaxiTo`, `HoldShortOf`, and `CrossRunway`, current-shape
+  `HoldPosition`, and a first narrow sequential ground compound layer now all
+  have packaged source-level issuance plus authority-gated issuance on the
+  current model
+- the next default FM work is no longer broader ground / surface movement;
+  the next deliberate widening choices are now broader
+  communications/surveillance semantics or the next genuinely semantic branch
+  beyond the current models
 - richer mode semantics remain a secondary widening direction, not the default
   next task
 
@@ -523,25 +533,26 @@ For a new human or AI agent, start here:
 
 1. [AGENT_GUIDE.md](/home/andrew/dev/projects/twr2/research/fm/AGENT_GUIDE.md)
 2. [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
-3. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
-4. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-5. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
-6. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
-7. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-8. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
-9. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
-10. [completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md)
+3. [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+4. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
+5. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+6. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+7. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
+8. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+9. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+10. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
+11. [completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md)
     Shortest path from the current state to `Safety-complete (N₀)` and then to
     full-brief closure.
-11. [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+12. [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
     Exact theorem-target inventory for the scoped `Safety-complete (N₀)` claim.
-12. [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+13. [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
     Exact widening target for the route-bearing proof surface.
-13. [certifier_interfaces.md](/home/andrew/dev/projects/twr2/research/fm/certifier_interfaces.md)
-14. [canonical_theorem.md](/home/andrew/dev/projects/twr2/research/fm/canonical_theorem.md)
+14. [certifier_interfaces.md](/home/andrew/dev/projects/twr2/research/fm/certifier_interfaces.md)
+15. [canonical_theorem.md](/home/andrew/dev/projects/twr2/research/fm/canonical_theorem.md)
    Optional. Read this only if you are working on the single-issuer
    composition layer.
-15. [lean/README.md](/home/andrew/dev/projects/twr2/research/fm/lean/README.md)
+16. [lean/README.md](/home/andrew/dev/projects/twr2/research/fm/lean/README.md)
 
 Then go to the specific Lean module you need.
 
@@ -566,6 +577,9 @@ Then go to the specific Lean module you need.
   Structural extraction contract from `AviationWorld` into proof-local views.
 - [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
   Narrowed instruction-to-authority mapping for the currently stable subset.
+- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+  Frozen Kotlin-to-Lean parity inventory for the delivered FM surface, plus
+  drift-control rules and the recommended next widening branch.
 - [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
   How `research/fm` should now relate to the product-authoritative
   `docs/design/` specs and the future project boundary.

@@ -26,6 +26,10 @@ It is a conservative proof contract:
 The following instruction families are now treated as authority-resolved:
 
 - `TaxiTo` -> `(taxiway, taxi)`
+- `HoldPosition` -> `(taxiway, taxi)` on the delivered current-shape ground
+  boundary
+- `HoldShortOf` -> `(runway, cross)` on the delivered current graph-backed
+  ground boundary
 - `CrossRunway` -> `(runway, cross)`
 - `BacktrackRunway` -> `(runway, backtrack)` on the current-shape backtrack
   boundary
@@ -50,6 +54,26 @@ The following instruction families are now treated as authority-resolved:
   shape airspace-clearance boundary
 - `ContactFrequency` -> `(radioRole, contact)`
 - `MonitorFrequency` -> `(radioRole, monitor)`
+- `ProceedDirect`, `LeaveHoldProceedDirect`, `WhenAbleProceedDirect`, and
+  `RejoinSidAt` -> `(fix, routeClearance)` on the delivered current-shape
+  route/vector-control boundary
+- `JoinAirway` -> `(airway, routeClearance)` on that same delivered
+  route/vector-control boundary
+- `ResumeOwnNavigation`, `RouteAsFiled`, `FlyHeading`, `TurnHeading`,
+  `ContinuePresentHeading`, `StopTurn`, and `InterceptLocaliser` ->
+  `(airspaceVolume, routeClearance)` on the delivered current-shape
+  route/vector-control boundary
+- `ClimbTo`, `DescendTo`, `DescendWhenReady`, `ExpediteClimb`,
+  `ExpediteDescend`, `MaintainLevel`, `StopClimbAt`, `StopDescentAt`,
+  `MaintainAtOrAbove`, `MaintainAtOrBelow`, `AfterPassingLevelClimbTo`,
+  `AfterPassingLevelDescendTo`, `MaintainAltitudeUntilEstablished`, and
+  `AvoidLevel` -> `(airspaceVolume, altitude)` on the delivered current-shape
+  air-modifier boundary
+- `MaintainSpeed`, `ReduceSpeedTo`, `IncreaseSpeedTo`, `MinimumCleanSpeed`,
+  and `ResumeNormalSpeed` -> `(airspaceVolume, speed)` on that same delivered
+  air-modifier boundary
+- `SetPressure` and `CancelClearance` -> `(airspaceVolume, information)` on
+  that same delivered current-shape air-modifier boundary
 - `SetSquawk` -> `(radioRole, squawk)` on the delivered current-shape
   communications/surveillance boundary
 - `ConfirmSquawk` -> `(radioRole, squawk)` on the delivered current-shape
@@ -71,13 +95,20 @@ through `instructionRequiredAuthorityGrant?`, and the delivered current-shape
 Phase B route-adjacent mappings are mirrored in
 [GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
 for the delivered current-shape Phase B route-adjacent surface.
+The delivered broader ground/surface movement mappings are now mirrored in
+[GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean)
+for the current graph-backed ground branch.
 
 ## Why These Are Safe To Freeze
 
 These instruction families line up directly with the greenfield role model:
 
 - taxi movement on taxiways
+- current-shape hold-position control as a conservative taxiway/taxi action on
+  the current engine
 - runway crossing and runway-use operations
+- current graph-backed hold-short resolution on the current runway-adjacent
+  protection boundary
 - circuit-procedure control
 - current-shape circuit-sequencing instructions that stay on the tower-side
   circuit family
@@ -89,6 +120,9 @@ These instruction families line up directly with the greenfield role model:
 - approach clearance over approach entities
 - holding-pattern control
 - radio role / handoff style instructions
+- route/vector-control instructions on the current route-control boundary
+- level/speed/pressure/admin modifiers on the delivered current-shape
+  air-modifier boundary
 
 They do not require the project to settle the harder open questions around
 clearance limits, mixed supersession, or derived pilot-intent semantics first.
@@ -99,15 +133,11 @@ The following instruction families remain intentionally unresolved at the
 authority-mapping layer:
 
 - `StartupApproved`
-- `HoldPosition`
-- `HoldShortOf`
 - `ReportDownwind`
 - `ReportFinal`
 - `Proceed`
 - `ClearedTo`
-- `ClimbTo`
-- `DescendTo`
-- `ReduceSpeedTo`
+- `TurnByDegrees`
 - `CrossControlledAirspace`
 
 The reason is not "these instructions have no authority semantics."
@@ -117,10 +147,8 @@ semantic questions."
 Examples:
 
 - `ClearedTo` depends on the still-open route/intention/limit theorem surface
-- `ClimbTo`, `DescendTo`, and `ReduceSpeedTo` may belong to a higher airspace or
-  sequencing authority contract rather than to one route entity family
-- `HoldShortOf` is operationally simple but its authority story still sits at an
-  awkward boundary between taxiway movement and runway-adjacent protection
+- `TurnByDegrees` still depends on a heading-progress observation model that is
+  not yet frozen on the current engine/proof boundary
 - `CrossControlledAirspace` likely belongs to a broader coordination/airspace
   authority layer that is not yet narrowed enough here
 
@@ -181,6 +209,8 @@ It should be:
 
 1. keep the current-shape Phase B authority mappings stable and aligned to the
    Kotlin model
-2. decide the right authority families for the still-unresolved airspace /
+2. keep the delivered route/vector-control and air-modifier mappings aligned to
+   the Kotlin model and parity inventory
+3. decide the right authority families for the still-unresolved airspace /
    route / coordination instructions
-3. only then widen the mapping surface again
+4. only then widen the mapping surface again

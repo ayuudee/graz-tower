@@ -191,7 +191,10 @@ It now contains:
   widening rule:
   every family whose Kotlin semantics are already stable, whose conservative
   authority family is frozen, and whose proof surface does not require new
-  world-resolution theory is now theorem-bearing on the greenfield boundary
+  world-resolution theory is now theorem-bearing on the greenfield boundary;
+  this now explicitly includes the delivered route/vector-control subset and
+  the delivered air-modifier/admin subset, with `TurnByDegrees` kept
+  intentionally open because heading-progress semantics are not yet frozen
 - the phase-2 communications/surveillance widening closure is now also
   complete under that same frozen rule:
   the already-delivered radio and transponder/surveillance families are now
@@ -236,12 +239,28 @@ It now contains:
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
-- the next honest route-bearing gap is now a branch choice rather than a
-  structural blocker: on the greenfield path, the live work is widening beyond
-  the current graph-backed published-procedure + one-primary-plus-immediate-
-  adjunct compound surface and beyond the newly closed small current-shape
-  compound slices for the current Phase B families; the older atomic closure for
-  `ClearedTo` / `HoldAt` remains optional and separate
+- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+  now freezes the Kotlin-to-Lean parity / refinement boundary for the
+  delivered surface:
+  the delivered families are classified as scoped-core complete,
+  current-shape complete, world-backed complete on the current model, or
+  intentionally open, and the load-bearing drift seams are recorded for
+  metadata, authority, completion, and supersession
+- `GroundMovementResolutionBridge.lean`,
+  `GreenfieldGroundMovementCurrentShape.lean`, and
+  `GreenfieldGroundMovementDeliveredCurrentShape.lean` now close the broader
+  ground / surface movement branch on the current graph-backed ground model:
+  `TaxiTo`, `HoldShortOf`, and `CrossRunway` now have a world-backed ground
+  boundary, `HoldPosition` now has a closed current-shape boundary, and the
+  first narrow sequential ground compound layer is now theorem-bearing and
+  packaged behind one source-level theorem surface
+- the next honest route-bearing gap is now an explicit optional branch rather
+  than a structural blocker: on the greenfield path, the live work is only
+  whatever widening we choose beyond the current graph-backed
+  published-procedure + one-primary-plus-immediate-adjunct compound surface
+  and beyond the newly closed small current-shape compound slices for the
+  current Phase B families; the older atomic closure for `ClearedTo` /
+  `HoldAt` remains optional and separate
 
 It does not yet contain:
 
@@ -769,30 +788,22 @@ Current stated-but-unproved targets:
 
 ## Recommended Next Task
 
-The default next engineering task is now optional widening rather than
-milestone-critical closure:
+The default next engineering task is no longer broader ground / surface
+movement; that branch is now closed for the current graph-backed model.
 
-1. continue the route-bearing proof surface widening above the current scoped
-   nominal claim
-   using
-   [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
-   as the guardrail, starting from the delivered first slice:
-   resolved semantics, procedure-bearing extraction, extraction-to-resolution
-   bridge, current-shape greenfield issuance for the full Phase A surface,
-   one-leading-step compound issuance, and bridgeable issuance for
-   `ClearedApproach` plus legacy-supported `JoinCircuit`
-2. next, decide whether to widen theorem-bearing issuance for `ClearedTo` /
-   `HoldAt` through the older atomic path, or to keep the widening track on
-   the current graph-backed published-procedure boundary and widen beyond the
-   current compound surface instead
-3. or replace the conservative mode-overlay semantics with richer degraded /
-   emergency operational semantics if the product needs them
-4. keep the current scoped surface stable unless a widening theorem forces a
-   model change
+1. keep the parity inventory frozen while widening:
+   update [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+   whenever metadata, authority, completion, supersession, or family status
+   changes
+2. choose one branch at a time:
+   broader communications / surveillance semantics, or
+   the next genuinely semantic branch beyond the current models
+3. keep the currently closed scoped, current-shape, and world-backed branches
+   stable while doing that work
 
-That sequence preserves the split-kernel architecture and keeps the project
-focused on the long-term product boundary instead of accumulating proof work on
-the current repo's staging model.
+That sequence preserves the split-kernel architecture, keeps the delivered
+surface honest, and avoids reopening branches that are already closed for
+their current models.
 
 ## Product Framing
 
@@ -819,14 +830,9 @@ What still cannot be said:
 
 What the next phase is working toward:
 
-- widening the extraction boundary from the scoped runway/taxiway/role subset
-  toward the route-bearing procedure subset
-- finishing the first widened route-bearing track by moving beyond the current
-  delivered slice:
-  truthful resolved semantics, procedure-bearing extraction, extraction-to-
-  resolution bridge, current-shape greenfield issuance for the full Phase A
-  surface, and compound packaging for one-leading-step route-bearing
-  clearances
-- then either widening legacy issuance further for `ClearedTo` and `HoldAt`,
-  or widening beyond the current compound surface, without regressing the
-  already-closed scoped claim
+- using the now-frozen Kotlin-to-Lean parity/refinement boundary as a guardrail
+  for the next widening branch
+- moving the greenfield proof surface into broader ground / surface movement,
+  starting with `TaxiTo`, `HoldShortOf`, and `CrossRunway`
+- keeping the already-closed scoped, current-shape, and world-backed branches
+  stable while that widening happens

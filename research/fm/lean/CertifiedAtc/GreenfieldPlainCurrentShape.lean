@@ -122,5 +122,52 @@ theorem plainCurrentShapeAdmissionSoundnessTheorem
   refine ⟨resolved, hResolve, ?_⟩
   exact ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve
 
+theorem plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
+    {world : ResolutionWorld}
+    {existing : List ManagedResolvedClearance}
+    {initialState : ResolutionState}
+    {clearance : StructuredClearance}
+    {instruction : AtcInstruction}
+    (hReach : ReachableResolvedSet existing)
+    (hFresh : clearance.id ∉ resolvedClearanceIds existing)
+    (hPlain : instructionNeedsSpecificResolution instruction = false)
+    (hNormalized : normalizeConditionalEnvelope clearance = .ok clearance)
+    (hContent : clearance.content = .single instruction)
+    (hDomain :
+      match instructionDomain? instruction with
+      | some domain => clearance.domain = domain
+      | none => True) :
+    ∃ resolved,
+      ResolvesClearance
+        world
+        initialState
+        clearance
+        resolved
+        initialState ∧
+      ReachableResolvedSet
+        (admitResolvedClearance existing resolved).clearances := by
+  let fallbackDomain := (instructionDomain? instruction).getD clearance.domain
+  have hFallbackDomain : clearance.domain = fallbackDomain := by
+    unfold fallbackDomain
+    cases hInstructionDomain : instructionDomain? instruction with
+    | none =>
+        simp
+    | some domain =>
+        simpa [hInstructionDomain] using hDomain
+  exact
+    plainCurrentShapeAdmissionSoundnessTheorem
+      (world := world)
+      (existing := existing)
+      (initialState := initialState)
+      (clearance := clearance)
+      (instruction := instruction)
+      (fallbackDomain := fallbackDomain)
+      hReach
+      hFresh
+      hPlain
+      hNormalized
+      hContent
+      hFallbackDomain
+
 end Greenfield
 end CertifiedAtc

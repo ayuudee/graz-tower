@@ -95,6 +95,14 @@ Then open the specific Lean module for the phase you are changing.
   shape Phase A surface behind one source-level theorem boundary
 - the remaining FM work is now optional widening, not milestone-critical
   closure
+- the broader ground / surface movement branch is now also closed on the
+  current graph-backed model:
+  `GroundMovementResolutionBridge.lean`,
+  `GreenfieldGroundMovementCurrentShape.lean`, and
+  `GreenfieldGroundMovementDeliveredCurrentShape.lean` now give a world-backed
+  boundary for `TaxiTo`, `HoldShortOf`, and `CrossRunway`, a current-shape
+  boundary for `HoldPosition`, and a first narrow sequential ground compound
+  layer on the same delivered branch
 - the next greenfield widening seam is no longer just Phase A route-bearing:
   the semantic-alignment gate for `JoinCircuit` / `ExtendDownwind` / `Orbit`
   is now closed, and `ContinueApproach`, `ExtendDownwind`, and `Orbit` each
@@ -191,7 +199,9 @@ Then open the specific Lean module for the phase you are changing.
   current-shape airspace family behind one source-level theorem boundary
   phase 1 is now closed under the frozen widening rule:
   do not reopen families in that bucket unless runtime semantics themselves
-  change
+  change; that bucket now explicitly includes the delivered route/vector-
+  control subset and the delivered air-modifier/admin subset, with
+  `TurnByDegrees` kept intentionally open
   phase 2 is now also closed under that same frozen widening rule:
   do not reopen the delivered communications/surveillance families unless
   their runtime semantics themselves change
@@ -284,38 +294,27 @@ For orchestration:
 Unless the user says otherwise, the next default task in `research/fm` is:
 
 - keep the scoped surface stable and honest
-- choose one widening direction at a time:
-  deeper route-bearing work, broader current-shape family widening, or richer
-  operational mode semantics
-- if staying on the route-bearing track, start from the delivered first slice
-  rather than redoing it:
-  resolved semantics, the first procedure-bearing extraction increment, the
-  extraction-to-resolution bridge, the first greenfield admission /
-  current-shape issuance layer, the first route-bearing compound issuance
-  layer, and the first current-shape lifecycle / supersession layers are
-  already in place for the full Phase A route-bearing surface, and
-  `GreenfieldRouteBearingCurrentShape.lean` now packages that surface at one
-  source-level theorem boundary on the current graph-backed
-  published-procedure model;
-  `ContinueApproach`, `ExtendDownwind`, and `Orbit` now also have small
-  current-shape theorem slices on top of that surface, and all three are now
-  widened through a narrow compound slice, with the delivered Phase B set now
-  also packaged behind one source-level current-shape theorem boundary and
-  closed through a current-shape authority layer;
-  the current Kotlin airspace-clearance family now has both a single-step
-  package and a first narrow compound slice for all three families, with the
-  broadened airspace family now packaged behind one source-level current-shape
-  theorem boundary;
-  the delivered runway-operation family now also has a first narrow compound
-  layer, and the broadened current-shape runway family now packages that
-  slice together with single-step `BacktrackRunway`;
-  the next honest work on the greenfield path is therefore no longer
-  structural bridge work, is not `ClearedApproach` completion, and is not
-  basic current-shape compound closure for `ContinueApproach`,
-  `ExtendDownwind`, or `Orbit`, and is also no longer basic
-  communications/surveillance, runway, or airspace widening;
-  the live gap is instead wider execution packaging beyond those slices,
-  deeper ground-movement work, modifier/pressure authority closure, or a
-  shift to a new narrow family
+- use the frozen parity / refinement / drift-control inventory in
+  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+  as a guardrail before opening a new branch:
+  if metadata, authority, completion, supersession, or family status changes,
+  update the inventory
+- remember what is already closed and therefore not the default “next” task:
+  the current graph-backed published-procedure route-bearing branch,
+  the delivered Phase B route-adjacent branch,
+  the current graph-backed point-set + transition airspace branch,
+  the delivered communications/surveillance surface,
+  the broadened current-shape runway surface,
+  and the current graph-backed broader ground / surface branch
+- the next widening branch is now a deliberate choice, not an automatic
+  default:
+  prefer one branch at a time between broader
+  communications/surveillance semantics and the next genuinely semantic
+  branch beyond the current models
+- after that branch, choose one widening direction at a time:
+  broader communications/surveillance, deeper route-bearing beyond the
+  current graph-backed published-procedure model, richer airspace beyond the
+  current graph-backed point-set + transition model, unresolved
+  heading-progress/vector semantics, or richer operational mode semantics
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

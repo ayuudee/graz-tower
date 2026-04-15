@@ -330,8 +330,15 @@ inductive AtcInstruction
       (expectFurtherClearanceAt : Option String := none)
   | leaveHoldProceedDirect (target : AircraftId) (fix : FixId)
   | whenAbleProceedDirect (target : AircraftId) (fix : FixId)
+  | flyHeading (target : AircraftId) (headingDegreesMagnetic : Nat)
+  | turnHeading (target : AircraftId) (headingDegreesMagnetic : Nat)
+  | turnByDegrees (target : AircraftId) (turnDirection : TurnDirection) (degrees : Nat)
+  | continuePresentHeading (target : AircraftId)
+  | stopTurn (target : AircraftId)
+  | interceptLocaliser (target : AircraftId)
   | climbTo (target : AircraftId) (level : Level)
   | descendTo (target : AircraftId) (level : Level)
+  | descendWhenReady (target : AircraftId) (level : Level)
   | expediteClimb (target : AircraftId) (level : Level)
   | expediteDescend (target : AircraftId) (level : Level)
   | maintainLevel (target : AircraftId) (level : Level)
@@ -343,6 +350,7 @@ inductive AtcInstruction
   | afterPassingLevelDescendTo (target : AircraftId) (afterPassing : Level) (descendTo : Level)
   | maintainAltitudeUntilEstablished (target : AircraftId) (level : Level)
       (on : ApproachComponent)
+  | avoidLevel (target : AircraftId) (level : Level)
   | maintainSpeed (target : AircraftId) (speed : Speed)
   | reduceSpeedTo (target : AircraftId) (speed : Speed)
   | increaseSpeedTo (target : AircraftId) (speed : Speed)
@@ -379,6 +387,7 @@ inductive AtcInstruction
   | squawkNormal (target : AircraftId) (mode : TransponderMode)
   | stopSquawk (target : AircraftId) (mode : TransponderMode)
   | setPressure (target : AircraftId) (pressure : PressureSetting)
+  | cancelClearance (target : AircraftId)
   | conditionalClearance (target : AircraftId) (condition : ConditionalPredicate)
       (instruction : AtcInstruction)
   deriving DecidableEq, Repr
@@ -410,8 +419,15 @@ def instructionTarget : AtcInstruction → AircraftId
   | .holdAt target _ _ => target
   | .leaveHoldProceedDirect target _ => target
   | .whenAbleProceedDirect target _ => target
+  | .flyHeading target _ => target
+  | .turnHeading target _ => target
+  | .turnByDegrees target _ _ => target
+  | .continuePresentHeading target => target
+  | .stopTurn target => target
+  | .interceptLocaliser target => target
   | .climbTo target _ => target
   | .descendTo target _ => target
+  | .descendWhenReady target _ => target
   | .expediteClimb target _ => target
   | .expediteDescend target _ => target
   | .maintainLevel target _ => target
@@ -422,6 +438,7 @@ def instructionTarget : AtcInstruction → AircraftId
   | .afterPassingLevelClimbTo target _ _ => target
   | .afterPassingLevelDescendTo target _ _ => target
   | .maintainAltitudeUntilEstablished target _ _ => target
+  | .avoidLevel target _ => target
   | .maintainSpeed target _ => target
   | .reduceSpeedTo target _ => target
   | .increaseSpeedTo target _ => target
@@ -444,6 +461,7 @@ def instructionTarget : AtcInstruction → AircraftId
   | .squawkNormal target _ => target
   | .stopSquawk target _ => target
   | .setPressure target _ => target
+  | .cancelClearance target => target
   | .conditionalClearance target _ _ => target
 
 inductive ClearanceDomain
@@ -487,8 +505,16 @@ def instructionTiming? : AtcInstruction → Option InstructionTiming
   | .squawkNormal _ _ => some .immediate
   | .stopSquawk _ _ => some .immediate
   | .setPressure _ _ => some .immediate
+  | .cancelClearance _ => some .immediate
+  | .flyHeading _ _ => some .immediate
+  | .turnHeading _ _ => some .immediate
+  | .turnByDegrees _ _ _ => some .immediate
+  | .continuePresentHeading _ => some .immediate
+  | .stopTurn _ => some .immediate
+  | .interceptLocaliser _ => some .immediate
   | .climbTo _ _ => some .immediate
   | .descendTo _ _ => some .immediate
+  | .descendWhenReady _ _ => none
   | .expediteClimb _ _ => some .immediate
   | .expediteDescend _ _ => some .immediate
   | .maintainLevel _ _ => some .immediate
@@ -499,6 +525,7 @@ def instructionTiming? : AtcInstruction → Option InstructionTiming
   | .afterPassingLevelClimbTo _ _ _ => some .immediate
   | .afterPassingLevelDescendTo _ _ _ => some .immediate
   | .maintainAltitudeUntilEstablished _ _ _ => some .immediate
+  | .avoidLevel _ _ => some .immediate
   | .maintainSpeed _ _ => some .immediate
   | .reduceSpeedTo _ _ => some .immediate
   | .increaseSpeedTo _ _ => some .immediate
@@ -544,6 +571,12 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .holdAt _ _ _ => some .route
   | .leaveHoldProceedDirect _ _ => some .route
   | .whenAbleProceedDirect _ _ => some .route
+  | .flyHeading _ _ => some .route
+  | .turnHeading _ _ => some .route
+  | .turnByDegrees _ _ _ => some .route
+  | .continuePresentHeading _ => some .route
+  | .stopTurn _ => some .route
+  | .interceptLocaliser _ => some .route
   | .clearedApproach _ _ _ _ => some .route
   | .joinCircuit _ _ _ _ => none
   | .continueApproach _ => some .route
@@ -554,6 +587,7 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .specialVfrClearance _ _ _ _ => some .route
   | .climbTo _ _ => some .level
   | .descendTo _ _ => some .level
+  | .descendWhenReady _ _ => some .level
   | .expediteClimb _ _ => some .level
   | .expediteDescend _ _ => some .level
   | .maintainLevel _ _ => some .level
@@ -564,6 +598,7 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .afterPassingLevelClimbTo _ _ _ => some .level
   | .afterPassingLevelDescendTo _ _ _ => some .level
   | .maintainAltitudeUntilEstablished _ _ _ => some .level
+  | .avoidLevel _ _ => some .level
   | .maintainSpeed _ _ => some .speed
   | .reduceSpeedTo _ _ => some .speed
   | .increaseSpeedTo _ _ => some .speed
@@ -578,6 +613,7 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .squawkNormal _ _ => some .squawk
   | .stopSquawk _ _ => some .squawk
   | .setPressure _ _ => none
+  | .cancelClearance _ => none
 
 def instructionSupersedesIn : AtcInstruction → List ClearanceDomain
   | .conditionalClearance _ _ instruction => instructionSupersedesIn instruction
@@ -604,19 +640,27 @@ def instructionCompletionCategory? : AtcInstruction → Option CompletionCategor
   | .rejoinSidAt _ _ => some .selfCompleting
   | .leaveHoldProceedDirect _ _ => some .selfCompleting
   | .whenAbleProceedDirect _ _ => some .selfCompleting
+  | .flyHeading _ _ => some .persistent
+  | .turnHeading _ _ => some .persistent
+  | .turnByDegrees _ _ _ => some .selfCompleting
+  | .continuePresentHeading _ => some .persistent
+  | .stopTurn _ => some .onActivation
+  | .interceptLocaliser _ => some .selfCompleting
   | .climbTo _ _ => some .selfCompleting
   | .descendTo _ _ => some .selfCompleting
+  | .descendWhenReady _ _ => some .selfCompleting
   | .expediteClimb _ _ => some .selfCompleting
   | .expediteDescend _ _ => some .selfCompleting
-  | .maintainLevel _ _ => some .selfCompleting
+  | .maintainLevel _ _ => some .persistent
   | .stopClimbAt _ _ => some .selfCompleting
   | .stopDescentAt _ _ => some .selfCompleting
-  | .maintainAtOrAbove _ _ => some .selfCompleting
-  | .maintainAtOrBelow _ _ => some .selfCompleting
+  | .maintainAtOrAbove _ _ => some .persistent
+  | .maintainAtOrBelow _ _ => some .persistent
   | .afterPassingLevelClimbTo _ _ _ => some .selfCompleting
   | .afterPassingLevelDescendTo _ _ _ => some .selfCompleting
   | .maintainAltitudeUntilEstablished _ _ _ => some .selfCompleting
-  | .maintainSpeed _ _ => some .selfCompleting
+  | .avoidLevel _ _ => some .persistent
+  | .maintainSpeed _ _ => some .persistent
   | .reduceSpeedTo _ _ => some .selfCompleting
   | .increaseSpeedTo _ _ => some .selfCompleting
   | .confirmSquawk _ _ => some .selfCompleting
@@ -627,9 +671,10 @@ def instructionCompletionCategory? : AtcInstruction → Option CompletionCategor
   | .joinCircuit _ _ _ _ => some .selfCompleting
   | .setSquawk _ _ => some .onActivation
   | .setPressure _ _ => some .onActivation
+  | .cancelClearance _ => some .onActivation
   | .resumeOwnNavigation _ => some .onActivation
   | .routeAsFiled _ => some .onActivation
-  | .minimumCleanSpeed _ => some .onActivation
+  | .minimumCleanSpeed _ => some .persistent
   | .resumeNormalSpeed _ => some .onActivation
   | .contactFrequency _ _ _ => some .externalEvent
   | .monitorFrequency _ _ _ => some .externalEvent
@@ -663,6 +708,12 @@ def instructionFrontierTiming : AtcInstruction → FrontierTiming
   | .holdShortOf _ _ => .movement
   | .backtrackRunway _ _ => .movement
   | .lineUpAndWait _ _ => .movement
+  | .flyHeading _ _ => .immediate
+  | .turnHeading _ _ => .immediate
+  | .turnByDegrees _ _ _ => .immediate
+  | .continuePresentHeading _ => .immediate
+  | .stopTurn _ => .immediate
+  | .interceptLocaliser _ => .immediate
   | .climbTo _ _ => .immediate
   | .descendTo _ _ => .immediate
   | .expediteClimb _ _ => .immediate
@@ -675,6 +726,7 @@ def instructionFrontierTiming : AtcInstruction → FrontierTiming
   | .afterPassingLevelClimbTo _ _ _ => .immediate
   | .afterPassingLevelDescendTo _ _ _ => .immediate
   | .maintainAltitudeUntilEstablished _ _ _ => .immediate
+  | .avoidLevel _ _ => .immediate
   | .maintainSpeed _ _ => .immediate
   | .reduceSpeedTo _ _ => .immediate
   | .increaseSpeedTo _ _ => .immediate

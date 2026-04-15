@@ -10,6 +10,20 @@ From the repository root:
 nix-shell -p lean4 --run 'cd research/fm/lean && lake build'
 ```
 
+## Default Next Work
+
+The parity / refinement / drift-control branch is now frozen in
+[parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md).
+
+There is no longer one automatic low-risk widening branch of exactly the same
+shape.
+
+- keep that inventory current if metadata, authority, completion,
+  supersession, or family status changes
+- choose the next deliberate widening branch between broader
+  communications/surveillance semantics and the next genuinely semantic
+  branch beyond the current models
+
 ## Module Order
 
 Read modules in roughly this order:
@@ -59,6 +73,11 @@ Read modules in roughly this order:
     Optional. This is the reusable current-shape helper for single-step
     greenfield instructions that resolve as plain steps rather than
     world-specific payloads.
+    For the delivered broader ground / surface branch, also read
+    [CertifiedAtc/GroundMovementResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GroundMovementResolutionBridge.lean),
+    [CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
+    and
+    [CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean).
 21. [CertifiedAtc/GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean)
     Optional. This closes the current-shape single-step `ContinueApproach`
     slice: source-level issuance, active lifecycle, and explicit `GoAround`

@@ -139,6 +139,8 @@ def observedInstructionCompletion?
       some <| if levelAtOrAbove observation.altitude level then .complete else .notComplete
   | .descendTo _ level =>
       some <| if levelAtOrBelow observation.altitude level then .complete else .notComplete
+  | .descendWhenReady _ level =>
+      some <| if levelAtOrBelow observation.altitude level then .complete else .notComplete
   | .expediteClimb _ level =>
       some <| if levelAtOrAbove observation.altitude level then .complete else .notComplete
   | .expediteDescend _ level =>
@@ -159,6 +161,8 @@ def observedInstructionCompletion?
       some <| if levelAtOrBelow observation.altitude descendTo then .complete else .notComplete
   | .maintainAltitudeUntilEstablished _ _ component =>
       some <| if component ∈ observation.establishedApproachComponents then .complete else .notComplete
+  | .avoidLevel _ level =>
+      some <| if levelMatches observation.altitude level then .notComplete else .complete
   | .maintainSpeed _ speed =>
       some <| if speedMatches observation.speed speed then .complete else .notComplete
   | .reduceSpeedTo _ speed =>
@@ -192,6 +196,12 @@ def observedInstructionCompletion?
             (match frequency with
             | some frequency => observation.currentFrequency = some frequency
             | none => false) then
+          .complete
+        else
+          .notComplete
+  | .interceptLocaliser _ =>
+      some <|
+        if .localiser ∈ observation.establishedApproachComponents then
           .complete
         else
           .notComplete

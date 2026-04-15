@@ -45,10 +45,24 @@ def worldCircuitJoinBindings : List ScopedCircuitSource → List ConcreteCircuit
   | circuit :: tail =>
       circuitJoinBindings circuit ++ worldCircuitJoinBindings tail
 
+def airwayPointBindings
+    (airway : ScopedAirwaySource) : List ConcreteAirwayPointBinding :=
+  airway.waypoints.map fun waypoint =>
+    { airway := airway.id
+      point := waypoint.point }
+
+def worldAirwayPointBindings
+    (airways : List ScopedAirwaySource) : List ConcreteAirwayPointBinding :=
+  match airways with
+  | [] => []
+  | airway :: tail => airwayPointBindings airway ++ worldAirwayPointBindings tail
+
 def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ConcreteResolutionWorld :=
   { fixPoints :=
       world.fixes.map (fun fix => (fix.id, fix.point))
+    airwayPoints :=
+      worldAirwayPointBindings world.airways
     holdingPatterns :=
       world.holdingPatterns.map fun hold =>
         { hold := .published hold.fix

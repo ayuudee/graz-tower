@@ -402,6 +402,7 @@ inductive CompileAuthorityOperation
   | contact
   | monitor
   | airspaceTransit
+  | information
   deriving DecidableEq, Repr
 
 structure CompileAuthorityGrantView where

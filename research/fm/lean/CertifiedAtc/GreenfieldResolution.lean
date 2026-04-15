@@ -19,6 +19,7 @@ structure ResolutionWorld where
   crossingPointForRunway : RunwayId → PointId → Prop
   farEndPointForRunway : RunwayId → PointId → Prop
   fixPoint : FixId → PointId → Prop
+  airwayPoint : AirwayId → PointId → Prop
   routeSpecPoints : RouteSpec → List PointId → Prop
   routeClearancePoints : RouteSpec → FixId → List PointId → Prop
   holdingPatternFor : HoldSpec → HoldingPatternId → FixId → Prop
@@ -71,6 +72,11 @@ structure ConcreteRouteClearanceBinding where
   points : List PointId
   deriving DecidableEq, Repr
 
+structure ConcreteAirwayPointBinding where
+  airway : AirwayId
+  point : PointId
+  deriving DecidableEq, Repr
+
 structure ConcreteCircuitJoinBinding where
   direction : CircuitDirection
   joinType : JoinType
@@ -98,6 +104,7 @@ structure ConcreteResolutionWorld where
   runwayCrossingPoints : List (RunwayId × PointId) := []
   runwayFarEnds : List (RunwayId × PointId) := []
   fixPoints : List (FixId × PointId) := []
+  airwayPoints : List ConcreteAirwayPointBinding := []
   routeClearanceBindings : List ConcreteRouteClearanceBinding := []
   holdingPatterns : List ConcreteHoldingPatternBinding := []
   holdingPatternLoops : List ConcreteHoldingPatternLoopBinding := []
@@ -121,6 +128,8 @@ def ConcreteResolutionWorld.toResolutionWorld
       (runway, point) ∈ world.runwayFarEnds
     fixPoint := fun fix point =>
       (fix, point) ∈ world.fixPoints
+    airwayPoint := fun airway point =>
+      { airway := airway, point := point } ∈ world.airwayPoints
     routeSpecPoints := fun _ _ => False
     routeClearancePoints := fun route clearanceLimit points =>
       { route := route, clearanceLimit := clearanceLimit, points := points } ∈ world.routeClearanceBindings
@@ -174,6 +183,14 @@ theorem ConcreteResolutionWorld.mem_fixPoint
     {point : PointId}
     (hMem : (fix, point) ∈ world.fixPoints) :
     world.toResolutionWorld.fixPoint fix point := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_airwayPoint
+    {world : ConcreteResolutionWorld}
+    {airway : AirwayId}
+    {point : PointId}
+    (hMem : { airway := airway, point := point } ∈ world.airwayPoints) :
+    world.toResolutionWorld.airwayPoint airway point := by
   simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
 
 theorem ConcreteResolutionWorld.mem_roleFrequency
@@ -702,7 +719,8 @@ inductive ResolvesIndexedStep :
       (joinFix : FixId)
       (joinPoint : PointId)
       (state : ResolutionState)
-      (hPoint : world.fixPoint joinFix joinPoint) :
+      (hPoint : world.fixPoint joinFix joinPoint)
+      (hAirway : world.airwayPoint airway joinPoint) :
       ResolvesIndexedStep
         world
         state
