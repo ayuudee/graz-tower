@@ -194,6 +194,18 @@ Read modules in roughly this order:
     fallback vocabulary, and reachable mode-aware preservation.
 62. [CertifiedAtc/JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
     Optional. This is a narrow orchestration milestone module.
+63. [CertifiedAtc/GreenfieldRunwayCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayCompound.lean)
+    Optional. This widens the delivered runway-operation family through a
+    first narrow current-shape compound slice.
+64. [CertifiedAtc/GreenfieldRunwayExpandedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayExpandedCurrentShape.lean)
+    Optional. This packages the broadened current-shape runway family behind
+    one source-level reachable-admission theorem boundary.
+65. [CertifiedAtc/GreenfieldAirspaceExpandedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceExpandedCompound.lean)
+    Optional. This widens the current airspace-clearance family by adding the
+    missing narrow compound slice for `RemainOutsideControlledAirspace`.
+66. [CertifiedAtc/GreenfieldAirspaceExpandedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceExpandedCurrentShape.lean)
+    Optional. This packages the broadened current-shape airspace family behind
+    one source-level theorem boundary.
 
 ## What Each Module Owns
 
@@ -314,6 +326,12 @@ Read modules in roughly this order:
 - `GreenfieldAirspaceDeliveredCurrentShape`
   Source-level current-shape packaging for the delivered airspace-clearance
   surface.
+- `GreenfieldAirspaceExpandedCompound`
+  The phase-4 widening increment that adds the missing
+  `RemainOutsideControlledAirspace` narrow compound slice.
+- `GreenfieldAirspaceExpandedCurrentShape`
+  Source-level current-shape packaging for the broadened airspace-clearance
+  surface.
 - `GreenfieldRadioCurrentShape`
   Source-level current-shape packaging for the delivered radio family:
   `ContactFrequency` and `MonitorFrequency`.
@@ -348,6 +366,12 @@ Read modules in roughly this order:
 - `GreenfieldRunwayDeliveredCurrentShape`
   Source-level current-shape packaging for the delivered runway-operation
   family.
+- `GreenfieldRunwayCompound`
+  The phase-3 widening increment that adds the first narrow current-shape
+  compound slice for the delivered runway-operation family.
+- `GreenfieldRunwayExpandedCurrentShape`
+  Source-level reachable-admission packaging for the broadened current-shape
+  runway family.
 - `GreenfieldSetSquawkCurrentShape`
   Source-level current-shape packaging for the delivered `SetSquawk` slice.
 - `GreenfieldConfirmSquawkCurrentShape`
@@ -474,48 +498,54 @@ There are now twenty-six distinct Lean layers above the local certifiers:
    Narrow current-shape compound closure for the persistent airspace-clearance families.
 21. `GreenfieldAirspaceDeliveredCurrentShape.lean`
    Source-level current-shape packaging for the delivered airspace-clearance surface.
-22. `GreenfieldCompletion.lean`
+22. `GreenfieldAirspaceExpandedCompound.lean`
+   The phase-4 widening increment that adds the missing
+   `RemainOutsideControlledAirspace` narrow compound slice.
+23. `GreenfieldAirspaceExpandedCurrentShape.lean`
+   Source-level current-shape packaging for the broadened airspace-clearance
+   surface.
+24. `GreenfieldCompletion.lean`
    The structured observation contract that evaluates proof-side facts against resolved steps.
-23. `GreenfieldExecution.lean`
+25. `GreenfieldExecution.lean`
    The resolved active-clearance layer that closes the loop from admitted clearances to completion and reconciliation.
-24. `GreenfieldReachability.lean`
+26. `GreenfieldReachability.lean`
    The reachable active-set layer that packages execution preservation into a reusable invariant boundary.
-25. `GreenfieldRouteBearing.lean`
+27. `GreenfieldRouteBearing.lean`
    The first widened route-bearing layer above the closed scoped programme:
    truthful resolved semantics for `ClearedTo`, `HoldAt`,
    `ClearedApproach`, and `JoinCircuit`.
-26. `GreenfieldRouteBearingAdmission.lean`
+28. `GreenfieldRouteBearingAdmission.lean`
    The first current-shape route-bearing admission layer:
    authority-gated admission, resolved-clearance existence, and packaged
    current-shape issuance for the full bridged Phase A surface.
-27. `GreenfieldRouteBearingCompound.lean`
+29. `GreenfieldRouteBearingCompound.lean`
    The first route-bearing compound layer above that admission boundary:
    one leading Phase A route-bearing step plus immediate adjunct tails,
    whole-clearance resolution/admission/issuance, and explicit non-completing
    `ClearedApproach` semantics.
-28. `GreenfieldRouteBearingLifecycle.lean`
+30. `GreenfieldRouteBearingLifecycle.lean`
    The first current-shape route-bearing lifecycle layer:
    theorem-bearing completion, active-state, and terminal-state behavior for
    the widened route-bearing surface.
-29. `GreenfieldRouteBearingSupersession.lean`
+31. `GreenfieldRouteBearingSupersession.lean`
    The first current-shape route-bearing supersession layer:
    partial frequency supersession, full `GoAround` supersession, and the
    current modeled `HoldAt` consequence after frequency supersession.
-30. `GreenfieldRouteBearingCurrentShape.lean`
+32. `GreenfieldRouteBearingCurrentShape.lean`
    The current-shape closure wrapper for the Phase A route-bearing surface:
    one source-level theorem boundary over the admitted route-bearing singles
    and compounds.
-31. `BridgeableRouteBearingIssuance.lean`
+33. `BridgeableRouteBearingIssuance.lean`
    The first widened issuing layer for the route-bearing track:
    theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
    legacy-supported `JoinCircuit`.
-32. `ScopedGreenfield.lean`
+34. `ScopedGreenfield.lean`
    The scoped `Safety-complete (N₀)` theorem package above the greenfield model
    and execution layers.
-33. `ScopedIssuance.lean`
+35. `ScopedIssuance.lean`
    The final scoped issuing layer above extraction and greenfield execution:
    bridge into the old certified path plus the Milestone 5 theorem package.
-34. `ScopedSafety.lean`
+36. `ScopedSafety.lean`
    The reachable-state safety layer above the scoped issuing boundary:
    preserved nominal/kernel/interface invariants, reachable issued-state
    semantics, and issued-step separation soundness.

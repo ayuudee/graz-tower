@@ -174,6 +174,19 @@ It now contains:
   boundary, with unified authority-gated issuance over the already-delivered
   single-step slices for `LineUpAndWait`, `ClearedForTakeoff`,
   `ClearedToLand`, `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround`
+- `GreenfieldRunwayCompound.lean` now widens that delivered runway-operation
+  family through a first narrow current-shape compound layer:
+  one leading runway-operation primary plus immediate adjunct tails now has
+  whole-clearance resolution/admission, frozen conservative authority at the
+  compound layer, and theorem-bearing current lifecycle/supersession
+  consequences for the current engine
+- `GreenfieldRunwayExpandedCurrentShape.lean` now packages the broadened
+  current-shape runway family behind one source-level theorem boundary:
+  the delivered runway-operation singles, the first narrow runway-operation
+  compound slice, and single-step `BacktrackRunway` now share one reachable
+  resolved-admission surface;
+  this is intentionally a reachability package rather than a new cross-cutting
+  runway-family authority theorem
 - the phase-1 current-shape parity closure is now complete under the frozen
   widening rule:
   every family whose Kotlin semantics are already stable, whose conservative
@@ -184,6 +197,22 @@ It now contains:
   the already-delivered radio and transponder/surveillance families are now
   widened through their first narrow mixed current-shape compound/package
   layer, still without introducing new world-resolution theory
+- `GreenfieldAirspaceExpandedCompound.lean` now closes the missing narrow
+  compound slice for `RemainOutsideControlledAirspace`, so all three current
+  Kotlin airspace-clearance families now have both a single-step slice and a
+  first narrow compound slice on the greenfield boundary
+- `GreenfieldAirspaceExpandedCurrentShape.lean` now packages that broadened
+  current-shape airspace family behind one source-level theorem boundary
+- the phase-3 runway widening closure is now complete under that same frozen
+  widening rule:
+  the delivered runway-operation family is now widened through a first narrow
+  current-shape compound slice, and the broadened current-shape runway family
+  now packages that slice together with single-step `BacktrackRunway`
+- the phase-4 airspace widening closure is now also complete under that same
+  frozen widening rule:
+  the whole current Kotlin airspace-clearance family now has both a
+  single-step slice and a first narrow compound slice, packaged behind one
+  source-level current-shape theorem boundary
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -215,47 +244,21 @@ It does not yet contain:
   closure remain incomplete, with legacy-bridge issuance still limited to
   `ClearedApproach` plus legacy-supported `JoinCircuit`
 - a widened current-shape airspace-clearance package beyond the now-delivered
-  narrow slice; the delivered family is now source-level packaged, but the
-  current Lean/runtime-aligned story does not yet claim world-backed
-  airspace-entry resolution, broader compound widening, or richer airspace
+  first full-family narrow compound slice; the broadened family is now
+  source-level packaged, but the current Lean/runtime-aligned story still does
+  not claim world-backed airspace-entry resolution or richer airspace
   lifecycle semantics
 - a widened current-shape communications/surveillance package beyond the now-
   delivered narrow compound slice; the delivered radio and
   transponder/surveillance families are now source-level packaged through
   their first mixed current-shape compound layer, but they are not yet
   widened through broader coordination or surveillance semantics
-- a widened current-shape `BacktrackRunway` package beyond the now-delivered
-  single-step slice; the current backtrack story is now closed on the
-  greenfield boundary, but it is not yet widened into a broader ground-
-  movement package
-- a widened current-shape `LineUpAndWait` package beyond the now-delivered
-  single-step slice; the current line-up story is now closed on the
-  greenfield boundary, but it is not yet widened into a broader runway-
-  operation package
-- a widened current-shape `ClearedForTakeoff` package beyond the now-delivered
-  single-step slice; the current takeoff story is now closed on the
-  greenfield boundary, but it is not yet widened into a broader runway-
-  operation package
-- a widened current-shape `ClearedToLand` package beyond the now-delivered
-  single-step slice; the current landing story is now closed on the
-  greenfield boundary, but it is not yet widened into a broader runway-
-  operation package
-- a widened current-shape `ClearedTouchAndGo` package beyond the now-delivered
-  single-step slice; the current touch-and-go story is now closed on the
-  greenfield boundary, but it is not yet widened into a broader runway-
-  operation package
-- a widened current-shape `ClearedLowApproach` package beyond the now-
-  delivered single-step slice; the current low-approach story is now closed
-  on the greenfield boundary, but it is not yet widened into a broader
-  runway-operation package
-- a widened current-shape `GoAround` package beyond the now-delivered
-  single-step slice; the current go-around story is now closed on the
-  greenfield boundary, but it is not yet widened into a broader runway-
-  operation package
-- a widened packaged runway-operation family beyond the now-delivered
-  single-step slices; the current runway-operation story is now source-level
-  packaged on the greenfield boundary, but it is not yet widened into a
-  broader runway-operations package
+- a widened current-shape runway family beyond the now-delivered first narrow
+  compound slice; the broadened family now packages the delivered
+  runway-operation singles, the first narrow runway-operation compounds, and
+  single-step `BacktrackRunway`, but it does not yet widen the broader
+  ground-movement family or add a new cross-cutting runway-family authority
+  theorem
 - widened current-shape compound/authority packaging for the newly delivered
   Phase B families beyond their current narrow compound slices; the delivered
   Phase B surface is now source-level packaged and current-shape

@@ -427,6 +427,25 @@ The default critical path is now:
   `LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround` now have one
   unified current-shape reachable/authorized issuance surface
+- `GreenfieldRunwayCompound.lean` now widens that delivered runway-operation
+  family through a first narrow current-shape compound slice:
+  one leading runway-operation primary plus immediate adjunct tails now has
+  whole-clearance resolution/admission, frozen conservative authority at the
+  compound layer, and theorem-bearing current lifecycle/supersession
+  consequences for the current engine
+- `GreenfieldRunwayExpandedCurrentShape.lean` now packages the broadened
+  current-shape runway family behind one source-level theorem boundary:
+  the delivered runway-operation singles, the first narrow runway-operation
+  compound slice, and single-step `BacktrackRunway` now share one reachable
+  resolved-admission surface;
+  this is intentionally a reachability package, not a new cross-cutting
+  runway-family authority theorem
+- `GreenfieldAirspaceExpandedCompound.lean` now closes the missing narrow
+  compound slice for `RemainOutsideControlledAirspace`, so all three current
+  Kotlin airspace-clearance families now have both a single-step slice and a
+  first narrow compound slice on the greenfield boundary
+- `GreenfieldAirspaceExpandedCurrentShape.lean` now packages that broadened
+  current-shape airspace family behind one source-level theorem boundary
 - the phase-1 current-shape parity closure is now complete under the frozen
   rule used for this widening programme:
   every family whose Kotlin semantics are already stable, whose conservative
@@ -437,16 +456,26 @@ The default critical path is now:
   the already-delivered radio and transponder/surveillance families are now
   widened through their first narrow mixed current-shape compound/package
   surface, still without introducing new world-resolution theory
+- the phase-3 runway widening closure is now also complete under that same
+  frozen rule:
+  the delivered runway-operation family is now widened through a first narrow
+  current-shape compound slice, and the broadened current-shape runway family
+  now packages that slice together with single-step `BacktrackRunway`
+- the phase-4 airspace widening closure is now also complete under that same
+  frozen rule:
+  the whole current Kotlin airspace-clearance family now has both a
+  single-step slice and a first narrow compound slice, packaged behind one
+  source-level current-shape theorem boundary
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
-  `ContinueApproach`, `ExtendDownwind`, or `Orbit`; it is to decide whether to
-  widen execution beyond the delivered Phase B slices, widen the airspace-
-  clearance family beyond its current narrow slice, widen the delivered
-  communications/surveillance package beyond its current narrow compound
-  surface, widen `BacktrackRunway` beyond its current
-  single-step package, widen the packaged runway-operation family into a
-  broader runway package, or shift to a new narrow family, or carry
-  `ClearedTo` / `HoldAt` through the older atomic path
+  `ContinueApproach`, `ExtendDownwind`, or `Orbit`;
+  it is now to decide whether to widen execution beyond the delivered Phase B
+  slices, widen communications/surveillance beyond the delivered narrow
+  compound surface, widen the broader ground-movement family on the greenfield
+  boundary, settle authority for the modifier/pressure families, or carry
+  `ClearedTo` / `HoldAt` through the older atomic path, or deepen current
+  airspace semantics from the present plain current-shape boundary into a more
+  world-backed layer
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

@@ -169,12 +169,27 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
   current-shape runway-operation family behind one source-level theorem
   boundary
+  `GreenfieldRunwayCompound.lean` now widens that delivered runway-operation
+  family through a first narrow compound layer, and
+  `GreenfieldRunwayExpandedCurrentShape.lean` now packages the broadened
+  current-shape runway family behind one source-level reachable-admission
+  boundary
+  `GreenfieldAirspaceExpandedCompound.lean` now closes the missing narrow
+  `RemainOutsideControlledAirspace` compound slice, and
+  `GreenfieldAirspaceExpandedCurrentShape.lean` now packages the broadened
+  current-shape airspace family behind one source-level theorem boundary
   phase 1 is now closed under the frozen widening rule:
   do not reopen families in that bucket unless runtime semantics themselves
   change
   phase 2 is now also closed under that same frozen widening rule:
   do not reopen the delivered communications/surveillance families unless
   their runtime semantics themselves change
+  phase 3 is now also closed under that same frozen widening rule:
+  do not reopen the delivered runway family unless runway runtime semantics
+  themselves change
+  phase 4 is now also closed under that same frozen widening rule:
+  do not reopen the current airspace-clearance family unless those runtime
+  semantics themselves change
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing
@@ -267,18 +282,20 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   widened through a narrow compound slice, with the delivered Phase B set now
   also packaged behind one source-level current-shape theorem boundary and
   closed through a current-shape authority layer;
-  the current Kotlin airspace-clearance family also now has a first
-  single-step current-shape package in `GreenfieldAirspaceCurrentShape.lean`,
-  and its two persistent families now also have a first narrow compound slice
-  in `GreenfieldAirspaceCompound.lean`, with the delivered airspace family now
-  also packaged behind one source-level current-shape theorem boundary;
+  the current Kotlin airspace-clearance family now has both a single-step
+  package and a first narrow compound slice for all three families, with the
+  broadened airspace family now packaged behind one source-level current-shape
+  theorem boundary;
+  the delivered runway-operation family now also has a first narrow compound
+  layer, and the broadened current-shape runway family now packages that
+  slice together with single-step `BacktrackRunway`;
   the next honest work on the greenfield path is therefore no longer
   structural bridge work, is not `ClearedApproach` completion, and is not
   basic current-shape compound closure for `ContinueApproach`,
   `ExtendDownwind`, or `Orbit`, and is also no longer basic
-  communications/surveillance widening;
+  communications/surveillance, runway, or airspace widening;
   the live gap is instead wider execution packaging beyond those slices,
-  widening the airspace-clearance family beyond its current narrow slice, or a
+  deeper ground-movement work, modifier/pressure authority closure, or a
   shift to a new narrow family
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation
