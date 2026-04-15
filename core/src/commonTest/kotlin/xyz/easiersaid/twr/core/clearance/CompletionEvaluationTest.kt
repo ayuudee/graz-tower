@@ -344,6 +344,66 @@ class CompletionEvaluationTest {
     }
 
     @Test
+    fun controlZoneAndSpecialVfrPermissionsCompleteOnExitTransitionOrLanding() {
+        val world = sampleWorld()
+        val enterZone = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ENTER-CTR-EXIT",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    ClearedToEnterControlZone(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+        val specialVfr = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-SVFR-LAND",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    SpecialVfrClearance(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val exitView = CompletionView(
+            position = xyz.easiersaid.twr.protocol.PointId("OUTSIDE-CTR"),
+            entities = emptySet(),
+            onGround = false,
+            transitionHistory = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace))
+        )
+        val landingView = CompletionView(
+            position = FixtureIds.standPoint,
+            entities = emptySet(),
+            onGround = true
+        )
+
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(enterZone, exitView).stepResults.single().result
+        )
+        assertEquals(
+            ClearanceStatus.COMPLETED,
+            evaluateCompletion(enterZone, exitView).updated.source.status
+        )
+        assertEquals(
+            CompletionResult.COMPLETE,
+            evaluateCompletion(specialVfr, landingView).stepResults.single().result
+        )
+        assertEquals(
+            ClearanceStatus.COMPLETED,
+            evaluateCompletion(specialVfr, landingView).updated.source.status
+        )
+    }
+
+    @Test
     fun controlZoneCompoundCompletesWhenImmediateFrequencyTailCompletes() {
         val world = sampleWorld()
         val resolved = world.resolveClearance(

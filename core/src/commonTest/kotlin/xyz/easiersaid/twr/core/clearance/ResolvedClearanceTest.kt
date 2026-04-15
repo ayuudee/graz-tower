@@ -377,7 +377,9 @@ class ResolvedClearanceTest {
 
     @Test
     fun resolvesControlZoneClearanceAgainstAirspaceVolume() {
-        val world = sampleWorld()
+        val world = sampleWorldWithAirspacePoints(
+            setOf(FixtureIds.vfrRoutePoint)
+        )
         val clearance = StructuredClearance(
             id = ClearanceId("CLR-ENTER-CTR"),
             aircraft = AircraftId("TEST123"),
@@ -407,6 +409,49 @@ class ResolvedClearanceTest {
             assertIs<xyz.easiersaid.twr.core.resolution.ResolvedRouteSpec.VfrRouteProcedure>(step.airspace.route).route.id
         )
         assertEquals(Level.AltitudeFeet.unsafe(1500), step.airspace.levelRestriction)
+        assertEquals(
+            listOf(FixtureIds.joinEntry, FixtureIds.vfrRoutePoint),
+            step.airspace.routeInteraction?.routePoints
+        )
+        assertEquals(
+            listOf(FixtureIds.vfrRoutePoint),
+            step.airspace.routeInteraction?.insidePoints
+        )
+        assertEquals(1, step.airspace.routeInteraction?.entryTransitions?.size)
+        assertEquals(FixtureIds.joinEntry, step.airspace.routeInteraction?.entryTransitions?.single()?.from)
+        assertEquals(FixtureIds.vfrRoutePoint, step.airspace.routeInteraction?.entryTransitions?.single()?.to)
+        assertEquals(emptyList(), step.airspace.routeInteraction?.exitTransitions)
+    }
+
+    @Test
+    fun rejectsAirspaceRouteThatDoesNotTouchResolvedVolume() {
+        val world = sampleWorldWithAirspacePoints(
+            setOf(FixtureIds.runway09Threshold)
+        )
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-ENTER-CTR-NO-INTERACTION"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                ClearedToEnterControlZone(
+                    target = AircraftId("TEST123"),
+                    airspace = FixtureIds.airspace,
+                    route = RouteSpec.ViaRoute(FixtureIds.vfrRoute)
+                )
+            ),
+            domain = ClearanceDomain.ROUTE,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(7),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val result = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        )
+
+        assertTrue(result.isLeft())
+        val unresolved = (result as arrow.core.Either.Left).value
+        assertEquals(ResolutionFailureCode.AIRSPACE_ROUTE_DOES_NOT_INTERACT, unresolved.code)
     }
 
     @Test

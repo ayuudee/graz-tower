@@ -71,6 +71,7 @@ enum class ResolutionFailureCode {
     UNKNOWN_HOLDING_PATTERN,
     AMBIGUOUS_HOLDING_PATTERN,
     UNKNOWN_AIRSPACE_VOLUME,
+    AIRSPACE_ROUTE_DOES_NOT_INTERACT,
     AIRWAY_EXIT_FIX_NOT_ON_AIRWAY,
     AIRWAY_JOIN_FIX_NOT_ON_AIRWAY,
     CONDITIONAL_STEP_NOT_SUPPORTED,
@@ -146,8 +147,48 @@ data class ResolvedAirspaceInstruction(
     val aerodrome: Aerodrome,
     val airspace: AirspaceVolume,
     val route: ResolvedRouteSpec? = null,
-    val levelRestriction: Level? = null
+    val levelRestriction: Level? = null,
+    val routeInteraction: ResolvedAirspaceRouteInteraction? = null
 )
+
+data class AirspaceBoundaryTransition(
+    val from: PointId,
+    val to: PointId
+)
+
+enum class AirspaceRouteInteractionType {
+    CONTAINED,
+    ENTRY_ONLY,
+    EXIT_ONLY,
+    TRANSIT
+}
+
+data class ResolvedAirspaceRouteInteraction(
+    val routePoints: List<PointId>,
+    val insidePoints: List<PointId>,
+    val entryTransitions: List<AirspaceBoundaryTransition>,
+    val exitTransitions: List<AirspaceBoundaryTransition>
+) {
+    private val insidePointSet = insidePoints.toSet()
+
+    val startsInside: Boolean =
+        routePoints.firstOrNull() in insidePointSet
+
+    val endsInside: Boolean =
+        routePoints.lastOrNull() in insidePointSet
+
+    val touchesAirspace: Boolean =
+        insidePoints.isNotEmpty() || entryTransitions.isNotEmpty() || exitTransitions.isNotEmpty()
+
+    val interactionType: AirspaceRouteInteractionType? =
+        when {
+            !touchesAirspace -> null
+            entryTransitions.isNotEmpty() && exitTransitions.isNotEmpty() -> AirspaceRouteInteractionType.TRANSIT
+            entryTransitions.isNotEmpty() -> AirspaceRouteInteractionType.ENTRY_ONLY
+            exitTransitions.isNotEmpty() -> AirspaceRouteInteractionType.EXIT_ONLY
+            else -> AirspaceRouteInteractionType.CONTAINED
+        }
+}
 
 data class ResolvedRoleFrequency(
     val aerodrome: Aerodrome,
@@ -500,25 +541,83 @@ private fun AviationWorld.resolveAirspaceInstruction(
 
     return when (resolvedRoute) {
         is arrow.core.Either.Left -> resolvedRoute
-        is arrow.core.Either.Right -> resolved(
-            ResolvedAirspaceInstruction(
-                aerodrome = aerodrome,
+        is arrow.core.Either.Right -> {
+            val routeInteraction = resolveAirspaceRouteInteraction(
                 airspace = airspaceVolume,
-                route = resolvedRoute.value,
-                levelRestriction = levelRestriction
+                route = resolvedRoute.value
             )
-        )
+            if (!routeInteraction.touchesAirspace) {
+                return unresolved(
+                    ResolutionFailureCode.AIRSPACE_ROUTE_DOES_NOT_INTERACT,
+                    "Route for airspace instruction ${airspaceId.value} does not touch airspace volume ${airspaceVolume.id.value}"
+                )
+            }
+            resolved(
+                ResolvedAirspaceInstruction(
+                    aerodrome = aerodrome,
+                    airspace = airspaceVolume,
+                    route = resolvedRoute.value,
+                    levelRestriction = levelRestriction,
+                    routeInteraction = routeInteraction
+                )
+            )
+        }
 
         null -> resolved(
             ResolvedAirspaceInstruction(
                 aerodrome = aerodrome,
                 airspace = airspaceVolume,
                 route = null,
-                levelRestriction = levelRestriction
+                levelRestriction = levelRestriction,
+                routeInteraction = null
             )
         )
     }
 }
+
+private fun resolveAirspaceRouteInteraction(
+    airspace: AirspaceVolume,
+    route: ResolvedRouteSpec
+): ResolvedAirspaceRouteInteraction {
+    val routePoints = route.routePoints()
+    val insidePoints = routePoints.filter { point -> point in airspace.points }
+    val transitions = routePoints.zipWithNext()
+
+    val entryTransitions = transitions.mapNotNull { (from, to) ->
+        if (from !in airspace.points && to in airspace.points) {
+            AirspaceBoundaryTransition(from, to)
+        } else {
+            null
+        }
+    }
+    val exitTransitions = transitions.mapNotNull { (from, to) ->
+        if (from in airspace.points && to !in airspace.points) {
+            AirspaceBoundaryTransition(from, to)
+        } else {
+            null
+        }
+    }
+
+    return ResolvedAirspaceRouteInteraction(
+        routePoints = routePoints,
+        insidePoints = insidePoints,
+        entryTransitions = entryTransitions,
+        exitTransitions = exitTransitions
+    )
+}
+
+private fun ResolvedRouteSpec.routePoints(): List<PointId> =
+    when (this) {
+        is ResolvedRouteSpec.Direct -> listOf(fix.point)
+        is ResolvedRouteSpec.Via -> fixes.map { fix -> fix.point }
+        is ResolvedRouteSpec.AirwaySegment -> {
+            val points = airway.waypoints.map { waypoint -> waypoint.point }
+            points.take(points.indexOf(exitFix.point) + 1)
+        }
+        is ResolvedRouteSpec.SidProcedure -> sid.waypoints.map { waypoint -> waypoint.point }
+        is ResolvedRouteSpec.StarProcedure -> star.waypoints.map { waypoint -> waypoint.point }
+        is ResolvedRouteSpec.VfrRouteProcedure -> route.waypoints.map { waypoint -> waypoint.point }
+    }
 
 private fun AviationWorld.resolveRouteSpec(
     aerodrome: Aerodrome,

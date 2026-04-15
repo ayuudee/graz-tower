@@ -19,6 +19,7 @@ structure ResolutionWorld where
   crossingPointForRunway : RunwayId → PointId → Prop
   farEndPointForRunway : RunwayId → PointId → Prop
   fixPoint : FixId → PointId → Prop
+  routeSpecPoints : RouteSpec → List PointId → Prop
   holdingPatternFor : HoldSpec → HoldingPatternId → FixId → Prop
   approachFor : ApproachType → RunwayId → Option RunwayId → ApproachId → Prop
   roleFrequency : RoleName → Frequency → Prop
@@ -82,6 +83,7 @@ def ConcreteResolutionWorld.toResolutionWorld
       (runway, point) ∈ world.runwayFarEnds
     fixPoint := fun fix point =>
       (fix, point) ∈ world.fixPoints
+    routeSpecPoints := fun _ _ => False
     holdingPatternFor := fun hold pattern fix =>
       { hold := hold, pattern := pattern, fix := fix } ∈ world.holdingPatterns
     approachFor := fun approachType runway circlingRunway approach =>
@@ -371,7 +373,12 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.remainOutsideControlledAirspace target airspace)
-          (.airspace { airspace := airspace, points := points })
+          (.airspace
+            { airspace := airspace
+              points := points
+              routePoints := []
+              entryTransitions := []
+              exitTransitions := [] })
           (by simp [resolutionCompatible]))
         state
   | clearedToEnterControlZone
@@ -383,8 +390,19 @@ inductive ResolvesIndexedStep :
       (route : Option RouteSpec)
       (levelRestriction : Option Level)
       (points : List PointId)
+      (routePoints : List PointId)
+      (entryTransitions : List (PointId × PointId))
+      (exitTransitions : List (PointId × PointId))
       (state : ResolutionState)
-      (hAirspace : world.airspaceVolume airspace points) :
+      (hAirspace : world.airspaceVolume airspace points)
+      (hRoute :
+        match route with
+        | some routeSpec =>
+            world.routeSpecPoints routeSpec routePoints ∧
+              entryTransitions = airspaceRouteEntryTransitions routePoints points ∧
+              exitTransitions = airspaceRouteExitTransitions routePoints points
+        | none =>
+            routePoints = [] ∧ entryTransitions = [] ∧ exitTransitions = []) :
       ResolvesIndexedStep
         world
         state
@@ -395,7 +413,12 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.clearedToEnterControlZone target airspace route levelRestriction)
-          (.airspace { airspace := airspace, points := points })
+          (.airspace
+            { airspace := airspace
+              points := points
+              routePoints := routePoints
+              entryTransitions := entryTransitions
+              exitTransitions := exitTransitions })
           (by simp [resolutionCompatible]))
         state
   | specialVfrClearance
@@ -407,8 +430,19 @@ inductive ResolvesIndexedStep :
       (route : Option RouteSpec)
       (levelRestriction : Option Level)
       (points : List PointId)
+      (routePoints : List PointId)
+      (entryTransitions : List (PointId × PointId))
+      (exitTransitions : List (PointId × PointId))
       (state : ResolutionState)
-      (hAirspace : world.airspaceVolume airspace points) :
+      (hAirspace : world.airspaceVolume airspace points)
+      (hRoute :
+        match route with
+        | some routeSpec =>
+            world.routeSpecPoints routeSpec routePoints ∧
+              entryTransitions = airspaceRouteEntryTransitions routePoints points ∧
+              exitTransitions = airspaceRouteExitTransitions routePoints points
+        | none =>
+            routePoints = [] ∧ entryTransitions = [] ∧ exitTransitions = []) :
       ResolvesIndexedStep
         world
         state
@@ -419,7 +453,12 @@ inductive ResolvesIndexedStep :
           index
           fallbackDomain
           (.specialVfrClearance target airspace route levelRestriction)
-          (.airspace { airspace := airspace, points := points })
+          (.airspace
+            { airspace := airspace
+              points := points
+              routePoints := routePoints
+              entryTransitions := entryTransitions
+              exitTransitions := exitTransitions })
           (by simp [resolutionCompatible]))
         state
   | monitorFrequencyExplicit

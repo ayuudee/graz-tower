@@ -132,7 +132,7 @@ theorem resolvesWorldBackedRemainOutsideAirspaceCompoundClearance_of_ready
       hTailReady with
       ⟨resolvedTail, hResolvedTail⟩
   let primaryStep :=
-    compiledWorldBackedAirspaceStep
+    compiledWorldBackedAirspaceStepNoRoute
       0
       .route
       (.remainOutsideControlledAirspace target airspace)
@@ -151,7 +151,7 @@ theorem resolvesWorldBackedRemainOutsideAirspaceCompoundClearance_of_ready
           (.remainOutsideControlledAirspace target airspace)
           primaryStep
           initialState := by
-      simpa [hDomain, primaryStep, compiledWorldBackedAirspaceStep, hId] using
+      simpa [hDomain, primaryStep, compiledWorldBackedAirspaceStepNoRoute, compiledWorldBackedAirspaceStep, hId] using
         (ResolvesIndexedStep.remainOutsideControlledAirspace
           (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
           (fallbackDomain := .route)
@@ -219,82 +219,127 @@ theorem resolvesWorldBackedEnterZoneAirspaceCompoundClearance_of_ready
         resolved
         initialState := by
   rcases hReady with ⟨hPrimaryReady, hTailReady⟩
-  rcases hPrimaryReady with ⟨volume, hMem, hId⟩
-  have hTailWrapped :
-      anyWrappedConditionalStep tail = false :=
-    anyWrappedConditionalStep_false_of_routeBearingImmediateAdjuncts hTailReady
-  have hWrapped :
-      anyWrappedConditionalStep
-        (.clearedToEnterControlZone target airspace route levelRestriction :: tail) = false := by
-    simp [anyWrappedConditionalStep, hTailWrapped]
-  rcases resolvesRouteBearingImmediateAdjunctTail_of_ready
-      (world := world)
-      (state := initialState)
-      (fallbackDomain := .route)
-      (start := 1)
-      (tail := tail)
-      hTailReady with
-      ⟨resolvedTail, hResolvedTail⟩
-  let primaryStep :=
-    compiledWorldBackedAirspaceStep
-      0
-      .route
-      (.clearedToEnterControlZone target airspace route levelRestriction)
-      volume.id
-      volume.points
-      (by simp [resolutionCompatible])
-  refine ⟨{ source := clearance, steps := primaryStep :: resolvedTail }, ?_⟩
-  refine ⟨?_, rfl, ?_⟩
-  · simp [normalizeConditionalEnvelope, hContent, hCondition, hSteps, hWrapped]
-  · have hPrimaryStep :
-        ResolvesIndexedStep
-          (RouteBearingScopedAviationWorld.toResolutionWorld world)
-          initialState
-          clearance.domain
-          0
-          (.clearedToEnterControlZone target airspace route levelRestriction)
-          primaryStep
-          initialState := by
-      simpa [hDomain, primaryStep, compiledWorldBackedAirspaceStep, hId] using
-        (ResolvesIndexedStep.clearedToEnterControlZone
-          (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-          (fallbackDomain := .route)
-          (index := 0)
-          (target := target)
-          (airspace := volume.id)
-          (route := route)
-          (levelRestriction := levelRestriction)
-          (points := volume.points)
+  rcases hPrimaryReady with ⟨volume, hMem, hId, hInteraction⟩
+  cases hRoutePts : worldBackedAirspaceRouteInteraction? world volume route with
+  | none =>
+      simp [hRoutePts] at hInteraction
+  | some triple =>
+      rcases triple with ⟨routePoints, entryTransitions, exitTransitions⟩
+      have hTailWrapped :
+          anyWrappedConditionalStep tail = false :=
+        anyWrappedConditionalStep_false_of_routeBearingImmediateAdjuncts hTailReady
+      have hWrapped :
+          anyWrappedConditionalStep
+            (.clearedToEnterControlZone target airspace route levelRestriction :: tail) = false := by
+        simp [anyWrappedConditionalStep, hTailWrapped]
+      rcases resolvesRouteBearingImmediateAdjunctTail_of_ready
+          (world := world)
           (state := initialState)
-          (hAirspace := RouteBearingScopedAviationWorld.mem_airspaceVolume_of_mem hMem))
-    have hResolvedTail' :
-        ResolvesSteps
-          (RouteBearingScopedAviationWorld.toResolutionWorld world)
-          initialState
-          clearance.domain
-          (enumerateFrom 1 tail)
-          resolvedTail
-          initialState := by
-      simpa [hDomain] using hResolvedTail
-    have hIndexed :
-        indexedSteps (structuredInstructions clearance) =
-          (0, .clearedToEnterControlZone target airspace route levelRestriction) ::
-            enumerateFrom 1 tail := by
-      simp [hContent, hSteps, structuredInstructions, contentInstructions, indexedSteps, enumerateFrom]
-    simpa [hIndexed] using
-      ResolvesSteps.cons
-        (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-        (state := initialState)
-        (nextState := initialState)
-        (finalState := initialState)
-        (fallbackDomain := clearance.domain)
-        (index := 0)
-        (instruction := .clearedToEnterControlZone target airspace route levelRestriction)
-        (step := primaryStep)
-        (tail := enumerateFrom 1 tail)
-        (resolvedTail := resolvedTail)
-        hPrimaryStep
-        hResolvedTail'
+          (fallbackDomain := .route)
+          (start := 1)
+          (tail := tail)
+          hTailReady with
+          ⟨resolvedTail, hResolvedTail⟩
+      let primaryStep :=
+        compiledWorldBackedAirspaceStep
+          0
+          .route
+          (.clearedToEnterControlZone target airspace route levelRestriction)
+          volume.id
+          volume.points
+          routePoints
+          entryTransitions
+          exitTransitions
+          (by simp [resolutionCompatible])
+      refine ⟨{ source := clearance, steps := primaryStep :: resolvedTail }, ?_⟩
+      refine ⟨?_, rfl, ?_⟩
+      · simp [normalizeConditionalEnvelope, hContent, hCondition, hSteps, hWrapped]
+      · have hPrimaryStep :
+            ResolvesIndexedStep
+              (RouteBearingScopedAviationWorld.toResolutionWorld world)
+              initialState
+              clearance.domain
+              0
+              (.clearedToEnterControlZone target airspace route levelRestriction)
+              primaryStep
+              initialState := by
+          simpa [hDomain, primaryStep, compiledWorldBackedAirspaceStep, hId] using
+            (ResolvesIndexedStep.clearedToEnterControlZone
+              (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+              (fallbackDomain := .route)
+              (index := 0)
+              (target := target)
+              (airspace := volume.id)
+              (route := route)
+              (levelRestriction := levelRestriction)
+              (points := volume.points)
+              (routePoints := routePoints)
+              (entryTransitions := entryTransitions)
+              (exitTransitions := exitTransitions)
+              (state := initialState)
+              (hAirspace := RouteBearingScopedAviationWorld.mem_airspaceVolume_of_mem hMem)
+              (hRoute := by
+                cases route with
+                | none =>
+                    have hNoRoute :
+                        routePoints = [] ∧ entryTransitions = [] ∧ exitTransitions = [] := by
+                      simpa [worldBackedAirspaceRouteInteraction?] using hRoutePts
+                    exact hNoRoute
+                | some routeSpec =>
+                    cases hSpec : routeBearingRouteSpecPoints? world routeSpec with
+                    | none =>
+                        simp [worldBackedAirspaceRouteInteraction?, hSpec] at hRoutePts
+                    | some specPoints =>
+                        have hTouch : airspaceRouteTouches specPoints volume.points = true := by
+                          by_cases hTouch' : airspaceRouteTouches specPoints volume.points = true
+                          · exact hTouch'
+                          · simp [worldBackedAirspaceRouteInteraction?, hSpec, hTouch'] at hRoutePts
+                        have hResolved :
+                            some
+                                (specPoints,
+                                  airspaceRouteEntryTransitions specPoints volume.points,
+                                  airspaceRouteExitTransitions specPoints volume.points) =
+                              some (routePoints, entryTransitions, exitTransitions) := by
+                          simpa [worldBackedAirspaceRouteInteraction?, hSpec, hTouch] using hRoutePts
+                        have hTuple :
+                            (specPoints,
+                              airspaceRouteEntryTransitions specPoints volume.points,
+                              airspaceRouteExitTransitions specPoints volume.points) =
+                            (routePoints, entryTransitions, exitTransitions) :=
+                          Option.some.inj hResolved
+                        cases hTuple
+                        exact ⟨
+                          RouteBearingScopedAviationWorld.routeSpecPoints_of_eq_some hSpec,
+                          rfl,
+                          rfl⟩))
+        have hResolvedTail' :
+            ResolvesSteps
+              (RouteBearingScopedAviationWorld.toResolutionWorld world)
+              initialState
+              clearance.domain
+              (enumerateFrom 1 tail)
+              resolvedTail
+              initialState := by
+          simpa [hDomain] using hResolvedTail
+        have hIndexed :
+            indexedSteps (structuredInstructions clearance) =
+              (0, .clearedToEnterControlZone target airspace route levelRestriction) ::
+                enumerateFrom 1 tail := by
+          simp [hContent, hSteps, structuredInstructions, contentInstructions, indexedSteps, enumerateFrom]
+        simpa [hIndexed] using
+          ResolvesSteps.cons
+            (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+            (state := initialState)
+            (nextState := initialState)
+            (finalState := initialState)
+            (fallbackDomain := clearance.domain)
+            (index := 0)
+            (instruction := .clearedToEnterControlZone target airspace route levelRestriction)
+            (step := primaryStep)
+            (tail := enumerateFrom 1 tail)
+            (resolvedTail := resolvedTail)
+            hPrimaryStep
+            hResolvedTail'
 
 theorem resolvesWorldBackedSpecialVfrAirspaceCompoundClearance_of_ready
     {world : RouteBearingScopedAviationWorld}
@@ -325,82 +370,127 @@ theorem resolvesWorldBackedSpecialVfrAirspaceCompoundClearance_of_ready
         resolved
         initialState := by
   rcases hReady with ⟨hPrimaryReady, hTailReady⟩
-  rcases hPrimaryReady with ⟨volume, hMem, hId⟩
-  have hTailWrapped :
-      anyWrappedConditionalStep tail = false :=
-    anyWrappedConditionalStep_false_of_routeBearingImmediateAdjuncts hTailReady
-  have hWrapped :
-      anyWrappedConditionalStep
-        (.specialVfrClearance target airspace route levelRestriction :: tail) = false := by
-    simp [anyWrappedConditionalStep, hTailWrapped]
-  rcases resolvesRouteBearingImmediateAdjunctTail_of_ready
-      (world := world)
-      (state := initialState)
-      (fallbackDomain := .route)
-      (start := 1)
-      (tail := tail)
-      hTailReady with
-      ⟨resolvedTail, hResolvedTail⟩
-  let primaryStep :=
-    compiledWorldBackedAirspaceStep
-      0
-      .route
-      (.specialVfrClearance target airspace route levelRestriction)
-      volume.id
-      volume.points
-      (by simp [resolutionCompatible])
-  refine ⟨{ source := clearance, steps := primaryStep :: resolvedTail }, ?_⟩
-  refine ⟨?_, rfl, ?_⟩
-  · simp [normalizeConditionalEnvelope, hContent, hCondition, hSteps, hWrapped]
-  · have hPrimaryStep :
-        ResolvesIndexedStep
-          (RouteBearingScopedAviationWorld.toResolutionWorld world)
-          initialState
-          clearance.domain
-          0
-          (.specialVfrClearance target airspace route levelRestriction)
-          primaryStep
-          initialState := by
-      simpa [hDomain, primaryStep, compiledWorldBackedAirspaceStep, hId] using
-        (ResolvesIndexedStep.specialVfrClearance
-          (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-          (fallbackDomain := .route)
-          (index := 0)
-          (target := target)
-          (airspace := volume.id)
-          (route := route)
-          (levelRestriction := levelRestriction)
-          (points := volume.points)
+  rcases hPrimaryReady with ⟨volume, hMem, hId, hInteraction⟩
+  cases hRoutePts : worldBackedAirspaceRouteInteraction? world volume route with
+  | none =>
+      simp [hRoutePts] at hInteraction
+  | some triple =>
+      rcases triple with ⟨routePoints, entryTransitions, exitTransitions⟩
+      have hTailWrapped :
+          anyWrappedConditionalStep tail = false :=
+        anyWrappedConditionalStep_false_of_routeBearingImmediateAdjuncts hTailReady
+      have hWrapped :
+          anyWrappedConditionalStep
+            (.specialVfrClearance target airspace route levelRestriction :: tail) = false := by
+        simp [anyWrappedConditionalStep, hTailWrapped]
+      rcases resolvesRouteBearingImmediateAdjunctTail_of_ready
+          (world := world)
           (state := initialState)
-          (hAirspace := RouteBearingScopedAviationWorld.mem_airspaceVolume_of_mem hMem))
-    have hResolvedTail' :
-        ResolvesSteps
-          (RouteBearingScopedAviationWorld.toResolutionWorld world)
-          initialState
-          clearance.domain
-          (enumerateFrom 1 tail)
-          resolvedTail
-          initialState := by
-      simpa [hDomain] using hResolvedTail
-    have hIndexed :
-        indexedSteps (structuredInstructions clearance) =
-          (0, .specialVfrClearance target airspace route levelRestriction) ::
-            enumerateFrom 1 tail := by
-      simp [hContent, hSteps, structuredInstructions, contentInstructions, indexedSteps, enumerateFrom]
-    simpa [hIndexed] using
-      ResolvesSteps.cons
-        (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-        (state := initialState)
-        (nextState := initialState)
-        (finalState := initialState)
-        (fallbackDomain := clearance.domain)
-        (index := 0)
-        (instruction := .specialVfrClearance target airspace route levelRestriction)
-        (step := primaryStep)
-        (tail := enumerateFrom 1 tail)
-        (resolvedTail := resolvedTail)
-        hPrimaryStep
-        hResolvedTail'
+          (fallbackDomain := .route)
+          (start := 1)
+          (tail := tail)
+          hTailReady with
+          ⟨resolvedTail, hResolvedTail⟩
+      let primaryStep :=
+        compiledWorldBackedAirspaceStep
+          0
+          .route
+          (.specialVfrClearance target airspace route levelRestriction)
+          volume.id
+          volume.points
+          routePoints
+          entryTransitions
+          exitTransitions
+          (by simp [resolutionCompatible])
+      refine ⟨{ source := clearance, steps := primaryStep :: resolvedTail }, ?_⟩
+      refine ⟨?_, rfl, ?_⟩
+      · simp [normalizeConditionalEnvelope, hContent, hCondition, hSteps, hWrapped]
+      · have hPrimaryStep :
+            ResolvesIndexedStep
+              (RouteBearingScopedAviationWorld.toResolutionWorld world)
+              initialState
+              clearance.domain
+              0
+              (.specialVfrClearance target airspace route levelRestriction)
+              primaryStep
+              initialState := by
+          simpa [hDomain, primaryStep, compiledWorldBackedAirspaceStep, hId] using
+            (ResolvesIndexedStep.specialVfrClearance
+              (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+              (fallbackDomain := .route)
+              (index := 0)
+              (target := target)
+              (airspace := volume.id)
+              (route := route)
+              (levelRestriction := levelRestriction)
+              (points := volume.points)
+              (routePoints := routePoints)
+              (entryTransitions := entryTransitions)
+              (exitTransitions := exitTransitions)
+              (state := initialState)
+              (hAirspace := RouteBearingScopedAviationWorld.mem_airspaceVolume_of_mem hMem)
+              (hRoute := by
+                cases route with
+                | none =>
+                    have hNoRoute :
+                        routePoints = [] ∧ entryTransitions = [] ∧ exitTransitions = [] := by
+                      simpa [worldBackedAirspaceRouteInteraction?] using hRoutePts
+                    exact hNoRoute
+                | some routeSpec =>
+                    cases hSpec : routeBearingRouteSpecPoints? world routeSpec with
+                    | none =>
+                        simp [worldBackedAirspaceRouteInteraction?, hSpec] at hRoutePts
+                    | some specPoints =>
+                        have hTouch : airspaceRouteTouches specPoints volume.points = true := by
+                          by_cases hTouch' : airspaceRouteTouches specPoints volume.points = true
+                          · exact hTouch'
+                          · simp [worldBackedAirspaceRouteInteraction?, hSpec, hTouch'] at hRoutePts
+                        have hResolved :
+                            some
+                                (specPoints,
+                                  airspaceRouteEntryTransitions specPoints volume.points,
+                                  airspaceRouteExitTransitions specPoints volume.points) =
+                              some (routePoints, entryTransitions, exitTransitions) := by
+                          simpa [worldBackedAirspaceRouteInteraction?, hSpec, hTouch] using hRoutePts
+                        have hTuple :
+                            (specPoints,
+                              airspaceRouteEntryTransitions specPoints volume.points,
+                              airspaceRouteExitTransitions specPoints volume.points) =
+                            (routePoints, entryTransitions, exitTransitions) :=
+                          Option.some.inj hResolved
+                        cases hTuple
+                        exact ⟨
+                          RouteBearingScopedAviationWorld.routeSpecPoints_of_eq_some hSpec,
+                          rfl,
+                          rfl⟩))
+        have hResolvedTail' :
+            ResolvesSteps
+              (RouteBearingScopedAviationWorld.toResolutionWorld world)
+              initialState
+              clearance.domain
+              (enumerateFrom 1 tail)
+              resolvedTail
+              initialState := by
+          simpa [hDomain] using hResolvedTail
+        have hIndexed :
+            indexedSteps (structuredInstructions clearance) =
+              (0, .specialVfrClearance target airspace route levelRestriction) ::
+                enumerateFrom 1 tail := by
+          simp [hContent, hSteps, structuredInstructions, contentInstructions, indexedSteps, enumerateFrom]
+        simpa [hIndexed] using
+          ResolvesSteps.cons
+            (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+            (state := initialState)
+            (nextState := initialState)
+            (finalState := initialState)
+            (fallbackDomain := clearance.domain)
+            (index := 0)
+            (instruction := .specialVfrClearance target airspace route levelRestriction)
+            (step := primaryStep)
+            (tail := enumerateFrom 1 tail)
+            (resolvedTail := resolvedTail)
+            hPrimaryStep
+            hResolvedTail'
 
 theorem GreenfieldAirspaceWorldBackedCompoundAdmissionSoundnessTheorem
     {world : RouteBearingScopedAviationWorld}
@@ -542,7 +632,7 @@ def sampleWorldBackedRemainOutsideContactCompound : ResolvedClearance :=
         status := .active
         condition := none }
     steps :=
-      [ compiledWorldBackedAirspaceStep
+      [ compiledWorldBackedAirspaceStepNoRoute
           0
           .route
           (.remainOutsideControlledAirspace "TEST123" "CTR-1")
@@ -573,7 +663,7 @@ def sampleWorldBackedEnterZoneContactCompound : ResolvedClearance :=
         status := .active
         condition := none }
     steps :=
-      [ compiledWorldBackedAirspaceStep
+      [ compiledWorldBackedAirspaceStepNoRoute
           0
           .route
           (.clearedToEnterControlZone "TEST123" "CTR-1" none none)

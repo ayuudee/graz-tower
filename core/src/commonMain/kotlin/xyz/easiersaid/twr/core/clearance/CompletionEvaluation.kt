@@ -211,7 +211,12 @@ private fun evaluateAirspaceCompletion(
             }
 
         is ClearedToEnterControlZone,
-        is SpecialVfrClearance -> CompletionResult.NOT_APPLICABLE
+        is SpecialVfrClearance ->
+            if (observation.exited || observation.landed) {
+                CompletionResult.COMPLETE
+            } else {
+                CompletionResult.NOT_APPLICABLE
+            }
 
         else -> CompletionResult.NOT_COMPLETE
     }
@@ -220,7 +225,8 @@ private fun evaluateAirspaceCompletion(
 private data class AirspaceObservationState(
     val inside: Boolean,
     val entered: Boolean,
-    val exited: Boolean
+    val exited: Boolean,
+    val landed: Boolean
 )
 
 private fun observeAirspaceState(
@@ -234,7 +240,8 @@ private fun observeAirspaceState(
     return AirspaceObservationState(
         inside = inside,
         entered = transitioned && inside,
-        exited = transitioned && !inside
+        exited = transitioned && !inside,
+        landed = view.onGround
     )
 }
 

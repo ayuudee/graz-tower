@@ -462,12 +462,16 @@ The default critical path is now:
   [GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
   now add the matching Lean boundary for world-backed airspace semantics:
   concrete airspace-volume existence in the proof-side world, resolved
-  airspace payloads, source-level admission and authority-gated issuance, a
-  first narrow compound layer over immediate adjunct tails, an explicit
-  inside-volume plus entry-transition violation observation for
+  airspace payloads, graph-backed route/airspace interaction facts, source-
+  level admission and authority-gated issuance, a first narrow compound layer
+  over immediate adjunct tails, an explicit inside-volume plus
+  entry-transition violation observation for
   `RemainOutsideControlledAirspace`, explicit persistence for
-  `ClearedToEnterControlZone` and `SpecialVfrClearance`, and theorem-bearing
-  current engine consequences for world-backed airspace compounds
+  `ClearedToEnterControlZone` and `SpecialVfrClearance`, exit/landing
+  completion for the permission pair, and theorem-bearing current engine
+  consequences for world-backed airspace compounds;
+  this branch is now closed for the current graph-backed point-set +
+  transition airspace model
 - the phase-1 current-shape parity closure is now complete under the frozen
   rule used for this widening programme:
   every family whose Kotlin semantics are already stable, whose conservative
@@ -498,8 +502,10 @@ The default critical path is now:
   compound surface, widen the broader ground-movement family on the greenfield
   boundary, settle authority for the modifier/pressure families, or carry
   `ClearedTo` / `HoldAt` through the older atomic path, or deepen the new
-  world-backed airspace layer beyond its present first narrow compound
-  boundary into richer geometric, route-backed, and lifecycle semantics
+  world-backed airspace layer beyond the now-closed graph-backed branch into
+  richer geometric/polygonal semantics, denser route/airspace interaction
+  semantics, and broader lifecycle than the current point-set +
+  entry/exit/landing model
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

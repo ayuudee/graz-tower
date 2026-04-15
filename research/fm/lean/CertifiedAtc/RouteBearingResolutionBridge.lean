@@ -67,10 +67,72 @@ def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
     circuitJoins :=
       worldCircuitJoinBindings world.circuits }
 
+def routeBearingFixPoint?
+    (world : RouteBearingScopedAviationWorld)
+    (fixId : FixId) : Option PointId :=
+  (world.fixes.find? (fun fix => fix.id = fixId)).map (fun fix => fix.point)
+
+def routeBearingFixPoints?
+    (world : RouteBearingScopedAviationWorld)
+    (fixes : List FixId) : Option (List PointId) :=
+  fixes.mapM (routeBearingFixPoint? world)
+
+def takePointsThrough
+    (exitPoint : PointId)
+    (points : List PointId) : Option (List PointId) :=
+  let rec go (seen : List PointId) : List PointId → Option (List PointId)
+    | [] => none
+    | point :: tail =>
+        let seen' := seen ++ [point]
+        if point = exitPoint then
+          some seen'
+        else
+          go seen' tail
+  go [] points
+
+def airwayPointsThroughExit?
+    (world : RouteBearingScopedAviationWorld)
+    (airwayId : AirwayId)
+    (exitFix : FixId) : Option (List PointId) := do
+  let airway <- world.airways.find? (fun airway => airway.id = airwayId)
+  let exitPoint <- routeBearingFixPoint? world exitFix
+  let points := airway.waypoints.map (fun waypoint => waypoint.point)
+  takePointsThrough exitPoint points
+
+def routeBearingRouteSpecPoints?
+    (world : RouteBearingScopedAviationWorld)
+    (route : RouteSpec) : Option (List PointId) :=
+  match route with
+  | .direct fix =>
+      routeBearingFixPoint? world fix |>.map List.singleton
+  | .via fixes =>
+      routeBearingFixPoints? world fixes
+  | .airway airway exitFix =>
+      airwayPointsThroughExit? world airway exitFix
+  | .viaSid sidId =>
+      (world.sids.find? (fun sid => sid.id = sidId)).map fun sid =>
+        sid.waypoints.map (fun waypoint => waypoint.point)
+  | .viaStar starId =>
+      (world.stars.find? (fun star => star.id = starId)).map fun star =>
+        star.waypoints.map (fun waypoint => waypoint.point)
+  | .viaRoute routeId =>
+      (world.vfrRoutes.find? (fun route => route.id = routeId)).map fun route =>
+        route.waypoints.map (fun waypoint => waypoint.point)
+
 def RouteBearingScopedAviationWorld.toResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ResolutionWorld :=
-  ConcreteResolutionWorld.toResolutionWorld
-    (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world)
+  { (ConcreteResolutionWorld.toResolutionWorld
+      (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world)) with
+      routeSpecPoints := fun route points =>
+        routeBearingRouteSpecPoints? world route = some points }
+
+theorem RouteBearingScopedAviationWorld.routeSpecPoints_of_eq_some
+    {world : RouteBearingScopedAviationWorld}
+    {route : RouteSpec}
+    {points : List PointId}
+    (hPoints : routeBearingRouteSpecPoints? world route = some points) :
+    (RouteBearingScopedAviationWorld.toResolutionWorld world).routeSpecPoints route points := by
+  simpa [RouteBearingScopedAviationWorld.toResolutionWorld] using hPoints
 
 theorem RouteBearingScopedAviationWorld.mem_fixPoint_of_mem
     {world : RouteBearingScopedAviationWorld}

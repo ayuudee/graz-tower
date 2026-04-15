@@ -299,13 +299,13 @@ def evaluateResolvedStepCompletion
   if step.domain ∈ managed.suppressedDomains then
     .notApplicable
   else
-    match step.completionCategory with
-    | some .persistent => .notApplicable
-    | some .onActivation => .complete
-    | _ =>
-        match observedResolvedStepCompletion? observation step with
-        | some result => result
-        | none => .notComplete
+    match observedResolvedStepCompletion? observation step with
+    | some result => result
+    | none =>
+        match step.completionCategory with
+        | some .persistent => .notApplicable
+        | some .onActivation => .complete
+        | _ => .notComplete
 
 def evaluateResolvedCompletion
     (managed : ManagedResolvedClearance)

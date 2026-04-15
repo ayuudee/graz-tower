@@ -204,9 +204,11 @@ Then open the specific Lean module for the phase you are changing.
   the new world-backed airspace layer is a separate widening branch:
   it is no longer accurate to describe airspace as plain/current-shape only,
   and it is no longer accurate to describe it as world-backed single-step
-  only; current-model entry/exit observation is now explicit, but richer
-  geometric, route-backed, and broader world-backed airspace lifecycle
-  semantics still remain open
+  only; the current graph-backed point-set + transition model is now closed
+  through route/airspace interaction, entry/exit observation, and
+  exit-or-landing lifecycle for the permission pair, but richer
+  geometric/polygonal semantics, denser route/airspace interaction
+  semantics, and broader world-backed lifecycle semantics still remain open
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing

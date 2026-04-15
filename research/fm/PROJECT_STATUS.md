@@ -206,10 +206,12 @@ It now contains:
 - `GreenfieldAirspaceWorldBackedCurrentShape.lean` now adds the first honest
   world-backed airspace layer above that package:
   concrete proof-side `AirspaceVolume` membership, resolved airspace payloads,
-  source-level admission and authority-gated issuance, explicit inside-volume
-  plus entry-transition violation observation for
+  graph-backed route/airspace interaction facts, source-level admission and
+  authority-gated issuance, explicit inside-volume plus entry-transition
+  violation observation for
   `RemainOutsideControlledAirspace`, and explicit persistence for
-  `ClearedToEnterControlZone` and `SpecialVfrClearance`
+  `ClearedToEnterControlZone` and `SpecialVfrClearance`, with exit/landing
+  completion for the permission pair
 - `GreenfieldAirspaceWorldBackedCompound.lean` and
   `GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean` now widen that
   same world-backed airspace layer through its first narrow compound slice and
@@ -229,7 +231,8 @@ It now contains:
   single-step slice and a first narrow compound slice, packaged behind one
   source-level current-shape theorem boundary; above that, the first
   world-backed airspace layer is now theorem-bearing through both its
-  single-step and first narrow-compound slices
+  single-step and first narrow-compound slices, and that world-backed branch
+  is now closed for the current graph-backed point-set + transition model
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -263,9 +266,12 @@ It does not yet contain:
 - a widened airspace package beyond the now-delivered current-shape family and
   first world-backed airspace layer; the current Lean/runtime-aligned story
   now does claim concrete airspace-volume-backed resolution for single-step
-  airspace instructions and the first world-backed compound layer, but it
-  still does not claim richer geometric, route-backed, or broader
-  world-backed airspace lifecycle semantics
+  airspace instructions and the first world-backed compound layer, plus
+  graph-backed route interaction and point-set entry/exit/landing lifecycle
+  semantics, but it still does not claim richer geometric/polygonal airspace
+  semantics, denser route/airspace interaction semantics, or broader
+  world-backed lifecycle semantics beyond the current point-set +
+  transition-based model
 - a widened current-shape communications/surveillance package beyond the now-
   delivered narrow compound slice; the delivered radio and
   transponder/surveillance families are now source-level packaged through

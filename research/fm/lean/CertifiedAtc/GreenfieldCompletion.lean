@@ -248,9 +248,17 @@ def observedResolvedStepCompletion?
               else
                 .notApplicable
         | .clearedToEnterControlZone _ _ _ _ =>
-            some .notApplicable
+            some <|
+              if airspaceExited airspace observation || observation.onGround then
+                .complete
+              else
+                .notApplicable
         | .specialVfrClearance _ _ _ _ =>
-            some .notApplicable
+            some <|
+              if airspaceExited airspace observation || observation.onGround then
+                .complete
+              else
+                .notApplicable
         | _ =>
             none
     | .plain =>

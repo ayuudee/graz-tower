@@ -73,7 +73,42 @@ structure ResolvedCircuitJoin where
 structure ResolvedAirspaceInstruction where
   airspace : AirspaceVolumeId
   points : List PointId
+  routePoints : List PointId := []
+  entryTransitions : List (PointId × PointId) := []
+  exitTransitions : List (PointId × PointId) := []
   deriving DecidableEq, Repr
+
+def airspaceRouteInsidePoints
+    (routePoints : List PointId)
+    (airspacePoints : List PointId) : List PointId :=
+  routePoints.filter (fun point => point ∈ airspacePoints)
+
+def airspaceRouteEntryTransitions
+    (routePoints : List PointId)
+    (airspacePoints : List PointId) : List (PointId × PointId) :=
+  routePoints.zip routePoints.tail |>.filterMap fun
+    | (fromPoint, toPoint) =>
+        if fromPoint ∉ airspacePoints && toPoint ∈ airspacePoints then
+          some (fromPoint, toPoint)
+        else
+          none
+
+def airspaceRouteExitTransitions
+    (routePoints : List PointId)
+    (airspacePoints : List PointId) : List (PointId × PointId) :=
+  routePoints.zip routePoints.tail |>.filterMap fun
+    | (fromPoint, toPoint) =>
+        if fromPoint ∈ airspacePoints && toPoint ∉ airspacePoints then
+          some (fromPoint, toPoint)
+        else
+          none
+
+def airspaceRouteTouches
+    (routePoints : List PointId)
+    (airspacePoints : List PointId) : Bool :=
+  !((airspaceRouteInsidePoints routePoints airspacePoints).isEmpty &&
+    (airspaceRouteEntryTransitions routePoints airspacePoints).isEmpty &&
+    (airspaceRouteExitTransitions routePoints airspacePoints).isEmpty)
 
 inductive ResolvedPayload
   | taxi (route : ResolvedTaxiRoute)

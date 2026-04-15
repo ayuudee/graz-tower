@@ -209,14 +209,17 @@ Read modules in roughly this order:
 67. [CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
     Optional. This adds the first world-backed airspace layer above the
     current-shape airspace package: concrete airspace-volume-backed resolution
-    facts, source-level admission and authority-gated issuance, and the first
-    theorem-bearing inside/outside plus entry/exit observation semantics.
+    facts, graph-backed route/airspace interaction facts, source-level
+    admission and authority-gated issuance, and the first theorem-bearing
+    inside/outside plus entry/exit observation semantics.
 68. [CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean)
     Optional. This widens that world-backed airspace layer through a first
-    narrow compound slice over immediate adjunct tails.
+    narrow compound slice over immediate adjunct tails, including the current
+    exit-or-landing lifecycle semantics for the permission pair.
 69. [CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
     Optional. This packages the delivered world-backed airspace surface behind
-    one source-level theorem boundary.
+    one source-level theorem boundary for the current graph-backed point-set +
+    transition model.
 
 ## What Each Module Owns
 
@@ -345,14 +348,18 @@ Read modules in roughly this order:
   surface.
 - `GreenfieldAirspaceWorldBackedCurrentShape`
   First world-backed airspace layer above the broadened current-shape package:
-  concrete `AirspaceVolume` membership, resolved airspace payloads, source-
-  level admission/authorized issuance, and first theorem-bearing
-  inside/outside plus entry/exit observation semantics.
+  concrete `AirspaceVolume` membership, resolved airspace payloads,
+  graph-backed route/airspace interaction, source-level admission/authorized
+  issuance, and first theorem-bearing inside/outside plus entry/exit
+  observation semantics.
 - `GreenfieldAirspaceWorldBackedCompound`
   First narrow compound layer above the world-backed airspace boundary:
-  one leading world-backed airspace primary plus immediate adjunct tails.
+  one leading world-backed airspace primary plus immediate adjunct tails,
+  including current exit-or-landing lifecycle semantics for the permission
+  pair.
 - `GreenfieldAirspaceWorldBackedDeliveredCurrentShape`
-  Source-level packaging for the delivered world-backed airspace surface.
+  Source-level packaging for the delivered world-backed airspace surface on
+  the current graph-backed point-set + transition model.
 - `GreenfieldRadioCurrentShape`
   Source-level current-shape packaging for the delivered radio family:
   `ContactFrequency` and `MonitorFrequency`.

@@ -472,6 +472,45 @@ class ActiveClearanceEngineTest {
             }
         )
     }
+
+    @Test
+    fun worldBackedControlZonePermissionTerminalsAfterExitTransition() {
+        val world = sampleWorld()
+        val existing = stageIncomingClearance(
+            world.resolveClearance(
+                context = ClearanceResolutionContext(FixtureIds.aerodrome),
+                clearance = structuredClearance(
+                    id = "ENTER-CTR-SINGLE",
+                    domain = ClearanceDomain.ROUTE,
+                    content = ClearanceContent.Single(
+                        ClearedToEnterControlZone(
+                            target = TEST_AIRCRAFT,
+                            airspace = FixtureIds.airspace
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+
+        val reconciled = reconcileClearances(
+            existing = listOf(existing),
+            completionViews = mapOf(
+                TEST_AIRCRAFT to CompletionView(
+                    position = xyz.easiersaid.twr.protocol.PointId("OUTSIDE-CTR"),
+                    entities = emptySet(),
+                    onGround = false,
+                    transitionHistory = setOf(xyz.easiersaid.twr.core.world.EntityRef.AirspaceVolumeRef(FixtureIds.airspace))
+                )
+            )
+        )
+
+        assertTrue(
+            reconciled.terminalClearances.any { managed ->
+                managed.source.id.value == "ENTER-CTR-SINGLE" &&
+                    managed.status == ClearanceStatus.COMPLETED
+            }
+        )
+    }
 }
 
 private val TEST_AIRCRAFT = AircraftId("TEST123")
