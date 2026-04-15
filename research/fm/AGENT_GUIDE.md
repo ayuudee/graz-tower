@@ -123,9 +123,13 @@ Then open the specific Lean module for the phase you are changing.
   world-backed airspace layer above that package:
   concrete proof-side `AirspaceVolume` membership, resolved airspace
   payloads, source-level admission and authority-gated issuance, explicit
-  inside-volume violation observation for
+  inside-volume plus entry-transition violation observation for
   `RemainOutsideControlledAirspace`, and explicit persistence for
   `ClearedToEnterControlZone` and `SpecialVfrClearance`
+  `GreenfieldAirspaceWorldBackedCompound.lean` and
+  `GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean` now widen that
+  same world-backed airspace layer through a first narrow compound slice and
+  package it behind one source-level theorem boundary
   `GreenfieldRadioCurrentShape.lean` now also closes a small current-shape
   radio package for `ContactFrequency` and `MonitorFrequency`, including
   conservative radio-role authority plus explicit/implicit frequency
@@ -199,8 +203,10 @@ Then open the specific Lean module for the phase you are changing.
   semantics themselves change
   the new world-backed airspace layer is a separate widening branch:
   it is no longer accurate to describe airspace as plain/current-shape only,
-  but boundary-crossing and world-backed compound airspace semantics still
-  remain open
+  and it is no longer accurate to describe it as world-backed single-step
+  only; current-model entry/exit observation is now explicit, but richer
+  geometric, route-backed, and broader world-backed airspace lifecycle
+  semantics still remain open
 
 Do not talk as if broad route-bearing or richer operational mode semantics are
 proved just because the scoped surface is closed. The current route-bearing

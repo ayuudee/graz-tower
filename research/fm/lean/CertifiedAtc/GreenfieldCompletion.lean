@@ -21,6 +21,8 @@ structure CompletionObservation where
   onGround : Bool := false
   runwayTransitions : UniqueSet RunwayId := {}
   activeRunways : UniqueSet RunwayId := {}
+  airspaceTransitions : UniqueSet AirspaceVolumeId := {}
+  activeAirspaces : UniqueSet AirspaceVolumeId := {}
   establishedApproachComponents : UniqueSet ApproachComponent := {}
   currentRole : Option RoleName := none
   currentFrequency : Option Frequency := none
@@ -40,6 +42,26 @@ def runwayTransitionComplete
     .complete
   else
     .notComplete
+
+def airspaceInside
+    (airspace : ResolvedAirspaceInstruction)
+    (observation : CompletionObservation) : Bool :=
+  airspace.airspace ∈ observation.activeAirspaces ||
+    match observation.position with
+    | some point => point ∈ airspace.points
+    | none => false
+
+def airspaceEntered
+    (airspace : ResolvedAirspaceInstruction)
+    (observation : CompletionObservation) : Bool :=
+  airspace.airspace ∈ observation.airspaceTransitions &&
+    airspaceInside airspace observation
+
+def airspaceExited
+    (airspace : ResolvedAirspaceInstruction)
+    (observation : CompletionObservation) : Bool :=
+  airspace.airspace ∈ observation.airspaceTransitions &&
+    !(airspaceInside airspace observation)
 
 def comparableFeet : Level → Int
   | .flightLevel fl => Int.ofNat fl * 100
@@ -221,10 +243,10 @@ def observedResolvedStepCompletion?
         match step.instruction with
         | .remainOutsideControlledAirspace _ _ =>
             some <|
-              match observation.position with
-              | some point =>
-                  if point ∈ airspace.points then .notComplete else .notApplicable
-              | none => .notApplicable
+              if airspaceInside airspace observation || airspaceEntered airspace observation then
+                .notComplete
+              else
+                .notApplicable
         | .clearedToEnterControlZone _ _ _ _ =>
             some .notApplicable
         | .specialVfrClearance _ _ _ _ =>

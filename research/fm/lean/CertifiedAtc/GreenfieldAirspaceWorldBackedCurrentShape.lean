@@ -358,11 +358,43 @@ theorem worldBackedRemainOutside_insideVolume_observes_violation :
       evaluation.stepResults.map (fun step => step.result) = [.notComplete] := by
   native_decide
 
+theorem worldBackedRemainOutside_entryTransition_observes_violation :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedWorldBackedRemainOutsideResolved
+        { position := some "P-IN-CTR"
+          activeAirspaces := UniqueSet.singleton "CTR-1"
+          airspaceTransitions := UniqueSet.singleton "CTR-1" }
+    evaluation.updated.status = .active ∧
+      evaluation.stepResults.map (fun step => step.result) = [.notComplete] := by
+  native_decide
+
+theorem worldBackedRemainOutside_exitTransition_is_not_violation :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedWorldBackedRemainOutsideResolved
+        { position := some "P-OUTSIDE"
+          airspaceTransitions := UniqueSet.singleton "CTR-1" }
+    evaluation.updated.status = .active ∧
+      evaluation.stepResults.map (fun step => step.result) = [.notApplicable] := by
+  native_decide
+
 theorem worldBackedEnterZone_insideVolume_remains_active :
     let evaluation :=
       evaluateResolvedCompletion
         sampleManagedWorldBackedEnterZoneResolved
         { position := some "P-IN-CTR" }
+    evaluation.updated.status = .active ∧
+      evaluation.newlyCompletedSteps = ({} : UniqueSet Nat) := by
+  native_decide
+
+theorem worldBackedEnterZone_entryTransition_remains_active :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedWorldBackedEnterZoneResolved
+        { position := some "P-IN-CTR"
+          activeAirspaces := UniqueSet.singleton "CTR-1"
+          airspaceTransitions := UniqueSet.singleton "CTR-1" }
     evaluation.updated.status = .active ∧
       evaluation.newlyCompletedSteps = ({} : UniqueSet Nat) := by
   native_decide

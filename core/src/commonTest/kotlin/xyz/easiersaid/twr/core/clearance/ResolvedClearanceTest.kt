@@ -410,6 +410,43 @@ class ResolvedClearanceTest {
     }
 
     @Test
+    fun resolvesCompoundControlZoneClearanceAgainstAirspaceVolumeAndTail() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-ENTER-CTR-COMPOUND"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Compound(
+                steps = arrow.core.nonEmptyListOf(
+                    ClearedToEnterControlZone(
+                        target = AircraftId("TEST123"),
+                        airspace = FixtureIds.airspace
+                    ),
+                    ContactFrequency(
+                        target = AircraftId("TEST123"),
+                        role = RoleName.TOWER
+                    )
+                )
+            ),
+            domain = ClearanceDomain.ROUTE,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(8),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        ).requireResolved()
+
+        val airspace = assertIs<ResolvedStep.Airspace>(resolved.steps[0])
+        assertEquals(FixtureIds.airspace, airspace.airspace.airspace.id)
+
+        val frequency = assertIs<ResolvedStep.FrequencyChange>(resolved.steps[1])
+        assertEquals(RoleName.TOWER, frequency.frequency.roleName)
+        assertEquals(setOf(ClearanceDomain.ROUTE, ClearanceDomain.FREQUENCY), resolved.supersedesDomains)
+    }
+
+    @Test
     fun resolvesRemainOutsideControlledAirspaceAgainstAirspaceVolume() {
         val world = sampleWorld()
         val clearance = StructuredClearance(
@@ -423,7 +460,7 @@ class ResolvedClearanceTest {
             ),
             domain = ClearanceDomain.ROUTE,
             issuedBy = ControllerId("CTRL-1"),
-            issuedAt = TickNumber(8),
+            issuedAt = TickNumber(9),
             status = ClearanceStatus.ACTIVE
         )
 
@@ -451,7 +488,7 @@ class ResolvedClearanceTest {
             ),
             domain = ClearanceDomain.ROUTE,
             issuedBy = ControllerId("CTRL-1"),
-            issuedAt = TickNumber(9),
+            issuedAt = TickNumber(10),
             status = ClearanceStatus.ACTIVE
         )
 

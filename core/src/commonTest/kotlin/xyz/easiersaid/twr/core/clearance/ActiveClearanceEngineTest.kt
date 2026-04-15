@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.ClearedTo
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ConditionalClearance
 import xyz.easiersaid.twr.protocol.ConditionalPredicate
 import xyz.easiersaid.twr.protocol.ContactFrequency
@@ -20,6 +21,8 @@ import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.HoldShortOf
+import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.TickNumber
@@ -179,6 +182,296 @@ class ActiveClearanceEngineTest {
             }
         )
     }
+
+    @Test
+    fun supersededPendingClearanceIsNotReactivatedLaterInSamePass() {
+        val world = sampleWorld()
+
+        val firstPending = admitClearance(
+            existing = emptyList(),
+            incoming = world.resolveClearance(
+                context = ClearanceResolutionContext(
+                    aerodromeId = FixtureIds.aerodrome,
+                    currentPoint = FixtureIds.holdShort09
+                ),
+                clearance = structuredClearance(
+                    id = "COND-CROSS",
+                    domain = ClearanceDomain.GROUND,
+                    issuedAt = 1,
+                    content = ClearanceContent.Single(
+                        ConditionalClearance(
+                            target = TEST_AIRCRAFT,
+                            condition = ConditionalPredicate.AfterTraffic(
+                                traffic = TrafficRef.ByDescription("landing 737"),
+                                action = TrafficAction.LANDING
+                            ),
+                            instruction = CrossRunway(
+                                target = TEST_AIRCRAFT,
+                                runway = FixtureIds.runway09
+                            )
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+
+        val secondPending = admitClearance(
+            existing = firstPending.clearances,
+            incoming = world.resolveClearance(
+                context = ClearanceResolutionContext(
+                    aerodromeId = FixtureIds.aerodrome,
+                    currentPoint = FixtureIds.holdShort09
+                ),
+                clearance = structuredClearance(
+                    id = "COND-HOLD",
+                    domain = ClearanceDomain.GROUND,
+                    issuedAt = 2,
+                    content = ClearanceContent.Single(
+                        ConditionalClearance(
+                            target = TEST_AIRCRAFT,
+                            condition = ConditionalPredicate.AfterTraffic(
+                                traffic = TrafficRef.ByDescription("landing 737"),
+                                action = TrafficAction.LANDING
+                            ),
+                            instruction = HoldShortOf(
+                                target = TEST_AIRCRAFT,
+                                runway = FixtureIds.runway27
+                            )
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+
+        val reconciled = reconcileClearances(
+            existing = secondPending.clearances,
+            completionViews = emptyMap(),
+            conditionEvaluator = { _, _ -> true }
+        )
+
+        assertEquals(1, reconciled.activatedClearances.size)
+        assertEquals("COND-CROSS", reconciled.activatedClearances.single().after.source.id.value)
+        assertTrue(
+            reconciled.terminalClearances.any { managed ->
+                managed.source.id.value == "COND-HOLD" && managed.status == ClearanceStatus.SUPERSEDED
+            }
+        )
+        assertTrue(
+            reconciled.clearances.none { managed ->
+                managed.source.id.value == "COND-HOLD" && managed.status == ClearanceStatus.ACTIVE
+            }
+        )
+    }
+
+    @Test
+    fun activatedConditionalClearancesRespectIssuedOrder() {
+        val world = sampleWorld()
+
+        val firstPending = admitClearance(
+            existing = emptyList(),
+            incoming = world.resolveClearance(
+                context = ClearanceResolutionContext(
+                    aerodromeId = FixtureIds.aerodrome,
+                    currentPoint = FixtureIds.holdShort09
+                ),
+                clearance = structuredClearance(
+                    id = "COND-CROSS",
+                    domain = ClearanceDomain.GROUND,
+                    issuedAt = 1,
+                    content = ClearanceContent.Single(
+                        ConditionalClearance(
+                            target = TEST_AIRCRAFT,
+                            condition = ConditionalPredicate.AfterTraffic(
+                                traffic = TrafficRef.ByDescription("landing 737"),
+                                action = TrafficAction.LANDING
+                            ),
+                            instruction = CrossRunway(
+                                target = TEST_AIRCRAFT,
+                                runway = FixtureIds.runway09
+                            )
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+
+        val secondPending = admitClearance(
+            existing = firstPending.clearances,
+            incoming = world.resolveClearance(
+                context = ClearanceResolutionContext(
+                    aerodromeId = FixtureIds.aerodrome,
+                    currentPoint = FixtureIds.holdShort09
+                ),
+                clearance = structuredClearance(
+                    id = "COND-LUP",
+                    domain = ClearanceDomain.RUNWAY,
+                    issuedAt = 2,
+                    content = ClearanceContent.Single(
+                        ConditionalClearance(
+                            target = TEST_AIRCRAFT,
+                            condition = ConditionalPredicate.AfterTraffic(
+                                traffic = TrafficRef.ByDescription("landing 737"),
+                                action = TrafficAction.LANDING
+                            ),
+                            instruction = LineUpAndWait(
+                                target = TEST_AIRCRAFT,
+                                runway = FixtureIds.runway09
+                            )
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+
+        val reconciled = reconcileClearances(
+            existing = secondPending.clearances,
+            completionViews = emptyMap(),
+            conditionEvaluator = { _, _ -> true }
+        )
+
+        assertEquals(
+            listOf("COND-CROSS", "COND-LUP"),
+            reconciled.activatedClearances.map { activation -> activation.after.source.id.value }
+        )
+        assertTrue(
+            reconciled.clearances.any { managed ->
+                managed.source.id.value == "COND-CROSS" && managed.status == ClearanceStatus.ACTIVE
+            }
+        )
+        assertTrue(
+            reconciled.clearances.any { managed ->
+                managed.source.id.value == "COND-LUP" && managed.status == ClearanceStatus.ACTIVE
+            }
+        )
+    }
+
+    @Test
+    fun frequencySupersessionLeavesWorldBackedRemainOutsideCompoundActive() {
+        val world = sampleWorld()
+        val existing = stageIncomingClearance(
+            world.resolveClearance(
+                context = ClearanceResolutionContext(FixtureIds.aerodrome),
+                clearance = structuredClearance(
+                    id = "ROCA-FREQ",
+                    domain = ClearanceDomain.ROUTE,
+                    content = ClearanceContent.Compound(
+                        steps = arrow.core.nonEmptyListOf(
+                            RemainOutsideControlledAirspace(
+                                target = TEST_AIRCRAFT,
+                                airspace = FixtureIds.airspace
+                            ),
+                            ContactFrequency(
+                                target = TEST_AIRCRAFT,
+                                role = RoleName.TOWER
+                            )
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+        val incoming = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "NEW-FREQ-ROCA",
+                domain = ClearanceDomain.FREQUENCY,
+                content = ClearanceContent.Single(
+                    ContactFrequency(
+                        target = TEST_AIRCRAFT,
+                        role = RoleName.APPROACH
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val admission = admitClearance(listOf(existing), incoming)
+
+        val reconciled = reconcileClearances(
+            existing = admission.clearances,
+            completionViews = mapOf(
+                TEST_AIRCRAFT to CompletionView(
+                    position = xyz.easiersaid.twr.protocol.PointId("OUTSIDE-CTR"),
+                    entities = emptySet(),
+                    onGround = false
+                )
+            )
+        )
+
+        assertTrue(
+            reconciled.clearances.any { managed ->
+                managed.source.id.value == "ROCA-FREQ" &&
+                    managed.status == ClearanceStatus.ACTIVE &&
+                    managed.suppressedDomains == setOf(ClearanceDomain.FREQUENCY)
+            }
+        )
+        assertTrue(
+            reconciled.terminalClearances.none { managed ->
+                managed.source.id.value == "ROCA-FREQ"
+            }
+        )
+    }
+
+    @Test
+    fun frequencySupersessionCompletesWorldBackedControlZoneCompound() {
+        val world = sampleWorld()
+        val existing = stageIncomingClearance(
+            world.resolveClearance(
+                context = ClearanceResolutionContext(FixtureIds.aerodrome),
+                clearance = structuredClearance(
+                    id = "ENTER-CTR-FREQ",
+                    domain = ClearanceDomain.ROUTE,
+                    content = ClearanceContent.Compound(
+                        steps = arrow.core.nonEmptyListOf(
+                            ClearedToEnterControlZone(
+                                target = TEST_AIRCRAFT,
+                                airspace = FixtureIds.airspace
+                            ),
+                            ContactFrequency(
+                                target = TEST_AIRCRAFT,
+                                role = RoleName.TOWER
+                            )
+                        )
+                    )
+                )
+            ).requireResolved()
+        )
+        val incoming = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "NEW-FREQ-ENTER",
+                domain = ClearanceDomain.FREQUENCY,
+                content = ClearanceContent.Single(
+                    ContactFrequency(
+                        target = TEST_AIRCRAFT,
+                        role = RoleName.APPROACH
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val admission = admitClearance(listOf(existing), incoming)
+        val reconciled = reconcileClearances(
+            existing = admission.clearances,
+            completionViews = mapOf(
+                TEST_AIRCRAFT to CompletionView(
+                    position = FixtureIds.runway09Threshold,
+                    entities = emptySet(),
+                    onGround = false
+                )
+            )
+        )
+
+        assertTrue(
+            reconciled.terminalClearances.any { managed ->
+                managed.source.id.value == "ENTER-CTR-FREQ" &&
+                    managed.status == ClearanceStatus.COMPLETED
+            }
+        )
+        assertTrue(
+            reconciled.clearances.any { managed ->
+                managed.source.id.value == "NEW-FREQ-ENTER" && managed.status == ClearanceStatus.ACTIVE
+            }
+        )
+    }
 }
 
 private val TEST_AIRCRAFT = AircraftId("TEST123")
@@ -187,7 +480,8 @@ private fun structuredClearance(
     id: String,
     domain: ClearanceDomain,
     content: ClearanceContent,
-    status: ClearanceStatus = ClearanceStatus.ACTIVE
+    status: ClearanceStatus = ClearanceStatus.ACTIVE,
+    issuedAt: Long = 1
 ): StructuredClearance =
     StructuredClearance(
         id = ClearanceId(id),
@@ -195,7 +489,7 @@ private fun structuredClearance(
         content = content,
         domain = domain,
         issuedBy = ControllerId("CTRL-1"),
-        issuedAt = TickNumber(1),
+        issuedAt = TickNumber(issuedAt),
         status = status
     )
 

@@ -200,19 +200,42 @@ private fun evaluateAirspaceCompletion(
     step: ResolvedStep.Airspace,
     view: CompletionView
 ): CompletionResult {
-    val airspaceRef = EntityRef.AirspaceVolumeRef(step.airspace.airspace.id)
-    val insideAirspace =
-        airspaceRef in view.entities || view.position in step.airspace.airspace.points
+    val observation = observeAirspaceState(step, view)
 
     return when (step.instruction) {
         is RemainOutsideControlledAirspace ->
-            if (insideAirspace) CompletionResult.NOT_COMPLETE else CompletionResult.NOT_APPLICABLE
+            if (observation.inside || observation.entered) {
+                CompletionResult.NOT_COMPLETE
+            } else {
+                CompletionResult.NOT_APPLICABLE
+            }
 
         is ClearedToEnterControlZone,
         is SpecialVfrClearance -> CompletionResult.NOT_APPLICABLE
 
         else -> CompletionResult.NOT_COMPLETE
     }
+}
+
+private data class AirspaceObservationState(
+    val inside: Boolean,
+    val entered: Boolean,
+    val exited: Boolean
+)
+
+private fun observeAirspaceState(
+    step: ResolvedStep.Airspace,
+    view: CompletionView
+): AirspaceObservationState {
+    val airspaceRef = EntityRef.AirspaceVolumeRef(step.airspace.airspace.id)
+    val inside =
+        airspaceRef in view.entities || view.position in step.airspace.airspace.points
+    val transitioned = airspaceRef in view.transitionHistory
+    return AirspaceObservationState(
+        inside = inside,
+        entered = transitioned && inside,
+        exited = transitioned && !inside
+    )
 }
 
 private fun evaluateGenericInstructionCompletion(

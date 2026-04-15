@@ -376,9 +376,11 @@ The default critical path is now:
   through a first narrow current-shape compound slice, and the delivered
   family is now packaged behind one source-level current-shape theorem
   boundary;
-  above that delivered package, a first world-backed single-step airspace
-  layer now exists too, but boundary-crossing and world-backed compound
-  airspace semantics are still open
+  above that delivered package, a first world-backed airspace layer now exists
+  too, with both single-step semantics and a first narrow compound layer;
+  inside/outside plus entry/exit observation semantics are now explicit on the
+  current model, but richer geometric and route-backed world airspace
+  semantics are still open
 - the current Kotlin radio family now also has a small closed current-shape
   slice:
   `ContactFrequency` and `MonitorFrequency` now have a single-step packaged
@@ -454,13 +456,18 @@ The default critical path is now:
   `ClearedToEnterControlZone`, and `SpecialVfrClearance` against concrete
   `AirspaceVolume` entities, and
   [GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
-  now adds the matching Lean boundary for world-backed single-step airspace
-  semantics:
+  plus
+  [GreenfieldAirspaceWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean)
+  and
+  [GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
+  now add the matching Lean boundary for world-backed airspace semantics:
   concrete airspace-volume existence in the proof-side world, resolved
-  airspace payloads, source-level admission and authority-gated issuance, an
-  explicit inside-volume violation observation for
-  `RemainOutsideControlledAirspace`, and explicit persistence for
-  `ClearedToEnterControlZone` and `SpecialVfrClearance`
+  airspace payloads, source-level admission and authority-gated issuance, a
+  first narrow compound layer over immediate adjunct tails, an explicit
+  inside-volume plus entry-transition violation observation for
+  `RemainOutsideControlledAirspace`, explicit persistence for
+  `ClearedToEnterControlZone` and `SpecialVfrClearance`, and theorem-bearing
+  current engine consequences for world-backed airspace compounds
 - the phase-1 current-shape parity closure is now complete under the frozen
   rule used for this widening programme:
   every family whose Kotlin semantics are already stable, whose conservative
@@ -481,7 +488,8 @@ The default critical path is now:
   the whole current Kotlin airspace-clearance family now has both a
   single-step slice and a first narrow compound slice, packaged behind one
   source-level current-shape theorem boundary; above that, the first
-  world-backed single-step airspace layer is now theorem-bearing
+  world-backed airspace layer is now theorem-bearing through its single-step
+  and first narrow-compound slices
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`;
@@ -490,8 +498,8 @@ The default critical path is now:
   compound surface, widen the broader ground-movement family on the greenfield
   boundary, settle authority for the modifier/pressure families, or carry
   `ClearedTo` / `HoldAt` through the older atomic path, or deepen the new
-  world-backed airspace layer beyond its present single-step boundary into
-  boundary-crossing and richer compound semantics
+  world-backed airspace layer beyond its present first narrow compound
+  boundary into richer geometric, route-backed, and lifecycle semantics
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

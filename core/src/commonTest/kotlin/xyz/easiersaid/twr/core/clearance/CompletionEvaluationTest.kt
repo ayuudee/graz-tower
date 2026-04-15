@@ -193,6 +193,48 @@ class CompletionEvaluationTest {
     }
 
     @Test
+    fun remainOutsideControlledAirspaceTreatsEntryAndExitTransitionsDifferently() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ROCA-TRANSITIONS",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    RemainOutsideControlledAirspace(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val entryEvaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runway09Threshold,
+                entities = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace)),
+                onGround = false,
+                transitionHistory = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace))
+            )
+        )
+        val exitEvaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = xyz.easiersaid.twr.protocol.PointId("OUTSIDE-CTR"),
+                entities = emptySet(),
+                onGround = false,
+                transitionHistory = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace))
+            )
+        )
+
+        assertEquals(CompletionResult.NOT_COMPLETE, entryEvaluation.stepResults.single().result)
+        assertEquals(ClearanceStatus.ACTIVE, entryEvaluation.updated.source.status)
+        assertEquals(CompletionResult.NOT_APPLICABLE, exitEvaluation.stepResults.single().result)
+        assertEquals(ClearanceStatus.ACTIVE, exitEvaluation.updated.source.status)
+    }
+
+    @Test
     fun controlZoneAndSpecialVfrPermissionsRemainActiveWhenObservedInsideAirspace() {
         val world = sampleWorld()
         val enterZone = world.resolveClearance(
@@ -244,6 +286,157 @@ class CompletionEvaluationTest {
             ClearanceStatus.ACTIVE,
             evaluateCompletion(specialVfr, insideView).updated.source.status
         )
+    }
+
+    @Test
+    fun controlZoneAndSpecialVfrPermissionsRemainActiveAcrossEntryTransition() {
+        val world = sampleWorld()
+        val enterZone = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ENTER-CTR-TRANSITION",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    ClearedToEnterControlZone(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+        val specialVfr = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-SVFR-TRANSITION",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    SpecialVfrClearance(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val entryView = CompletionView(
+            position = FixtureIds.runway09Threshold,
+            entities = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace)),
+            onGround = false,
+            transitionHistory = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace))
+        )
+
+        assertEquals(
+            CompletionResult.NOT_APPLICABLE,
+            evaluateCompletion(enterZone, entryView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.NOT_APPLICABLE,
+            evaluateCompletion(specialVfr, entryView).stepResults.single().result
+        )
+        assertEquals(
+            ClearanceStatus.ACTIVE,
+            evaluateCompletion(enterZone, entryView).updated.source.status
+        )
+        assertEquals(
+            ClearanceStatus.ACTIVE,
+            evaluateCompletion(specialVfr, entryView).updated.source.status
+        )
+    }
+
+    @Test
+    fun controlZoneCompoundCompletesWhenImmediateFrequencyTailCompletes() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ENTER-CTR-FREQ",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Compound(
+                    steps = arrow.core.nonEmptyListOf(
+                        ClearedToEnterControlZone(
+                            target = TEST_AIRCRAFT,
+                            airspace = FixtureIds.airspace
+                        ),
+                        ContactFrequency(
+                            target = TEST_AIRCRAFT,
+                            role = RoleName.TOWER
+                        )
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val evaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runway09Threshold,
+                entities = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace)),
+                onGround = false,
+                radioState = RadioState(
+                    currentRole = RoleName.TOWER,
+                    currentFrequency = Frequency.unsafe("118.500"),
+                    lastContactRole = RoleName.TOWER
+                )
+            )
+        )
+
+        assertEquals(
+            listOf(
+                CompletionResult.NOT_APPLICABLE,
+                CompletionResult.COMPLETE
+            ),
+            evaluation.stepResults.map { stepResult -> stepResult.result }
+        )
+        assertEquals(setOf(1), evaluation.newlyCompletedSteps)
+        assertEquals(ClearanceStatus.COMPLETED, evaluation.updated.source.status)
+    }
+
+    @Test
+    fun remainOutsideCompoundKeepsPrimaryActiveAfterImmediateFrequencyTailCompletes() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ROCA-FREQ",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Compound(
+                    steps = arrow.core.nonEmptyListOf(
+                        RemainOutsideControlledAirspace(
+                            target = TEST_AIRCRAFT,
+                            airspace = FixtureIds.airspace
+                        ),
+                        ContactFrequency(
+                            target = TEST_AIRCRAFT,
+                            role = RoleName.TOWER
+                        )
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val evaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = xyz.easiersaid.twr.protocol.PointId("OUTSIDE-CTR"),
+                entities = emptySet(),
+                onGround = false,
+                radioState = RadioState(
+                    currentRole = RoleName.TOWER,
+                    currentFrequency = Frequency.unsafe("118.500"),
+                    lastContactRole = RoleName.TOWER
+                )
+            )
+        )
+
+        assertEquals(
+            listOf(
+                CompletionResult.NOT_APPLICABLE,
+                CompletionResult.COMPLETE
+            ),
+            evaluation.stepResults.map { stepResult -> stepResult.result }
+        )
+        assertEquals(setOf(1), evaluation.newlyCompletedSteps)
+        assertEquals(ClearanceStatus.ACTIVE, evaluation.updated.source.status)
     }
 
     @Test
