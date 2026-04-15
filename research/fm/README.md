@@ -355,7 +355,13 @@ As of April 15, 2026:
   full-brief preservation over the mode-aware top layer
 - optional orchestration layer: partial composition proof exists, but it is not
   the primary success criterion
-- code refinement and enforcement: not started
+- code refinement and drift enforcement: closed for the delivered branch set
+  via
+  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md),
+  the proof-side registry in
+  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean),
+  and tracked Kotlin drift tests; broader automated refinement beyond the
+  delivered branch set remains open
 
 The default critical path is now:
 
@@ -504,12 +510,24 @@ The default critical path is now:
   source-level current-shape theorem boundary; above that, the first
   world-backed airspace layer is now theorem-bearing through its single-step
   and first narrow-compound slices
-- the parity / refinement / drift-control branch is now frozen in
+- the parity / refinement / drift-control branch is now closed and frozen in
   [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md):
   the delivered families are now classified as scoped-core complete,
   current-shape complete, world-backed complete on the current model, or
   intentionally open, and the load-bearing drift seams are recorded for
   metadata, authority, completion, and supersession
+- the route-to-95%-plan phase 2 is now also closed:
+  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  now freezes the enforcement boundary for the delivered surface,
+  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  now re-exports the load-bearing theorem surfaces for the delivered branches,
+  and the tracked Kotlin drift suites in
+  [DeliveredMetadataParityTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/DeliveredMetadataParityTest.kt),
+  [StableRuntimeCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/StableRuntimeCurrentShapeTest.kt),
+  [GroundMovementCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementCurrentShapeTest.kt),
+  and
+  [RouteAdjacentCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/RouteAdjacentCurrentShapeTest.kt)
+  now make delivered metadata and current-engine behavior fail loudly on drift
 - the delivered broader ground / surface movement branch is now also closed:
   [GroundMovementResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GroundMovementResolutionBridge.lean),
   [GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
@@ -520,8 +538,9 @@ The default critical path is now:
   `HoldPosition`, and a first narrow sequential ground compound layer now all
   have packaged source-level issuance plus authority-gated issuance on the
   current model
-- the next default FM work is no longer broader ground / surface movement;
-  the next deliberate widening choices are now broader
+- the next default FM work is no longer broader ground / surface movement, and
+  it is no longer the delivered-branch refinement / drift-control branch
+  either; the next deliberate widening choices are now broader
   communications/surveillance semantics or the next genuinely semantic branch
   beyond the current models
 - richer mode semantics remain a secondary widening direction, not the default
@@ -534,10 +553,11 @@ For a new human or AI agent, start here:
 1. [AGENT_GUIDE.md](/home/andrew/dev/projects/twr2/research/fm/AGENT_GUIDE.md)
 2. [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
 3. [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-4. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
-5. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-6. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
-7. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
+4. [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+5. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
+6. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+7. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+8. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
 8. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
 9. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
 10. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)

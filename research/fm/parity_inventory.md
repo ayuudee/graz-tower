@@ -10,6 +10,12 @@ FM surface. It is the authoritative inventory for:
 - what remains intentionally open
 - where drift must be checked before widening further
 
+Use it together with
+[refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md):
+
+- this file says **what status each delivered branch has**
+- `refinement_inventory.md` says **where that status is enforced**
+
 ## Status Classes
 
 - `SCOPED_CORE_COMPLETE`
@@ -83,5 +89,10 @@ low-risk widening branch of exactly the same shape.
 
 The next deliberate choices are:
 
+- keep
+  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  and
+  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  current whenever a delivered branch changes
 - broader communications / surveillance semantics, or
 - the next genuinely semantic research branch beyond the current models

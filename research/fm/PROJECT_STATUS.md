@@ -246,6 +246,15 @@ It now contains:
   current-shape complete, world-backed complete on the current model, or
   intentionally open, and the load-bearing drift seams are recorded for
   metadata, authority, completion, and supersession
+- the route-to-95%-plan phase-2 refinement / drift-control closure is now
+  also complete:
+  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  now freezes the enforcing Kotlin/Lean surfaces for the delivered branch set,
+  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  now registers the load-bearing delivered theorem surfaces in one Lean
+  module, and the tracked Kotlin drift tests now cover frozen metadata plus
+  the delivered current-engine seams for stable runtime and route-adjacent
+  behavior
 - `GroundMovementResolutionBridge.lean`,
   `GreenfieldGroundMovementCurrentShape.lean`, and
   `GreenfieldGroundMovementDeliveredCurrentShape.lean` now close the broader
@@ -261,6 +270,9 @@ It now contains:
   and beyond the newly closed small current-shape compound slices for the
   current Phase B families; the older atomic closure for `ClearedTo` /
   `HoldAt` remains optional and separate
+- the delivered-branch refinement/drift-control branch is now closed too, so
+  the next default FM work is no longer parity enforcement; the next branch is
+  again a deliberate widening choice
 
 It does not yet contain:
 

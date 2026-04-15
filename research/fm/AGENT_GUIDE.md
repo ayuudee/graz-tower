@@ -26,14 +26,16 @@ Read in this order:
 
 1. [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
 2. [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
-3. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
-4. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-5. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
-6. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
-7. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-8. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
-9. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
-10. [lean/README.md](/home/andrew/dev/projects/twr2/research/fm/lean/README.md)
+3. [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+4. [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+5. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
+6. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+7. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+8. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
+9. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+10. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+11. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
+12. [lean/README.md](/home/andrew/dev/projects/twr2/research/fm/lean/README.md)
 
 Then open the specific Lean module for the phase you are changing.
 
@@ -296,16 +298,20 @@ Unless the user says otherwise, the next default task in `research/fm` is:
 - keep the scoped surface stable and honest
 - use the frozen parity / refinement / drift-control inventory in
   [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-  as a guardrail before opening a new branch:
+  and the enforcing branch map in
+  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  as guardrails before opening a new branch:
   if metadata, authority, completion, supersession, or family status changes,
-  update the inventory
+  update the inventories and the central registry in
+  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
 - remember what is already closed and therefore not the default “next” task:
   the current graph-backed published-procedure route-bearing branch,
   the delivered Phase B route-adjacent branch,
   the current graph-backed point-set + transition airspace branch,
   the delivered communications/surveillance surface,
   the broadened current-shape runway surface,
-  and the current graph-backed broader ground / surface branch
+  the current graph-backed broader ground / surface branch,
+  and the delivered-branch refinement / drift-control branch
 - the next widening branch is now a deliberate choice, not an automatic
   default:
   prefer one branch at a time between broader

@@ -12,14 +12,17 @@ nix-shell -p lean4 --run 'cd research/fm/lean && lake build'
 
 ## Default Next Work
 
-The parity / refinement / drift-control branch is now frozen in
-[parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md).
+The delivered-branch refinement / drift-control closure is now in place.
 
-There is no longer one automatic low-risk widening branch of exactly the same
-shape.
-
-- keep that inventory current if metadata, authority, completion,
-  supersession, or family status changes
+- keep
+  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md),
+  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md),
+  and
+  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  current if metadata, authority, completion, supersession, or family status
+  changes
+- there is no longer one automatic low-risk widening branch of exactly the
+  same shape
 - choose the next deliberate widening branch between broader
   communications/surveillance semantics and the next genuinely semantic
   branch beyond the current models
@@ -238,6 +241,10 @@ Read modules in roughly this order:
 69. [CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
     Optional. This packages the delivered world-backed airspace surface behind
     one source-level theorem boundary for the current graph-backed point-set +
+70. [CertifiedAtc/GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+    Optional. This is the central proof-side registry for the delivered
+    Kotlin↔Lean refinement boundary: branch classifications plus aliases for
+    the load-bearing delivered theorem surfaces.
     transition model.
 
 ## What Each Module Owns
