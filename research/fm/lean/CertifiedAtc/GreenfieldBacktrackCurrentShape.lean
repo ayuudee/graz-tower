@@ -256,11 +256,34 @@ theorem singleBacktrack_completes_at_far_end :
       evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
   native_decide
 
+theorem singleBacktrack_completes_on_traversed_far_end_progress :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedSingleBacktrack
+        { position := some "RWY-X"
+          traversedGroundPoints := UniqueSet.singleton "RWY27-FAR"
+          onGround := true }
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
 theorem singleBacktrack_reconcile_transitions_to_terminal :
     let reconciliation :=
       reconcileResolvedClearances
         [sampleManagedResolvedSingleBacktrack]
         { position := some "RWY27-FAR" }
+        (fun _ _ => false)
+    resolvedClearanceIds reconciliation.clearances = [] ∧
+      resolvedClearanceIds reconciliation.terminalClearances = ["CLR-BACKTRACK"] := by
+  native_decide
+
+theorem singleBacktrack_reconcile_progress_completion_to_terminal :
+    let reconciliation :=
+      reconcileResolvedClearances
+        [sampleManagedResolvedSingleBacktrack]
+        { position := some "RWY-X"
+          traversedGroundPoints := UniqueSet.singleton "RWY27-FAR"
+          onGround := true }
         (fun _ _ => false)
     resolvedClearanceIds reconciliation.clearances = [] ∧
       resolvedClearanceIds reconciliation.terminalClearances = ["CLR-BACKTRACK"] := by

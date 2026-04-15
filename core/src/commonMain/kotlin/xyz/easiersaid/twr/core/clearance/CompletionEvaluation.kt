@@ -27,9 +27,11 @@ import xyz.easiersaid.twr.protocol.MaintainAtOrBelow
 import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
 import xyz.easiersaid.twr.protocol.MaintainLevel
 import xyz.easiersaid.twr.protocol.MaintainSpeed
+import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.ReduceSpeedTo
 import xyz.easiersaid.twr.protocol.ConfirmSquawk
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.StopClimbAt
@@ -131,7 +133,7 @@ private fun evaluateStepCompletion(
     view: CompletionView
 ): CompletionResult =
     when (step) {
-        is ResolvedStep.Taxi -> if (view.position == step.route.destination) {
+        is ResolvedStep.Taxi -> if (groundPointReached(step.route.destination, view)) {
             CompletionResult.COMPLETE
         } else {
             CompletionResult.NOT_COMPLETE
@@ -141,10 +143,15 @@ private fun evaluateStepCompletion(
 
         is ResolvedStep.Crossing -> evaluateRunwayTransitionCompletion(
             runway = step.crossing.runway.id,
+            crossed = runwayCrossedOnGround(
+                runway = step.crossing.runway.id,
+                crossingPoint = step.crossing.crossingPoint,
+                view = view
+            ),
             view = view
         )
 
-        is ResolvedStep.Backtrack -> if (view.position == step.farEndPoint) {
+        is ResolvedStep.Backtrack -> if (groundPointReached(step.farEndPoint, view)) {
             CompletionResult.COMPLETE
         } else {
             CompletionResult.NOT_COMPLETE
@@ -196,6 +203,22 @@ private fun evaluateStepCompletion(
 
         is ResolvedStep.Plain -> evaluateGenericInstructionCompletion(step.instruction, view)
     }
+
+private fun groundPointReached(
+    point: PointId,
+    view: CompletionView
+): Boolean =
+    view.position == point ||
+        point in view.groundProgress.traversedPoints ||
+        point in view.groundProgress.reachedHoldingPoints
+
+private fun runwayCrossedOnGround(
+    runway: RunwayId,
+    crossingPoint: PointId,
+    view: CompletionView
+): Boolean =
+    runway in view.groundProgress.crossedRunways ||
+        groundPointReached(crossingPoint, view)
 
 private fun evaluateAirspaceCompletion(
     step: ResolvedStep.Airspace,
@@ -329,7 +352,7 @@ private fun evaluateSelfCompletingInstruction(
         is SquawkNormal,
         is StopSquawk -> evaluateSquawkCompletion(instruction, view)
         is ClearedForTakeoff -> completionOf(!view.onGround)
-        is ClearedToLand -> evaluateRunwayTransitionCompletion(instruction.runway, view)
+        is ClearedToLand -> evaluateRunwayTransitionCompletion(instruction.runway, view = view)
         is ClearedLowApproach -> evaluateLowApproachCompletion(instruction, view)
         is ClearedTouchAndGo -> evaluateTouchAndGoCompletion(instruction, view)
         is BacktrackRunway -> CompletionResult.NOT_COMPLETE
@@ -438,10 +461,14 @@ private fun completionOf(isComplete: Boolean): CompletionResult =
 
 private fun evaluateRunwayTransitionCompletion(
     runway: xyz.easiersaid.twr.protocol.RunwayId,
+    crossed: Boolean = false,
     view: CompletionView
 ): CompletionResult {
     val runwayRef = EntityRef.RunwayRef(runway)
-    return if (runwayRef in view.transitionHistory && runwayRef !in view.entities) {
+    return if (
+        crossed ||
+        (runwayRef in view.transitionHistory && runwayRef !in view.entities)
+    ) {
         CompletionResult.COMPLETE
     } else {
         CompletionResult.NOT_COMPLETE

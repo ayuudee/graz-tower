@@ -263,7 +263,9 @@ It now contains:
   `TaxiTo`, `HoldShortOf`, and `CrossRunway` now have a world-backed ground
   boundary, `HoldPosition` now has a closed current-shape boundary, and the
   first narrow sequential ground compound layer is now theorem-bearing and
-  packaged behind one source-level theorem surface
+  packaged behind one source-level theorem surface on the explicit
+  ground-progress observation model: traversed points, reached holding
+  points, crossed runways, and stopped-on-ground state
 - the next honest route-bearing gap is now an explicit optional branch rather
   than a structural blocker: on the greenfield path, the live work is only
   whatever widening we choose beyond the current graph-backed

@@ -104,7 +104,9 @@ Then open the specific Lean module for the phase you are changing.
   `GreenfieldGroundMovementDeliveredCurrentShape.lean` now give a world-backed
   boundary for `TaxiTo`, `HoldShortOf`, and `CrossRunway`, a current-shape
   boundary for `HoldPosition`, and a first narrow sequential ground compound
-  layer on the same delivered branch
+  layer on the same delivered branch, all on the explicit ground-progress
+  observation model: traversed points, reached holding points, crossed
+  runways, and stopped-on-ground state
 - the next greenfield widening seam is no longer just Phase A route-bearing:
   the semantic-alignment gate for `JoinCircuit` / `ExtendDownwind` / `Orbit`
   is now closed, and `ContinueApproach`, `ExtendDownwind`, and `Orbit` each

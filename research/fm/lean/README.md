@@ -81,6 +81,9 @@ Read modules in roughly this order:
     [CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
     and
     [CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean).
+    That delivered branch now closes the explicit ground-progress observation
+    model: traversed points, reached holding points, crossed runways, and
+    stopped-on-ground state.
     For the delivered route/vector-control branch, also read
     [CertifiedAtc/GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
     [CertifiedAtc/GreenfieldRouteControlCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),

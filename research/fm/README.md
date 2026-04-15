@@ -530,6 +530,7 @@ The default critical path is now:
   [DeliveredMetadataParityTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/DeliveredMetadataParityTest.kt),
   [StableRuntimeCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/StableRuntimeCurrentShapeTest.kt),
   [GroundMovementCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementCurrentShapeTest.kt),
+  [GroundMovementProgressionTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementProgressionTest.kt),
   and
   [RouteAdjacentCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/RouteAdjacentCurrentShapeTest.kt)
   now make delivered metadata and current-engine behavior fail loudly on drift
@@ -542,7 +543,8 @@ The default critical path is now:
   world-backed `TaxiTo`, `HoldShortOf`, and `CrossRunway`, current-shape
   `HoldPosition`, and a first narrow sequential ground compound layer now all
   have packaged source-level issuance plus authority-gated issuance on the
-  current model
+  current explicit ground-progress model: traversed points, reached holding
+  points, crossed runways, and stopped-on-ground state
 - the next default FM work is no longer broader ground / surface movement, and
   it is no longer the delivered-branch refinement / drift-control branch
   either; the next deliberate widening choices are now broader

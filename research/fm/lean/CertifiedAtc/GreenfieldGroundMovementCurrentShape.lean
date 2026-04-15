@@ -898,6 +898,16 @@ theorem singleTaxi_completes_at_destination :
       evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
   native_decide
 
+theorem singleTaxi_completes_on_traversed_ground_progress :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedSingleTaxi
+        { position := some "RWY-X"
+          traversedGroundPoints := UniqueSet.singleton "HP-27" }
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
 theorem singleTaxi_reconcile_transitions_to_terminal :
     let completed :=
       (evaluateResolvedCompletion
@@ -912,11 +922,14 @@ theorem singleTaxi_reconcile_transitions_to_terminal :
       resolvedClearanceIds reconciliation.terminalClearances = ["CLR-TAXI-CS"] := by
   native_decide
 
-theorem singleHoldShort_remains_active :
+theorem singleHoldShort_remains_active_when_holding_point_reached_and_stopped :
     let evaluation :=
       evaluateResolvedCompletion
         sampleManagedResolvedSingleHoldShort
-        { position := some "HP-27" }
+        { position := some "HP-27"
+          reachedHoldingPoints := UniqueSet.singleton "HP-27"
+          onGround := true
+          stoppedOnGround := true }
     evaluation.updated.status = .active ∧
       evaluation.newlyCompletedSteps = ({} : UniqueSet Nat) := by
   native_decide
@@ -939,6 +952,15 @@ theorem singleCrossRunway_completes_on_runway_transition :
       evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
   native_decide
 
+theorem singleCrossRunway_completes_on_crossed_runway_progress :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedSingleCrossRunway
+        { crossedRunways := UniqueSet.singleton "RWY-09" }
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
 theorem singleCrossRunway_reconcile_transitions_to_terminal :
     let completed :=
       (evaluateResolvedCompletion
@@ -953,11 +975,13 @@ theorem singleCrossRunway_reconcile_transitions_to_terminal :
       resolvedClearanceIds reconciliation.terminalClearances = ["CLR-CROSS-CS"] := by
   native_decide
 
-theorem singleHoldPosition_remains_active :
+theorem singleHoldPosition_remains_active_when_stopped_on_ground :
     let evaluation :=
       evaluateResolvedCompletion
         sampleManagedResolvedSingleHoldPosition
-        { position := some "APRON-JCT" }
+        { position := some "APRON-JCT"
+          onGround := true
+          stoppedOnGround := true }
     evaluation.updated.status = .active ∧
       evaluation.newlyCompletedSteps = ({} : UniqueSet Nat) := by
   native_decide
@@ -977,6 +1001,20 @@ theorem taxiCrossHoldShort_compound_completes_on_destination_and_transition :
         sampleManagedResolvedTaxiCrossHoldShortCompound
         { position := some "HP-27"
           runwayTransitions := UniqueSet.singleton "RWY-09" }
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.ofList [0, 1] := by
+  native_decide
+
+theorem taxiCrossHoldShort_compound_completes_on_ground_progress :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedTaxiCrossHoldShortCompound
+        { position := some "HP-27"
+          traversedGroundPoints := UniqueSet.singleton "HP-27"
+          reachedHoldingPoints := UniqueSet.singleton "HP-27"
+          crossedRunways := UniqueSet.singleton "RWY-09"
+          onGround := true
+          stoppedOnGround := true }
     evaluation.updated.status = .completed ∧
       evaluation.newlyCompletedSteps = UniqueSet.ofList [0, 1] := by
   native_decide

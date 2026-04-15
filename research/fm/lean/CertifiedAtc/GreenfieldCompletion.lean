@@ -16,11 +16,14 @@ Movement and procedure completion now runs against resolved step payloads.
 
 structure CompletionObservation where
   position : Option PointId := none
+  traversedGroundPoints : UniqueSet PointId := {}
+  reachedHoldingPoints : UniqueSet PointId := {}
   activeCircuits : UniqueSet CircuitProcedureId := {}
   activeHoldingPatterns : UniqueSet HoldingPatternId := {}
   reachedFixes : UniqueSet FixId := {}
   onGround : Bool := false
   runwayTransitions : UniqueSet RunwayId := {}
+  crossedRunways : UniqueSet RunwayId := {}
   activeRunways : UniqueSet RunwayId := {}
   airspaceTransitions : UniqueSet AirspaceVolumeId := {}
   activeAirspaces : UniqueSet AirspaceVolumeId := {}
@@ -34,6 +37,7 @@ structure CompletionObservation where
   transponderCode : Option Squawk := none
   transponderMode : Option TransponderMode := none
   transponderIdentActive : Bool := false
+  stoppedOnGround : Bool := false
   altitude : Option Level := none
   speed : Option Speed := none
   deriving DecidableEq, Repr
@@ -46,6 +50,13 @@ def runwayTransitionComplete
     .complete
   else
     .notComplete
+
+def groundPointReached
+    (point : PointId)
+    (observation : CompletionObservation) : Bool :=
+  observation.position = some point ||
+    point ∈ observation.traversedGroundPoints ||
+    point ∈ observation.reachedHoldingPoints
 
 def airspaceInside
     (airspace : ResolvedAirspaceInstruction)
@@ -228,13 +239,18 @@ def observedResolvedStepCompletion?
   else
     match step.payload with
     | .taxi route =>
-        some <| if observation.position = some route.destination then .complete else .notComplete
+        some <| if groundPointReached route.destination observation then .complete else .notComplete
     | .holdShort _ =>
         some .notApplicable
     | .crossing crossing =>
-        some <| runwayTransitionComplete crossing.runway observation
+        some <|
+          if crossing.runway ∈ observation.crossedRunways ||
+              groundPointReached crossing.crossingPoint observation then
+            .complete
+          else
+            runwayTransitionComplete crossing.runway observation
     | .backtrack backtrack =>
-        some <| if observation.position = some backtrack.farEndPoint then .complete else .notComplete
+        some <| if groundPointReached backtrack.farEndPoint observation then .complete else .notComplete
     | .route clearance =>
         some <|
           if observation.position = some clearance.clearanceLimitPoint ||

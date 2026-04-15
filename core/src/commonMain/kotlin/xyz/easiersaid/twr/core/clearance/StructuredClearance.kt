@@ -16,6 +16,7 @@ import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.Squawk
 import xyz.easiersaid.twr.protocol.TickNumber
@@ -39,6 +40,13 @@ data class RadioState(
     val lastContactRole: RoleName? = null
 )
 
+data class GroundProgressState(
+    val traversedPoints: Set<PointId> = emptySet(),
+    val reachedHoldingPoints: Set<PointId> = emptySet(),
+    val crossedRunways: Set<RunwayId> = emptySet(),
+    val stoppedOnGround: Boolean = false
+)
+
 enum class CompletionResult {
     COMPLETE,
     NOT_COMPLETE,
@@ -49,6 +57,7 @@ data class CompletionView(
     val position: PointId,
     val entities: Set<EntityRef>,
     val reachedFixes: Set<FixId> = emptySet(),
+    val groundProgress: GroundProgressState = GroundProgressState(),
     val altitude: Level? = null,
     val speed: Speed? = null,
     val currentHeading: Heading? = null,
