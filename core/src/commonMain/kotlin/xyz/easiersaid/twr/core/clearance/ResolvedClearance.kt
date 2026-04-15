@@ -8,6 +8,7 @@ import xyz.easiersaid.twr.core.resolution.ResolvedHoldingPoint
 import xyz.easiersaid.twr.core.resolution.ResolvedRoleFrequency
 import xyz.easiersaid.twr.core.resolution.ResolvedRouteClearance
 import xyz.easiersaid.twr.core.resolution.ResolvedRunwayCrossing
+import xyz.easiersaid.twr.core.resolution.ResolvedRunwayOperation
 import xyz.easiersaid.twr.core.resolution.ResolvedTaxiRoute
 import xyz.easiersaid.twr.core.resolution.ResolvedVectorInstruction
 import xyz.easiersaid.twr.core.world.Airway
@@ -41,6 +42,12 @@ import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnHeading
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedLowApproach
+import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.GoAround
+import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.instructionSupersedesIn
 
 data class ClearanceResolutionContext(
@@ -49,6 +56,7 @@ data class ClearanceResolutionContext(
     val currentHeading: xyz.easiersaid.twr.protocol.Heading? = null,
     val currentRole: RoleName? = null,
     val currentFix: FixId? = null,
+    val currentRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
     val onGround: Boolean? = null
 )
 
@@ -95,6 +103,26 @@ sealed interface ResolvedStep {
         val runway: Runway,
         val farEndPoint: PointId
     ) : ResolvedStep
+
+    data class RunwayOperation(
+        override val index: Int,
+        override val instruction: AtcInstruction,
+        override val timing: InstructionTiming?,
+        override val domain: ClearanceDomain,
+        override val completionCategory: CompletionCategory?,
+        val operation: ResolvedRunwayOperation
+    ) : ResolvedStep {
+        init {
+            require(
+                instruction is LineUpAndWait ||
+                    instruction is ClearedForTakeoff ||
+                    instruction is ClearedToLand ||
+                    instruction is ClearedTouchAndGo ||
+                    instruction is ClearedLowApproach ||
+                    instruction is GoAround
+            ) { "ResolvedStep.RunwayOperation may only wrap runway-operation instructions" }
+        }
+    }
 
     data class Route(
         override val index: Int,

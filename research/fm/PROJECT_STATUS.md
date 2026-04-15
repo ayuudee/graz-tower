@@ -176,10 +176,19 @@ It now contains:
   authority, explicit active lifecycle behavior, theorem-bearing landing
   supersession, and frequency non-supersession regressions
 - `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
-  current-shape runway-operation family behind one source-level theorem
-  boundary, with unified authority-gated issuance over the already-delivered
-  single-step slices for `LineUpAndWait`, `ClearedForTakeoff`,
+  historical current-shape runway-operation family behind one source-level
+  theorem boundary, with unified authority-gated issuance over the
+  already-delivered single-step slices for `LineUpAndWait`, `ClearedForTakeoff`,
   `ClearedToLand`, `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround`
+- `GreenfieldRunwayWorldBackedCurrentShape.lean`,
+  `GreenfieldRunwayWorldBackedCompound.lean`, and
+  `GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean` now close the
+  authoritative delivered runway branch on the current published-runway graph
+  model:
+  explicit runway path/threshold resolution, world-backed runway-operation
+  payloads, runway-transition completion, `GoAround` on explicit
+  `currentRunway` context, and a first narrow world-backed compound slice are
+  now theorem-bearing and aligned with the Kotlin runtime
 - `GreenfieldRunwayCompound.lean` now widens that delivered runway-operation
   family through a first narrow current-shape compound layer:
   one leading runway-operation primary plus immediate adjunct tails now has
@@ -236,6 +245,12 @@ It now contains:
   the delivered runway-operation family is now widened through a first narrow
   current-shape compound slice, and the broadened current-shape runway family
   now packages that slice together with single-step `BacktrackRunway`
+- the delivered runway branch is now stronger than that historical phase-3
+  closure:
+  `GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean` is now the
+  authoritative delivered runway boundary, and the parity/refinement surface
+  classifies it as `WORLD_BACKED_COMPLETE` on the current published-runway
+  graph model
 - the phase-4 airspace widening closure is now also complete under that same
   frozen widening rule:
   the whole current Kotlin airspace-clearance family now has both a

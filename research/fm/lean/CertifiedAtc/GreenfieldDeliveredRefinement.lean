@@ -12,7 +12,7 @@ import CertifiedAtc.GreenfieldRadioCurrentShape
 import CertifiedAtc.GreenfieldTransponderDeliveredCurrentShape
 import CertifiedAtc.GreenfieldCommunicationsExpandedCurrentShape
 import CertifiedAtc.GreenfieldCommunicationsJurisdictionDeliveredCurrentShape
-import CertifiedAtc.GreenfieldRunwayDeliveredCurrentShape
+import CertifiedAtc.GreenfieldRunwayWorldBackedDeliveredCurrentShape
 import CertifiedAtc.GreenfieldRunwayExpandedCurrentShape
 
 namespace CertifiedAtc
@@ -68,7 +68,7 @@ def deliveredBranchClosureKind : DeliveredBranch → DeliveredClosureKind
   | .transponder => .currentShapeComplete
   | .communications => .currentShapeComplete
   | .communicationsJurisdiction => .worldBackedComplete
-  | .runwayDelivered => .currentShapeComplete
+  | .runwayDelivered => .worldBackedComplete
   | .runwayExpanded => .currentShapeComplete
 
 @[simp] theorem deliveredBranchClosureKind_scopedCore :
@@ -94,7 +94,7 @@ def deliveredBranchClosureKind : DeliveredBranch → DeliveredClosureKind
 @[simp] theorem deliveredBranchClosureKind_communicationsJurisdiction :
     deliveredBranchClosureKind .communicationsJurisdiction = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_runwayDelivered :
-    deliveredBranchClosureKind .runwayDelivered = .currentShapeComplete := rfl
+    deliveredBranchClosureKind .runwayDelivered = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_runwayExpanded :
     deliveredBranchClosureKind .runwayExpanded = .currentShapeComplete := rfl
 
@@ -168,10 +168,10 @@ abbrev CommunicationsJurisdictionDeliveredAuthorizedRefinementTheorem :=
   @GreenfieldCommunicationsJurisdictionDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev RunwayDeliveredReachableRefinementTheorem :=
-  @GreenfieldRunwayDeliveredCurrentShapeReachableIssuanceTheorem
+  @GreenfieldRunwayWorldBackedDeliveredCurrentShapeReachableIssuanceTheorem
 
 abbrev RunwayDeliveredAuthorizedRefinementTheorem :=
-  @GreenfieldRunwayDeliveredCurrentShapeAuthorizedIssuanceTheorem
+  @GreenfieldRunwayWorldBackedDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev RunwayExpandedReachableRefinementTheorem :=
   @GreenfieldRunwayExpandedCurrentShapeReachableIssuanceTheorem

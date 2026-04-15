@@ -34,6 +34,12 @@ structure ResolvedBacktrack where
   farEndPoint : PointId
   deriving DecidableEq, Repr
 
+structure ResolvedRunwayOperation where
+  runway : RunwayId
+  thresholdPoint : PointId
+  pathPoints : List PointId := []
+  deriving DecidableEq, Repr
+
 structure ResolvedRouteClearance where
   clearanceLimitFix : FixId
   clearanceLimitPoint : PointId
@@ -160,6 +166,7 @@ inductive ResolvedPayload
   | holdShort (holdingPoint : ResolvedHoldingPoint)
   | crossing (crossing : ResolvedRunwayCrossing)
   | backtrack (backtrack : ResolvedBacktrack)
+  | runwayOperation (operation : ResolvedRunwayOperation)
   | route (clearance : ResolvedRouteClearance)
   | holding (holding : ResolvedHoldingInstruction)
   | approach (approach : ResolvedApproachClearance)
@@ -199,6 +206,12 @@ def resolutionCompatible : ResolvedPayload → AtcInstruction → Bool
   | .holdShort _, .holdShortOf _ _ => true
   | .crossing _, .crossRunway _ _ => true
   | .backtrack _, .backtrackRunway _ _ => true
+  | .runwayOperation _, .lineUpAndWait _ _ => true
+  | .runwayOperation _, .clearedForTakeoff _ _ => true
+  | .runwayOperation _, .clearedToLand _ _ => true
+  | .runwayOperation _, .clearedTouchAndGo _ _ => true
+  | .runwayOperation _, .clearedLowApproach _ _ => true
+  | .runwayOperation _, .goAround _ => true
   | .route _, .clearedTo _ _ _ => true
   | .holding _, .holdAt _ _ _ => true
   | .approach _, .clearedApproach _ _ _ _ => true

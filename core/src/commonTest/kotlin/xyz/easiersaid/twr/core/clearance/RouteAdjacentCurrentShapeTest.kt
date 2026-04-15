@@ -115,7 +115,10 @@ class RouteAdjacentCurrentShapeTest {
             )
         ).requireResolved()
         val incomingGoAround = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentRunway = FixtureIds.runway09
+            ),
             clearance = structuredClearance(
                 id = "CLR-GA",
                 domain = ClearanceDomain.RUNWAY,

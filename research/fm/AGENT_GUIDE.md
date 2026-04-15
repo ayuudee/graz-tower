@@ -194,9 +194,15 @@ Then open the specific Lean module for the phase you are changing.
   and `MonitorFrequency`, and
   `GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean` now
   packages that branch behind one reachable/authorized theorem surface
-  `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the delivered
-  current-shape runway-operation family behind one source-level theorem
-  boundary
+  `GreenfieldRunwayDeliveredCurrentShape.lean` now packages the historical
+  delivered current-shape runway-operation family behind one source-level
+  theorem boundary
+  `GreenfieldRunwayWorldBackedCurrentShape.lean`,
+  `GreenfieldRunwayWorldBackedCompound.lean`, and
+  `GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean` now close the
+  authoritative delivered runway branch on the current published-runway graph
+  model; use that world-backed package, not the older current-shape package,
+  as the live runway status boundary
   `GreenfieldRunwayCompound.lean` now widens that delivered runway-operation
   family through a first narrow compound layer, and
   `GreenfieldRunwayExpandedCurrentShape.lean` now packages the broadened
@@ -220,8 +226,10 @@ Then open the specific Lean module for the phase you are changing.
   do not reopen it unless the runtime handoff/jurisdiction semantics
   themselves change
   phase 3 is now also closed under that same frozen widening rule:
-  do not reopen the delivered runway family unless runway runtime semantics
-  themselves change
+  the historical current-shape runway widening is closed, and the
+  authoritative delivered runway branch is now world-backed complete on the
+  current published-runway graph model; do not reopen either unless runway
+  runtime semantics themselves change
   phase 4 is now also closed under that same frozen widening rule:
   do not reopen the current airspace-clearance family unless those runtime
   semantics themselves change

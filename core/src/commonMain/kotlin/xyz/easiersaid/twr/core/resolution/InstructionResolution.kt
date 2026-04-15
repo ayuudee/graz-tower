@@ -48,6 +48,7 @@ data class AerodromeResolutionContext(
     val currentRole: RoleName? = null,
     val currentPoint: PointId? = null,
     val currentFix: FixId? = null,
+    val currentRunway: RunwayId? = null,
     val onGround: Boolean? = null
 )
 
@@ -89,7 +90,8 @@ enum class ResolutionFailureCode {
     MULTIPLE_CONDITIONS_NOT_SUPPORTED,
     UNKNOWN_CIRCUIT_PROCEDURE,
     AMBIGUOUS_CIRCUIT_PROCEDURE,
-    GROUND_STEP_NOT_ON_ACTIVE_TAXI_ROUTE
+    GROUND_STEP_NOT_ON_ACTIVE_TAXI_ROUTE,
+    MISSING_CURRENT_RUNWAY
 }
 
 data class ResolutionFailure(
@@ -128,6 +130,13 @@ data class ResolvedApproachClearance(
     val thresholdPoint: PointId,
     val missedApproachPoints: List<PointId>,
     val missedApproachHoldingPattern: HoldingPattern
+)
+
+data class ResolvedRunwayOperation(
+    val aerodrome: Aerodrome,
+    val runway: Runway,
+    val thresholdPoint: PointId,
+    val pathPoints: List<PointId>
 )
 
 sealed interface ResolvedRouteSpec {
@@ -240,6 +249,28 @@ data class ResolvedVectorInstruction(
     val turnDegrees: Int? = null,
     val capturedHeading: Heading? = null
 )
+
+fun AviationWorld.resolveRunwayOperation(
+    aerodromeId: AerodromeId,
+    runwayId: RunwayId
+): ResolutionResult<ResolvedRunwayOperation> {
+    val aerodrome = aerodrome(aerodromeId) ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AERODROME,
+        "Unknown aerodrome ${aerodromeId.value}"
+    )
+    val runway = aerodrome.runways[runwayId] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_RUNWAY,
+        "Unknown runway ${runwayId.value} at aerodrome ${aerodrome.icao.value}"
+    )
+    return resolved(
+        ResolvedRunwayOperation(
+            aerodrome = aerodrome,
+            runway = runway,
+            thresholdPoint = runway.threshold,
+            pathPoints = runway.path.points
+        )
+    )
+}
 
 fun AviationWorld.resolveTaxiTo(
     context: GroundResolutionContext,

@@ -328,11 +328,22 @@ As of April 15, 2026:
   authority, explicit active lifecycle behavior, theorem-bearing landing
   supersession, and frequency non-supersession behavior
 - [GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
-  now packages the delivered current-shape runway-operation family behind one
-  source-level theorem boundary, with unified authority-gated issuance over
-  the already-delivered single-step slices for `LineUpAndWait`,
+  now packages the historical delivered current-shape runway-operation family
+  behind one source-level theorem boundary, with unified authority-gated
+  issuance over the already-delivered single-step slices for `LineUpAndWait`,
   `ClearedForTakeoff`, `ClearedToLand`, `ClearedTouchAndGo`,
   `ClearedLowApproach`, and `GoAround`
+- [GreenfieldRunwayWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCurrentShape.lean),
+  [GreenfieldRunwayWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCompound.lean),
+  and
+  [GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
+  now close the authoritative world-backed runway-operation branch above that
+  historical current-shape package:
+  the Kotlin runtime and Lean surface now agree on explicit runway
+  path/threshold resolution, world-backed runway-operation payloads, runway-
+  transition completion, `GoAround` on explicit `currentRunway` context, and
+  the first narrow compound layer for the current published-runway graph
+  model
 - [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   now aligns `instructionMayBeConditional` with the current Kotlin runway-
   clearance metadata for `ClearedForTakeoff`, `ClearedToLand`,
@@ -455,6 +466,13 @@ The default critical path is now:
   `LineUpAndWait`, `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, `ClearedLowApproach`, and `GoAround` now have one
   unified current-shape reachable/authorized issuance surface
+- above that historical current-shape package, the authoritative delivered
+  runway branch is now world-backed:
+  the Kotlin runtime and Lean surface now close runway operations on the
+  current published-runway graph through explicit runway path/threshold
+  resolution, world-backed runway-operation payloads, runway-transition
+  completion, `GoAround` on explicit `currentRunway` context, and a first
+  narrow world-backed compound layer
 - `GreenfieldRunwayCompound.lean` now widens that delivered runway-operation
   family through a first narrow current-shape compound slice:
   one leading runway-operation primary plus immediate adjunct tails now has
@@ -523,6 +541,13 @@ The default critical path is now:
   the delivered runway-operation family is now widened through a first narrow
   current-shape compound slice, and the broadened current-shape runway family
   now packages that slice together with single-step `BacktrackRunway`
+- the runway-operation branch is now also closed on a stronger boundary than
+  the original phase-3 current-shape package:
+  [GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
+  now packages the authoritative delivered runway family on the current
+  published-runway graph model, and
+  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+  now classifies that branch as `WORLD_BACKED_COMPLETE`
 - the phase-4 airspace widening closure is now also complete under that same
   frozen rule:
   the whole current Kotlin airspace-clearance family now has both a

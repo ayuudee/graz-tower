@@ -75,7 +75,7 @@ theorem resolvesSingleBacktrackClearance_of_ready
         initialState
         clearance
         resolved
-        { currentPoint := some farEndPoint } := by
+        { currentPoint := some farEndPoint, currentRunway := some runway } := by
   rcases hReady with ⟨farEndPoint, hFarEnd⟩
   let resolved :=
     singletonResolvedBacktrackClearance clearance target runway farEndPoint
@@ -95,7 +95,7 @@ theorem resolvesSingleBacktrackClearance_of_ready
             (.backtrackRunway target runway)
             (.backtrack { runway := runway, farEndPoint := farEndPoint })
             (by simp [resolutionCompatible]))
-          { currentPoint := some farEndPoint } := by
+          { currentPoint := some farEndPoint, currentRunway := some runway } := by
       simpa [hDomain] using
         (ResolvesIndexedStep.backtrack
           world
@@ -113,13 +113,13 @@ theorem resolvesSingleBacktrackClearance_of_ready
           clearance.domain
           [(0, .backtrackRunway target runway)]
           resolved.steps
-          { currentPoint := some farEndPoint } := by
+          { currentPoint := some farEndPoint, currentRunway := some runway } := by
       apply ResolvesSteps.cons
       · simpa [resolved, singletonResolvedBacktrackClearance] using hStep
       · simpa using
           (ResolvesSteps.nil
             world
-            ({ currentPoint := some farEndPoint } : ResolutionState)
+            ({ currentPoint := some farEndPoint, currentRunway := some runway } : ResolutionState)
             clearance.domain)
     simpa [resolved, singletonResolvedBacktrackClearance, structuredInstructions,
       contentInstructions, indexedSteps, enumerateFrom, hContent, hDomain]
@@ -133,13 +133,13 @@ theorem BacktrackCurrentShapeIssuanceTheorem
     (hReach : ReachableResolvedSet existing)
     (hFresh : clearance.id ∉ resolvedClearanceIds existing)
     (hIssuable : BacktrackCurrentShapeIssuable world clearance) :
-    ∃ farEndPoint, ∃ resolved,
+    ∃ runway, ∃ farEndPoint, ∃ resolved,
       ResolvesClearance
         world
         initialState
         clearance
         resolved
-        { currentPoint := some farEndPoint } ∧
+        { currentPoint := some farEndPoint, currentRunway := some runway } ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   cases hIssuable
@@ -158,7 +158,7 @@ theorem BacktrackCurrentShapeIssuanceTheorem
   have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
     simpa [hResolve.sourceEq] using hFresh
   exact
-    ⟨farEndPoint, resolved, hResolve,
+    ⟨runway, farEndPoint, resolved, hResolve,
       ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
 
 theorem BacktrackCurrentShapeAuthorizedIssuanceTheorem
@@ -176,7 +176,7 @@ theorem BacktrackCurrentShapeAuthorizedIssuanceTheorem
         compileWorld
         clearance.issuedBy
         currentShapeBacktrackAuthorityGrant) :
-    ∃ farEndPoint, ∃ resolved,
+    ∃ runway, ∃ farEndPoint, ∃ resolved,
       controllerHasAuthorityGrant
         (extractCompileView compileWorld)
         clearance.issuedBy
@@ -186,7 +186,7 @@ theorem BacktrackCurrentShapeAuthorizedIssuanceTheorem
         initialState
         clearance
         resolved
-        { currentPoint := some farEndPoint } ∧
+        { currentPoint := some farEndPoint, currentRunway := some runway } ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   have hAuthorized :
@@ -205,8 +205,8 @@ theorem BacktrackCurrentShapeAuthorizedIssuanceTheorem
       hReach
       hFresh
       hIssuable with
-      ⟨farEndPoint, resolved, hResolve, hReachable⟩
-  exact ⟨farEndPoint, resolved, hAuthorized, hResolve, hReachable⟩
+      ⟨runway, farEndPoint, resolved, hResolve, hReachable⟩
+  exact ⟨runway, farEndPoint, resolved, hAuthorized, hResolve, hReachable⟩
 
 def sampleResolvedSingleBacktrack : ResolvedClearance :=
   { source :=

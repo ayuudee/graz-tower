@@ -151,8 +151,8 @@ Read modules in roughly this order:
 40. [CertifiedAtc/GreenfieldGoAroundCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGoAroundCurrentShape.lean)
     Optional. This closes the delivered current-shape `GoAround` package.
 41. [CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
-    Optional. This packages the delivered current-shape runway-operation
-    family behind one source-level theorem boundary.
+    Optional. This packages the historical delivered current-shape
+    runway-operation family behind one source-level theorem boundary.
 42. [CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean)
     Optional. This closes the delivered current-shape `SetSquawk` package.
 43. [CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean)
@@ -256,11 +256,23 @@ Read modules in roughly this order:
 69. [CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
     Optional. This packages the delivered world-backed airspace surface behind
     one source-level theorem boundary for the current graph-backed point-set +
-70. [CertifiedAtc/GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+    transition model.
+70. [CertifiedAtc/GreenfieldRunwayWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCurrentShape.lean)
+    Optional. This adds the authoritative world-backed runway-operation
+    surface on the current published-runway graph model: explicit runway
+    path/threshold resolution, world-backed runway-operation payloads, and
+    `GoAround` on explicit `currentRunway` context.
+71. [CertifiedAtc/GreenfieldRunwayWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCompound.lean)
+    Optional. This widens that world-backed runway surface through a first
+    narrow compound slice over immediate adjunct tails.
+72. [CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
+    Optional. This packages the delivered world-backed runway-operation
+    surface behind one source-level theorem boundary for the current
+    published-runway graph model.
+73. [CertifiedAtc/GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
     Optional. This is the central proof-side registry for the delivered
     Kotlin↔Lean refinement boundary: branch classifications plus aliases for
     the load-bearing delivered theorem surfaces.
-    transition model.
 
 ## What Each Module Owns
 
@@ -451,14 +463,23 @@ Read modules in roughly this order:
 - `GreenfieldGoAroundCurrentShape`
   Source-level current-shape packaging for the delivered `GoAround` slice.
 - `GreenfieldRunwayDeliveredCurrentShape`
-  Source-level current-shape packaging for the delivered runway-operation
-  family.
+  Historical source-level current-shape packaging for the delivered
+  runway-operation family.
 - `GreenfieldRunwayCompound`
   The phase-3 widening increment that adds the first narrow current-shape
   compound slice for the delivered runway-operation family.
 - `GreenfieldRunwayExpandedCurrentShape`
   Source-level reachable-admission packaging for the broadened current-shape
   runway family.
+- `GreenfieldRunwayWorldBackedCurrentShape`
+  Authoritative world-backed single-step runway packaging on the current
+  published-runway graph model.
+- `GreenfieldRunwayWorldBackedCompound`
+  The first narrow world-backed compound slice for the delivered runway
+  branch.
+- `GreenfieldRunwayWorldBackedDeliveredCurrentShape`
+  Packaged world-backed theorem surface for the delivered runway branch on
+  the current published-runway graph model.
 - `GreenfieldSetSquawkCurrentShape`
   Source-level current-shape packaging for the delivered `SetSquawk` slice.
 - `GreenfieldConfirmSquawkCurrentShape`

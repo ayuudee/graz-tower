@@ -159,6 +159,8 @@ private fun evaluateStepCompletion(
             CompletionResult.NOT_COMPLETE
         }
 
+        is ResolvedStep.RunwayOperation -> evaluateRunwayOperationCompletion(step, view)
+
         is ResolvedStep.Route -> evaluateRouteCompletion(step, view)
 
         is ResolvedStep.Holding -> CompletionResult.NOT_APPLICABLE
@@ -286,6 +288,25 @@ private fun observeAirspaceState(
         exited = transitioned && !inside,
         landed = view.onGround
     )
+}
+
+private fun evaluateRunwayOperationCompletion(
+    step: ResolvedStep.RunwayOperation,
+    view: CompletionView
+): CompletionResult {
+    val runwayRef = EntityRef.RunwayRef(step.operation.runway.id)
+    return when (step.instruction) {
+        is xyz.easiersaid.twr.protocol.LineUpAndWait -> CompletionResult.NOT_APPLICABLE
+        is ClearedForTakeoff ->
+            completionOf(!view.onGround && runwayRef in view.transitionHistory)
+        is ClearedToLand -> evaluateRunwayTransitionCompletion(step.operation.runway.id, view = view)
+        is ClearedTouchAndGo ->
+            completionOf(!view.onGround && runwayRef in view.transitionHistory)
+        is ClearedLowApproach ->
+            completionOf(!view.onGround && runwayRef in view.transitionHistory && runwayRef !in view.entities)
+        is xyz.easiersaid.twr.protocol.GoAround -> CompletionResult.NOT_COMPLETE
+        else -> CompletionResult.NOT_COMPLETE
+    }
 }
 
 private fun evaluateRouteCompletion(

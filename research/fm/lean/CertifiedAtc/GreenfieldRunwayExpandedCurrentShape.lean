@@ -79,8 +79,8 @@ theorem GreenfieldRunwayExpandedCurrentShapeReachableIssuanceTheorem
           hReach
           hFresh
           hBacktrack with
-          ⟨farEndPoint, resolved, hResolve, hReachable⟩
-      exact ⟨{ currentPoint := some farEndPoint }, resolved, hResolve, hReachable⟩
+          ⟨runway, farEndPoint, resolved, hResolve, hReachable⟩
+      exact ⟨{ currentPoint := some farEndPoint, currentRunway := some runway }, resolved, hResolve, hReachable⟩
   | compound hCompound =>
       rcases RunwayCompoundCurrentShapeIssuanceTheorem
           (world := world)

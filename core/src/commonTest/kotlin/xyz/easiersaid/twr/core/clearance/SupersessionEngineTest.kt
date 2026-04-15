@@ -118,14 +118,17 @@ class SupersessionEngineTest {
                     content = ClearanceContent.Single(
                         ClimbTo(
                             target = TEST_AIRCRAFT,
-                            level = Level.AltitudeFeet(5000)
+                            level = Level.AltitudeFeet.unsafe(5000)
                         )
                     )
                 )
             ).requireResolved()
         )
         val incoming = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentRunway = FixtureIds.runway09
+            ),
             clearance = supersessionClearance(
                 id = "GA",
                 domain = ClearanceDomain.RUNWAY,

@@ -18,6 +18,8 @@ structure ResolutionWorld where
   holdingPointForRunway : RunwayId → PointId → Prop
   crossingPointForRunway : RunwayId → PointId → Prop
   farEndPointForRunway : RunwayId → PointId → Prop
+  runwayPath : RunwayId → List PointId → Prop
+  runwayThreshold : RunwayId → PointId → Prop
   fixPoint : FixId → PointId → Prop
   airwayPoint : AirwayId → PointId → Prop
   routeSpecPoints : RouteSpec → List PointId → Prop
@@ -40,6 +42,12 @@ structure ConcreteTaxiRoute where
   start : PointId
   destination : PointId
   path : List PointId
+  deriving DecidableEq, Repr
+
+structure ConcreteRunwayBinding where
+  runway : RunwayId
+  path : List PointId
+  threshold : PointId
   deriving DecidableEq, Repr
 
 structure ConcreteHoldingPatternBinding where
@@ -112,6 +120,7 @@ structure ConcreteResolutionWorld where
   runwayHoldingPoints : List (RunwayId × PointId) := []
   runwayCrossingPoints : List (RunwayId × PointId) := []
   runwayFarEnds : List (RunwayId × PointId) := []
+  runways : List ConcreteRunwayBinding := []
   fixPoints : List (FixId × PointId) := []
   airwayPoints : List ConcreteAirwayPointBinding := []
   routeClearanceBindings : List ConcreteRouteClearanceBinding := []
@@ -136,6 +145,14 @@ def ConcreteResolutionWorld.toResolutionWorld
       (runway, point) ∈ world.runwayCrossingPoints
     farEndPointForRunway := fun runway point =>
       (runway, point) ∈ world.runwayFarEnds
+    runwayPath := fun runway path =>
+      ∃ binding ∈ world.runways,
+        binding.runway = runway ∧
+        binding.path = path
+    runwayThreshold := fun runway threshold =>
+      ∃ binding ∈ world.runways,
+        binding.runway = runway ∧
+        binding.threshold = threshold
     fixPoint := fun fix point =>
       (fix, point) ∈ world.fixPoints
     airwayPoint := fun airway point =>
@@ -195,6 +212,28 @@ theorem ConcreteResolutionWorld.mem_fixPoint
     {point : PointId}
     (hMem : (fix, point) ∈ world.fixPoints) :
     world.toResolutionWorld.fixPoint fix point := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_runwayPath
+    {world : ConcreteResolutionWorld}
+    {runway : RunwayId}
+    {path : List PointId}
+    (hMem :
+      ∃ binding ∈ world.runways,
+        binding.runway = runway ∧
+        binding.path = path) :
+    world.toResolutionWorld.runwayPath runway path := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_runwayThreshold
+    {world : ConcreteResolutionWorld}
+    {runway : RunwayId}
+    {threshold : PointId}
+    (hMem :
+      ∃ binding ∈ world.runways,
+        binding.runway = runway ∧
+        binding.threshold = threshold) :
+    world.toResolutionWorld.runwayThreshold runway threshold := by
   simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
 
 theorem ConcreteResolutionWorld.mem_airwayPoint
@@ -259,6 +298,7 @@ structure ResolutionState where
   currentHeadingDegreesMagnetic : Option Nat := none
   currentRole : Option RoleName := none
   currentFix : Option FixId := none
+  currentRunway : Option RunwayId := none
   onGround : Option Bool := none
   deriving DecidableEq, Repr
 
@@ -365,7 +405,171 @@ inductive ResolvesIndexedStep :
           (.backtrackRunway target runway)
           (.backtrack { runway := runway, farEndPoint := farEndPoint })
           (by simp [resolutionCompatible]))
-        { currentPoint := some farEndPoint }
+        { currentPoint := some farEndPoint
+          currentRunway := some runway }
+  | lineUpAndWait
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (runway : RunwayId)
+      (thresholdPoint : PointId)
+      (pathPoints : List PointId)
+      (state : ResolutionState)
+      (hPath : world.runwayPath runway pathPoints)
+      (hThreshold : world.runwayThreshold runway thresholdPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.lineUpAndWait target runway)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.lineUpAndWait target runway)
+          (.runwayOperation
+            { runway := runway
+              thresholdPoint := thresholdPoint
+              pathPoints := pathPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentRunway := some runway }
+  | clearedForTakeoff
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (runway : RunwayId)
+      (thresholdPoint : PointId)
+      (pathPoints : List PointId)
+      (state : ResolutionState)
+      (hPath : world.runwayPath runway pathPoints)
+      (hThreshold : world.runwayThreshold runway thresholdPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.clearedForTakeoff target runway)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.clearedForTakeoff target runway)
+          (.runwayOperation
+            { runway := runway
+              thresholdPoint := thresholdPoint
+              pathPoints := pathPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentRunway := some runway }
+  | clearedToLand
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (runway : RunwayId)
+      (thresholdPoint : PointId)
+      (pathPoints : List PointId)
+      (state : ResolutionState)
+      (hPath : world.runwayPath runway pathPoints)
+      (hThreshold : world.runwayThreshold runway thresholdPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.clearedToLand target runway)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.clearedToLand target runway)
+          (.runwayOperation
+            { runway := runway
+              thresholdPoint := thresholdPoint
+              pathPoints := pathPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentRunway := some runway }
+  | clearedTouchAndGo
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (runway : RunwayId)
+      (thresholdPoint : PointId)
+      (pathPoints : List PointId)
+      (state : ResolutionState)
+      (hPath : world.runwayPath runway pathPoints)
+      (hThreshold : world.runwayThreshold runway thresholdPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.clearedTouchAndGo target runway)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.clearedTouchAndGo target runway)
+          (.runwayOperation
+            { runway := runway
+              thresholdPoint := thresholdPoint
+              pathPoints := pathPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentRunway := some runway }
+  | clearedLowApproach
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (runway : RunwayId)
+      (thresholdPoint : PointId)
+      (pathPoints : List PointId)
+      (state : ResolutionState)
+      (hPath : world.runwayPath runway pathPoints)
+      (hThreshold : world.runwayThreshold runway thresholdPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.clearedLowApproach target runway)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.clearedLowApproach target runway)
+          (.runwayOperation
+            { runway := runway
+              thresholdPoint := thresholdPoint
+              pathPoints := pathPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentRunway := some runway }
+  | goAround
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (runway : RunwayId)
+      (thresholdPoint : PointId)
+      (pathPoints : List PointId)
+      (state : ResolutionState)
+      (hCurrentRunway : state.currentRunway = some runway)
+      (hPath : world.runwayPath runway pathPoints)
+      (hThreshold : world.runwayThreshold runway thresholdPoint) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.goAround target)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.goAround target)
+          (.runwayOperation
+            { runway := runway
+              thresholdPoint := thresholdPoint
+              pathPoints := pathPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentRunway := some runway }
   | flyHeading
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)

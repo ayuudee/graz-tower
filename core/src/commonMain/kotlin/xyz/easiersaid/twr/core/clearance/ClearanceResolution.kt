@@ -21,6 +21,7 @@ import xyz.easiersaid.twr.core.resolution.resolveHoldAt
 import xyz.easiersaid.twr.core.resolution.resolveHoldShortOf
 import xyz.easiersaid.twr.core.resolution.resolveMonitorFrequency
 import xyz.easiersaid.twr.core.resolution.resolveRemainOutsideControlledAirspace
+import xyz.easiersaid.twr.core.resolution.resolveRunwayOperation
 import xyz.easiersaid.twr.core.resolution.resolveSpecialVfrClearance
 import xyz.easiersaid.twr.core.resolution.resolveTaxiTo
 import xyz.easiersaid.twr.core.world.AviationWorld
@@ -30,7 +31,11 @@ import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.ClearedApproach
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedLowApproach
 import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
+import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ClearedVisualApproach
 import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ClearanceContent
@@ -41,6 +46,7 @@ import xyz.easiersaid.twr.protocol.ContinuePresentHeading
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.FlyHeading
+import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldAt
@@ -48,6 +54,7 @@ import xyz.easiersaid.twr.protocol.InstructionTiming
 import xyz.easiersaid.twr.protocol.JoinAirway
 import xyz.easiersaid.twr.protocol.JoinCircuit
 import xyz.easiersaid.twr.protocol.LeaveHoldProceedDirect
+import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ProceedDirect
@@ -80,7 +87,8 @@ fun AviationWorld.resolveClearance(
 
     val initialState = ResolutionCompilationState(
         currentPoint = context.currentPoint,
-        currentHeading = context.currentHeading
+        currentHeading = context.currentHeading,
+        currentRunway = context.currentRunway
     )
 
     return arrow.core.raise.either {
@@ -186,6 +194,12 @@ private fun AviationWorld.resolveStep(
         is HoldShortOf -> resolveHoldShortStep(context, stepContext, instruction, state)
         is CrossRunway -> resolveCrossingStep(context, stepContext, instruction, state)
         is BacktrackRunway -> resolveBacktrackStep(context, stepContext, instruction, state)
+        is LineUpAndWait -> resolveRunwayOperationStep(context, stepContext, instruction, instruction.runway, state)
+        is ClearedForTakeoff -> resolveRunwayOperationStep(context, stepContext, instruction, instruction.runway, state)
+        is ClearedToLand -> resolveRunwayOperationStep(context, stepContext, instruction, instruction.runway, state)
+        is ClearedTouchAndGo -> resolveRunwayOperationStep(context, stepContext, instruction, instruction.runway, state)
+        is ClearedLowApproach -> resolveRunwayOperationStep(context, stepContext, instruction, instruction.runway, state)
+        is GoAround -> resolveGoAroundStep(context, stepContext, instruction, state)
         is ClearedTo -> resolveRouteStep(context, stepContext, instruction, state)
         is HoldAt -> resolveHoldingStep(context, stepContext, instruction, state)
         is ClearedApproach -> resolveApproachStep(context, stepContext, instruction, state)
@@ -494,6 +508,30 @@ private fun AviationWorld.resolveRouteStep(
         )
     }
 
+private fun AviationWorld.resolveRunwayOperationStep(
+    context: ClearanceResolutionContext,
+    stepContext: StepContext,
+    instruction: AtcInstruction,
+    runwayId: xyz.easiersaid.twr.protocol.RunwayId,
+    state: ResolutionCompilationState
+): ResolutionResult<ResolvedStepWithState> =
+    when (val result = resolveRunwayOperation(context.aerodromeId, runwayId)) {
+        is arrow.core.Either.Left -> result
+        is arrow.core.Either.Right -> arrow.core.Either.Right(
+            ResolvedStepWithState(
+                step = ResolvedStep.RunwayOperation(
+                    index = stepContext.index,
+                    instruction = instruction,
+                    timing = stepContext.timing,
+                    domain = stepContext.domain,
+                    completionCategory = stepContext.completionCategory,
+                    operation = result.value
+                ),
+                state = state.copy(currentRunway = runwayId)
+            )
+        )
+    }
+
 private fun AviationWorld.resolveBacktrackStep(
     context: ClearanceResolutionContext,
     stepContext: StepContext,
@@ -520,8 +558,27 @@ private fun AviationWorld.resolveBacktrackStep(
                 runway = runway,
                 farEndPoint = instruction.vacateAt ?: runway.path.points.last()
             ),
-            state = state
+            state = state.copy(currentRunway = runway.id)
         )
+    )
+}
+
+private fun AviationWorld.resolveGoAroundStep(
+    context: ClearanceResolutionContext,
+    stepContext: StepContext,
+    instruction: GoAround,
+    state: ResolutionCompilationState
+): ResolutionResult<ResolvedStepWithState> {
+    val runwayId = state.currentRunway ?: return unresolved(
+        ResolutionFailureCode.MISSING_CURRENT_RUNWAY,
+        "Go-around resolution requires a current runway at aerodrome ${context.aerodromeId.value}"
+    )
+    return resolveRunwayOperationStep(
+        context = context,
+        stepContext = stepContext,
+        instruction = instruction,
+        runwayId = runwayId,
+        state = state
     )
 }
 
@@ -566,7 +623,7 @@ private fun AviationWorld.resolveApproachStep(
                     completionCategory = stepContext.completionCategory,
                     approach = result.value
                 ),
-                state = state
+                state = state.copy(currentRunway = result.value.approach.runway)
             )
         )
     }
@@ -783,7 +840,7 @@ private fun AviationWorld.resolveVisualApproachStep(
                 domain = stepContext.domain,
                 completionCategory = stepContext.completionCategory
             ),
-            state = state
+            state = state.copy(currentRunway = instruction.runway)
         )
     )
 }
@@ -951,6 +1008,7 @@ private data class StepContext(
 private data class ResolutionCompilationState(
     val currentPoint: PointId?,
     val currentHeading: Heading? = null,
+    val currentRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
     val activeTaxiRoute: ActiveTaxiRoute? = null
 )
 

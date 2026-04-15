@@ -262,6 +262,36 @@ def observedResolvedStepCompletion?
             runwayTransitionComplete crossing.runway observation
     | .backtrack backtrack =>
         some <| if groundPointReached backtrack.farEndPoint observation then .complete else .notComplete
+    | .runwayOperation operation =>
+        match step.instruction with
+        | .lineUpAndWait _ _ =>
+            some .notApplicable
+        | .clearedForTakeoff _ _ =>
+            some <|
+              if !observation.onGround && operation.runway ∈ observation.runwayTransitions then
+                .complete
+              else
+                .notComplete
+        | .clearedToLand _ _ =>
+            some <| runwayTransitionComplete operation.runway observation
+        | .clearedTouchAndGo _ _ =>
+            some <|
+              if !observation.onGround && operation.runway ∈ observation.runwayTransitions then
+                .complete
+              else
+                .notComplete
+        | .clearedLowApproach _ _ =>
+            some <|
+              if !observation.onGround &&
+                  operation.runway ∈ observation.runwayTransitions &&
+                  operation.runway ∉ observation.activeRunways then
+                .complete
+              else
+                .notComplete
+        | .goAround _ =>
+            some .notComplete
+        | _ =>
+            none
     | .route clearance =>
         some <|
           if observation.position = some clearance.clearanceLimitPoint ||

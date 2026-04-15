@@ -129,9 +129,17 @@ def scopedHandoffBinding
       | .boundaryFix fix => .boundaryFix fix
       | .airborne => .airborne }
 
+def scopedRunwayBinding
+    (runway : ScopedRunwaySource) : ConcreteRunwayBinding :=
+  { runway := runway.id
+    path := runway.path
+    threshold := runway.threshold }
+
 def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ConcreteResolutionWorld :=
-  { fixPoints :=
+  { runways :=
+      world.toScopedAviationWorld.runways.map scopedRunwayBinding
+    fixPoints :=
       world.fixes.map (fun fix => (fix.id, fix.point))
     airwayPoints :=
       worldAirwayPointBindings world.airways
@@ -432,6 +440,42 @@ theorem RouteBearingScopedAviationWorld.mem_fixPoint_of_mem
     exact List.mem_map.mpr ⟨fix, hMem, rfl⟩
   exact
     ConcreteResolutionWorld.mem_fixPoint
+      (world := RouteBearingScopedAviationWorld.toConcreteResolutionWorld world)
+      hMap
+
+theorem RouteBearingScopedAviationWorld.mem_runwayPath_of_mem
+    {world : RouteBearingScopedAviationWorld}
+    {runway : ScopedRunwaySource}
+    (hMem : runway ∈ world.toScopedAviationWorld.runways) :
+    (RouteBearingScopedAviationWorld.toResolutionWorld world).runwayPath
+      runway.id
+      runway.path := by
+  have hMap :
+      ∃ binding ∈ (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world).runways,
+        binding.runway = runway.id ∧
+        binding.path = runway.path := by
+    refine ⟨scopedRunwayBinding runway, ?_, rfl, rfl⟩
+    exact List.mem_map.mpr ⟨runway, hMem, rfl⟩
+  exact
+    ConcreteResolutionWorld.mem_runwayPath
+      (world := RouteBearingScopedAviationWorld.toConcreteResolutionWorld world)
+      hMap
+
+theorem RouteBearingScopedAviationWorld.mem_runwayThreshold_of_mem
+    {world : RouteBearingScopedAviationWorld}
+    {runway : ScopedRunwaySource}
+    (hMem : runway ∈ world.toScopedAviationWorld.runways) :
+    (RouteBearingScopedAviationWorld.toResolutionWorld world).runwayThreshold
+      runway.id
+      runway.threshold := by
+  have hMap :
+      ∃ binding ∈ (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world).runways,
+        binding.runway = runway.id ∧
+        binding.threshold = runway.threshold := by
+    refine ⟨scopedRunwayBinding runway, ?_, rfl, rfl⟩
+    exact List.mem_map.mpr ⟨runway, hMem, rfl⟩
+  exact
+    ConcreteResolutionWorld.mem_runwayThreshold
       (world := RouteBearingScopedAviationWorld.toConcreteResolutionWorld world)
       hMap
 
