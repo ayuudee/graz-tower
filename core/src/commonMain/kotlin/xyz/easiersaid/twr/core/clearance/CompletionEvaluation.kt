@@ -39,8 +39,11 @@ import xyz.easiersaid.twr.protocol.SquawkIdent
 import xyz.easiersaid.twr.protocol.SquawkNormal
 import xyz.easiersaid.twr.protocol.SquawkStandby
 import xyz.easiersaid.twr.protocol.AvoidLevel
+import xyz.easiersaid.twr.core.resolution.ResolvedVectorInstruction
+import xyz.easiersaid.twr.core.resolution.ResolvedVectorKind
 import xyz.easiersaid.twr.protocol.DescendWhenReady
 import xyz.easiersaid.twr.protocol.InterceptLocaliser
+import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.VacateRunway
 import xyz.easiersaid.twr.protocol.instructionDomain
 
@@ -189,6 +192,8 @@ private fun evaluateStepCompletion(
             }
         }
 
+        is ResolvedStep.Vector -> evaluateVectorCompletion(step.vector, view)
+
         is ResolvedStep.Plain -> evaluateGenericInstructionCompletion(step.instruction, view)
     }
 
@@ -317,6 +322,7 @@ private fun evaluateSelfCompletingInstruction(
         is MaintainAltitudeUntilEstablished -> evaluateLevelCompletion(instruction, view)
         is ReduceSpeedTo,
         is IncreaseSpeedTo -> evaluateSpeedCompletion(instruction, view)
+        is TurnByDegrees -> evaluateTurnByDegreesCompletion(instruction, view)
         is ConfirmSquawk,
         is SquawkIdent,
         is SquawkStandby,
@@ -382,6 +388,31 @@ private fun evaluateSquawkCompletion(
         is SquawkNormal -> completionOf(view.transponderMode == instruction.mode)
         is StopSquawk -> completionOf(view.transponderMode != instruction.mode)
         else -> CompletionResult.NOT_COMPLETE
+    }
+
+private fun evaluateTurnByDegreesCompletion(
+    instruction: TurnByDegrees,
+    view: CompletionView
+): CompletionResult =
+    completionOf(
+        view.observedTurnDirection == instruction.direction &&
+            (view.observedTurnDegrees ?: 0) >= instruction.degrees
+    )
+
+private fun evaluateVectorCompletion(
+    instruction: ResolvedVectorInstruction,
+    view: CompletionView
+): CompletionResult =
+    when (instruction.kind) {
+        ResolvedVectorKind.TURN_BY_DEGREES ->
+            completionOf(
+                view.observedTurnDirection == instruction.turnDirection &&
+                    (view.observedTurnDegrees ?: 0) >= (instruction.turnDegrees ?: Int.MAX_VALUE)
+            )
+
+        ResolvedVectorKind.FLY_HEADING,
+        ResolvedVectorKind.TURN_HEADING,
+        ResolvedVectorKind.CONTINUE_PRESENT_HEADING -> CompletionResult.NOT_APPLICABLE
     }
 
 private fun evaluateLowApproachCompletion(

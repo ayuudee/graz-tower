@@ -60,9 +60,12 @@ The following instruction families are now treated as authority-resolved:
 - `JoinAirway` -> `(airway, routeClearance)` on that same delivered
   route/vector-control boundary
 - `ResumeOwnNavigation`, `RouteAsFiled`, `FlyHeading`, `TurnHeading`,
-  `ContinuePresentHeading`, `StopTurn`, and `InterceptLocaliser` ->
+  `TurnByDegrees`, `ContinuePresentHeading`, `StopTurn`, and
+  `InterceptLocaliser` ->
   `(airspaceVolume, routeClearance)` on the delivered current-shape
-  route/vector-control boundary
+  route/vector-control boundary, now widened through its first narrow
+  immediate-adjunct compound layer and with `TurnByDegrees` closed on the
+  explicit observed-turn-progress model
 - `ClimbTo`, `DescendTo`, `DescendWhenReady`, `ExpediteClimb`,
   `ExpediteDescend`, `MaintainLevel`, `StopClimbAt`, `StopDescentAt`,
   `MaintainAtOrAbove`, `MaintainAtOrBelow`, `AfterPassingLevelClimbTo`,
@@ -137,7 +140,6 @@ authority-mapping layer:
 - `ReportFinal`
 - `Proceed`
 - `ClearedTo`
-- `TurnByDegrees`
 - `CrossControlledAirspace`
 
 The reason is not "these instructions have no authority semantics."
@@ -147,8 +149,6 @@ semantic questions."
 Examples:
 
 - `ClearedTo` depends on the still-open route/intention/limit theorem surface
-- `TurnByDegrees` still depends on a heading-progress observation model that is
-  not yet frozen on the current engine/proof boundary
 - `CrossControlledAirspace` likely belongs to a broader coordination/airspace
   authority layer that is not yet narrowed enough here
 

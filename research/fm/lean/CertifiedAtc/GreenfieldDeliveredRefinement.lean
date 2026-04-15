@@ -1,7 +1,7 @@
 import CertifiedAtc.ScopedSafety
 import CertifiedAtc.ScopedModes
 import CertifiedAtc.GreenfieldGroundMovementDeliveredCurrentShape
-import CertifiedAtc.GreenfieldRouteControlCurrentShape
+import CertifiedAtc.GreenfieldRouteControlDeliveredCurrentShape
 import CertifiedAtc.GreenfieldAirModifierCurrentShape
 import CertifiedAtc.GreenfieldRouteAdjacentAuthority
 import CertifiedAtc.GreenfieldRouteBearingCurrentShape
@@ -127,10 +127,10 @@ abbrev AirspaceWorldBackedDeliveredAuthorizedRefinementTheorem :=
   @GreenfieldAirspaceWorldBackedDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev RouteControlDeliveredReachableRefinementTheorem :=
-  @GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
+  @GreenfieldRouteControlDeliveredCurrentShapeReachableIssuanceTheorem
 
 abbrev RouteControlDeliveredAuthorizedRefinementTheorem :=
-  @GreenfieldRouteControlCurrentShapeAuthorizedIssuanceTheorem
+  @GreenfieldRouteControlDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev AirModifierDeliveredReachableRefinementTheorem :=
   @GreenfieldAirModifierCurrentShapeReachableIssuanceTheorem

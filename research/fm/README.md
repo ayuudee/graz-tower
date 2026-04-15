@@ -487,12 +487,17 @@ The default critical path is now:
   every family whose Kotlin semantics are already stable, whose conservative
   authority family is frozen, and whose proof surface does not require new
   world-resolution theory is now theorem-bearing on the greenfield boundary;
-  this now explicitly includes the delivered route/vector-control subset in
-  [GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean)
-  and the delivered air-modifier/admin subset in
+  this now explicitly includes the delivered route/vector-control surface in
+  [GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
+  [GreenfieldRouteControlCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),
+  and
+  [GreenfieldRouteControlDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlDeliveredCurrentShape.lean),
+  plus the delivered air-modifier/admin subset in
   [GreenfieldAirModifierCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirModifierCurrentShape.lean),
-  while `TurnByDegrees` remains intentionally open because heading-progress
-  semantics are not yet frozen on the current engine/proof boundary
+  with the route/vector surface now widened through its first narrow
+  immediate-adjunct compound layer and `TurnByDegrees` closed on the current
+  explicit observed-turn-progress boundary; richer heading-hold semantics
+  remain a separate open branch
 - the phase-2 communications/surveillance widening closure is now also
   complete under that same frozen rule:
   the already-delivered radio and transponder/surveillance families are now

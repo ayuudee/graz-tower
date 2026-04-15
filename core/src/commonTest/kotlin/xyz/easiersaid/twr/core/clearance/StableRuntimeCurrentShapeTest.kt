@@ -5,6 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import xyz.easiersaid.twr.core.resolution.ResolutionResult
+import xyz.easiersaid.twr.core.resolution.ResolutionFailureCode
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.FixtureIds
 import xyz.easiersaid.twr.core.world.sampleWorld
@@ -35,6 +36,7 @@ import xyz.easiersaid.twr.protocol.SetPressure
 import xyz.easiersaid.twr.protocol.StopTurn
 import xyz.easiersaid.twr.protocol.TickNumber
 import xyz.easiersaid.twr.protocol.TurnDirection
+import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnHeading
 
 class StableRuntimeCurrentShapeTest {
@@ -139,11 +141,27 @@ class StableRuntimeCurrentShapeTest {
             )
         ).requireResolved()
         val continuePresentHeading = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                FixtureIds.aerodrome,
+                currentHeading = Heading.unsafe(135)
+            ),
             clearance = structuredClearance(
                 id = "CLR-CPH",
                 domain = ClearanceDomain.ROUTE,
                 content = ClearanceContent.Single(ContinuePresentHeading(TEST_AIRCRAFT))
+            )
+        ).requireResolved()
+        val turnByDegrees = world.resolveClearance(
+            context = ClearanceResolutionContext(
+                FixtureIds.aerodrome,
+                currentHeading = Heading.unsafe(135)
+            ),
+            clearance = structuredClearance(
+                id = "CLR-TURN-DEG",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    TurnByDegrees.unsafe(TEST_AIRCRAFT, TurnDirection.LEFT, 90)
+                )
             )
         ).requireResolved()
         val stopTurn = world.resolveClearance(
@@ -165,15 +183,27 @@ class StableRuntimeCurrentShapeTest {
 
         assertIs<ResolvedStep.Plain>(resumeOwnNavigation.steps.single())
         assertIs<ResolvedStep.Plain>(routeAsFiled.steps.single())
-        assertIs<ResolvedStep.Plain>(flyHeading.steps.single())
-        assertIs<ResolvedStep.Plain>(turnHeading.steps.single())
-        assertIs<ResolvedStep.Plain>(continuePresentHeading.steps.single())
+        val flyHeadingStep = assertIs<ResolvedStep.Vector>(flyHeading.steps.single())
+        val turnHeadingStep = assertIs<ResolvedStep.Vector>(turnHeading.steps.single())
+        val continuePresentHeadingStep = assertIs<ResolvedStep.Vector>(continuePresentHeading.steps.single())
+        val turnByDegreesStep = assertIs<ResolvedStep.Vector>(turnByDegrees.steps.single())
         assertIs<ResolvedStep.Plain>(stopTurn.steps.single())
         assertIs<ResolvedStep.Plain>(interceptLocaliser.steps.single())
+
+        assertEquals(Heading.unsafe(270), flyHeadingStep.vector.targetHeading)
+        assertEquals(Heading.unsafe(180), turnHeadingStep.vector.targetHeading)
+        assertEquals(TurnDirection.LEFT, turnHeadingStep.vector.turnDirection)
+        assertEquals(Heading.unsafe(135), continuePresentHeadingStep.vector.capturedHeading)
+        assertEquals(Heading.unsafe(45), turnByDegreesStep.vector.targetHeading)
+        assertEquals(90, turnByDegreesStep.vector.turnDegrees)
 
         val emptyView = CompletionView(position = FixtureIds.sidExit, entities = emptySet(), onGround = false)
         val localiserView = emptyView.copy(
             establishedApproachComponents = setOf(ApproachComponent.LOCALISER)
+        )
+        val observedLeftTurnView = emptyView.copy(
+            observedTurnDirection = TurnDirection.LEFT,
+            observedTurnDegrees = 90
         )
 
         assertEquals(
@@ -197,12 +227,55 @@ class StableRuntimeCurrentShapeTest {
             evaluateCompletion(continuePresentHeading, emptyView).stepResults.single().result
         )
         assertEquals(
+            CompletionResult.NOT_COMPLETE,
+            evaluateCompletion(turnByDegrees, emptyView).stepResults.single().result
+        )
+        val turnByDegreesEvaluation = evaluateCompletion(turnByDegrees, observedLeftTurnView)
+        assertEquals(
+            CompletionResult.COMPLETE,
+            turnByDegreesEvaluation.stepResults.single().result
+        )
+        assertEquals(ClearanceStatus.COMPLETED, turnByDegreesEvaluation.updated.source.status)
+        assertEquals(
             CompletionResult.COMPLETE,
             evaluateCompletion(stopTurn, emptyView).stepResults.single().result
         )
         assertEquals(
             CompletionResult.COMPLETE,
             evaluateCompletion(interceptLocaliser, localiserView).stepResults.single().result
+        )
+    }
+
+    @Test
+    fun continuePresentHeadingAndTurnByDegreesRequireCurrentHeadingAtResolution() {
+        val world = sampleWorld()
+
+        val continuePresentHeading = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-CPH-MISS",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(ContinuePresentHeading(TEST_AIRCRAFT))
+            )
+        )
+        val turnByDegrees = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-TURN-DEG-MISS",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    TurnByDegrees.unsafe(TEST_AIRCRAFT, TurnDirection.LEFT, 45)
+                )
+            )
+        )
+
+        assertEquals(
+            ResolutionFailureCode.MISSING_CURRENT_HEADING,
+            continuePresentHeading.fold({ it.code }, { error("Expected heading-resolution failure") })
+        )
+        assertEquals(
+            ResolutionFailureCode.MISSING_CURRENT_HEADING,
+            turnByDegrees.fold({ it.code }, { error("Expected heading-resolution failure") })
         )
     }
 

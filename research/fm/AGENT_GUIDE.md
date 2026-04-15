@@ -202,8 +202,9 @@ Then open the specific Lean module for the phase you are changing.
   phase 1 is now closed under the frozen widening rule:
   do not reopen families in that bucket unless runtime semantics themselves
   change; that bucket now explicitly includes the delivered route/vector-
-  control subset and the delivered air-modifier/admin subset, with
-  `TurnByDegrees` kept intentionally open
+  control surface through its first narrow immediate-adjunct compound layer
+  and the delivered air-modifier/admin subset, with `TurnByDegrees` now also
+  closed on the current explicit observed-turn-progress boundary
   phase 2 is now also closed under that same frozen widening rule:
   do not reopen the delivered communications/surveillance families unless
   their runtime semantics themselves change
@@ -320,7 +321,8 @@ Unless the user says otherwise, the next default task in `research/fm` is:
 - after that branch, choose one widening direction at a time:
   broader communications/surveillance, deeper route-bearing beyond the
   current graph-backed published-procedure model, richer airspace beyond the
-  current graph-backed point-set + transition model, unresolved
-  heading-progress/vector semantics, or richer operational mode semantics
+  current graph-backed point-set + transition model, richer heading-progress
+  semantics beyond the current explicit observed-turn-progress model, or
+  richer operational mode semantics
 - widen extraction, greenfield semantics, and issuing-layer theorems together
   rather than widening only one layer in isolation

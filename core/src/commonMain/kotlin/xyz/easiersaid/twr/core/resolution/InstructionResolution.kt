@@ -26,6 +26,7 @@ import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.HoldAt
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldSpec
@@ -38,6 +39,7 @@ import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TurnDirection
 
 data class AerodromeResolutionContext(
     val aerodromeId: AerodromeId
@@ -56,6 +58,7 @@ enum class ResolutionFailureCode {
     UNKNOWN_RUNWAY,
     UNKNOWN_FIX,
     UNKNOWN_ROLE,
+    MISSING_CURRENT_HEADING,
     UNKNOWN_SID,
     UNKNOWN_STAR,
     UNKNOWN_VFR_ROUTE,
@@ -213,6 +216,21 @@ data class ResolvedRoleFrequency(
     val role: AerodromeRole,
     val publishedFrequency: Frequency,
     val instructedFrequency: Frequency
+)
+
+enum class ResolvedVectorKind {
+    FLY_HEADING,
+    TURN_HEADING,
+    CONTINUE_PRESENT_HEADING,
+    TURN_BY_DEGREES
+}
+
+data class ResolvedVectorInstruction(
+    val kind: ResolvedVectorKind,
+    val targetHeading: Heading? = null,
+    val turnDirection: TurnDirection? = null,
+    val turnDegrees: Int? = null,
+    val capturedHeading: Heading? = null
 )
 
 fun AviationWorld.resolveTaxiTo(

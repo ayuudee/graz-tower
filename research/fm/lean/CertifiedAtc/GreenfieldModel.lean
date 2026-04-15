@@ -331,7 +331,7 @@ inductive AtcInstruction
   | leaveHoldProceedDirect (target : AircraftId) (fix : FixId)
   | whenAbleProceedDirect (target : AircraftId) (fix : FixId)
   | flyHeading (target : AircraftId) (headingDegreesMagnetic : Nat)
-  | turnHeading (target : AircraftId) (headingDegreesMagnetic : Nat)
+  | turnHeading (target : AircraftId) (turnDirection : TurnDirection) (headingDegreesMagnetic : Nat)
   | turnByDegrees (target : AircraftId) (turnDirection : TurnDirection) (degrees : Nat)
   | continuePresentHeading (target : AircraftId)
   | stopTurn (target : AircraftId)
@@ -420,7 +420,7 @@ def instructionTarget : AtcInstruction → AircraftId
   | .leaveHoldProceedDirect target _ => target
   | .whenAbleProceedDirect target _ => target
   | .flyHeading target _ => target
-  | .turnHeading target _ => target
+  | .turnHeading target _ _ => target
   | .turnByDegrees target _ _ => target
   | .continuePresentHeading target => target
   | .stopTurn target => target
@@ -507,7 +507,7 @@ def instructionTiming? : AtcInstruction → Option InstructionTiming
   | .setPressure _ _ => some .immediate
   | .cancelClearance _ => some .immediate
   | .flyHeading _ _ => some .immediate
-  | .turnHeading _ _ => some .immediate
+  | .turnHeading _ _ _ => some .immediate
   | .turnByDegrees _ _ _ => some .immediate
   | .continuePresentHeading _ => some .immediate
   | .stopTurn _ => some .immediate
@@ -572,7 +572,7 @@ def instructionDomain? : AtcInstruction → Option ClearanceDomain
   | .leaveHoldProceedDirect _ _ => some .route
   | .whenAbleProceedDirect _ _ => some .route
   | .flyHeading _ _ => some .route
-  | .turnHeading _ _ => some .route
+  | .turnHeading _ _ _ => some .route
   | .turnByDegrees _ _ _ => some .route
   | .continuePresentHeading _ => some .route
   | .stopTurn _ => some .route
@@ -641,7 +641,7 @@ def instructionCompletionCategory? : AtcInstruction → Option CompletionCategor
   | .leaveHoldProceedDirect _ _ => some .selfCompleting
   | .whenAbleProceedDirect _ _ => some .selfCompleting
   | .flyHeading _ _ => some .persistent
-  | .turnHeading _ _ => some .persistent
+  | .turnHeading _ _ _ => some .persistent
   | .turnByDegrees _ _ _ => some .selfCompleting
   | .continuePresentHeading _ => some .persistent
   | .stopTurn _ => some .onActivation
@@ -709,7 +709,7 @@ def instructionFrontierTiming : AtcInstruction → FrontierTiming
   | .backtrackRunway _ _ => .movement
   | .lineUpAndWait _ _ => .movement
   | .flyHeading _ _ => .immediate
-  | .turnHeading _ _ => .immediate
+  | .turnHeading _ _ _ => .immediate
   | .turnByDegrees _ _ _ => .immediate
   | .continuePresentHeading _ => .immediate
   | .stopTurn _ => .immediate

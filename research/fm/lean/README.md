@@ -81,6 +81,11 @@ Read modules in roughly this order:
     [CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
     and
     [CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean).
+    For the delivered route/vector-control branch, also read
+    [CertifiedAtc/GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
+    [CertifiedAtc/GreenfieldRouteControlCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),
+    and
+    [CertifiedAtc/GreenfieldRouteControlDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlDeliveredCurrentShape.lean).
 21. [CertifiedAtc/GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean)
     Optional. This closes the current-shape single-step `ContinueApproach`
     slice: source-level issuance, active lifecycle, and explicit `GoAround`
@@ -326,6 +331,16 @@ Read modules in roughly this order:
 - `GreenfieldPlainCurrentShape`
   Reusable current-shape helper for single-step greenfield instructions that
   resolve as plain steps and admit directly into the reachable resolved set.
+- `GreenfieldRouteControlCurrentShape`
+  Delivered single-step route/vector-control surface: direct-fix, airway-join,
+  explicit vector-resolution, and plain route-control instructions on the
+  current engine boundary.
+- `GreenfieldRouteControlCompound`
+  First narrow compound widening for the delivered route/vector-control
+  surface: one leading route/vector-control step plus immediate adjunct tails.
+- `GreenfieldRouteControlDeliveredCurrentShape`
+  Source-level current-shape packaging for the delivered route/vector-control
+  singles plus the first narrow compound layer.
 - `GreenfieldContinueApproach`
   Small current-shape closure for single-step `ContinueApproach`: source-level
   issuance, active lifecycle, and explicit `GoAround` supersession.

@@ -25,6 +25,9 @@ structure CompletionObservation where
   airspaceTransitions : UniqueSet AirspaceVolumeId := {}
   activeAirspaces : UniqueSet AirspaceVolumeId := {}
   establishedApproachComponents : UniqueSet ApproachComponent := {}
+  currentHeadingDegreesMagnetic : Option Nat := none
+  observedTurnDirection : Option TurnDirection := none
+  observedTurnDegrees : Option Nat := none
   currentRole : Option RoleName := none
   currentFrequency : Option Frequency := none
   lastContactRole : Option RoleName := none
@@ -169,6 +172,15 @@ def observedInstructionCompletion?
       some <| if speedAtOrBelow observation.speed speed then .complete else .notComplete
   | .increaseSpeedTo _ speed =>
       some <| if speedAtOrAbove observation.speed speed then .complete else .notComplete
+  | .turnByDegrees _ direction degrees =>
+      some <|
+        if observation.observedTurnDirection = some direction &&
+            match observation.observedTurnDegrees with
+            | some observedDegrees => observedDegrees >= degrees
+            | none => false then
+          .complete
+        else
+          .notComplete
   | .confirmSquawk _ squawk =>
       some <| if observation.transponderCode = some squawk then .complete else .notComplete
   | .squawkIdent _ =>
@@ -263,6 +275,21 @@ def observedResolvedStepCompletion?
             .complete
           else
             .notComplete
+    | .vector vector =>
+        match vector.kind with
+        | .turnByDegrees =>
+            some <|
+              if observation.observedTurnDirection = vector.turnDirection &&
+                  match observation.observedTurnDegrees, vector.turnDegrees with
+                  | some observedDegrees, some turnDegrees => observedDegrees >= turnDegrees
+                  | _, _ => false then
+                .complete
+              else
+                .notComplete
+        | .flyHeading
+        | .turnHeading
+        | .continuePresentHeading =>
+            some .notApplicable
     | .airspace airspace =>
         match step.instruction with
         | .remainOutsideControlledAirspace _ _ =>

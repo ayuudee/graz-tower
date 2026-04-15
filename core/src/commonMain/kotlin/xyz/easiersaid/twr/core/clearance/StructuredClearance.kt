@@ -12,6 +12,7 @@ import xyz.easiersaid.twr.protocol.ConditionalPredicate
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RoleName
@@ -19,6 +20,7 @@ import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.Squawk
 import xyz.easiersaid.twr.protocol.TickNumber
 import xyz.easiersaid.twr.protocol.TransponderMode
+import xyz.easiersaid.twr.protocol.TurnDirection
 
 data class StructuredClearance(
     val id: ClearanceId,
@@ -49,6 +51,9 @@ data class CompletionView(
     val reachedFixes: Set<FixId> = emptySet(),
     val altitude: Level? = null,
     val speed: Speed? = null,
+    val currentHeading: Heading? = null,
+    val observedTurnDirection: TurnDirection? = null,
+    val observedTurnDegrees: Int? = null,
     val onGround: Boolean,
     val transitionHistory: Set<EntityRef> = emptySet(),
     val establishedApproachComponents: Set<ApproachComponent> = emptySet(),

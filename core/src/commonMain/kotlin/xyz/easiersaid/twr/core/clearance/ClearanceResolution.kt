@@ -10,6 +10,8 @@ import xyz.easiersaid.twr.core.resolution.ResolvedCircuitJoinInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedHoldingPoint
 import xyz.easiersaid.twr.core.resolution.ResolvedRunwayCrossing
 import xyz.easiersaid.twr.core.resolution.ResolvedTaxiRoute
+import xyz.easiersaid.twr.core.resolution.ResolvedVectorInstruction
+import xyz.easiersaid.twr.core.resolution.ResolvedVectorKind
 import xyz.easiersaid.twr.core.resolution.resolveClearedApproach
 import xyz.easiersaid.twr.core.resolution.resolveClearedToEnterControlZone
 import xyz.easiersaid.twr.core.resolution.resolveClearedTo
@@ -35,8 +37,11 @@ import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.CompletionCategory
 import xyz.easiersaid.twr.protocol.ConditionalClearance
+import xyz.easiersaid.twr.protocol.ContinuePresentHeading
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.FlyHeading
+import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldAt
 import xyz.easiersaid.twr.protocol.InstructionTiming
@@ -50,6 +55,9 @@ import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RejoinSidAt
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TurnByDegrees
+import xyz.easiersaid.twr.protocol.TurnDirection
+import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.WhenAbleProceedDirect
 import xyz.easiersaid.twr.protocol.instructionCompletionCategory
 import xyz.easiersaid.twr.protocol.instructionDomain
@@ -70,7 +78,10 @@ fun AviationWorld.resolveClearance(
         is ClearanceContent.Compound -> content.steps
     }
 
-    val initialState = ResolutionCompilationState(currentPoint = context.currentPoint)
+    val initialState = ResolutionCompilationState(
+        currentPoint = context.currentPoint,
+        currentHeading = context.currentHeading
+    )
 
     return arrow.core.raise.either {
         val compiled = steps.foldIndexed(Pair(emptyList<ResolvedStep>(), initialState)) { index, (resolvedSoFar, state), instruction ->
@@ -190,6 +201,10 @@ private fun AviationWorld.resolveStep(
         is RejoinSidAt -> resolveDirectFixStep(stepContext, instruction.fix, state)
         is JoinAirway -> resolveJoinAirwayStep(stepContext, instruction, state)
         is JoinCircuit -> resolveJoinCircuitStep(context, stepContext, instruction, state)
+        is FlyHeading -> resolveVectorStep(stepContext, instruction, state)
+        is TurnHeading -> resolveVectorStep(stepContext, instruction, state)
+        is ContinuePresentHeading -> resolveVectorStep(stepContext, instruction, state)
+        is TurnByDegrees -> resolveVectorStep(stepContext, instruction, state)
         else -> arrow.core.Either.Right(
             ResolvedStepWithState(
                 step = ResolvedStep.Plain(
@@ -256,6 +271,67 @@ private fun AviationWorld.resolveAirspaceStep(
                 airspace = resolvedAirspace
             ),
             state = state
+        )
+    )
+}
+
+private fun AviationWorld.resolveVectorStep(
+    stepContext: StepContext,
+    instruction: AtcInstruction,
+    state: ResolutionCompilationState
+): ResolutionResult<ResolvedStepWithState> {
+    val resolvedVector = when (instruction) {
+        is FlyHeading -> ResolvedVectorInstruction(
+            kind = ResolvedVectorKind.FLY_HEADING,
+            targetHeading = instruction.heading
+        )
+
+        is TurnHeading -> ResolvedVectorInstruction(
+            kind = ResolvedVectorKind.TURN_HEADING,
+            targetHeading = instruction.heading,
+            turnDirection = instruction.direction
+        )
+
+        is ContinuePresentHeading -> {
+            val capturedHeading = state.currentHeading ?: return unresolved(
+                ResolutionFailureCode.MISSING_CURRENT_HEADING,
+                "Continue-present-heading resolution requires a current heading"
+            )
+            ResolvedVectorInstruction(
+                kind = ResolvedVectorKind.CONTINUE_PRESENT_HEADING,
+                targetHeading = capturedHeading,
+                capturedHeading = capturedHeading
+            )
+        }
+
+        is TurnByDegrees -> {
+            val capturedHeading = state.currentHeading ?: return unresolved(
+                ResolutionFailureCode.MISSING_CURRENT_HEADING,
+                "Turn-by-degrees resolution requires a current heading"
+            )
+            ResolvedVectorInstruction(
+                kind = ResolvedVectorKind.TURN_BY_DEGREES,
+                targetHeading = turnedHeading(capturedHeading, instruction.direction, instruction.degrees),
+                turnDirection = instruction.direction,
+                turnDegrees = instruction.degrees,
+                capturedHeading = capturedHeading
+            )
+        }
+
+        else -> error("resolveVectorStep called for non-vector instruction $instruction")
+    }
+
+    return arrow.core.Either.Right(
+        ResolvedStepWithState(
+            step = ResolvedStep.Vector(
+                index = stepContext.index,
+                instruction = instruction,
+                timing = stepContext.timing,
+                domain = stepContext.domain,
+                completionCategory = stepContext.completionCategory,
+                vector = resolvedVector
+            ),
+            state = state.copy(currentHeading = resolvedVector.targetHeading ?: state.currentHeading)
         )
     )
 }
@@ -856,6 +932,7 @@ private data class StepContext(
 
 private data class ResolutionCompilationState(
     val currentPoint: PointId?,
+    val currentHeading: Heading? = null,
     val activeTaxiRoute: ActiveTaxiRoute? = null
 )
 
@@ -890,3 +967,15 @@ private data class RouteCrossingCandidate(
     val crossingPoint: PointId,
     val routeIndex: Int
 )
+
+private fun turnedHeading(
+    currentHeading: Heading,
+    direction: TurnDirection,
+    degrees: Int
+): Heading {
+    val normalized = when (direction) {
+        TurnDirection.LEFT -> ((currentHeading.degrees - degrees - 1).mod(360)) + 1
+        TurnDirection.RIGHT -> ((currentHeading.degrees + degrees - 1).mod(360)) + 1
+    }
+    return Heading.unsafe(normalized)
+}

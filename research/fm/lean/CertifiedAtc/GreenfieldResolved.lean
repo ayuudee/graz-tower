@@ -89,6 +89,21 @@ structure ResolvedAirspaceInstruction where
   exitTransitions : List (PointId × PointId) := []
   deriving DecidableEq, Repr
 
+inductive ResolvedVectorKind
+  | flyHeading
+  | turnHeading
+  | continuePresentHeading
+  | turnByDegrees
+  deriving DecidableEq, Repr
+
+structure ResolvedVectorInstruction where
+  kind : ResolvedVectorKind
+  targetHeadingDegreesMagnetic : Option Nat := none
+  turnDirection : Option TurnDirection := none
+  turnDegrees : Option Nat := none
+  capturedHeadingDegreesMagnetic : Option Nat := none
+  deriving DecidableEq, Repr
+
 def airspaceRouteInsidePoints
     (routePoints : List PointId)
     (airspacePoints : List PointId) : List PointId :=
@@ -134,6 +149,7 @@ inductive ResolvedPayload
   | airwayJoin (join : ResolvedAirwayJoin)
   | circuitJoin (circuit : ResolvedCircuitJoin)
   | airspace (airspace : ResolvedAirspaceInstruction)
+  | vector (vector : ResolvedVectorInstruction)
   | plain
   deriving DecidableEq, Repr
 
@@ -153,6 +169,10 @@ def instructionNeedsSpecificResolution : AtcInstruction → Bool
   | .rejoinSidAt _ _ => true
   | .joinAirway _ _ _ => true
   | .joinCircuit _ _ _ _ => true
+  | .flyHeading _ _ => true
+  | .turnHeading _ _ _ => true
+  | .continuePresentHeading _ => true
+  | .turnByDegrees _ _ _ => true
   | _ => false
 
 def resolutionCompatible : ResolvedPayload → AtcInstruction → Bool
@@ -174,6 +194,10 @@ def resolutionCompatible : ResolvedPayload → AtcInstruction → Bool
   | .directFix _, .rejoinSidAt _ _ => true
   | .airwayJoin _, .joinAirway _ _ _ => true
   | .circuitJoin _, .joinCircuit _ _ _ _ => true
+  | .vector _, .flyHeading _ _ => true
+  | .vector _, .turnHeading _ _ _ => true
+  | .vector _, .continuePresentHeading _ => true
+  | .vector _, .turnByDegrees _ _ _ => true
   | .plain, instruction => !(instructionNeedsSpecificResolution instruction)
   | _, _ => false
 

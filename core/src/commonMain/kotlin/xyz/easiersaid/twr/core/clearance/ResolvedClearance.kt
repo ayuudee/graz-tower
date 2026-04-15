@@ -9,6 +9,7 @@ import xyz.easiersaid.twr.core.resolution.ResolvedRoleFrequency
 import xyz.easiersaid.twr.core.resolution.ResolvedRouteClearance
 import xyz.easiersaid.twr.core.resolution.ResolvedRunwayCrossing
 import xyz.easiersaid.twr.core.resolution.ResolvedTaxiRoute
+import xyz.easiersaid.twr.core.resolution.ResolvedVectorInstruction
 import xyz.easiersaid.twr.core.world.Airway
 import xyz.easiersaid.twr.core.world.CircuitProcedure
 import xyz.easiersaid.twr.core.world.Fix
@@ -22,6 +23,8 @@ import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.CompletionCategory
+import xyz.easiersaid.twr.protocol.ContinuePresentHeading
+import xyz.easiersaid.twr.protocol.FlyHeading
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldAt
 import xyz.easiersaid.twr.protocol.InstructionTiming
@@ -34,11 +37,14 @@ import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TurnByDegrees
+import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.instructionSupersedesIn
 
 data class ClearanceResolutionContext(
     val aerodromeId: AerodromeId,
-    val currentPoint: PointId? = null
+    val currentPoint: PointId? = null,
+    val currentHeading: xyz.easiersaid.twr.protocol.Heading? = null
 )
 
 sealed interface ResolvedStep {
@@ -165,6 +171,24 @@ sealed interface ResolvedStep {
         override val completionCategory: CompletionCategory?,
         val join: ResolvedCircuitJoinInstruction
     ) : ResolvedStep
+
+    data class Vector(
+        override val index: Int,
+        override val instruction: AtcInstruction,
+        override val timing: InstructionTiming?,
+        override val domain: ClearanceDomain,
+        override val completionCategory: CompletionCategory?,
+        val vector: ResolvedVectorInstruction
+    ) : ResolvedStep {
+        init {
+            require(
+                instruction is FlyHeading ||
+                    instruction is TurnHeading ||
+                    instruction is ContinuePresentHeading ||
+                    instruction is TurnByDegrees
+            ) { "ResolvedStep.Vector may only wrap vector instructions" }
+        }
+    }
 
     data class Plain(
         override val index: Int,

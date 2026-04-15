@@ -13,7 +13,8 @@ explicit and do not require broader route-bearing research:
 - direct-fix instructions with explicit point completion
 - `JoinAirway` with explicit join-fix-on-airway resolution
 - plain route-control instructions whose current behavior is on-activation,
-  persistent, or localiser-capture based
+  persistent, localiser-capture based, or explicitly driven by observed
+  turn-progress
 -/
 
 def RouteControlCurrentShapeInstruction : AtcInstruction → Prop
@@ -25,7 +26,8 @@ def RouteControlCurrentShapeInstruction : AtcInstruction → Prop
   | .resumeOwnNavigation _ => True
   | .routeAsFiled _ => True
   | .flyHeading _ _ => True
-  | .turnHeading _ _ => True
+  | .turnHeading _ _ _ => True
+  | .turnByDegrees _ _ _ => True
   | .continuePresentHeading _ => True
   | .stopTurn _ => True
   | .interceptLocaliser _ => True
@@ -49,7 +51,8 @@ def RouteControlCurrentShapeInstructionReady
   | .resumeOwnNavigation _ => True
   | .routeAsFiled _ => True
   | .flyHeading _ _ => True
-  | .turnHeading _ _ => True
+  | .turnHeading _ _ _ => True
+  | .turnByDegrees _ _ _ => True
   | .continuePresentHeading _ => True
   | .stopTurn _ => True
   | .interceptLocaliser _ => True
@@ -73,7 +76,9 @@ def routeControlCurrentShapeInstructionRequiredAuthorityGrant? :
       some { entityType := .airspaceVolume, operation := .routeClearance }
   | .flyHeading _ _ =>
       some { entityType := .airspaceVolume, operation := .routeClearance }
-  | .turnHeading _ _ =>
+  | .turnHeading _ _ _ =>
+      some { entityType := .airspaceVolume, operation := .routeClearance }
+  | .turnByDegrees _ _ _ =>
       some { entityType := .airspaceVolume, operation := .routeClearance }
   | .continuePresentHeading _ =>
       some { entityType := .airspaceVolume, operation := .routeClearance }
@@ -110,13 +115,22 @@ def GreenfieldRouteControlCurrentShapeWorldAuthorized
     | some grant =>
         WorldControllerHasGrant world.toScopedAviationWorld controller grant
 
+def RouteControlCurrentShapeStateReady
+    (state : ResolutionState) :
+    AtcInstruction → Prop
+  | .continuePresentHeading _ => ∃ heading, state.currentHeadingDegreesMagnetic = some heading
+  | .turnByDegrees _ _ _ => ∃ heading, state.currentHeadingDegreesMagnetic = some heading
+  | _ => True
+
 def GreenfieldRouteControlCurrentShapeIssuable
     (world : RouteBearingScopedAviationWorld)
+    (initialState : ResolutionState)
     (clearance : StructuredClearance) : Prop :=
   match clearance.content with
   | .single instruction =>
       RouteControlCurrentShapeInstruction instruction ∧
         RouteControlCurrentShapeInstructionReady world instruction ∧
+        RouteControlCurrentShapeStateReady initialState instruction ∧
         clearance.condition = none ∧
         clearance.domain = .route
   | .compound _ => False
@@ -155,6 +169,24 @@ def singletonResolvedAirwayJoinClearance
           (.joinAirway target airway joinFix)
           (.airwayJoin { airway := airway, joinFix := joinFix, joinPoint := joinPoint })
           (by simp [resolutionCompatible]) ] }
+
+def singletonResolvedVectorClearance
+    (clearance : StructuredClearance)
+    (instruction : AtcInstruction)
+    (vector : ResolvedVectorInstruction)
+    (hCompatible :
+      resolutionCompatible
+        (.vector vector)
+        instruction = true) :
+    ResolvedClearance :=
+  { source := clearance
+    steps :=
+      [ compileResolvedStep
+          0
+          .route
+          instruction
+          (.vector vector)
+          hCompatible ] }
 
 theorem routeControlCurrentShapeInstructionIssuerAuthorized_eq_true_of_worldAuthorized
     {world : RouteBearingScopedAviationWorld}
@@ -228,20 +260,20 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
     {clearance : StructuredClearance}
     (hReach : ReachableResolvedSet existing)
     (hFresh : clearance.id ∉ resolvedClearanceIds existing)
-    (hIssuable : GreenfieldRouteControlCurrentShapeIssuable world clearance) :
-    ∃ resolved,
+    (hIssuable : GreenfieldRouteControlCurrentShapeIssuable world initialState clearance) :
+    ∃ finalState resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   cases hContent : clearance.content with
   | single instruction =>
       simp [GreenfieldRouteControlCurrentShapeIssuable, hContent] at hIssuable
-      rcases hIssuable with ⟨hInstruction, hReady, hCondition, hDomain⟩
+      rcases hIssuable with ⟨hInstruction, hReady, hStateReady, hCondition, hDomain⟩
       cases instruction with
       | proceedDirect target fix =>
           rcases hReady with ⟨point, hPoint⟩
@@ -291,7 +323,7 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
                 (by simpa [hDomain] using hStep)
           have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
             simpa [resolved] using hFresh
-          exact ⟨resolved, hResolve,
+          exact ⟨initialState, resolved, hResolve,
             ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | leaveHoldProceedDirect target fix =>
           rcases hReady with ⟨point, hPoint⟩
@@ -341,7 +373,7 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
                 (by simpa [hDomain] using hStep)
           have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
             simpa [resolved] using hFresh
-          exact ⟨resolved, hResolve,
+          exact ⟨initialState, resolved, hResolve,
             ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | whenAbleProceedDirect target fix =>
           rcases hReady with ⟨point, hPoint⟩
@@ -391,7 +423,7 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
                 (by simpa [hDomain] using hStep)
           have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
             simpa [resolved] using hFresh
-          exact ⟨resolved, hResolve,
+          exact ⟨initialState, resolved, hResolve,
             ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | rejoinSidAt target fix =>
           rcases hReady with ⟨point, hPoint⟩
@@ -441,7 +473,7 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
                 (by simpa [hDomain] using hStep)
           have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
             simpa [resolved] using hFresh
-          exact ⟨resolved, hResolve,
+          exact ⟨initialState, resolved, hResolve,
             ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | joinAirway target airway joinFix =>
           rcases hReady with ⟨joinPoint, hPoint, hAirway⟩
@@ -493,10 +525,10 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
                 (by simpa [hDomain] using hStep)
           have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
             simpa [resolved] using hFresh
-          exact ⟨resolved, hResolve,
+          exact ⟨initialState, resolved, hResolve,
             ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | resumeOwnNavigation target =>
-          exact
+          rcases
             plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
               (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
               (existing := existing)
@@ -508,9 +540,11 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
               (by simp [instructionNeedsSpecificResolution])
               (by simp [normalizeConditionalEnvelope, hContent, hCondition])
               hContent
-              (by simpa using hDomain)
+              (by simpa using hDomain) with
+              ⟨resolved, hResolve, hReachable⟩
+          exact ⟨initialState, resolved, hResolve, hReachable⟩
       | routeAsFiled target =>
-          exact
+          rcases
             plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
               (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
               (existing := existing)
@@ -522,51 +556,224 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
               (by simp [instructionNeedsSpecificResolution])
               (by simp [normalizeConditionalEnvelope, hContent, hCondition])
               hContent
-              (by simpa using hDomain)
+              (by simpa using hDomain) with
+              ⟨resolved, hResolve, hReachable⟩
+          exact ⟨initialState, resolved, hResolve, hReachable⟩
       | flyHeading target heading =>
-          exact
-            plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
-              (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-              (existing := existing)
-              (initialState := initialState)
-              (clearance := clearance)
-              (instruction := .flyHeading target heading)
-              hReach
-              hFresh
-              (by simp [instructionNeedsSpecificResolution])
-              (by simp [normalizeConditionalEnvelope, hContent, hCondition])
-              hContent
-              (by simpa using hDomain)
-      | turnHeading target heading =>
-          exact
-            plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
-              (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-              (existing := existing)
-              (initialState := initialState)
-              (clearance := clearance)
-              (instruction := .turnHeading target heading)
-              hReach
-              hFresh
-              (by simp [instructionNeedsSpecificResolution])
-              (by simp [normalizeConditionalEnvelope, hContent, hCondition])
-              hContent
-              (by simpa using hDomain)
+          let vector : ResolvedVectorInstruction :=
+            { kind := .flyHeading
+              targetHeadingDegreesMagnetic := some heading }
+          let resolved := singletonResolvedVectorClearance clearance (.flyHeading target heading) vector
+            (by simp [resolutionCompatible])
+          have hStep :
+              ResolvesIndexedStep
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                .route
+                0
+                (.flyHeading target heading)
+                (compileResolvedStep
+                  0
+                  .route
+                  (.flyHeading target heading)
+                  (.vector vector)
+                  (by simp [resolutionCompatible]))
+                { initialState with currentHeadingDegreesMagnetic := some heading } := by
+            simpa [vector] using
+              (ResolvesIndexedStep.flyHeading
+                (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+                (fallbackDomain := .route)
+                (index := 0)
+                (target := target)
+                (headingDegreesMagnetic := heading)
+                (state := initialState))
+          have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
+            simp [normalizeConditionalEnvelope, hContent, hCondition]
+          have hResolve :
+              ResolvesClearance
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                clearance
+                resolved
+                { initialState with currentHeadingDegreesMagnetic := some heading } := by
+            exact
+              resolvesSingleInstructionClearance
+                hNormalized
+                hContent
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, compileResolvedStep, instructionDomain?] using hDomain)
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, hDomain] using hStep)
+          have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
+            simpa [resolved] using hFresh
+          exact ⟨{ initialState with currentHeadingDegreesMagnetic := some heading }, resolved, hResolve,
+            ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
+      | turnHeading target direction heading =>
+          let vector : ResolvedVectorInstruction :=
+            { kind := .turnHeading
+              targetHeadingDegreesMagnetic := some heading
+              turnDirection := some direction }
+          let resolved := singletonResolvedVectorClearance clearance (.turnHeading target direction heading) vector
+            (by simp [resolutionCompatible])
+          have hStep :
+              ResolvesIndexedStep
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                .route
+                0
+                (.turnHeading target direction heading)
+                (compileResolvedStep
+                  0
+                  .route
+                  (.turnHeading target direction heading)
+                  (.vector vector)
+                  (by simp [resolutionCompatible]))
+                { initialState with currentHeadingDegreesMagnetic := some heading } := by
+            simpa [vector] using
+              (ResolvesIndexedStep.turnHeading
+                (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+                (fallbackDomain := .route)
+                (index := 0)
+                (target := target)
+                (turnDirection := direction)
+                (headingDegreesMagnetic := heading)
+                (state := initialState))
+          have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
+            simp [normalizeConditionalEnvelope, hContent, hCondition]
+          have hResolve :
+              ResolvesClearance
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                clearance
+                resolved
+                { initialState with currentHeadingDegreesMagnetic := some heading } := by
+            exact
+              resolvesSingleInstructionClearance
+                hNormalized
+                hContent
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, compileResolvedStep, instructionDomain?] using hDomain)
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, hDomain] using hStep)
+          have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
+            simpa [resolved] using hFresh
+          exact ⟨{ initialState with currentHeadingDegreesMagnetic := some heading }, resolved, hResolve,
+            ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
+      | turnByDegrees target direction degrees =>
+          rcases hStateReady with ⟨currentHeading, hCurrentHeading⟩
+          have hInitialHeadingState :
+              { initialState with currentHeadingDegreesMagnetic := some currentHeading } = initialState := by
+            cases initialState
+            cases hCurrentHeading
+            rfl
+          let vector : ResolvedVectorInstruction :=
+            { kind := .turnByDegrees
+              targetHeadingDegreesMagnetic := some (turnedHeadingDegrees currentHeading direction degrees)
+              turnDirection := some direction
+              turnDegrees := some degrees
+              capturedHeadingDegreesMagnetic := some currentHeading }
+          let resolved := singletonResolvedVectorClearance clearance (.turnByDegrees target direction degrees) vector
+            (by simp [resolutionCompatible])
+          have hStep :
+              ResolvesIndexedStep
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                .route
+                0
+                (.turnByDegrees target direction degrees)
+                (compileResolvedStep
+                  0
+                  .route
+                  (.turnByDegrees target direction degrees)
+                  (.vector vector)
+                  (by simp [resolutionCompatible]))
+                { initialState with
+                    currentHeadingDegreesMagnetic := some (turnedHeadingDegrees currentHeading direction degrees) } := by
+            simpa [vector, hCurrentHeading, hInitialHeadingState] using
+              (ResolvesIndexedStep.turnByDegrees
+                (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+                (fallbackDomain := .route)
+                (index := 0)
+                (target := target)
+                (turnDirection := direction)
+                (degrees := degrees)
+                (headingDegreesMagnetic := currentHeading)
+                (currentPoint := initialState.currentPoint))
+          have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
+            simp [normalizeConditionalEnvelope, hContent, hCondition]
+          have hResolve :
+              ResolvesClearance
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                clearance
+                resolved
+                { initialState with
+                    currentHeadingDegreesMagnetic := some (turnedHeadingDegrees currentHeading direction degrees) } := by
+            exact
+              resolvesSingleInstructionClearance
+                hNormalized
+                hContent
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, compileResolvedStep, instructionDomain?] using hDomain)
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, hDomain, hCurrentHeading] using hStep)
+          have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
+            simpa [resolved] using hFresh
+          exact ⟨{ initialState with
+              currentHeadingDegreesMagnetic := some (turnedHeadingDegrees currentHeading direction degrees) },
+            resolved,
+            hResolve,
+            ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | continuePresentHeading target =>
-          exact
-            plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
-              (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
-              (existing := existing)
-              (initialState := initialState)
-              (clearance := clearance)
-              (instruction := .continuePresentHeading target)
-              hReach
-              hFresh
-              (by simp [instructionNeedsSpecificResolution])
-              (by simp [normalizeConditionalEnvelope, hContent, hCondition])
-              hContent
-              (by simpa using hDomain)
+          rcases hStateReady with ⟨currentHeading, hCurrentHeading⟩
+          have hInitialHeadingState :
+              { initialState with currentHeadingDegreesMagnetic := some currentHeading } = initialState := by
+            cases initialState
+            cases hCurrentHeading
+            rfl
+          let vector : ResolvedVectorInstruction :=
+            { kind := .continuePresentHeading
+              targetHeadingDegreesMagnetic := some currentHeading
+              capturedHeadingDegreesMagnetic := some currentHeading }
+          let resolved := singletonResolvedVectorClearance clearance (.continuePresentHeading target) vector
+            (by simp [resolutionCompatible])
+          have hStep :
+              ResolvesIndexedStep
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                .route
+                0
+                (.continuePresentHeading target)
+                (compileResolvedStep
+                  0
+                  .route
+                  (.continuePresentHeading target)
+                  (.vector vector)
+                  (by simp [resolutionCompatible]))
+                { initialState with currentHeadingDegreesMagnetic := some currentHeading } := by
+            simpa [vector, hCurrentHeading, hInitialHeadingState] using
+              (ResolvesIndexedStep.continuePresentHeading
+                (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+                (fallbackDomain := .route)
+                (index := 0)
+                (target := target)
+                (headingDegreesMagnetic := currentHeading)
+                (currentPoint := initialState.currentPoint))
+          have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
+            simp [normalizeConditionalEnvelope, hContent, hCondition]
+          have hResolve :
+              ResolvesClearance
+                (RouteBearingScopedAviationWorld.toResolutionWorld world)
+                initialState
+                clearance
+                resolved
+                { initialState with currentHeadingDegreesMagnetic := some currentHeading } := by
+            exact
+              resolvesSingleInstructionClearance
+                hNormalized
+                hContent
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, compileResolvedStep, instructionDomain?] using hDomain)
+                (by simpa [resolved, singletonResolvedVectorClearance, vector, hDomain, hCurrentHeading] using hStep)
+          have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
+            simpa [resolved] using hFresh
+          exact ⟨{ initialState with currentHeadingDegreesMagnetic := some currentHeading }, resolved, hResolve,
+            ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve⟩
       | stopTurn target =>
-          exact
+          rcases
             plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
               (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
               (existing := existing)
@@ -578,9 +785,11 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
               (by simp [instructionNeedsSpecificResolution])
               (by simp [normalizeConditionalEnvelope, hContent, hCondition])
               hContent
-              (by simpa using hDomain)
+              (by simpa using hDomain) with
+              ⟨resolved, hResolve, hReachable⟩
+          exact ⟨initialState, resolved, hResolve, hReachable⟩
       | interceptLocaliser target =>
-          exact
+          rcases
             plainCurrentShapeAdmissionSoundnessTheorem_autoDomain
               (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
               (existing := existing)
@@ -592,7 +801,9 @@ theorem GreenfieldRouteControlCurrentShapeReachableIssuanceTheorem
               (by simp [instructionNeedsSpecificResolution])
               (by simp [normalizeConditionalEnvelope, hContent, hCondition])
               hContent
-              (by simpa using hDomain)
+              (by simpa using hDomain) with
+              ⟨resolved, hResolve, hReachable⟩
+          exact ⟨initialState, resolved, hResolve, hReachable⟩
       | _ =>
           cases hInstruction
   | compound content =>
@@ -606,13 +817,13 @@ theorem GreenfieldRouteControlCurrentShapeAuthorizedIssuanceTheorem
     (hWf : RouteBearingExtractionWellFormed world)
     (hReach : ReachableResolvedSet existing)
     (hFresh : clearance.id ∉ resolvedClearanceIds existing)
-    (hIssuable : GreenfieldRouteControlCurrentShapeIssuable world clearance)
+    (hIssuable : GreenfieldRouteControlCurrentShapeIssuable world initialState clearance)
     (hAuthority :
       GreenfieldRouteControlCurrentShapeWorldAuthorized
         world
         clearance.issuedBy
         (structuredInstructions clearance)) :
-    ∃ resolved,
+    ∃ finalState resolved,
       routeControlCurrentShapeInstructionsIssuerAuthorized
         (extractRouteBearingCompileView world)
         clearance.issuedBy
@@ -622,7 +833,7 @@ theorem GreenfieldRouteControlCurrentShapeAuthorizedIssuanceTheorem
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   have hAuthorized :
@@ -641,8 +852,8 @@ theorem GreenfieldRouteControlCurrentShapeAuthorizedIssuanceTheorem
       hReach
       hFresh
       hIssuable with
-      ⟨resolved, hResolve, hReachable⟩
-  exact ⟨resolved, hAuthorized, hResolve, hReachable⟩
+      ⟨finalState, resolved, hResolve, hReachable⟩
+  exact ⟨finalState, resolved, hAuthorized, hResolve, hReachable⟩
 
 def sampleResolvedSingleProceedDirect : ResolvedClearance :=
   { source :=
@@ -696,14 +907,43 @@ def sampleResolvedSingleFlyHeading : ResolvedClearance :=
         status := .active
         condition := none }
     steps :=
-      [ compiledPlainResolvedStep
+      [ compileResolvedStep
           0
           .route
           (.flyHeading "TEST123" 270)
-          (by simp [instructionNeedsSpecificResolution]) ] }
+          (.vector
+            { kind := .flyHeading
+              targetHeadingDegreesMagnetic := some 270 })
+          (by simp [resolutionCompatible]) ] }
 
 def sampleManagedResolvedSingleFlyHeading : ManagedResolvedClearance :=
   { resolved := sampleResolvedSingleFlyHeading }
+
+def sampleResolvedSingleTurnByDegrees : ResolvedClearance :=
+  { source :=
+      { id := "CLR-TURN-DEG"
+        aircraft := "TEST123"
+        content := .single (.turnByDegrees "TEST123" .left 90)
+        domain := .route
+        issuedBy := "CTRL-1"
+        issuedAt := 112
+        status := .active
+        condition := none }
+    steps :=
+      [ compileResolvedStep
+          0
+          .route
+          (.turnByDegrees "TEST123" .left 90)
+          (.vector
+            { kind := .turnByDegrees
+              targetHeadingDegreesMagnetic := some 180
+              turnDirection := some .left
+              turnDegrees := some 90
+              capturedHeadingDegreesMagnetic := some 270 })
+          (by simp [resolutionCompatible]) ] }
+
+def sampleManagedResolvedSingleTurnByDegrees : ManagedResolvedClearance :=
+  { resolved := sampleResolvedSingleTurnByDegrees }
 
 def sampleResolvedSingleInterceptLocaliser : ResolvedClearance :=
   { source :=
@@ -788,6 +1028,16 @@ theorem singleFlyHeading_remains_active_under_current_engine :
       evaluation.stepResults.length = 1 := by
   native_decide
 
+theorem singleTurnByDegrees_completes_on_observed_turn_progress :
+    let evaluation :=
+      evaluateResolvedCompletion
+        sampleManagedResolvedSingleTurnByDegrees
+        { observedTurnDirection := some .left
+          observedTurnDegrees := some 90 }
+    evaluation.updated.status = .completed ∧
+      evaluation.newlyCompletedSteps = UniqueSet.singleton 0 := by
+  native_decide
+
 theorem singleInterceptLocaliser_completes_on_capture :
     let evaluation :=
       evaluateResolvedCompletion
@@ -803,6 +1053,15 @@ theorem incomingFrequency_does_not_supersede_singleFlyHeading :
         [sampleManagedResolvedSingleFlyHeading]
         sampleResolvedIncomingTowerContactForRouteControl
     resolvedClearanceIds admitted.clearances = ["CLR-HDG", "CLR-ROUTE-FREQ"] ∧
+      resolvedClearanceIds admitted.fullySuperseded = [] := by
+  native_decide
+
+theorem incomingFrequency_does_not_supersede_singleTurnByDegrees :
+    let admitted :=
+      admitResolvedClearance
+        [sampleManagedResolvedSingleTurnByDegrees]
+        sampleResolvedIncomingTowerContactForRouteControl
+    resolvedClearanceIds admitted.clearances = ["CLR-TURN-DEG", "CLR-ROUTE-FREQ"] ∧
       resolvedClearanceIds admitted.fullySuperseded = [] := by
   native_decide
 

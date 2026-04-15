@@ -192,9 +192,10 @@ It now contains:
   every family whose Kotlin semantics are already stable, whose conservative
   authority family is frozen, and whose proof surface does not require new
   world-resolution theory is now theorem-bearing on the greenfield boundary;
-  this now explicitly includes the delivered route/vector-control subset and
-  the delivered air-modifier/admin subset, with `TurnByDegrees` kept
-  intentionally open because heading-progress semantics are not yet frozen
+  this now explicitly includes the delivered route/vector-control surface
+  through its first narrow immediate-adjunct compound layer and the delivered
+  air-modifier/admin subset, with `TurnByDegrees` now also closed on the
+  current explicit observed-turn-progress boundary
 - the phase-2 communications/surveillance widening closure is now also
   complete under that same frozen rule:
   the already-delivered radio and transponder/surveillance families are now

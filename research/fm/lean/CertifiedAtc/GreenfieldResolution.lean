@@ -222,8 +222,18 @@ theorem ConcreteResolutionWorld.mem_airspaceVolume
     world.toResolutionWorld.airspaceVolume airspace points := by
   simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
 
+def turnedHeadingDegrees (current : Nat) (direction : TurnDirection) (degrees : Nat) : Nat :=
+  let currentInt := Int.ofNat current
+  let degreesInt := Int.ofNat degrees
+  let raw :=
+    match direction with
+    | .left => currentInt - degreesInt
+    | .right => currentInt + degreesInt
+  Int.toNat ((((raw - 1) % 360) + 360) % 360 + 1)
+
 structure ResolutionState where
   currentPoint : Option PointId := none
+  currentHeadingDegreesMagnetic : Option Nat := none
   deriving DecidableEq, Repr
 
 inductive ResolvesIndexedStep :
@@ -322,6 +332,103 @@ inductive ResolvesIndexedStep :
           (.backtrack { runway := runway, farEndPoint := farEndPoint })
           (by simp [resolutionCompatible]))
         { currentPoint := some farEndPoint }
+  | flyHeading
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (headingDegreesMagnetic : Nat)
+      (state : ResolutionState) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.flyHeading target headingDegreesMagnetic)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.flyHeading target headingDegreesMagnetic)
+          (.vector
+            { kind := .flyHeading
+              targetHeadingDegreesMagnetic := some headingDegreesMagnetic })
+          (by simp [resolutionCompatible]))
+        { state with currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+  | turnHeading
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (turnDirection : TurnDirection)
+      (headingDegreesMagnetic : Nat)
+      (state : ResolutionState) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.turnHeading target turnDirection headingDegreesMagnetic)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.turnHeading target turnDirection headingDegreesMagnetic)
+          (.vector
+            { kind := .turnHeading
+              targetHeadingDegreesMagnetic := some headingDegreesMagnetic
+              turnDirection := some turnDirection })
+          (by simp [resolutionCompatible]))
+        { state with currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+  | continuePresentHeading
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (headingDegreesMagnetic : Nat)
+      (currentPoint : Option PointId) :
+      ResolvesIndexedStep
+        world
+        { currentPoint := currentPoint, currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+        fallbackDomain
+        index
+        (.continuePresentHeading target)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.continuePresentHeading target)
+          (.vector
+            { kind := .continuePresentHeading
+              targetHeadingDegreesMagnetic := some headingDegreesMagnetic
+              capturedHeadingDegreesMagnetic := some headingDegreesMagnetic })
+          (by simp [resolutionCompatible]))
+        { currentPoint := currentPoint, currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+  | turnByDegrees
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (turnDirection : TurnDirection)
+      (degrees : Nat)
+      (headingDegreesMagnetic : Nat)
+      (currentPoint : Option PointId) :
+      ResolvesIndexedStep
+        world
+        { currentPoint := currentPoint, currentHeadingDegreesMagnetic := some headingDegreesMagnetic }
+        fallbackDomain
+        index
+        (.turnByDegrees target turnDirection degrees)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.turnByDegrees target turnDirection degrees)
+          (.vector
+            { kind := .turnByDegrees
+              targetHeadingDegreesMagnetic := some (turnedHeadingDegrees headingDegreesMagnetic turnDirection degrees)
+              turnDirection := some turnDirection
+              turnDegrees := some degrees
+              capturedHeadingDegreesMagnetic := some headingDegreesMagnetic })
+          (by simp [resolutionCompatible]))
+        { currentPoint := currentPoint
+          currentHeadingDegreesMagnetic := some (turnedHeadingDegrees headingDegreesMagnetic turnDirection degrees) }
   | route
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)
