@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.core.resolution
 
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AerodromeRole
+import xyz.easiersaid.twr.core.world.AirspaceVolume
 import xyz.easiersaid.twr.core.world.Airway
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.CircuitProcedure
@@ -19,6 +20,7 @@ import xyz.easiersaid.twr.core.world.Taxiway
 import xyz.easiersaid.twr.core.world.VfrRoute
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.ClearedApproach
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
@@ -27,11 +29,14 @@ import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.HoldAt
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldSpec
+import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
 
 data class AerodromeResolutionContext(
@@ -65,6 +70,7 @@ enum class ResolutionFailureCode {
     AMBIGUOUS_APPROACH,
     UNKNOWN_HOLDING_PATTERN,
     AMBIGUOUS_HOLDING_PATTERN,
+    UNKNOWN_AIRSPACE_VOLUME,
     AIRWAY_EXIT_FIX_NOT_ON_AIRWAY,
     AIRWAY_JOIN_FIX_NOT_ON_AIRWAY,
     CONDITIONAL_STEP_NOT_SUPPORTED,
@@ -134,6 +140,13 @@ data class ResolvedHoldingInstruction(
     val holdingPattern: HoldingPattern,
     val hold: HoldSpec,
     val expectFurtherClearanceAt: String? = null
+)
+
+data class ResolvedAirspaceInstruction(
+    val aerodrome: Aerodrome,
+    val airspace: AirspaceVolume,
+    val route: ResolvedRouteSpec? = null,
+    val levelRestriction: Level? = null
 )
 
 data class ResolvedRoleFrequency(
@@ -411,6 +424,39 @@ fun AviationWorld.resolveMonitorFrequency(
 ): ResolutionResult<ResolvedRoleFrequency> =
     resolveRoleFrequency(context, instruction.role, instruction.frequency)
 
+fun AviationWorld.resolveRemainOutsideControlledAirspace(
+    context: AerodromeResolutionContext,
+    instruction: RemainOutsideControlledAirspace
+): ResolutionResult<ResolvedAirspaceInstruction> =
+    resolveAirspaceInstruction(
+        context = context,
+        airspaceId = instruction.airspace,
+        route = null,
+        levelRestriction = null
+    )
+
+fun AviationWorld.resolveClearedToEnterControlZone(
+    context: AerodromeResolutionContext,
+    instruction: ClearedToEnterControlZone
+): ResolutionResult<ResolvedAirspaceInstruction> =
+    resolveAirspaceInstruction(
+        context = context,
+        airspaceId = instruction.airspace,
+        route = instruction.route,
+        levelRestriction = instruction.levelRestriction
+    )
+
+fun AviationWorld.resolveSpecialVfrClearance(
+    context: AerodromeResolutionContext,
+    instruction: SpecialVfrClearance
+): ResolutionResult<ResolvedAirspaceInstruction> =
+    resolveAirspaceInstruction(
+        context = context,
+        airspaceId = instruction.airspace,
+        route = instruction.route,
+        levelRestriction = instruction.levelRestriction
+    )
+
 private fun AviationWorld.resolveRoleFrequency(
     context: AerodromeResolutionContext,
     roleName: RoleName,
@@ -434,6 +480,44 @@ private fun AviationWorld.resolveRoleFrequency(
             instructedFrequency = explicitFrequency ?: role.frequency
         )
     )
+}
+
+private fun AviationWorld.resolveAirspaceInstruction(
+    context: AerodromeResolutionContext,
+    airspaceId: xyz.easiersaid.twr.protocol.AirspaceVolumeId,
+    route: RouteSpec?,
+    levelRestriction: Level?
+): ResolutionResult<ResolvedAirspaceInstruction> {
+    val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AERODROME,
+        "Unknown aerodrome ${context.aerodromeId.value}"
+    )
+    val airspaceVolume = airspace[airspaceId] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AIRSPACE_VOLUME,
+        "Unknown airspace volume ${airspaceId.value}"
+    )
+    val resolvedRoute = route?.let { resolveRouteSpec(aerodrome, it) }
+
+    return when (resolvedRoute) {
+        is arrow.core.Either.Left -> resolvedRoute
+        is arrow.core.Either.Right -> resolved(
+            ResolvedAirspaceInstruction(
+                aerodrome = aerodrome,
+                airspace = airspaceVolume,
+                route = resolvedRoute.value,
+                levelRestriction = levelRestriction
+            )
+        )
+
+        null -> resolved(
+            ResolvedAirspaceInstruction(
+                aerodrome = aerodrome,
+                airspace = airspaceVolume,
+                route = null,
+                levelRestriction = levelRestriction
+            )
+        )
+    }
 }
 
 private fun AviationWorld.resolveRouteSpec(

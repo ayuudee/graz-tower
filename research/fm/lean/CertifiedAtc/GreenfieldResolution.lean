@@ -23,6 +23,7 @@ structure ResolutionWorld where
   approachFor : ApproachType → RunwayId → Option RunwayId → ApproachId → Prop
   roleFrequency : RoleName → Frequency → Prop
   circuitJoin : CircuitDirection → JoinType → Option RunwayId → CircuitProcedureId → Level → Prop
+  airspaceVolume : AirspaceVolumeId → List PointId → Prop
 
 structure ConcreteTaxiRoute where
   start : PointId
@@ -51,6 +52,11 @@ structure ConcreteCircuitJoinBinding where
   altitude : Level
   deriving DecidableEq, Repr
 
+structure ConcreteAirspaceVolumeBinding where
+  airspace : AirspaceVolumeId
+  points : List PointId
+  deriving DecidableEq, Repr
+
 structure ConcreteResolutionWorld where
   taxiRoutes : List ConcreteTaxiRoute := []
   runwayHoldingPoints : List (RunwayId × PointId) := []
@@ -61,6 +67,7 @@ structure ConcreteResolutionWorld where
   approaches : List ConcreteApproachBinding := []
   roleFrequencies : List (RoleName × Frequency) := []
   circuitJoins : List ConcreteCircuitJoinBinding := []
+  airspaceVolumes : List ConcreteAirspaceVolumeBinding := []
   deriving Repr
 
 def ConcreteResolutionWorld.toResolutionWorld
@@ -82,7 +89,9 @@ def ConcreteResolutionWorld.toResolutionWorld
     roleFrequency := fun role frequency =>
       (role, frequency) ∈ world.roleFrequencies
     circuitJoin := fun direction joinType runway circuit altitude =>
-      { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈ world.circuitJoins }
+      { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈ world.circuitJoins
+    airspaceVolume := fun airspace points =>
+      { airspace := airspace, points := points } ∈ world.airspaceVolumes }
 
 theorem ConcreteResolutionWorld.mem_taxiRoute
     {world : ConcreteResolutionWorld}
@@ -119,6 +128,14 @@ theorem ConcreteResolutionWorld.mem_circuitJoin
       { direction := direction, joinType := joinType, runway := runway, circuit := circuit, altitude := altitude } ∈
         world.circuitJoins) :
     world.toResolutionWorld.circuitJoin direction joinType runway circuit altitude := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_airspaceVolume
+    {world : ConcreteResolutionWorld}
+    {airspace : AirspaceVolumeId}
+    {points : List PointId}
+    (hMem : { airspace := airspace, points := points } ∈ world.airspaceVolumes) :
+    world.toResolutionWorld.airspaceVolume airspace points := by
   simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
 
 structure ResolutionState where
@@ -333,6 +350,76 @@ inductive ResolvesIndexedStep :
           fallbackDomain
           (.contactFrequency target role none)
           (.frequencyChange { roleName := role, instructedFrequency := some frequency })
+          (by simp [resolutionCompatible]))
+        state
+  | remainOutsideControlledAirspace
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (airspace : AirspaceVolumeId)
+      (points : List PointId)
+      (state : ResolutionState)
+      (hAirspace : world.airspaceVolume airspace points) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.remainOutsideControlledAirspace target airspace)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.remainOutsideControlledAirspace target airspace)
+          (.airspace { airspace := airspace, points := points })
+          (by simp [resolutionCompatible]))
+        state
+  | clearedToEnterControlZone
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (airspace : AirspaceVolumeId)
+      (route : Option RouteSpec)
+      (levelRestriction : Option Level)
+      (points : List PointId)
+      (state : ResolutionState)
+      (hAirspace : world.airspaceVolume airspace points) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.clearedToEnterControlZone target airspace route levelRestriction)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.clearedToEnterControlZone target airspace route levelRestriction)
+          (.airspace { airspace := airspace, points := points })
+          (by simp [resolutionCompatible]))
+        state
+  | specialVfrClearance
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (airspace : AirspaceVolumeId)
+      (route : Option RouteSpec)
+      (levelRestriction : Option Level)
+      (points : List PointId)
+      (state : ResolutionState)
+      (hAirspace : world.airspaceVolume airspace points) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.specialVfrClearance target airspace route levelRestriction)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.specialVfrClearance target airspace route levelRestriction)
+          (.airspace { airspace := airspace, points := points })
           (by simp [resolutionCompatible]))
         state
   | monitorFrequencyExplicit

@@ -217,6 +217,20 @@ def observedResolvedStepCompletion?
             .complete
           else
             .notComplete
+    | .airspace airspace =>
+        match step.instruction with
+        | .remainOutsideControlledAirspace _ _ =>
+            some <|
+              match observation.position with
+              | some point =>
+                  if point ∈ airspace.points then .notComplete else .notApplicable
+              | none => .notApplicable
+        | .clearedToEnterControlZone _ _ _ _ =>
+            some .notApplicable
+        | .specialVfrClearance _ _ _ _ =>
+            some .notApplicable
+        | _ =>
+            none
     | .plain =>
         observedInstructionCompletion? step.instruction observation
 
@@ -309,6 +323,32 @@ def sampleResolvedBacktrackObservation : CompletionObservation :=
 example :
     observedResolvedStepCompletion? sampleResolvedBacktrackObservation sampleResolvedBacktrack =
       some .complete := by
+  native_decide
+
+def sampleResolvedRemainOutsideAirspace : ResolvedStep :=
+  compileResolvedStep
+    0
+    .route
+    (.remainOutsideControlledAirspace "TEST123" "CTR-1")
+    (.airspace { airspace := "CTR-1", points := ["P-IN-CTR"] })
+    (by native_decide)
+
+def sampleResolvedRemainOutsideAirspaceOutsideObservation : CompletionObservation :=
+  { position := some "P-OUTSIDE" }
+
+def sampleResolvedRemainOutsideAirspaceInsideObservation : CompletionObservation :=
+  { position := some "P-IN-CTR" }
+
+example :
+    observedResolvedStepCompletion?
+      sampleResolvedRemainOutsideAirspaceOutsideObservation
+      sampleResolvedRemainOutsideAirspace = some .notApplicable := by
+  native_decide
+
+example :
+    observedResolvedStepCompletion?
+      sampleResolvedRemainOutsideAirspaceInsideObservation
+      sampleResolvedRemainOutsideAirspace = some .notComplete := by
   native_decide
 
 end Greenfield

@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: April 14, 2026
+Last updated: April 15, 2026
 
 This file is the current execution status for `research/fm`.
 
@@ -203,6 +203,12 @@ It now contains:
   first narrow compound slice on the greenfield boundary
 - `GreenfieldAirspaceExpandedCurrentShape.lean` now packages that broadened
   current-shape airspace family behind one source-level theorem boundary
+- `GreenfieldAirspaceWorldBackedCurrentShape.lean` now adds the first honest
+  world-backed airspace layer above that package:
+  concrete proof-side `AirspaceVolume` membership, resolved airspace payloads,
+  source-level admission and authority-gated issuance, explicit inside-volume
+  violation observation for `RemainOutsideControlledAirspace`, and explicit
+  persistence for `ClearedToEnterControlZone` and `SpecialVfrClearance`
 - the phase-3 runway widening closure is now complete under that same frozen
   widening rule:
   the delivered runway-operation family is now widened through a first narrow
@@ -212,7 +218,8 @@ It now contains:
   frozen widening rule:
   the whole current Kotlin airspace-clearance family now has both a
   single-step slice and a first narrow compound slice, packaged behind one
-  source-level current-shape theorem boundary
+  source-level current-shape theorem boundary; above that, the first
+  world-backed single-step airspace layer is now theorem-bearing
 - `GreenfieldModel.lean` is now aligned with the current Kotlin runway-
   clearance conditional metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -243,11 +250,12 @@ It does not yet contain:
   but full extraction closure, broader authority closure, and legacy-bridge
   closure remain incomplete, with legacy-bridge issuance still limited to
   `ClearedApproach` plus legacy-supported `JoinCircuit`
-- a widened current-shape airspace-clearance package beyond the now-delivered
-  first full-family narrow compound slice; the broadened family is now
-  source-level packaged, but the current Lean/runtime-aligned story still does
-  not claim world-backed airspace-entry resolution or richer airspace
-  lifecycle semantics
+- a widened airspace package beyond the now-delivered current-shape family and
+  first world-backed single-step slice; the current Lean/runtime-aligned story
+  now does claim concrete airspace-volume-backed resolution for single-step
+  airspace instructions, but it still does not claim boundary-crossing,
+  world-backed compound airspace semantics, or richer airspace lifecycle
+  semantics
 - a widened current-shape communications/surveillance package beyond the now-
   delivered narrow compound slice; the delivered radio and
   transponder/surveillance families are now source-level packaged through

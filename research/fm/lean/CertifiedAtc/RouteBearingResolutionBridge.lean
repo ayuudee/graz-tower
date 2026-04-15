@@ -60,6 +60,10 @@ def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
           runway := approach.runway
           circlingRunway := none
           approach := approach.id }
+    airspaceVolumes :=
+      world.airspaceVolumes.map fun airspace =>
+        { airspace := airspace.id
+          points := airspace.points }
     circuitJoins :=
       worldCircuitJoinBindings world.circuits }
 
@@ -173,6 +177,21 @@ theorem RouteBearingScopedAviationWorld.mem_circuitJoin_of_mem
   simpa [RouteBearingScopedAviationWorld.toResolutionWorld,
     RouteBearingScopedAviationWorld.toConcreteResolutionWorld,
     ConcreteResolutionWorld.toResolutionWorld, scopedCircuitJoinBinding] using hOuter
+
+theorem RouteBearingScopedAviationWorld.mem_airspaceVolume_of_mem
+    {world : RouteBearingScopedAviationWorld}
+    {airspace : ScopedAirspaceVolumeSource}
+    (hMem : airspace ∈ world.airspaceVolumes) :
+    (RouteBearingScopedAviationWorld.toResolutionWorld world).airspaceVolume
+      airspace.id
+      airspace.points := by
+  have hMap :
+      { airspace := airspace.id, points := airspace.points } ∈
+        (RouteBearingScopedAviationWorld.toConcreteResolutionWorld world).airspaceVolumes := by
+    exact List.mem_map.mpr ⟨airspace, hMem, rfl⟩
+  simpa [RouteBearingScopedAviationWorld.toResolutionWorld,
+    RouteBearingScopedAviationWorld.toConcreteResolutionWorld,
+    ConcreteResolutionWorld.toResolutionWorld] using hMap
 
 def RouteBearingInstructionResolutionReady
     (world : RouteBearingScopedAviationWorld) : AtcInstruction → Prop

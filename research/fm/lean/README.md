@@ -206,6 +206,11 @@ Read modules in roughly this order:
 66. [CertifiedAtc/GreenfieldAirspaceExpandedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceExpandedCurrentShape.lean)
     Optional. This packages the broadened current-shape airspace family behind
     one source-level theorem boundary.
+67. [CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
+    Optional. This adds the first world-backed airspace layer above the
+    current-shape airspace package: concrete airspace-volume-backed resolution
+    facts, source-level admission and authority-gated issuance, and the first
+    theorem-bearing inside/outside observation semantics.
 
 ## What Each Module Owns
 
@@ -332,6 +337,11 @@ Read modules in roughly this order:
 - `GreenfieldAirspaceExpandedCurrentShape`
   Source-level current-shape packaging for the broadened airspace-clearance
   surface.
+- `GreenfieldAirspaceWorldBackedCurrentShape`
+  First world-backed airspace layer above the broadened current-shape package:
+  concrete `AirspaceVolume` membership, resolved airspace payloads, source-
+  level admission/authorized issuance, and first theorem-bearing
+  inside/outside observation semantics.
 - `GreenfieldRadioCurrentShape`
   Source-level current-shape packaging for the delivered radio family:
   `ContactFrequency` and `MonitorFrequency`.

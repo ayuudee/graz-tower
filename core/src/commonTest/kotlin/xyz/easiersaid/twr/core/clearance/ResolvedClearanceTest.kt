@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.core.resolution.ResolutionResult
 import xyz.easiersaid.twr.core.world.FixtureIds
 import xyz.easiersaid.twr.core.world.sampleWorld
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
@@ -21,12 +22,16 @@ import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClimbTo
 import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.JoinAirway
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
+import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TrafficAction
 import xyz.easiersaid.twr.protocol.TrafficRef
@@ -161,13 +166,13 @@ class ResolvedClearanceTest {
                         traffic = TrafficRef.ByDescription("landing 737"),
                         action = TrafficAction.LANDING
                     ),
-                    instruction = ClearedForTakeoff(
+                    instruction = ClimbTo(
                         target = AircraftId("TEST123"),
-                        runway = FixtureIds.runway09
+                        level = Level.FlightLevel.unsafe(350)
                     )
                 )
             ),
-            domain = ClearanceDomain.RUNWAY,
+            domain = ClearanceDomain.LEVEL,
             issuedBy = ControllerId("CTRL-1"),
             issuedAt = TickNumber(1),
             status = ClearanceStatus.ACTIVE
@@ -368,6 +373,96 @@ class ResolvedClearanceTest {
 
         val step = assertIs<ResolvedStep.Backtrack>(resolved.steps.single())
         assertEquals(FixtureIds.runway27Threshold, step.farEndPoint)
+    }
+
+    @Test
+    fun resolvesControlZoneClearanceAgainstAirspaceVolume() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-ENTER-CTR"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                ClearedToEnterControlZone(
+                    target = AircraftId("TEST123"),
+                    airspace = FixtureIds.airspace,
+                    route = RouteSpec.ViaRoute(FixtureIds.vfrRoute),
+                    levelRestriction = Level.AltitudeFeet.unsafe(1500)
+                )
+            ),
+            domain = ClearanceDomain.ROUTE,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(7),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        ).requireResolved()
+
+        val step = assertIs<ResolvedStep.Airspace>(resolved.steps.single())
+        assertEquals(FixtureIds.airspace, step.airspace.airspace.id)
+        assertEquals(
+            FixtureIds.vfrRoute,
+            assertIs<xyz.easiersaid.twr.core.resolution.ResolvedRouteSpec.VfrRouteProcedure>(step.airspace.route).route.id
+        )
+        assertEquals(Level.AltitudeFeet.unsafe(1500), step.airspace.levelRestriction)
+    }
+
+    @Test
+    fun resolvesRemainOutsideControlledAirspaceAgainstAirspaceVolume() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-ROCA"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                RemainOutsideControlledAirspace(
+                    target = AircraftId("TEST123"),
+                    airspace = FixtureIds.airspace
+                )
+            ),
+            domain = ClearanceDomain.ROUTE,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(8),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        ).requireResolved()
+
+        val step = assertIs<ResolvedStep.Airspace>(resolved.steps.single())
+        assertEquals(FixtureIds.airspace, step.airspace.airspace.id)
+        assertTrue(FixtureIds.runway09Threshold in step.airspace.airspace.points)
+    }
+
+    @Test
+    fun unresolvedAirspaceInstructionRequiresKnownAirspaceVolume() {
+        val world = sampleWorld()
+        val clearance = StructuredClearance(
+            id = ClearanceId("CLR-SVFR-UNKNOWN"),
+            aircraft = AircraftId("TEST123"),
+            content = ClearanceContent.Single(
+                SpecialVfrClearance(
+                    target = AircraftId("TEST123"),
+                    airspace = xyz.easiersaid.twr.protocol.AirspaceVolumeId("UNKNOWN-CTR")
+                )
+            ),
+            domain = ClearanceDomain.ROUTE,
+            issuedBy = ControllerId("CTRL-1"),
+            issuedAt = TickNumber(9),
+            status = ClearanceStatus.ACTIVE
+        )
+
+        val result = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = clearance
+        )
+
+        assertTrue(result.isLeft())
+        val unresolved = (result as arrow.core.Either.Left).value
+        assertEquals(ResolutionFailureCode.UNKNOWN_AIRSPACE_VOLUME, unresolved.code)
     }
 }
 

@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.ClearedTo
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.CrossRunway
@@ -28,6 +29,7 @@ import xyz.easiersaid.twr.protocol.MaintainSpeed
 import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
 import xyz.easiersaid.twr.protocol.MaintainLevel
 import xyz.easiersaid.twr.protocol.ReduceSpeedTo
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.ConfirmSquawk
@@ -41,6 +43,7 @@ import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TickNumber
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.TransponderMode
+import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 
 class CompletionEvaluationTest {
 
@@ -147,6 +150,100 @@ class CompletionEvaluationTest {
         )
         assertEquals(setOf(0, 1), evaluation.completedSteps)
         assertEquals(ClearanceStatus.COMPLETED, evaluation.updated.source.status)
+    }
+
+    @Test
+    fun remainOutsideControlledAirspaceUsesWorldBackedInsideOutsideObservation() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ROCA",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    RemainOutsideControlledAirspace(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val outsideEvaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = xyz.easiersaid.twr.protocol.PointId("OUTSIDE-CTR"),
+                entities = emptySet(),
+                onGround = false
+            )
+        )
+        val insideEvaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runway09Threshold,
+                entities = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace)),
+                onGround = false
+            )
+        )
+
+        assertEquals(CompletionResult.NOT_APPLICABLE, outsideEvaluation.stepResults.single().result)
+        assertEquals(ClearanceStatus.ACTIVE, outsideEvaluation.updated.source.status)
+        assertEquals(CompletionResult.NOT_COMPLETE, insideEvaluation.stepResults.single().result)
+        assertEquals(ClearanceStatus.ACTIVE, insideEvaluation.updated.source.status)
+    }
+
+    @Test
+    fun controlZoneAndSpecialVfrPermissionsRemainActiveWhenObservedInsideAirspace() {
+        val world = sampleWorld()
+        val enterZone = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ENTER-CTR",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    ClearedToEnterControlZone(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+        val specialVfr = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-SVFR",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    SpecialVfrClearance(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val insideView = CompletionView(
+            position = FixtureIds.runway09Threshold,
+            entities = setOf(EntityRef.AirspaceVolumeRef(FixtureIds.airspace)),
+            onGround = false
+        )
+
+        assertEquals(
+            CompletionResult.NOT_APPLICABLE,
+            evaluateCompletion(enterZone, insideView).stepResults.single().result
+        )
+        assertEquals(
+            CompletionResult.NOT_APPLICABLE,
+            evaluateCompletion(specialVfr, insideView).stepResults.single().result
+        )
+        assertEquals(
+            ClearanceStatus.ACTIVE,
+            evaluateCompletion(enterZone, insideView).updated.source.status
+        )
+        assertEquals(
+            ClearanceStatus.ACTIVE,
+            evaluateCompletion(specialVfr, insideView).updated.source.status
+        )
     }
 
     @Test

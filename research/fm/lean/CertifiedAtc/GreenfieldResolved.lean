@@ -70,6 +70,11 @@ structure ResolvedCircuitJoin where
   altitude : Level
   deriving DecidableEq, Repr
 
+structure ResolvedAirspaceInstruction where
+  airspace : AirspaceVolumeId
+  points : List PointId
+  deriving DecidableEq, Repr
+
 inductive ResolvedPayload
   | taxi (route : ResolvedTaxiRoute)
   | holdShort (holdingPoint : ResolvedHoldingPoint)
@@ -82,6 +87,7 @@ inductive ResolvedPayload
   | directFix (fix : ResolvedDirectFix)
   | airwayJoin (join : ResolvedAirwayJoin)
   | circuitJoin (circuit : ResolvedCircuitJoin)
+  | airspace (airspace : ResolvedAirspaceInstruction)
   | plain
   deriving DecidableEq, Repr
 
@@ -113,6 +119,9 @@ def resolutionCompatible : ResolvedPayload → AtcInstruction → Bool
   | .approach _, .clearedApproach _ _ _ _ => true
   | .frequencyChange _, .contactFrequency _ _ _ => true
   | .frequencyChange _, .monitorFrequency _ _ _ => true
+  | .airspace _, .clearedToEnterControlZone _ _ _ _ => true
+  | .airspace _, .remainOutsideControlledAirspace _ _ => true
+  | .airspace _, .specialVfrClearance _ _ _ _ => true
   | .directFix _, .proceedDirect _ _ => true
   | .directFix _, .leaveHoldProceedDirect _ _ => true
   | .directFix _, .whenAbleProceedDirect _ _ => true

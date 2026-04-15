@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedLowApproach
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ClimbTo
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
@@ -26,8 +27,10 @@ import xyz.easiersaid.twr.protocol.MaintainAtOrBelow
 import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
 import xyz.easiersaid.twr.protocol.MaintainLevel
 import xyz.easiersaid.twr.protocol.MaintainSpeed
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.ReduceSpeedTo
 import xyz.easiersaid.twr.protocol.ConfirmSquawk
+import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.StopClimbAt
 import xyz.easiersaid.twr.protocol.StopDescentAt
@@ -35,6 +38,10 @@ import xyz.easiersaid.twr.protocol.StopSquawk
 import xyz.easiersaid.twr.protocol.SquawkIdent
 import xyz.easiersaid.twr.protocol.SquawkNormal
 import xyz.easiersaid.twr.protocol.SquawkStandby
+import xyz.easiersaid.twr.protocol.AvoidLevel
+import xyz.easiersaid.twr.protocol.DescendWhenReady
+import xyz.easiersaid.twr.protocol.InterceptLocaliser
+import xyz.easiersaid.twr.protocol.VacateRunway
 import xyz.easiersaid.twr.protocol.instructionDomain
 
 data class StepCompletion(
@@ -150,6 +157,8 @@ private fun evaluateStepCompletion(
 
         is ResolvedStep.Approach -> evaluateGenericInstructionCompletion(step.instruction, view)
 
+        is ResolvedStep.Airspace -> evaluateAirspaceCompletion(step, view)
+
         is ResolvedStep.FrequencyChange -> {
             val radioState = view.radioState
             if (
@@ -187,16 +196,52 @@ private fun evaluateStepCompletion(
         is ResolvedStep.Plain -> evaluateGenericInstructionCompletion(step.instruction, view)
     }
 
+private fun evaluateAirspaceCompletion(
+    step: ResolvedStep.Airspace,
+    view: CompletionView
+): CompletionResult {
+    val airspaceRef = EntityRef.AirspaceVolumeRef(step.airspace.airspace.id)
+    val insideAirspace =
+        airspaceRef in view.entities || view.position in step.airspace.airspace.points
+
+    return when (step.instruction) {
+        is RemainOutsideControlledAirspace ->
+            if (insideAirspace) CompletionResult.NOT_COMPLETE else CompletionResult.NOT_APPLICABLE
+
+        is ClearedToEnterControlZone,
+        is SpecialVfrClearance -> CompletionResult.NOT_APPLICABLE
+
+        else -> CompletionResult.NOT_COMPLETE
+    }
+}
+
 private fun evaluateGenericInstructionCompletion(
     instruction: xyz.easiersaid.twr.protocol.AtcInstruction,
     view: CompletionView
 ): CompletionResult =
     when (instruction.completionCategory()) {
         CompletionCategory.ON_ACTIVATION -> CompletionResult.COMPLETE
-        CompletionCategory.PERSISTENT -> CompletionResult.NOT_APPLICABLE
+        CompletionCategory.PERSISTENT -> evaluatePersistentConstraint(instruction, view)
         CompletionCategory.EXTERNAL_EVENT -> CompletionResult.NOT_COMPLETE
         CompletionCategory.SELF_COMPLETING -> evaluateSelfCompletingInstruction(instruction, view)
         null -> CompletionResult.NOT_COMPLETE
+    }
+
+// Persistent constraints are not "completed" in the compound clearance sense — they remain in
+// force until superseded. But we still evaluate whether the aircraft satisfies the constraint,
+// returning NOT_APPLICABLE for pure holds/orbits and delegating to the same evaluation logic
+// for maintain-level/maintain-speed constraints that have observable compliance.
+private fun evaluatePersistentConstraint(
+    instruction: xyz.easiersaid.twr.protocol.AtcInstruction,
+    view: CompletionView
+): CompletionResult =
+    when (instruction) {
+        is MaintainLevel -> evaluateLevelCompletion(instruction, view)
+        is MaintainAtOrAbove -> evaluateLevelCompletion(instruction, view)
+        is MaintainAtOrBelow -> evaluateLevelCompletion(instruction, view)
+        is MaintainSpeed -> evaluateSpeedCompletion(instruction, view)
+        is AvoidLevel -> evaluateLevelCompletion(instruction, view)
+        else -> CompletionResult.NOT_APPLICABLE
     }
 
 private fun evaluateSelfCompletingInstruction(
@@ -207,16 +252,13 @@ private fun evaluateSelfCompletingInstruction(
         is ClimbTo,
         is ExpediteClimb,
         is DescendTo,
+        is DescendWhenReady,
         is ExpediteDescend,
-        is MaintainLevel,
         is StopClimbAt,
         is StopDescentAt,
-        is MaintainAtOrAbove,
-        is MaintainAtOrBelow,
         is AfterPassingLevelClimbTo,
         is AfterPassingLevelDescendTo,
         is MaintainAltitudeUntilEstablished -> evaluateLevelCompletion(instruction, view)
-        is MaintainSpeed,
         is ReduceSpeedTo,
         is IncreaseSpeedTo -> evaluateSpeedCompletion(instruction, view)
         is ConfirmSquawk,
@@ -231,6 +273,10 @@ private fun evaluateSelfCompletingInstruction(
         is BacktrackRunway -> CompletionResult.NOT_COMPLETE
         is JoinCircuit -> CompletionResult.NOT_COMPLETE
         is AfterLandingVacateVia -> completionOf(view.position == instruction.exit)
+        // D: InterceptLocaliser completes when localiser captured
+        is InterceptLocaliser -> completionOf(ApproachComponent.LOCALISER in view.establishedApproachComponents)
+        // K: VacateRunway completes when aircraft is no longer on any runway
+        is VacateRunway -> completionOf(view.entities.none { it is EntityRef.RunwayRef })
         else -> CompletionResult.NOT_COMPLETE
     }
 
@@ -242,6 +288,7 @@ private fun evaluateLevelCompletion(
         is ClimbTo -> completionOf(view.altitude.isAtOrAbove(instruction.level))
         is ExpediteClimb -> completionOf(view.altitude.isAtOrAbove(instruction.level))
         is DescendTo -> completionOf(view.altitude.isAtOrBelow(instruction.level))
+        is DescendWhenReady -> completionOf(view.altitude.isAtOrBelow(instruction.level))
         is ExpediteDescend -> completionOf(view.altitude.isAtOrBelow(instruction.level))
         is MaintainLevel -> completionOf(view.altitude.matches(instruction.level))
         is StopClimbAt -> completionOf(view.altitude.matches(instruction.level))
@@ -252,6 +299,7 @@ private fun evaluateLevelCompletion(
         is AfterPassingLevelDescendTo -> completionOf(view.altitude.isAtOrBelow(instruction.descendTo))
         is MaintainAltitudeUntilEstablished ->
             completionOf(instruction.on in view.establishedApproachComponents)
+        is AvoidLevel -> completionOf(!view.altitude.matches(instruction.level))
         else -> CompletionResult.NOT_COMPLETE
     }
 
@@ -337,6 +385,11 @@ private fun Speed?.isAtOrBelow(target: Speed): Boolean =
 private fun Speed?.isAtOrAbove(target: Speed): Boolean =
     comparableSpeedAgainst(this, target)?.let { (current, targetValue) -> current >= targetValue } ?: false
 
+// Converts levels to a comparable integer in feet. Flight levels are converted by FL * 100,
+// which assumes standard pressure (1013.25 hPa). This is a pragmatic simplification: in
+// non-standard pressure conditions FL100 != 10,000 ft QNH. For correct evaluation near the
+// transition altitude, the CompletionView would need a current pressure setting. Acceptable
+// for simulation purposes but not for real ATC safety systems.
 private fun comparableFeet(level: Level): Int? =
     when (level) {
         is Level.FlightLevel -> level.fl * 100

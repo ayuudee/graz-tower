@@ -3,7 +3,7 @@
 `research/fm` is the proof-authoritative research spike for the split
 certification architecture described in [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md).
 
-As of April 14, 2026, the product-authoritative world and clearance design for
+As of April 15, 2026, the product-authoritative world and clearance design for
 the next project lives in
 [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
 and
@@ -40,7 +40,7 @@ Read `research/fm` in this order of importance:
 
 ## Current Status
 
-As of April 14, 2026:
+As of April 15, 2026:
 
 - architecture contract: frozen
 - generic runway kernel: implemented and proved locally
@@ -376,7 +376,9 @@ The default critical path is now:
   through a first narrow current-shape compound slice, and the delivered
   family is now packaged behind one source-level current-shape theorem
   boundary;
-  no world-backed airspace-entry resolution is claimed yet
+  above that delivered package, a first world-backed single-step airspace
+  layer now exists too, but boundary-crossing and world-backed compound
+  airspace semantics are still open
 - the current Kotlin radio family now also has a small closed current-shape
   slice:
   `ContactFrequency` and `MonitorFrequency` now have a single-step packaged
@@ -446,6 +448,19 @@ The default critical path is now:
   first narrow compound slice on the greenfield boundary
 - `GreenfieldAirspaceExpandedCurrentShape.lean` now packages that broadened
   current-shape airspace family behind one source-level theorem boundary
+- the first world-backed airspace increment is now also in place:
+  the Kotlin runtime now resolves
+  `RemainOutsideControlledAirspace`,
+  `ClearedToEnterControlZone`, and `SpecialVfrClearance` against concrete
+  `AirspaceVolume` entities, and
+  [GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
+  now adds the matching Lean boundary for world-backed single-step airspace
+  semantics:
+  concrete airspace-volume existence in the proof-side world, resolved
+  airspace payloads, source-level admission and authority-gated issuance, an
+  explicit inside-volume violation observation for
+  `RemainOutsideControlledAirspace`, and explicit persistence for
+  `ClearedToEnterControlZone` and `SpecialVfrClearance`
 - the phase-1 current-shape parity closure is now complete under the frozen
   rule used for this widening programme:
   every family whose Kotlin semantics are already stable, whose conservative
@@ -465,7 +480,8 @@ The default critical path is now:
   frozen rule:
   the whole current Kotlin airspace-clearance family now has both a
   single-step slice and a first narrow compound slice, packaged behind one
-  source-level current-shape theorem boundary
+  source-level current-shape theorem boundary; above that, the first
+  world-backed single-step airspace layer is now theorem-bearing
 - the immediate next widening step is no longer structural bridge work, no
   longer approach-completion work, and no longer basic closure for
   `ContinueApproach`, `ExtendDownwind`, or `Orbit`;
@@ -473,9 +489,9 @@ The default critical path is now:
   slices, widen communications/surveillance beyond the delivered narrow
   compound surface, widen the broader ground-movement family on the greenfield
   boundary, settle authority for the modifier/pressure families, or carry
-  `ClearedTo` / `HoldAt` through the older atomic path, or deepen current
-  airspace semantics from the present plain current-shape boundary into a more
-  world-backed layer
+  `ClearedTo` / `HoldAt` through the older atomic path, or deepen the new
+  world-backed airspace layer beyond its present single-step boundary into
+  boundary-crossing and richer compound semantics
   That is a real design/proof choice, not just missing routine packaging:
   current greenfield `ClearedTo` / `HoldAt` do not line up 1:1 with every
   field on the older envelope/compiler surface, and the legacy compiler path

@@ -160,6 +160,11 @@ structure ScopedFixSource where
   name : String
   deriving DecidableEq, Repr
 
+structure ScopedAirspaceVolumeSource where
+  id : Greenfield.AirspaceVolumeId
+  points : List PointId
+  deriving DecidableEq, Repr
+
 def ScopedFixSource.toCompileView
     (fix : ScopedFixSource) : CompileFixView :=
   { id := fix.id
@@ -175,6 +180,7 @@ structure RouteBearingScopedAviationWorld extends ScopedAviationWorld where
   stars : List ScopedStarSource := []
   vfrRoutes : List ScopedVfrRouteSource := []
   fixes : List ScopedFixSource := []
+  airspaceVolumes : List ScopedAirspaceVolumeSource := []
   deriving Repr
 
 def extractRouteBearingCompileView
