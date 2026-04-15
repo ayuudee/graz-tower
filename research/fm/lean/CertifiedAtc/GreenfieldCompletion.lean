@@ -333,6 +333,12 @@ def observedResolvedStepCompletion?
             .complete
           else
             .notComplete
+    | .continueApproach _ =>
+        some .notComplete
+    | .extendDownwind _ =>
+        some .notApplicable
+    | .orbit _ =>
+        some .notApplicable
     | .vector vector =>
         match vector.kind with
         | .turnByDegrees =>

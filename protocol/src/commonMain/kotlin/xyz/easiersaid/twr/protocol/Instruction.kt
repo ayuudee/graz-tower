@@ -37,8 +37,8 @@ data class Frequency private constructor(val mhz: String) {
             if (mhz.isBlank()) return arrow.core.Either.Left("Frequency must not be blank")
             val freq = mhz.toDoubleOrNull()
                 ?: return arrow.core.Either.Left("Frequency must be numeric: $mhz")
-            if (freq < 118.0 || freq > 137.0)
-                return arrow.core.Either.Left("Frequency must be in VHF airband range (118.000–136.975 MHz): $mhz")
+            if (freq < 117.975 || freq > 136.975)
+                return arrow.core.Either.Left("Frequency must be in VHF airband range (117.975–136.975 MHz): $mhz")
             return arrow.core.Either.Right(Frequency(mhz))
         }
 
@@ -87,34 +87,58 @@ data class Knots private constructor(val value: Int) {
 data class Mach private constructor(val value: Double) {
     companion object {
         operator fun invoke(value: Double): arrow.core.Either<String, Mach> =
-            if (value > 0.0 && value < 1.0) arrow.core.Either.Right(Mach(value))
-            else arrow.core.Either.Left("Mach must be in (0.0, 1.0): $value")
+            if (value > 0.0 && value <= 4.0) arrow.core.Either.Right(Mach(value))
+            else arrow.core.Either.Left("Mach must be in (0.0, 4.0]: $value")
 
         fun unsafe(value: Double): Mach = invoke(value).fold({ error(it) }, { it })
     }
 }
 
-data class DmeDistanceNm(val value: Double) {
-    init {
-        require(value >= 0.0) { "DME distance must be >= 0" }
+@ConsistentCopyVisibility
+data class DmeDistanceNm private constructor(val value: Double) {
+    companion object {
+        operator fun invoke(value: Double): arrow.core.Either<String, DmeDistanceNm> =
+            if (value >= 0.0) arrow.core.Either.Right(DmeDistanceNm(value))
+            else arrow.core.Either.Left("DME distance must be >= 0: $value")
+
+        fun unsafe(value: Double): DmeDistanceNm = invoke(value).fold({ error(it) }, { it })
     }
 }
 
-data class Minutes(val value: Int) {
-    init {
-        require(value >= 0) { "Minutes must be >= 0" }
+@ConsistentCopyVisibility
+data class Minutes private constructor(val value: Int) {
+    companion object {
+        operator fun invoke(value: Int): arrow.core.Either<String, Minutes> =
+            if (value >= 0) arrow.core.Either.Right(Minutes(value))
+            else arrow.core.Either.Left("Minutes must be >= 0: $value")
+
+        fun unsafe(value: Int): Minutes = invoke(value).fold({ error(it) }, { it })
     }
 }
 
-data class Wind(
+@ConsistentCopyVisibility
+data class Wind private constructor(
     val directionDegrees: Int,
     val speedKnots: Int,
     val gustKnots: Int? = null
 ) {
-    init {
-        require(directionDegrees in 0..360) { "Wind direction must be in 0..360" }
-        require(speedKnots >= 0) { "Wind speed must be >= 0" }
-        if (gustKnots != null) require(gustKnots > speedKnots) { "Gust must exceed mean wind speed" }
+    companion object {
+        operator fun invoke(
+            directionDegrees: Int,
+            speedKnots: Int,
+            gustKnots: Int? = null
+        ): arrow.core.Either<String, Wind> {
+            if (directionDegrees !in 0..360)
+                return arrow.core.Either.Left("Wind direction must be in 0..360: $directionDegrees")
+            if (speedKnots < 0)
+                return arrow.core.Either.Left("Wind speed must be >= 0: $speedKnots")
+            if (gustKnots != null && gustKnots <= speedKnots)
+                return arrow.core.Either.Left("Gust must exceed mean wind speed: gust=$gustKnots, mean=$speedKnots")
+            return arrow.core.Either.Right(Wind(directionDegrees, speedKnots, gustKnots))
+        }
+
+        fun unsafe(directionDegrees: Int, speedKnots: Int, gustKnots: Int? = null): Wind =
+            invoke(directionDegrees, speedKnots, gustKnots).fold({ error(it) }, { it })
     }
 }
 
@@ -123,28 +147,63 @@ data class Wind(
 // -----------------------------------------------------------------------------
 
 sealed interface Level {
-    data class FlightLevel(val fl: Int) : Level {
-        init {
-            require(fl > 0) { "Flight level must be > 0" }
+    @ConsistentCopyVisibility
+    data class FlightLevel private constructor(val fl: Int) : Level {
+        companion object {
+            operator fun invoke(fl: Int): arrow.core.Either<String, FlightLevel> =
+                if (fl > 0) arrow.core.Either.Right(FlightLevel(fl))
+                else arrow.core.Either.Left("Flight level must be > 0: $fl")
+
+            fun unsafe(fl: Int): FlightLevel = invoke(fl).fold({ error(it) }, { it })
         }
     }
 
-    data class AltitudeFeet(val feet: Int) : Level {
-        init {
-            require(feet >= 0) { "Altitude must be >= 0 ft" }
+    @ConsistentCopyVisibility
+    data class AltitudeFeet private constructor(val feet: Int) : Level {
+        companion object {
+            operator fun invoke(feet: Int): arrow.core.Either<String, AltitudeFeet> =
+                if (feet >= 0) arrow.core.Either.Right(AltitudeFeet(feet))
+                else arrow.core.Either.Left("Altitude must be >= 0 ft: $feet")
+
+            fun unsafe(feet: Int): AltitudeFeet = invoke(feet).fold({ error(it) }, { it })
         }
     }
 
-    data class HeightFeet(val feet: Int) : Level {
-        init {
-            require(feet >= 0) { "Height must be >= 0 ft" }
+    @ConsistentCopyVisibility
+    data class HeightFeet private constructor(val feet: Int) : Level {
+        companion object {
+            operator fun invoke(feet: Int): arrow.core.Either<String, HeightFeet> =
+                if (feet >= 0) arrow.core.Either.Right(HeightFeet(feet))
+                else arrow.core.Either.Left("Height must be >= 0 ft: $feet")
+
+            fun unsafe(feet: Int): HeightFeet = invoke(feet).fold({ error(it) }, { it })
         }
     }
 }
 
 sealed interface PressureSetting {
-    data class QnhHpa(val value: Int) : PressureSetting
-    data class QfeHpa(val value: Int) : PressureSetting
+    @ConsistentCopyVisibility
+    data class QnhHpa private constructor(val value: Int) : PressureSetting {
+        companion object {
+            operator fun invoke(value: Int): arrow.core.Either<String, QnhHpa> =
+                if (value in 900..1100) arrow.core.Either.Right(QnhHpa(value))
+                else arrow.core.Either.Left("QNH must be in 900..1100 hPa: $value")
+
+            fun unsafe(value: Int): QnhHpa = invoke(value).fold({ error(it) }, { it })
+        }
+    }
+
+    @ConsistentCopyVisibility
+    data class QfeHpa private constructor(val value: Int) : PressureSetting {
+        companion object {
+            operator fun invoke(value: Int): arrow.core.Either<String, QfeHpa> =
+                if (value in 900..1100) arrow.core.Either.Right(QfeHpa(value))
+                else arrow.core.Either.Left("QFE must be in 900..1100 hPa: $value")
+
+            fun unsafe(value: Int): QfeHpa = invoke(value).fold({ error(it) }, { it })
+        }
+    }
+
     data object Standard : PressureSetting
 }
 
@@ -193,7 +252,6 @@ enum class ApproachType {
     VOR,
     NDB,
     SRA,
-    VISUAL,
     PAR
 }
 
@@ -226,20 +284,21 @@ enum class FlightPhase {
 sealed interface TrafficRef {
     data class ByCallsign(val callsign: Callsign) : TrafficRef
     data class ByDescription(val text: String) : TrafficRef
-    data class SequenceNumber(val number: Int) : TrafficRef {
-        init {
-            require(number > 0) { "Sequence number must be > 0" }
+    @ConsistentCopyVisibility
+    data class SequenceNumber private constructor(val number: Int) : TrafficRef {
+        companion object {
+            operator fun invoke(number: Int): arrow.core.Either<String, SequenceNumber> =
+                if (number > 0) arrow.core.Either.Right(SequenceNumber(number))
+                else arrow.core.Either.Left("Sequence number must be > 0: $number")
+
+            fun unsafe(number: Int): SequenceNumber = invoke(number).fold({ error(it) }, { it })
         }
     }
 }
 
 sealed interface RouteSpec {
     data class Direct(val fix: FixId) : RouteSpec
-    data class Via(val fixes: List<FixId>) : RouteSpec {
-        init {
-            require(fixes.isNotEmpty()) { "Via route must not be empty" }
-        }
-    }
+    data class Via(val fixes: arrow.core.NonEmptyList<FixId>) : RouteSpec
 
     data class Airway(val airway: AirwayId, val exitFix: FixId) : RouteSpec
     data class ViaSid(val sid: SidId) : RouteSpec
@@ -249,15 +308,36 @@ sealed interface RouteSpec {
 
 sealed interface HoldSpec {
     data class Published(val fix: FixId) : HoldSpec
-    data class InboundTrack(
+    @ConsistentCopyVisibility
+    data class InboundTrack private constructor(
         val fix: FixId,
         val inboundDegreesMagnetic: Int,
         val turnDirection: TurnDirection,
         val legTime: Minutes? = null,
         val legDistance: DmeDistanceNm? = null
     ) : HoldSpec {
-        init {
-            require(inboundDegreesMagnetic in 1..360)
+        companion object {
+            operator fun invoke(
+                fix: FixId,
+                inboundDegreesMagnetic: Int,
+                turnDirection: TurnDirection,
+                legTime: Minutes? = null,
+                legDistance: DmeDistanceNm? = null
+            ): arrow.core.Either<String, InboundTrack> {
+                if (inboundDegreesMagnetic !in 1..360)
+                    return arrow.core.Either.Left("Inbound track must be in 1..360: $inboundDegreesMagnetic")
+                if (legTime != null && legDistance != null)
+                    return arrow.core.Either.Left("Hold leg must specify time or distance, not both")
+                return arrow.core.Either.Right(InboundTrack(fix, inboundDegreesMagnetic, turnDirection, legTime, legDistance))
+            }
+
+            fun unsafe(
+                fix: FixId,
+                inboundDegreesMagnetic: Int,
+                turnDirection: TurnDirection,
+                legTime: Minutes? = null,
+                legDistance: DmeDistanceNm? = null
+            ): InboundTrack = invoke(fix, inboundDegreesMagnetic, turnDirection, legTime, legDistance).fold({ error(it) }, { it })
         }
     }
 }
@@ -281,6 +361,19 @@ sealed interface ConditionalPredicate {
 
     data class BehindTraffic(
         val traffic: TrafficRef
+    ) : ConditionalPredicate
+
+    data class AtLevel(
+        val level: Level
+    ) : ConditionalPredicate
+
+    data class AtDistance(
+        val distance: DmeDistanceNm,
+        val fix: FixId? = null
+    ) : ConditionalPredicate
+
+    data class AfterPassing(
+        val fix: FixId
     ) : ConditionalPredicate
 }
 
@@ -379,7 +472,8 @@ data class CrossRunway(
 
 data class BacktrackRunway(
     override val target: AircraftId,
-    val runway: RunwayId
+    val runway: RunwayId,
+    val vacateAt: PointId? = null
 ) : Clearance, GroundInstruction
 
 data class VacateRunway(
@@ -417,7 +511,7 @@ data class GiveWayToTraffic(
 data class LineUpAndWait(
     override val target: AircraftId,
     val runway: RunwayId
-) : RunwayInstruction
+) : Clearance, RunwayInstruction
 
 data class ClearedForTakeoff(
     override val target: AircraftId,
@@ -531,13 +625,23 @@ data class TurnHeading(
     val heading: Heading
 ) : VectorInstruction
 
-data class TurnByDegrees(
+@ConsistentCopyVisibility
+data class TurnByDegrees private constructor(
     override val target: AircraftId,
     val direction: TurnDirection,
     val degrees: Int
 ) : VectorInstruction {
-    init {
-        require(degrees in 1..359)
+    companion object {
+        operator fun invoke(
+            target: AircraftId,
+            direction: TurnDirection,
+            degrees: Int
+        ): arrow.core.Either<String, TurnByDegrees> =
+            if (degrees in 1..360) arrow.core.Either.Right(TurnByDegrees(target, direction, degrees))
+            else arrow.core.Either.Left("Turn degrees must be in 1..360: $degrees")
+
+        fun unsafe(target: AircraftId, direction: TurnDirection, degrees: Int): TurnByDegrees =
+            invoke(target, direction, degrees).fold({ error(it) }, { it })
     }
 }
 
@@ -567,13 +671,15 @@ data class WhenAbleProceedDirect(
 data class ClimbTo(
     override val target: AircraftId,
     val level: Level,
-    val rateFtPerMin: Int? = null
+    val rateFtPerMin: Int? = null,
+    val byFix: FixId? = null
 ) : LevelInstruction
 
 data class DescendTo(
     override val target: AircraftId,
     val level: Level,
-    val rateFtPerMin: Int? = null
+    val rateFtPerMin: Int? = null,
+    val byFix: FixId? = null
 ) : LevelInstruction
 
 data class ExpediteClimb(
@@ -661,6 +767,11 @@ data class ClearedApproach(
     val circlingRunway: RunwayId? = null
 ) : Clearance, ApproachInstruction
 
+data class ClearedVisualApproach(
+    override val target: AircraftId,
+    val runway: RunwayId
+) : Clearance, ApproachInstruction
+
 data class ContinueApproach(
     override val target: AircraftId
 ) : ApproachInstruction
@@ -691,7 +802,7 @@ data class TurnBase(
 data class Orbit(
     override val target: AircraftId,
     val direction: OrbitDirection
-) : AerodromeInstruction, VectorInstruction
+) : AerodromeInstruction
 
 data class MakeAnotherCircuit(
     override val target: AircraftId
@@ -753,13 +864,23 @@ data class FollowTraffic(
     val traffic: TrafficRef
 ) : SequencingInstruction, AerodromeInstruction
 
-data class NumberInSequence(
+@ConsistentCopyVisibility
+data class NumberInSequence private constructor(
     override val target: AircraftId,
     val number: Int,
     val behindTraffic: TrafficRef? = null
 ) : SequencingInstruction {
-    init {
-        require(number > 0)
+    companion object {
+        operator fun invoke(
+            target: AircraftId,
+            number: Int,
+            behindTraffic: TrafficRef? = null
+        ): arrow.core.Either<String, NumberInSequence> =
+            if (number > 0) arrow.core.Either.Right(NumberInSequence(target, number, behindTraffic))
+            else arrow.core.Either.Left("Sequence number must be > 0: $number")
+
+        fun unsafe(target: AircraftId, number: Int, behindTraffic: TrafficRef? = null): NumberInSequence =
+            invoke(target, number, behindTraffic).fold({ error(it) }, { it })
     }
 }
 
@@ -849,6 +970,46 @@ data class RemainOutsideControlledAirspace(
     override val target: AircraftId,
     val airspace: AirspaceVolumeId
 ) : AtcInstruction
+
+data class SpecialVfrClearance(
+    override val target: AircraftId,
+    val airspace: AirspaceVolumeId,
+    val route: RouteSpec? = null,
+    val levelRestriction: Level? = null
+) : Clearance
+
+// -----------------------------------------------------------------------------
+// Cancellation / amendment
+// -----------------------------------------------------------------------------
+
+data class CancelClearance(
+    override val target: AircraftId,
+    val domain: ClearanceDomain? = null
+) : AtcInstruction
+
+// -----------------------------------------------------------------------------
+// Miscellaneous instructions
+// -----------------------------------------------------------------------------
+
+data class ReportIntentions(
+    override val target: AircraftId
+) : ReportInstruction
+
+data class DescendWhenReady(
+    override val target: AircraftId,
+    val level: Level,
+    val byFix: FixId? = null
+) : LevelInstruction
+
+data class AvoidArea(
+    override val target: AircraftId,
+    val description: String
+) : AtcInstruction
+
+data class AvoidLevel(
+    override val target: AircraftId,
+    val level: Level
+) : LevelInstruction
 
 // -----------------------------------------------------------------------------
 // Controller responses / information (not instructions — do not direct action)

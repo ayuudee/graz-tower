@@ -307,7 +307,7 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
     (hWf : RouteBearingExtractionWellFormed world)
     (hPrimary : GreenfieldRouteBearingAdmissibleInstruction instruction)
     (hReady : RouteBearingInstructionResolutionReady world instruction) :
-    ∃ step,
+    ∃ finalState, ∃ step,
       ResolvesIndexedStep
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         state
@@ -315,11 +315,10 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
         index
         instruction
         step
-        state := by
+        finalState := by
   cases instruction with
   | clearedTo target clearanceLimit route =>
-      simpa [greenfieldRouteBearingAdmissibleDomain] using
-        resolvesIndexedClearedTo_of_ready
+      rcases resolvesIndexedClearedTo_of_ready
           (world := world)
           (state := state)
           (index := index)
@@ -327,26 +326,26 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
           (clearanceLimit := clearanceLimit)
           (route := route)
           hWf
-          hReady
+          hReady with ⟨step, hStep⟩
+      exact ⟨state, step, by simpa [greenfieldRouteBearingAdmissibleDomain] using hStep⟩
   | holdAt target hold efc =>
       cases hold with
       | published fixId =>
-          simpa [greenfieldRouteBearingAdmissibleDomain] using
-            resolvesIndexedPublishedHoldAt_of_ready
+          rcases resolvesIndexedPublishedHoldAt_of_ready
               (world := world)
               (state := state)
               (index := index)
               (target := target)
               (fixId := fixId)
               (efc := efc)
-              hReady
+              hReady with ⟨step, hStep⟩
+          exact ⟨state, step, by simpa [greenfieldRouteBearingAdmissibleDomain] using hStep⟩
       | inboundTrack fix degrees direction legTime legDistance =>
           cases hPrimary
   | clearedApproach target approachType runway circlingRunway =>
       cases circlingRunway with
       | none =>
-          simpa [greenfieldRouteBearingAdmissibleDomain] using
-            resolvesIndexedNonCirclingClearedApproach_of_ready
+          rcases resolvesIndexedNonCirclingClearedApproach_of_ready
               (world := world)
               (state := state)
               (index := index)
@@ -354,12 +353,12 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
               (approachType := approachType)
               (runway := runway)
               hWf
-              hReady
+              hReady with ⟨finalState, step, hStep⟩
+          exact ⟨finalState, step, by simpa [greenfieldRouteBearingAdmissibleDomain] using hStep⟩
       | some circling =>
           cases hPrimary
   | joinCircuit target direction joinType runway =>
-      simpa [greenfieldRouteBearingAdmissibleDomain] using
-        resolvesIndexedJoinCircuit_of_ready
+      rcases resolvesIndexedJoinCircuit_of_ready
           (world := world)
           (state := state)
           (index := index)
@@ -368,7 +367,8 @@ theorem resolvesIndexedGreenfieldRouteBearingStep_of_ready
           (joinType := joinType)
           (runway := runway)
           hWf
-          hReady
+          hReady with ⟨finalState, step, hStep⟩
+      exact ⟨finalState, step, by simpa [greenfieldRouteBearingAdmissibleDomain] using hStep⟩
   | _ =>
       cases hPrimary
 
@@ -696,13 +696,13 @@ theorem resolvesGreenfieldRouteBearingCompoundClearance_of_ready
     (hReady : GreenfieldRouteBearingCompoundReady world primary tail)
     (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain primary)
     (hCondition : clearance.condition = none) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState := by
+        finalState := by
   have hWrapped : anyWrappedConditionalStep (primary :: tail) = false :=
     anyWrappedConditionalStep_false_of_routeBearingCompoundReady hReady
   rcases hReady with ⟨hPrimary, hPrimaryReady, hTailReady⟩
@@ -713,15 +713,15 @@ theorem resolvesGreenfieldRouteBearingCompoundClearance_of_ready
       (instruction := primary)
       hWf
       hPrimary
-      hPrimaryReady with ⟨primaryStep, hPrimaryStep⟩
+      hPrimaryReady with ⟨primaryFinalState, primaryStep, hPrimaryStep⟩
   rcases resolvesRouteBearingImmediateAdjunctTail_of_ready
       (world := world)
-      (state := initialState)
+      (state := primaryFinalState)
       (fallbackDomain := greenfieldRouteBearingAdmissibleDomain primary)
       (start := 1)
       (tail := tail)
       hTailReady with ⟨resolvedTail, hResolvedTail⟩
-  refine ⟨{ source := clearance, steps := primaryStep :: resolvedTail }, ?_⟩
+  refine ⟨primaryFinalState, { source := clearance, steps := primaryStep :: resolvedTail }, ?_⟩
   refine ⟨?_, rfl, ?_⟩
   · simp [normalizeConditionalEnvelope, hContent, hCondition, hSteps, hWrapped]
   · have hPrimaryStep' :
@@ -732,27 +732,27 @@ theorem resolvesGreenfieldRouteBearingCompoundClearance_of_ready
           0
           primary
           primaryStep
-          initialState := by
+          primaryFinalState := by
         simpa [hDomain] using hPrimaryStep
     have hResolvedTail' :
         ResolvesSteps
           (RouteBearingScopedAviationWorld.toResolutionWorld world)
-          initialState
+          primaryFinalState
           clearance.domain
           (enumerateFrom 1 tail)
           resolvedTail
-          initialState := by
+          primaryFinalState := by
       simpa [hDomain] using hResolvedTail
     have hIndexed :
-        indexedSteps (structuredInstructions clearance) =
+      indexedSteps (structuredInstructions clearance) =
           (0, primary) :: enumerateFrom 1 tail := by
       simp [hContent, hSteps, structuredInstructions, contentInstructions, indexedSteps, enumerateFrom]
     simpa [hIndexed] using
       ResolvesSteps.cons
         (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
         (state := initialState)
-        (nextState := initialState)
-        (finalState := initialState)
+        (nextState := primaryFinalState)
+        (finalState := primaryFinalState)
         (fallbackDomain := clearance.domain)
         (index := 0)
         (instruction := primary)
@@ -778,13 +778,13 @@ theorem GreenfieldRouteBearingCompoundAdmissionSoundnessTheorem
     (hReady : GreenfieldRouteBearingCompoundReady world primary tail)
     (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain primary)
     (hCondition : clearance.condition = none) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   rcases resolvesGreenfieldRouteBearingCompoundClearance_of_ready
@@ -799,10 +799,10 @@ theorem GreenfieldRouteBearingCompoundAdmissionSoundnessTheorem
       hSteps
       hReady
       hDomain
-      hCondition with ⟨resolved, hResolve⟩
+      hCondition with ⟨finalState, resolved, hResolve⟩
   have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
     simpa [hResolve.sourceEq] using hFresh
-  refine ⟨resolved, hResolve, ?_⟩
+  refine ⟨finalState, resolved, hResolve, ?_⟩
   exact ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve
 
 theorem GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
@@ -823,7 +823,7 @@ theorem GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
     (hCondition : clearance.condition = none)
     (hAuthority :
       RouteBearingCompoundWorldAuthorized world clearance.issuedBy (primary :: tail)) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       routeBearingCompoundInstructionsIssuerAuthorized
         (extractRouteBearingCompileView world)
         clearance.issuedBy
@@ -833,7 +833,7 @@ theorem GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   have hAuthorized :
@@ -862,8 +862,8 @@ theorem GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
       hSteps
       hReady
       hDomain
-      hCondition with ⟨resolved, hResolve, hReachResolved⟩
-  exact ⟨resolved, hAuthorized, hResolve, hReachResolved⟩
+      hCondition with ⟨finalState, resolved, hResolve, hReachResolved⟩
+  exact ⟨finalState, resolved, hAuthorized, hResolve, hReachResolved⟩
 
 end Greenfield
 end CertifiedAtc

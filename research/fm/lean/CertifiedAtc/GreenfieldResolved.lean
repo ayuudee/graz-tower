@@ -63,6 +63,25 @@ structure ResolvedApproachClearance where
   missedApproachHoldingPattern : HoldingPatternId
   deriving DecidableEq, Repr
 
+structure ResolvedContinueApproachInstruction where
+  approach : ApproachId
+  waypointPoints : List PointId := []
+  thresholdPoint : PointId
+  deriving DecidableEq, Repr
+
+structure ResolvedExtendedDownwindInstruction where
+  circuit : CircuitProcedureId
+  extendedPathPoints : List PointId := []
+  offRampPoints : List (List PointId) := []
+  deriving DecidableEq, Repr
+
+structure ResolvedOrbitInstruction where
+  circuit : CircuitProcedureId
+  orbitPoint : PointId
+  direction : OrbitDirection
+  loopPoints : List PointId := []
+  deriving DecidableEq, Repr
+
 inductive ResolvedPublishedHandoffAction
   | contact
   | monitor
@@ -174,6 +193,9 @@ inductive ResolvedPayload
   | directFix (fix : ResolvedDirectFix)
   | airwayJoin (join : ResolvedAirwayJoin)
   | circuitJoin (circuit : ResolvedCircuitJoin)
+  | continueApproach (continuation : ResolvedContinueApproachInstruction)
+  | extendDownwind (extension : ResolvedExtendedDownwindInstruction)
+  | orbit (orbit : ResolvedOrbitInstruction)
   | airspace (airspace : ResolvedAirspaceInstruction)
   | vector (vector : ResolvedVectorInstruction)
   | plain
@@ -195,6 +217,9 @@ def instructionNeedsSpecificResolution : AtcInstruction → Bool
   | .rejoinSidAt _ _ => true
   | .joinAirway _ _ _ => true
   | .joinCircuit _ _ _ _ => true
+  | .continueApproach _ => true
+  | .extendDownwind _ => true
+  | .orbit _ _ => true
   | .flyHeading _ _ => true
   | .turnHeading _ _ _ => true
   | .continuePresentHeading _ => true
@@ -226,6 +251,9 @@ def resolutionCompatible : ResolvedPayload → AtcInstruction → Bool
   | .directFix _, .rejoinSidAt _ _ => true
   | .airwayJoin _, .joinAirway _ _ _ => true
   | .circuitJoin _, .joinCircuit _ _ _ _ => true
+  | .continueApproach _, .continueApproach _ => true
+  | .extendDownwind _, .extendDownwind _ => true
+  | .orbit _, .orbit _ _ => true
   | .vector _, .flyHeading _ _ => true
   | .vector _, .turnHeading _ _ _ => true
   | .vector _, .continuePresentHeading _ => true

@@ -87,7 +87,7 @@ Read modules in roughly this order:
     [CertifiedAtc/GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
     [CertifiedAtc/GreenfieldRouteControlCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),
     and
-    [CertifiedAtc/GreenfieldRouteControlDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlDeliveredCurrentShape.lean).
+    [CertifiedAtc/GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean).
 21. [CertifiedAtc/GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean)
     Optional. This closes the current-shape single-step `ContinueApproach`
     slice: source-level issuance, active lifecycle, and explicit `GoAround`
@@ -112,11 +112,12 @@ Read modules in roughly this order:
 27. [CertifiedAtc/GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean)
     Optional. This widens `Orbit` through the same narrow current-shape
     compound slice shape as `ExtendDownwind`.
-28. [CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean)
+28. [CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
     Optional. This packages the delivered Phase B route-adjacent surface
-    behind one source-level current-shape theorem boundary.
-29. [CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
-    Optional. This closes the current-shape authority layer for the delivered
+    behind one source-level world-backed theorem boundary on the current
+    explicit approach/circuit model.
+29. [CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+    Optional. This closes the world-backed authority layer for the delivered
     Phase B route-adjacent surface.
 30. [CertifiedAtc/GreenfieldAirspaceCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceCurrentShape.lean)
     Optional. This closes the first current-shape single-step slice for the
@@ -360,9 +361,10 @@ Read modules in roughly this order:
 - `GreenfieldRouteControlCompound`
   First narrow compound widening for the delivered route/vector-control
   surface: one leading route/vector-control step plus immediate adjunct tails.
-- `GreenfieldRouteControlDeliveredCurrentShape`
-  Source-level current-shape packaging for the delivered route/vector-control
-  singles plus the first narrow compound layer.
+- `GreenfieldRouteControlWorldBackedDeliveredCurrentShape`
+  Source-level world-backed packaging for the delivered route/vector-control
+  singles plus the first narrow compound layer on the current explicit
+  published-fix/airway + vector-state model.
 - `GreenfieldContinueApproach`
   Small current-shape closure for single-step `ContinueApproach`: source-level
   issuance, active lifecycle, and explicit `GoAround` supersession.
@@ -385,14 +387,14 @@ Read modules in roughly this order:
   consequence.
 - `GreenfieldOrbitCompound`
   Narrow current-shape compound widening for `Orbit`.
-- `GreenfieldRouteAdjacentCurrentShape`
-  Source-level current-shape packaging for the delivered Phase B
-  route-adjacent surface.
-- `GreenfieldRouteAdjacentAuthority`
-  Current-shape authority closure for the delivered Phase B route-adjacent
+- `GreenfieldRouteAdjacentWorldBackedCurrentShape`
+  World-backed single-step closure for the delivered Phase B route-adjacent
+  surface on the current explicit approach/circuit model.
+- `GreenfieldRouteAdjacentWorldBackedAuthority`
+  World-backed authority closure for the delivered Phase B route-adjacent
   surface: conservative type-level grant mapping for `ContinueApproach`,
   `ExtendDownwind`, and `Orbit`, plus authority-gated issuance for the
-  delivered single-step and narrow-compound slices.
+  delivered world-backed single-step and narrow-compound slices.
 - `GreenfieldAirspaceCurrentShape`
   Small current-shape single-step closure for the current Kotlin airspace-
   clearance family: `RemainOutsideControlledAirspace`,
@@ -596,10 +598,12 @@ There are now twenty-six distinct Lean layers above the local certifiers:
    Small current-shape single-step closure for `Orbit`.
 16. `GreenfieldOrbitCompound.lean`
    Small current-shape compound closure for `Orbit`.
-17. `GreenfieldRouteAdjacentCurrentShape.lean`
-   Source-level current-shape packaging for the delivered Phase B surface.
-18. `GreenfieldRouteAdjacentAuthority.lean`
-   Current-shape authority closure for the delivered Phase B route-adjacent surface.
+17. `GreenfieldRouteAdjacentWorldBackedCurrentShape.lean`
+   World-backed single-step closure for the delivered Phase B surface on the
+   current explicit approach/circuit model.
+18. `GreenfieldRouteAdjacentWorldBackedAuthority.lean`
+   World-backed authority closure for the delivered Phase B route-adjacent
+   surface.
 19. `GreenfieldAirspaceCurrentShape.lean`
    Small current-shape single-step closure for the current Kotlin airspace-clearance family.
 20. `GreenfieldAirspaceCompound.lean`

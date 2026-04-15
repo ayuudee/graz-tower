@@ -123,10 +123,13 @@ As of April 14, 2026, the first honest widening increment is now in place.
   [GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
   freezing the shared null-domain / source-domain-supplied persistent-plain
   convention used by `ExtendDownwind` and `Orbit`, and
-  [GreenfieldRouteAdjacentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean)
-  packaging the whole currently delivered Phase B surface behind one
-  source-level current-shape theorem boundary
-  now give the first small current-shape Phase B closures:
+  [GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
+  now packages the whole currently delivered Phase B surface behind one
+  source-level world-backed theorem boundary on the current explicit
+  approach/circuit model, and the earlier current-shape files remain
+  historical context for how that branch was widened;
+  together these modules now give the first small world-backed Phase B
+  closures:
   `ContinueApproach` now has both a single-step theorem slice and a narrow
   compound slice for one leading `ContinueApproach` plus immediate adjuncts,
   and `ExtendDownwind` / `Orbit` now each have both a single-step theorem
@@ -135,8 +138,8 @@ As of April 14, 2026, the first honest widening increment is now in place.
   these delivered slices package source-level issuance into
   `ReachableResolvedSet`, explicit current lifecycle behavior, and explicit
   supersession / engine-consequence theorems for the currently modeled cases
-- [GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
-  now closes the current-shape authority layer for that delivered Phase B
+- [GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+  now closes the authority layer for that delivered world-backed Phase B
   surface:
   `ContinueApproach` is mapped conservatively to
   `(instrumentApproach, sequence)` on the current type-level role model,
@@ -153,13 +156,13 @@ As of April 14, 2026, the first honest widening increment is now in place.
   remain active until any non-persistent adjuncts also complete, so it is not
   a live widening gap
 - if we stay on the greenfield path, the current live widening gap is now no
-  longer Phase A closure work and no longer current-shape authority closure
-  for the delivered Phase B families:
-  it is widening beyond the now-closed current-shape Phase A core, beyond the
+  longer Phase A closure work and no longer authority closure for the
+  delivered Phase B families:
+  it is widening beyond the now-closed world-backed Phase A core, beyond the
   one-primary-plus-immediate-adjunct compound surface, beyond the newly closed
-  current-shape compound slices for `ContinueApproach`, `ExtendDownwind`, and
+  world-backed compound slices for `ContinueApproach`, `ExtendDownwind`, and
   `Orbit`, beyond the newly closed source-level Phase B packaging theorem,
-  and beyond the newly closed current-shape Phase B authority layer, while
+  and beyond the newly closed world-backed Phase B authority layer, while
   keeping the next execution semantics honest
 - the remaining legacy-atomic closure for `ClearedTo` / `HoldAt` is now a
   separate optional branch, not the default next step
@@ -268,17 +271,17 @@ Current delivered state:
   persistent-only compound terminalization behavior after frequency
   suppression.
 - `Orbit` now has the same closure shape as `ExtendDownwind`:
-  single-step plus a narrow current-shape compound slice over immediate
+  single-step plus a narrow world-backed compound slice over immediate
   adjuncts.
-- the delivered Phase B surface now also has a current-shape authority layer:
+- the delivered Phase B surface now also has a world-backed authority layer:
   `ContinueApproach` is treated conservatively as
   `(instrumentApproach, sequence)` on the current type-level role model,
   while `ExtendDownwind` and `Orbit` are treated as
   `(circuitProcedure, circuit)`.
 
 What remains open for Phase B is no longer basic current-shape compound
-closure or current-shape authority closure for these three families. It is
-now wider execution packaging beyond these delivered slices, or widening a
+closure or world-backed authority closure for these three families. It is now
+wider execution packaging beyond these delivered slices, or widening a
 different family such as the current Kotlin airspace-clearance surface.
 
 ### Phase C: Deferred Coordination/Airspace Families

@@ -62,6 +62,19 @@ data class TaxiRouteReadback(
     val via: List<PointId> = emptyList()
 ) : AtomicReadback
 data class HoldReadback(val hold: HoldSpec) : AtomicReadback
+data class GoAroundReadback(
+    val runway: RunwayId? = null,
+    val level: Level? = null,
+    val heading: Heading? = null
+) : AtomicReadback
+data class VacateReadback(
+    val direction: TurnDirection? = null,
+    val via: PointId? = null
+) : AtomicReadback
+data class OrbitReadback(val direction: OrbitDirection) : AtomicReadback
+data class ExtendDownwindReadback(val runway: RunwayId? = null) : AtomicReadback
+data class VisualApproachReadback(val runway: RunwayId) : AtomicReadback
+data class SpecialVfrReadback(val airspace: AirspaceVolumeId) : AtomicReadback
 data class FreeTextReadback(val text: String) : AtomicReadback
 
 // --- Readback conditions ---
@@ -75,8 +88,12 @@ data class AfterTrafficCondition(
     val traffic: TrafficRef,
     val action: TrafficAction
 ) : ReadbackCondition
+data class BehindTrafficCondition(
+    val traffic: TrafficRef
+) : ReadbackCondition
 data class AfterDepartureCondition(val description: String? = null) : ReadbackCondition
 data class AtLevelCondition(val level: Level) : ReadbackCondition
+data class AtDistanceCondition(val distance: DmeDistanceNm) : ReadbackCondition
 
 // -----------------------------------------------------------------------------
 // Initial contact

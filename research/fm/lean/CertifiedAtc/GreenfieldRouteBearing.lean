@@ -297,7 +297,7 @@ example :
       {}
       sampleResolvedApproachFromWorld.source
       sampleResolvedApproachFromWorld
-      {} := by
+      { currentApproach := some "ILS27" } := by
   refine ⟨?_, rfl, ?_⟩
   · simp [sampleResolvedApproachFromWorld, normalizeConditionalEnvelope]
   · apply ResolvesSteps.cons
@@ -310,7 +310,11 @@ example :
           ConcreteResolutionWorld.toResolutionWorld]
       · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
           ConcreteResolutionWorld.toResolutionWorld]
-    · simpa using ResolvesSteps.nil sampleResolutionWorld {} .route
+    · simpa using
+        ResolvesSteps.nil
+          sampleResolutionWorld
+          { currentApproach := some "ILS27" }
+          .route
 
 def sampleResolvedCircuitJoinFromWorld : ResolvedClearance :=
   { source :=
@@ -341,7 +345,7 @@ example :
       {}
       sampleResolvedCircuitJoinFromWorld.source
       sampleResolvedCircuitJoinFromWorld
-      {} := by
+      { currentCircuit := some "CIRCUIT-27-LH" } := by
   refine ⟨?_, rfl, ?_⟩
   · simp [sampleResolvedCircuitJoinFromWorld, normalizeConditionalEnvelope]
   · apply ResolvesSteps.cons
@@ -352,7 +356,11 @@ example :
           ConcreteResolutionWorld.toResolutionWorld]
       · simp [sampleResolutionWorld, sampleConcreteResolutionWorld,
           ConcreteResolutionWorld.toResolutionWorld]
-    · simpa using ResolvesSteps.nil sampleResolutionWorld {} .runway
+    · simpa using
+        ResolvesSteps.nil
+          sampleResolutionWorld
+          { currentCircuit := some "CIRCUIT-27-LH" }
+          .runway
 
 end Greenfield
 end CertifiedAtc

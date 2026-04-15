@@ -39,23 +39,25 @@ The following instruction families are now treated as authority-resolved:
 - `GoAround` -> `(runway, goAround)` on the current-shape runway boundary
 - `ClearedLowApproach` -> `(runway, lowApproach)`
 - `ClearedTouchAndGo` -> `(runway, touchAndGo)`
+- `ClearedTo` -> `(fix, routeClearance)` on the delivered world-backed
+  route-bearing boundary
 - `JoinCircuit` -> `(circuitProcedure, circuit)`
-- `ExtendDownwind` -> `(circuitProcedure, circuit)` on the current-shape
+- `ExtendDownwind` -> `(circuitProcedure, circuit)` on the delivered
+  world-backed route-adjacent boundary
+- `Orbit` -> `(circuitProcedure, circuit)` on the delivered world-backed
   route-adjacent boundary
-- `Orbit` -> `(circuitProcedure, circuit)` on the current-shape
-  route-adjacent boundary
-- `ContinueApproach` -> `(instrumentApproach, sequence)` on the current-shape
-  route-adjacent boundary
+- `ContinueApproach` -> `(instrumentApproach, sequence)` on the delivered
+  world-backed route-adjacent boundary
 - `RemainOutsideControlledAirspace` -> `(airspaceVolume, airspaceTransit)` on
-  the current-shape airspace-clearance boundary
+  the delivered world-backed airspace boundary
 - `ClearedToEnterControlZone` -> `(airspaceVolume, airspaceTransit)` on the
-  current-shape airspace-clearance boundary
-- `SpecialVfrClearance` -> `(airspaceVolume, airspaceTransit)` on the current-
-  shape airspace-clearance boundary
+  delivered world-backed airspace boundary
+- `SpecialVfrClearance` -> `(airspaceVolume, airspaceTransit)` on the
+  delivered world-backed airspace boundary
 - `ContactFrequency` -> `(radioRole, contact)`
 - `MonitorFrequency` -> `(radioRole, monitor)`
 - `ProceedDirect`, `LeaveHoldProceedDirect`, `WhenAbleProceedDirect`, and
-  `RejoinSidAt` -> `(fix, routeClearance)` on the delivered current-shape
+  `RejoinSidAt` -> `(fix, routeClearance)` on the delivered world-backed
   route/vector-control boundary
 - `JoinAirway` -> `(airway, routeClearance)` on that same delivered
   route/vector-control boundary
@@ -94,10 +96,10 @@ The following instruction families are now treated as authority-resolved:
 
 The longstanding envelope-facing subset is mirrored in
 [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
-through `instructionRequiredAuthorityGrant?`, and the delivered current-shape
+through `instructionRequiredAuthorityGrant?`, and the delivered world-backed
 Phase B route-adjacent mappings are mirrored in
-[GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
-for the delivered current-shape Phase B route-adjacent surface.
+[GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+for the delivered world-backed Phase B route-adjacent surface.
 
 On the published-handoff jurisdiction branch, `ContactFrequency` and
 `MonitorFrequency` keep those same `(radioRole, contact|monitor)` grants.
@@ -117,18 +119,20 @@ These instruction families line up directly with the greenfield role model:
 - runway crossing and runway-use operations
 - current graph-backed hold-short resolution on the current runway-adjacent
   protection boundary
+- current graph-backed route-bearing progression to a published clearance limit
 - circuit-procedure control
-- current-shape circuit-sequencing instructions that stay on the tower-side
+- world-backed circuit-sequencing instructions that stay on the tower-side
   circuit family
-- current-shape `ContinueApproach` as approach sequencing on the present
+- world-backed `ContinueApproach` as approach sequencing on the present
   approach family, still at the same type-level authority granularity used
   elsewhere in the greenfield model
-- current-shape controlled-airspace entry / restriction instructions over the
+- world-backed controlled-airspace entry / restriction instructions over the
   existing type-level `airspaceVolume / airspaceTransit` authority family
 - approach clearance over approach entities
 - holding-pattern control
 - radio role / handoff style instructions
-- route/vector-control instructions on the current route-control boundary
+- route/vector-control instructions on the current explicit published-fix /
+  airway + vector-state boundary
 - level/speed/pressure/admin modifiers on the delivered current-shape
   air-modifier boundary
 
@@ -144,16 +148,14 @@ authority-mapping layer:
 - `ReportDownwind`
 - `ReportFinal`
 - `Proceed`
-- `ClearedTo`
 - `CrossControlledAirspace`
 
 The reason is not "these instructions have no authority semantics."
 The reason is "the right authority family is still entangled with other open
 semantic questions."
 
-Examples:
+Example:
 
-- `ClearedTo` depends on the still-open route/intention/limit theorem surface
 - `CrossControlledAirspace` likely belongs to a broader coordination/airspace
   authority layer that is not yet narrowed enough here
 
@@ -212,10 +214,10 @@ The next authority increment should not be "map every remaining instruction."
 
 It should be:
 
-1. keep the current-shape Phase B authority mappings stable and aligned to the
-   Kotlin model
-2. keep the delivered route/vector-control and air-modifier mappings aligned to
-   the Kotlin model and parity inventory
-3. decide the right authority families for the still-unresolved route /
-   coordination instructions
+1. keep the delivered world-backed Phase B authority mappings stable and aligned
+   to the Kotlin model
+2. keep the delivered world-backed route/vector-control and route-bearing
+   mappings aligned to the Kotlin model and parity inventory
+3. decide the right authority families for the still-unresolved coordination
+   instructions
 4. only then widen the mapping surface again

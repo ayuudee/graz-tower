@@ -40,6 +40,35 @@ def circuitJoinBindings
     (circuit : ScopedCircuitSource) : List ConcreteCircuitJoinBinding :=
   circuitJoinBindingsFor circuit circuit.joinProcedures
 
+def circuitExtendedDownwindBinding?
+    (circuit : ScopedCircuitSource) : Option ConcreteCircuitExtendedDownwindBinding :=
+  circuit.extendedDownwind.map fun extendedDownwind =>
+    { circuit := circuit.id
+      pathPoints := extendedDownwind.path
+      offRampPoints := extendedDownwind.offRamps.map (·.path) }
+
+def worldCircuitExtendedDownwindBindings : List ScopedCircuitSource → List ConcreteCircuitExtendedDownwindBinding
+  | [] => []
+  | circuit :: tail =>
+      let head :=
+        match circuitExtendedDownwindBinding? circuit with
+        | some binding => [binding]
+        | none => []
+      head ++ worldCircuitExtendedDownwindBindings tail
+
+def circuitOrbitBindings
+    (circuit : ScopedCircuitSource) : List ConcreteCircuitOrbitBinding :=
+  circuit.orbitPoints.map fun orbitPoint =>
+    { circuit := circuit.id
+      orbitPoint := orbitPoint.point
+      direction := orbitPoint.direction
+      loopPoints := orbitPoint.loopPoints }
+
+def worldCircuitOrbitBindings : List ScopedCircuitSource → List ConcreteCircuitOrbitBinding
+  | [] => []
+  | circuit :: tail =>
+      circuitOrbitBindings circuit ++ worldCircuitOrbitBindings tail
+
 def worldCircuitJoinBindings : List ScopedCircuitSource → List ConcreteCircuitJoinBinding
   | [] => []
   | circuit :: tail =>
@@ -161,7 +190,11 @@ def RouteBearingScopedAviationWorld.toConcreteResolutionWorld
         { airspace := airspace.id
           points := airspace.points }
     circuitJoins :=
-      worldCircuitJoinBindings world.circuits }
+      worldCircuitJoinBindings world.circuits
+    circuitExtendedDownwinds :=
+      worldCircuitExtendedDownwindBindings world.circuits
+    circuitOrbits :=
+      worldCircuitOrbitBindings world.circuits }
 
 def routeBearingFixPoint?
     (world : RouteBearingScopedAviationWorld)
@@ -318,6 +351,23 @@ def circuitProcedurePoints?
   pure <|
     firstLeg.startPoint :: (firstLeg.to :: remainingLegs.map (fun leg => leg.to))
 
+def circuitExtendedDownwind?
+    (world : RouteBearingScopedAviationWorld)
+    (circuitId : CircuitProcedureId) : Option (List PointId × List (List PointId)) := do
+  let circuit <- world.circuits.find? (fun candidate => candidate.id = circuitId)
+  let extendedDownwind <- circuit.extendedDownwind
+  pure (extendedDownwind.path, extendedDownwind.offRamps.map (·.path))
+
+def circuitOrbit?
+    (world : RouteBearingScopedAviationWorld)
+    (circuitId : CircuitProcedureId)
+    (orbitPoint : PointId)
+    (direction : OrbitDirection) : Option (List PointId) := do
+  let circuit <- world.circuits.find? (fun candidate => candidate.id = circuitId)
+  let orbit <- circuit.orbitPoints.find? (fun candidate =>
+    candidate.point = orbitPoint && candidate.direction = direction)
+  pure orbit.loopPoints
+
 def RouteBearingScopedAviationWorld.toResolutionWorld
     (world : RouteBearingScopedAviationWorld) : ResolutionWorld :=
   { (ConcreteResolutionWorld.toResolutionWorld
@@ -337,7 +387,11 @@ def RouteBearingScopedAviationWorld.toResolutionWorld
       circuitJoinEntry := fun circuit joinType entryPoint entryPathPoints =>
         circuitJoinEntry? world circuit joinType = some (entryPoint, entryPathPoints)
       circuitProcedurePoints := fun circuit points =>
-        circuitProcedurePoints? world circuit = some points }
+        circuitProcedurePoints? world circuit = some points
+      circuitExtendedDownwind := fun circuit pathPoints offRampPoints =>
+        circuitExtendedDownwind? world circuit = some (pathPoints, offRampPoints)
+      circuitOrbit := fun circuit orbitPoint direction loopPoints =>
+        circuitOrbit? world circuit orbitPoint direction = some loopPoints }
 
 private theorem findById_eq_some_of_mem
     {α β : Type}
@@ -1000,7 +1054,7 @@ theorem resolvesIndexedNonCirclingClearedApproach_of_ready
     (hReady :
       RouteBearingInstructionResolutionReady world
         (.clearedApproach target approachType runway none)) :
-    ∃ step,
+    ∃ finalState, ∃ step,
       ResolvesIndexedStep
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         state
@@ -1008,11 +1062,11 @@ theorem resolvesIndexedNonCirclingClearedApproach_of_ready
         index
         (.clearedApproach target approachType runway none)
         step
-        state := by
+        finalState := by
   rcases hReady with ⟨approach, hMem, hKindEq, hRunwayEq, holdingPattern, hHoldAt, hold, hHoldMem, hHoldId⟩
   subst approachType
   subst runway
-  refine ⟨compileResolvedStep
+  refine ⟨{ state with currentApproach := some approach.id }, compileResolvedStep
       index
       .route
       (.clearedApproach target approach.kind approach.runway none)
@@ -1059,7 +1113,7 @@ theorem resolvesIndexedJoinCircuit_of_ready
     (hReady :
       RouteBearingInstructionResolutionReady world
         (.joinCircuit target direction joinType runway)) :
-    ∃ step,
+    ∃ finalState, ∃ step,
       ResolvesIndexedStep
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         state
@@ -1067,7 +1121,7 @@ theorem resolvesIndexedJoinCircuit_of_ready
         index
         (.joinCircuit target direction joinType runway)
         step
-        state := by
+        finalState := by
   rcases hReady with ⟨circuit, hCircuitMem, hRest⟩
   rcases hRest with ⟨hDirEq, hJoin, hRunway, hLegs⟩
   rcases hJoin with ⟨join, hJoinUnique⟩
@@ -1080,7 +1134,7 @@ theorem resolvesIndexedJoinCircuit_of_ready
   rcases hJoinProps with ⟨hJoinMem, hJoinEq⟩
   subst direction
   subst joinType
-  refine ⟨compileResolvedStep
+  refine ⟨{ state with currentCircuit := some circuit.id }, compileResolvedStep
       index
       .runway
       (.joinCircuit target (greenfieldCircuitDirection circuit.direction) join.type runway)
@@ -1238,15 +1292,16 @@ theorem resolvesSingleNonCirclingClearedApproachClearance_of_ready
       clearance.content = .single (.clearedApproach target approachType runway none))
     (hDomain : clearance.domain = .route)
     (hCondition : clearance.condition = none) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState := by
+        finalState := by
   rcases resolvesIndexedNonCirclingClearedApproach_of_ready
-      (world := world) (state := initialState) (index := 0) hWf hReady with ⟨step, hStep⟩
+      (world := world) (state := initialState) (index := 0) hWf hReady with
+      ⟨finalState, step, hStep⟩
   have hStepDomain : step.domain = .route := by
     cases hStep <;> simp [compileResolvedStep, instructionDomain?]
   have hDomainStep : clearance.domain = step.domain := by
@@ -1259,7 +1314,7 @@ theorem resolvesSingleNonCirclingClearedApproachClearance_of_ready
         0
         (.clearedApproach target approachType runway none)
         step
-        initialState := by
+        finalState := by
     simpa [hDomain] using hStep
   have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
     cases clearance with
@@ -1268,7 +1323,7 @@ theorem resolvesSingleNonCirclingClearedApproachClearance_of_ready
         subst content
         subst condition
         simp [normalizeConditionalEnvelope, instructionMayBeConditional]
-  refine ⟨singletonResolvedClearance clearance step, ?_⟩
+  refine ⟨finalState, singletonResolvedClearance clearance step, ?_⟩
   exact resolvesSingleInstructionClearance
     hNormalized
     hContent
@@ -1291,15 +1346,16 @@ theorem resolvesSingleJoinCircuitClearance_of_ready
       clearance.content = .single (.joinCircuit target direction joinType runway))
     (hDomain : clearance.domain = .runway)
     (hCondition : clearance.condition = none) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState := by
+        finalState := by
   rcases resolvesIndexedJoinCircuit_of_ready
-      (world := world) (state := initialState) (index := 0) hWf hReady with ⟨step, hStep⟩
+      (world := world) (state := initialState) (index := 0) hWf hReady with
+      ⟨finalState, step, hStep⟩
   have hStepDomain : step.domain = .runway := by
     cases hStep <;> simp [compileResolvedStep, instructionDomain?]
   have hDomainStep : clearance.domain = step.domain := by
@@ -1312,7 +1368,7 @@ theorem resolvesSingleJoinCircuitClearance_of_ready
         0
         (.joinCircuit target direction joinType runway)
         step
-        initialState := by
+        finalState := by
     simpa [hDomain] using hStep
   have hNormalized : normalizeConditionalEnvelope clearance = .ok clearance := by
     cases clearance with
@@ -1321,7 +1377,7 @@ theorem resolvesSingleJoinCircuitClearance_of_ready
         subst content
         subst condition
         simp [normalizeConditionalEnvelope, instructionMayBeConditional]
-  refine ⟨singletonResolvedClearance clearance step, ?_⟩
+  refine ⟨finalState, singletonResolvedClearance clearance step, ?_⟩
   exact resolvesSingleInstructionClearance
     hNormalized
     hContent

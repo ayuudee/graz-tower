@@ -36,6 +36,8 @@ structure ResolutionWorld where
   circuitJoin : CircuitDirection → JoinType → Option RunwayId → CircuitProcedureId → Level → Prop
   circuitJoinEntry : CircuitProcedureId → JoinType → PointId → List PointId → Prop
   circuitProcedurePoints : CircuitProcedureId → List PointId → Prop
+  circuitExtendedDownwind : CircuitProcedureId → List PointId → List (List PointId) → Prop
+  circuitOrbit : CircuitProcedureId → PointId → OrbitDirection → List PointId → Prop
   airspaceVolume : AirspaceVolumeId → List PointId → Prop
 
 structure ConcreteTaxiRoute where
@@ -103,6 +105,19 @@ structure ConcreteCircuitJoinPathBinding where
   circuitPoints : List PointId
   deriving DecidableEq, Repr
 
+structure ConcreteCircuitExtendedDownwindBinding where
+  circuit : CircuitProcedureId
+  pathPoints : List PointId
+  offRampPoints : List (List PointId)
+  deriving DecidableEq, Repr
+
+structure ConcreteCircuitOrbitBinding where
+  circuit : CircuitProcedureId
+  orbitPoint : PointId
+  direction : OrbitDirection
+  loopPoints : List PointId
+  deriving DecidableEq, Repr
+
 structure ConcreteAirspaceVolumeBinding where
   airspace : AirspaceVolumeId
   points : List PointId
@@ -132,6 +147,8 @@ structure ConcreteResolutionWorld where
   publishedHandoffs : List ConcretePublishedHandoffBinding := []
   circuitJoins : List ConcreteCircuitJoinBinding := []
   circuitJoinPaths : List ConcreteCircuitJoinPathBinding := []
+  circuitExtendedDownwinds : List ConcreteCircuitExtendedDownwindBinding := []
+  circuitOrbits : List ConcreteCircuitOrbitBinding := []
   airspaceVolumes : List ConcreteAirspaceVolumeBinding := []
   deriving Repr
 
@@ -195,6 +212,12 @@ def ConcreteResolutionWorld.toResolutionWorld
       ∃ binding ∈ world.circuitJoinPaths,
         binding.circuit = circuit ∧
         binding.circuitPoints = points
+    circuitExtendedDownwind := fun circuit pathPoints offRampPoints =>
+      { circuit := circuit, pathPoints := pathPoints, offRampPoints := offRampPoints } ∈
+        world.circuitExtendedDownwinds
+    circuitOrbit := fun circuit orbitPoint direction loopPoints =>
+      { circuit := circuit, orbitPoint := orbitPoint, direction := direction, loopPoints := loopPoints } ∈
+        world.circuitOrbits
     airspaceVolume := fun airspace points =>
       { airspace := airspace, points := points } ∈ world.airspaceVolumes }
 
@@ -276,6 +299,29 @@ theorem ConcreteResolutionWorld.mem_circuitJoin
     world.toResolutionWorld.circuitJoin direction joinType runway circuit altitude := by
   simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
 
+theorem ConcreteResolutionWorld.mem_circuitExtendedDownwind
+    {world : ConcreteResolutionWorld}
+    {circuit : CircuitProcedureId}
+    {pathPoints : List PointId}
+    {offRampPoints : List (List PointId)}
+    (hMem :
+      { circuit := circuit, pathPoints := pathPoints, offRampPoints := offRampPoints } ∈
+        world.circuitExtendedDownwinds) :
+    world.toResolutionWorld.circuitExtendedDownwind circuit pathPoints offRampPoints := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
+theorem ConcreteResolutionWorld.mem_circuitOrbit
+    {world : ConcreteResolutionWorld}
+    {circuit : CircuitProcedureId}
+    {orbitPoint : PointId}
+    {direction : OrbitDirection}
+    {loopPoints : List PointId}
+    (hMem :
+      { circuit := circuit, orbitPoint := orbitPoint, direction := direction, loopPoints := loopPoints } ∈
+        world.circuitOrbits) :
+    world.toResolutionWorld.circuitOrbit circuit orbitPoint direction loopPoints := by
+  simpa [ConcreteResolutionWorld.toResolutionWorld] using hMem
+
 theorem ConcreteResolutionWorld.mem_airspaceVolume
     {world : ConcreteResolutionWorld}
     {airspace : AirspaceVolumeId}
@@ -299,6 +345,8 @@ structure ResolutionState where
   currentRole : Option RoleName := none
   currentFix : Option FixId := none
   currentRunway : Option RunwayId := none
+  currentApproach : Option ApproachId := none
+  currentCircuit : Option CircuitProcedureId := none
   onGround : Option Bool := none
   deriving DecidableEq, Repr
 
@@ -775,7 +823,35 @@ inductive ResolvesIndexedStep :
               missedApproachPoints := missedApproachPoints
               missedApproachHoldingPattern := missedApproachHoldingPattern })
           (by simp [resolutionCompatible]))
+        { state with currentApproach := some approach }
+  | continueApproach
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (approach : ApproachId)
+      (waypointPoints : List PointId)
+      (thresholdPoint : PointId)
+      (state : ResolutionState)
+      (hCurrentApproach : state.currentApproach = some approach)
+      (hWaypoints : world.approachWaypoints approach waypointPoints)
+      (hThreshold : world.approachThreshold approach thresholdPoint) :
+      ResolvesIndexedStep
+        world
         state
+        fallbackDomain
+        index
+        (.continueApproach target)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.continueApproach target)
+          (.continueApproach
+            { approach := approach
+              waypointPoints := waypointPoints
+              thresholdPoint := thresholdPoint })
+          (by simp [resolutionCompatible]))
+        { state with currentApproach := some approach }
   | contactFrequencyExplicit
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)
@@ -1245,7 +1321,65 @@ inductive ResolvesIndexedStep :
               entryPathPoints := entryPathPoints
               circuitPoints := circuitPoints })
           (by simp [resolutionCompatible]))
+        { state with currentCircuit := some circuit }
+  | extendDownwind
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (circuit : CircuitProcedureId)
+      (extendedPathPoints : List PointId)
+      (offRampPoints : List (List PointId))
+      (state : ResolutionState)
+      (hCurrentCircuit : state.currentCircuit = some circuit)
+      (hExtendedDownwind :
+        world.circuitExtendedDownwind circuit extendedPathPoints offRampPoints) :
+      ResolvesIndexedStep
+        world
         state
+        fallbackDomain
+        index
+        (.extendDownwind target)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.extendDownwind target)
+          (.extendDownwind
+            { circuit := circuit
+              extendedPathPoints := extendedPathPoints
+              offRampPoints := offRampPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentCircuit := some circuit }
+  | orbit
+      (world : ResolutionWorld)
+      (fallbackDomain : ClearanceDomain)
+      (index : Nat)
+      (target : AircraftId)
+      (direction : OrbitDirection)
+      (circuit : CircuitProcedureId)
+      (orbitPoint : PointId)
+      (loopPoints : List PointId)
+      (state : ResolutionState)
+      (hCurrentCircuit : state.currentCircuit = some circuit)
+      (hCurrentPoint : state.currentPoint = some orbitPoint)
+      (hOrbit : world.circuitOrbit circuit orbitPoint direction loopPoints) :
+      ResolvesIndexedStep
+        world
+        state
+        fallbackDomain
+        index
+        (.orbit target direction)
+        (compileResolvedStep
+          index
+          fallbackDomain
+          (.orbit target direction)
+          (.orbit
+            { circuit := circuit
+              orbitPoint := orbitPoint
+              direction := direction
+              loopPoints := loopPoints })
+          (by simp [resolutionCompatible]))
+        { state with currentPoint := some orbitPoint, currentCircuit := some circuit }
   | plain
       (world : ResolutionWorld)
       (fallbackDomain : ClearanceDomain)

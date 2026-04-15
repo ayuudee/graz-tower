@@ -159,6 +159,7 @@ fun reconcileClearances(
 
     val activationResult = pendingIds.fold(ActivationAcc(working = afterCompletion)) { acc, clearanceId ->
         val current = acc.working.findById(clearanceId) ?: return@fold acc
+        if (current.status != ClearanceStatus.CONDITION_PENDING) return@fold acc
         val condition = current.source.condition ?: return@fold acc
         if (!conditionEvaluator(current.aircraft, condition)) return@fold acc
 
@@ -227,4 +228,3 @@ private fun applyIncomingSupersession(
 
 private fun List<ManagedClearance>.findById(id: ClearanceId): ManagedClearance? =
     firstOrNull { managed -> managed.source.id == id }
-

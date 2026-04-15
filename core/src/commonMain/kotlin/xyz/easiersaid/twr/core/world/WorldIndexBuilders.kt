@@ -17,8 +17,24 @@ fun AviationWorld.buildWorldIndex(): WorldIndex =
         surfaceBySegment = geometry.expandSegmentValues { segment -> segment.surface },
         lengthBySegment = geometry.expandSegmentValues { segment -> segment.length },
         widthBySegment = geometry.expandSegmentValues { segment -> segment.width },
-        entitiesByPoint = deriveEntitiesByPoint()
+        entitiesByPoint = deriveEntitiesByPoint(),
+        holdingPointsByRunway = deriveHoldingPointsByRunway(),
+        circuitLegsByPoint = deriveCircuitLegsByPoint(),
     )
+
+fun AviationWorld.deriveHoldingPointsByRunway(): Map<xyz.easiersaid.twr.protocol.RunwayId, Set<PointId>> {
+    val entries = aerodromes.values.flatMap { aerodrome ->
+        aerodrome.taxiways.values.flatMap { taxiway ->
+            taxiway.holdingPoints.mapNotNull { hp ->
+                hp.runway?.let { runway -> runway to hp.point }
+            }
+        }
+    }
+    return entries.groupBy(
+        keySelector = { (runway, _) -> runway },
+        valueTransform = { (_, point) -> point }
+    ).mapValues { (_, points) -> points.toSet() }
+}
 
 fun AviationWorld.deriveAdjacency(): Map<PointId, Set<PointId>> {
     val edges = geometry.segments.keys.flatMap { segment ->
@@ -151,6 +167,20 @@ private fun AviationWorld.collectAirspaceEntries(): List<Pair<PointId, EntityRef
         val ref = EntityRef.AirspaceVolumeRef(airspaceVolume.id)
         airspaceVolume.points.map { point -> point to ref }
     }
+
+fun AviationWorld.deriveCircuitLegsByPoint(): Map<xyz.easiersaid.twr.protocol.PointId, Set<LegName>> {
+    val entries = aerodromes.values.flatMap { aerodrome ->
+        aerodrome.circuits.values.flatMap { circuit ->
+            circuit.legs.flatMap { leg ->
+                leg.path.points.map { point -> point to leg.name }
+            }
+        }
+    }
+    return entries.groupBy(
+        keySelector = { (point, _) -> point },
+        valueTransform = { (_, legName) -> legName }
+    ).mapValues { (_, names) -> names.toSet() }
+}
 
 private fun <T> PhysicalGeometry.expandSegmentValues(
     valueSelector: (SegmentGeometry) -> T

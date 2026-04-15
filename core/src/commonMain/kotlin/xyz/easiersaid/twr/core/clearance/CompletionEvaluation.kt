@@ -203,6 +203,12 @@ private fun evaluateStepCompletion(
             }
         }
 
+        is ResolvedStep.ContinueApproachStep -> CompletionResult.NOT_COMPLETE
+
+        is ResolvedStep.ExtendDownwindStep -> CompletionResult.NOT_APPLICABLE
+
+        is ResolvedStep.OrbitStep -> CompletionResult.NOT_APPLICABLE
+
         is ResolvedStep.Vector -> evaluateVectorCompletion(step.vector, view)
 
         is ResolvedStep.Plain -> evaluateGenericInstructionCompletion(step.instruction, view)

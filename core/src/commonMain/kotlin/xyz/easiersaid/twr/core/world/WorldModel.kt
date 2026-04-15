@@ -314,5 +314,7 @@ data class WorldIndex(
     val surfaceBySegment: Map<SegmentId, SurfaceType> = emptyMap(),
     val lengthBySegment: Map<SegmentId, Meters> = emptyMap(),
     val widthBySegment: Map<SegmentId, Meters> = emptyMap(),
-    val entitiesByPoint: Map<PointId, Set<EntityRef>> = emptyMap()
+    val entitiesByPoint: Map<PointId, Set<EntityRef>> = emptyMap(),
+    val holdingPointsByRunway: Map<RunwayId, Set<PointId>> = emptyMap(),
+    val circuitLegsByPoint: Map<PointId, Set<LegName>> = emptyMap(),
 )

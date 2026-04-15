@@ -191,19 +191,20 @@ As of April 15, 2026:
   [GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
   freezing the shared source-domain-supplied convention for the
   metadata-domain-less persistent families, and
-  [GreenfieldRouteAdjacentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentCurrentShape.lean)
-  packaging the whole delivered Phase B set behind one source-level
-  current-shape theorem boundary
-  now provide the first small closed Phase B slices:
-  `ContinueApproach` now has a single-step slice plus a narrow current-shape
+  [GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
+  now packages the whole delivered Phase B set behind one source-level
+  world-backed theorem boundary on the current explicit approach/circuit model;
+  the earlier current-shape files remain historical context for how the branch
+  was widened
+  and the first small closed Phase B slices:
+  `ContinueApproach` now has a single-step slice plus a narrow world-backed
   compound slice, and `ExtendDownwind` / `Orbit` now each also have a narrow
-  current-shape compound slice on top of their single-step slice;
+  world-backed compound slice on top of their single-step slice;
   together these packages cover source-level issuance into
   `ReachableResolvedSet`, current lifecycle behavior, and explicit current
   supersession / engine-consequence theorems
-- [GreenfieldRouteAdjacentAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentAuthority.lean)
-  now closes the current-shape authority layer for that delivered Phase B
-  set:
+- [GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+  now closes the authority layer for that delivered world-backed Phase B set:
   `ContinueApproach` is treated conservatively as
   `(instrumentApproach, sequence)` on the current type-level role model,
   while `ExtendDownwind` and `Orbit` map to
@@ -393,11 +394,12 @@ The default critical path is now:
   [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
   remains the main route-centric widening track, but it is no longer the only
   live widening branch
-- the current route-bearing / route-adjacent widening state now has a closed
-  Phase A greenfield surface plus small current-shape compound slices for
-  `ContinueApproach`, `ExtendDownwind`, and `Orbit`, with one source-level
-  current-shape theorem packaging for that delivered Phase B set plus a
-  current-shape authority layer for the same families
+- the current route-bearing / route-adjacent widening state now has two closed
+  world-backed branches on their current explicit models:
+  Phase A route-bearing is closed on the graph-backed published-procedure
+  model, and Phase B route-adjacent is closed on the current
+  approach/circuit-state model with one source-level world-backed theorem
+  package and a matching world-backed authority layer
 - the current Kotlin airspace-clearance family now also has a first honest
   greenfield slice:
   `RemainOutsideControlledAirspace` is covered as a small single-step package,
@@ -523,7 +525,7 @@ The default critical path is now:
   [GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
   [GreenfieldRouteControlCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),
   and
-  [GreenfieldRouteControlDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlDeliveredCurrentShape.lean),
+  [GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean),
   plus the delivered air-modifier/admin subset in
   [GreenfieldAirModifierCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirModifierCurrentShape.lean),
   with the route/vector surface now widened through its first narrow

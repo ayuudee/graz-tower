@@ -3,8 +3,11 @@ package xyz.easiersaid.twr.core.clearance
 import xyz.easiersaid.twr.core.resolution.ResolvedApproachClearance
 import xyz.easiersaid.twr.core.resolution.ResolvedAirspaceInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedCircuitJoinInstruction
+import xyz.easiersaid.twr.core.resolution.ResolvedContinueApproachInstruction
+import xyz.easiersaid.twr.core.resolution.ResolvedExtendedDownwindInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedHoldingInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedHoldingPoint
+import xyz.easiersaid.twr.core.resolution.ResolvedOrbitInstruction
 import xyz.easiersaid.twr.core.resolution.ResolvedRoleFrequency
 import xyz.easiersaid.twr.core.resolution.ResolvedRouteClearance
 import xyz.easiersaid.twr.core.resolution.ResolvedRunwayCrossing
@@ -24,6 +27,7 @@ import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.CompletionCategory
+import xyz.easiersaid.twr.protocol.ContinueApproach
 import xyz.easiersaid.twr.protocol.ContinuePresentHeading
 import xyz.easiersaid.twr.protocol.FlyHeading
 import xyz.easiersaid.twr.protocol.HoldShortOf
@@ -34,6 +38,7 @@ import xyz.easiersaid.twr.protocol.JoinCircuit
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
@@ -42,12 +47,15 @@ import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnHeading
+import xyz.easiersaid.twr.protocol.ApproachId
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedLowApproach
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.Orbit
 import xyz.easiersaid.twr.protocol.instructionSupersedesIn
 
 data class ClearanceResolutionContext(
@@ -57,6 +65,8 @@ data class ClearanceResolutionContext(
     val currentRole: RoleName? = null,
     val currentFix: FixId? = null,
     val currentRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
+    val currentApproach: ApproachId? = null,
+    val currentCircuit: CircuitProcedureId? = null,
     val onGround: Boolean? = null
 )
 
@@ -203,6 +213,33 @@ sealed interface ResolvedStep {
         override val domain: ClearanceDomain,
         override val completionCategory: CompletionCategory?,
         val join: ResolvedCircuitJoinInstruction
+    ) : ResolvedStep
+
+    data class ContinueApproachStep(
+        override val index: Int,
+        override val instruction: ContinueApproach,
+        override val timing: InstructionTiming?,
+        override val domain: ClearanceDomain,
+        override val completionCategory: CompletionCategory?,
+        val continuation: ResolvedContinueApproachInstruction
+    ) : ResolvedStep
+
+    data class ExtendDownwindStep(
+        override val index: Int,
+        override val instruction: ExtendDownwind,
+        override val timing: InstructionTiming?,
+        override val domain: ClearanceDomain,
+        override val completionCategory: CompletionCategory?,
+        val extension: ResolvedExtendedDownwindInstruction
+    ) : ResolvedStep
+
+    data class OrbitStep(
+        override val index: Int,
+        override val instruction: Orbit,
+        override val timing: InstructionTiming?,
+        override val domain: ClearanceDomain,
+        override val completionCategory: CompletionCategory?,
+        val orbit: ResolvedOrbitInstruction
     ) : ResolvedStep
 
     data class Vector(

@@ -62,13 +62,13 @@ theorem GreenfieldRouteBearingCurrentShapeReachableIssuanceTheorem
     (hReach : ReachableResolvedSet existing)
     (hFresh : clearance.id ∉ resolvedClearanceIds existing)
     (hIssuable : GreenfieldRouteBearingCurrentShapeIssuable world clearance) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   cases hIssuable
@@ -87,8 +87,8 @@ theorem GreenfieldRouteBearingCurrentShapeReachableIssuanceTheorem
           hContent
           hDomain
           hCondition
-          hAuthority with ⟨resolved, _, hResolve, hReachResolved⟩
-      exact ⟨resolved, hResolve, hReachResolved⟩
+          hAuthority with ⟨finalState, resolved, _, hResolve, hReachResolved⟩
+      exact ⟨finalState, resolved, hResolve, hReachResolved⟩
   case compound content primary tail hContent hSteps hReady hDomain hCondition hAuthority =>
       rcases GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
           (world := world)
@@ -106,8 +106,8 @@ theorem GreenfieldRouteBearingCurrentShapeReachableIssuanceTheorem
           hReady
           hDomain
           hCondition
-          hAuthority with ⟨resolved, _, hResolve, hReachResolved⟩
-      exact ⟨resolved, hResolve, hReachResolved⟩
+          hAuthority with ⟨finalState, resolved, _, hResolve, hReachResolved⟩
+      exact ⟨finalState, resolved, hResolve, hReachResolved⟩
 
 end Greenfield
 end CertifiedAtc

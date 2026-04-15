@@ -1,9 +1,9 @@
 import CertifiedAtc.ScopedSafety
 import CertifiedAtc.ScopedModes
 import CertifiedAtc.GreenfieldGroundMovementDeliveredCurrentShape
-import CertifiedAtc.GreenfieldRouteControlDeliveredCurrentShape
+import CertifiedAtc.GreenfieldRouteControlWorldBackedDeliveredCurrentShape
 import CertifiedAtc.GreenfieldAirModifierCurrentShape
-import CertifiedAtc.GreenfieldRouteAdjacentAuthority
+import CertifiedAtc.GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape
 import CertifiedAtc.GreenfieldRouteBearingCurrentShape
 import CertifiedAtc.GreenfieldRouteBearingAdmission
 import CertifiedAtc.GreenfieldRouteBearingCompound
@@ -60,9 +60,9 @@ def deliveredBranchClosureKind : DeliveredBranch → DeliveredClosureKind
   | .scopedCore => .scopedCoreComplete
   | .groundMovement => .worldBackedComplete
   | .routeBearing => .worldBackedComplete
-  | .routeAdjacent => .currentShapeComplete
+  | .routeAdjacent => .worldBackedComplete
   | .airspaceWorldBacked => .worldBackedComplete
-  | .routeControl => .currentShapeComplete
+  | .routeControl => .worldBackedComplete
   | .airModifier => .currentShapeComplete
   | .radio => .currentShapeComplete
   | .transponder => .currentShapeComplete
@@ -78,11 +78,11 @@ def deliveredBranchClosureKind : DeliveredBranch → DeliveredClosureKind
 @[simp] theorem deliveredBranchClosureKind_routeBearing :
     deliveredBranchClosureKind .routeBearing = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_routeAdjacent :
-    deliveredBranchClosureKind .routeAdjacent = .currentShapeComplete := rfl
+    deliveredBranchClosureKind .routeAdjacent = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_airspaceWorldBacked :
     deliveredBranchClosureKind .airspaceWorldBacked = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_routeControl :
-    deliveredBranchClosureKind .routeControl = .currentShapeComplete := rfl
+    deliveredBranchClosureKind .routeControl = .worldBackedComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_airModifier :
     deliveredBranchClosureKind .airModifier = .currentShapeComplete := rfl
 @[simp] theorem deliveredBranchClosureKind_radio :
@@ -120,10 +120,10 @@ abbrev RouteBearingDeliveredCompoundAuthorizedRefinementTheorem :=
   @GreenfieldRouteBearingCompoundCurrentShapeIssuanceTheorem
 
 abbrev RouteAdjacentDeliveredReachableRefinementTheorem :=
-  @GreenfieldRouteAdjacentCurrentShapeReachableIssuanceTheorem
+  @GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShapeReachableIssuanceTheorem
 
 abbrev RouteAdjacentDeliveredAuthorizedRefinementTheorem :=
-  @RouteAdjacentAuthorityCurrentShapeIssuanceTheorem
+  @GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev AirspaceWorldBackedDeliveredReachableRefinementTheorem :=
   @GreenfieldAirspaceWorldBackedDeliveredCurrentShapeReachableIssuanceTheorem
@@ -132,10 +132,10 @@ abbrev AirspaceWorldBackedDeliveredAuthorizedRefinementTheorem :=
   @GreenfieldAirspaceWorldBackedDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev RouteControlDeliveredReachableRefinementTheorem :=
-  @GreenfieldRouteControlDeliveredCurrentShapeReachableIssuanceTheorem
+  @GreenfieldRouteControlWorldBackedDeliveredCurrentShapeReachableIssuanceTheorem
 
 abbrev RouteControlDeliveredAuthorizedRefinementTheorem :=
-  @GreenfieldRouteControlDeliveredCurrentShapeAuthorizedIssuanceTheorem
+  @GreenfieldRouteControlWorldBackedDeliveredCurrentShapeAuthorizedIssuanceTheorem
 
 abbrev AirModifierDeliveredReachableRefinementTheorem :=
   @GreenfieldAirModifierCurrentShapeReachableIssuanceTheorem

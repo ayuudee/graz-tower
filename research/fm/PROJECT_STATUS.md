@@ -41,25 +41,24 @@ It now contains:
   `ExtendDownwind`, and `Orbit`, and the current persistent-only-compound
   consequence is now explicit in theorem-bearing execution regressions rather
   than being only an implicit engine artifact
-- the first route-adjacent widening increment above Phase A is now in place as
-  a small set of closed current-shape Phase B slices:
-  `ContinueApproach`, `ExtendDownwind`, and `Orbit` now each have a
-  single-step slice plus a narrow current-shape compound slice, with
-  `GreenfieldSourceDomainPersistentPlain.lean` freezing the shared null-domain
-  / source-domain-supplied helper story for the latter two, and
-  `GreenfieldRouteAdjacentCurrentShape.lean` packaging the delivered Phase B
-  surface behind one source-level current-shape theorem boundary;
+- the route-adjacent widening branch is now closed on the current explicit
+  approach/circuit model:
+  `ContinueApproach`, `ExtendDownwind`, and `Orbit` each have a world-backed
+  single-step slice plus a first narrow world-backed compound slice, with
+  `GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean` packaging the
+  delivered Phase B surface behind one source-level theorem boundary;
   together they now have source-level issuance into `ReachableResolvedSet`,
   explicit current lifecycle behavior, and explicit supersession /
-  engine-consequence theorems for the currently modeled cases
-- `GreenfieldRouteAdjacentAuthority.lean` now closes the current-shape
-  authority layer for that delivered Phase B surface:
+  engine-consequence theorems for the current model
+- `GreenfieldRouteAdjacentWorldBackedAuthority.lean` now closes the authority
+  layer for that delivered Phase B world-backed surface:
   `ContinueApproach` is treated conservatively as
   `(instrumentApproach, sequence)` on the current type-level role model,
   while `ExtendDownwind` and `Orbit` map to
   `(circuitProcedure, circuit)`;
-  the delivered Phase B single-step and narrow-compound slices now therefore
-  also have authority-gated issuance on the current greenfield boundary
+  the delivered Phase B world-backed single-step and narrow-compound slices now
+  therefore also have authority-gated issuance on the current greenfield
+  boundary
 - `GreenfieldAirspaceCurrentShape.lean` now closes the first honest widening
   slice for the current Kotlin airspace-clearance family:
   `RemainOutsideControlledAirspace`,
@@ -276,8 +275,8 @@ It now contains:
   [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
   now registers the load-bearing delivered theorem surfaces in one Lean
   module, and the tracked Kotlin drift tests now cover frozen metadata plus
-  the delivered current-engine seams for stable runtime and route-adjacent
-  behavior
+  the delivered stable-runtime seams and the route-adjacent world-backed
+  behavior surface
 - `GroundMovementResolutionBridge.lean`,
   `GreenfieldGroundMovementCurrentShape.lean`, and
   `GreenfieldGroundMovementDeliveredCurrentShape.lean` now close the broader

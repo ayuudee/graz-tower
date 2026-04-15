@@ -11,7 +11,7 @@ The delivered slice is:
 
 - single-step radio (`ContactFrequency`, `MonitorFrequency`)
 - single-step transponder/surveillance
-- first narrow mixed radio/transponder compounds over those delivered families
+- delivered mixed radio/transponder compounds over those families
 
 This keeps the current widening honest:
 
@@ -44,6 +44,55 @@ abbrev GreenfieldCommunicationsDeliveredCurrentShapeWorldAuthorized
     (controller : AgentId)
     (steps : List AtcInstruction) : Prop :=
   CommunicationsCompoundWorldAuthorized world controller steps
+
+theorem GreenfieldCommunicationsDeliveredCurrentShapeReachableIssuanceTheorem
+    {world : RouteBearingScopedAviationWorld}
+    {existing : List ManagedResolvedClearance}
+    {initialState : ResolutionState}
+    {clearance : StructuredClearance}
+    (hReach : ReachableResolvedSet existing)
+    (hFresh : clearance.id ∉ resolvedClearanceIds existing)
+    (hIssuable : GreenfieldCommunicationsDeliveredCurrentShapeIssuable world clearance) :
+    ∃ resolved,
+      ResolvesClearance
+        (RouteBearingScopedAviationWorld.toResolutionWorld world)
+        initialState
+        clearance
+        resolved
+        initialState ∧
+      ReachableResolvedSet
+        (admitResolvedClearance existing resolved).clearances := by
+  cases hIssuable with
+  | radioSingle hRadio =>
+      exact
+        GreenfieldRadioCurrentShapeAdmissionSoundnessTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hRadio
+  | transponderSingle hTransponder =>
+      exact
+        GreenfieldTransponderDeliveredCurrentShapeReachableIssuanceTheorem
+          (world := RouteBearingScopedAviationWorld.toResolutionWorld world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hTransponder
+  | compound hCompound =>
+      exact
+        GreenfieldCommunicationsCompoundCurrentShapeIssuanceTheorem
+          (world := world)
+          (existing := existing)
+          (initialState := initialState)
+          (clearance := clearance)
+          hReach
+          hFresh
+          hCompound
 
 theorem GreenfieldCommunicationsDeliveredCurrentShapeAuthorizedIssuanceTheorem
     {world : RouteBearingScopedAviationWorld}

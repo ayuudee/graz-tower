@@ -40,6 +40,12 @@ structure ScopedCircuitJoinSource where
   entryPath : Option (List PointId) := none
   deriving DecidableEq, Repr
 
+structure ScopedOrbitPointSource where
+  point : PointId
+  direction : Greenfield.OrbitDirection
+  loopPoints : List PointId
+  deriving DecidableEq, Repr
+
 structure ScopedCircuitSource where
   id : CircuitProcedureId
   runway : RunwayId
@@ -50,6 +56,7 @@ structure ScopedCircuitSource where
   reportingPoints : List CompileReportingPointView := []
   joinProcedures : List ScopedCircuitJoinSource := []
   extendedDownwind : Option CompileExtendedDownwindView := none
+  orbitPoints : List ScopedOrbitPointSource := []
   deriving DecidableEq, Repr
 
 def ScopedCircuitSource.toCompileView

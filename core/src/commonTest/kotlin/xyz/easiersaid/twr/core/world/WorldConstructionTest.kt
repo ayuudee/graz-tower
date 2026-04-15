@@ -261,9 +261,9 @@ internal fun sampleWorld(): AviationWorld {
                 FixtureIds.holdFixPoint
             )
         ),
-        legTime = xyz.easiersaid.twr.protocol.Minutes(1),
+        legTime = xyz.easiersaid.twr.protocol.Minutes.unsafe(1),
         maxSpeed = Knots.unsafe(200),
-        altitude = Level.AltitudeFeet(3000),
+        altitude = Level.AltitudeFeet.unsafe(3000),
         stackSeparation = Feet(1000)
     )
     val circuit = CircuitProcedure(
@@ -277,7 +277,7 @@ internal fun sampleWorld(): AviationWorld {
             CircuitLeg(LegName.BASE, Path(listOf(FixtureIds.downwindEnd, FixtureIds.baseTurn))),
             CircuitLeg(LegName.FINAL, Path(listOf(FixtureIds.baseTurn, FixtureIds.runway09Threshold)))
         ),
-        altitude = Level.AltitudeFeet(1800),
+        altitude = Level.AltitudeFeet.unsafe(1800),
         reportingPoints = mapOf(LegName.DOWNWIND to FixtureIds.downwindEnd),
         joinProcedures = listOf(
             CircuitJoin(
@@ -303,7 +303,7 @@ internal fun sampleWorld(): AviationWorld {
             Waypoint(
                 FixtureIds.sidExit,
                 "SIDEXIT",
-                altitudeConstraint = AltitudeConstraint.AtOrAbove(Level.AltitudeFeet(2500))
+                altitudeConstraint = AltitudeConstraint.AtOrAbove(Level.AltitudeFeet.unsafe(2500))
             )
         ),
         transitions = mapOf(
@@ -333,8 +333,8 @@ internal fun sampleWorld(): AviationWorld {
         ),
         minimumAltitude = ApproachMinimum(
             type = MinimumType.DECISION_ALTITUDE,
-            altitude = Level.AltitudeFeet(1500),
-            height = Level.HeightFeet(250)
+            altitude = Level.AltitudeFeet.unsafe(1500),
+            height = Level.HeightFeet.unsafe(250)
         ),
         missedApproach = MissedApproachProcedure(
             waypoints = listOf(
@@ -374,8 +374,8 @@ internal fun sampleWorld(): AviationWorld {
         icao = FixtureIds.aerodrome,
         elevation = Feet(420),
         magneticVariation = Degrees(2.0),
-        transitionAltitude = Level.AltitudeFeet(5000),
-        transitionLevel = Level.FlightLevel(60),
+        transitionAltitude = Level.AltitudeFeet.unsafe(5000),
+        transitionLevel = Level.FlightLevel.unsafe(60),
         roles = mapOf(
             RoleName.GROUND to role(
                 RoleName.GROUND,
@@ -459,7 +459,7 @@ internal fun sampleWorld(): AviationWorld {
             Waypoint(FixtureIds.holdFixPoint, "HOLD")
         ),
         altitudeBand = AltitudeBand(
-            lower = AltitudeBoundary.AtLevel(Level.AltitudeFeet(3000)),
+            lower = AltitudeBoundary.AtLevel(Level.AltitudeFeet.unsafe(3000)),
             upper = AltitudeBoundary.Unlimited
         )
     )

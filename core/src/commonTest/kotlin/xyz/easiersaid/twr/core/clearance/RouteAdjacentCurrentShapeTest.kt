@@ -1,12 +1,13 @@
 package xyz.easiersaid.twr.core.clearance
 
+import arrow.core.Either
 import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import xyz.easiersaid.twr.core.resolution.ResolutionResult
+import xyz.easiersaid.twr.core.resolution.ResolutionFailureCode
 import xyz.easiersaid.twr.core.world.FixtureIds
-import xyz.easiersaid.twr.core.world.sampleWorld
+import xyz.easiersaid.twr.core.world.routeAdjacentWorld
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ClearanceContent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
@@ -25,10 +26,13 @@ import xyz.easiersaid.twr.protocol.TickNumber
 class RouteAdjacentCurrentShapeTest {
 
     @Test
-    fun continueApproachResolvesAsPlainAndRemainsActiveUnderCurrentEngine() {
-        val world = sampleWorld()
+    fun continueApproachResolvesAgainstCurrentApproachAndRemainsActive() {
+        val world = routeAdjacentWorld()
         val clearance = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentApproach = FixtureIds.approach
+            ),
             clearance = structuredClearance(
                 id = "CLR-CONT-APP",
                 domain = ClearanceDomain.ROUTE,
@@ -36,8 +40,9 @@ class RouteAdjacentCurrentShapeTest {
             )
         ).requireResolved()
 
-        val step = assertIs<ResolvedStep.Plain>(clearance.steps.single())
-        assertEquals(ClearanceDomain.ROUTE, step.domain)
+        val step = assertIs<ResolvedStep.ContinueApproachStep>(clearance.steps.single())
+        assertEquals(FixtureIds.approach, step.continuation.approach.id)
+        assertEquals(listOf(FixtureIds.iafPoint, FixtureIds.fafPoint, FixtureIds.runway09Threshold), step.continuation.waypointPoints)
 
         val evaluation = evaluateCompletion(
             clearance = clearance,
@@ -53,10 +58,13 @@ class RouteAdjacentCurrentShapeTest {
     }
 
     @Test
-    fun extendDownwindAndOrbitUseSourceDomainConventionAndRemainActive() {
-        val world = sampleWorld()
+    fun extendDownwindAndOrbitResolveAgainstCurrentCircuitContext() {
+        val world = routeAdjacentWorld()
         val extendDownwind = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentCircuit = FixtureIds.circuit09
+            ),
             clearance = structuredClearance(
                 id = "CLR-EXT-DW",
                 domain = ClearanceDomain.RUNWAY,
@@ -64,7 +72,11 @@ class RouteAdjacentCurrentShapeTest {
             )
         ).requireResolved()
         val orbit = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentPoint = FixtureIds.downwindEnd,
+                currentCircuit = FixtureIds.circuit09
+            ),
             clearance = structuredClearance(
                 id = "CLR-ORBIT",
                 domain = ClearanceDomain.RUNWAY,
@@ -72,10 +84,17 @@ class RouteAdjacentCurrentShapeTest {
             )
         ).requireResolved()
 
-        val extendStep = assertIs<ResolvedStep.Plain>(extendDownwind.steps.single())
-        val orbitStep = assertIs<ResolvedStep.Plain>(orbit.steps.single())
-        assertEquals(ClearanceDomain.RUNWAY, extendStep.domain)
-        assertEquals(ClearanceDomain.RUNWAY, orbitStep.domain)
+        val extendStep = assertIs<ResolvedStep.ExtendDownwindStep>(extendDownwind.steps.single())
+        val orbitStep = assertIs<ResolvedStep.OrbitStep>(orbit.steps.single())
+
+        assertEquals(FixtureIds.circuit09, extendStep.extension.circuit.id)
+        assertEquals(
+            listOf(FixtureIds.downwindEnd, xyz.easiersaid.twr.core.world.RouteAdjacentFixtureIds.extendedDownwindEnd),
+            extendStep.extension.extendedPathPoints
+        )
+        assertEquals(FixtureIds.circuit09, orbitStep.orbit.circuit.id)
+        assertEquals(FixtureIds.downwindEnd, orbitStep.orbit.orbitPoint)
+        assertEquals(OrbitDirection.LEFT, orbitStep.orbit.direction)
 
         val view = CompletionView(
             position = FixtureIds.downwindEnd,
@@ -91,15 +110,38 @@ class RouteAdjacentCurrentShapeTest {
             CompletionResult.NOT_APPLICABLE,
             evaluateCompletion(orbit, view).stepResults.single().result
         )
-        assertEquals(ClearanceStatus.ACTIVE, evaluateCompletion(extendDownwind, view).updated.source.status)
-        assertEquals(ClearanceStatus.ACTIVE, evaluateCompletion(orbit, view).updated.source.status)
+    }
+
+    @Test
+    fun orbitRequiresCurrentPointMatchingPublishedOrbitPoint() {
+        val world = routeAdjacentWorld()
+        val result = world.resolveClearance(
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentPoint = FixtureIds.crosswindEnd,
+                currentCircuit = FixtureIds.circuit09
+            ),
+            clearance = structuredClearance(
+                id = "CLR-ORBIT",
+                domain = ClearanceDomain.RUNWAY,
+                content = ClearanceContent.Single(Orbit(TEST_AIRCRAFT, OrbitDirection.LEFT))
+            )
+        )
+
+        when (result) {
+            is Either.Left -> assertEquals(ResolutionFailureCode.NO_ORBIT_POINT, result.value.code)
+            is Either.Right -> error("Expected orbit resolution to fail when no published orbit point matches the current point")
+        }
     }
 
     @Test
     fun routeAdjacentSupersessionMatchesCurrentEngine() {
-        val world = sampleWorld()
+        val world = routeAdjacentWorld()
         val continueApproach = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentApproach = FixtureIds.approach
+            ),
             clearance = structuredClearance(
                 id = "CLR-CONT-APP",
                 domain = ClearanceDomain.ROUTE,
@@ -107,7 +149,10 @@ class RouteAdjacentCurrentShapeTest {
             )
         ).requireResolved()
         val extendDownwind = world.resolveClearance(
-            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            context = ClearanceResolutionContext(
+                aerodromeId = FixtureIds.aerodrome,
+                currentCircuit = FixtureIds.circuit09
+            ),
             clearance = structuredClearance(
                 id = "CLR-EXT-DW",
                 domain = ClearanceDomain.RUNWAY,
@@ -160,5 +205,5 @@ private fun structuredClearance(
         status = status
     )
 
-private fun <T> ResolutionResult<T>.requireResolved(): T =
+private fun <T> arrow.core.Either<xyz.easiersaid.twr.core.resolution.ResolutionFailure, T>.requireResolved(): T =
     getOrElse { failure -> error("Expected resolved, got ${failure.code}: ${failure.message}") }

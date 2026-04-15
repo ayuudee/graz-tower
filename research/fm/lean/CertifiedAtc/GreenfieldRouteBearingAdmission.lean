@@ -36,7 +36,7 @@ def greenfieldRouteBearingAdmissibleDomain : AtcInstruction → ClearanceDomain
 def greenfieldRouteBearingRequiredAuthorityGrant? :
     AtcInstruction → Option CompileAuthorityGrantView
   | .clearedTo _ _ _ =>
-      none
+      some { entityType := .fix, operation := .routeClearance }
   | .holdAt _ (.published _) _ =>
       some { entityType := .holdingPattern, operation := .hold }
   | .clearedApproach _ _ _ none =>
@@ -96,41 +96,43 @@ theorem resolvesSingleGreenfieldRouteBearingClearance_of_ready
     (hContent : clearance.content = .single instruction)
     (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain instruction)
     (hCondition : clearance.condition = none) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState := by
+        finalState := by
   cases instruction with
   | clearedTo target clearanceLimit route =>
-          exact resolvesSingleClearedToClearance_of_ready
-            (world := world)
-            (initialState := initialState)
-            (clearance := clearance)
-            (target := target)
-            (clearanceLimit := clearanceLimit)
-            (route := route)
-            hWf
-            hReady
-            hContent
-            (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
-            hCondition
+      rcases resolvesSingleClearedToClearance_of_ready
+          (world := world)
+          (initialState := initialState)
+          (clearance := clearance)
+          (target := target)
+          (clearanceLimit := clearanceLimit)
+          (route := route)
+          hWf
+          hReady
+          hContent
+          (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
+          hCondition with ⟨resolved, hResolve⟩
+      exact ⟨initialState, resolved, hResolve⟩
   | holdAt target hold efc =>
       cases hold with
       | published fixId =>
-          exact resolvesSinglePublishedHoldAtClearance_of_ready
-            (world := world)
-            (initialState := initialState)
-            (clearance := clearance)
-            (target := target)
-            (fixId := fixId)
-            (efc := efc)
-            hReady
-            hContent
-            (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
-            hCondition
+          rcases resolvesSinglePublishedHoldAtClearance_of_ready
+              (world := world)
+              (initialState := initialState)
+              (clearance := clearance)
+              (target := target)
+              (fixId := fixId)
+              (efc := efc)
+              hReady
+              hContent
+              (by simpa [greenfieldRouteBearingAdmissibleDomain] using hDomain)
+              hCondition with ⟨resolved, hResolve⟩
+          exact ⟨initialState, resolved, hResolve⟩
       | inboundTrack fixId inboundDegreesMagnetic turnDirection legTime legDistance =>
           cases hIssued
   | clearedApproach target approachType runway circlingRunway =>
@@ -181,13 +183,13 @@ theorem GreenfieldRouteBearingAdmissionSoundnessTheorem
     (hContent : clearance.content = .single instruction)
     (hDomain : clearance.domain = greenfieldRouteBearingAdmissibleDomain instruction)
     (hCondition : clearance.condition = none) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       ResolvesClearance
         (RouteBearingScopedAviationWorld.toResolutionWorld world)
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   rcases resolvesSingleGreenfieldRouteBearingClearance_of_ready
@@ -200,10 +202,10 @@ theorem GreenfieldRouteBearingAdmissionSoundnessTheorem
       hReady
       hContent
       hDomain
-      hCondition with ⟨resolved, hResolve⟩
+      hCondition with ⟨finalState, resolved, hResolve⟩
   have hFreshResolved : resolved.source.id ∉ resolvedClearanceIds existing := by
     simpa [hResolve.sourceEq] using hFresh
-  refine ⟨resolved, hResolve, ?_⟩
+  refine ⟨finalState, resolved, hResolve, ?_⟩
   exact ReachableResolvedSet.admit_of_resolved hReach hFreshResolved hResolve
 
 theorem GreenfieldRouteBearingCurrentShapeIssuanceTheorem
@@ -225,7 +227,7 @@ theorem GreenfieldRouteBearingCurrentShapeIssuanceTheorem
       | none => True
       | some grant =>
           WorldControllerHasGrant world.toScopedAviationWorld clearance.issuedBy grant) :
-    ∃ resolved,
+    ∃ finalState, ∃ resolved,
       greenfieldRouteBearingIssuerAuthorized
         (extractRouteBearingCompileView world)
         clearance.issuedBy
@@ -235,7 +237,7 @@ theorem GreenfieldRouteBearingCurrentShapeIssuanceTheorem
         initialState
         clearance
         resolved
-        initialState ∧
+        finalState ∧
       ReachableResolvedSet
         (admitResolvedClearance existing resolved).clearances := by
   have hAuthorized :
@@ -269,8 +271,8 @@ theorem GreenfieldRouteBearingCurrentShapeIssuanceTheorem
       hReady
       hContent
       hDomain
-      hCondition with ⟨resolved, hResolve, hReachResolved⟩
-  exact ⟨resolved, hAuthorized, hResolve, hReachResolved⟩
+      hCondition with ⟨finalState, resolved, hResolve, hReachResolved⟩
+  exact ⟨finalState, resolved, hAuthorized, hResolve, hReachResolved⟩
 
 end Greenfield
 end CertifiedAtc

@@ -22,10 +22,12 @@ import xyz.easiersaid.twr.core.world.Taxiway
 import xyz.easiersaid.twr.core.world.VfrRoute
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.ClearedApproach
+import xyz.easiersaid.twr.protocol.ContinueApproach
 import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
 import xyz.easiersaid.twr.protocol.ClearedTo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.Heading
@@ -34,7 +36,10 @@ import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldSpec
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.MonitorFrequency
+import xyz.easiersaid.twr.protocol.Orbit
+import xyz.easiersaid.twr.protocol.OrbitDirection
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.ApproachId
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.RoleName
@@ -42,6 +47,7 @@ import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnDirection
+import xyz.easiersaid.twr.protocol.ExtendDownwind
 
 data class AerodromeResolutionContext(
     val aerodromeId: AerodromeId,
@@ -49,6 +55,8 @@ data class AerodromeResolutionContext(
     val currentPoint: PointId? = null,
     val currentFix: FixId? = null,
     val currentRunway: RunwayId? = null,
+    val currentApproach: ApproachId? = null,
+    val currentCircuit: CircuitProcedureId? = null,
     val onGround: Boolean? = null
 )
 
@@ -90,6 +98,11 @@ enum class ResolutionFailureCode {
     MULTIPLE_CONDITIONS_NOT_SUPPORTED,
     UNKNOWN_CIRCUIT_PROCEDURE,
     AMBIGUOUS_CIRCUIT_PROCEDURE,
+    MISSING_CURRENT_APPROACH,
+    MISSING_CURRENT_CIRCUIT,
+    NO_EXTENDED_DOWNWIND,
+    NO_ORBIT_POINT,
+    AMBIGUOUS_ORBIT_POINT,
     GROUND_STEP_NOT_ON_ACTIVE_TAXI_ROUTE,
     MISSING_CURRENT_RUNWAY
 }
@@ -179,6 +192,28 @@ data class ResolvedCircuitJoinInstruction(
     val circuitPoints: List<PointId>
 )
 
+data class ResolvedContinueApproachInstruction(
+    val aerodrome: Aerodrome,
+    val approach: InstrumentApproach,
+    val waypointPoints: List<PointId>,
+    val thresholdPoint: PointId
+)
+
+data class ResolvedExtendedDownwindInstruction(
+    val aerodrome: Aerodrome,
+    val circuit: CircuitProcedure,
+    val extendedPathPoints: List<PointId>,
+    val offRampPoints: List<List<PointId>>
+)
+
+data class ResolvedOrbitInstruction(
+    val aerodrome: Aerodrome,
+    val circuit: CircuitProcedure,
+    val orbitPoint: PointId,
+    val direction: OrbitDirection,
+    val loopPoints: List<PointId>
+)
+
 data class ResolvedAirspaceInstruction(
     val aerodrome: Aerodrome,
     val airspace: AirspaceVolume,
@@ -249,6 +284,115 @@ data class ResolvedVectorInstruction(
     val turnDegrees: Int? = null,
     val capturedHeading: Heading? = null
 )
+
+fun AviationWorld.resolveContinueApproach(
+    context: AerodromeResolutionContext,
+    instruction: ContinueApproach
+): ResolutionResult<ResolvedContinueApproachInstruction> {
+    val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AERODROME,
+        "Unknown aerodrome ${context.aerodromeId.value}"
+    )
+    val approachId = context.currentApproach ?: return unresolved(
+        ResolutionFailureCode.MISSING_CURRENT_APPROACH,
+        "Continue-approach resolution requires a current approach at aerodrome ${aerodrome.icao.value}"
+    )
+    val approach = aerodrome.approaches[approachId] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_APPROACH,
+        "Current approach ${approachId.value} is not defined at aerodrome ${aerodrome.icao.value}"
+    )
+    val runway = aerodrome.runways[approach.runway] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_RUNWAY,
+        "Approach ${approach.id.value} references unknown runway ${approach.runway.value} at aerodrome ${aerodrome.icao.value}"
+    )
+
+    return resolved(
+        ResolvedContinueApproachInstruction(
+            aerodrome = aerodrome,
+            approach = approach,
+            waypointPoints = approach.waypoints.map { waypoint -> waypoint.point },
+            thresholdPoint = runway.threshold
+        )
+    )
+}
+
+fun AviationWorld.resolveExtendDownwind(
+    context: AerodromeResolutionContext,
+    instruction: ExtendDownwind
+): ResolutionResult<ResolvedExtendedDownwindInstruction> {
+    val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AERODROME,
+        "Unknown aerodrome ${context.aerodromeId.value}"
+    )
+    val circuitId = context.currentCircuit ?: return unresolved(
+        ResolutionFailureCode.MISSING_CURRENT_CIRCUIT,
+        "Extend-downwind resolution requires a current circuit at aerodrome ${aerodrome.icao.value}"
+    )
+    val circuit = aerodrome.circuits[circuitId] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_CIRCUIT_PROCEDURE,
+        "Current circuit ${circuitId.value} is not defined at aerodrome ${aerodrome.icao.value}"
+    )
+    val extension = circuit.extendedDownwind ?: return unresolved(
+        ResolutionFailureCode.NO_EXTENDED_DOWNWIND,
+        "Circuit ${circuit.id.value} at aerodrome ${aerodrome.icao.value} has no published extended downwind"
+    )
+
+    return resolved(
+        ResolvedExtendedDownwindInstruction(
+            aerodrome = aerodrome,
+            circuit = circuit,
+            extendedPathPoints = extension.extendedPath.points,
+            offRampPoints = extension.offRamps.map { offRamp -> offRamp.path.points }
+        )
+    )
+}
+
+fun AviationWorld.resolveOrbit(
+    context: AerodromeResolutionContext,
+    instruction: Orbit
+): ResolutionResult<ResolvedOrbitInstruction> {
+    val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_AERODROME,
+        "Unknown aerodrome ${context.aerodromeId.value}"
+    )
+    val circuitId = context.currentCircuit ?: return unresolved(
+        ResolutionFailureCode.MISSING_CURRENT_CIRCUIT,
+        "Orbit resolution requires a current circuit at aerodrome ${aerodrome.icao.value}"
+    )
+    val circuit = aerodrome.circuits[circuitId] ?: return unresolved(
+        ResolutionFailureCode.UNKNOWN_CIRCUIT_PROCEDURE,
+        "Current circuit ${circuitId.value} is not defined at aerodrome ${aerodrome.icao.value}"
+    )
+    val currentPoint = context.currentPoint ?: return unresolved(
+        ResolutionFailureCode.MISSING_CURRENT_POINT,
+        "Orbit resolution requires a current point at aerodrome ${aerodrome.icao.value}"
+    )
+    val matches = circuit.orbitPoints.filter { orbitPoint ->
+        orbitPoint.point == currentPoint && orbitPoint.direction == instruction.direction
+    }
+    val orbitPoint = when (matches.size) {
+        0 -> return unresolved(
+            ResolutionFailureCode.NO_ORBIT_POINT,
+            "Circuit ${circuit.id.value} has no ${instruction.direction.name.lowercase()} orbit point at ${currentPoint.value}"
+        )
+
+        1 -> matches.single()
+        else -> return unresolved(
+            ResolutionFailureCode.AMBIGUOUS_ORBIT_POINT,
+            "Circuit ${circuit.id.value} has multiple ${instruction.direction.name.lowercase()} orbit points at ${currentPoint.value}"
+        )
+    }
+
+    return resolved(
+        ResolvedOrbitInstruction(
+            aerodrome = aerodrome,
+            circuit = circuit,
+            orbitPoint = orbitPoint.point,
+            direction = orbitPoint.direction,
+            loopPoints = orbitPoint.loop.points
+        )
+    )
+}
 
 fun AviationWorld.resolveRunwayOperation(
     aerodromeId: AerodromeId,

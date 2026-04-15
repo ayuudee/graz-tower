@@ -110,12 +110,14 @@ Then open the specific Lean module for the phase you are changing.
 - the next greenfield widening seam is no longer just Phase A route-bearing:
   the semantic-alignment gate for `JoinCircuit` / `ExtendDownwind` / `Orbit`
   is now closed, and `ContinueApproach`, `ExtendDownwind`, and `Orbit` each
-  now have a small current-shape theorem slice, with all three now widened
-  through a first narrow compound package and the shared null-domain /
-  source-domain-supplied helper story frozen for `ExtendDownwind` / `Orbit`;
-  `GreenfieldRouteAdjacentCurrentShape.lean` now packages that delivered
-  Phase B set behind one source-level current-shape theorem boundary, and
-  `GreenfieldRouteAdjacentAuthority.lean` now closes the current-shape
+  now have a world-backed theorem slice on the current explicit
+  approach/circuit model, with all three widened through a first narrow
+  world-backed compound package and the shared source-domain-supplied helper
+  story frozen for `ExtendDownwind` / `Orbit`;
+  `GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean` now packages
+  that delivered Phase B set behind one source-level world-backed theorem
+  boundary, and
+  `GreenfieldRouteAdjacentWorldBackedAuthority.lean` closes the matching
   authority layer for the same delivered Phase B families
 - the current Kotlin airspace-clearance family now also has a first honest
   greenfield widening slice in
@@ -326,8 +328,11 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
 - remember what is already closed and therefore not the default “next” task:
   the current graph-backed published-procedure route-bearing branch,
-  the delivered Phase B route-adjacent branch,
+  the world-backed Phase B route-adjacent branch on the current
+  approach/circuit model,
   the current graph-backed point-set + transition airspace branch,
+  the world-backed route/vector-control branch on the current explicit
+  published-fix / airway + vector-state model,
   the delivered communications/surveillance surface,
   the published-handoff communications/jurisdiction branch,
   the broadened current-shape runway surface,

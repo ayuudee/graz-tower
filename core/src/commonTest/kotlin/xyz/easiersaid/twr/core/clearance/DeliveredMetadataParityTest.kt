@@ -62,6 +62,7 @@ import xyz.easiersaid.twr.protocol.StopSquawk
 import xyz.easiersaid.twr.protocol.StopTurn
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnDirection
+import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.instructionCompletionCategory
 import xyz.easiersaid.twr.protocol.instructionDomain
@@ -162,6 +163,14 @@ class DeliveredMetadataParityTest {
             timing = InstructionTiming.IMMEDIATE,
             domain = ClearanceDomain.ROUTE,
             completion = CompletionCategory.PERSISTENT,
+            mayBeConditional = false,
+            supersedes = setOf(ClearanceDomain.ROUTE)
+        )
+        assertMetadata(
+            TurnByDegrees.unsafe(target, TurnDirection.LEFT, 45),
+            timing = InstructionTiming.IMMEDIATE,
+            domain = ClearanceDomain.ROUTE,
+            completion = CompletionCategory.SELF_COMPLETING,
             mayBeConditional = false,
             supersedes = setOf(ClearanceDomain.ROUTE)
         )
