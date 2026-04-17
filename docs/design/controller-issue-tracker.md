@@ -71,8 +71,8 @@ backlog) are:
 
 ## Carry-over open tasks from pre-Phase-4 backlog
 
-- [ ] **43. Queue semantics regression test for mixed 3+ entries** (corresponds to repo task #5) — predates Phase 4 review
-- [ ] **44. Transmission-reception design doc v1 appendix** (corresponds to repo task #4) — close-out of the wiki design note
+- [x] **43. Queue semantics regression test for mixed 3+ entries** — `RunwayDutyQueueTest` covers FIFO preservation, preemption-requeue, ARRIVAL-beats-DEPARTURE sort, commitment-pruning
+- [x] **44. Transmission-reception design doc v1 appendix** — Appendix A (v1 landing report) in `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
 
 ## Cross-aircraft TrafficRef (resolved)
 

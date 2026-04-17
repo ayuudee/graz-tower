@@ -220,3 +220,66 @@ These sit outside the scope and can be added as additional event variants withou
 - Controller architecture: `wiki/design-decisions/2026-04-15-controller-architecture.md`.
 - TWR1 radio model files listed in §6.
 - Controller module handoff: `docs/design/controller-handoff.md`.
+
+---
+
+## Appendix A — v1 landing report (2026-04-17)
+
+Status of every item from §7 "Scope: What We Build Now" after the Phase 4
+vertical landed. Deferred items that surfaced during the four-agent review
+are cross-referenced to their entry in `docs/design/atc-agent-review-tracker.md`.
+
+### Landed in Phase 4
+
+| §7 item | Landed as | File |
+|---------|-----------|------|
+| `pendingReadbacks: Map<AircraftId, List<PendingReadback>>` | `BeliefState.pendingReadbacks` with `PendingReadback(instruction, issuedAt)` | `controller/observe/BeliefState.kt`, `observe/Readback.kt` |
+| Pipeline step recording outgoing `Instruct` after arbitration | `BeliefState.recordPendingReadbacks(outputs, time)` invoked in `controllerDecide` after readback validation | `Controller.kt:65` |
+| Readback validator matching safety-critical atoms | `classifyReadback` returns a three-state `ReadbackVerdict` (`Correct` / `Incorrect(defects)`) instead of the originally-scoped binary match; `validatedReadbackResponses` handles pop-on-match and correction-emission | `observe/Readback.kt` |
+| GC of pending readbacks older than `maxReadbackAge` | `gcOldPendingReadbacks(time)` runs at cycle start with `MAX_READBACK_AGE = 30s` | `observe/Readback.kt:27`, `Controller.kt:34` |
+| `ReceivedMessage` keeps its current shape; no `PilotUtterance` yet | Unchanged; tests construct `ReceivedMessage.Clear(aircraft, transmission)` directly | `protocol/Instruction.kt` |
+
+### Overshoot beyond §7 scope
+
+These landed in Phase 4 but were not called out in the original §7:
+
+- **Three-state verdict.** The proposal said "Emit `ReadBackCorrect` on full match + pop. Silence on mismatch or no-pending." The Phase 4 implementation emits a structured correction (`ReadbackCorrection` response) on `Incorrect`, so a pilot who reads back the wrong runway gets "negative, …" instead of silence. This raised training value meaningfully; the correction is the signal that the classifier caught the defect. Silence is reserved for no-pending.
+- **`AtomDefect` algebra.** Every `Incorrect` verdict carries a non-empty ordered list of defects (`MissingAtom`, `WrongAtom`, `MissingCondition`, `WrongCondition`). The §5 `Discrepant(…, issues)` sketch called for this shape; Phase 4 wires the data end-to-end but the controller currently flattens it to `ReadbackCorrectionKind`. Preserving the full defect list on the wire is tracked as P4-D17.
+- **Conditional readback recursion.** `AllOf`/`AnyOf`-style conditional clearances (e.g. `BehindTrafficCondition`, `AfterDepartureCondition`) are now recognised in readbacks and contribute their own defects.
+- **Mandatory hold-position atom.** `HoldingAcknowledgementReadback` was added as a required atom for `HoldPosition` / `HoldPositionCancelTakeoff` (CAP 413 §4.46, ICAO 4444 §12.3.1). Without it the classifier could not tell "pilot silent" from "pilot said roger" — both dangerous.
+- **Sim-side step-on.** `ControllerWiring.frequencyFreeFrom` looks at `SimState.inFlightTransmissions` to schedule controller transmissions behind any overlapping in-flight pilot call. This is a proto-physics layer in the sim, not the controller; it lets the departure/arrival verticals exercise overlap realistically without the full physics layer this doc proposes.
+
+### Explicitly deferred from §7 ("Later" and "Deferred")
+
+| Item | Tracker |
+|------|---------|
+| Physics layer — `resolveChannel` / `Stepped` / `Garbled` classification inside the controller reception model | P4-D16 (only the sim-side step-on exists) |
+| Interpretation layer (LLM-backed parser, VAD, voice-time/parse-time clock) | P4-D16, P4-D19 |
+| `PilotUtterance` sum type + widening of `ReceivedMessage` | P4-D16 |
+| `VoiceActivityDetected` two-event model | P4-D16 |
+| `ReadbackCorrection` carrying the full `AtomDefect` list (currently flattens to `ReadbackCorrectionKind`) | P4-D17 |
+| "Vacate left/right when able" — needs optional direction + `WhenAble` modifier on `AfterLandingVacateVia` | P4-D18 |
+| "Stand by" / workload-deferral response from controller | P4-D19 |
+| Compound readback across multiple concurrent clearances | out of scope — belongs in interpretation layer |
+| Readback mid-correction ("land two seven, correction, zero nine") | out of scope — belongs in interpretation layer |
+| "Roger" substitution for required readbacks | out of scope — belongs in interpretation layer |
+| Partial callsign suffixes | out of scope — belongs in interpretation layer |
+
+### Load-bearing invariants for future widening
+
+Written here so they survive the next refactor:
+
+- **Cycle-start GC, cycle-end record.** Pending readbacks are aged out at the top of each cycle so rule guards like `NoPendingReadback` see an already-GC'd register. New pending entries are appended after arbitration. Inverting this order would let a rule fire against a pending it also created in the same cycle.
+- **Three-state verdict is intentional.** Two-state (match/no-match) is simpler but loses the correction signal. Downgrading to two-state would lose training value and regress on CAP 413 §1.5.6 / ICAO 4444 §12.3.2.
+- **`voiceAt` will replace `issuedAt`-ordering only.** When the interpretation layer arrives, `PendingReadback` ordering must pivot from `issuedAt` (controller clock, what we have now) to pilot `voiceAt` for readback matching. The current `issuedAt` field is future-compatible with that change — it just needs a sibling field on the readback side. Do not swap `issuedAt` out for `voiceAt`; they answer different questions ("when did the controller say it" vs "when did the pilot start talking").
+- **`AtomicReadback` is the controller's semantic unit.** Phraseology fidelity (digit-by-digit wording, "zero niner" vs "zero nine") belongs entirely in the interpretation layer. The controller operates on structural `AtomicReadback` values and must never string-compare transmissions.
+
+### Exit criteria for promoting the proposal out of "proposed"
+
+Treat §3–§5 of this doc as binding only after all of these have landed:
+
+1. Multi-pilot sim scenario with concurrent transmissions (requires the physics layer).
+2. Audio-in input path (requires the interpretation layer).
+3. `PilotUtterance` widening with migration of all existing `ReceivedMessage` call sites.
+
+Until then, §3–§5 are forward-compatible sketches, not contracts.
