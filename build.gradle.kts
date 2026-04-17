@@ -23,6 +23,7 @@ subprojects {
 detekt {
     buildUponDefaultConfig = true
     config.setFrom(files("$rootDir/detekt.yml"))
+    baseline = file("$rootDir/detekt-baseline.xml")
     parallel = true
     source.setFrom(
         subprojects.flatMap { project ->
@@ -32,4 +33,14 @@ detekt {
             )
         }
     )
+}
+
+// Gate `./gradlew check` on detekt so lint failures break the build, not just
+// a standalone `./gradlew detekt` invocation. Subprojects don't each run the
+// root `detekt` task, so we attach a dependency from each subproject's `check`
+// to the root `detekt` task.
+subprojects {
+    tasks.matching { it.name == "check" }.configureEach {
+        dependsOn(rootProject.tasks.named("detekt"))
+    }
 }

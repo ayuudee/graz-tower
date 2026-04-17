@@ -773,8 +773,31 @@ data class ClearedVisualApproach(
 ) : Clearance, ApproachInstruction
 
 data class ContinueApproach(
-    override val target: AircraftId
+    override val target: AircraftId,
+    /**
+     * Optional reason shared with the pilot so they know *why* the landing clearance
+     * is being withheld (CAP 413 §4.55 — "continue approach, [traffic rolling / runway
+     * occupied / etc.]"). Null when the controller has no specific reason to share.
+     */
+    val reason: ContinueApproachReason? = null,
 ) : ApproachInstruction
+
+enum class ContinueApproachReason {
+    /** Preceding aircraft is still on the runway (landing roll or vacate in progress). */
+    TRAFFIC_LANDING,
+
+    /** Departing aircraft is rolling or yet to lift off ahead of the arrival. */
+    TRAFFIC_DEPARTING,
+
+    /** Runway is being crossed / backtracked. */
+    TRAFFIC_CROSSING,
+
+    /** Preceding arrival has gone around; the approach path is not yet clear. */
+    PRECEDING_GO_AROUND,
+
+    /** Runway access has not yet been granted (queue position pending). */
+    RUNWAY_ACCESS_PENDING,
+}
 
 data class JoinCircuit(
     override val target: AircraftId,
@@ -1018,6 +1041,26 @@ data class AvoidLevel(
 data class ReadBackCorrect(
     override val target: AircraftId
 ) : ControllerResponse
+
+/**
+ * Controller correction of an incorrect or incomplete readback, per ICAO Doc 4444 §12.3.2
+ * and CAP 413 §1.5.6. Phraseology: "NEGATIVE, I SAY AGAIN, …" followed by the correct
+ * instruction. The [correct] field carries the instruction to be re-transmitted; whether
+ * the original was wrong outright or missing an atom is captured by [kind].
+ */
+data class ReadbackCorrection(
+    override val target: AircraftId,
+    val correct: AtcInstruction,
+    val kind: ReadbackCorrectionKind,
+) : ControllerResponse
+
+enum class ReadbackCorrectionKind {
+    /** A required atom was read back with the wrong value ("zero niner" read as "two seven"). */
+    INCORRECT_ATOM,
+
+    /** A required atom was silently omitted from the readback. */
+    MISSING_ATOM,
+}
 
 data class Standby(
     override val target: AircraftId

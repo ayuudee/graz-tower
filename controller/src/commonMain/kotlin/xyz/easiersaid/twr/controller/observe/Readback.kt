@@ -1,0 +1,393 @@
+package xyz.easiersaid.twr.controller.observe
+
+import xyz.easiersaid.twr.protocol.*
+
+/**
+ * An instruction that has been issued and is awaiting readback from the pilot.
+ *
+ * Controller records one entry per outgoing [ControllerOutput.Instruct]. Entries are
+ * popped when a matching readback arrives, or GC'd after [MAX_READBACK_AGE].
+ *
+ * Time is load-bearing: it supports ordering resolution when multiple instructions
+ * are outstanding, anchors future timeout behaviour ("[callsign], readback?"), and
+ * scopes the interpretation layer's context snapshot to voice-time when that layer
+ * is eventually built. See wiki/design-decisions/2026-04-16-transmission-reception-architecture.md.
+ */
+data class PendingReadback(
+    val instruction: AtcInstruction,
+    val issuedAt: SimTime,
+)
+
+/**
+ * Maximum age of a pending readback before it is silently GC'd.
+ *
+ * 30 seconds balances realistic RT lag (pilots may read back after a few seconds of
+ * workload), future LLM parser latency, and preventing indefinite pending accumulation.
+ */
+val MAX_READBACK_AGE: SimDuration = SimDuration.ofSeconds(30)
+
+/**
+ * Validate a readback against a pending instruction by matching safety-critical atoms.
+ *
+ * Returns a three-state verdict ([ReadbackVerdict]) so callers can distinguish
+ * "fully correct" from "incorrect atom read back" from "atom missing entirely". The
+ * first maps to `ReadBackCorrect`; the other two map to a correction prompt under
+ * ICAO Doc 4444 §12.3.2 / CAP 413 §1.5.6 (controller must correct an incorrect or
+ * incomplete readback rather than stay silent).
+ *
+ * The controller-side check is intentionally structural (atom equality). Phraseology
+ * fidelity (digit-by-digit verbalisation, "I say again" doubling, style adaptation)
+ * is the future LLM interpretation layer's responsibility — see
+ * transmission-reception-architecture design doc.
+ */
+fun matchReadback(instruction: AtcInstruction, readback: Readback): Boolean =
+    classifyReadback(instruction, readback) is ReadbackVerdict.Correct
+
+/**
+ * Algebraic verdict for a readback against one pending instruction.
+ *
+ * [Correct] is the single right answer. [Incorrect] carries a non-empty, deterministically
+ * ordered list of [AtomDefect]s so a correction response can be precise about *what* the
+ * pilot got wrong, not just "something was wrong". Totality of the algebra means every
+ * incorrect case is a data-bearing value, not a bare enum tag.
+ */
+sealed interface ReadbackVerdict {
+    data object Correct : ReadbackVerdict
+
+    /** Non-empty defect list; iteration order matches required-atom order for determinism. */
+    data class Incorrect(val defects: List<AtomDefect>) : ReadbackVerdict {
+        init { require(defects.isNotEmpty()) { "Incorrect verdict must carry at least one defect" } }
+    }
+}
+
+/** A single problem found while classifying a readback against an instruction. */
+sealed interface AtomDefect {
+    /** Required atom entirely absent from the readback (silent drop). */
+    data class MissingAtom(val expected: AtomicReadback) : AtomDefect
+
+    /** An atom of the right kind was present, but its value did not match. */
+    data class WrongAtom(val expected: AtomicReadback) : AtomDefect
+
+    /** Conditional clearance's condition was absent from the readback. */
+    data class MissingCondition(val expected: ReadbackCondition) : AtomDefect
+
+    /** Conditional clearance's condition was present in kind but with a wrong value. */
+    data class WrongCondition(val expected: ReadbackCondition) : AtomDefect
+}
+
+/** True if any defect is a wrong value (as opposed to merely missing). */
+val ReadbackVerdict.Incorrect.hasWrongValue: Boolean
+    get() = defects.any { it is AtomDefect.WrongAtom || it is AtomDefect.WrongCondition }
+
+/**
+ * Classify a readback against a pending instruction.
+ *
+ * Collects *all* defects in a single pass — a readback that is both missing one atom and
+ * has another wrong returns both in [ReadbackVerdict.Incorrect.defects]. The corresponding
+ * correction at the [Controller] level uses [hasWrongValue] to choose between
+ * [ReadbackCorrectionKind.INCORRECT_ATOM] (any wrong value) and
+ * [ReadbackCorrectionKind.MISSING_ATOM] (all defects are omissions).
+ *
+ * Conditional clearances ([ConditionalClearance]) recurse: both the wrapped instruction's
+ * atoms AND the predicate must be read back. Wrapped defects propagate up the recursion
+ * unchanged; a condition problem becomes a [AtomDefect.MissingCondition] or
+ * [AtomDefect.WrongCondition] appended to the wrapped defect list.
+ */
+fun classifyReadback(instruction: AtcInstruction, readback: Readback): ReadbackVerdict {
+    // Conditional clearance: the wrapped instruction's atoms PLUS the predicate must be read back.
+    if (instruction is ConditionalClearance) {
+        val innerVerdict = classifyReadback(instruction.instruction, readback)
+        val innerDefects = if (innerVerdict is ReadbackVerdict.Incorrect) innerVerdict.defects else emptyList()
+        val conditionDefect = classifyCondition(instruction.condition, readback)
+        val all = innerDefects + listOfNotNull(conditionDefect)
+        return if (all.isEmpty()) ReadbackVerdict.Correct else ReadbackVerdict.Incorrect(all)
+    }
+
+    val required = requiredReadbackAtoms(instruction)
+    if (required.isEmpty()) return ReadbackVerdict.Correct
+
+    val presentAtoms: List<AtomicReadback> = readback.elements.map { element ->
+        when (element) {
+            is SimpleElement -> element.value
+            is ConditionalElement -> element.action
+        }
+    }
+
+    // LinkedHashSet (the default setOf() implementation) preserves insertion order,
+    // and requiredReadbackAtoms emits its set from a single when-branch literal — so
+    // iterating `required` is deterministic. We still build the defect list eagerly
+    // rather than early-returning so mixed wrong+missing cases return both defects.
+    val defects = required.mapNotNull { req ->
+        if (req in presentAtoms) return@mapNotNull null
+        val reqKind = req.kind()
+        if (presentAtoms.any { it.kind() == reqKind }) AtomDefect.WrongAtom(req)
+        else AtomDefect.MissingAtom(req)
+    }
+    return if (defects.isEmpty()) ReadbackVerdict.Correct else ReadbackVerdict.Incorrect(defects)
+}
+
+/**
+ * Classifier-local kind tag for [AtomicReadback]. Used to answer
+ * "same kind but different value?" without reflection.
+ */
+private enum class AtomKind {
+    Heading, Level, Speed, Route, Runway, Squawk, Frequency, Pressure,
+    HoldShort, ClearedForTakeoff, ClearedToLand, ClearedApproach,
+    ClearedTouchAndGo, ClearedLowApproach, LineUp, CrossRunway, Backtrack,
+    TaxiRoute, Hold, GoAround, Vacate, Orbit, ExtendDownwind,
+    VisualApproach, SpecialVfr, FreeText,
+    // HoldingAck (and its cancel-takeoff sibling) are distinct kinds so the
+    // classifier distinguishes "pilot read back the wrong hold variant" from
+    // "pilot didn't acknowledge at all".
+    HoldingAck, HoldingAckCancelTakeoff,
+}
+
+@Suppress("CyclomaticComplexMethod")
+private fun AtomicReadback.kind(): AtomKind = when (this) {
+    is HeadingReadback -> AtomKind.Heading
+    is LevelReadback -> AtomKind.Level
+    is SpeedReadback -> AtomKind.Speed
+    is RouteReadback -> AtomKind.Route
+    is RunwayReadback -> AtomKind.Runway
+    is SquawkReadback -> AtomKind.Squawk
+    is FrequencyReadback -> AtomKind.Frequency
+    is PressureSettingReadback -> AtomKind.Pressure
+    is HoldShortReadback -> AtomKind.HoldShort
+    is ClearedForTakeoffReadback -> AtomKind.ClearedForTakeoff
+    is ClearedToLandReadback -> AtomKind.ClearedToLand
+    is ClearedApproachReadback -> AtomKind.ClearedApproach
+    is ClearedTouchAndGoReadback -> AtomKind.ClearedTouchAndGo
+    is ClearedLowApproachReadback -> AtomKind.ClearedLowApproach
+    is LineUpReadback -> AtomKind.LineUp
+    is CrossRunwayReadback -> AtomKind.CrossRunway
+    is BacktrackReadback -> AtomKind.Backtrack
+    is TaxiRouteReadback -> AtomKind.TaxiRoute
+    is HoldReadback -> AtomKind.Hold
+    is GoAroundReadback -> AtomKind.GoAround
+    is VacateReadback -> AtomKind.Vacate
+    is OrbitReadback -> AtomKind.Orbit
+    is ExtendDownwindReadback -> AtomKind.ExtendDownwind
+    is VisualApproachReadback -> AtomKind.VisualApproach
+    is SpecialVfrReadback -> AtomKind.SpecialVfr
+    is FreeTextReadback -> AtomKind.FreeText
+    is HoldingAcknowledgementReadback ->
+        if (cancelTakeoff) AtomKind.HoldingAckCancelTakeoff else AtomKind.HoldingAck
+}
+
+/** Classifier-local kind tag for [ReadbackCondition]. */
+private enum class ConditionKind {
+    PassingLevel, WhenAble, AfterFix, AfterTraffic, BehindTraffic,
+    AfterDeparture, AtLevel, AtDistance,
+}
+
+private fun ReadbackCondition.kind(): ConditionKind = when (this) {
+    is PassingLevelCondition -> ConditionKind.PassingLevel
+    is WhenAbleCondition -> ConditionKind.WhenAble
+    is AfterFixCondition -> ConditionKind.AfterFix
+    is AfterTrafficCondition -> ConditionKind.AfterTraffic
+    is BehindTrafficCondition -> ConditionKind.BehindTraffic
+    is AfterDepartureCondition -> ConditionKind.AfterDeparture
+    is AtLevelCondition -> ConditionKind.AtLevel
+    is AtDistanceCondition -> ConditionKind.AtDistance
+}
+
+/** Returns null when the condition matches; otherwise the specific defect. */
+private fun classifyCondition(predicate: ConditionalPredicate, readback: Readback): AtomDefect? {
+    val expected: ReadbackCondition = when (predicate) {
+        is ConditionalPredicate.AfterTraffic -> AfterTrafficCondition(predicate.traffic, predicate.action)
+        is ConditionalPredicate.BehindTraffic -> BehindTrafficCondition(predicate.traffic)
+        is ConditionalPredicate.AtLevel -> AtLevelCondition(predicate.level)
+        is ConditionalPredicate.AtDistance -> AtDistanceCondition(predicate.distance)
+        is ConditionalPredicate.AfterPassing -> AfterFixCondition(predicate.fix)
+    }
+    val presentConditions = readback.elements.mapNotNull { (it as? ConditionalElement)?.condition }
+    val expectedKind = expected.kind()
+    return when {
+        expected in presentConditions -> null
+        presentConditions.any { it.kind() == expectedKind } -> AtomDefect.WrongCondition(expected)
+        else -> AtomDefect.MissingCondition(expected)
+    }
+}
+
+/**
+ * Safety-critical atoms that a readback must carry for a given instruction.
+ *
+ * Empty set = no safety-critical items; accept any readback. Coverage spans the
+ * ICAO Doc 4444 §12.3.1 readback required list: runway clearances and crossings,
+ * level and heading, speed (when on a speed control), route/approach/hold assignments,
+ * taxi clearances, frequency changes, squawk, and altimeter setting.
+ *
+ * Totality is enforced — every [AtcInstruction] leaf has an explicit branch so that
+ * adding a new instruction type forces the author to decide whether it has a
+ * safety-critical readback atom, rather than silently defaulting to "none".
+ */
+@Suppress("CyclomaticComplexMethod", "LongMethod")
+fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = when (instruction) {
+    // Conditional clearances recurse at the call site — classifyReadback peels them off
+    // before reaching this function. Falling through here with only the condition text
+    // would be a logic error, so emit an empty set and rely on classifyReadback's
+    // recursion to enforce the readback of both wrapped atom and condition.
+    is ConditionalClearance -> emptySet()
+
+    // ── Runway operations (safety-critical: all carry runway id) ──────────
+    is ClearedForTakeoff -> setOf(ClearedForTakeoffReadback(instruction.runway))
+    is ClearedToLand -> setOf(ClearedToLandReadback(instruction.runway))
+    is ClearedTouchAndGo -> setOf(ClearedTouchAndGoReadback(instruction.runway))
+    is ClearedLowApproach -> setOf(ClearedLowApproachReadback(instruction.runway))
+    is LineUpAndWait -> setOf(LineUpReadback(instruction.runway))
+    is CrossRunway -> setOf(CrossRunwayReadback(instruction.runway))
+    is BacktrackRunway -> setOf(BacktrackReadback(instruction.runway))
+    is HoldShortOf -> setOf(HoldShortReadback(instruction.runway))
+    is GoAround -> setOf(GoAroundReadback(level = instruction.level, heading = instruction.heading))
+    is AfterLandingVacateVia -> setOf(VacateReadback(via = instruction.exit))
+    is VacateRunway -> setOf(VacateReadback(direction = instruction.direction, via = instruction.via))
+
+    // Runway urgency / override: hold instructions carry a mandatory
+    // acknowledgement atom (CAP 413 §4.46 / ICAO 4444 §12.3.1) — silent
+    // compliance is not acceptable for runway-safety-critical commands. The
+    // cancel-takeoff variant is distinguished so a bare "holding" readback
+    // does not satisfy a cancel-takeoff pending entry.
+    is HoldPosition -> setOf(HoldingAcknowledgementReadback(cancelTakeoff = false))
+    is HoldPositionCancelTakeoff -> setOf(HoldingAcknowledgementReadback(cancelTakeoff = true))
+    // The "stop / immediate takeoff or vacate / immediate takeoff or hold short"
+    // family still pending a dedicated readback atom — see Phase-4 deferred
+    // tracker. Empty set here keeps the current behaviour unchanged.
+    is StopImmediately -> emptySet()
+    is TakeoffImmediatelyOrVacateRunway -> emptySet()
+    is TakeoffImmediatelyOrHoldShort -> emptySet()
+
+    // ── Level / climb / descent ──────────────────────────────────────────
+    is ClimbTo -> setOf(LevelReadback(instruction.level))
+    is DescendTo -> setOf(LevelReadback(instruction.level))
+    is MaintainLevel -> setOf(LevelReadback(instruction.level))
+    is StopClimbAt -> setOf(LevelReadback(instruction.level))
+    is StopDescentAt -> setOf(LevelReadback(instruction.level))
+    is MaintainAtOrAbove -> setOf(LevelReadback(instruction.minimumLevel))
+    is MaintainAtOrBelow -> setOf(LevelReadback(instruction.maximumLevel))
+    is ExpediteClimb -> setOf(LevelReadback(instruction.level))
+    is ExpediteDescend -> setOf(LevelReadback(instruction.level))
+    is DescendWhenReady -> setOf(LevelReadback(instruction.level))
+    is AfterPassingLevelClimbTo -> setOf(LevelReadback(instruction.climbTo))
+    is AfterPassingLevelDescendTo -> setOf(LevelReadback(instruction.descendTo))
+    is MaintainAltitudeUntilEstablished -> setOf(LevelReadback(instruction.level))
+    is AvoidLevel -> setOf(LevelReadback(instruction.level))
+
+    // ── Heading / vectoring ──────────────────────────────────────────────
+    is FlyHeading -> setOf(HeadingReadback(instruction.heading))
+    is TurnHeading -> setOf(HeadingReadback(instruction.heading))
+    // TurnByDegrees / ContinuePresentHeading / StopTurn / InterceptLocaliser:
+    // no explicit heading atom (relative turn or continuation) — pilot
+    // readback is free-form acknowledgement of the action, not a digit match.
+    is TurnByDegrees -> emptySet()
+    is ContinuePresentHeading -> emptySet()
+    is StopTurn -> emptySet()
+    is InterceptLocaliser -> emptySet()
+
+    // ── Speed ────────────────────────────────────────────────────────────
+    is MaintainSpeed -> setOf(SpeedReadback(instruction.speed))
+    is ReduceSpeedTo -> setOf(SpeedReadback(instruction.speed))
+    is IncreaseSpeedTo -> setOf(SpeedReadback(instruction.speed))
+    // No numeric atom — pilot echoes the instruction in words.
+    is MinimumCleanSpeed -> emptySet()
+    is ResumeNormalSpeed -> emptySet()
+
+    // ── Pressure ─────────────────────────────────────────────────────────
+    is SetPressure -> setOf(PressureSettingReadback(instruction.pressure))
+
+    // ── Route / approach / hold ──────────────────────────────────────────
+    is ClearedTo -> instruction.route?.let { setOf(RouteReadback(it)) } ?: emptySet()
+    is ProceedDirect -> setOf(RouteReadback(RouteSpec.Direct(instruction.fix)))
+    is WhenAbleProceedDirect -> setOf(RouteReadback(RouteSpec.Direct(instruction.fix)))
+    is ClearedApproach -> setOf(ClearedApproachReadback(instruction.approachType, instruction.runway))
+    is ClearedVisualApproach -> setOf(VisualApproachReadback(instruction.runway))
+    is HoldAt -> setOf(HoldReadback(instruction.hold))
+    // Route ops without a structured atom in our readback vocabulary.
+    is ResumeOwnNavigation -> emptySet()
+    is RouteAsFiled -> emptySet()
+    is JoinAirway -> emptySet()
+    is RejoinSidAt -> emptySet()
+    is LeaveHoldProceedDirect -> emptySet()
+
+    // ── Approach / circuit instructions without a readback atom ──────────
+    // Pilot echoes the word (e.g. "extending downwind") — no structural match.
+    is ContinueApproach -> emptySet()
+    is JoinCircuit -> emptySet()
+    is MakeShortApproach -> emptySet()
+    is MakeLongApproach -> emptySet()
+    is ExtendDownwind -> emptySet()
+    is TurnBase -> emptySet()
+    is Orbit -> emptySet()
+    is MakeAnotherCircuit -> emptySet()
+    is CommenceApproachAt -> emptySet()
+
+    // ── Taxi / ground movement ───────────────────────────────────────────
+    is TaxiTo -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
+    is AirTaxiTo -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
+    // Non-routed taxi ops — no structural atom to compare.
+    is TaxiViaRunway -> emptySet()
+    is StartupApproved -> emptySet()
+    is PushbackApproved -> emptySet()
+    is PushbackFace -> emptySet()
+    is TaxiIntoHoldingBay -> emptySet()
+    is TaxiWithCaution -> emptySet()
+    is ExpediteTaxi -> emptySet()
+    is ReduceTaxiSpeed -> emptySet()
+    is GiveWayToTraffic -> emptySet()
+
+    // ── Reporting ────────────────────────────────────────────────────────
+    // "Wilco" acknowledgement; no structural atom.
+    is ReportWhen -> emptySet()
+    is ReportTrafficInSight -> emptySet()
+    is ReportIntentions -> emptySet()
+
+    // ── Sequencing ───────────────────────────────────────────────────────
+    is FollowTraffic -> emptySet()
+    is NumberInSequence -> emptySet()
+    is MaintainVisualSeparation -> emptySet()
+
+    // ── Frequency / squawk ───────────────────────────────────────────────
+    is ContactFrequency -> instruction.frequency?.let {
+        setOf(FrequencyReadback(it, instruction.role))
+    } ?: emptySet()
+    is MonitorFrequency -> instruction.frequency?.let {
+        setOf(FrequencyReadback(it, instruction.role))
+    } ?: emptySet()
+    is SetSquawk -> setOf(SquawkReadback(instruction.squawk))
+    // Transponder-mode ops: pilot echoes the word, no digit match.
+    is ConfirmSquawk -> emptySet()
+    is SquawkIdent -> emptySet()
+    is SquawkStandby -> emptySet()
+    is SquawkNormal -> emptySet()
+    is StopSquawk -> emptySet()
+
+    // ── Airspace / emergency / misc ──────────────────────────────────────
+    is DivertTo -> emptySet()
+    is ClearedToEnterControlZone -> emptySet()
+    is RemainOutsideControlledAirspace -> emptySet()
+    is SpecialVfrClearance -> emptySet()
+    is CancelClearance -> emptySet()
+    is AvoidArea -> emptySet()
+}
+
+/** Record outgoing instructions as pending readbacks. Called after arbitration. */
+internal fun BeliefState.recordPendingReadbacks(
+    outputs: List<xyz.easiersaid.twr.controller.ControllerOutput.Instruct>,
+    time: SimTime,
+): BeliefState {
+    if (outputs.isEmpty()) return this
+    val updated = pendingReadbacks.toMutableMap()
+    for (output in outputs) {
+        val entry = PendingReadback(output.instruction, time)
+        updated[output.target] = (updated[output.target] ?: emptyList()) + entry
+    }
+    return copy(pendingReadbacks = updated)
+}
+
+/** Drop pending readbacks older than [MAX_READBACK_AGE]. */
+internal fun BeliefState.gcOldPendingReadbacks(now: SimTime): BeliefState {
+    if (pendingReadbacks.isEmpty()) return this
+    val kept = pendingReadbacks.mapValues { (_, entries) ->
+        entries.filter { (now - it.issuedAt) <= MAX_READBACK_AGE }
+    }.filterValues { it.isNotEmpty() }
+    return if (kept == pendingReadbacks) this else copy(pendingReadbacks = kept)
+}

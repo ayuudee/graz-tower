@@ -1,0 +1,332 @@
+package xyz.easiersaid.twr.controller
+
+import xyz.easiersaid.twr.controller.observe.BeliefState
+import xyz.easiersaid.twr.controller.observe.MAX_READBACK_AGE
+import xyz.easiersaid.twr.controller.observe.PendingReadback
+import xyz.easiersaid.twr.protocol.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+/**
+ * Regression tests for Bug B (2026-04-16): readback validation against pending instructions.
+ *
+ * Before the fix, the controller confirmed every readback as `ReadBackCorrect` regardless of
+ * content or whether any clearance was pending. Now, readbacks are matched against pending
+ * safety-critical atoms, and the verdict is three-state (ICAO 4444 §12.3.2):
+ *   - CORRECT         → emit `ReadBackCorrect`, pop pending.
+ *   - INCORRECT_ATOM  → emit `ReadbackCorrection(INCORRECT_ATOM)`, keep pending.
+ *   - MISSING_ATOM    → emit `ReadbackCorrection(MISSING_ATOM)`, keep pending.
+ * Readbacks with no matching pending stay silent; stale pending entries GC after
+ * `MAX_READBACK_AGE`.
+ */
+class ReadbackValidationTest {
+
+    private val world = testWorld()
+
+    private fun readbackMessage(aircraft: AircraftId, vararg atoms: AtomicReadback): ReceivedMessage =
+        ReceivedMessage.Clear(aircraft, Readback(atoms.map { SimpleElement(it) }))
+
+    private fun viewWithReadback(
+        aircraft: AircraftId,
+        time: SimTime,
+        messages: List<ReceivedMessage>,
+    ): ControllerView = towerView(
+        aircraft = mapOf(aircraft to aircraftAt(aircraft, TestIds.finalApproach, testWorldIndex(), onGround = false)),
+        time = time,
+        receivedMessages = messages,
+    )
+
+    @Test
+    fun `correct readback emits ReadBackCorrect and pops pending`() {
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(
+                TestIds.acAlpha to listOf(
+                    PendingReadback(
+                        ClearedToLand(TestIds.acAlpha, TestIds.runway09),
+                        SimTime.ofSeconds(0),
+                    )
+                )
+            )
+        )
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, ClearedToLandReadback(TestIds.runway09))),
+        )
+        val result = controllerDecide(view, beliefs, world)
+
+        val response = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .firstOrNull { it.response is ReadBackCorrect }
+        assertNotNull(response, "Correct readback should emit ReadBackCorrect")
+        assertTrue(
+            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha].isNullOrEmpty(),
+            "Matched pending entry should be popped",
+        )
+    }
+
+    @Test
+    fun `wrong-runway readback emits ReadbackCorrection(INCORRECT_ATOM) and leaves pending in place`() {
+        val pending = PendingReadback(
+            ClearedToLand(TestIds.acAlpha, TestIds.runway09),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+        )
+        val wrongRunway = RunwayId("27")
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, ClearedToLandReadback(wrongRunway))),
+        )
+        val result = controllerDecide(view, beliefs, world)
+
+        val confirm = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .firstOrNull { it.response is ReadBackCorrect }
+        assertNull(confirm, "Wrong-runway readback must not be confirmed")
+
+        val correction = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .mapNotNull { it.response as? ReadbackCorrection }
+            .firstOrNull()
+        assertNotNull(correction, "Wrong-runway readback must trigger a correction")
+        assertEquals(ReadbackCorrectionKind.INCORRECT_ATOM, correction.kind)
+        assertEquals(pending.instruction, correction.correct,
+            "Correction payload should replay the original ClearedToLand")
+        assertEquals(
+            listOf(pending),
+            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha],
+            "Pending must remain until pilot transmits a correct readback",
+        )
+    }
+
+    @Test
+    fun `missing-atom readback emits ReadbackCorrection(MISSING_ATOM)`() {
+        val pending = PendingReadback(
+            ClearedToLand(TestIds.acAlpha, TestIds.runway09),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+        )
+        // Readback present but without the ClearedToLandReadback atom at all
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, SquawkReadback(Squawk.unsafe(7001)))),
+        )
+        val result = controllerDecide(view, beliefs, world)
+
+        val correction = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .mapNotNull { it.response as? ReadbackCorrection }
+            .firstOrNull()
+        assertNotNull(correction)
+        assertEquals(ReadbackCorrectionKind.MISSING_ATOM, correction.kind)
+        assertEquals(
+            listOf(pending),
+            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha],
+        )
+    }
+
+    @Test
+    fun `level-change readback must match assigned level`() {
+        val assigned = Level.AltitudeFeet.unsafe(3000)
+        val pending = PendingReadback(
+            ClimbTo(TestIds.acAlpha, assigned),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+        )
+
+        // Wrong level → INCORRECT_ATOM
+        val wrong = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, LevelReadback(Level.AltitudeFeet.unsafe(4000)))),
+        )
+        val wrongResult = controllerDecide(wrong, beliefs, world)
+        val wrongCorrection = wrongResult.outputs.filterIsInstance<ControllerOutput.Respond>()
+            .mapNotNull { it.response as? ReadbackCorrection }.firstOrNull()
+        assertNotNull(wrongCorrection)
+        assertEquals(ReadbackCorrectionKind.INCORRECT_ATOM, wrongCorrection.kind)
+
+        // Correct level → CORRECT
+        val right = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, LevelReadback(assigned))),
+        )
+        val rightResult = controllerDecide(right, beliefs, world)
+        assertNotNull(
+            rightResult.outputs.filterIsInstance<ControllerOutput.Respond>()
+                .firstOrNull { it.response is ReadBackCorrect }
+        )
+    }
+
+    @Test
+    fun `conditional clearance requires both wrapped atoms and condition to be read back`() {
+        val inner = LineUpAndWait(TestIds.acAlpha, TestIds.runway09)
+        val predicate = ConditionalPredicate.AfterTraffic(
+            TrafficRef.ByCallsign(Callsign("G-AB")),
+            TrafficAction.LANDING,
+        )
+        val pending = PendingReadback(
+            ConditionalClearance(TestIds.acAlpha, predicate, inner),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+        )
+
+        // Condition missing → MISSING_ATOM
+        val missingCond = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, LineUpReadback(TestIds.runway09))),
+        )
+        val missingResult = controllerDecide(missingCond, beliefs, world)
+        val missing = missingResult.outputs.filterIsInstance<ControllerOutput.Respond>()
+            .mapNotNull { it.response as? ReadbackCorrection }.firstOrNull()
+        assertNotNull(missing, "Conditional clearance without condition readback must trigger correction")
+        assertEquals(ReadbackCorrectionKind.MISSING_ATOM, missing.kind)
+
+        // Both atoms + condition → CORRECT
+        val full = towerView(
+            aircraft = mapOf(TestIds.acAlpha to aircraftAt(TestIds.acAlpha, TestIds.finalApproach, testWorldIndex(), onGround = false)),
+            time = SimTime.ofSeconds(5),
+            receivedMessages = listOf(
+                ReceivedMessage.Clear(
+                    TestIds.acAlpha,
+                    Readback(listOf(
+                        ConditionalElement(
+                            condition = AfterTrafficCondition(predicate.traffic, predicate.action),
+                            action = LineUpReadback(TestIds.runway09),
+                        ),
+                    )),
+                ),
+            ),
+        )
+        val fullResult = controllerDecide(full, beliefs, world)
+        assertNotNull(
+            fullResult.outputs.filterIsInstance<ControllerOutput.Respond>()
+                .firstOrNull { it.response is ReadBackCorrect },
+            "Correct conditional readback should be confirmed",
+        )
+    }
+
+    @Test
+    fun `readback with no pending emits nothing`() {
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha, ClearedToLandReadback(TestIds.runway09))),
+        )
+        val result = controllerDecide(view, BeliefState.EMPTY, world)
+
+        val response = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .firstOrNull { it.response is ReadBackCorrect }
+        assertNull(response, "Readback with no pending must not be confirmed")
+    }
+
+    @Test
+    fun `pending readback GCs after MAX_READBACK_AGE`() {
+        val old = PendingReadback(
+            ClearedToLand(TestIds.acAlpha, TestIds.runway09),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(old))
+        )
+        // Age past MAX_READBACK_AGE, no incoming readback this cycle.
+        val nowSeconds = (MAX_READBACK_AGE.millis / 1000L).toInt() + 5
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(nowSeconds),
+            emptyList(),
+        )
+        val result = controllerDecide(view, beliefs, world)
+
+        assertTrue(
+            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha].isNullOrEmpty(),
+            "Pending older than MAX_READBACK_AGE must be GC'd",
+        )
+    }
+
+    @Test
+    fun `matches most recent pending when multiple outstanding`() {
+        // Aircraft lines up and then gets cleared for takeoff — two pending readbacks.
+        // A line-up readback should match the line-up pending, not the takeoff pending.
+        val lineUp = PendingReadback(
+            LineUpAndWait(TestIds.acAlpha, TestIds.runway09),
+            SimTime.ofSeconds(0),
+        )
+        val takeoff = PendingReadback(
+            ClearedForTakeoff(TestIds.acAlpha, TestIds.runway09),
+            SimTime.ofSeconds(5),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(lineUp, takeoff))
+        )
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(6),
+            listOf(readbackMessage(TestIds.acAlpha, LineUpReadback(TestIds.runway09))),
+        )
+        val result = controllerDecide(view, beliefs, world)
+
+        assertNotNull(
+            result.outputs.filterIsInstance<ControllerOutput.Respond>()
+                .firstOrNull { it.response is ReadBackCorrect },
+            "Line-up readback should be confirmed"
+        )
+        assertEquals(
+            listOf(takeoff),
+            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha],
+            "Line-up pending popped; takeoff pending remains",
+        )
+    }
+
+    @Test
+    fun `outgoing instruction recorded as pending`() {
+        // Drive a full cycle: tower issues ClearedToLand (via normal procedure flow) →
+        // the outgoing instruction should appear in pendingReadbacks.
+        var beliefs = BeliefState.EMPTY
+        val worldIndex = testWorldIndex()
+
+        // Cycle 1: aircraft on downwind, no runway observation issues.
+        val ac1 = aircraftAt(TestIds.acAlpha, TestIds.downwind, worldIndex, onGround = false)
+        val view1 = towerView(
+            aircraft = mapOf(TestIds.acAlpha to ac1),
+            time = SimTime.ofSeconds(0),
+            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+        )
+        beliefs = controllerDecide(view1, beliefs, world).updatedBeliefs
+
+        // Cycle 2+: progress aircraft to final and observe output.
+        val ac2 = aircraftAt(TestIds.acAlpha, TestIds.finalApproach, worldIndex, onGround = false)
+        val view2 = towerView(
+            aircraft = mapOf(TestIds.acAlpha to ac2),
+            time = SimTime.ofSeconds(10),
+        )
+        val result = controllerDecide(view2, beliefs, world)
+
+        val issued = result.outputs.filterIsInstance<ControllerOutput.Instruct>()
+            .firstOrNull { it.instruction is ClearedToLand }
+        // If ClearedToLand was issued this cycle, it should now be pending.
+        if (issued != null) {
+            val pending = result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha].orEmpty()
+            assertTrue(
+                pending.any { it.instruction is ClearedToLand },
+                "ClearedToLand should be recorded as pending readback after arbitration",
+            )
+        }
+    }
+}

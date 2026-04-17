@@ -1,0 +1,306 @@
+package xyz.easiersaid.twr.controller.bdi
+
+import xyz.easiersaid.twr.controller.AircraftObservation
+import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.controller.PilotGoal
+import xyz.easiersaid.twr.controller.RunwayStatus
+import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.observe.BeliefState
+import xyz.easiersaid.twr.controller.observe.ControllerEvent
+import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.core.world.LegName
+import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.protocol.*
+import kotlin.reflect.KClass
+
+/**
+ * Shared context for guard evaluation and action resolution.
+ * Single context — no split between guard and action concerns.
+ */
+data class OperatorContext(
+    val view: ControllerView,
+    val beliefs: BeliefState,
+    val events: List<ControllerEvent>,
+    val world: AviationWorld,
+) {
+    val time: SimTime get() = view.time
+    val worldIndex: WorldIndex get() = view.worldIndex
+    val weather: WeatherObservation? get() = view.weather
+}
+
+/**
+ * Composable guard predicate evaluated against aircraft state, commitment, and context.
+ * Entity-aware: guards check [EntityRef] membership, not AircraftPhase enums.
+ */
+sealed interface RuleGuard {
+    fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean
+    /** Human-readable explanation when this guard fails. For training feedback. */
+    val failureMessage: String get() = this::class.simpleName ?: "unknown guard"
+}
+
+// ── Combinators ──────────────────────────────────────────────────────
+
+data class AllOf(val guards: List<RuleGuard>) : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        guards.all { it.evaluate(ac, commitment, ctx) }
+}
+
+data class AnyOf(val guards: List<RuleGuard>) : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        guards.any { it.evaluate(ac, commitment, ctx) }
+}
+
+data class Not(val inner: RuleGuard) : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        !inner.evaluate(ac, commitment, ctx)
+}
+
+data object Always : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) = true
+}
+
+// ── Entity-aware position checks ────────────────────────────────────
+
+/** Aircraft is at a point belonging to a runway entity. */
+data object OnRunway : RuleGuard {
+    override val failureMessage = "Aircraft is not on the runway"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.entities.any { it is EntityRef.RunwayRef }
+}
+
+/** Aircraft is on the ground. */
+data object OnGround : RuleGuard {
+    override val failureMessage = "Aircraft is not on the ground"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.onGround
+}
+
+/** Aircraft is airborne. */
+data object Airborne : RuleGuard {
+    override val failureMessage = "Aircraft is not airborne"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        !ac.onGround
+}
+
+/** Aircraft is at a known holding point for the commitment's runway. */
+data object AtHoldingPoint : RuleGuard {
+    override val failureMessage = "Aircraft is not at a holding point for this runway"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway ?: return false
+        val holdingPoints = ctx.worldIndex.holdingPointsByRunway[runway] ?: return false
+        return ac.position in holdingPoints
+    }
+}
+
+/** Aircraft is on a circuit procedure entity. */
+data object InCircuit : RuleGuard {
+    override val failureMessage = "Aircraft is not in the circuit pattern"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.entities.any { it is EntityRef.CircuitProcedureRef }
+}
+
+/** Aircraft is on an approach procedure entity. */
+data object OnApproach : RuleGuard {
+    override val failureMessage = "Aircraft is not on an approach procedure"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.entities.any { it is EntityRef.ApproachRef }
+}
+
+// ── Communication ────────────────────────────────────────────────────
+
+/** Two-way communication established with this aircraft. */
+data object ContactEstablished : RuleGuard {
+    override val failureMessage = "Two-way communication not yet established"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        commitment.contacted
+}
+
+/**
+ * No pending (unacknowledged) readback for an instruction matching [matcher].
+ *
+ * The idempotency pair for fire-and-forget rules — handoffs, position-info,
+ * QNH updates — whose effect lands several ticks after the controller speaks.
+ * The pending-readback register is the already-authoritative "what's in flight"
+ * store: every outgoing [ControllerOutput.Instruct] is appended there by
+ * [recordPendingReadbacks] and either popped when the readback arrives or
+ * GC'd after [MAX_READBACK_AGE].
+ *
+ * That GC horizon gives the retry behaviour for free: while a readback is in
+ * flight the rule is blocked; if no readback arrives within 30 s the entry ages
+ * out and the rule fires again — the "how copy?" retransmit (CAP 413 §2.7).
+ */
+data class NoPendingReadback(val matcher: InstructionMatcher) : RuleGuard {
+    override val failureMessage = "An instruction matching this matcher is already pending readback"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.pendingReadbacks[ac.id].orEmpty()
+            .none { matcher.matches(it.instruction) }
+}
+
+// ── Pilot events ─────────────────────────────────────────────────────
+
+/** Pilot has reported ready for departure this cycle. */
+data object PilotReady : RuleGuard {
+    override val failureMessage = "Pilot has not reported ready for departure"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.events.any { it is ControllerEvent.ReadyForDepartureReceived && it.aircraft == ac.id }
+}
+
+/** Pilot reported position this cycle. */
+data object PositionReported : RuleGuard {
+    override val failureMessage = "Pilot has not reported position this cycle"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.events.any { it is ControllerEvent.PositionReported && it.aircraft == ac.id }
+}
+
+/** Pilot has made initial contact this cycle. */
+data object ContactReceived : RuleGuard {
+    override val failureMessage = "Pilot has not made initial contact"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.events.any { it is ControllerEvent.InitialContactReceived && it.aircraft == ac.id }
+}
+
+/** Pilot has requested taxi this cycle. */
+data object TaxiRequested : RuleGuard {
+    override val failureMessage = "Pilot has not requested taxi"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.events.any { it is ControllerEvent.TaxiRequested && it.aircraft == ac.id }
+}
+
+/** AI proactive: no pilot agent, controller acts without prompt. */
+data object AiProactive : RuleGuard {
+    override val failureMessage = "Aircraft is human-piloted — waiting for pilot action"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        !ac.humanPiloted
+}
+
+// ── Pilot goal ───────────────────────────────────────────────────────
+
+/** Aircraft's pilot goal matches the given value. */
+data class PilotGoalIs(val goal: PilotGoal) : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.pilotGoal == goal
+}
+
+// ── Runway state ─────────────────────────────────────────────────────
+
+/** This aircraft has been granted runway access. */
+data object RunwayAccessGranted : RuleGuard {
+    override val failureMessage = "Runway access not yet granted — another aircraft may have priority"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.runwayDuty?.holder == ac.id
+}
+
+/** The commitment's runway is physically clear. */
+data object RunwayPhysicallyClear : RuleGuard {
+    override val failureMessage = "Runway is occupied by another aircraft"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway ?: return false
+        val rwyObs = ctx.beliefs.runwayBeliefs[runway] ?: return true
+        return rwyObs.status == RunwayStatus.CLEAR ||
+            (rwyObs.occupants.size == 1 && ac.id in rwyObs.occupants)
+    }
+}
+
+// ── Weather ──────────────────────────────────────────────────────────
+
+/** Weather permits VFR operations — visibility >= 5000m. */
+data object WeatherPermitsVfr : RuleGuard {
+    override val failureMessage = "Weather below VMC minima — VFR operations not permitted"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val weather = ctx.weather ?: return true // no weather info = don't block
+        val visibility = weather.visibility ?: return true
+        return visibility >= 5000
+    }
+}
+
+// ── Clearance state ──────────────────────────────────────────────────
+
+/**
+ * Inspectable predicate over [AtcInstruction] used by [NoActiveInstruction].
+ *
+ * Replaces the earlier `(AtcInstruction) -> Boolean` lambda so that guards
+ * carrying the same matcher remain structurally equal (KClass has structural
+ * equality, which Kotlin lambdas do not) and so rule traces can describe
+ * what the guard was looking for.
+ */
+sealed interface InstructionMatcher {
+    fun matches(instruction: AtcInstruction): Boolean
+
+    /** Matches iff the instruction is an instance of [type]. */
+    data class OfType(val type: KClass<out AtcInstruction>) : InstructionMatcher {
+        override fun matches(instruction: AtcInstruction) = type.isInstance(instruction)
+    }
+
+    /** Matches iff any of [matchers] matches. Empty list never matches. */
+    data class AnyOf(val matchers: List<InstructionMatcher>) : InstructionMatcher {
+        override fun matches(instruction: AtcInstruction) =
+            matchers.any { it.matches(instruction) }
+    }
+}
+
+/** Shorthand for `InstructionMatcher.OfType(T::class)`. */
+inline fun <reified T : AtcInstruction> instructionOfType(): InstructionMatcher =
+    InstructionMatcher.OfType(T::class)
+
+/** No active non-terminal clearance matching [matcher] for this aircraft. */
+data class NoActiveInstruction(val matcher: InstructionMatcher) : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.issuedClearances.values.none { clr ->
+            clr.aircraft == ac.id && !clr.status.isTerminal && matcher.matches(clr.instruction)
+        }
+}
+
+/** Aircraft is on a specific circuit leg (UPWIND, CROSSWIND, DOWNWIND, BASE, FINAL). */
+data class OnCircuitLeg(val leg: LegName) : RuleGuard {
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.worldIndex.circuitLegsByPoint[ac.position]?.contains(leg) == true
+}
+
+/** Pilot reported going around this cycle. */
+data object GoAroundEvent : RuleGuard {
+    override val failureMessage = "No go-around reported this cycle"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.events.any { it is ControllerEvent.GoAroundDetected && it.aircraft == ac.id }
+}
+
+/** Aircraft is at a stand entity. */
+data object AtStand : RuleGuard {
+    override val failureMessage = "Aircraft is not at a parking stand"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.entities.any { it is EntityRef.StandRef }
+}
+
+/**
+ * Some OTHER aircraft holds a landing commitment that has reached the final leg
+ * of the active runway. Used to block LineUpAndWait when an arrival is on short
+ * final (ICAO Doc 4444 §7.10 — landing traffic has priority, and lining up a
+ * departure in front of a committed arrival erodes the approach buffer).
+ */
+data object OtherTrafficOnShortFinal : RuleGuard {
+    override val failureMessage = "Another aircraft is on short final for this runway"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        return ctx.beliefs.commitments.any { (otherId, other) ->
+            otherId != ac.id &&
+                other.kind == CommitmentKind.TOWER_ARRIVAL &&
+                (other.stage == TowerArrivalStage.AwaitApproach ||
+                    other.stage == TowerArrivalStage.AwaitLandedObserved) &&
+                run {
+                    val otherAc = ctx.beliefs.trackedAircraft[otherId] ?: return@run false
+                    if (otherAc.onGround) return@run false
+                    val legs = ctx.worldIndex.circuitLegsByPoint[otherAc.position] ?: emptySet()
+                    val onApproach = otherAc.entities.any { it is EntityRef.ApproachRef }
+                    LegName.FINAL in legs || onApproach
+                }
+        }
+    }
+}
+
+/** No active runway clearance for this aircraft. */
+data object NoRunwayClearanceIssued : RuleGuard {
+    override val failureMessage = "A runway clearance has already been issued for this aircraft"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.issuedClearances.values.none { clr ->
+            clr.aircraft == ac.id && !clr.status.isTerminal && clr.domain == ClearanceDomain.RUNWAY
+        }
+}

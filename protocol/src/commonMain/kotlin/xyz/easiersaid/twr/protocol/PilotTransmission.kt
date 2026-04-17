@@ -77,6 +77,21 @@ data class VisualApproachReadback(val runway: RunwayId) : AtomicReadback
 data class SpecialVfrReadback(val airspace: AirspaceVolumeId) : AtomicReadback
 data class FreeTextReadback(val text: String) : AtomicReadback
 
+/**
+ * Acknowledgement of [HoldPosition] / [HoldPositionCancelTakeoff].
+ *
+ * These instructions have no numeric or identifier payload of their own — the
+ * pilot echoes "HOLDING, [callsign]" (and "holding, cancel take-off"). Making
+ * the acknowledgement a distinct atom rather than free text lets the classifier
+ * detect a missing readback, which matters for runway-safety instructions
+ * (CAP 413 §4.46, ICAO 4444 §12.3.1). [cancelTakeoff] distinguishes the two
+ * so a cancel-takeoff readback cannot satisfy a simple hold-position pending,
+ * and vice versa.
+ */
+data class HoldingAcknowledgementReadback(
+    val cancelTakeoff: Boolean = false,
+) : AtomicReadback
+
 // --- Readback conditions ---
 
 sealed interface ReadbackCondition
