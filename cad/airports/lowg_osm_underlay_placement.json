@@ -1,0 +1,26 @@
+{
+  "imagePath": "/home/andrew/dev/projects/twr2/cad/airports/lowg_osm_underlay.png",
+  "sourceGeojson": "/home/andrew/dev/projects/twr2/cad/airports/lowg_osm_underlay.geojson",
+  "boundsMeters": {
+    "minX": -4275.893413796826,
+    "minY": -7950.160157328751,
+    "maxX": 5318.47364790678,
+    "maxY": 8749.183326871977
+  },
+  "imageSizePx": {
+    "width": 4096,
+    "height": 7129
+  },
+  "recommendedPlacement": {
+    "lowerLeft": {
+      "x": -4275.893413796826,
+      "y": -7950.160157328751
+    },
+    "widthMeters": 9594.367061703606,
+    "heightMeters": 16699.343484200726
+  },
+  "metersPerPixel": {
+    "x": 2.342374770923732,
+    "y": 2.3424524455324347
+  }
+}

@@ -3,7 +3,7 @@
 `research/fm` is the proof-authoritative research spike for the split
 certification architecture described in [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md).
 
-As of April 15, 2026, the product-authoritative world and clearance design for
+As of April 18, 2026, the product-authoritative world and clearance design for
 the next project lives in
 [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
 and
@@ -40,7 +40,7 @@ Read `research/fm` in this order of importance:
 
 ## Current Status
 
-As of April 15, 2026:
+As of April 18, 2026:
 
 - architecture contract: frozen
 - generic runway kernel: implemented and proved locally
@@ -64,6 +64,19 @@ As of April 15, 2026:
   [WorldModel.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt),
   and clearance lifecycle state in
   [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+- the LOWG-driven first runtime widening slice is now also in the repo model:
+  `VfrRoute.airspaceProfile` is now optional and, when present, is one of
+  `InVolume`, `InClass`, or volume-authoritative `Segmented`; `AirspaceVolume`
+  now carries explicit `memberPoints` plus optional boundary geometry; and
+  `AerodromeAip` now carries runtime operational sectors plus published VFR
+  procedures
+- the current FM boundary remains intentionally narrower than that runtime
+  widening:
+  the current proof-visible extraction still treats VFR routes as waypoint
+  sequences only and airspace as explicit membership points only; runtime
+  operational sectors, published VFR procedures, route-airspace profiles, and
+  airspace boundary geometry remain outside the current proof-visible
+  extraction surface
 - the structural extraction contract from overlay-entity `AviationWorld` into
   proof-local views is now recorded in
   [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md),

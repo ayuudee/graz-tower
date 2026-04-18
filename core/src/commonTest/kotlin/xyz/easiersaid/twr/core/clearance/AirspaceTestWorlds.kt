@@ -10,7 +10,7 @@ internal fun sampleWorldWithAirspacePoints(points: Set<PointId>): AviationWorld 
     return world.copy(
         airspace = world.airspace.mapValues { (id, volume) ->
             if (id == FixtureIds.airspace) {
-                volume.copy(points = points)
+                volume.copy(memberPoints = points)
             } else {
                 volume
             }

@@ -220,14 +220,26 @@ Entry procedures (direct, parallel, teardrop) are determined at runtime by the p
 **VFR route** — a named corridor between aerodromes.
 
 ```
+VfrRouteAirspaceSegment(
+  from: PointId,
+  to: PointId,
+  airspaceClass: AirspaceClass,
+  airspaceVolume: AirspaceVolumeId?,
+)
+
+VfrRouteAirspaceProfile =
+  | InVolume(airspaceVolume: AirspaceVolumeId)
+  | InClass(airspaceClass: AirspaceClass)
+  | Segmented(segments: List<VfrRouteAirspaceSegment>)
+
 VfrRoute(
   name: String,
   waypoints: List<Waypoint>,              // with per-waypoint altitude constraints
-  airspaceClass: AirspaceClass,
+  airspaceProfile: VfrRouteAirspaceProfile?,
 )
 ```
 
-VFR routes use `List<Waypoint>` (not `Path`) so altitude constraints can vary along the route — e.g. "not above 2000ft in the CTR, not below 1500ft in the TMA."
+VFR routes use `List<Waypoint>` (not `Path`) so altitude constraints can vary along the route — e.g. "not above 2000ft in the CTR, not below 1500ft in the TMA." `airspaceProfile` is now optional so migration can leave mixed boundary-crossing routes unassigned rather than lying. When present, `InVolume` means one authoritative named volume, `InClass` means an uncontrolled / unbound corridor, and `Segmented` means each leg resolves through an authoritative volume.
 
 **Airway** — a named IFR corridor.
 
@@ -320,8 +332,17 @@ AirspaceVolume(
   type: AirspaceVolumeType,              // CTR, TMA, ATZ, FIR, UIR, OCA
   airspaceClass: AirspaceClass,           // A, B, C, D, E, F, G
   altitudeBand: AltitudeBand,
-  points: Set<PointId>,                   // the points (and their segments) within this volume
+  memberPoints: Set<PointId>,             // explicit runtime membership; not geometric polygon fill
   fir: FirId,                             // which FIR this volume belongs to
+  boundary: AirspaceBoundary?,            // optional explicit chart/runtime boundary geometry
+)
+
+AirspaceBoundary(
+  rings: List<BoundaryRing>,
+)
+
+BoundaryRing(
+  points: List<PointId>,                  // implicit closing edge; no duplicate endpoint
 )
 
 enum AirspaceVolumeType {
@@ -413,6 +434,8 @@ AerodromeAIP(
   activeRunwaySelection: ActiveRunwayRule, // how active runway is determined (wind, preference)
   noiseAbatement: List<NoiseRule>?,       // circuit restrictions, preferred runway times, etc.
   specialInstructions: List<String>?,     // "report overhead at 2000ft", etc.
+  operationalSectors: Map<OperationalSectorId, OperationalSector>,
+  publishedVfrProcedures: Map<PublishedVfrProcedureId, PublishedVfrProcedure>,
 )
 ```
 
@@ -446,10 +469,10 @@ Aerodrome(
   taxiways: Map<TaxiwayId, Taxiway>,
   stands: Map<StandId, Stand>,
   aprons: Map<ApronId, Apron>,
-  circuits: List<CircuitProcedure>,        // may have multiple per runway (L/R, noise abatement)
-  sids: Map<String, SID>,
-  stars: Map<String, STAR>,
-  approaches: Map<String, InstrumentApproach>,
+  circuits: Map<CircuitProcedureId, CircuitProcedure>,
+  sids: Map<SidId, SID>,
+  stars: Map<StarId, STAR>,
+  approaches: Map<ApproachId, InstrumentApproach>,
   holdingPatterns: Map<HoldingPatternId, HoldingPattern>,
 )
 ```
@@ -462,6 +485,7 @@ An aerodrome doesn't own the path segments directly. It's a collection of overla
 
 ```
 AviationWorld(
+  geometry: PhysicalGeometry,
   fixes: Map<FixId, Fix>,
   aerodromes: Map<AerodromeId, Aerodrome>,
   airways: Map<AirwayId, Airway>,

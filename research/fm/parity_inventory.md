@@ -1,6 +1,6 @@
 # Kotlin / Lean Parity Inventory
 
-Last updated: April 15, 2026
+Last updated: April 18, 2026
 
 This file freezes the current Kotlin-to-Lean parity boundary for the delivered
 FM surface. It is the authoritative inventory for:
@@ -15,6 +15,18 @@ Use it together with
 
 - this file says **what status each delivered branch has**
 - `refinement_inventory.md` says **where that status is enforced**
+
+Runtime note:
+
+- the repo runtime now carries richer route/airspace/AIP facts than the
+  currently delivered FM boundary: optional `VfrRoute.airspaceProfile`
+  (`InVolume`, `InClass`, `Segmented`), `AirspaceVolume.memberPoints` plus
+  optional boundary geometry, and runtime-owned operational sectors plus
+  published VFR procedures
+- the delivered FM boundary still extracts VFR routes as waypoint sequences and
+  airspace as explicit point membership only; the richer runtime
+  route-airspace, boundary-geometry, sector, and published-procedure data
+  remain intentionally outside the current proof-visible boundary
 
 ## Status Classes
 

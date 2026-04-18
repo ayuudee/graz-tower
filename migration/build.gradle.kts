@@ -24,6 +24,8 @@ kotlin {
         jvmTest {
             dependencies {
                 implementation(kotlin("test"))
+                implementation(project(":protocol"))
+                implementation(libs.kotlinx.serialization.json)
             }
         }
     }

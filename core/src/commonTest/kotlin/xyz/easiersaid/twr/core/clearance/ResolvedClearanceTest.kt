@@ -676,7 +676,7 @@ class ResolvedClearanceTest {
 
         val step = assertIs<ResolvedStep.Airspace>(resolved.steps.single())
         assertEquals(FixtureIds.airspace, step.airspace.airspace.id)
-        assertTrue(FixtureIds.runway09Threshold in step.airspace.airspace.points)
+        assertTrue(FixtureIds.runway09Threshold in step.airspace.airspace.memberPoints)
     }
 
     @Test

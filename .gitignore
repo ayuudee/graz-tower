@@ -21,3 +21,9 @@ docs/*.pdf
 .ripgreprc
 .mcp.json
 .codex
+.claude/
+__pycache__/
+*.pyc
+cad/airports/#*
+cad/airports/*~
+research/fm/r1-smoke/

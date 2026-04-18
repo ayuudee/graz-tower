@@ -1,9 +1,21 @@
 # Route-Bearing Widening Scope
 
-Last updated: April 15, 2026
+Last updated: April 18, 2026
 
 This document defines the next widening track after the scoped
 `Safety-complete (N₀)` and `Full-brief complete` closures.
+
+Runtime note:
+
+The repo runtime now carries a wider LOWG-driven airport slice than the current
+route-bearing proof boundary: optional `VfrRoute.airspaceProfile`
+(`InVolume`, `InClass`, `Segmented`), `AirspaceVolume.memberPoints` plus
+optional boundaries, and runtime-owned operational sectors plus published VFR
+procedures. The current proof-visible route-bearing boundary still extracts VFR
+routes as waypoint sequences only and does not consume the richer
+route-airspace, boundary, sector, or published-procedure data. Those runtime
+additions therefore remain outside this current widening track unless a later
+FM branch chooses to make them proof-visible.
 
 It does not replace
 [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md).

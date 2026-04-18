@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: April 15, 2026
+Last updated: April 18, 2026
 
 This file is the current execution status for `research/fm`.
 
@@ -17,6 +17,18 @@ It now contains:
   and
   [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md),
   with the current repo's Kotlin boundary files acting as a staging mirror
+- that staging mirror has now absorbed the LOWG-driven first runtime widening
+  slice too:
+  `VfrRoute.airspaceProfile` is now optional and, when present, is one of
+  `InVolume`, `InClass`, or volume-authoritative `Segmented`;
+  `AirspaceVolume` now carries explicit `memberPoints` plus optional boundary
+  geometry; and `AerodromeAip` now carries runtime operational sectors plus
+  published VFR procedures
+- the FM boundary has been kept intentionally narrower than that runtime slice:
+  the current proof-visible extraction still treats VFR routes as waypoint
+  sequences only and airspace as explicit membership points only, so the richer
+  runtime route-airspace, airspace-boundary, operational-sector, and
+  published-VFR concepts remain outside the current proof-visible world
 - a concrete proved runway kernel
 - a concrete proved surface kernel with one validation graph
 - a concrete proved air-path kernel with one validation graph

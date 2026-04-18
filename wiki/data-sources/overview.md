@@ -24,7 +24,9 @@ Operational/airspace data. AIXM 4.5 XML with VFR extensions. Regional snapshots 
 
 **Note on OFM maps:** The OFM web viewer shows accurate circuit patterns and VFR routes rendered into raster tiles. This geometry exists in OFM's rendering pipeline but is NOT in the downloadable OFMX data. The tiles are pre-rendered at `nwy-tiles-api.prod.newaydata.com`.
 
-**Test data:** `data/ofm/austria/ofmx_extracted/` (full Austria), `migration/src/commonTest/resources/ofmx/lowg_subset.ofmx`
+**Repo data:** `data/ofm/austria/ofmx_extracted/` (full Austria), `migration/src/commonTest/resources/ofmx/lowg_subset.ofmx`
+
+**Current parser scope:** The extracted Austria package also contains `ofmx_lo_ofmShapeExtension.xml`, but the current parser only consumes `isolated/ofmx_lo.ofmx`.
 
 ## X-Plane CIFP
 
@@ -40,8 +42,10 @@ IFR procedures. One file per airport. X-Plane's comma-delimited CIFP format (bas
 
 Global waypoint and navaid position database. Needed because CIFP references fixes by name without positions.
 
-**Contains:** `earth_fix.dat` -- lat/lon for ICAO waypoints (ABIRI, GOLVA, GOTAR, MUREG confirmed). `earth_nav.dat` -- lat/lon + frequency + type for navaids (GRZ VOR/DME at 116.20, OEG ILS localizer for 34C confirmed).
+**Purpose:** `earth_fix.dat` provides lat/lon for ICAO waypoints. `earth_nav.dat` provides lat/lon + frequency + type for navaids.
 
-**Not yet parsed.** Simple line-oriented formats, trivial to add when needed.
+**Repo status:** Not currently checked into this repo working tree. Earlier notes refer to a 2017-vintage copy inspected outside the current tree.
 
-**Gap:** Some newer CIFP waypoints (PIBIP, XIBAR, RONOT) not found in the 2017-vintage earth_fix.dat we have. Would need a current version.
+**Not yet parsed.** Simple line-oriented formats, trivial to add once sourced.
+
+**Gap:** Some newer CIFP waypoints (PIBIP, XIBAR, RONOT) were not found in the previously inspected 2017-vintage `earth_fix.dat`. We would need a current version or manual lookup.

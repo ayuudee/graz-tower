@@ -24,6 +24,7 @@ import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PublishedVfrProcedureId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SidId
@@ -137,6 +138,96 @@ class WorldConstructionTest {
             WorldValidationCode.UNKNOWN_GEOMETRY_SEGMENT_REFERENCE
         )
     }
+
+    @Test
+    fun validationDetectsUnknownPublishedVfrProcedureRouteReference() {
+        val report = sampleWorldWithUnknownPublishedProcedureRouteReference().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.PUBLISHED_VFR_PROCEDURE_UNKNOWN_ROUTE
+        )
+    }
+
+    @Test
+    fun validationDetectsAirspaceBoundaryVertexOutsideMembership() {
+        val report = sampleWorldWithBoundaryVertexOutsideMembership().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.AIRSPACE_BOUNDARY_VERTEX_NOT_IN_MEMBERSHIP
+        )
+    }
+
+    @Test
+    fun validationDetectsControlledClassRouteWithoutVolume() {
+        val report = sampleWorldWithControlledClassRouteWithoutVolume().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME
+        )
+    }
+
+    @Test
+    fun validationDetectsClassARouteWithoutVolume() {
+        val report = sampleWorldWithClassARouteWithoutVolume().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME
+        )
+    }
+
+    @Test
+    fun validationDetectsUnknownRouteAirspaceVolume() {
+        val report = sampleWorldWithUnknownRouteAirspaceVolume().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.VFR_ROUTE_UNKNOWN_VOLUME
+        )
+    }
+
+    @Test
+    fun validationDetectsRoutePointOutsideVolume() {
+        val report = sampleWorldWithRoutePointOutsideVolume().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.VFR_ROUTE_POINT_NOT_IN_VOLUME
+        )
+    }
+
+    @Test
+    fun validationDetectsSegmentedRouteUnknownVolume() {
+        val report = sampleWorldWithSegmentedRouteUnknownVolume().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.VFR_ROUTE_SEGMENT_UNKNOWN_VOLUME
+        )
+    }
+
+    @Test
+    fun validationDetectsSegmentedRouteSequenceMismatch() {
+        val report = sampleWorldWithSegmentedRouteSequenceMismatch().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.VFR_ROUTE_SEGMENT_SEQUENCE_MISMATCH
+        )
+    }
+
+    @Test
+    fun validationDetectsSegmentedRouteEndpointOutsideVolume() {
+        val report = sampleWorldWithSegmentedRouteEndpointOutsideVolume().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.VFR_ROUTE_SEGMENT_ENDPOINT_NOT_IN_VOLUME
+        )
+    }
 }
 
 internal object FixtureIds {
@@ -158,6 +249,7 @@ internal object FixtureIds {
     val hold = HoldingPatternId("HOLD-IAF")
     val airway = AirwayId("W1")
     val vfrRoute = VfrRouteId("VR-1")
+    val publishedProcedure = PublishedVfrProcedureId("PRC-1")
 
     val controller = ControllerId("CTRL-1")
 
@@ -470,7 +562,7 @@ internal fun sampleWorld(): AviationWorld {
             Waypoint(FixtureIds.joinEntry, "JOIN"),
             Waypoint(FixtureIds.vfrRoutePoint, "RIVER")
         ),
-        airspaceClass = AirspaceClass.D
+        airspaceProfile = VfrRouteAirspaceProfile.InVolume(FixtureIds.airspace)
     )
     val airspaceVolume = AirspaceVolume(
         id = FixtureIds.airspace,
@@ -481,8 +573,20 @@ internal fun sampleWorld(): AviationWorld {
             lower = AltitudeBoundary.Surface,
             upper = AltitudeBoundary.Unlimited
         ),
-        points = allPoints,
-        fir = FixtureIds.fir
+        memberPoints = allPoints,
+        fir = FixtureIds.fir,
+        boundary = AirspaceBoundary(
+            listOf(
+                BoundaryRing(
+                    listOf(
+                        FixtureIds.runway09Threshold,
+                        FixtureIds.sidExit,
+                        FixtureIds.holdFixPoint,
+                        FixtureIds.goAroundClimb
+                    )
+                )
+            )
+        )
     )
     val fir = FlightInformationRegion(
         id = FixtureIds.fir,
@@ -576,6 +680,36 @@ internal fun sampleGeometry(): PhysicalGeometry {
     )
 }
 
+internal fun sampleWorldWithUnknownPublishedProcedureRouteReference(): AviationWorld {
+    val world = sampleWorld()
+    val aerodrome = world.aerodromes.getValue(FixtureIds.aerodrome)
+    val procedure = PublishedVfrProcedure(
+        id = FixtureIds.publishedProcedure,
+        plateId = PlateId("PRC-1"),
+        kind = PublishedVfrProcedureKind.ARRIVAL,
+        publishedSequence = listOf(
+            PublishedPointReference.NamedPoint(
+                reference = "JOIN",
+                point = FixtureIds.joinEntry,
+            ),
+            PublishedPointReference.NamedPoint(
+                reference = "RIVER",
+                point = FixtureIds.vfrRoutePoint,
+            )
+        ),
+        associatedVfrRoutes = setOf(VfrRouteId("VR-UNKNOWN"))
+    )
+    val updatedAerodrome = aerodrome.copy(
+        aip = aerodrome.aip.copy(
+            publishedVfrProcedures = mapOf(procedure.id to procedure)
+        )
+    )
+
+    return world.copy(
+        aerodromes = mapOf(FixtureIds.aerodrome to updatedAerodrome)
+    )
+}
+
 internal fun sampleWorldWithMissingHoldingPoint(): AviationWorld {
     val world = sampleWorld()
     val aerodrome = world.aerodromes.getValue(FixtureIds.aerodrome)
@@ -593,6 +727,140 @@ internal fun sampleWorldWithMissingHoldingPoint(): AviationWorld {
 
     return world.copy(
         aerodromes = world.aerodromes + (FixtureIds.aerodrome to mutatedAerodrome)
+    )
+}
+
+internal fun sampleWorldWithBoundaryVertexOutsideMembership(): AviationWorld {
+    val world = sampleWorld()
+    val airspace = world.airspace.getValue(FixtureIds.airspace)
+
+    return world.copy(
+        airspace = world.airspace + (
+            FixtureIds.airspace to airspace.copy(
+                memberPoints = airspace.memberPoints - FixtureIds.sidExit
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithControlledClassRouteWithoutVolume(): AviationWorld {
+    val world = sampleWorld()
+    val route = world.vfrRoutes.getValue(FixtureIds.vfrRoute)
+
+    return world.copy(
+        vfrRoutes = world.vfrRoutes + (
+            FixtureIds.vfrRoute to route.copy(
+                airspaceProfile = VfrRouteAirspaceProfile.InClass(AirspaceClass.D)
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithClassARouteWithoutVolume(): AviationWorld {
+    val world = sampleWorld()
+    val route = world.vfrRoutes.getValue(FixtureIds.vfrRoute)
+
+    return world.copy(
+        vfrRoutes = world.vfrRoutes + (
+            FixtureIds.vfrRoute to route.copy(
+                airspaceProfile = VfrRouteAirspaceProfile.InClass(AirspaceClass.A)
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithUnknownRouteAirspaceVolume(): AviationWorld {
+    val world = sampleWorld()
+    val route = world.vfrRoutes.getValue(FixtureIds.vfrRoute)
+
+    return world.copy(
+        vfrRoutes = world.vfrRoutes + (
+            FixtureIds.vfrRoute to route.copy(
+                airspaceProfile = VfrRouteAirspaceProfile.InVolume(AirspaceVolumeId("UNKNOWN-CTR"))
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithRoutePointOutsideVolume(): AviationWorld {
+    val world = sampleWorld()
+    val airspace = world.airspace.getValue(FixtureIds.airspace)
+
+    return world.copy(
+        airspace = world.airspace + (
+            FixtureIds.airspace to airspace.copy(
+                memberPoints = airspace.memberPoints - FixtureIds.vfrRoutePoint
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithSegmentedRouteUnknownVolume(): AviationWorld {
+    val world = sampleWorld()
+    val route = world.vfrRoutes.getValue(FixtureIds.vfrRoute)
+
+    return world.copy(
+        vfrRoutes = world.vfrRoutes + (
+            FixtureIds.vfrRoute to route.copy(
+                airspaceProfile = VfrRouteAirspaceProfile.Segmented(
+                    listOf(
+                        VfrRouteAirspaceSegment(
+                            from = FixtureIds.joinEntry,
+                            to = FixtureIds.vfrRoutePoint,
+                            airspaceVolume = AirspaceVolumeId("UNKNOWN-CTR")
+                        )
+                    )
+                )
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithSegmentedRouteSequenceMismatch(): AviationWorld {
+    val world = sampleWorld()
+    val route = world.vfrRoutes.getValue(FixtureIds.vfrRoute)
+
+    return world.copy(
+        vfrRoutes = world.vfrRoutes + (
+            FixtureIds.vfrRoute to route.copy(
+                airspaceProfile = VfrRouteAirspaceProfile.Segmented(
+                    listOf(
+                        VfrRouteAirspaceSegment(
+                            from = FixtureIds.vfrRoutePoint,
+                            to = FixtureIds.joinEntry,
+                            airspaceVolume = FixtureIds.airspace
+                        )
+                    )
+                )
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithSegmentedRouteEndpointOutsideVolume(): AviationWorld {
+    val world = sampleWorld()
+    val route = world.vfrRoutes.getValue(FixtureIds.vfrRoute)
+    val airspace = world.airspace.getValue(FixtureIds.airspace)
+
+    return world.copy(
+        vfrRoutes = world.vfrRoutes + (
+            FixtureIds.vfrRoute to route.copy(
+                airspaceProfile = VfrRouteAirspaceProfile.Segmented(
+                    listOf(
+                        VfrRouteAirspaceSegment(
+                            from = FixtureIds.joinEntry,
+                            to = FixtureIds.vfrRoutePoint,
+                            airspaceVolume = FixtureIds.airspace
+                        )
+                    )
+                )
+            )
+        ),
+        airspace = world.airspace + (
+            FixtureIds.airspace to airspace.copy(
+                memberPoints = airspace.memberPoints - FixtureIds.vfrRoutePoint
+            )
+        )
     )
 }
 

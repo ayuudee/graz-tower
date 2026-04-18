@@ -20,7 +20,7 @@ OFMX and CIFP both use plain identifiers (e.g., `GRZ`) but reference different f
 
 Fix positions come from:
 - OFMX `Dpn` elements (lat/lon in OFMX format: `47.65381389N`)
-- `earth_fix.dat` / `earth_nav.dat` for CIFP-referenced fixes not in OFMX
+- `earth_fix.dat` / `earth_nav.dat` for CIFP-referenced fixes not in OFMX (needed, but not currently checked into this repo)
 
 ## Airport identifiers
 

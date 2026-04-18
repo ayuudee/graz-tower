@@ -14,6 +14,13 @@ enum class WorldValidationCode {
     UNKNOWN_FIR,
     FIR_VOLUME_MISMATCH,
     UNKNOWN_AIRSPACE_VOLUME,
+    AIRSPACE_BOUNDARY_VERTEX_NOT_IN_MEMBERSHIP,
+    VFR_ROUTE_UNKNOWN_VOLUME,
+    VFR_ROUTE_POINT_NOT_IN_VOLUME,
+    VFR_ROUTE_SEGMENT_SEQUENCE_MISMATCH,
+    VFR_ROUTE_SEGMENT_UNKNOWN_VOLUME,
+    VFR_ROUTE_SEGMENT_ENDPOINT_NOT_IN_VOLUME,
+    UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME,
     MISSING_RUNWAY_HOLDING_POINT,
     UNREACHABLE_STAND_FROM_HOLDING_POINT,
     UNKNOWN_RUNWAY_EXIT_TAXIWAY,
@@ -33,7 +40,11 @@ enum class WorldValidationCode {
     RECIPROCAL_RUNWAYS_DO_NOT_SHARE_SEGMENT,
     DUPLICATE_AIRWAY_NAME,
     DUPLICATE_SID_NAME,
-    DUPLICATE_STAR_NAME
+    DUPLICATE_STAR_NAME,
+    OPERATIONAL_SECTOR_UNKNOWN_PROCEDURE,
+    PUBLISHED_VFR_PROCEDURE_UNKNOWN_ROUTE,
+    PUBLISHED_VFR_PROCEDURE_UNKNOWN_SECTOR,
+    PUBLISHED_VFR_PROCEDURE_UNKNOWN_CIRCUIT
 }
 
 data class WorldValidationIssue(
@@ -52,24 +63,11 @@ fun AviationWorld.validate(): WorldValidationReport =
     WorldValidationReport(
         validateGeometryReferencesAndClaims() +
             validateAirspaceCoverage() +
+            validateVfrRouteAirspaceProfiles() +
             validateFirMembership() +
             validateGlobalNames() +
             aerodromes.values.flatMap(::validateAerodrome)
     )
-
-private fun AviationWorld.validateAirspaceCoverage(): List<WorldValidationIssue> {
-    val coveredPoints = airspace.values.flatMap { volume -> volume.points }.toSet()
-
-    return geometry.points.keys
-        .filter { point -> point !in coveredPoints }
-        .sortedBy(PointId::value)
-        .map { point ->
-            WorldValidationIssue(
-                WorldValidationCode.POINT_OUTSIDE_AIRSPACE,
-                "Point ${point.value} is not contained in any airspace volume"
-            )
-        }
-}
 
 private fun AviationWorld.validateGeometryReferencesAndClaims(): List<WorldValidationIssue> {
     val claimedPoints = deriveEntitiesByPoint().keys
@@ -178,6 +176,7 @@ private fun AviationWorld.validateAerodrome(aerodrome: Aerodrome): List<WorldVal
         validateProcedureAnchoring(aerodrome) +
         validateSegmentOwnership(aerodrome) +
         validateHoldingPatterns(aerodrome) +
+        validateAipReferences(aerodrome) +
         validateRoleStaffing(aerodrome) +
         validateReciprocalRunways(aerodrome) +
         validateAerodromeNames(aerodrome)
@@ -371,6 +370,59 @@ private fun AviationWorld.validateHoldingPatterns(
         )
     }
 
+private fun AviationWorld.validateAipReferences(
+    aerodrome: Aerodrome
+): List<WorldValidationIssue> {
+    val sectorIssues = aerodrome.aip.operationalSectors.values.flatMap { sector ->
+        sector.associatedProcedures
+            .filter { procedureId -> procedureId !in aerodrome.aip.publishedVfrProcedures }
+            .sortedBy { procedureId -> procedureId.value }
+            .map { procedureId ->
+                WorldValidationIssue(
+                    WorldValidationCode.OPERATIONAL_SECTOR_UNKNOWN_PROCEDURE,
+                    "Operational sector ${sector.id.value} at aerodrome ${aerodrome.icao.value} " +
+                        "references unknown published VFR procedure ${procedureId.value}"
+                )
+            }
+    }
+
+    val procedureIssues = aerodrome.aip.publishedVfrProcedures.values.flatMap { procedure ->
+        val unknownRoutes = procedure.associatedVfrRoutes
+            .filter { routeId -> routeId !in vfrRoutes }
+            .sortedBy { routeId -> routeId.value }
+            .map { routeId ->
+                WorldValidationIssue(
+                    WorldValidationCode.PUBLISHED_VFR_PROCEDURE_UNKNOWN_ROUTE,
+                    "Published VFR procedure ${procedure.id.value} at aerodrome ${aerodrome.icao.value} " +
+                        "references unknown VFR route ${routeId.value}"
+                )
+            }
+        val unknownSectors = procedure.associatedOperationalSectors
+            .filter { sectorId -> sectorId !in aerodrome.aip.operationalSectors }
+            .sortedBy { sectorId -> sectorId.value }
+            .map { sectorId ->
+                WorldValidationIssue(
+                    WorldValidationCode.PUBLISHED_VFR_PROCEDURE_UNKNOWN_SECTOR,
+                    "Published VFR procedure ${procedure.id.value} at aerodrome ${aerodrome.icao.value} " +
+                        "references unknown operational sector ${sectorId.value}"
+                )
+            }
+        val unknownCircuits = procedure.associatedCircuits
+            .filter { circuitId -> circuitId !in aerodrome.circuits }
+            .sortedBy { circuitId -> circuitId.value }
+            .map { circuitId ->
+                WorldValidationIssue(
+                    WorldValidationCode.PUBLISHED_VFR_PROCEDURE_UNKNOWN_CIRCUIT,
+                    "Published VFR procedure ${procedure.id.value} at aerodrome ${aerodrome.icao.value} " +
+                        "references unknown circuit procedure ${circuitId.value}"
+                )
+            }
+        unknownRoutes + unknownSectors + unknownCircuits
+    }
+
+    return sectorIssues + procedureIssues
+}
+
 private fun validateRoleStaffing(aerodrome: Aerodrome): List<WorldValidationIssue> {
     val staffedRoles = aerodrome.controllers.values.flatten().toSet()
 
@@ -502,6 +554,14 @@ private fun AviationWorld.collectClaimedSegments(): Set<GeometrySegmentId> =
 
         airways.values.forEach { airway -> airway.waypoints.asPathOrNull()?.let(::addPath) }
         vfrRoutes.values.forEach { route -> route.waypoints.asPathOrNull()?.let(::addPath) }
+        airspace.values.forEach { volume ->
+            volume.boundary?.rings.orEmpty().forEach { ring -> addPath(ring.asClosedPath()) }
+        }
+        aerodromes.values.forEach { aerodrome ->
+            aerodrome.aip.operationalSectors.values.forEach { sector ->
+                sector.boundary.rings.forEach { ring -> addPath(ring.asClosedPath()) }
+            }
+        }
     }
 
 private fun RunwayId.reciprocal(): RunwayId? {

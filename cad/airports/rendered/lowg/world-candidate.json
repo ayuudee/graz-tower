@@ -1,0 +1,5224 @@
+{
+  "airportCode": "LOWG",
+  "airportName": "Graz Airport",
+  "forcedAssumptions": [
+    "A single synthetic point-claim CTR volume still covers every projected LOWG v1 world point so validation can focus on entity fit instead of unfinished airspace membership, but it now also carries the worked LOWG CTR boundary path for runtime-owned chart geometry.",
+    "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
+    "Apron access now uses the authored NEW_Parking graph and NEW_Parking_Points stand set, with direct authored attachments onto taxiway A from the working DXF.",
+    "Current-core runway-protection holding points are projected only onto the connected taxiway-A spine because the present validator requires every holding point to reach every stand through the ground graph.",
+    "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly."
+  ],
+  "omittedFeatures": [
+    "Circuit procedures are omitted from the current world candidate because the current CAD is still a shared graph and has not yet been projected into directional CircuitProcedure entities.",
+    "Only the worked LOWG CTR boundary is projected into the current runtime candidate; the broader surrounding airspace set still remains outside the current-core subset until point membership is assigned honestly.",
+    "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
+    "The east non-standard hold remains deferred to version 2.",
+    "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule."
+  ],
+  "projectionGaps": [
+    "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
+    "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
+    "The current circuit drawing is still a shared graph and has not yet been projected into final directional CircuitProcedure entities.",
+    "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
+    "The east non-standard hold remains deferred to version 2 until the loiter model is corrected."
+  ],
+  "projectionStatus": "v1_current_core_fit_subset",
+  "sourceEntityBundle": "cad/airports/rendered/lowg/entity-bundle.json",
+  "sourceManifest": "cad/airports/lowg.manifest.json",
+  "sourceStructuredAirportPackage": "cad/airports/rendered/lowg/structured-airport-package.json",
+  "world": {
+    "aerodrome": {
+      "aip": {
+        "noiseAbatement": [],
+        "operationalSectors": {
+          "sector_echo": {
+            "altitudeBand": {
+              "lower": {
+                "kind": "SURFACE"
+              },
+              "upper": {
+                "kind": "AT_LEVEL",
+                "levelType": "ALTITUDE_FEET",
+                "value": 3000
+              }
+            },
+            "anchor": {
+              "kind": "CTR_BOUNDARY_REPORTING_POINT",
+              "pointId": "LOWG_FIX_KALSDORF"
+            },
+            "associatedProcedureIds": [
+              "prc_3_arrival_kalsdorf",
+              "prc_3_departure_kalsdorf"
+            ],
+            "boundaryPathIds": [
+              "LOWG_SECTOR_SECTOR_ECHO_01"
+            ],
+            "contactRequirement": {
+              "role": "TOWER",
+              "timing": {
+                "kind": "BEFORE_ENTRY"
+              }
+            },
+            "entryExitPointIds": [
+              "LOWG_FIX_KALSDORF"
+            ],
+            "id": "sector_echo",
+            "kind": "VFR_OPERATIONAL",
+            "name": "SECTOR ECHO",
+            "note": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume.",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "relationToCtr": "BOUNDARY_OR_OVERLAP",
+            "specialProcedureNote": null
+          },
+          "sector_whiskey": {
+            "altitudeBand": {
+              "lower": {
+                "kind": "SURFACE"
+              },
+              "upper": {
+                "kind": "AT_LEVEL",
+                "levelType": "ALTITUDE_FEET",
+                "value": 3000
+              }
+            },
+            "anchor": {
+              "kind": "CTR_BOUNDARY_REPORTING_POINT",
+              "pointId": "LOWG_FIX_SENDER_DOBL"
+            },
+            "associatedProcedureIds": [
+              "prc_2_arrival_sender_dobl",
+              "prc_2_departure_sender_dobl"
+            ],
+            "boundaryPathIds": [
+              "LOWG_SECTOR_SECTOR_WHISKEY_01"
+            ],
+            "contactRequirement": {
+              "role": "TOWER",
+              "timing": {
+                "kind": "BEFORE_ENTRY"
+              }
+            },
+            "entryExitPointIds": [
+              "LOWG_FIX_SENDER_DOBL"
+            ],
+            "id": "sector_whiskey",
+            "kind": "VFR_OPERATIONAL",
+            "name": "SECTOR WHISKEY",
+            "note": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume.",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "relationToCtr": "BOUNDARY_OR_OVERLAP",
+            "specialProcedureNote": "Within CTR LOWG the highway A2 shall under no circumstances be overflown, to avoid drifting unintentionally into TRA LOWG GLIDER L or U."
+          }
+        },
+        "publishedVfrProcedures": {
+          "arr_1_gleisdorf_arrival_only": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Approach GLEISDORF at max 3000 ft; TMA above.",
+              "availability": null,
+              "contact": "Approaching GLEISDORF max 3000 (TMA above), contact GRAZ TOWER.",
+              "equipmentMinimum": null,
+              "general": "Published OFM arrival-only / NORDO-arrival plate. This is the dedicated Gleisdorf arrival axis and comm-failure reference route.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": null,
+              "route": "Traffic circuit east of field, 2500 ft.",
+              "specialProcedure": null,
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [],
+            "associatedVfrRouteIds": [
+              "vfr_northeast_entry_path"
+            ],
+            "communicationFailure": {
+              "afterContactEstablishedExitSequence": [
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_GLEISDORF",
+                  "reference": "GLEISDORF"
+                },
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_LASSNITZH\u00d6HE",
+                  "reference": "LASSNITZH\u00d6HE"
+                },
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_AUTOBAHN_OST",
+                  "reference": "AUTOBAHN-OST"
+                },
+                {
+                  "kind": "LITERAL",
+                  "reference": "nordo_holding_east_of_tower"
+                }
+              ],
+              "beforeContactEstablished": null,
+              "note": "In case of COM FAILURE, SQ7600, review AD-4."
+            },
+            "contactRequirement": {
+              "role": "TOWER",
+              "timing": {
+                "kind": "BEFORE_POINT",
+                "pointId": "LOWG_FIX_GLEISDORF",
+                "reference": "GLEISDORF"
+              }
+            },
+            "departureRunwayIds": [],
+            "holdAt": null,
+            "id": "arr_1_gleisdorf_arrival_only",
+            "kind": "ARRIVAL",
+            "mapLabels": [],
+            "plateId": "ARR-1",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_GLEISDORF",
+                "reference": "GLEISDORF"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_LASSNITZH\u00d6HE",
+                "reference": "LASSNITZH\u00d6HE"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_AUTOBAHN_OST",
+                "reference": "AUTOBAHN-OST"
+              }
+            ],
+            "terminatesAt": null
+          },
+          "prc_1_arrival_graz_nord": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Approach GRAZ-NORD at max 2500 ft; TMA above.",
+              "availability": null,
+              "contact": "Contact GRAZ TWR before approaching GRAZ-NORD (2500 max, TMA above).",
+              "equipmentMinimum": null,
+              "general": "Published OFM arrival procedure. The route via GREEN CITY ends at AUTOBAHN-WEST, where aircraft should hold for further clearance unless approach/landing clearance has already been received.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": null,
+              "route": null,
+              "specialProcedure": null,
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [],
+            "associatedVfrRouteIds": [
+              "vfr_western_corridor_path"
+            ],
+            "communicationFailure": {
+              "afterContactEstablishedExitSequence": [
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+                  "reference": "AUTOBAHN-WEST"
+                },
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_GREEN_CITY",
+                  "reference": "GREEN CITY"
+                },
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_GRAZ_NORD",
+                  "reference": "GRAZ-NORD"
+                }
+              ],
+              "beforeContactEstablished": null,
+              "note": "If COM FAILURE, SQ 7600, leave CTR via this route in opposite direction, via GRAZ-NORD; review AD-4."
+            },
+            "contactRequirement": {
+              "role": "TOWER",
+              "timing": {
+                "kind": "BEFORE_POINT",
+                "pointId": "LOWG_FIX_GRAZ_NORD",
+                "reference": "GRAZ-NORD"
+              }
+            },
+            "departureRunwayIds": [],
+            "holdAt": {
+              "kind": "FIX",
+              "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+              "reference": "AUTOBAHN-WEST"
+            },
+            "id": "prc_1_arrival_graz_nord",
+            "kind": "ARRIVAL",
+            "mapLabels": [
+              {
+                "label": "GRAZ-NORD @3500 MSL (-)",
+                "location": {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_GRAZ_NORD",
+                  "reference": "GRAZ-NORD"
+                }
+              },
+              {
+                "label": "GREEN CITY @3500 MSL (-)",
+                "location": {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_GREEN_CITY",
+                  "reference": "GREEN CITY"
+                }
+              },
+              {
+                "label": "AUTOBAHN-WEST @3000 MSL (-)",
+                "location": {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+                  "reference": "AUTOBAHN-WEST"
+                }
+              }
+            ],
+            "plateId": "PRC-1",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_GRAZ_NORD",
+                "reference": "GRAZ-NORD"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_GREEN_CITY",
+                "reference": "GREEN CITY"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+                "reference": "AUTOBAHN-WEST"
+              }
+            ],
+            "terminatesAt": {
+              "kind": "FIX",
+              "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+              "reference": "AUTOBAHN-WEST"
+            }
+          },
+          "prc_1_departure_graz_nord": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Climb to 3500 ft as soon as practicable for noise abatement.",
+              "availability": null,
+              "contact": null,
+              "equipmentMinimum": null,
+              "general": "Published OFM departure procedure for departures via reporting point GRAZ-NORD.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": "Unless instructed otherwise, do not report when passing AUTOBAHN-WEST.",
+              "route": "Departures via reporting point GRAZ-NORD shall follow the depicted VFR route from AUTOBAHN-WEST via GREEN CITY.",
+              "specialProcedure": null,
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [],
+            "associatedVfrRouteIds": [
+              "vfr_western_corridor_path"
+            ],
+            "communicationFailure": null,
+            "contactRequirement": null,
+            "departureRunwayIds": [
+              "16C",
+              "34C",
+              "16R",
+              "34L",
+              "16L",
+              "34R"
+            ],
+            "holdAt": null,
+            "id": "prc_1_departure_graz_nord",
+            "kind": "DEPARTURE",
+            "mapLabels": [],
+            "plateId": "PRC-1",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+                "reference": "AUTOBAHN-WEST"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_GREEN_CITY",
+                "reference": "GREEN CITY"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_GRAZ_NORD",
+                "reference": "GRAZ-NORD"
+              }
+            ],
+            "terminatesAt": null
+          },
+          "prc_2_arrival_sender_dobl": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Enter SECTOR WHISKEY at max 3000 ft.",
+              "availability": null,
+              "contact": "Contact GRAZ TWR before entering SECTOR W and CTR at max 3000 ft.",
+              "equipmentMinimum": null,
+              "general": "Published OFM arrival procedure. The route ends at SENDER DOBL, where aircraft should hold for further clearance unless approach/landing clearance has already been received.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": null,
+              "route": null,
+              "specialProcedure": "Within CTR LOWG the highway A2 shall under no circumstances be overflown, to avoid drifting unintentionally into TRA LOWG GLIDER L or U.",
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [
+              "sector_whiskey"
+            ],
+            "associatedVfrRouteIds": [
+              "vfr_southwest_entry_path"
+            ],
+            "communicationFailure": {
+              "afterContactEstablishedExitSequence": [
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_SENDER_DOBL",
+                  "reference": "SENDER DOBL"
+                },
+                {
+                  "kind": "OPERATIONAL_SECTOR_ANCHOR",
+                  "pointId": "LOWG_FIX_SENDER_DOBL",
+                  "reference": "SECTOR WHISKEY"
+                }
+              ],
+              "beforeContactEstablished": null,
+              "note": "If COM FAILURE, SQ 7600, leave CTR via this route in opposite direction, via SENDER DOBL -> SECTOR W; review AD-4."
+            },
+            "contactRequirement": {
+              "role": "TOWER",
+              "timing": {
+                "kind": "BEFORE_POINT",
+                "pointId": "LOWG_FIX_SENDER_DOBL",
+                "reference": "SECTOR WHISKEY"
+              }
+            },
+            "departureRunwayIds": [],
+            "holdAt": {
+              "kind": "FIX",
+              "pointId": "LOWG_FIX_SENDER_DOBL",
+              "reference": "SENDER DOBL"
+            },
+            "id": "prc_2_arrival_sender_dobl",
+            "kind": "ARRIVAL",
+            "mapLabels": [
+              {
+                "label": "SENDER DOBL @3000 MSL (-)",
+                "location": {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_SENDER_DOBL",
+                  "reference": "SENDER DOBL"
+                }
+              }
+            ],
+            "plateId": "PRC-2",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "OPERATIONAL_SECTOR_ANCHOR",
+                "pointId": "LOWG_FIX_SENDER_DOBL",
+                "reference": "SECTOR WHISKEY"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_SENDER_DOBL",
+                "reference": "SENDER DOBL"
+              }
+            ],
+            "terminatesAt": {
+              "kind": "FIX",
+              "pointId": "LOWG_FIX_SENDER_DOBL",
+              "reference": "SENDER DOBL"
+            }
+          },
+          "prc_2_departure_sender_dobl": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Climb to max 3000 ft as soon as practicable for noise abatement.",
+              "availability": null,
+              "contact": null,
+              "equipmentMinimum": null,
+              "general": "Published OFM departure procedure via SENDER DOBL.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": "Unless instructed otherwise, do not report when passing SENDER DOBL.",
+              "route": null,
+              "specialProcedure": "Within CTR LOWG the highway A2 shall under no circumstances be overflown, to avoid drifting unintentionally into TRA LOWG GLIDER L or U.",
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [
+              "sector_whiskey"
+            ],
+            "associatedVfrRouteIds": [
+              "vfr_southwest_entry_path"
+            ],
+            "communicationFailure": null,
+            "contactRequirement": null,
+            "departureRunwayIds": [],
+            "holdAt": null,
+            "id": "prc_2_departure_sender_dobl",
+            "kind": "DEPARTURE",
+            "mapLabels": [],
+            "plateId": "PRC-2",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_SENDER_DOBL",
+                "reference": "SENDER DOBL"
+              },
+              {
+                "kind": "OPERATIONAL_SECTOR_ANCHOR",
+                "pointId": "LOWG_FIX_SENDER_DOBL",
+                "reference": "SECTOR WHISKEY"
+              }
+            ],
+            "terminatesAt": null
+          },
+          "prc_3_arrival_kalsdorf": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Enter SECTOR ECHO at max 3000 ft.",
+              "availability": null,
+              "contact": "Contact GRAZ TWR before entering SECTOR E and CTR at max 3000 ft.",
+              "equipmentMinimum": null,
+              "general": "Published OFM arrival procedure. The route ends at KALSDORF, where aircraft should hold for further clearance unless approach/landing clearance has already been received.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": null,
+              "route": null,
+              "specialProcedure": null,
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [
+              "sector_echo"
+            ],
+            "associatedVfrRouteIds": [
+              "vfr_southeast_entry_path"
+            ],
+            "communicationFailure": {
+              "afterContactEstablishedExitSequence": [
+                {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_KALSDORF",
+                  "reference": "KALSDORF"
+                },
+                {
+                  "kind": "OPERATIONAL_SECTOR_ANCHOR",
+                  "pointId": "LOWG_FIX_KALSDORF",
+                  "reference": "SECTOR ECHO"
+                }
+              ],
+              "beforeContactEstablished": null,
+              "note": "If COM FAILURE, SQ 7600, leave CTR via this route in opposite direction, via KALSDORF -> SECTOR E; review AD-4."
+            },
+            "contactRequirement": {
+              "role": "TOWER",
+              "timing": {
+                "kind": "BEFORE_POINT",
+                "pointId": "LOWG_FIX_KALSDORF",
+                "reference": "SECTOR ECHO"
+              }
+            },
+            "departureRunwayIds": [],
+            "holdAt": {
+              "kind": "FIX",
+              "pointId": "LOWG_FIX_KALSDORF",
+              "reference": "KALSDORF"
+            },
+            "id": "prc_3_arrival_kalsdorf",
+            "kind": "ARRIVAL",
+            "mapLabels": [
+              {
+                "label": "KALSDORF @2500 MSL",
+                "location": {
+                  "kind": "FIX",
+                  "pointId": "LOWG_FIX_KALSDORF",
+                  "reference": "KALSDORF"
+                }
+              }
+            ],
+            "plateId": "PRC-3",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "OPERATIONAL_SECTOR_ANCHOR",
+                "pointId": "LOWG_FIX_KALSDORF",
+                "reference": "SECTOR ECHO"
+              },
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_KALSDORF",
+                "reference": "KALSDORF"
+              }
+            ],
+            "terminatesAt": {
+              "kind": "FIX",
+              "pointId": "LOWG_FIX_KALSDORF",
+              "reference": "KALSDORF"
+            }
+          },
+          "prc_3_departure_kalsdorf": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Climb to max 3000 ft as soon as practicable for noise abatement.",
+              "availability": null,
+              "contact": null,
+              "equipmentMinimum": null,
+              "general": "Published OFM departure procedure via KALSDORF.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": "Unless instructed otherwise, do not report when passing KALSDORF.",
+              "route": null,
+              "specialProcedure": null,
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [
+              "sector_echo"
+            ],
+            "associatedVfrRouteIds": [
+              "vfr_southeast_entry_path"
+            ],
+            "communicationFailure": null,
+            "contactRequirement": null,
+            "departureRunwayIds": [],
+            "holdAt": null,
+            "id": "prc_3_departure_kalsdorf",
+            "kind": "DEPARTURE",
+            "mapLabels": [],
+            "plateId": "PRC-3",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "FIX",
+                "pointId": "LOWG_FIX_KALSDORF",
+                "reference": "KALSDORF"
+              },
+              {
+                "kind": "OPERATIONAL_SECTOR_ANCHOR",
+                "pointId": "LOWG_FIX_KALSDORF",
+                "reference": "SECTOR ECHO"
+              }
+            ],
+            "terminatesAt": null
+          },
+          "prc_4_west_traffic_circuit": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Traffic circuit west at 2500 ft MSL.",
+              "availability": "Traffic circuit west is not available for flights from and to 16L/34R, but is available from 16C/34C according to ATC.",
+              "contact": null,
+              "equipmentMinimum": null,
+              "general": "Published OFM west traffic circuit procedure.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": null,
+              "route": null,
+              "specialProcedure": "The aerodrome traffic circuit west is intended to keep traffic clear of the parachute area west of runway 16R/34L; pilots are required to adhere to it as best as possible.",
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [
+              "16R",
+              "34L"
+            ],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [],
+            "associatedVfrRouteIds": [],
+            "communicationFailure": null,
+            "contactRequirement": null,
+            "departureRunwayIds": [],
+            "holdAt": null,
+            "id": "prc_4_west_traffic_circuit",
+            "kind": "CIRCUIT_PUBLICATION",
+            "mapLabels": [],
+            "plateId": "PRC-4",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [],
+            "terminatesAt": null
+          },
+          "prc_5_east_hold": {
+            "advisories": {
+              "activationHours": null,
+              "altitude": "Traffic circuit east of field at 2500 ft MSL.",
+              "availability": "If runway 16C/34C is in use, ATC may assign either the east or west traffic pattern.",
+              "contact": null,
+              "equipmentMinimum": null,
+              "general": "Published OFM east traffic / non-standard east hold for 16C/34C and 16L/34R. Geometry and semantics still need to be reconciled against the intended loiter-area model.",
+              "language": null,
+              "noiseAbatement": null,
+              "reporting": null,
+              "route": null,
+              "specialProcedure": null,
+              "speedCap": null,
+              "squawkConvention": null
+            },
+            "applicableRunwayIds": [],
+            "associatedCircuitIds": [],
+            "associatedOperationalSectorIds": [],
+            "associatedVfrRouteIds": [],
+            "communicationFailure": null,
+            "contactRequirement": null,
+            "departureRunwayIds": [],
+            "holdAt": null,
+            "id": "prc_5_east_hold",
+            "kind": "CIRCUIT_ATTACHED_HOLD",
+            "mapLabels": [],
+            "plateId": "PRC-5",
+            "projectionStatus": "direct_runtime_aip_entity",
+            "publishedSequence": [
+              {
+                "kind": "LITERAL",
+                "reference": "TFC 16C/34C 16L/34R EAST TFC"
+              },
+              {
+                "kind": "LITERAL",
+                "reference": "EAST HOLD (NON-STD)"
+              }
+            ],
+            "terminatesAt": null
+          }
+        },
+        "specialInstructions": []
+      },
+      "aprons": {
+        "LOWG_APRON_AUTHORED_PARKING": {
+          "id": "LOWG_APRON_AUTHORED_PARKING",
+          "name": "Authored Parking",
+          "note": "Authored apron graph from NEW_Parking with direct taxiway A attachments from the working DXF.",
+          "pathIds": [
+            "LOWG_APRON_AUTHORED_01",
+            "LOWG_APRON_AUTHORED_02",
+            "LOWG_APRON_AUTHORED_03",
+            "LOWG_APRON_AUTHORED_04",
+            "LOWG_APRON_AUTHORED_05",
+            "LOWG_APRON_AUTHORED_06",
+            "LOWG_APRON_AUTHORED_07",
+            "LOWG_APRON_AUTHORED_08",
+            "LOWG_APRON_AUTHORED_09",
+            "LOWG_APRON_AUTHORED_10",
+            "LOWG_APRON_AUTHORED_11",
+            "LOWG_APRON_AUTHORED_12",
+            "LOWG_APRON_AUTHORED_13",
+            "LOWG_APRON_AUTHORED_14",
+            "LOWG_APRON_AUTHORED_15",
+            "LOWG_APRON_AUTHORED_16",
+            "LOWG_APRON_AUTHORED_17",
+            "LOWG_APRON_AUTHORED_18",
+            "LOWG_APRON_AUTHORED_19",
+            "LOWG_APRON_AUTHORED_20",
+            "LOWG_APRON_AUTHORED_21",
+            "LOWG_APRON_AUTHORED_22",
+            "LOWG_APRON_AUTHORED_23",
+            "LOWG_APRON_AUTHORED_24",
+            "LOWG_APRON_AUTHORED_25",
+            "LOWG_APRON_AUTHORED_26",
+            "LOWG_APRON_AUTHORED_27",
+            "LOWG_APRON_AUTHORED_28",
+            "LOWG_APRON_AUTHORED_29",
+            "LOWG_APRON_AUTHORED_30",
+            "LOWG_APRON_AUTHORED_31",
+            "LOWG_APRON_AUTHORED_32",
+            "LOWG_APRON_AUTHORED_33",
+            "LOWG_APRON_AUTHORED_34",
+            "LOWG_APRON_AUTHORED_35",
+            "LOWG_APRON_AUTHORED_36",
+            "LOWG_APRON_AUTHORED_37",
+            "LOWG_APRON_AUTHORED_38",
+            "LOWG_APRON_AUTHORED_39"
+          ],
+          "projectionStatus": "direct_authored_parking_graph_with_direct_taxiway_a_attachments",
+          "standIds": [
+            "LOWG_STAND_1",
+            "LOWG_STAND_2",
+            "LOWG_STAND_20",
+            "LOWG_STAND_22",
+            "LOWG_STAND_26",
+            "LOWG_STAND_28",
+            "LOWG_STAND_3",
+            "LOWG_STAND_30",
+            "LOWG_STAND_32",
+            "LOWG_STAND_35",
+            "LOWG_STAND_38",
+            "LOWG_STAND_F1",
+            "LOWG_STAND_F10",
+            "LOWG_STAND_F12",
+            "LOWG_STAND_F2",
+            "LOWG_STAND_F4",
+            "LOWG_STAND_F6",
+            "LOWG_STAND_F7",
+            "LOWG_STAND_F8",
+            "LOWG_STAND_G1",
+            "LOWG_STAND_G10",
+            "LOWG_STAND_G11",
+            "LOWG_STAND_G12",
+            "LOWG_STAND_G13",
+            "LOWG_STAND_G14",
+            "LOWG_STAND_G15",
+            "LOWG_STAND_G16",
+            "LOWG_STAND_G17",
+            "LOWG_STAND_G18",
+            "LOWG_STAND_G19",
+            "LOWG_STAND_G2",
+            "LOWG_STAND_G20",
+            "LOWG_STAND_G4",
+            "LOWG_STAND_G5",
+            "LOWG_STAND_G6",
+            "LOWG_STAND_G7",
+            "LOWG_STAND_G8",
+            "LOWG_STAND_G9"
+          ]
+        }
+      },
+      "elevationFeet": 1120,
+      "icao": "LOWG",
+      "magneticVariationDegrees": 5,
+      "name": "Graz Airport",
+      "runways": {
+        "16C": {
+          "declaredDistances": {
+            "asdaMeters": 2999,
+            "ldaMeters": 2739,
+            "todaMeters": 2999,
+            "toraMeters": 2999
+          },
+          "id": "16C",
+          "note": "Version 1 uses the full strip and intentionally does not model displaced-threshold asymmetry.",
+          "pathId": "LOWG_PATH_RWY_16C",
+          "projectionStatus": "direct",
+          "thresholdPointId": "LOWG_RWY_16C_THR"
+        },
+        "16L": {
+          "declaredDistances": {
+            "asdaMeters": 639,
+            "ldaMeters": 639,
+            "todaMeters": 639,
+            "toraMeters": 639
+          },
+          "id": "16L",
+          "note": "Version 1 uses the full strip and intentionally does not model displaced-threshold asymmetry.",
+          "pathId": "LOWG_PATH_RWY_16L",
+          "projectionStatus": "direct",
+          "thresholdPointId": "LOWG_RWY_16L_THR"
+        },
+        "16R": {
+          "declaredDistances": {
+            "asdaMeters": 760,
+            "ldaMeters": 610,
+            "todaMeters": 760,
+            "toraMeters": 760
+          },
+          "id": "16R",
+          "note": "Version 1 uses the full strip and intentionally does not model displaced-threshold asymmetry.",
+          "pathId": "LOWG_PATH_RWY_16R",
+          "projectionStatus": "direct",
+          "thresholdPointId": "LOWG_RWY_16R_THR"
+        },
+        "34C": {
+          "declaredDistances": {
+            "asdaMeters": 2999,
+            "ldaMeters": 2999,
+            "todaMeters": 2999,
+            "toraMeters": 2999
+          },
+          "id": "34C",
+          "note": "Version 1 uses the full strip and intentionally does not model displaced-threshold asymmetry.",
+          "pathId": "LOWG_PATH_RWY_34C",
+          "projectionStatus": "direct",
+          "thresholdPointId": "LOWG_RWY_34C_THR"
+        },
+        "34L": {
+          "declaredDistances": {
+            "asdaMeters": 760,
+            "ldaMeters": 610,
+            "todaMeters": 760,
+            "toraMeters": 760
+          },
+          "id": "34L",
+          "note": "Version 1 uses the full strip and intentionally does not model displaced-threshold asymmetry.",
+          "pathId": "LOWG_PATH_RWY_34L",
+          "projectionStatus": "direct",
+          "thresholdPointId": "LOWG_RWY_34L_THR"
+        },
+        "34R": {
+          "declaredDistances": {
+            "asdaMeters": 639,
+            "ldaMeters": 639,
+            "todaMeters": 639,
+            "toraMeters": 639
+          },
+          "id": "34R",
+          "note": "Version 1 uses the full strip and intentionally does not model displaced-threshold asymmetry.",
+          "pathId": "LOWG_PATH_RWY_34R",
+          "projectionStatus": "direct",
+          "thresholdPointId": "LOWG_RWY_34R_THR"
+        }
+      },
+      "stands": {
+        "LOWG_STAND_1": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_1",
+          "locationType": "gate",
+          "name": "1",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 33.3m away.",
+          "pointId": "LOWG_STAND_1_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_2": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_2",
+          "locationType": "gate",
+          "name": "2",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 32.5m away.",
+          "pointId": "LOWG_STAND_2_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_20": {
+          "aircraftTypes": "heavy|jets|turboprops",
+          "id": "LOWG_STAND_20",
+          "locationType": "gate",
+          "name": "20",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 29.8m away.",
+          "pointId": "LOWG_STAND_20_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_22": {
+          "aircraftTypes": "heavy|jets|turboprops",
+          "id": "LOWG_STAND_22",
+          "locationType": "gate",
+          "name": "22",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 35.0m away.",
+          "pointId": "LOWG_STAND_22_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_26": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_26",
+          "locationType": "gate",
+          "name": "26",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 37.2m away.",
+          "pointId": "LOWG_STAND_26_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_28": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_28",
+          "locationType": "gate",
+          "name": "28",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 46.0m away.",
+          "pointId": "LOWG_STAND_28_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_3": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_3",
+          "locationType": "gate",
+          "name": "3",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 35.6m away.",
+          "pointId": "LOWG_STAND_3_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_30": {
+          "aircraftTypes": "heavy|jets|turboprops",
+          "id": "LOWG_STAND_30",
+          "locationType": "gate",
+          "name": "30",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 28.5m away.",
+          "pointId": "LOWG_STAND_30_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_32": {
+          "aircraftTypes": "heavy|jets|turboprops",
+          "id": "LOWG_STAND_32",
+          "locationType": "gate",
+          "name": "32",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 35.5m away.",
+          "pointId": "LOWG_STAND_32_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_35": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_35",
+          "locationType": "gate",
+          "name": "35",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 31.4m away.",
+          "pointId": "LOWG_STAND_35_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_38": {
+          "aircraftTypes": "jets|turboprops",
+          "id": "LOWG_STAND_38",
+          "locationType": "gate",
+          "name": "38",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 45.9m away.",
+          "pointId": "LOWG_STAND_38_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F1": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_F1",
+          "locationType": "tie_down",
+          "name": "F1",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 5.6m away.",
+          "pointId": "LOWG_STAND_F1_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F10": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_F10",
+          "locationType": "tie_down",
+          "name": "F10",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 7.2m away.",
+          "pointId": "LOWG_STAND_F10_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F12": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_F12",
+          "locationType": "tie_down",
+          "name": "F12",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 8.6m away.",
+          "pointId": "LOWG_STAND_F12_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F2": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_F2",
+          "locationType": "tie_down",
+          "name": "F2",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.4m away.",
+          "pointId": "LOWG_STAND_F2_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F4": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_F4",
+          "locationType": "tie_down",
+          "name": "F4",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 7.5m away.",
+          "pointId": "LOWG_STAND_F4_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F6": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_F6",
+          "locationType": "tie_down",
+          "name": "F6",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 18.4m away.",
+          "pointId": "LOWG_STAND_F6_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F7": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_F7",
+          "locationType": "tie_down",
+          "name": "F7",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.9m away.",
+          "pointId": "LOWG_STAND_F7_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_F8": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_F8",
+          "locationType": "tie_down",
+          "name": "F8",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 14.0m away.",
+          "pointId": "LOWG_STAND_F8_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G1": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G1",
+          "locationType": "tie_down",
+          "name": "G1",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 6.9m away.",
+          "pointId": "LOWG_STAND_G1_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G10": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G10",
+          "locationType": "tie_down",
+          "name": "G10",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 2.6m away.",
+          "pointId": "LOWG_STAND_G10_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G11": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G11",
+          "locationType": "tie_down",
+          "name": "G11",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.1m away.",
+          "pointId": "LOWG_STAND_G11_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G12": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G12",
+          "locationType": "tie_down",
+          "name": "G12",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 4.9m away.",
+          "pointId": "LOWG_STAND_G12_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G13": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G13",
+          "locationType": "tie_down",
+          "name": "G13",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.2m away.",
+          "pointId": "LOWG_STAND_G13_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G14": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G14",
+          "locationType": "tie_down",
+          "name": "G14",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.5m away.",
+          "pointId": "LOWG_STAND_G14_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G15": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G15",
+          "locationType": "tie_down",
+          "name": "G15",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 5.1m away.",
+          "pointId": "LOWG_STAND_G15_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G16": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G16",
+          "locationType": "tie_down",
+          "name": "G16",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 4.0m away.",
+          "pointId": "LOWG_STAND_G16_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G17": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G17",
+          "locationType": "tie_down",
+          "name": "G17",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 6.9m away.",
+          "pointId": "LOWG_STAND_G17_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G18": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G18",
+          "locationType": "tie_down",
+          "name": "G18",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 6.7m away.",
+          "pointId": "LOWG_STAND_G18_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G19": {
+          "aircraftTypes": "jets|turboprops|props",
+          "id": "LOWG_STAND_G19",
+          "locationType": "tie_down",
+          "name": "G19",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 10.9m away.",
+          "pointId": "LOWG_STAND_G19_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G2": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G2",
+          "locationType": "tie_down",
+          "name": "G2",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 7.6m away.",
+          "pointId": "LOWG_STAND_G2_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G20": {
+          "aircraftTypes": "jets|turboprops|props",
+          "id": "LOWG_STAND_G20",
+          "locationType": "tie_down",
+          "name": "G20",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 9.8m away.",
+          "pointId": "LOWG_STAND_G20_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G4": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G4",
+          "locationType": "tie_down",
+          "name": "G4",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 8.5m away.",
+          "pointId": "LOWG_STAND_G4_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G5": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G5",
+          "locationType": "tie_down",
+          "name": "G5",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.5m away.",
+          "pointId": "LOWG_STAND_G5_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G6": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G6",
+          "locationType": "tie_down",
+          "name": "G6",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 3.1m away.",
+          "pointId": "LOWG_STAND_G6_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G7": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G7",
+          "locationType": "tie_down",
+          "name": "G7",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 5.4m away.",
+          "pointId": "LOWG_STAND_G7_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G8": {
+          "aircraftTypes": "props",
+          "id": "LOWG_STAND_G8",
+          "locationType": "tie_down",
+          "name": "G8",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 8.1m away.",
+          "pointId": "LOWG_STAND_G8_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        },
+        "LOWG_STAND_G9": {
+          "aircraftTypes": "props|helos",
+          "id": "LOWG_STAND_G9",
+          "locationType": "tie_down",
+          "name": "G9",
+          "note": "Authored stand point from NEW_Parking_Points; nearest apt.dat reference is 2.3m away.",
+          "pointId": "LOWG_STAND_G9_POINT",
+          "projectionStatus": "direct_authored_geometry_with_reference_attrs"
+        }
+      },
+      "taxiways": {
+        "A": {
+          "bidirectional": true,
+          "holdingPoints": [
+            {
+              "name": "D",
+              "pointId": "LOWG_TWY_A_11",
+              "runwayId": "16C",
+              "type": "CAT_A"
+            },
+            {
+              "name": "G1",
+              "pointId": "LOWG_TWY_A_09_3",
+              "runwayId": "16L",
+              "type": "CAT_A"
+            },
+            {
+              "name": "G2",
+              "pointId": "LOWG_TWY_A_09_3",
+              "runwayId": "34R",
+              "type": "CAT_A"
+            },
+            {
+              "name": "X",
+              "pointId": "LOWG_TWY_A_03",
+              "runwayId": "16R",
+              "type": "CAT_A"
+            },
+            {
+              "name": "X",
+              "pointId": "LOWG_TWY_A_03",
+              "runwayId": "34L",
+              "type": "CAT_A"
+            },
+            {
+              "name": "Y",
+              "pointId": "LOWG_TWY_A_04",
+              "runwayId": "34C",
+              "type": "CAT_A"
+            }
+          ],
+          "id": "A",
+          "name": "A",
+          "note": "This projected taxiway still contains the runway-end D turn and should be split later. Tower-side mixed ground cluster. It appears to be D at the runway-end turn and A for the rest toward the tower/apron side, so keep it as an explicit mixed assignment rather than collapsing it to a single taxiway name.",
+          "pathId": "LOWG_PATH_TWY_A",
+          "projectionStatus": "provisional_mixed_taxiway_cluster"
+        },
+        "B": {
+          "bidirectional": true,
+          "holdingPoints": [],
+          "id": "B",
+          "name": "B",
+          "note": "Likely the B-side taxiway cluster.",
+          "pathId": "LOWG_PATH_TWY_B",
+          "projectionStatus": "direct"
+        },
+        "C": {
+          "bidirectional": true,
+          "holdingPoints": [],
+          "id": "C",
+          "name": "C",
+          "note": "Likely the C-side taxiway cluster.",
+          "pathId": "LOWG_PATH_TWY_C",
+          "projectionStatus": "direct"
+        },
+        "Y": {
+          "bidirectional": true,
+          "holdingPoints": [],
+          "id": "Y",
+          "name": "Y",
+          "note": "Known 16/34L glider-use divergence area. Marker Y is on this component, but the final world semantics still need to be decided.",
+          "pathId": "LOWG_PATH_TWY_Y",
+          "projectionStatus": "direct"
+        },
+        "Z": {
+          "bidirectional": true,
+          "holdingPoints": [],
+          "id": "Z",
+          "name": "Z",
+          "note": "Assigned as Z from the hand-authored geometry. X-Plane still places the nearest reference edge under X, so this remains a naming divergence rather than an unresolved assignment.",
+          "pathId": "LOWG_PATH_TWY_Z",
+          "projectionStatus": "direct"
+        }
+      },
+      "transitionAltitudeFeet": 10000
+    },
+    "fixes": {
+      "AUTOBAHN-OST": {
+        "id": "AUTOBAHN-OST",
+        "name": "AUTOBAHN-OST",
+        "pointId": "LOWG_FIX_AUTOBAHN_OST",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-RP",
+        "type": "WAYPOINT"
+      },
+      "AUTOBAHN-WEST": {
+        "id": "AUTOBAHN-WEST",
+        "name": "AUTOBAHN-WEST",
+        "pointId": "LOWG_FIX_AUTOBAHN_WEST",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-RP",
+        "type": "WAYPOINT"
+      },
+      "GLEISDORF": {
+        "id": "GLEISDORF",
+        "name": "GLEISDORF",
+        "pointId": "LOWG_FIX_GLEISDORF",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-MRP",
+        "type": "WAYPOINT"
+      },
+      "GRAZ-NORD": {
+        "id": "GRAZ-NORD",
+        "name": "GRAZ-NORD",
+        "pointId": "LOWG_FIX_GRAZ_NORD",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-MRP",
+        "type": "WAYPOINT"
+      },
+      "GREEN CITY": {
+        "id": "GREEN CITY",
+        "name": "GREEN CITY",
+        "pointId": "LOWG_FIX_GREEN_CITY",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-RP",
+        "type": "WAYPOINT"
+      },
+      "KALSDORF": {
+        "id": "KALSDORF",
+        "name": "KALSDORF",
+        "pointId": "LOWG_FIX_KALSDORF",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-RP",
+        "type": "WAYPOINT"
+      },
+      "LASSNITZH\u00d6HE": {
+        "id": "LASSNITZH\u00d6HE",
+        "name": "LASSNITZH\u00d6HE",
+        "pointId": "LOWG_FIX_LASSNITZH\u00d6HE",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-MRP",
+        "type": "WAYPOINT"
+      },
+      "SENDER DOBL": {
+        "id": "SENDER DOBL",
+        "name": "SENDER DOBL",
+        "pointId": "LOWG_FIX_SENDER_DOBL",
+        "projectionStatus": "direct",
+        "reportingType": "VFR-RP",
+        "type": "WAYPOINT"
+      }
+    },
+    "geometry": {
+      "paths": {
+        "LOWG_APRON_AUTHORED_01": {
+          "id": "LOWG_APRON_AUTHORED_01",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_09_3",
+            "LOWG_APRON_AUTHORED_01_02",
+            "LOWG_APRON_AUTHORED_01_03",
+            "LOWG_APRON_AUTHORED_01_04",
+            "LOWG_APRON_AUTHORED_01_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_02": {
+          "id": "LOWG_APRON_AUTHORED_02",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_01_05",
+            "LOWG_STAND_F6_POINT",
+            "LOWG_APRON_AUTHORED_02_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_03": {
+          "id": "LOWG_APRON_AUTHORED_03",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_02_03",
+            "LOWG_APRON_AUTHORED_03_02",
+            "LOWG_APRON_AUTHORED_03_03",
+            "LOWG_APRON_AUTHORED_03_04"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_04": {
+          "id": "LOWG_APRON_AUTHORED_04",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_03_04",
+            "LOWG_STAND_F1_POINT",
+            "LOWG_APRON_AUTHORED_01_02"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_05": {
+          "id": "LOWG_APRON_AUTHORED_05",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_03_03",
+            "LOWG_STAND_F2_POINT",
+            "LOWG_APRON_AUTHORED_01_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_06": {
+          "id": "LOWG_APRON_AUTHORED_06",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_03_02",
+            "LOWG_STAND_F4_POINT",
+            "LOWG_APRON_AUTHORED_01_04"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_07": {
+          "id": "LOWG_APRON_AUTHORED_07",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_10_3",
+            "LOWG_APRON_AUTHORED_07_02",
+            "LOWG_APRON_AUTHORED_07_03",
+            "LOWG_APRON_AUTHORED_07_04",
+            "LOWG_APRON_AUTHORED_07_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_08": {
+          "id": "LOWG_APRON_AUTHORED_08",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_07_05",
+            "LOWG_STAND_F12_POINT",
+            "LOWG_APRON_AUTHORED_08_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_09": {
+          "id": "LOWG_APRON_AUTHORED_09",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_08_03",
+            "LOWG_APRON_AUTHORED_09_02",
+            "LOWG_APRON_AUTHORED_09_03",
+            "LOWG_APRON_AUTHORED_09_04"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_10": {
+          "id": "LOWG_APRON_AUTHORED_10",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_09_04",
+            "LOWG_STAND_F7_POINT",
+            "LOWG_APRON_AUTHORED_07_02"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_11": {
+          "id": "LOWG_APRON_AUTHORED_11",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_09_03",
+            "LOWG_STAND_F8_POINT",
+            "LOWG_APRON_AUTHORED_07_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_12": {
+          "id": "LOWG_APRON_AUTHORED_12",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_09_02",
+            "LOWG_STAND_F10_POINT",
+            "LOWG_APRON_AUTHORED_07_04"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_13": {
+          "id": "LOWG_APRON_AUTHORED_13",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_11_2",
+            "LOWG_APRON_AUTHORED_13_02",
+            "LOWG_APRON_AUTHORED_13_03",
+            "LOWG_APRON_AUTHORED_13_04",
+            "LOWG_APRON_AUTHORED_13_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_14": {
+          "id": "LOWG_APRON_AUTHORED_14",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_13_05",
+            "LOWG_STAND_G8_POINT",
+            "LOWG_APRON_AUTHORED_14_03",
+            "LOWG_APRON_AUTHORED_14_04",
+            "LOWG_STAND_G12_POINT",
+            "LOWG_APRON_AUTHORED_14_06"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_15": {
+          "id": "LOWG_APRON_AUTHORED_15",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_14_06",
+            "LOWG_APRON_AUTHORED_15_02",
+            "LOWG_APRON_AUTHORED_15_03",
+            "LOWG_APRON_AUTHORED_15_04",
+            "LOWG_TWY_A_15_2"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_16": {
+          "id": "LOWG_APRON_AUTHORED_16",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_13_2",
+            "LOWG_APRON_AUTHORED_16_02",
+            "LOWG_APRON_AUTHORED_16_03",
+            "LOWG_APRON_AUTHORED_16_04",
+            "LOWG_APRON_AUTHORED_14_04"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_17": {
+          "id": "LOWG_APRON_AUTHORED_17",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_12_2",
+            "LOWG_APRON_AUTHORED_17_02",
+            "LOWG_APRON_AUTHORED_17_03",
+            "LOWG_APRON_AUTHORED_17_04",
+            "LOWG_APRON_AUTHORED_14_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_18": {
+          "id": "LOWG_APRON_AUTHORED_18",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_15_04",
+            "LOWG_STAND_G9_POINT",
+            "LOWG_APRON_AUTHORED_16_02",
+            "LOWG_STAND_G5_POINT",
+            "LOWG_APRON_AUTHORED_17_02",
+            "LOWG_STAND_G1_POINT",
+            "LOWG_APRON_AUTHORED_13_02"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_19": {
+          "id": "LOWG_APRON_AUTHORED_19",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_15_03",
+            "LOWG_STAND_G10_POINT",
+            "LOWG_APRON_AUTHORED_16_03",
+            "LOWG_STAND_G6_POINT",
+            "LOWG_APRON_AUTHORED_17_03",
+            "LOWG_STAND_G2_POINT",
+            "LOWG_APRON_AUTHORED_13_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_20": {
+          "id": "LOWG_APRON_AUTHORED_20",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_15_02",
+            "LOWG_STAND_G11_POINT",
+            "LOWG_APRON_AUTHORED_16_04",
+            "LOWG_STAND_G7_POINT",
+            "LOWG_APRON_AUTHORED_17_04",
+            "LOWG_STAND_G4_POINT",
+            "LOWG_APRON_AUTHORED_13_04"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_21": {
+          "id": "LOWG_APRON_AUTHORED_21",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_19",
+            "LOWG_APRON_AUTHORED_21_02",
+            "LOWG_APRON_AUTHORED_21_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_22": {
+          "id": "LOWG_APRON_AUTHORED_22",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_21_03",
+            "LOWG_STAND_G20_POINT",
+            "LOWG_APRON_AUTHORED_22_03",
+            "LOWG_STAND_G18_POINT",
+            "LOWG_APRON_AUTHORED_22_05",
+            "LOWG_STAND_G15_POINT",
+            "LOWG_APRON_AUTHORED_22_07"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_23": {
+          "id": "LOWG_APRON_AUTHORED_23",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_22_07",
+            "LOWG_APRON_AUTHORED_23_02",
+            "LOWG_APRON_AUTHORED_23_03",
+            "LOWG_TWY_A_16"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_24": {
+          "id": "LOWG_APRON_AUTHORED_24",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_18",
+            "LOWG_APRON_AUTHORED_24_02",
+            "LOWG_APRON_AUTHORED_24_03",
+            "LOWG_APRON_AUTHORED_22_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_25": {
+          "id": "LOWG_APRON_AUTHORED_25",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_17",
+            "LOWG_APRON_AUTHORED_25_02",
+            "LOWG_APRON_AUTHORED_25_03",
+            "LOWG_APRON_AUTHORED_22_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_26": {
+          "id": "LOWG_APRON_AUTHORED_26",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_23_03",
+            "LOWG_STAND_G13_POINT",
+            "LOWG_APRON_AUTHORED_25_02",
+            "LOWG_STAND_G16_POINT",
+            "LOWG_APRON_AUTHORED_24_02"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_27": {
+          "id": "LOWG_APRON_AUTHORED_27",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_23_02",
+            "LOWG_STAND_G14_POINT",
+            "LOWG_APRON_AUTHORED_25_03",
+            "LOWG_STAND_G17_POINT",
+            "LOWG_APRON_AUTHORED_24_03",
+            "LOWG_STAND_G19_POINT",
+            "LOWG_APRON_AUTHORED_21_02"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_28": {
+          "id": "LOWG_APRON_AUTHORED_28",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_28_01",
+            "LOWG_STAND_3_POINT",
+            "LOWG_TWY_A_20"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_29": {
+          "id": "LOWG_APRON_AUTHORED_29",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_29_01",
+            "LOWG_STAND_2_POINT",
+            "LOWG_TWY_A_22"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_30": {
+          "id": "LOWG_APRON_AUTHORED_30",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_30_01",
+            "LOWG_STAND_1_POINT",
+            "LOWG_TWY_A_23"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_31": {
+          "id": "LOWG_APRON_AUTHORED_31",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_24",
+            "LOWG_APRON_AUTHORED_31_02",
+            "LOWG_APRON_AUTHORED_31_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_32": {
+          "id": "LOWG_APRON_AUTHORED_32",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_31_03",
+            "LOWG_APRON_AUTHORED_31_02",
+            "LOWG_TWY_A_25"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_33": {
+          "id": "LOWG_APRON_AUTHORED_33",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_31_02",
+            "LOWG_APRON_AUTHORED_31_03",
+            "LOWG_APRON_AUTHORED_33_03",
+            "LOWG_APRON_AUTHORED_33_04",
+            "LOWG_APRON_AUTHORED_33_05",
+            "LOWG_APRON_AUTHORED_33_06"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_34": {
+          "id": "LOWG_APRON_AUTHORED_34",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_33_06",
+            "LOWG_STAND_38_POINT",
+            "LOWG_APRON_AUTHORED_34_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_35": {
+          "id": "LOWG_APRON_AUTHORED_35",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_33_06",
+            "LOWG_STAND_28_POINT",
+            "LOWG_APRON_AUTHORED_35_03"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_36": {
+          "id": "LOWG_APRON_AUTHORED_36",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_36_01",
+            "LOWG_STAND_35_POINT",
+            "LOWG_APRON_AUTHORED_33_05",
+            "LOWG_STAND_26_POINT",
+            "LOWG_APRON_AUTHORED_36_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_37": {
+          "id": "LOWG_APRON_AUTHORED_37",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_37_01",
+            "LOWG_STAND_32_POINT",
+            "LOWG_APRON_AUTHORED_33_04",
+            "LOWG_STAND_22_POINT",
+            "LOWG_APRON_AUTHORED_37_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_38": {
+          "id": "LOWG_APRON_AUTHORED_38",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_APRON_AUTHORED_38_01",
+            "LOWG_STAND_30_POINT",
+            "LOWG_APRON_AUTHORED_33_03",
+            "LOWG_STAND_20_POINT",
+            "LOWG_APRON_AUTHORED_38_05"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_APRON_AUTHORED_39": {
+          "id": "LOWG_APRON_AUTHORED_39",
+          "note": "Authored parking/apron geometry from NEW_Parking.",
+          "pointIds": [
+            "LOWG_TWY_A_26",
+            "LOWG_APRON_AUTHORED_38_01"
+          ],
+          "projectionStatus": "direct_authored_parking_graph",
+          "source": "cad_working_dxf",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_PATH_RWY_16C": {
+          "id": "LOWG_PATH_RWY_16C",
+          "note": "Directional runway path using the full strip axis.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_RWY_34C_THR"
+          ],
+          "projectionStatus": "direct",
+          "source": "apt.dat",
+          "surface": "RUNWAY",
+          "widthMeters": 45.0
+        },
+        "LOWG_PATH_RWY_16L": {
+          "id": "LOWG_PATH_RWY_16L",
+          "note": "Directional runway path using the full strip axis.",
+          "pointIds": [
+            "LOWG_RWY_16L_THR",
+            "LOWG_RWY_34R_THR"
+          ],
+          "projectionStatus": "direct",
+          "source": "apt.dat",
+          "surface": "RUNWAY",
+          "widthMeters": 30.0
+        },
+        "LOWG_PATH_RWY_16R": {
+          "id": "LOWG_PATH_RWY_16R",
+          "note": "Directional runway path using the full strip axis.",
+          "pointIds": [
+            "LOWG_RWY_16R_THR",
+            "LOWG_RWY_34L_THR"
+          ],
+          "projectionStatus": "direct",
+          "source": "apt.dat",
+          "surface": "RUNWAY",
+          "widthMeters": 25.0
+        },
+        "LOWG_PATH_RWY_34C": {
+          "id": "LOWG_PATH_RWY_34C",
+          "note": "Directional runway path using the full strip axis.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_RWY_16C_THR"
+          ],
+          "projectionStatus": "direct",
+          "source": "apt.dat",
+          "surface": "RUNWAY",
+          "widthMeters": 45.0
+        },
+        "LOWG_PATH_RWY_34L": {
+          "id": "LOWG_PATH_RWY_34L",
+          "note": "Directional runway path using the full strip axis.",
+          "pointIds": [
+            "LOWG_RWY_34L_THR",
+            "LOWG_RWY_16R_THR"
+          ],
+          "projectionStatus": "direct",
+          "source": "apt.dat",
+          "surface": "RUNWAY",
+          "widthMeters": 25.0
+        },
+        "LOWG_PATH_RWY_34R": {
+          "id": "LOWG_PATH_RWY_34R",
+          "note": "Directional runway path using the full strip axis.",
+          "pointIds": [
+            "LOWG_RWY_34R_THR",
+            "LOWG_RWY_16L_THR"
+          ],
+          "projectionStatus": "direct",
+          "source": "apt.dat",
+          "surface": "RUNWAY",
+          "widthMeters": 30.0
+        },
+        "LOWG_PATH_TWY_A": {
+          "id": "LOWG_PATH_TWY_A",
+          "note": "This projected taxiway still contains the runway-end D turn and should be split later. Tower-side mixed ground cluster. It appears to be D at the runway-end turn and A for the rest toward the tower/apron side, so keep it as an explicit mixed assignment rather than collapsing it to a single taxiway name. Includes 16 direct authored parking attachment point(s).",
+          "pointIds": [
+            "LOWG_TWY_A_01",
+            "LOWG_TWY_A_02",
+            "LOWG_TWY_A_03",
+            "LOWG_TWY_A_04",
+            "LOWG_TWY_A_05",
+            "LOWG_TWY_A_06",
+            "LOWG_TWY_A_07",
+            "LOWG_TWY_A_08_2",
+            "LOWG_TWY_A_09_3",
+            "LOWG_TWY_A_10_3",
+            "LOWG_TWY_A_11_2",
+            "LOWG_TWY_A_12_2",
+            "LOWG_TWY_A_13_2",
+            "LOWG_TWY_A_09_2",
+            "LOWG_TWY_A_15_2",
+            "LOWG_TWY_A_16",
+            "LOWG_TWY_A_17",
+            "LOWG_TWY_A_18",
+            "LOWG_TWY_A_19",
+            "LOWG_TWY_A_20",
+            "LOWG_TWY_A_10_2",
+            "LOWG_TWY_A_22",
+            "LOWG_TWY_A_23",
+            "LOWG_TWY_A_24",
+            "LOWG_TWY_A_25",
+            "LOWG_TWY_A_26",
+            "LOWG_TWY_A_08",
+            "LOWG_TWY_A_09",
+            "LOWG_TWY_A_10",
+            "LOWG_TWY_A_11",
+            "LOWG_TWY_A_12",
+            "LOWG_TWY_A_13",
+            "LOWG_TWY_A_14",
+            "LOWG_TWY_A_15"
+          ],
+          "projectionStatus": "provisional_mixed_taxiway_cluster",
+          "source": "cad_ground",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_PATH_TWY_B": {
+          "id": "LOWG_PATH_TWY_B",
+          "note": "Likely the B-side taxiway cluster.",
+          "pointIds": [
+            "LOWG_TWY_B_01",
+            "LOWG_TWY_B_02",
+            "LOWG_TWY_B_03",
+            "LOWG_TWY_B_04",
+            "LOWG_TWY_B_05",
+            "LOWG_TWY_B_06"
+          ],
+          "projectionStatus": "direct",
+          "source": "cad_ground",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_PATH_TWY_C": {
+          "id": "LOWG_PATH_TWY_C",
+          "note": "Likely the C-side taxiway cluster.",
+          "pointIds": [
+            "LOWG_TWY_C_01",
+            "LOWG_TWY_C_02",
+            "LOWG_TWY_C_03",
+            "LOWG_TWY_C_04",
+            "LOWG_TWY_C_05",
+            "LOWG_TWY_C_06",
+            "LOWG_TWY_C_07",
+            "LOWG_TWY_C_08",
+            "LOWG_TWY_C_09",
+            "LOWG_TWY_C_10",
+            "LOWG_TWY_C_11",
+            "LOWG_TWY_C_12"
+          ],
+          "projectionStatus": "direct",
+          "source": "cad_ground",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_PATH_TWY_Y": {
+          "id": "LOWG_PATH_TWY_Y",
+          "note": "Known 16/34L glider-use divergence area. Marker Y is on this component, but the final world semantics still need to be decided.",
+          "pointIds": [
+            "LOWG_TWY_Y_01",
+            "LOWG_TWY_Y_02",
+            "LOWG_TWY_Y_03",
+            "LOWG_TWY_Y_04",
+            "LOWG_TWY_Y_05",
+            "LOWG_TWY_Y_06",
+            "LOWG_TWY_Y_07",
+            "LOWG_TWY_Y_08",
+            "LOWG_TWY_Y_09",
+            "LOWG_TWY_Y_10",
+            "LOWG_TWY_Y_11"
+          ],
+          "projectionStatus": "direct",
+          "source": "cad_ground",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_PATH_TWY_Z": {
+          "id": "LOWG_PATH_TWY_Z",
+          "note": "Assigned as Z from the hand-authored geometry. X-Plane still places the nearest reference edge under X, so this remains a naming divergence rather than an unresolved assignment.",
+          "pointIds": [
+            "LOWG_TWY_Z_01",
+            "LOWG_TWY_Z_02",
+            "LOWG_TWY_Z_03"
+          ],
+          "projectionStatus": "direct",
+          "source": "cad_ground",
+          "surface": "GROUND",
+          "widthMeters": 18.0
+        },
+        "LOWG_SECTOR_SECTOR_ECHO_01": {
+          "id": "LOWG_SECTOR_SECTOR_ECHO_01",
+          "note": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume.",
+          "pointIds": [
+            "LOWG_FIX_KALSDORF",
+            "SECTOR_ECHO_BOUNDARY_02",
+            "SECTOR_ECHO_BOUNDARY_03",
+            "SECTOR_ECHO_BOUNDARY_04",
+            "SECTOR_ECHO_BOUNDARY_05",
+            "LOWG_FIX_KALSDORF"
+          ],
+          "projectionStatus": "direct_runtime_boundary",
+          "source": "working_airspace_dxf",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_SECTOR_SECTOR_WHISKEY_01": {
+          "id": "LOWG_SECTOR_SECTOR_WHISKEY_01",
+          "note": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume.",
+          "pointIds": [
+            "SECTOR_WHISKEY_BOUNDARY_01",
+            "SECTOR_WHISKEY_BOUNDARY_02",
+            "SECTOR_WHISKEY_BOUNDARY_03",
+            "SECTOR_WHISKEY_BOUNDARY_04",
+            "SECTOR_WHISKEY_BOUNDARY_01"
+          ],
+          "projectionStatus": "direct_runtime_boundary",
+          "source": "working_airspace_dxf",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_SYNTH_AIRSPACE_01": {
+          "id": "LOWG_SYNTH_AIRSPACE_01",
+          "note": "Projected real CTR boundary paired with synthetic point-claim coverage.",
+          "pointIds": [
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO585_01_02",
+            "LOWG_AIRSPACE_LO585_01_03",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "SECTOR_ECHO_BOUNDARY_04",
+            "LOWG_AIRSPACE_LO585_01_07",
+            "LOWG_AIRSPACE_LO585_01_08",
+            "LOWG_AIRSPACE_LO585_01_01"
+          ],
+          "projectionStatus": "synthetic_runtime_boundary",
+          "source": "candidate_airspace_boundary",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_VFR_ROUTE_VFR_NORTHEAST_ENTRY_PATH": {
+          "id": "LOWG_VFR_ROUTE_VFR_NORTHEAST_ENTRY_PATH",
+          "note": "User-confirmed path. The reporting-point portion is the literal join GLEISDORF -> LASSNITZH\u00d6HE -> AUTOBAHN-OST; the final join now targets the explicit NE circuit anchor from lowg_circuits.dxf.",
+          "pointIds": [
+            "LOWG_FIX_GLEISDORF",
+            "LOWG_FIX_LASSNITZH\u00d6HE",
+            "LOWG_FIX_AUTOBAHN_OST",
+            "LOWG_ANCHOR_CIRCUIT_NE_ENTRY"
+          ],
+          "projectionStatus": "direct",
+          "source": "structured_vfr_route",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_VFR_ROUTE_VFR_SOUTHEAST_ENTRY_PATH": {
+          "id": "LOWG_VFR_ROUTE_VFR_SOUTHEAST_ENTRY_PATH",
+          "note": "User-confirmed SE arrival path into the circuit. KALSDORF is the literal reporting-point anchor and the join uses the existing SE circuit endpoint.",
+          "pointIds": [
+            "LOWG_FIX_KALSDORF",
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
+          ],
+          "projectionStatus": "direct",
+          "source": "structured_vfr_route",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_VFR_ROUTE_VFR_SOUTHWEST_ENTRY_PATH": {
+          "id": "LOWG_VFR_ROUTE_VFR_SOUTHWEST_ENTRY_PATH",
+          "note": "User-confirmed western circuit entry option. From SENDER DOBL aircraft can join the circuit via the explicit SW anchor depending on runway direction.",
+          "pointIds": [
+            "LOWG_FIX_SENDER_DOBL",
+            "LOWG_ANCHOR_CIRCUIT_SW_ENTRY"
+          ],
+          "projectionStatus": "direct",
+          "source": "structured_vfr_route",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_VFR_ROUTE_VFR_WESTERN_CORRIDOR_PATH": {
+          "id": "LOWG_VFR_ROUTE_VFR_WESTERN_CORRIDOR_PATH",
+          "note": "User-confirmed path. This route is the literal join SENDER DOBL -> AUTOBAHN-WEST -> GREEN CITY -> GRAZ-NORD. The NW circuit point is treated as AUTOBAHN-WEST, so this route already lands on the existing circuit attachment there.",
+          "pointIds": [
+            "LOWG_FIX_SENDER_DOBL",
+            "LOWG_FIX_AUTOBAHN_WEST",
+            "LOWG_FIX_GREEN_CITY",
+            "LOWG_FIX_GRAZ_NORD"
+          ],
+          "projectionStatus": "direct",
+          "source": "structured_vfr_route",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        }
+      },
+      "points": {
+        "LOWG_AIRSPACE_LO585_01_01": {
+          "id": "LOWG_AIRSPACE_LO585_01_01",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": -14431.544486,
+          "yMeters": 11644.580016
+        },
+        "LOWG_AIRSPACE_LO585_01_02": {
+          "id": "LOWG_AIRSPACE_LO585_01_02",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": -10892.128928,
+          "yMeters": 12324.104444
+        },
+        "LOWG_AIRSPACE_LO585_01_03": {
+          "id": "LOWG_AIRSPACE_LO585_01_03",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": 4192.521337,
+          "yMeters": 15196.639678
+        },
+        "LOWG_AIRSPACE_LO585_01_04": {
+          "id": "LOWG_AIRSPACE_LO585_01_04",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": 7184.170409,
+          "yMeters": 15783.502038
+        },
+        "LOWG_AIRSPACE_LO585_01_05": {
+          "id": "LOWG_AIRSPACE_LO585_01_05",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": 10386.498373,
+          "yMeters": 14455.340909
+        },
+        "LOWG_AIRSPACE_LO585_01_07": {
+          "id": "LOWG_AIRSPACE_LO585_01_07",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": -6552.131759,
+          "yMeters": -29497.542843
+        },
+        "LOWG_AIRSPACE_LO585_01_08": {
+          "id": "LOWG_AIRSPACE_LO585_01_08",
+          "label": null,
+          "sources": [
+            "ofmx"
+          ],
+          "tags": [
+            "airspace_boundary"
+          ],
+          "xMeters": -12008.730775,
+          "yMeters": -926.624685
+        },
+        "LOWG_ANCHOR_CIRCUIT_NE_ENTRY": {
+          "id": "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+          "label": "NE",
+          "sources": [
+            "cad_circuit",
+            "manifest",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "named_anchor",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 1128.024795,
+          "yMeters": 2580.47703
+        },
+        "LOWG_ANCHOR_CIRCUIT_SE_ENTRY": {
+          "id": "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+          "label": "SE",
+          "sources": [
+            "cad_circuit",
+            "manifest",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "named_anchor",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 3052.135482,
+          "yMeters": -1740.813233
+        },
+        "LOWG_ANCHOR_CIRCUIT_SW_ENTRY": {
+          "id": "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
+          "label": "SW",
+          "sources": [
+            "cad_circuit",
+            "manifest",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "named_anchor",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2109.365722,
+          "yMeters": -2671.963038
+        },
+        "LOWG_APRON_AUTHORED_01_02": {
+          "id": "LOWG_APRON_AUTHORED_01_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 370.60982,
+          "yMeters": -235.006863
+        },
+        "LOWG_APRON_AUTHORED_01_03": {
+          "id": "LOWG_APRON_AUTHORED_01_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 385.949567,
+          "yMeters": -232.522535
+        },
+        "LOWG_APRON_AUTHORED_01_04": {
+          "id": "LOWG_APRON_AUTHORED_01_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 403.725442,
+          "yMeters": -229.643668
+        },
+        "LOWG_APRON_AUTHORED_01_05": {
+          "id": "LOWG_APRON_AUTHORED_01_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 423.469784,
+          "yMeters": -226.446001
+        },
+        "LOWG_APRON_AUTHORED_02_03": {
+          "id": "LOWG_APRON_AUTHORED_02_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 415.763965,
+          "yMeters": -178.284632
+        },
+        "LOWG_APRON_AUTHORED_03_02": {
+          "id": "LOWG_APRON_AUTHORED_03_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 395.346468,
+          "yMeters": -180.80279
+        },
+        "LOWG_APRON_AUTHORED_03_03": {
+          "id": "LOWG_APRON_AUTHORED_03_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 378.941512,
+          "yMeters": -182.826068
+        },
+        "LOWG_APRON_AUTHORED_03_04": {
+          "id": "LOWG_APRON_AUTHORED_03_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 363.224289,
+          "yMeters": -184.764525
+        },
+        "LOWG_APRON_AUTHORED_07_02": {
+          "id": "LOWG_APRON_AUTHORED_07_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 361.390398,
+          "yMeters": -172.665986
+        },
+        "LOWG_APRON_AUTHORED_07_03": {
+          "id": "LOWG_APRON_AUTHORED_07_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 376.828209,
+          "yMeters": -170.58327
+        },
+        "LOWG_APRON_AUTHORED_07_04": {
+          "id": "LOWG_APRON_AUTHORED_07_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 391.313193,
+          "yMeters": -168.629101
+        },
+        "LOWG_APRON_AUTHORED_07_05": {
+          "id": "LOWG_APRON_AUTHORED_07_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 411.911055,
+          "yMeters": -165.850242
+        },
+        "LOWG_APRON_AUTHORED_08_03": {
+          "id": "LOWG_APRON_AUTHORED_08_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 405.956558,
+          "yMeters": -114.886757
+        },
+        "LOWG_APRON_AUTHORED_09_02": {
+          "id": "LOWG_APRON_AUTHORED_09_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 384.085698,
+          "yMeters": -117.185051
+        },
+        "LOWG_APRON_AUTHORED_09_03": {
+          "id": "LOWG_APRON_AUTHORED_09_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 370.11012,
+          "yMeters": -118.653671
+        },
+        "LOWG_APRON_AUTHORED_09_04": {
+          "id": "LOWG_APRON_AUTHORED_09_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 354.292544,
+          "yMeters": -120.315857
+        },
+        "LOWG_APRON_AUTHORED_13_02": {
+          "id": "LOWG_APRON_AUTHORED_13_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 352.547232,
+          "yMeters": -106.904534
+        },
+        "LOWG_APRON_AUTHORED_13_03": {
+          "id": "LOWG_APRON_AUTHORED_13_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 369.368976,
+          "yMeters": -104.195143
+        },
+        "LOWG_APRON_AUTHORED_13_04": {
+          "id": "LOWG_APRON_AUTHORED_13_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 381.449982,
+          "yMeters": -102.249318
+        },
+        "LOWG_APRON_AUTHORED_13_05": {
+          "id": "LOWG_APRON_AUTHORED_13_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 396.499417,
+          "yMeters": -99.825383
+        },
+        "LOWG_APRON_AUTHORED_14_03": {
+          "id": "LOWG_APRON_AUTHORED_14_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 390.540705,
+          "yMeters": -65.767254
+        },
+        "LOWG_APRON_AUTHORED_14_04": {
+          "id": "LOWG_APRON_AUTHORED_14_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 384.327064,
+          "yMeters": -30.252034
+        },
+        "LOWG_APRON_AUTHORED_14_06": {
+          "id": "LOWG_APRON_AUTHORED_14_06",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 378.635927,
+          "yMeters": 2.276719
+        },
+        "LOWG_APRON_AUTHORED_15_02": {
+          "id": "LOWG_APRON_AUTHORED_15_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 363.860678,
+          "yMeters": 0.08143
+        },
+        "LOWG_APRON_AUTHORED_15_03": {
+          "id": "LOWG_APRON_AUTHORED_15_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 350.368115,
+          "yMeters": -1.92328
+        },
+        "LOWG_APRON_AUTHORED_15_04": {
+          "id": "LOWG_APRON_AUTHORED_15_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 332.673059,
+          "yMeters": -4.552391
+        },
+        "LOWG_APRON_AUTHORED_16_02": {
+          "id": "LOWG_APRON_AUTHORED_16_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 339.019756,
+          "yMeters": -37.237929
+        },
+        "LOWG_APRON_AUTHORED_16_03": {
+          "id": "LOWG_APRON_AUTHORED_16_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 356.430392,
+          "yMeters": -34.553398
+        },
+        "LOWG_APRON_AUTHORED_16_04": {
+          "id": "LOWG_APRON_AUTHORED_16_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 369.4684,
+          "yMeters": -32.543079
+        },
+        "LOWG_APRON_AUTHORED_17_02": {
+          "id": "LOWG_APRON_AUTHORED_17_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 345.789227,
+          "yMeters": -72.100759
+        },
+        "LOWG_APRON_AUTHORED_17_03": {
+          "id": "LOWG_APRON_AUTHORED_17_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 362.954881,
+          "yMeters": -69.67137
+        },
+        "LOWG_APRON_AUTHORED_17_04": {
+          "id": "LOWG_APRON_AUTHORED_17_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 375.544013,
+          "yMeters": -67.889678
+        },
+        "LOWG_APRON_AUTHORED_21_02": {
+          "id": "LOWG_APRON_AUTHORED_21_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 311.359772,
+          "yMeters": 214.358913
+        },
+        "LOWG_APRON_AUTHORED_21_03": {
+          "id": "LOWG_APRON_AUTHORED_21_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 334.392613,
+          "yMeters": 218.03737
+        },
+        "LOWG_APRON_AUTHORED_22_03": {
+          "id": "LOWG_APRON_AUTHORED_22_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 346.205793,
+          "yMeters": 157.122453
+        },
+        "LOWG_APRON_AUTHORED_22_05": {
+          "id": "LOWG_APRON_AUTHORED_22_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 355.518587,
+          "yMeters": 109.100826
+        },
+        "LOWG_APRON_AUTHORED_22_07": {
+          "id": "LOWG_APRON_AUTHORED_22_07",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 363.996271,
+          "yMeters": 65.385469
+        },
+        "LOWG_APRON_AUTHORED_23_02": {
+          "id": "LOWG_APRON_AUTHORED_23_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 342.894819,
+          "yMeters": 61.739625
+        },
+        "LOWG_APRON_AUTHORED_23_03": {
+          "id": "LOWG_APRON_AUTHORED_23_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 317.587213,
+          "yMeters": 57.367054
+        },
+        "LOWG_APRON_AUTHORED_24_02": {
+          "id": "LOWG_APRON_AUTHORED_24_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 299.062776,
+          "yMeters": 149.404203
+        },
+        "LOWG_APRON_AUTHORED_24_03": {
+          "id": "LOWG_APRON_AUTHORED_24_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 323.939527,
+          "yMeters": 153.477022
+        },
+        "LOWG_APRON_AUTHORED_25_02": {
+          "id": "LOWG_APRON_AUTHORED_25_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 308.754078,
+          "yMeters": 101.253762
+        },
+        "LOWG_APRON_AUTHORED_25_03": {
+          "id": "LOWG_APRON_AUTHORED_25_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 333.859733,
+          "yMeters": 105.46648
+        },
+        "LOWG_APRON_AUTHORED_28_01": {
+          "id": "LOWG_APRON_AUTHORED_28_01",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 329.861709,
+          "yMeters": 244.103519
+        },
+        "LOWG_APRON_AUTHORED_29_01": {
+          "id": "LOWG_APRON_AUTHORED_29_01",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 318.739487,
+          "yMeters": 304.690363
+        },
+        "LOWG_APRON_AUTHORED_30_01": {
+          "id": "LOWG_APRON_AUTHORED_30_01",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 308.495334,
+          "yMeters": 365.569898
+        },
+        "LOWG_APRON_AUTHORED_31_02": {
+          "id": "LOWG_APRON_AUTHORED_31_02",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 222.647342,
+          "yMeters": 559.575703
+        },
+        "LOWG_APRON_AUTHORED_31_03": {
+          "id": "LOWG_APRON_AUTHORED_31_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 223.029834,
+          "yMeters": 559.330725
+        },
+        "LOWG_APRON_AUTHORED_33_03": {
+          "id": "LOWG_APRON_AUTHORED_33_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 270.396054,
+          "yMeters": 567.935424
+        },
+        "LOWG_APRON_AUTHORED_33_04": {
+          "id": "LOWG_APRON_AUTHORED_33_04",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 333.055308,
+          "yMeters": 578.905644
+        },
+        "LOWG_APRON_AUTHORED_33_05": {
+          "id": "LOWG_APRON_AUTHORED_33_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 403.749894,
+          "yMeters": 591.282669
+        },
+        "LOWG_APRON_AUTHORED_33_06": {
+          "id": "LOWG_APRON_AUTHORED_33_06",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 446.937738,
+          "yMeters": 598.843884
+        },
+        "LOWG_APRON_AUTHORED_34_03": {
+          "id": "LOWG_APRON_AUTHORED_34_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 432.051264,
+          "yMeters": 682.140119
+        },
+        "LOWG_APRON_AUTHORED_35_03": {
+          "id": "LOWG_APRON_AUTHORED_35_03",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 461.648614,
+          "yMeters": 518.041199
+        },
+        "LOWG_APRON_AUTHORED_36_01": {
+          "id": "LOWG_APRON_AUTHORED_36_01",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 388.96873,
+          "yMeters": 673.033242
+        },
+        "LOWG_APRON_AUTHORED_36_05": {
+          "id": "LOWG_APRON_AUTHORED_36_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 420.317403,
+          "yMeters": 499.652313
+        },
+        "LOWG_APRON_AUTHORED_37_01": {
+          "id": "LOWG_APRON_AUTHORED_37_01",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 316.463978,
+          "yMeters": 668.304671
+        },
+        "LOWG_APRON_AUTHORED_37_05": {
+          "id": "LOWG_APRON_AUTHORED_37_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 349.388841,
+          "yMeters": 490.8957
+        },
+        "LOWG_APRON_AUTHORED_38_01": {
+          "id": "LOWG_APRON_AUTHORED_38_01",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 253.766632,
+          "yMeters": 657.971868
+        },
+        "LOWG_APRON_AUTHORED_38_05": {
+          "id": "LOWG_APRON_AUTHORED_38_05",
+          "label": null,
+          "sources": [
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 290.544405,
+          "yMeters": 458.846498
+        },
+        "LOWG_FIX_AUTOBAHN_OST": {
+          "id": "LOWG_FIX_AUTOBAHN_OST",
+          "label": "AUTOBAHN-OST",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": 3539.415026,
+          "yMeters": 2625.436089
+        },
+        "LOWG_FIX_AUTOBAHN_WEST": {
+          "id": "LOWG_FIX_AUTOBAHN_WEST",
+          "label": "AUTOBAHN-WEST",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": -2401.746125,
+          "yMeters": 803.074668
+        },
+        "LOWG_FIX_GLEISDORF": {
+          "id": "LOWG_FIX_GLEISDORF",
+          "label": "GLEISDORF",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": 20836.200869,
+          "yMeters": 12354.992171
+        },
+        "LOWG_FIX_GRAZ_NORD": {
+          "id": "LOWG_FIX_GRAZ_NORD",
+          "label": "GRAZ-NORD",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": -11692.711299,
+          "yMeters": 15721.726585
+        },
+        "LOWG_FIX_GREEN_CITY": {
+          "id": "LOWG_FIX_GREEN_CITY",
+          "label": "GREEN CITY",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": -3432.805107,
+          "yMeters": 5161.551073
+        },
+        "LOWG_FIX_KALSDORF": {
+          "id": "LOWG_FIX_KALSDORF",
+          "label": "KALSDORF",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route",
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "fix",
+            "operational_sector_boundary",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": 3960.774328,
+          "yMeters": -2625.436312
+        },
+        "LOWG_FIX_LASSNITZH\u00d6HE": {
+          "id": "LOWG_FIX_LASSNITZH\u00d6HE",
+          "label": "LASSNITZH\u00d6HE",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": 11755.915346,
+          "yMeters": 7567.432335
+        },
+        "LOWG_FIX_SENDER_DOBL": {
+          "id": "LOWG_FIX_SENDER_DOBL",
+          "label": "SENDER DOBL",
+          "sources": [
+            "ofmx",
+            "structured_vfr_route"
+          ],
+          "tags": [
+            "fix",
+            "path_point",
+            "sky",
+            "vfr_reporting_point"
+          ],
+          "xMeters": -4529.609234,
+          "yMeters": -4664.009596
+        },
+        "LOWG_RWY_16C_THR": {
+          "id": "LOWG_RWY_16C_THR",
+          "label": "16C",
+          "sources": [
+            "apt.dat",
+            "manifest"
+          ],
+          "tags": [
+            "named_anchor",
+            "path_point",
+            "runway",
+            "runway_threshold"
+          ],
+          "xMeters": -240.901985,
+          "yMeters": 1249.351058
+        },
+        "LOWG_RWY_16L_THR": {
+          "id": "LOWG_RWY_16L_THR",
+          "label": "16L",
+          "sources": [
+            "apt.dat"
+          ],
+          "tags": [
+            "path_point",
+            "runway",
+            "runway_threshold"
+          ],
+          "xMeters": 258.063801,
+          "yMeters": -273.581329
+        },
+        "LOWG_RWY_16R_THR": {
+          "id": "LOWG_RWY_16R_THR",
+          "label": "16R",
+          "sources": [
+            "apt.dat"
+          ],
+          "tags": [
+            "path_point",
+            "runway",
+            "runway_threshold"
+          ],
+          "xMeters": -307.985787,
+          "yMeters": 260.08093
+        },
+        "LOWG_RWY_34C_THR": {
+          "id": "LOWG_RWY_34C_THR",
+          "label": "34C",
+          "sources": [
+            "apt.dat",
+            "manifest"
+          ],
+          "tags": [
+            "named_anchor",
+            "path_point",
+            "runway",
+            "runway_threshold"
+          ],
+          "xMeters": 312.396607,
+          "yMeters": -1697.695896
+        },
+        "LOWG_RWY_34L_THR": {
+          "id": "LOWG_RWY_34L_THR",
+          "label": "34L",
+          "sources": [
+            "apt.dat"
+          ],
+          "tags": [
+            "path_point",
+            "runway",
+            "runway_threshold"
+          ],
+          "xMeters": -167.972838,
+          "yMeters": -487.197902
+        },
+        "LOWG_RWY_34R_THR": {
+          "id": "LOWG_RWY_34R_THR",
+          "label": "34R",
+          "sources": [
+            "apt.dat"
+          ],
+          "tags": [
+            "path_point",
+            "runway",
+            "runway_threshold"
+          ],
+          "xMeters": 375.600957,
+          "yMeters": -902.175145
+        },
+        "LOWG_STAND_1_POINT": {
+          "id": "LOWG_STAND_1_POINT",
+          "label": "1",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 282.228914,
+          "yMeters": 384.329539
+        },
+        "LOWG_STAND_20_POINT": {
+          "id": "LOWG_STAND_20_POINT",
+          "label": "20",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 280.950789,
+          "yMeters": 510.789078
+        },
+        "LOWG_STAND_22_POINT": {
+          "id": "LOWG_STAND_22_POINT",
+          "label": "22",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 341.904437,
+          "yMeters": 531.223898
+        },
+        "LOWG_STAND_26_POINT": {
+          "id": "LOWG_STAND_26_POINT",
+          "label": "26",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 411.945262,
+          "yMeters": 545.956335
+        },
+        "LOWG_STAND_28_POINT": {
+          "id": "LOWG_STAND_28_POINT",
+          "label": "28",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 453.449277,
+          "yMeters": 563.077839
+        },
+        "LOWG_STAND_2_POINT": {
+          "id": "LOWG_STAND_2_POINT",
+          "label": "2",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 294.114029,
+          "yMeters": 322.160982
+        },
+        "LOWG_STAND_30_POINT": {
+          "id": "LOWG_STAND_30_POINT",
+          "label": "30",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 261.272221,
+          "yMeters": 617.334464
+        },
+        "LOWG_STAND_32_POINT": {
+          "id": "LOWG_STAND_32_POINT",
+          "label": "32",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 323.826682,
+          "yMeters": 628.632231
+        },
+        "LOWG_STAND_35_POINT": {
+          "id": "LOWG_STAND_35_POINT",
+          "label": "35",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 394.107868,
+          "yMeters": 644.610079
+        },
+        "LOWG_STAND_38_POINT": {
+          "id": "LOWG_STAND_38_POINT",
+          "label": "38",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 439.378109,
+          "yMeters": 641.143263
+        },
+        "LOWG_STAND_3_POINT": {
+          "id": "LOWG_STAND_3_POINT",
+          "label": "3",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "gate",
+            "ground",
+            "path_point",
+            "stand"
+          ],
+          "xMeters": 303.565319,
+          "yMeters": 262.128424
+        },
+        "LOWG_STAND_F10_POINT": {
+          "id": "LOWG_STAND_F10_POINT",
+          "label": "F10",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 387.943348,
+          "yMeters": -144.64313
+        },
+        "LOWG_STAND_F12_POINT": {
+          "id": "LOWG_STAND_F12_POINT",
+          "label": "F12",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 409.232597,
+          "yMeters": -142.925793
+        },
+        "LOWG_STAND_F1_POINT": {
+          "id": "LOWG_STAND_F1_POINT",
+          "label": "F1",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 366.701258,
+          "yMeters": -208.41767
+        },
+        "LOWG_STAND_F2_POINT": {
+          "id": "LOWG_STAND_F2_POINT",
+          "label": "F2",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 382.333939,
+          "yMeters": -206.8829
+        },
+        "LOWG_STAND_F4_POINT": {
+          "id": "LOWG_STAND_F4_POINT",
+          "label": "F4",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 399.780069,
+          "yMeters": -206.646165
+        },
+        "LOWG_STAND_F6_POINT": {
+          "id": "LOWG_STAND_F6_POINT",
+          "label": "F6",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 419.698832,
+          "yMeters": -202.877553
+        },
+        "LOWG_STAND_F7_POINT": {
+          "id": "LOWG_STAND_F7_POINT",
+          "label": "F7",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 357.856832,
+          "yMeters": -146.604218
+        },
+        "LOWG_STAND_F8_POINT": {
+          "id": "LOWG_STAND_F8_POINT",
+          "label": "F8",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 373.590856,
+          "yMeters": -145.559121
+        },
+        "LOWG_STAND_G10_POINT": {
+          "id": "LOWG_STAND_G10_POINT",
+          "label": "G10",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 353.3766,
+          "yMeters": -18.116411
+        },
+        "LOWG_STAND_G11_POINT": {
+          "id": "LOWG_STAND_G11_POINT",
+          "label": "G11",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 366.605858,
+          "yMeters": -15.889432
+        },
+        "LOWG_STAND_G12_POINT": {
+          "id": "LOWG_STAND_G12_POINT",
+          "label": "G12",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 381.700815,
+          "yMeters": -15.241217
+        },
+        "LOWG_STAND_G13_POINT": {
+          "id": "LOWG_STAND_G13_POINT",
+          "label": "G13",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 313.392633,
+          "yMeters": 78.207482
+        },
+        "LOWG_STAND_G14_POINT": {
+          "id": "LOWG_STAND_G14_POINT",
+          "label": "G14",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 338.447738,
+          "yMeters": 83.262038
+        },
+        "LOWG_STAND_G15_POINT": {
+          "id": "LOWG_STAND_G15_POINT",
+          "label": "G15",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 360.139009,
+          "yMeters": 85.275523
+        },
+        "LOWG_STAND_G16_POINT": {
+          "id": "LOWG_STAND_G16_POINT",
+          "label": "G16",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 304.230441,
+          "yMeters": 123.729078
+        },
+        "LOWG_STAND_G17_POINT": {
+          "id": "LOWG_STAND_G17_POINT",
+          "label": "G17",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 329.798532,
+          "yMeters": 125.121361
+        },
+        "LOWG_STAND_G18_POINT": {
+          "id": "LOWG_STAND_G18_POINT",
+          "label": "G18",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 351.722669,
+          "yMeters": 128.674561
+        },
+        "LOWG_STAND_G19_POINT": {
+          "id": "LOWG_STAND_G19_POINT",
+          "label": "G19",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 317.296457,
+          "yMeters": 185.627307
+        },
+        "LOWG_STAND_G1_POINT": {
+          "id": "LOWG_STAND_G1_POINT",
+          "label": "G1",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 349.08924,
+          "yMeters": -89.095852
+        },
+        "LOWG_STAND_G20_POINT": {
+          "id": "LOWG_STAND_G20_POINT",
+          "label": "G20",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 339.651143,
+          "yMeters": 190.921647
+        },
+        "LOWG_STAND_G2_POINT": {
+          "id": "LOWG_STAND_G2_POINT",
+          "label": "G2",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 366.16917,
+          "yMeters": -86.972235
+        },
+        "LOWG_STAND_G4_POINT": {
+          "id": "LOWG_STAND_G4_POINT",
+          "label": "G4",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 378.495487,
+          "yMeters": -85.060707
+        },
+        "LOWG_STAND_G5_POINT": {
+          "id": "LOWG_STAND_G5_POINT",
+          "label": "G5",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 342.142789,
+          "yMeters": -53.321572
+        },
+        "LOWG_STAND_G6_POINT": {
+          "id": "LOWG_STAND_G6_POINT",
+          "label": "G6",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 359.389424,
+          "yMeters": -50.480347
+        },
+        "LOWG_STAND_G7_POINT": {
+          "id": "LOWG_STAND_G7_POINT",
+          "label": "G7",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 372.454471,
+          "yMeters": -49.915393
+        },
+        "LOWG_STAND_G8_POINT": {
+          "id": "LOWG_STAND_G8_POINT",
+          "label": "G8",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 393.380074,
+          "yMeters": -81.996198
+        },
+        "LOWG_STAND_G9_POINT": {
+          "id": "LOWG_STAND_G9_POINT",
+          "label": "G9",
+          "sources": [
+            "authored_parking",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point",
+            "stand",
+            "tie_down"
+          ],
+          "xMeters": 335.65154,
+          "yMeters": -19.891593
+        },
+        "LOWG_TWY_A_01": {
+          "id": "LOWG_TWY_A_01",
+          "label": "A 1",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 349.287495,
+          "yMeters": -271.075118
+        },
+        "LOWG_TWY_A_02": {
+          "id": "LOWG_TWY_A_02",
+          "label": "A 2",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 275.685627,
+          "yMeters": -283.016478
+        },
+        "LOWG_TWY_A_03": {
+          "id": "LOWG_TWY_A_03",
+          "label": "A 3",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 260.372199,
+          "yMeters": -276.048694
+        },
+        "LOWG_TWY_A_04": {
+          "id": "LOWG_TWY_A_04",
+          "label": "A 4",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 376.328366,
+          "yMeters": -903.13365
+        },
+        "LOWG_TWY_A_05": {
+          "id": "LOWG_TWY_A_05",
+          "label": "A 5",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 400.781667,
+          "yMeters": -882.922387
+        },
+        "LOWG_TWY_A_06": {
+          "id": "LOWG_TWY_A_06",
+          "label": "A 6",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 432.435724,
+          "yMeters": -848.985278
+        },
+        "LOWG_TWY_A_07": {
+          "id": "LOWG_TWY_A_07",
+          "label": "A 7",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 449.827734,
+          "yMeters": -806.80335
+        },
+        "LOWG_TWY_A_08": {
+          "id": "LOWG_TWY_A_08",
+          "label": "A 8",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 98.053494,
+          "yMeters": 1067.624172
+        },
+        "LOWG_TWY_A_08_2": {
+          "id": "LOWG_TWY_A_08_2",
+          "label": "A 8",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 348.470716,
+          "yMeters": -266.722918
+        },
+        "LOWG_TWY_A_09": {
+          "id": "LOWG_TWY_A_09",
+          "label": "A 9",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 85.518402,
+          "yMeters": 1095.645255
+        },
+        "LOWG_TWY_A_09_2": {
+          "id": "LOWG_TWY_A_09_2",
+          "label": "A 9",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 305.102556,
+          "yMeters": -35.635864
+        },
+        "LOWG_TWY_A_09_3": {
+          "id": "LOWG_TWY_A_09_3",
+          "label": "A 9",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 343.347174,
+          "yMeters": -239.422147
+        },
+        "LOWG_TWY_A_10": {
+          "id": "LOWG_TWY_A_10",
+          "label": "A 10",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 52.80829,
+          "yMeters": 1125.871056
+        },
+        "LOWG_TWY_A_10_2": {
+          "id": "LOWG_TWY_A_10_2",
+          "label": "A 10",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 231.933302,
+          "yMeters": 354.246194
+        },
+        "LOWG_TWY_A_10_3": {
+          "id": "LOWG_TWY_A_10_3",
+          "label": "A 10",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 331.573942,
+          "yMeters": -176.688526
+        },
+        "LOWG_TWY_A_11": {
+          "id": "LOWG_TWY_A_11",
+          "label": "A 11",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -88.466298,
+          "yMeters": 1221.356083
+        },
+        "LOWG_TWY_A_11_2": {
+          "id": "LOWG_TWY_A_11_2",
+          "label": "A 11",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 319.477175,
+          "yMeters": -112.230956
+        },
+        "LOWG_TWY_A_12": {
+          "id": "LOWG_TWY_A_12",
+          "label": "A 12",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -95.235133,
+          "yMeters": 1225.93102
+        },
+        "LOWG_TWY_A_12_2": {
+          "id": "LOWG_TWY_A_12_2",
+          "label": "A 12",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 312.821561,
+          "yMeters": -76.766547
+        },
+        "LOWG_TWY_A_13": {
+          "id": "LOWG_TWY_A_13",
+          "label": "A 13",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -162.881874,
+          "yMeters": 1248.405227
+        },
+        "LOWG_TWY_A_13_2": {
+          "id": "LOWG_TWY_A_13_2",
+          "label": "A 13",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 306.348612,
+          "yMeters": -42.275464
+        },
+        "LOWG_TWY_A_14": {
+          "id": "LOWG_TWY_A_14",
+          "label": "A 14",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -214.087655,
+          "yMeters": 1232.106262
+        },
+        "LOWG_TWY_A_15": {
+          "id": "LOWG_TWY_A_15",
+          "label": "A 15",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -228.699728,
+          "yMeters": 1184.357898
+        },
+        "LOWG_TWY_A_15_2": {
+          "id": "LOWG_TWY_A_15_2",
+          "label": "A 15",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 300.175276,
+          "yMeters": -9.380874
+        },
+        "LOWG_TWY_A_16": {
+          "id": "LOWG_TWY_A_16",
+          "label": "A 16",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 288.588949,
+          "yMeters": 52.356824
+        },
+        "LOWG_TWY_A_17": {
+          "id": "LOWG_TWY_A_17",
+          "label": "A 17",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 280.308236,
+          "yMeters": 96.480563
+        },
+        "LOWG_TWY_A_18": {
+          "id": "LOWG_TWY_A_18",
+          "label": "A 18",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 271.23118,
+          "yMeters": 144.847617
+        },
+        "LOWG_TWY_A_19": {
+          "id": "LOWG_TWY_A_19",
+          "label": "A 19",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 259.73332,
+          "yMeters": 206.113918
+        },
+        "LOWG_TWY_A_20": {
+          "id": "LOWG_TWY_A_20",
+          "label": "A 20",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 241.198233,
+          "yMeters": 304.878049
+        },
+        "LOWG_TWY_A_22": {
+          "id": "LOWG_TWY_A_22",
+          "label": "A 22",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 229.329055,
+          "yMeters": 368.122913
+        },
+        "LOWG_TWY_A_23": {
+          "id": "LOWG_TWY_A_23",
+          "label": "A 23",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 217.628871,
+          "yMeters": 430.46729
+        },
+        "LOWG_TWY_A_24": {
+          "id": "LOWG_TWY_A_24",
+          "label": "A 24",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 199.057147,
+          "yMeters": 529.426644
+        },
+        "LOWG_TWY_A_25": {
+          "id": "LOWG_TWY_A_25",
+          "label": "A 25",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 189.403133,
+          "yMeters": 580.868016
+        },
+        "LOWG_TWY_A_26": {
+          "id": "LOWG_TWY_A_26",
+          "label": "A 26",
+          "sources": [
+            "cad_ground",
+            "cad_working_dxf"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 172.040098,
+          "yMeters": 673.386873
+        },
+        "LOWG_TWY_B_01": {
+          "id": "LOWG_TWY_B_01",
+          "label": "B 1",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 268.013674,
+          "yMeters": 161.992085
+        },
+        "LOWG_TWY_B_02": {
+          "id": "LOWG_TWY_B_02",
+          "label": "B 2",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 132.740763,
+          "yMeters": 29.592163
+        },
+        "LOWG_TWY_B_03": {
+          "id": "LOWG_TWY_B_03",
+          "label": "B 3",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 130.794381,
+          "yMeters": 27.7763
+        },
+        "LOWG_TWY_B_04": {
+          "id": "LOWG_TWY_B_04",
+          "label": "B 4",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 44.009839,
+          "yMeters": -53.188707
+        },
+        "LOWG_TWY_B_05": {
+          "id": "LOWG_TWY_B_05",
+          "label": "B 5",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 13.248374,
+          "yMeters": -104.335815
+        },
+        "LOWG_TWY_B_06": {
+          "id": "LOWG_TWY_B_06",
+          "label": "B 6",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 0.345003,
+          "yMeters": -35.608296
+        },
+        "LOWG_TWY_C_01": {
+          "id": "LOWG_TWY_C_01",
+          "label": "C 1",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 172.050108,
+          "yMeters": 673.333535
+        },
+        "LOWG_TWY_C_02": {
+          "id": "LOWG_TWY_C_02",
+          "label": "C 2",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 134.495065,
+          "yMeters": 698.571616
+        },
+        "LOWG_TWY_C_03": {
+          "id": "LOWG_TWY_C_03",
+          "label": "C 3",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 54.645336,
+          "yMeters": 681.268358
+        },
+        "LOWG_TWY_C_04": {
+          "id": "LOWG_TWY_C_04",
+          "label": "C 4",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 25.195789,
+          "yMeters": 663.49028
+        },
+        "LOWG_TWY_C_05": {
+          "id": "LOWG_TWY_C_05",
+          "label": "C 5",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 21.130844,
+          "yMeters": 658.459907
+        },
+        "LOWG_TWY_C_06": {
+          "id": "LOWG_TWY_C_06",
+          "label": "C 6",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 17.582607,
+          "yMeters": 654.068961
+        },
+        "LOWG_TWY_C_07": {
+          "id": "LOWG_TWY_C_07",
+          "label": "C 7",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -13.963647,
+          "yMeters": 567.240044
+        },
+        "LOWG_TWY_C_08": {
+          "id": "LOWG_TWY_C_08",
+          "label": "C 8",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -36.790981,
+          "yMeters": 462.639155
+        },
+        "LOWG_TWY_C_09": {
+          "id": "LOWG_TWY_C_09",
+          "label": "C 9",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -64.416296,
+          "yMeters": 309.331294
+        },
+        "LOWG_TWY_C_10": {
+          "id": "LOWG_TWY_C_10",
+          "label": "C 10",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -61.421128,
+          "yMeters": 449.785697
+        },
+        "LOWG_TWY_C_11": {
+          "id": "LOWG_TWY_C_11",
+          "label": "C 11",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -92.406707,
+          "yMeters": 458.41726
+        },
+        "LOWG_TWY_C_12": {
+          "id": "LOWG_TWY_C_12",
+          "label": "C 12",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 160.270764,
+          "yMeters": 736.099717
+        },
+        "LOWG_TWY_Y_01": {
+          "id": "LOWG_TWY_Y_01",
+          "label": "Y 1",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -309.117406,
+          "yMeters": 260.074921
+        },
+        "LOWG_TWY_Y_02": {
+          "id": "LOWG_TWY_Y_02",
+          "label": "Y 2",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -168.751645,
+          "yMeters": -489.502458
+        },
+        "LOWG_TWY_Y_03": {
+          "id": "LOWG_TWY_Y_03",
+          "label": "Y 3",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -291.264788,
+          "yMeters": -592.977552
+        },
+        "LOWG_TWY_Y_04": {
+          "id": "LOWG_TWY_Y_04",
+          "label": "Y 4",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -174.01944,
+          "yMeters": -924.716849
+        },
+        "LOWG_TWY_Y_05": {
+          "id": "LOWG_TWY_Y_05",
+          "label": "Y 5",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -100.680601,
+          "yMeters": -898.398886
+        },
+        "LOWG_TWY_Y_06": {
+          "id": "LOWG_TWY_Y_06",
+          "label": "Y 6",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -63.290025,
+          "yMeters": -896.051448
+        },
+        "LOWG_TWY_Y_07": {
+          "id": "LOWG_TWY_Y_07",
+          "label": "Y 7",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -19.679242,
+          "yMeters": -907.242632
+        },
+        "LOWG_TWY_Y_08": {
+          "id": "LOWG_TWY_Y_08",
+          "label": "Y 8",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 19.317438,
+          "yMeters": -921.78132
+        },
+        "LOWG_TWY_Y_09": {
+          "id": "LOWG_TWY_Y_09",
+          "label": "Y 9",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 130.467895,
+          "yMeters": -963.220281
+        },
+        "LOWG_TWY_Y_10": {
+          "id": "LOWG_TWY_Y_10",
+          "label": "Y 10",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 181.787074,
+          "yMeters": -1002.027352
+        },
+        "LOWG_TWY_Y_11": {
+          "id": "LOWG_TWY_Y_11",
+          "label": "Y 11",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 165.583713,
+          "yMeters": -915.723019
+        },
+        "LOWG_TWY_Z_01": {
+          "id": "LOWG_TWY_Z_01",
+          "label": "Z 1",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -234.53248,
+          "yMeters": -138.221452
+        },
+        "LOWG_TWY_Z_02": {
+          "id": "LOWG_TWY_Z_02",
+          "label": "Z 2",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": -159.323424,
+          "yMeters": -125.015662
+        },
+        "LOWG_TWY_Z_03": {
+          "id": "LOWG_TWY_Z_03",
+          "label": "Z 3",
+          "sources": [
+            "cad_ground"
+          ],
+          "tags": [
+            "ground",
+            "path_point"
+          ],
+          "xMeters": 11.499591,
+          "yMeters": -95.021233
+        },
+        "SECTOR_ECHO_BOUNDARY_02": {
+          "id": "SECTOR_ECHO_BOUNDARY_02",
+          "label": null,
+          "sources": [
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 20177.658885,
+          "yMeters": 2618.173893
+        },
+        "SECTOR_ECHO_BOUNDARY_03": {
+          "id": "SECTOR_ECHO_BOUNDARY_03",
+          "label": null,
+          "sources": [
+            "ofmx",
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "airspace_boundary",
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 24944.451028,
+          "yMeters": -23536.259399
+        },
+        "SECTOR_ECHO_BOUNDARY_04": {
+          "id": "SECTOR_ECHO_BOUNDARY_04",
+          "label": null,
+          "sources": [
+            "ofmx",
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "airspace_boundary",
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 17781.348205,
+          "yMeters": -24864.421641
+        },
+        "SECTOR_ECHO_BOUNDARY_05": {
+          "id": "SECTOR_ECHO_BOUNDARY_05",
+          "label": null,
+          "sources": [
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 16736.088922,
+          "yMeters": -19306.587776
+        },
+        "SECTOR_WHISKEY_BOUNDARY_01": {
+          "id": "SECTOR_WHISKEY_BOUNDARY_01",
+          "label": null,
+          "sources": [
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -8578.417539,
+          "yMeters": -18887.848961
+        },
+        "SECTOR_WHISKEY_BOUNDARY_02": {
+          "id": "SECTOR_WHISKEY_BOUNDARY_02",
+          "label": null,
+          "sources": [
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -11753.901186,
+          "yMeters": -2260.920151
+        },
+        "SECTOR_WHISKEY_BOUNDARY_03": {
+          "id": "SECTOR_WHISKEY_BOUNDARY_03",
+          "label": null,
+          "sources": [
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -7686.584078,
+          "yMeters": -4489.660204
+        },
+        "SECTOR_WHISKEY_BOUNDARY_04": {
+          "id": "SECTOR_WHISKEY_BOUNDARY_04",
+          "label": null,
+          "sources": [
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "operational_sector_boundary",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -4532.693056,
+          "yMeters": -4667.093419
+        }
+      }
+    },
+    "syntheticAirspace": {
+      "airspaceClass": "D",
+      "boundaryPathIds": [
+        "LOWG_SYNTH_AIRSPACE_01"
+      ],
+      "firId": "LOVV",
+      "firName": "LOVV FIR (LOWG v1 synthetic claim coverage)",
+      "memberPointIds": [
+        "LOWG_AIRSPACE_LO585_01_01",
+        "LOWG_AIRSPACE_LO585_01_02",
+        "LOWG_AIRSPACE_LO585_01_03",
+        "LOWG_AIRSPACE_LO585_01_04",
+        "LOWG_AIRSPACE_LO585_01_05",
+        "LOWG_AIRSPACE_LO585_01_07",
+        "LOWG_AIRSPACE_LO585_01_08",
+        "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+        "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+        "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
+        "LOWG_APRON_AUTHORED_01_02",
+        "LOWG_APRON_AUTHORED_01_03",
+        "LOWG_APRON_AUTHORED_01_04",
+        "LOWG_APRON_AUTHORED_01_05",
+        "LOWG_APRON_AUTHORED_02_03",
+        "LOWG_APRON_AUTHORED_03_02",
+        "LOWG_APRON_AUTHORED_03_03",
+        "LOWG_APRON_AUTHORED_03_04",
+        "LOWG_APRON_AUTHORED_07_02",
+        "LOWG_APRON_AUTHORED_07_03",
+        "LOWG_APRON_AUTHORED_07_04",
+        "LOWG_APRON_AUTHORED_07_05",
+        "LOWG_APRON_AUTHORED_08_03",
+        "LOWG_APRON_AUTHORED_09_02",
+        "LOWG_APRON_AUTHORED_09_03",
+        "LOWG_APRON_AUTHORED_09_04",
+        "LOWG_APRON_AUTHORED_13_02",
+        "LOWG_APRON_AUTHORED_13_03",
+        "LOWG_APRON_AUTHORED_13_04",
+        "LOWG_APRON_AUTHORED_13_05",
+        "LOWG_APRON_AUTHORED_14_03",
+        "LOWG_APRON_AUTHORED_14_04",
+        "LOWG_APRON_AUTHORED_14_06",
+        "LOWG_APRON_AUTHORED_15_02",
+        "LOWG_APRON_AUTHORED_15_03",
+        "LOWG_APRON_AUTHORED_15_04",
+        "LOWG_APRON_AUTHORED_16_02",
+        "LOWG_APRON_AUTHORED_16_03",
+        "LOWG_APRON_AUTHORED_16_04",
+        "LOWG_APRON_AUTHORED_17_02",
+        "LOWG_APRON_AUTHORED_17_03",
+        "LOWG_APRON_AUTHORED_17_04",
+        "LOWG_APRON_AUTHORED_21_02",
+        "LOWG_APRON_AUTHORED_21_03",
+        "LOWG_APRON_AUTHORED_22_03",
+        "LOWG_APRON_AUTHORED_22_05",
+        "LOWG_APRON_AUTHORED_22_07",
+        "LOWG_APRON_AUTHORED_23_02",
+        "LOWG_APRON_AUTHORED_23_03",
+        "LOWG_APRON_AUTHORED_24_02",
+        "LOWG_APRON_AUTHORED_24_03",
+        "LOWG_APRON_AUTHORED_25_02",
+        "LOWG_APRON_AUTHORED_25_03",
+        "LOWG_APRON_AUTHORED_28_01",
+        "LOWG_APRON_AUTHORED_29_01",
+        "LOWG_APRON_AUTHORED_30_01",
+        "LOWG_APRON_AUTHORED_31_02",
+        "LOWG_APRON_AUTHORED_31_03",
+        "LOWG_APRON_AUTHORED_33_03",
+        "LOWG_APRON_AUTHORED_33_04",
+        "LOWG_APRON_AUTHORED_33_05",
+        "LOWG_APRON_AUTHORED_33_06",
+        "LOWG_APRON_AUTHORED_34_03",
+        "LOWG_APRON_AUTHORED_35_03",
+        "LOWG_APRON_AUTHORED_36_01",
+        "LOWG_APRON_AUTHORED_36_05",
+        "LOWG_APRON_AUTHORED_37_01",
+        "LOWG_APRON_AUTHORED_37_05",
+        "LOWG_APRON_AUTHORED_38_01",
+        "LOWG_APRON_AUTHORED_38_05",
+        "LOWG_FIX_AUTOBAHN_OST",
+        "LOWG_FIX_AUTOBAHN_WEST",
+        "LOWG_FIX_GLEISDORF",
+        "LOWG_FIX_GRAZ_NORD",
+        "LOWG_FIX_GREEN_CITY",
+        "LOWG_FIX_KALSDORF",
+        "LOWG_FIX_LASSNITZH\u00d6HE",
+        "LOWG_FIX_SENDER_DOBL",
+        "LOWG_RWY_16C_THR",
+        "LOWG_RWY_16L_THR",
+        "LOWG_RWY_16R_THR",
+        "LOWG_RWY_34C_THR",
+        "LOWG_RWY_34L_THR",
+        "LOWG_RWY_34R_THR",
+        "LOWG_STAND_1_POINT",
+        "LOWG_STAND_20_POINT",
+        "LOWG_STAND_22_POINT",
+        "LOWG_STAND_26_POINT",
+        "LOWG_STAND_28_POINT",
+        "LOWG_STAND_2_POINT",
+        "LOWG_STAND_30_POINT",
+        "LOWG_STAND_32_POINT",
+        "LOWG_STAND_35_POINT",
+        "LOWG_STAND_38_POINT",
+        "LOWG_STAND_3_POINT",
+        "LOWG_STAND_F10_POINT",
+        "LOWG_STAND_F12_POINT",
+        "LOWG_STAND_F1_POINT",
+        "LOWG_STAND_F2_POINT",
+        "LOWG_STAND_F4_POINT",
+        "LOWG_STAND_F6_POINT",
+        "LOWG_STAND_F7_POINT",
+        "LOWG_STAND_F8_POINT",
+        "LOWG_STAND_G10_POINT",
+        "LOWG_STAND_G11_POINT",
+        "LOWG_STAND_G12_POINT",
+        "LOWG_STAND_G13_POINT",
+        "LOWG_STAND_G14_POINT",
+        "LOWG_STAND_G15_POINT",
+        "LOWG_STAND_G16_POINT",
+        "LOWG_STAND_G17_POINT",
+        "LOWG_STAND_G18_POINT",
+        "LOWG_STAND_G19_POINT",
+        "LOWG_STAND_G1_POINT",
+        "LOWG_STAND_G20_POINT",
+        "LOWG_STAND_G2_POINT",
+        "LOWG_STAND_G4_POINT",
+        "LOWG_STAND_G5_POINT",
+        "LOWG_STAND_G6_POINT",
+        "LOWG_STAND_G7_POINT",
+        "LOWG_STAND_G8_POINT",
+        "LOWG_STAND_G9_POINT",
+        "LOWG_TWY_A_01",
+        "LOWG_TWY_A_02",
+        "LOWG_TWY_A_03",
+        "LOWG_TWY_A_04",
+        "LOWG_TWY_A_05",
+        "LOWG_TWY_A_06",
+        "LOWG_TWY_A_07",
+        "LOWG_TWY_A_08",
+        "LOWG_TWY_A_08_2",
+        "LOWG_TWY_A_09",
+        "LOWG_TWY_A_09_2",
+        "LOWG_TWY_A_09_3",
+        "LOWG_TWY_A_10",
+        "LOWG_TWY_A_10_2",
+        "LOWG_TWY_A_10_3",
+        "LOWG_TWY_A_11",
+        "LOWG_TWY_A_11_2",
+        "LOWG_TWY_A_12",
+        "LOWG_TWY_A_12_2",
+        "LOWG_TWY_A_13",
+        "LOWG_TWY_A_13_2",
+        "LOWG_TWY_A_14",
+        "LOWG_TWY_A_15",
+        "LOWG_TWY_A_15_2",
+        "LOWG_TWY_A_16",
+        "LOWG_TWY_A_17",
+        "LOWG_TWY_A_18",
+        "LOWG_TWY_A_19",
+        "LOWG_TWY_A_20",
+        "LOWG_TWY_A_22",
+        "LOWG_TWY_A_23",
+        "LOWG_TWY_A_24",
+        "LOWG_TWY_A_25",
+        "LOWG_TWY_A_26",
+        "LOWG_TWY_B_01",
+        "LOWG_TWY_B_02",
+        "LOWG_TWY_B_03",
+        "LOWG_TWY_B_04",
+        "LOWG_TWY_B_05",
+        "LOWG_TWY_B_06",
+        "LOWG_TWY_C_01",
+        "LOWG_TWY_C_02",
+        "LOWG_TWY_C_03",
+        "LOWG_TWY_C_04",
+        "LOWG_TWY_C_05",
+        "LOWG_TWY_C_06",
+        "LOWG_TWY_C_07",
+        "LOWG_TWY_C_08",
+        "LOWG_TWY_C_09",
+        "LOWG_TWY_C_10",
+        "LOWG_TWY_C_11",
+        "LOWG_TWY_C_12",
+        "LOWG_TWY_Y_01",
+        "LOWG_TWY_Y_02",
+        "LOWG_TWY_Y_03",
+        "LOWG_TWY_Y_04",
+        "LOWG_TWY_Y_05",
+        "LOWG_TWY_Y_06",
+        "LOWG_TWY_Y_07",
+        "LOWG_TWY_Y_08",
+        "LOWG_TWY_Y_09",
+        "LOWG_TWY_Y_10",
+        "LOWG_TWY_Y_11",
+        "LOWG_TWY_Z_01",
+        "LOWG_TWY_Z_02",
+        "LOWG_TWY_Z_03",
+        "SECTOR_ECHO_BOUNDARY_02",
+        "SECTOR_ECHO_BOUNDARY_03",
+        "SECTOR_ECHO_BOUNDARY_04",
+        "SECTOR_ECHO_BOUNDARY_05",
+        "SECTOR_WHISKEY_BOUNDARY_01",
+        "SECTOR_WHISKEY_BOUNDARY_02",
+        "SECTOR_WHISKEY_BOUNDARY_03",
+        "SECTOR_WHISKEY_BOUNDARY_04"
+      ],
+      "note": "Synthetic point-claim volume used only to exercise the current validator against the projected LOWG subset.",
+      "projectionStatus": "synthetic_validator_support",
+      "type": "CTR",
+      "upperAltitudeFeet": 10000,
+      "volumeId": "LOWG_V1_POINT_CLAIM",
+      "volumeName": "LOWG v1 projected point-claim coverage"
+    },
+    "vfrRoutes": {
+      "vfr_northeast_entry_path": {
+        "airspaceProfile": null,
+        "id": "vfr_northeast_entry_path",
+        "name": "vfr_northeast_entry_path",
+        "note": "User-confirmed path. The reporting-point portion is the literal join GLEISDORF -> LASSNITZH\u00d6HE -> AUTOBAHN-OST; the final join now targets the explicit NE circuit anchor from lowg_circuits.dxf.",
+        "pathId": "LOWG_VFR_ROUTE_VFR_NORTHEAST_ENTRY_PATH",
+        "pointIds": [
+          "LOWG_FIX_GLEISDORF",
+          "LOWG_FIX_LASSNITZH\u00d6HE",
+          "LOWG_FIX_AUTOBAHN_OST",
+          "LOWG_ANCHOR_CIRCUIT_NE_ENTRY"
+        ],
+        "projectionStatus": "direct_geometry_airspace_profile_pending"
+      },
+      "vfr_southeast_entry_path": {
+        "airspaceProfile": null,
+        "id": "vfr_southeast_entry_path",
+        "name": "vfr_southeast_entry_path",
+        "note": "User-confirmed SE arrival path into the circuit. KALSDORF is the literal reporting-point anchor and the join uses the existing SE circuit endpoint.",
+        "pathId": "LOWG_VFR_ROUTE_VFR_SOUTHEAST_ENTRY_PATH",
+        "pointIds": [
+          "LOWG_FIX_KALSDORF",
+          "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
+        ],
+        "projectionStatus": "direct_geometry_airspace_profile_pending"
+      },
+      "vfr_southwest_entry_path": {
+        "airspaceProfile": null,
+        "id": "vfr_southwest_entry_path",
+        "name": "vfr_southwest_entry_path",
+        "note": "User-confirmed western circuit entry option. From SENDER DOBL aircraft can join the circuit via the explicit SW anchor depending on runway direction.",
+        "pathId": "LOWG_VFR_ROUTE_VFR_SOUTHWEST_ENTRY_PATH",
+        "pointIds": [
+          "LOWG_FIX_SENDER_DOBL",
+          "LOWG_ANCHOR_CIRCUIT_SW_ENTRY"
+        ],
+        "projectionStatus": "direct_geometry_airspace_profile_pending"
+      },
+      "vfr_western_corridor_path": {
+        "airspaceProfile": null,
+        "id": "vfr_western_corridor_path",
+        "name": "vfr_western_corridor_path",
+        "note": "User-confirmed path. This route is the literal join SENDER DOBL -> AUTOBAHN-WEST -> GREEN CITY -> GRAZ-NORD. The NW circuit point is treated as AUTOBAHN-WEST, so this route already lands on the existing circuit attachment there.",
+        "pathId": "LOWG_VFR_ROUTE_VFR_WESTERN_CORRIDOR_PATH",
+        "pointIds": [
+          "LOWG_FIX_SENDER_DOBL",
+          "LOWG_FIX_AUTOBAHN_WEST",
+          "LOWG_FIX_GREEN_CITY",
+          "LOWG_FIX_GRAZ_NORD"
+        ],
+        "projectionStatus": "direct_geometry_airspace_profile_pending"
+      }
+    }
+  }
+}

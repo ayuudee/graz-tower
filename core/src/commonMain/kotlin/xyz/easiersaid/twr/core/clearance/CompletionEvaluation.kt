@@ -286,7 +286,7 @@ private fun observeAirspaceState(
 ): AirspaceObservationState {
     val airspaceRef = EntityRef.AirspaceVolumeRef(step.airspace.airspace.id)
     val inside =
-        airspaceRef in view.entities || view.position in step.airspace.airspace.points
+        airspaceRef in view.entities || view.position in step.airspace.airspace.memberPoints
     val transitioned = airspaceRef in view.transitionHistory
     return AirspaceObservationState(
         inside = inside,

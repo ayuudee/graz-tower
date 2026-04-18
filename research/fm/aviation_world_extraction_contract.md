@@ -14,6 +14,24 @@ The source inputs remain:
 - [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
 - [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
 
+Status note:
+
+As of April 18, 2026, the repo runtime now also carries richer airport-migration
+facts that sit outside the currently extracted proof surface:
+
+- optional `VfrRoute.airspaceProfile` with `InVolume`, `InClass`, and
+  volume-authoritative `Segmented` cases
+- `AirspaceVolume.memberPoints` plus optional `boundary`
+- runtime operational sectors in `AerodromeAip`
+- runtime published VFR procedures in `AerodromeAip`
+
+The current proof-visible extraction remains narrower than that runtime shape:
+VFR routes still extract as waypoint sequences only, and proof-visible airspace
+still extracts as explicit membership points only. The richer route-airspace,
+boundary-geometry, sector, and published-procedure additions remain
+intentionally unextracted while the current FM branch stays closed on its
+narrower world model.
+
 ## Boundary Shape
 
 The proof-facing extraction stack is:

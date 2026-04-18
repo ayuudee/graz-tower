@@ -75,7 +75,8 @@ private fun AviationWorld.collectAerodromeEntries(
         collectSidEntries(aerodrome) +
         collectStarEntries(aerodrome) +
         collectApproachEntries(aerodrome) +
-        collectHoldingPatternEntries(aerodrome)
+        collectHoldingPatternEntries(aerodrome) +
+        collectAerodromeAipEntries(aerodrome)
 
 private fun collectRunwayEntries(aerodrome: Aerodrome): List<Pair<PointId, EntityRef>> =
     aerodrome.runways.values.flatMap { runway ->
@@ -165,8 +166,17 @@ private fun AviationWorld.collectVfrRouteEntries(): List<Pair<PointId, EntityRef
 private fun AviationWorld.collectAirspaceEntries(): List<Pair<PointId, EntityRef>> =
     airspace.values.flatMap { airspaceVolume ->
         val ref = EntityRef.AirspaceVolumeRef(airspaceVolume.id)
-        airspaceVolume.points.map { point -> point to ref }
+        airspaceVolume.memberPoints.map { point -> point to ref } +
+            // Boundary vertices are intentionally registered as well as memberPoints.
+            // deriveEntitiesByPoint() deduplicates by Set<EntityRef>, so keeping both
+            // sources makes the boundary claim explicit without double-counting.
+            airspaceVolume.boundary.orEmpty().flatMap { ring ->
+                ring.points.map { point -> point to ref }
+            }
     }
+
+private fun AirspaceBoundary?.orEmpty(): List<BoundaryRing> =
+    this?.rings.orEmpty()
 
 fun AviationWorld.deriveCircuitLegsByPoint(): Map<xyz.easiersaid.twr.protocol.PointId, Set<LegName>> {
     val entries = aerodromes.values.flatMap { aerodrome ->
@@ -189,4 +199,3 @@ private fun <T> PhysicalGeometry.expandSegmentValues(
         val value = valueSelector(geometry)
         segmentId.directedIds().map { directed -> directed to value }
     }.toMap()
-

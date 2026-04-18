@@ -343,7 +343,6 @@ structure CompileStarView where
 structure CompileVfrRouteView where
   id : VfrRouteId
   waypoints : List CompileWaypointView
-  airspaceClass : AirspaceClass
   deriving DecidableEq, Repr
 
 structure CompileFixView where

@@ -885,18 +885,20 @@ private fun resolveAirspaceRouteInteraction(
     route: ResolvedRouteSpec
 ): ResolvedAirspaceRouteInteraction {
     val routePoints = route.routePoints()
-    val insidePoints = routePoints.filter { point -> point in airspace.points }
+    // Route/airspace interaction still follows explicit memberPoints, not geometric
+    // point-in-polygon inference from the published boundary.
+    val insidePoints = routePoints.filter { point -> point in airspace.memberPoints }
     val transitions = routePoints.zipWithNext()
 
     val entryTransitions = transitions.mapNotNull { (from, to) ->
-        if (from !in airspace.points && to in airspace.points) {
+        if (from !in airspace.memberPoints && to in airspace.memberPoints) {
             AirspaceBoundaryTransition(from, to)
         } else {
             null
         }
     }
     val exitTransitions = transitions.mapNotNull { (from, to) ->
-        if (from in airspace.points && to !in airspace.points) {
+        if (from in airspace.memberPoints && to !in airspace.memberPoints) {
             AirspaceBoundaryTransition(from, to)
         } else {
             null

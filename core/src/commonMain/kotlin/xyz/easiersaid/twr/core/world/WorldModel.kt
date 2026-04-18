@@ -14,7 +14,9 @@ import xyz.easiersaid.twr.protocol.FixId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.HoldingPatternId
 import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.OperationalSectorId
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PublishedVfrProcedureId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SidId
@@ -259,7 +261,9 @@ data class AerodromeAip(
     val handoffSequence: List<HandoffStep> = emptyList(),
     val activeRunwaySelection: ActiveRunwayRule = ActiveRunwayRule.PreferIntoWind,
     val noiseAbatement: List<NoiseRule> = emptyList(),
-    val specialInstructions: List<String> = emptyList()
+    val specialInstructions: List<String> = emptyList(),
+    val operationalSectors: Map<OperationalSectorId, OperationalSector> = emptyMap(),
+    val publishedVfrProcedures: Map<PublishedVfrProcedureId, PublishedVfrProcedure> = emptyMap()
 )
 
 data class Aerodrome(
@@ -306,6 +310,8 @@ sealed interface EntityRef {
     data class AirwayRef(val id: AirwayId) : EntityRef
     data class VfrRouteRef(val id: VfrRouteId) : EntityRef
     data class AirspaceVolumeRef(val id: AirspaceVolumeId) : EntityRef
+    data class OperationalSectorRef(val id: OperationalSectorId) : EntityRef
+    data class PublishedVfrProcedureRef(val id: PublishedVfrProcedureId) : EntityRef
 }
 
 data class WorldIndex(

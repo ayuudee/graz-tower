@@ -154,14 +154,12 @@ def ScopedStarSource.toCompileView
 structure ScopedVfrRouteSource where
   id : VfrRouteId
   waypoints : List CompileWaypointView
-  airspaceClass : AirspaceClass
   deriving DecidableEq, Repr
 
 def ScopedVfrRouteSource.toCompileView
     (route : ScopedVfrRouteSource) : CompileVfrRouteView :=
   { id := route.id
-    waypoints := route.waypoints
-    airspaceClass := route.airspaceClass }
+    waypoints := route.waypoints }
 
 structure ScopedFixSource where
   id : FixId
