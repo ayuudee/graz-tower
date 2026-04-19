@@ -40,6 +40,10 @@ def _copy_path(path: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _slugify(text: str) -> str:
+    return "".join(character if character.isalnum() else "_" for character in text)
+
+
 def _build_path_document(
     path_id: str,
     point_ids: list[str],
@@ -66,6 +70,263 @@ def _build_path_document(
 
 def _xy_for_point(point: dict[str, Any]) -> report.XY:
     return report.XY(float(point["xMeters"]), float(point["yMeters"]))
+
+
+def _point_on_segment(
+    point: report.XY,
+    start: report.XY,
+    end: report.XY,
+    *,
+    tolerance: float = 1e-6,
+) -> bool:
+    cross = (point.y - start.y) * (end.x - start.x) - (point.x - start.x) * (end.y - start.y)
+    if abs(cross) > tolerance:
+        return False
+    dot = (point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)
+    if dot < -tolerance:
+        return False
+    squared_length = (end.x - start.x) ** 2 + (end.y - start.y) ** 2
+    if dot - squared_length > tolerance:
+        return False
+    return True
+
+
+def _point_in_ring(point: report.XY, ring: list[report.XY]) -> bool:
+    if len(ring) < 3:
+        return False
+    if any(_point_on_segment(point, start, end) for start, end in zip(ring, ring[1:] + ring[:1])):
+        return True
+
+    inside = False
+    for start, end in zip(ring, ring[1:] + ring[:1]):
+        if (start.y > point.y) == (end.y > point.y):
+            continue
+        crossing_x = (end.x - start.x) * (point.y - start.y) / (end.y - start.y) + start.x
+        if point.x < crossing_x:
+            inside = not inside
+    return inside
+
+
+def _point_in_any_ring(point: report.XY, rings: list[list[report.XY]]) -> bool:
+    return any(_point_in_ring(point, ring) for ring in rings)
+
+
+def _candidate_airspace_rings(
+    volume: dict[str, Any],
+    geometry_points: dict[str, dict[str, Any]],
+) -> list[list[report.XY]]:
+    rings: list[list[report.XY]] = []
+    for ring in volume.get("boundaryPointIds", []):
+        if not isinstance(ring, list):
+            continue
+        ring_points = [
+            _xy_for_point(geometry_points[point_id])
+            for point_id in ring
+            if isinstance(point_id, str) and point_id in geometry_points
+        ]
+        if len(ring_points) >= 3:
+            rings.append(ring_points)
+    return rings
+
+
+def _candidate_altitude_boundary(
+    value: Any,
+    unit: Any,
+    reference: Any,
+) -> dict[str, Any] | None:
+    if reference == "HEI" and value == 0:
+        return {"kind": "SURFACE"}
+    if not isinstance(value, (int, float)):
+        return None
+    level_type = {
+        ("FT", "ALT"): "ALTITUDE_FEET",
+        ("FT", "HEI"): "HEIGHT_FEET",
+        ("FL", "STD"): "FLIGHT_LEVEL",
+    }.get((unit, reference))
+    if level_type is None:
+        return None
+    return {
+        "kind": "AT_LEVEL",
+        "levelType": level_type,
+        "value": int(value),
+    }
+
+
+def _candidate_altitude_band(volume: dict[str, Any]) -> dict[str, Any] | None:
+    lower = _candidate_altitude_boundary(
+        volume.get("lowerValue"),
+        volume.get("lowerUnit"),
+        volume.get("lowerReference"),
+    )
+    upper = _candidate_altitude_boundary(
+        volume.get("upperValue"),
+        volume.get("upperUnit"),
+        volume.get("upperReference"),
+    )
+    if lower is None:
+        return None
+    return {
+        "lower": lower,
+        "upper": upper,
+    }
+
+
+def _altitude_sort_key(volume: dict[str, Any]) -> tuple[int, int]:
+    reference = volume.get("lowerReference")
+    unit = volume.get("lowerUnit")
+    value = volume.get("lowerValue")
+    numeric_value = int(value) if isinstance(value, (int, float)) else 999999
+    if reference == "HEI" and numeric_value == 0:
+        return (0, 0)
+    if unit == "FT" and reference in {"ALT", "HEI"}:
+        return (1, numeric_value)
+    if unit == "FL" and reference == "STD":
+        return (2, numeric_value)
+    return (3, numeric_value)
+
+
+def _low_level_runtime_airspace_volumes(
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for volume in candidate_airspace_volumes.values():
+        if not isinstance(volume, dict):
+            continue
+        if not isinstance(volume.get("volumeType"), str) or not isinstance(volume.get("airspaceClass"), str):
+            continue
+        base_code_id = str(volume.get("baseCodeId") or volume.get("codeId") or volume.get("id"))
+        grouped.setdefault(base_code_id, []).append(volume)
+
+    selected: dict[str, dict[str, Any]] = {}
+    for base_code_id, volumes in grouped.items():
+        lowest = min(volumes, key=_altitude_sort_key)
+        selected[str(lowest["id"])] = lowest
+    return dict(sorted(selected.items()))
+
+
+def _boundary_path_documents(
+    airport_code: str,
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+    geometry_paths: dict[str, dict[str, Any]],
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[str]]]:
+    path_documents: dict[str, dict[str, Any]] = {}
+    path_ids_by_volume: dict[str, list[str]] = {}
+    for volume_id, volume in sorted(candidate_airspace_volumes.items()):
+        boundary_path_ids: list[str] = []
+        for index, ring in enumerate(volume.get("boundaryPointIds", []), start=1):
+            if not isinstance(ring, list):
+                continue
+            point_ids = [point_id for point_id in ring if isinstance(point_id, str)]
+            if len(point_ids) < 3:
+                continue
+            if point_ids[0] != point_ids[-1]:
+                point_ids = point_ids + [point_ids[0]]
+            path_id = f"{airport_code}_AIRSPACE_{_slugify(volume_id).upper()}_{index:02d}"
+            path_documents[path_id] = _build_path_document(
+                path_id,
+                point_ids,
+                geometry_paths,
+                surface="SKY",
+                width_meters=authoring.AIRSPACE_STROKE_WIDTH_METERS if hasattr(authoring, "AIRSPACE_STROKE_WIDTH_METERS") else 160.0,
+                source="candidate_airspace_boundary",
+                projection_status="direct_runtime_boundary",
+                note=str(volume.get("note") or "Projected LOWG airspace boundary from OFMX geometry."),
+            )
+            boundary_path_ids.append(path_id)
+        path_ids_by_volume[volume_id] = boundary_path_ids
+    return path_documents, path_ids_by_volume
+
+
+def _projected_current_core_airspace(
+    *,
+    included_points: dict[str, dict[str, Any]],
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+    boundary_path_ids_by_volume: dict[str, list[str]],
+    geometry_points: dict[str, dict[str, Any]],
+    fir_id: str,
+    transition_altitude_feet: int,
+) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]], list[str]]:
+    projected_volumes: dict[str, dict[str, Any]] = {}
+
+    for volume_id, volume in sorted(candidate_airspace_volumes.items()):
+        rings = _candidate_airspace_rings(volume, geometry_points)
+        if not rings:
+            continue
+        altitude_band = _candidate_altitude_band(volume)
+        if altitude_band is None:
+            continue
+
+        boundary_point_ids = {
+            point_id
+            for ring in volume.get("boundaryPointIds", [])
+            if isinstance(ring, list)
+            for point_id in ring
+            if isinstance(point_id, str)
+        }
+        member_point_ids = sorted(
+            boundary_point_ids | {
+                point_id
+                for point_id, point in included_points.items()
+                if _point_in_any_ring(_xy_for_point(point), rings)
+            }
+        )
+        if not member_point_ids:
+            continue
+
+        projected_volumes[volume_id] = {
+            "id": volume_id,
+            "name": str(volume.get("name") or volume_id),
+            "type": str(volume["volumeType"]),
+            "airspaceClass": str(volume["airspaceClass"]),
+            "altitudeBand": altitude_band,
+            "memberPointIds": member_point_ids,
+            "firId": fir_id,
+            "boundaryPathIds": boundary_path_ids_by_volume.get(volume_id, []),
+            "projectionStatus": "direct_low_level_runtime_airspace_volume",
+            "note": volume.get("note"),
+        }
+
+    covered_points = {
+        point_id
+        for volume in projected_volumes.values()
+        for point_id in volume["memberPointIds"]
+    }
+    uncovered_points = sorted(set(included_points) - covered_points)
+    assumptions: list[str] = []
+    if uncovered_points:
+        fallback_volume_id = "LOVV_OPEN_FIR_G"
+        projected_volumes[fallback_volume_id] = {
+            "id": fallback_volume_id,
+            "name": "LOVV open-FIR fallback coverage",
+            "type": "FIR",
+            "airspaceClass": "G",
+            "altitudeBand": {
+                "lower": {"kind": "SURFACE"},
+                "upper": {
+                    "kind": "AT_LEVEL",
+                    "levelType": "ALTITUDE_FEET",
+                    "value": transition_altitude_feet,
+                },
+            },
+            "memberPointIds": uncovered_points,
+            "firId": fir_id,
+            "boundaryPathIds": [],
+            "projectionStatus": "synthetic_open_fir_fallback",
+            "note": "Fallback open-FIR membership for projected LOWG points not yet covered by the worked low-level controlled volumes.",
+        }
+        assumptions.append(
+            f"{len(uncovered_points)} projected LOWG point(s) still fall outside the worked low-level CTR/TMA slice and are temporarily assigned to an explicit open-FIR Class G fallback volume."
+        )
+
+    firs = {
+        fir_id: {
+            "id": fir_id,
+            "name": "LOVV FIR (LOWG worked airspace subset)",
+            "volumeIds": sorted(projected_volumes.keys()),
+            "projectionStatus": "current_core_worked_subset",
+        }
+    }
+    return projected_volumes, firs, assumptions
 
 
 def _nearest_path_point_id(
@@ -225,28 +486,14 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         for path_id in sector.get("boundaryPathIds", [])
         if isinstance(path_id, str)
     }
-    candidate_ctr = next(
-        (
-            airspace
-            for airspace in candidate_entities.get("airspaceVolumes", {}).values()
-            if isinstance(airspace, dict) and str(airspace.get("codeId")) == "LO585"
-        ),
-        None,
+    candidate_airspace_volumes = _low_level_runtime_airspace_volumes(
+        candidate_entities.get("airspaceVolumes", {})
     )
-    synthetic_boundary_paths = {
-        f"{airport_code}_SYNTH_AIRSPACE_{index:02d}": _build_path_document(
-            f"{airport_code}_SYNTH_AIRSPACE_{index:02d}",
-            [point_id for point_id in ring if isinstance(point_id, str)],
-            geometry_paths,
-            surface="SKY",
-            width_meters=authoring.AIRSPACE_STROKE_WIDTH_METERS if hasattr(authoring, "AIRSPACE_STROKE_WIDTH_METERS") else 160.0,
-            source="candidate_airspace_boundary",
-            projection_status="synthetic_runtime_boundary",
-            note="Projected real CTR boundary paired with synthetic point-claim coverage.",
-        )
-        for index, ring in enumerate(candidate_ctr.get("boundaryPointIds", []) if isinstance(candidate_ctr, dict) else [], start=1)
-        if isinstance(ring, list)
-    }
+    projected_airspace_boundary_paths, boundary_path_ids_by_volume = _boundary_path_documents(
+        airport_code,
+        candidate_airspace_volumes,
+        geometry_paths,
+    )
 
     included_path_ids = (
         {runway["pathId"] for runway in aerodrome["runways"].values()}
@@ -259,13 +506,13 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         | route_path_ids
         | circuit_path_ids
         | sector_boundary_path_ids
-        | set(synthetic_boundary_paths.keys())
+        | set(projected_airspace_boundary_paths.keys())
     )
     included_paths = {
         path_id: (
             _copy_path(geometry_paths[path_id])
             if path_id in geometry_paths
-            else synthetic_boundary_paths[path_id]
+            else projected_airspace_boundary_paths[path_id]
         )
         for path_id in sorted(included_path_ids)
     }
@@ -333,6 +580,17 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         for point_id in sorted(included_point_ids)
     }
 
+    transition_altitude_feet = int(aerodrome.get("transitionAltitudeFeet") or 10000)
+    fir_id = "LOVV"
+    projected_airspace_volumes, projected_firs, airspace_assumptions = _projected_current_core_airspace(
+        included_points=included_points,
+        candidate_airspace_volumes=candidate_airspace_volumes,
+        boundary_path_ids_by_volume=boundary_path_ids_by_volume,
+        geometry_points=geometry_points,
+        fir_id=fir_id,
+        transition_altitude_feet=transition_altitude_feet,
+    )
+
     forced_holding_points, holding_assumptions = _projected_current_core_holding_points(
         manifest_path,
         bundle,
@@ -351,9 +609,6 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         for taxiway_id, taxiway in sorted(aerodrome["taxiways"].items())
     }
 
-    transition_altitude_feet = int(aerodrome.get("transitionAltitudeFeet") or 10000)
-    fir_id = "LOVV"
-    synthetic_volume_id = f"{airport_code}_V1_POINT_CLAIM"
     apron_projection_statuses = {
         apron.get("projectionStatus")
         for apron in aerodrome.get("aprons", {}).values()
@@ -379,15 +634,17 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         )
 
     forced_assumptions = [
-        "A single synthetic point-claim CTR volume still covers every projected LOWG v1 world point so validation can focus on entity fit instead of unfinished airspace membership, but it now also carries the worked LOWG CTR boundary path for runtime-owned chart geometry.",
+        "LOWG current-core airspace membership is now projected from the worked CTR/TMA boundary geometry as an explicit low-level point-to-volume assignment. This remains a 2D plan-view approximation, not altitude-aware polygon reasoning.",
+        "OFMX class-layer volumes reuse their parent CTR/TMA boundary geometry where the class records carry no separate boundary of their own.",
         "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
         apron_access_assumption,
         "Current-core runway-protection holding points are projected only onto the connected taxiway-A spine because the present validator requires every holding point to reach every stand through the ground graph.",
         "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly.",
     ]
+    forced_assumptions.extend(airspace_assumptions)
     forced_assumptions.extend(holding_assumptions)
     omitted_features = [
-        "Only the worked LOWG CTR boundary is projected into the current runtime candidate; the broader surrounding airspace set still remains outside the current-core subset until point membership is assigned honestly.",
+        "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
         "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
         "The east non-standard hold remains deferred to version 2.",
         "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule.",
@@ -423,19 +680,8 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
                 "stands": dict(sorted(aerodrome["stands"].items())),
                 "aprons": dict(sorted(aerodrome["aprons"].items())),
             },
-            "syntheticAirspace": {
-                "firId": fir_id,
-                "firName": "LOVV FIR (LOWG v1 synthetic claim coverage)",
-                "volumeId": synthetic_volume_id,
-                "volumeName": "LOWG v1 projected point-claim coverage",
-                "type": "CTR",
-                "airspaceClass": "D",
-                "upperAltitudeFeet": transition_altitude_feet,
-                "memberPointIds": sorted(included_point_ids),
-                "boundaryPathIds": sorted(synthetic_boundary_paths.keys()),
-                "projectionStatus": "synthetic_validator_support",
-                "note": "Synthetic point-claim volume used only to exercise the current validator against the projected LOWG subset.",
-            },
+            "airspaceVolumes": dict(sorted(projected_airspace_volumes.items())),
+            "firs": dict(sorted(projected_firs.items())),
         },
     }
 

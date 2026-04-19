@@ -47,12 +47,17 @@ For LOWG, the current implementation lives in:
 Status as of April 17, 2026:
 
 - the first LOWG runtime slice now projects VFR routes, operational sectors,
-  published VFR procedures, and the worked CTR boundary path out of this
-  package into the current-core candidate
+  published VFR procedures, directional circuits, and a worked low-level LOWG
+  CTR/TMA airspace slice out of this package into the current-core candidate
 - the second LOWG cleanup pass now also narrows raw publication/AIP data at
   that boundary: the current-core projection carries typed `PlateId`,
   typed contact timing, sealed point/anchor references, and an advisory bag,
   while raw publication status/provenance remains in the structured package
+- the current LOWG route-airspace fit is now mixed by design:
+  `InVolume(LO585)` for the southeast/southwest entries,
+  segmented `LO585 -> LO0EF_E` for the western corridor,
+  and explicit null where the northeast route would still require invented
+  authority
 - the package still matters because it remains the only honest place to hold
   richer authoring/procedure truth before projection
 

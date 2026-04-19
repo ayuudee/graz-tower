@@ -307,30 +307,28 @@ class LowgWorldCandidateValidationTest {
             )
         }.mapKeys { (id, _) -> CircuitProcedureId(id) }
 
-        val syntheticAirspace = world.syntheticAirspace
-        val airspaceVolumeId = AirspaceVolumeId(syntheticAirspace.volumeId)
-        val firId = FirId(syntheticAirspace.firId)
-        val airspace = AirspaceVolume(
-            id = airspaceVolumeId,
-            name = syntheticAirspace.volumeName,
-            type = AirspaceVolumeType.valueOf(syntheticAirspace.type),
-            airspaceClass = AirspaceClass.valueOf(syntheticAirspace.airspaceClass),
-            altitudeBand = AltitudeBand(
-                lower = AltitudeBoundary.Surface,
-                upper = AltitudeBoundary.AtLevel(Level.AltitudeFeet.unsafe(syntheticAirspace.upperAltitudeFeet)),
-            ),
-            memberPoints = syntheticAirspace.memberPointIds.map(::PointId).toSet(),
-            fir = firId,
-            boundary = syntheticAirspace.boundaryPathIds
-                .takeIf { it.isNotEmpty() }
-                ?.map { pathId -> paths.getValue(pathId).asBoundaryRing() }
-                ?.let(::AirspaceBoundary),
-        )
-        val fir = FlightInformationRegion(
-            id = firId,
-            name = syntheticAirspace.firName,
-            volumes = setOf(airspaceVolumeId),
-        )
+        val airspace = world.airspaceVolumes.mapValues { (_, volume) ->
+            AirspaceVolume(
+                id = AirspaceVolumeId(volume.id),
+                name = volume.name,
+                type = AirspaceVolumeType.valueOf(volume.type),
+                airspaceClass = AirspaceClass.valueOf(volume.airspaceClass),
+                altitudeBand = volume.altitudeBand.toAltitudeBand(),
+                memberPoints = volume.memberPointIds.map(::PointId).toSet(),
+                fir = FirId(volume.firId),
+                boundary = volume.boundaryPathIds
+                    .takeIf { it.isNotEmpty() }
+                    ?.map { pathId -> paths.getValue(pathId).asBoundaryRing() }
+                    ?.let(::AirspaceBoundary),
+            )
+        }.mapKeys { (id, _) -> AirspaceVolumeId(id) }
+        val firs = world.firs.mapValues { (_, fir) ->
+            FlightInformationRegion(
+                id = FirId(fir.id),
+                name = fir.name,
+                volumes = fir.volumeIds.map(::AirspaceVolumeId).toSet(),
+            )
+        }.mapKeys { (id, _) -> FirId(id) }
 
         val aerodrome = Aerodrome(
             icao = AerodromeId(world.aerodrome.icao),
@@ -356,8 +354,8 @@ class LowgWorldCandidateValidationTest {
             fixes = fixes,
             vfrRoutes = vfrRoutes,
             aerodromes = mapOf(AerodromeId(world.aerodrome.icao) to aerodrome),
-            airspace = mapOf(airspaceVolumeId to airspace),
-            firs = mapOf(firId to fir),
+            airspace = airspace,
+            firs = firs,
         )
     }
 

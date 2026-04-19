@@ -1108,10 +1108,233 @@ def projected_circuit_procedures(
     return circuits
 
 
-def lowg_vfr_airspace_profile(route_id: str, point_ids: list[str]) -> dict[str, Any] | None:
-    del route_id
-    del point_ids
+def airspace_base_code_id(code_id: str | None) -> str | None:
+    if not isinstance(code_id, str):
+        return None
+    return code_id.split("_", 1)[0]
+
+
+def projected_airspace_volume_type(code_type: str | None) -> str | None:
+    return {
+        "CTR": "CTR",
+        "TMA": "TMA",
+    }.get(code_type or "")
+
+
+def projected_airspace_class(code_type: str | None, code_id: str | None) -> str | None:
+    if code_type == "CTR":
+        # Current migration scope is LOWG-focused; the worked CTR is Class D per
+        # the local AIP/chart material and wiki notes.
+        return "D"
+    if code_type == "CLASS" and isinstance(code_id, str) and "_" in code_id:
+        suffix = code_id.rsplit("_", 1)[1]
+        if suffix in {"A", "B", "C", "D", "E", "F", "G"}:
+            return suffix
     return None
+
+
+def structured_airspace_volumes(
+    scene: authoring.SceneContext,
+    ofmx_data: dict[str, Any],
+    registry: PointRegistry,
+    airport_code: str,
+) -> dict[str, dict[str, Any]]:
+    shapes_by_code_id = {
+        shape.code_id: shape
+        for shape in scene.airspace_shapes
+        if shape.code_id is not None and shape.boundaries
+    }
+    airspaces_by_code_id = {
+        airspace.code_id: airspace
+        for airspace in ofmx_data["airspaces"]
+        if isinstance(airspace.code_id, str)
+    }
+
+    volumes: dict[str, dict[str, Any]] = {}
+    for airspace in ofmx_data["airspaces"]:
+        runtime_id = airspace.code_id or airspace.mid
+        base_code_id = airspace_base_code_id(airspace.code_id) or runtime_id
+        base_airspace = airspaces_by_code_id.get(base_code_id)
+        boundary_shape = shapes_by_code_id.get(airspace.code_id) or shapes_by_code_id.get(base_code_id)
+        if boundary_shape is None or not boundary_shape.boundaries:
+            continue
+
+        boundary_point_ids: list[list[str]] = []
+        for boundary_index, boundary in enumerate(boundary_shape.boundaries, start=1):
+            point_ids: list[str] = []
+            for point_index, point in enumerate(boundary, start=1):
+                point_ids.append(
+                    registry.register(
+                        point,
+                        f"{airport_code}_AIRSPACE_{slugify(runtime_id).upper()}_{boundary_index:02d}_{point_index:02d}",
+                        tags=["airspace_boundary"],
+                        sources=["ofmx"],
+                    )
+                )
+            boundary_point_ids.append(point_ids)
+
+        volume_type = projected_airspace_volume_type(airspace.code_type) or projected_airspace_volume_type(
+            base_airspace.code_type if base_airspace is not None else None
+        )
+        airspace_class = projected_airspace_class(airspace.code_type, airspace.code_id)
+        if airspace.code_type == "CLASS" and boundary_shape.code_id != airspace.code_id:
+            note = f"Class-layer airspace volume using the {base_code_id} boundary geometry."
+        elif volume_type is not None and airspace_class is not None:
+            note = "Runtime-usable airspace volume projected from OFMX boundary geometry."
+        else:
+            note = "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume."
+
+        volumes[runtime_id] = {
+            "id": runtime_id,
+            "sourceMid": airspace.mid,
+            "codeId": airspace.code_id,
+            "baseCodeId": base_code_id,
+            "codeType": airspace.code_type,
+            "name": airspace.name,
+            "label": boundary_shape.label,
+            "lowerValue": airspace.lower_value,
+            "lowerUnit": airspace.lower_unit,
+            "lowerReference": airspace.lower_reference,
+            "upperValue": airspace.upper_value,
+            "upperUnit": airspace.upper_unit,
+            "upperReference": airspace.upper_reference,
+            "lowerLimit": report.format_limit(airspace.lower_value, airspace.lower_unit, airspace.lower_reference),
+            "upperLimit": report.format_limit(airspace.upper_value, airspace.upper_unit, airspace.upper_reference),
+            "volumeType": volume_type,
+            "airspaceClass": airspace_class,
+            "boundaryPointIds": boundary_point_ids,
+            "category": boundary_shape.category,
+            "projectionStatus": (
+                "candidate_runtime_airspace_volume"
+                if volume_type is not None and airspace_class is not None
+                else "candidate_boundary_geometry_without_runtime_class"
+            ),
+            "note": note,
+        }
+
+    return dict(sorted(volumes.items()))
+
+
+def candidate_airspace_boundary_rings(
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+    volume_id: str,
+    point_lookup: dict[str, report.XY],
+) -> list[list[report.XY]]:
+    volume = candidate_airspace_volumes.get(volume_id)
+    if not isinstance(volume, dict):
+        return []
+    rings: list[list[report.XY]] = []
+    for ring in volume.get("boundaryPointIds", []):
+        if not isinstance(ring, list):
+            continue
+        ring_points = [
+            point_lookup[point_id]
+            for point_id in ring
+            if isinstance(point_id, str) and point_id in point_lookup
+        ]
+        if len(ring_points) >= 3:
+            rings.append(ring_points)
+    return rings
+
+
+def route_boundary_transition_point(
+    start: report.XY,
+    end: report.XY,
+    boundary_rings: list[list[report.XY]],
+    *,
+    tolerance: float = 1e-6,
+) -> report.XY | None:
+    intersections: list[report.XY] = []
+    for ring in boundary_rings:
+        for segment_start, segment_end in zip(ring, ring[1:] + ring[:1]):
+            intersection = segment_intersection_point(start, end, segment_start, segment_end, tolerance=tolerance)
+            if intersection is None:
+                continue
+            if distance(intersection, start) <= tolerance or distance(intersection, end) <= tolerance:
+                continue
+            intersections.append(intersection)
+
+    if not intersections:
+        return None
+    unique_intersections = unique_xy(intersections)
+    return min(unique_intersections, key=lambda point: distance(start, point))
+
+
+def lowg_vfr_route_projection(
+    route_id: str,
+    point_ids: list[str],
+    registry: PointRegistry,
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+    airport_code: str,
+) -> tuple[list[str], dict[str, Any] | None, str]:
+    ctr_volume_id = "LO585" if "LO585" in candidate_airspace_volumes else None
+    point_lookup = registry.point_lookup()
+
+    if route_id in {"vfr_southeast_entry_path", "vfr_southwest_entry_path"} and ctr_volume_id is not None:
+        return (
+            point_ids,
+            {
+                "kind": "IN_VOLUME",
+                "airspaceVolumeId": ctr_volume_id,
+            },
+            "direct",
+        )
+
+    if route_id == "vfr_western_corridor_path" and ctr_volume_id is not None and "LO0EF_E" in candidate_airspace_volumes:
+        if len(point_ids) != 4:
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+        green_city = point_lookup.get(point_ids[2])
+        graz_nord = point_lookup.get(point_ids[3])
+        if green_city is None or graz_nord is None:
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+        target_volume_id = "LO0EF_E"
+        transition_point = route_boundary_transition_point(
+            green_city,
+            graz_nord,
+            candidate_airspace_boundary_rings(candidate_airspace_volumes, target_volume_id, point_lookup)
+            or candidate_airspace_boundary_rings(candidate_airspace_volumes, ctr_volume_id, point_lookup),
+        )
+        if transition_point is None:
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+        transition_point_id = registry.register(
+            transition_point,
+            f"{airport_code}_ROUTE_{slugify(route_id).upper()}_AIRSPACE_TRANSITION_01",
+            tags=["airspace_transition"],
+            sources=["projected_airspace_membership"],
+            reuse_existing=False,
+        )
+        projected_point_ids = point_ids[:3] + [transition_point_id] + point_ids[3:]
+        return (
+            projected_point_ids,
+            {
+                "kind": "SEGMENTED",
+                "segments": [
+                    {
+                        "fromPointId": projected_point_ids[0],
+                        "toPointId": projected_point_ids[1],
+                        "airspaceVolumeId": ctr_volume_id,
+                    },
+                    {
+                        "fromPointId": projected_point_ids[1],
+                        "toPointId": projected_point_ids[2],
+                        "airspaceVolumeId": ctr_volume_id,
+                    },
+                    {
+                        "fromPointId": projected_point_ids[2],
+                        "toPointId": projected_point_ids[3],
+                        "airspaceVolumeId": ctr_volume_id,
+                    },
+                    {
+                        "fromPointId": projected_point_ids[3],
+                        "toPointId": projected_point_ids[4],
+                        "airspaceVolumeId": target_volume_id,
+                    },
+                ],
+            },
+            "direct",
+        )
+
+    return point_ids, None, "direct_geometry_airspace_profile_pending"
 
 
 def published_reference_kind(resolution_type: str | None, point_id: str | None = None) -> str:
@@ -2082,6 +2305,13 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             "projectionStatus": "candidate_named_point",
         }
 
+    candidate_entities["airspaceVolumes"] = structured_airspace_volumes(
+        scene,
+        ofmx_data,
+        registry,
+        airport_code,
+    )
+
     for route in manifest_named_mapping(manifest, "vfrRoutes"):
         route_id = route.get("routeId")
         if not isinstance(route_id, str):
@@ -2171,28 +2401,34 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             for point_id in route.get("pointIds", [])
             if isinstance(point_id, str)
         ]
+        projected_point_ids, airspace_profile, route_projection_status = lowg_vfr_route_projection(
+            route_id,
+            point_ids,
+            registry,
+            candidate_entities["airspaceVolumes"],
+            airport_code,
+        )
         path_id = f"{airport_code}_VFR_ROUTE_{slugify(route_id).upper()}"
         path = add_core_path_from_point_ids(
             geometry_paths,
             registry,
             path_id,
-            point_ids,
+            projected_point_ids,
             surface="SKY",
             width_m=SKY_WIDTH_METERS,
             source="structured_vfr_route",
-            projection_status="direct",
+            projection_status=route_projection_status,
             note=route.get("note"),
         )
         if path is None:
             continue
-        airspace_profile = lowg_vfr_airspace_profile(route_id, point_ids)
         core_entities["vfrRoutes"][route_id] = {
             "id": route_id,
             "name": route.get("name", route_id),
-            "pointIds": point_ids,
+            "pointIds": projected_point_ids,
             "pathId": path_id,
             "airspaceProfile": airspace_profile,
-            "projectionStatus": "direct" if airspace_profile is not None else "direct_geometry_airspace_profile_pending",
+            "projectionStatus": route_projection_status,
             "note": route.get("note"),
         }
 
@@ -2363,33 +2599,6 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
                 if isinstance(runway_id, str)
             ],
             "projectionStatus": "direct_runtime_aip_entity",
-        }
-
-    for airspace_shape in scene.airspace_shapes:
-        boundary_point_ids: list[list[str]] = []
-        for boundary_index, boundary in enumerate(airspace_shape.boundaries, start=1):
-            point_ids: list[str] = []
-            for point_index, point in enumerate(boundary, start=1):
-                point_ids.append(
-                    registry.register(
-                        point,
-                        f"{airport_code}_AIRSPACE_{slugify(airspace_shape.code_id or airspace_shape.mid).upper()}_{boundary_index:02d}_{point_index:02d}",
-                        tags=["airspace_boundary"],
-                        sources=["ofmx"],
-                    )
-                )
-            boundary_point_ids.append(point_ids)
-        candidate_entities["airspaceVolumes"][airspace_shape.mid] = {
-            "id": airspace_shape.mid,
-            "name": airspace_shape.name,
-            "codeId": airspace_shape.code_id,
-            "label": airspace_shape.label,
-            "lowerLimit": airspace_shape.lower_limit,
-            "upperLimit": airspace_shape.upper_limit,
-            "boundaryPointIds": boundary_point_ids,
-            "category": airspace_shape.category,
-            "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-            "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
         }
 
     core_entities["geometry"]["points"] = registry.as_json()

@@ -3,15 +3,17 @@
   "airportName": "Graz Airport",
   "candidateOperationalStructures": {
     "airspaceVolumes": {
-      "19be4186-d0d3-7c47-b584-df7fd4104611": {
+      "LO0EF": {
+        "airspaceClass": null,
+        "baseCodeId": "LO0EF",
         "boundaryPointIds": [
           [
             "LOWG_AIRSPACE_LO0EF_01_01",
             "LOWG_AIRSPACE_LO0EF_01_02",
             "LOWG_AIRSPACE_LO0EF_01_03",
             "LOWG_AIRSPACE_LO80C_01_06",
-            "SECTOR_ECHO_BOUNDARY_03",
-            "SECTOR_ECHO_BOUNDARY_04",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
             "LOWG_AIRSPACE_LO585_01_07",
             "LOWG_AIRSPACE_LO585_01_08",
             "LOWG_AIRSPACE_LO585_01_01",
@@ -33,15 +35,356 @@
         ],
         "category": "primary",
         "codeId": "LO0EF",
-        "id": "19be4186-d0d3-7c47-b584-df7fd4104611",
+        "codeType": "TMA",
+        "id": "LO0EF",
         "label": "LOWG 2",
         "lowerLimit": "?",
+        "lowerReference": null,
+        "lowerUnit": null,
+        "lowerValue": null,
         "name": "LOWG 2",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "?"
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "19be4186-d0d3-7c47-b584-df7fd4104611",
+        "upperLimit": "?",
+        "upperReference": null,
+        "upperUnit": null,
+        "upperValue": null,
+        "volumeType": "TMA"
       },
-      "30b29d9a-7465-5eaa-cfe6-d4918717a76c": {
+      "LO0EF_C": {
+        "airspaceClass": "C",
+        "baseCodeId": "LO0EF",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LO0EF_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
+            "LOWG_AIRSPACE_LO585_01_07",
+            "LOWG_AIRSPACE_LO585_01_08",
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO80C_01_12",
+            "LOWG_AIRSPACE_LO80C_01_01",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LO0EF_01_16",
+            "LOWG_AIRSPACE_LO0EF_01_17",
+            "LOWG_AIRSPACE_LO0EF_01_18",
+            "LOWG_AIRSPACE_LO0EF_01_19",
+            "LOWG_AIRSPACE_LO0EF_01_20",
+            "LOWG_AIRSPACE_LO0EF_01_21",
+            "LOWG_AIRSPACE_LO0EF_01_22",
+            "LOWG_AIRSPACE_LO0EF_01_23"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO0EF_C",
+        "codeType": "CLASS",
+        "id": "LO0EF_C",
+        "label": "LOWG 2",
+        "lowerLimit": "195 FL STD",
+        "lowerReference": "STD",
+        "lowerUnit": "FL",
+        "lowerValue": 195,
+        "name": "LOWG 2",
+        "note": "Class-layer airspace volume using the LO0EF boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "2a702154-f386-bf65-c484-e2707742a8d7",
+        "upperLimit": "245 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 245,
+        "volumeType": "TMA"
+      },
+      "LO0EF_D": {
+        "airspaceClass": "D",
+        "baseCodeId": "LO0EF",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LO0EF_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
+            "LOWG_AIRSPACE_LO585_01_07",
+            "LOWG_AIRSPACE_LO585_01_08",
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO80C_01_12",
+            "LOWG_AIRSPACE_LO80C_01_01",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LO0EF_01_16",
+            "LOWG_AIRSPACE_LO0EF_01_17",
+            "LOWG_AIRSPACE_LO0EF_01_18",
+            "LOWG_AIRSPACE_LO0EF_01_19",
+            "LOWG_AIRSPACE_LO0EF_01_20",
+            "LOWG_AIRSPACE_LO0EF_01_21",
+            "LOWG_AIRSPACE_LO0EF_01_22",
+            "LOWG_AIRSPACE_LO0EF_01_23"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO0EF_D",
+        "codeType": "CLASS",
+        "id": "LO0EF_D",
+        "label": "LOWG 2",
+        "lowerLimit": "4500 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 4500,
+        "name": "LOWG 2",
+        "note": "Class-layer airspace volume using the LO0EF boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "5d18555d-9431-2619-48f7-89c9d068f6bd",
+        "upperLimit": "195 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 195,
+        "volumeType": "TMA"
+      },
+      "LO0EF_E": {
+        "airspaceClass": "E",
+        "baseCodeId": "LO0EF",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LO0EF_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
+            "LOWG_AIRSPACE_LO585_01_07",
+            "LOWG_AIRSPACE_LO585_01_08",
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO80C_01_12",
+            "LOWG_AIRSPACE_LO80C_01_01",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LO0EF_01_16",
+            "LOWG_AIRSPACE_LO0EF_01_17",
+            "LOWG_AIRSPACE_LO0EF_01_18",
+            "LOWG_AIRSPACE_LO0EF_01_19",
+            "LOWG_AIRSPACE_LO0EF_01_20",
+            "LOWG_AIRSPACE_LO0EF_01_21",
+            "LOWG_AIRSPACE_LO0EF_01_22",
+            "LOWG_AIRSPACE_LO0EF_01_23"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO0EF_E",
+        "codeType": "CLASS",
+        "id": "LO0EF_E",
+        "label": "LOWG 2",
+        "lowerLimit": "1000 FT HEI",
+        "lowerReference": "HEI",
+        "lowerUnit": "FT",
+        "lowerValue": 1000,
+        "name": "LOWG 2",
+        "note": "Class-layer airspace volume using the LO0EF boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "a6027013-96f9-3b4f-8a75-b70fd38cfd11",
+        "upperLimit": "4500 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 4500,
+        "volumeType": "TMA"
+      },
+      "LO585": {
+        "airspaceClass": "D",
+        "baseCodeId": "LO585",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO585_01_02",
+            "LOWG_AIRSPACE_LO585_01_03",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LO585_01_06",
+            "LOWG_AIRSPACE_LO585_01_07",
+            "LOWG_AIRSPACE_LO585_01_08",
+            "LOWG_AIRSPACE_LO585_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO585",
+        "codeType": "CTR",
+        "id": "LO585",
+        "label": "LOWG",
+        "lowerLimit": "0 FT HEI",
+        "lowerReference": "HEI",
+        "lowerUnit": "FT",
+        "lowerValue": 0,
+        "name": "LOWG",
+        "note": "Runtime-usable airspace volume projected from OFMX boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "64feb1f1-f6e3-65d2-2509-287695fcf0a7",
+        "upperLimit": "4500 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 4500,
+        "volumeType": "CTR"
+      },
+      "LO59D": {
+        "airspaceClass": null,
+        "baseCodeId": "LO59D",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOF12_01_08",
+            "LOWG_AIRSPACE_LOF12_01_09",
+            "LOWG_AIRSPACE_LOF12_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOF12_01_08"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO59D",
+        "codeType": "TMA",
+        "id": "LO59D",
+        "label": "LOWG 5",
+        "lowerLimit": "?",
+        "lowerReference": null,
+        "lowerUnit": null,
+        "lowerValue": null,
+        "name": "LOWG 5",
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "9f0ee89e-0fbf-3793-787b-33d9e60cbcad",
+        "upperLimit": "?",
+        "upperReference": null,
+        "upperUnit": null,
+        "upperValue": null,
+        "volumeType": "TMA"
+      },
+      "LO59D_C": {
+        "airspaceClass": "C",
+        "baseCodeId": "LO59D",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOF12_01_08",
+            "LOWG_AIRSPACE_LOF12_01_09",
+            "LOWG_AIRSPACE_LOF12_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOF12_01_08"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO59D_C",
+        "codeType": "CLASS",
+        "id": "LO59D_C",
+        "label": "LOWG 5",
+        "lowerLimit": "195 FL STD",
+        "lowerReference": "STD",
+        "lowerUnit": "FL",
+        "lowerValue": 195,
+        "name": "LOWG 5",
+        "note": "Class-layer airspace volume using the LO59D boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "451b9236-0276-2a27-c1a5-6831a23843f4",
+        "upperLimit": "245 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 245,
+        "volumeType": "TMA"
+      },
+      "LO59D_D": {
+        "airspaceClass": "D",
+        "baseCodeId": "LO59D",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOF12_01_08",
+            "LOWG_AIRSPACE_LOF12_01_09",
+            "LOWG_AIRSPACE_LOF12_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOF12_01_08"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO59D_D",
+        "codeType": "CLASS",
+        "id": "LO59D_D",
+        "label": "LOWG 5",
+        "lowerLimit": "7500 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 7500,
+        "name": "LOWG 5",
+        "note": "Class-layer airspace volume using the LO59D boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "be8b7306-6a26-55e3-3f53-9d5c259a8d97",
+        "upperLimit": "195 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 195,
+        "volumeType": "TMA"
+      },
+      "LO59D_E": {
+        "airspaceClass": "E",
+        "baseCodeId": "LO59D",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOF12_01_08",
+            "LOWG_AIRSPACE_LOF12_01_09",
+            "LOWG_AIRSPACE_LOF12_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_03",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOF12_01_08"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO59D_E",
+        "codeType": "CLASS",
+        "id": "LO59D_E",
+        "label": "LOWG 5",
+        "lowerLimit": "5500 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 5500,
+        "name": "LOWG 5",
+        "note": "Class-layer airspace volume using the LO59D boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "08262789-b8ac-7295-9c8d-651c920379c9",
+        "upperLimit": "7500 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 7500,
+        "volumeType": "TMA"
+      },
+      "LO80C": {
+        "airspaceClass": null,
+        "baseCodeId": "LO80C",
         "boundaryPointIds": [
           [
             "LOWG_AIRSPACE_LO80C_01_01",
@@ -50,8 +393,8 @@
             "LOWG_AIRSPACE_LO585_01_04",
             "LOWG_AIRSPACE_LO585_01_05",
             "LOWG_AIRSPACE_LO80C_01_06",
-            "SECTOR_ECHO_BOUNDARY_03",
-            "SECTOR_ECHO_BOUNDARY_04",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
             "LOWG_AIRSPACE_LO585_01_07",
             "LOWG_AIRSPACE_LO585_01_08",
             "LOWG_AIRSPACE_LO585_01_01",
@@ -61,60 +404,104 @@
         ],
         "category": "primary",
         "codeId": "LO80C",
-        "id": "30b29d9a-7465-5eaa-cfe6-d4918717a76c",
+        "codeType": "TMA",
+        "id": "LO80C",
         "label": "LOWG 1",
         "lowerLimit": "?",
+        "lowerReference": null,
+        "lowerUnit": null,
+        "lowerValue": null,
         "name": "LOWG 1",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "?"
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "30b29d9a-7465-5eaa-cfe6-d4918717a76c",
+        "upperLimit": "?",
+        "upperReference": null,
+        "upperUnit": null,
+        "upperValue": null,
+        "volumeType": "TMA"
       },
-      "5be20cf1-465a-e395-3809-7e72adeef33d": {
+      "LO80C_C": {
+        "airspaceClass": "C",
+        "baseCodeId": "LO80C",
         "boundaryPointIds": [
           [
-            "LOWG_AIRSPACE_LODDA_01_01",
-            "LOWG_AIRSPACE_LODDA_01_02",
-            "LOWG_AIRSPACE_LO0EF_01_13",
-            "LOWG_AIRSPACE_LO0EF_01_14",
-            "LOWG_AIRSPACE_LO0EF_01_15",
-            "LOWG_AIRSPACE_LODDA_01_01"
-          ]
-        ],
-        "category": "primary",
-        "codeId": "LODDA",
-        "id": "5be20cf1-465a-e395-3809-7e72adeef33d",
-        "label": "LOWG 3",
-        "lowerLimit": "?",
-        "name": "LOWG 3",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "?"
-      },
-      "64feb1f1-f6e3-65d2-2509-287695fcf0a7": {
-        "boundaryPointIds": [
-          [
-            "LOWG_AIRSPACE_LO585_01_01",
-            "LOWG_AIRSPACE_LO585_01_02",
-            "LOWG_AIRSPACE_LO585_01_03",
+            "LOWG_AIRSPACE_LO80C_01_01",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO80C_01_03",
             "LOWG_AIRSPACE_LO585_01_04",
             "LOWG_AIRSPACE_LO585_01_05",
-            "SECTOR_ECHO_BOUNDARY_04",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
             "LOWG_AIRSPACE_LO585_01_07",
             "LOWG_AIRSPACE_LO585_01_08",
-            "LOWG_AIRSPACE_LO585_01_01"
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO80C_01_12",
+            "LOWG_AIRSPACE_LO80C_01_01"
           ]
         ],
         "category": "primary",
-        "codeId": "LO585",
-        "id": "64feb1f1-f6e3-65d2-2509-287695fcf0a7",
-        "label": "LOWG",
-        "lowerLimit": "0 FT HEI",
-        "name": "LOWG",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "4500 FT ALT"
+        "codeId": "LO80C_C",
+        "codeType": "CLASS",
+        "id": "LO80C_C",
+        "label": "LOWG 1",
+        "lowerLimit": "195 FL STD",
+        "lowerReference": "STD",
+        "lowerUnit": "FL",
+        "lowerValue": 195,
+        "name": "LOWG 1",
+        "note": "Class-layer airspace volume using the LO80C boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "68760e29-40de-d00c-9fda-46f8fbe9f983",
+        "upperLimit": "245 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 245,
+        "volumeType": "TMA"
       },
-      "6e55dac9-8159-2b8e-df96-1e97c3a7132e": {
+      "LO80C_D": {
+        "airspaceClass": "D",
+        "baseCodeId": "LO80C",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LO80C_01_01",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO80C_01_03",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LO80C_01_06",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
+            "LOWG_AIRSPACE_LO585_01_07",
+            "LOWG_AIRSPACE_LO585_01_08",
+            "LOWG_AIRSPACE_LO585_01_01",
+            "LOWG_AIRSPACE_LO80C_01_12",
+            "LOWG_AIRSPACE_LO80C_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LO80C_D",
+        "codeType": "CLASS",
+        "id": "LO80C_D",
+        "label": "LOWG 1",
+        "lowerLimit": "2500 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 2500,
+        "name": "LOWG 1",
+        "note": "Class-layer airspace volume using the LO80C boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "15ac3d5d-17c0-7326-d45a-68cc2c49f1c1",
+        "upperLimit": "195 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 195,
+        "volumeType": "TMA"
+      },
+      "LOCB1": {
+        "airspaceClass": null,
+        "baseCodeId": "LOCB1",
         "boundaryPointIds": [
           [
             "LOWG_AIRSPACE_LOCB1_01_01",
@@ -139,40 +526,317 @@
         ],
         "category": "primary",
         "codeId": "LOCB1",
-        "id": "6e55dac9-8159-2b8e-df96-1e97c3a7132e",
+        "codeType": "TMA",
+        "id": "LOCB1",
         "label": "LOWG 4",
         "lowerLimit": "?",
+        "lowerReference": null,
+        "lowerUnit": null,
+        "lowerValue": null,
         "name": "LOWG 4",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "?"
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "6e55dac9-8159-2b8e-df96-1e97c3a7132e",
+        "upperLimit": "?",
+        "upperReference": null,
+        "upperUnit": null,
+        "upperValue": null,
+        "volumeType": "TMA"
       },
-      "8979525f-25f3-bfed-9ddb-eca553f8fcef": {
+      "LOCB1_C": {
+        "airspaceClass": "C",
+        "baseCodeId": "LOCB1",
         "boundaryPointIds": [
           [
-            "LOWG_AIRSPACE_LOF12_01_06",
-            "LOWG_AIRSPACE_LOF12_01_05",
-            "LOWG_AIRSPACE_LOF12_01_04",
-            "LOWG_AIRSPACE_LO585_01_05",
-            "LOWG_AIRSPACE_LO585_01_04",
-            "LOWG_AIRSPACE_LO80C_01_03",
-            "LOWG_AIRSPACE_LO80C_01_02",
-            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LOCB1_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_17",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01",
             "LOWG_AIRSPACE_LODDA_01_02",
-            "LOWG_AIRSPACE_LOF12_01_06"
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO80C_01_03",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOCB1_01_15",
+            "LOWG_AIRSPACE_LOCB1_01_16",
+            "LOWG_AIRSPACE_LOCB1_01_17",
+            "LOWG_AIRSPACE_LOCB1_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LOCB1_C",
+        "codeType": "CLASS",
+        "id": "LOCB1_C",
+        "label": "LOWG 4",
+        "lowerLimit": "195 FL STD",
+        "lowerReference": "STD",
+        "lowerUnit": "FL",
+        "lowerValue": 195,
+        "name": "LOWG 4",
+        "note": "Class-layer airspace volume using the LOCB1 boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "cd91777f-3a9d-7390-92b5-5b64ea4ce468",
+        "upperLimit": "245 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 245,
+        "volumeType": "TMA"
+      },
+      "LOCB1_D": {
+        "airspaceClass": "D",
+        "baseCodeId": "LOCB1",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOCB1_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_17",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO80C_01_03",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOCB1_01_15",
+            "LOWG_AIRSPACE_LOCB1_01_16",
+            "LOWG_AIRSPACE_LOCB1_01_17",
+            "LOWG_AIRSPACE_LOCB1_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LOCB1_D",
+        "codeType": "CLASS",
+        "id": "LOCB1_D",
+        "label": "LOWG 4",
+        "lowerLimit": "7000 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 7000,
+        "name": "LOWG 4",
+        "note": "Class-layer airspace volume using the LOCB1 boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "5b6e7140-2fd8-6d34-15cf-fd8b8e1dbf8d",
+        "upperLimit": "195 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 195,
+        "volumeType": "TMA"
+      },
+      "LOCB1_E": {
+        "airspaceClass": "E",
+        "baseCodeId": "LOCB1",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOCB1_01_01",
+            "LOWG_AIRSPACE_LO0EF_01_17",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO80C_01_03",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOCB1_01_14",
+            "LOWG_AIRSPACE_LOCB1_01_15",
+            "LOWG_AIRSPACE_LOCB1_01_16",
+            "LOWG_AIRSPACE_LOCB1_01_17",
+            "LOWG_AIRSPACE_LOCB1_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LOCB1_E",
+        "codeType": "CLASS",
+        "id": "LOCB1_E",
+        "label": "LOWG 4",
+        "lowerLimit": "1000 FT HEI",
+        "lowerReference": "HEI",
+        "lowerUnit": "FT",
+        "lowerValue": 1000,
+        "name": "LOWG 4",
+        "note": "Class-layer airspace volume using the LOCB1 boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "549ff384-1529-3db7-2c4c-157b25b29a6b",
+        "upperLimit": "7000 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 7000,
+        "volumeType": "TMA"
+      },
+      "LODDA": {
+        "airspaceClass": null,
+        "baseCodeId": "LODDA",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LODDA_01_01",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LODDA",
+        "codeType": "TMA",
+        "id": "LODDA",
+        "label": "LOWG 3",
+        "lowerLimit": "?",
+        "lowerReference": null,
+        "lowerUnit": null,
+        "lowerValue": null,
+        "name": "LOWG 3",
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "5be20cf1-465a-e395-3809-7e72adeef33d",
+        "upperLimit": "?",
+        "upperReference": null,
+        "upperUnit": null,
+        "upperValue": null,
+        "volumeType": "TMA"
+      },
+      "LODDA_C": {
+        "airspaceClass": "C",
+        "baseCodeId": "LODDA",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LODDA_01_01",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LODDA_C",
+        "codeType": "CLASS",
+        "id": "LODDA_C",
+        "label": "LOWG 3",
+        "lowerLimit": "195 FL STD",
+        "lowerReference": "STD",
+        "lowerUnit": "FL",
+        "lowerValue": 195,
+        "name": "LOWG 3",
+        "note": "Class-layer airspace volume using the LODDA boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "d18d1178-9d7d-7dd4-1405-642f9e6f0855",
+        "upperLimit": "245 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 245,
+        "volumeType": "TMA"
+      },
+      "LODDA_D": {
+        "airspaceClass": "D",
+        "baseCodeId": "LODDA",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LODDA_01_01",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LODDA_D",
+        "codeType": "CLASS",
+        "id": "LODDA_D",
+        "label": "LOWG 3",
+        "lowerLimit": "5000 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 5000,
+        "name": "LOWG 3",
+        "note": "Class-layer airspace volume using the LODDA boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "58582610-f2d3-2df3-2c1c-cfb7d0146f8b",
+        "upperLimit": "195 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 195,
+        "volumeType": "TMA"
+      },
+      "LODDA_E": {
+        "airspaceClass": "E",
+        "baseCodeId": "LODDA",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LODDA_01_01",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LO0EF_01_14",
+            "LOWG_AIRSPACE_LO0EF_01_15",
+            "LOWG_AIRSPACE_LODDA_01_01"
+          ]
+        ],
+        "category": "primary",
+        "codeId": "LODDA_E",
+        "codeType": "CLASS",
+        "id": "LODDA_E",
+        "label": "LOWG 3",
+        "lowerLimit": "1000 FT HEI",
+        "lowerReference": "HEI",
+        "lowerUnit": "FT",
+        "lowerValue": 1000,
+        "name": "LOWG 3",
+        "note": "Class-layer airspace volume using the LODDA boundary geometry.",
+        "projectionStatus": "candidate_runtime_airspace_volume",
+        "sourceMid": "d4fa10f8-5019-dc08-32aa-15f4f86c295a",
+        "upperLimit": "5000 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 5000,
+        "volumeType": "TMA"
+      },
+      "LOEAB": {
+        "airspaceClass": null,
+        "baseCodeId": "LOEAB",
+        "boundaryPointIds": [
+          [
+            "LOWG_AIRSPACE_LOEAB_01_01",
+            "LOWG_AIRSPACE_LOEAB_01_02",
+            "LOWG_AIRSPACE_LOEAB_01_03",
+            "LOWG_AIRSPACE_LOEAB_01_04",
+            "LOWG_AIRSPACE_LOEAB_01_01"
           ]
         ],
         "category": "secondary",
-        "codeId": "LOF55",
-        "id": "8979525f-25f3-bfed-9ddb-eca553f8fcef",
-        "label": "SCHOECKL",
-        "lowerLimit": "7000 FT ALT",
-        "name": "SCHOECKL",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "9500 FT ALT"
+        "codeId": "LOEAB",
+        "codeType": "HPGLDR",
+        "id": "LOEAB",
+        "label": "PARACHUTE AREA",
+        "lowerLimit": "0 FT HEI",
+        "lowerReference": "HEI",
+        "lowerUnit": "FT",
+        "lowerValue": 0,
+        "name": "PARACHUTE AREA",
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "93ae857d-d656-fad5-b365-f6b6c5474f49",
+        "upperLimit": "160 FL STD",
+        "upperReference": "STD",
+        "upperUnit": "FL",
+        "upperValue": 160,
+        "volumeType": null
       },
-      "91ef99e0-b2b2-a66d-60b4-51ec406cd5ca": {
+      "LOF12": {
+        "airspaceClass": null,
+        "baseCodeId": "LOF12",
         "boundaryPointIds": [
           [
             "LOWG_AIRSPACE_LOF12_01_01",
@@ -189,59 +853,58 @@
         ],
         "category": "secondary",
         "codeId": "LOF12",
-        "id": "91ef99e0-b2b2-a66d-60b4-51ec406cd5ca",
+        "codeType": "TRA",
+        "id": "LOF12",
         "label": "ALMENLAND",
         "lowerLimit": "7500 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 7500,
         "name": "ALMENLAND",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "9500 FT ALT"
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "91ef99e0-b2b2-a66d-60b4-51ec406cd5ca",
+        "upperLimit": "9500 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 9500,
+        "volumeType": null
       },
-      "93ae857d-d656-fad5-b365-f6b6c5474f49": {
+      "LOF55": {
+        "airspaceClass": null,
+        "baseCodeId": "LOF55",
         "boundaryPointIds": [
           [
-            "LOWG_AIRSPACE_LOEAB_01_01",
-            "LOWG_AIRSPACE_LOEAB_01_02",
-            "LOWG_AIRSPACE_LOEAB_01_03",
-            "LOWG_AIRSPACE_LOEAB_01_04",
-            "LOWG_AIRSPACE_LOEAB_01_01"
+            "LOWG_AIRSPACE_LOF12_01_06",
+            "LOWG_AIRSPACE_LOF12_01_05",
+            "LOWG_AIRSPACE_LOF12_01_04",
+            "LOWG_AIRSPACE_LO585_01_05",
+            "LOWG_AIRSPACE_LO585_01_04",
+            "LOWG_AIRSPACE_LO80C_01_03",
+            "LOWG_AIRSPACE_LO80C_01_02",
+            "LOWG_AIRSPACE_LO0EF_01_13",
+            "LOWG_AIRSPACE_LODDA_01_02",
+            "LOWG_AIRSPACE_LOF12_01_06"
           ]
         ],
         "category": "secondary",
-        "codeId": "LOEAB",
-        "id": "93ae857d-d656-fad5-b365-f6b6c5474f49",
-        "label": "PARACHUTE AREA",
-        "lowerLimit": "0 FT HEI",
-        "name": "PARACHUTE AREA",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "160 FL STD"
-      },
-      "9f0ee89e-0fbf-3793-787b-33d9e60cbcad": {
-        "boundaryPointIds": [
-          [
-            "LOWG_AIRSPACE_LOF12_01_08",
-            "LOWG_AIRSPACE_LOF12_01_09",
-            "LOWG_AIRSPACE_LOF12_01_01",
-            "LOWG_AIRSPACE_LO0EF_01_03",
-            "LOWG_AIRSPACE_LO80C_01_06",
-            "LOWG_AIRSPACE_LO585_01_05",
-            "LOWG_AIRSPACE_LOF12_01_04",
-            "LOWG_AIRSPACE_LOF12_01_05",
-            "LOWG_AIRSPACE_LOF12_01_06",
-            "LOWG_AIRSPACE_LOCB1_01_14",
-            "LOWG_AIRSPACE_LOF12_01_08"
-          ]
-        ],
-        "category": "primary",
-        "codeId": "LO59D",
-        "id": "9f0ee89e-0fbf-3793-787b-33d9e60cbcad",
-        "label": "LOWG 5",
-        "lowerLimit": "?",
-        "name": "LOWG 5",
-        "note": "Boundary geometry is available, but point-to-volume membership has not yet been projected for the current core model.",
-        "projectionStatus": "candidate_boundary_geometry_without_point_claims",
-        "upperLimit": "?"
+        "codeId": "LOF55",
+        "codeType": "TRA",
+        "id": "LOF55",
+        "label": "SCHOECKL",
+        "lowerLimit": "7000 FT ALT",
+        "lowerReference": "ALT",
+        "lowerUnit": "FT",
+        "lowerValue": 7000,
+        "name": "SCHOECKL",
+        "note": "Boundary geometry is available, but this record does not yet map cleanly to a runtime airspace volume.",
+        "projectionStatus": "candidate_boundary_geometry_without_runtime_class",
+        "sourceMid": "8979525f-25f3-bfed-9ddb-eca553f8fcef",
+        "upperLimit": "9500 FT ALT",
+        "upperReference": "ALT",
+        "upperUnit": "FT",
+        "upperValue": 9500,
+        "volumeType": null
       }
     },
     "circuitGraphs": {
@@ -393,8 +1056,8 @@
           [
             "LOWG_FIX_KALSDORF",
             "SECTOR_ECHO_BOUNDARY_02",
-            "SECTOR_ECHO_BOUNDARY_03",
-            "SECTOR_ECHO_BOUNDARY_04",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
             "SECTOR_ECHO_BOUNDARY_05",
             "LOWG_FIX_KALSDORF"
           ]
@@ -4259,8 +4922,8 @@
           "pointIds": [
             "LOWG_FIX_KALSDORF",
             "SECTOR_ECHO_BOUNDARY_02",
-            "SECTOR_ECHO_BOUNDARY_03",
-            "SECTOR_ECHO_BOUNDARY_04",
+            "LOWG_AIRSPACE_LO80C_01_07",
+            "LOWG_AIRSPACE_LO585_01_06",
             "SECTOR_ECHO_BOUNDARY_05",
             "LOWG_FIX_KALSDORF"
           ],
@@ -4295,7 +4958,7 @@
             "LOWG_FIX_AUTOBAHN_OST",
             "LOWG_ANCHOR_CIRCUIT_NE_ENTRY"
           ],
-          "projectionStatus": "direct",
+          "projectionStatus": "direct_geometry_airspace_profile_pending",
           "source": "structured_vfr_route",
           "surface": "SKY",
           "widthMeters": 160.0
@@ -4334,6 +4997,7 @@
             "LOWG_FIX_SENDER_DOBL",
             "LOWG_FIX_AUTOBAHN_WEST",
             "LOWG_FIX_GREEN_CITY",
+            "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
             "LOWG_FIX_GRAZ_NORD"
           ],
           "projectionStatus": "direct",
@@ -4571,6 +5235,20 @@
           "xMeters": 10386.498373,
           "yMeters": 14455.340909
         },
+        "LOWG_AIRSPACE_LO585_01_06": {
+          "id": "LOWG_AIRSPACE_LO585_01_06",
+          "label": null,
+          "sources": [
+            "ofmx",
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "airspace_boundary",
+            "operational_sector_boundary"
+          ],
+          "xMeters": 17781.348205,
+          "yMeters": -24864.421641
+        },
         "LOWG_AIRSPACE_LO585_01_07": {
           "id": "LOWG_AIRSPACE_LO585_01_07",
           "label": null,
@@ -4642,6 +5320,20 @@
           ],
           "xMeters": 18645.134167,
           "yMeters": 11026.829929
+        },
+        "LOWG_AIRSPACE_LO80C_01_07": {
+          "id": "LOWG_AIRSPACE_LO80C_01_07",
+          "label": null,
+          "sources": [
+            "ofmx",
+            "working_airspace_dxf"
+          ],
+          "tags": [
+            "airspace_boundary",
+            "operational_sector_boundary"
+          ],
+          "xMeters": 24944.451028,
+          "yMeters": -23536.259399
         },
         "LOWG_AIRSPACE_LO80C_01_12": {
           "id": "LOWG_AIRSPACE_LO80C_01_12",
@@ -6573,6 +7265,18 @@
           "xMeters": -4529.609234,
           "yMeters": -4664.009596
         },
+        "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01": {
+          "id": "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
+          "label": null,
+          "sources": [
+            "projected_airspace_membership"
+          ],
+          "tags": [
+            "airspace_transition"
+          ],
+          "xMeters": -11288.573836,
+          "yMeters": 15205.042443
+        },
         "LOWG_RWY_16C_THR": {
           "id": "LOWG_RWY_16C_THR",
           "label": "16C",
@@ -8167,34 +8871,6 @@
           "xMeters": 20177.658885,
           "yMeters": 2618.173893
         },
-        "SECTOR_ECHO_BOUNDARY_03": {
-          "id": "SECTOR_ECHO_BOUNDARY_03",
-          "label": null,
-          "sources": [
-            "ofmx",
-            "working_airspace_dxf"
-          ],
-          "tags": [
-            "airspace_boundary",
-            "operational_sector_boundary"
-          ],
-          "xMeters": 24944.451028,
-          "yMeters": -23536.259399
-        },
-        "SECTOR_ECHO_BOUNDARY_04": {
-          "id": "SECTOR_ECHO_BOUNDARY_04",
-          "label": null,
-          "sources": [
-            "ofmx",
-            "working_airspace_dxf"
-          ],
-          "tags": [
-            "airspace_boundary",
-            "operational_sector_boundary"
-          ],
-          "xMeters": 17781.348205,
-          "yMeters": -24864.421641
-        },
         "SECTOR_ECHO_BOUNDARY_05": {
           "id": "SECTOR_ECHO_BOUNDARY_05",
           "label": null,
@@ -8273,7 +8949,10 @@
         "projectionStatus": "direct_geometry_airspace_profile_pending"
       },
       "vfr_southeast_entry_path": {
-        "airspaceProfile": null,
+        "airspaceProfile": {
+          "airspaceVolumeId": "LO585",
+          "kind": "IN_VOLUME"
+        },
         "id": "vfr_southeast_entry_path",
         "name": "vfr_southeast_entry_path",
         "note": "User-confirmed SE arrival path into the circuit. KALSDORF is the literal reporting-point anchor and the join uses the existing SE circuit endpoint.",
@@ -8282,10 +8961,13 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
         ],
-        "projectionStatus": "direct_geometry_airspace_profile_pending"
+        "projectionStatus": "direct"
       },
       "vfr_southwest_entry_path": {
-        "airspaceProfile": null,
+        "airspaceProfile": {
+          "airspaceVolumeId": "LO585",
+          "kind": "IN_VOLUME"
+        },
         "id": "vfr_southwest_entry_path",
         "name": "vfr_southwest_entry_path",
         "note": "User-confirmed western circuit entry option. From SENDER DOBL aircraft can join the circuit via the explicit SW anchor depending on runway direction.",
@@ -8294,10 +8976,34 @@
           "LOWG_FIX_SENDER_DOBL",
           "LOWG_ANCHOR_CIRCUIT_SW_ENTRY"
         ],
-        "projectionStatus": "direct_geometry_airspace_profile_pending"
+        "projectionStatus": "direct"
       },
       "vfr_western_corridor_path": {
-        "airspaceProfile": null,
+        "airspaceProfile": {
+          "kind": "SEGMENTED",
+          "segments": [
+            {
+              "airspaceVolumeId": "LO585",
+              "fromPointId": "LOWG_FIX_SENDER_DOBL",
+              "toPointId": "LOWG_FIX_AUTOBAHN_WEST"
+            },
+            {
+              "airspaceVolumeId": "LO585",
+              "fromPointId": "LOWG_FIX_AUTOBAHN_WEST",
+              "toPointId": "LOWG_FIX_GREEN_CITY"
+            },
+            {
+              "airspaceVolumeId": "LO585",
+              "fromPointId": "LOWG_FIX_GREEN_CITY",
+              "toPointId": "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01"
+            },
+            {
+              "airspaceVolumeId": "LO0EF_E",
+              "fromPointId": "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
+              "toPointId": "LOWG_FIX_GRAZ_NORD"
+            }
+          ]
+        },
         "id": "vfr_western_corridor_path",
         "name": "vfr_western_corridor_path",
         "note": "User-confirmed path. This route is the literal join SENDER DOBL -> AUTOBAHN-WEST -> GREEN CITY -> GRAZ-NORD. The NW circuit point is treated as AUTOBAHN-WEST, so this route already lands on the existing circuit attachment there.",
@@ -8306,9 +9012,10 @@
           "LOWG_FIX_SENDER_DOBL",
           "LOWG_FIX_AUTOBAHN_WEST",
           "LOWG_FIX_GREEN_CITY",
+          "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_FIX_GRAZ_NORD"
         ],
-        "projectionStatus": "direct_geometry_airspace_profile_pending"
+        "projectionStatus": "direct"
       }
     }
   },

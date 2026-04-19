@@ -23,7 +23,8 @@ currently reports `0` issues and `0` structural issues.
 
 That boundary currently depends on two explicit current-core assumptions:
 
-- one synthetic point-claim airspace volume covers every projected LOWG point
+- low-level LOWG airspace membership is projected as a 2D plan-view point assignment against the
+  worked CTR/TMA geometry, not as altitude-aware polygon reasoning
 - runway-protection holding points are projected only onto the connected `A` taxiway spine using
   the snapped `D` marker plus X-Plane sign evidence for `G1/G2`, `X`, and `Y`
 
@@ -77,7 +78,8 @@ What already fits well:
 
 What does not yet fit cleanly:
 
-- broader surrounding-airspace projection beyond the worked LOWG CTR boundary
+- broader surrounding-airspace projection beyond the worked LOWG low-level CTR/TMA subset
+- altitude-aware airspace membership beyond the current 2D low-level projection
 - the east non-standard hold / loiter semantics
 
 ## Direct fit to current entities
@@ -228,15 +230,18 @@ Current explicit candidate routes:
 
 The route geometry already matches the current `VfrRoute` shape well enough for version 1.
 
-The two remaining issues are:
+The current LOWG projection now lands in a mixed but honest state:
 
-- the current model does not capture the published protocol layered on top of those paths
-- the runtime route-airspace model is now wider, but LOWG still needs honest
-  projection decisions for mixed boundary-crossing routes instead of forcing
-  lazy uniform authority
+- `vfr_southeast_entry_path` and `vfr_southwest_entry_path` project as
+  `InVolume(LO585)`
+- `vfr_western_corridor_path` projects as segmented `LO585 -> LO0EF_E` with an
+  explicit boundary transition point
+- `vfr_northeast_entry_path` remains null because a more precise answer would
+  still require invented authority or more airspace-transition structure than
+  the current route projection carries
 
-So LOWG can already project candidate VFR routes, but a strict current-shape import would still be
-lossy.
+So LOWG can now project real runtime `VfrRoute` entities, but the broader
+route-airspace story is still intentionally incomplete rather than guessed.
 
 ### CircuitProcedure
 

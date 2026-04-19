@@ -58,11 +58,13 @@ The current LOWG pipeline now has:
 For LOWG version 1, the current-core candidate now includes:
 
 - runways / taxiways / holding points / aprons / stands
-- VFR routes as entities, with airspace profiles left null where LOWG would
-  otherwise have to fake mixed bound/unbound authority
+- VFR routes as entities, with honest `InVolume` / `Segmented` profiles where
+  the current LOWG worked slice can justify them and null where it still
+  cannot
 - operational sectors
 - published VFR procedures
-- a worked CTR boundary attached to the synthetic current-core airspace volume
+- a worked low-level LOWG CTR/TMA airspace subset with explicit member points,
+  FIR ownership, and runtime-owned boundary geometry
 
 The candidate still validates cleanly in
 [world-validation-report.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/lowg/world-validation-report.json).
@@ -88,8 +90,8 @@ Still open:
 
 - runtime behaviors that should reason from the boundary itself rather than
   only the point set
-- broader airspace projection beyond the worked LOWG CTR boundary currently
-  fed into the world candidate
+- broader airspace projection beyond the worked LOWG low-level CTR/TMA subset
+  currently fed into the world candidate
 - FM widening if the proof branch should ever reason about polygonal or
   boundary-derived airspace facts
 
@@ -122,9 +124,9 @@ correct. It is not.
 
 ### 4. Surrounding airspace is still selectively projected
 
-LOWG now carries real sector geometry and a worked CTR boundary in the runtime
-candidate, but the broader surrounding airspace set is still selectively kept
-out of the current-core world candidate.
+LOWG now carries real sector geometry and a worked low-level CTR/TMA slice in
+the runtime candidate, but the broader surrounding airspace set is still
+selectively kept out of the current-core world candidate.
 
 That is a deliberate first-slice boundary:
 

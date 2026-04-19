@@ -223,8 +223,9 @@ def build_current_core_ctr_shape(
     world_candidate: dict[str, Any],
     path_lookup: dict[str, list[report.XY]],
 ) -> authoring.AirspaceShape | None:
-    synthetic_airspace = world_candidate.get("world", {}).get("syntheticAirspace", {})
-    boundary_path_ids = synthetic_airspace.get("boundaryPathIds", [])
+    airspace = world_candidate.get("world", {}).get("airspaceVolumes", {})
+    ctr = airspace.get("LO585", {}) if isinstance(airspace, dict) else {}
+    boundary_path_ids = ctr.get("boundaryPathIds", [])
     boundaries = [
         path_lookup[path_id]
         for path_id in boundary_path_ids
@@ -232,13 +233,19 @@ def build_current_core_ctr_shape(
     ]
     if not boundaries:
         return None
+    altitude_band = ctr.get("altitudeBand", {}) if isinstance(ctr.get("altitudeBand"), dict) else {}
+    upper = altitude_band.get("upper", {}) if isinstance(altitude_band.get("upper"), dict) else {}
     return authoring.AirspaceShape(
-        mid=str(synthetic_airspace.get("volumeId", "synthetic_ctr")),
+        mid=str(ctr.get("id", "LO585")),
         code_id="LO585",
-        name=str(synthetic_airspace.get("volumeName", "CTR")),
+        name=str(ctr.get("name", "CTR")),
         label="LOWG CTR",
         lower_limit="SFC",
-        upper_limit=f"{synthetic_airspace.get('upperAltitudeFeet', '?')} FT",
+        upper_limit=(
+            f"{int(upper.get('value'))} FT"
+            if upper.get("kind") == "AT_LEVEL" and upper.get("levelType") == "ALTITUDE_FEET"
+            else "?"
+        ),
         category="primary",
         has_curve_vertices=False,
         boundaries=boundaries,

@@ -27,7 +27,8 @@ data class CandidateWorld(
     val fixes: Map<String, CandidateFix>,
     val vfrRoutes: Map<String, CandidateVfrRoute> = emptyMap(),
     val aerodrome: CandidateAerodrome,
-    val syntheticAirspace: CandidateSyntheticAirspace,
+    val airspaceVolumes: Map<String, CandidateAirspaceVolume> = emptyMap(),
+    val firs: Map<String, CandidateFir> = emptyMap(),
 )
 
 @Serializable
@@ -283,14 +284,23 @@ data class CandidatePublishedProcedureCommunicationFailure(
 )
 
 @Serializable
-data class CandidateSyntheticAirspace(
-    val firId: String,
-    val firName: String,
-    val volumeId: String,
-    val volumeName: String,
+data class CandidateAirspaceVolume(
+    val id: String,
+    val name: String,
     val type: String,
     val airspaceClass: String,
-    val upperAltitudeFeet: Int,
-    val memberPointIds: List<String>,
+    val altitudeBand: CandidateAltitudeBand,
+    val memberPointIds: List<String> = emptyList(),
+    val firId: String,
     val boundaryPathIds: List<String> = emptyList(),
+    val projectionStatus: String? = null,
+    val note: String? = null,
+)
+
+@Serializable
+data class CandidateFir(
+    val id: String,
+    val name: String,
+    val volumeIds: List<String> = emptyList(),
+    val projectionStatus: String? = null,
 )
