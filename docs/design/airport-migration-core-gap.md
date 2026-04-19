@@ -93,19 +93,21 @@ Still open:
 - FM widening if the proof branch should ever reason about polygonal or
   boundary-derived airspace facts
 
-### 2. Directional circuit semantics remain primarily a package/projection task
+### 2. Directional circuit projection is no longer a `core` blocker
 
-LOWG still uses a shared authored circuit graph which later needs compiling
-into specific directional circuit procedures and joins.
+LOWG still uses a shared authored circuit graph in CAD, but that graph now
+projects into explicit directional `CircuitProcedure` entities in the runtime
+candidate.
 
-This is not primarily a `core` gap yet. The current model can already hold
-ordinary `CircuitProcedure` entities. The missing work is:
+That means the previous circuit question has moved:
 
-- extracting explicit traversals from the shared graph
-- assigning runway-specific applicability
-- projecting published "join circuit" meaning onto the right graph traversal
+- it is no longer a `core` modelling blocker for LOWG v1
+- it remains a migration/compiler-generalization question for future airports
 
-Do not redesign circuits in `core` before exhausting that projection step.
+The current compiler is still LOWG-specific and driven by explicit traversal
+choices for the authored shared graph. Do not redesign circuits in `core`
+unless a second-airport pass shows a real shape mismatch that the current
+`CircuitProcedure` model cannot absorb.
 
 ### 3. Hold / loiter semantics remain intentionally deferred
 

@@ -688,6 +688,11 @@ def candidate_circuit_graph(data: PlateData, graph_id: str) -> dict[str, Any] | 
     return graph if isinstance(graph, dict) else None
 
 
+def current_core_circuit(data: PlateData, circuit_id: str) -> dict[str, Any] | None:
+    circuit = current_core_aerodrome(data).get("circuits", {}).get(circuit_id)
+    return circuit if isinstance(circuit, dict) else None
+
+
 def entity_route_items(data: PlateData, route_id: str) -> list[str]:
     route = vfr_route_for_id(data, route_id)
     if route is None:
@@ -722,6 +727,42 @@ def circuit_graph_items(data: PlateData, graph_id: str) -> list[str]:
     projection_status = graph.get("projectionStatus")
     if isinstance(projection_status, str):
         items.append(f"projection status: {projection_status}")
+    return items
+
+
+def circuit_procedure_items(data: PlateData, circuit_id: str) -> list[str]:
+    circuit = current_core_circuit(data, circuit_id)
+    if circuit is None:
+        return [f"{circuit_id}: not projected."]
+    items = [
+        f"runway: {circuit.get('runwayId', '?')}",
+        f"direction: {circuit.get('direction', '?')}",
+        f"altitude: {circuit.get('altitudeFeet', '?')} FT",
+    ]
+    legs = circuit.get("legs", [])
+    if isinstance(legs, list) and legs:
+        items.append(
+            "legs: " + " -> ".join(
+                f"{leg.get('name', '?')} ({leg.get('pathId', '?')})"
+                for leg in legs
+                if isinstance(leg, dict)
+            )
+        )
+    joins = circuit.get("joinProcedures", [])
+    if isinstance(joins, list) and joins:
+        items.append(
+            "joins: " + ", ".join(
+                f"{join.get('type', '?')} @ {join.get('entryPointId', '?')}"
+                for join in joins
+                if isinstance(join, dict)
+            )
+        )
+    projection_status = circuit.get("projectionStatus")
+    if isinstance(projection_status, str):
+        items.append(f"projection status: {projection_status}")
+    source_loop = circuit.get("sourceLoop")
+    if isinstance(source_loop, str):
+        items.append(f"source loop: {source_loop}")
     return items
 
 
@@ -1426,13 +1467,22 @@ def prc_arrival_departure_page_html(data: PlateData, plate_id: str, title: str, 
 
 
 def prc4_page_html(data: PlateData, map_file: str) -> str:
+    procedure = current_core_aerodrome(data).get("aip", {}).get("publishedVfrProcedures", {}).get("prc_4_west_traffic_circuit", {})
+    associated_circuits = [
+        circuit_id
+        for circuit_id in procedure.get("associatedCircuitIds", [])
+        if isinstance(circuit_id, str)
+    ]
     blocks = [
         map_shell_html(map_file, data),
         '<div class="procedure-grid">'
         + info_block_html("prc_4_west_traffic_circuit", published_vfr_procedure_items(data, "prc_4_west_traffic_circuit"))
+        + "".join(
+            info_block_html(circuit_id, circuit_procedure_items(data, circuit_id))
+            for circuit_id in associated_circuits
+        )
         + info_block_html("main_shared_graph", circuit_graph_items(data, "main_shared_graph"))
         + info_block_html("west_side_component", circuit_graph_items(data, "west_side_component"))
-        + gap_block_html("Projection Gap", projection_gap_items(data, "circuit", "first-class runtime entities"))
         + "</div>",
         runway_table_html(data),
     ]
@@ -1440,13 +1490,23 @@ def prc4_page_html(data: PlateData, map_file: str) -> str:
 
 
 def prc5_page_html(data: PlateData, map_file: str) -> str:
+    procedure = current_core_aerodrome(data).get("aip", {}).get("publishedVfrProcedures", {}).get("prc_5_east_hold", {})
+    associated_circuits = [
+        circuit_id
+        for circuit_id in procedure.get("associatedCircuitIds", [])
+        if isinstance(circuit_id, str)
+    ]
     blocks = [
         map_shell_html(map_file, data),
         '<div class="procedure-grid">'
         + info_block_html("prc_5_east_hold", published_vfr_procedure_items(data, "prc_5_east_hold"))
+        + "".join(
+            info_block_html(circuit_id, circuit_procedure_items(data, circuit_id))
+            for circuit_id in associated_circuits
+        )
         + info_block_html("main_shared_graph", circuit_graph_items(data, "main_shared_graph"))
         + info_block_html("east_side_component", circuit_graph_items(data, "east_side_component"))
-        + gap_block_html("Projection Gap", projection_gap_items(data, "circuit", "east non-standard hold", "first-class runtime entities"))
+        + gap_block_html("Projection Gap", projection_gap_items(data, "east non-standard hold"))
         + "</div>",
     ]
     return page_chrome_html("VFR APP/DEP", "PRC-5", "".join(blocks), data)

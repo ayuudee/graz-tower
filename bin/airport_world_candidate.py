@@ -207,6 +207,17 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         for route in vfr_routes.values()
         if isinstance(route, dict) and isinstance(route.get("pathId"), str)
     }
+    circuit_path_ids = {
+        path_id
+        for circuit in aerodrome.get("circuits", {}).values()
+        if isinstance(circuit, dict)
+        for path_id in [
+            *(leg.get("pathId") for leg in circuit.get("legs", []) if isinstance(leg, dict)),
+            circuit.get("goAroundPathId"),
+            *(join.get("entryPathId") for join in circuit.get("joinProcedures", []) if isinstance(join, dict)),
+        ]
+        if isinstance(path_id, str)
+    }
     sector_boundary_path_ids = {
         path_id
         for sector in aerodrome_aip.get("operationalSectors", {}).values()
@@ -246,6 +257,7 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
             for path_id in apron["pathIds"]
         }
         | route_path_ids
+        | circuit_path_ids
         | sector_boundary_path_ids
         | set(synthetic_boundary_paths.keys())
     )
@@ -296,6 +308,23 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
             _published_point_reference_point_id(procedure.get("terminatesAt")),
             _published_point_reference_point_id(procedure.get("holdAt")),
             _contact_requirement_point_id(procedure.get("contactRequirement")),
+        ]
+        if isinstance(point_id, str)
+    } | {
+        point_id
+        for circuit in aerodrome.get("circuits", {}).values()
+        if isinstance(circuit, dict)
+        for point_id in [
+            *(
+                point_id
+                for point_id in circuit.get("reportingPoints", {}).values()
+                if isinstance(point_id, str)
+            ),
+            *(
+                join.get("entryPointId")
+                for join in circuit.get("joinProcedures", [])
+                if isinstance(join, dict)
+            ),
         ]
         if isinstance(point_id, str)
     }
@@ -358,7 +387,6 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
     ]
     forced_assumptions.extend(holding_assumptions)
     omitted_features = [
-        "Circuit procedures are omitted from the current world candidate because the current CAD is still a shared graph and has not yet been projected into directional CircuitProcedure entities.",
         "Only the worked LOWG CTR boundary is projected into the current runtime candidate; the broader surrounding airspace set still remains outside the current-core subset until point membership is assigned honestly.",
         "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
         "The east non-standard hold remains deferred to version 2.",
@@ -390,6 +418,7 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
                 "transitionAltitudeFeet": transition_altitude_feet,
                 "aip": aerodrome.get("aip", {}),
                 "runways": dict(sorted(aerodrome["runways"].items())),
+                "circuits": dict(sorted(aerodrome.get("circuits", {}).items())),
                 "taxiways": world_taxiways,
                 "stands": dict(sorted(aerodrome["stands"].items())),
                 "aprons": dict(sorted(aerodrome["aprons"].items())),

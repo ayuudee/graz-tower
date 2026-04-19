@@ -9,7 +9,6 @@
     "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly."
   ],
   "omittedFeatures": [
-    "Circuit procedures are omitted from the current world candidate because the current CAD is still a shared graph and has not yet been projected into directional CircuitProcedure entities.",
     "Only the worked LOWG CTR boundary is projected into the current runtime candidate; the broader surrounding airspace set still remains outside the current-core subset until point membership is assigned honestly.",
     "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
     "The east non-standard hold remains deferred to version 2.",
@@ -18,7 +17,6 @@
   "projectionGaps": [
     "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
     "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
-    "The current circuit drawing is still a shared graph and has not yet been projected into final directional CircuitProcedure entities.",
     "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
     "The east non-standard hold remains deferred to version 2 until the loiter model is corrected."
   ],
@@ -645,7 +643,10 @@
               "16R",
               "34L"
             ],
-            "associatedCircuitIds": [],
+            "associatedCircuitIds": [
+              "LOWG_CIRCUIT_16R_WEST_SIDE",
+              "LOWG_CIRCUIT_34L_WEST_SIDE"
+            ],
             "associatedOperationalSectorIds": [],
             "associatedVfrRouteIds": [],
             "communicationFailure": null,
@@ -677,7 +678,12 @@
               "squawkConvention": null
             },
             "applicableRunwayIds": [],
-            "associatedCircuitIds": [],
+            "associatedCircuitIds": [
+              "LOWG_CIRCUIT_16C_CENTER_EAST",
+              "LOWG_CIRCUIT_16L_EAST_SIDE",
+              "LOWG_CIRCUIT_34C_CENTER_EAST",
+              "LOWG_CIRCUIT_34R_EAST_SIDE"
+            ],
             "associatedOperationalSectorIds": [],
             "associatedVfrRouteIds": [],
             "communicationFailure": null,
@@ -791,6 +797,340 @@
             "LOWG_STAND_G8",
             "LOWG_STAND_G9"
           ]
+        }
+      },
+      "circuits": {
+        "LOWG_CIRCUIT_16C_CENTER_EAST": {
+          "altitudeFeet": 2500,
+          "direction": "LEFT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_16C_CENTER_EAST_UPWIND",
+          "id": "LOWG_CIRCUIT_16C_CENTER_EAST",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+              "type": "BASE"
+            },
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+              "type": "DOWNWIND"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_EAST_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_EAST_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_EAST_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_EAST_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_EAST_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "16C",
+          "sourceLoop": "center_east"
+        },
+        "LOWG_CIRCUIT_16C_CENTER_WEST": {
+          "altitudeFeet": 2500,
+          "direction": "RIGHT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_16C_CENTER_WEST_UPWIND",
+          "id": "LOWG_CIRCUIT_16C_CENTER_WEST",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+              "type": "BASE"
+            },
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
+              "type": "CROSSWIND"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_WEST_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_WEST_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_WEST_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_WEST_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_16C_CENTER_WEST_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "16C",
+          "sourceLoop": "center_west"
+        },
+        "LOWG_CIRCUIT_16L_EAST_SIDE": {
+          "altitudeFeet": 2500,
+          "direction": "LEFT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_16L_EAST_SIDE_UPWIND",
+          "id": "LOWG_CIRCUIT_16L_EAST_SIDE",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+              "type": "CROSSWIND"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_16L_EAST_SIDE_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_16L_EAST_SIDE_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_16L_EAST_SIDE_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_16L_EAST_SIDE_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_16L_EAST_SIDE_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "16L",
+          "sourceLoop": "east_side"
+        },
+        "LOWG_CIRCUIT_16R_WEST_SIDE": {
+          "altitudeFeet": 2500,
+          "direction": "RIGHT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_16R_WEST_SIDE_UPWIND",
+          "id": "LOWG_CIRCUIT_16R_WEST_SIDE",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+              "type": "STRAIGHT_IN"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_16R_WEST_SIDE_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_16R_WEST_SIDE_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_16R_WEST_SIDE_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_16R_WEST_SIDE_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_16R_WEST_SIDE_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "16R",
+          "sourceLoop": "west_side"
+        },
+        "LOWG_CIRCUIT_34C_CENTER_EAST": {
+          "altitudeFeet": 2500,
+          "direction": "RIGHT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_34C_CENTER_EAST_UPWIND",
+          "id": "LOWG_CIRCUIT_34C_CENTER_EAST",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+              "type": "CROSSWIND"
+            },
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+              "type": "BASE"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_EAST_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_EAST_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_EAST_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_EAST_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_EAST_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "34C",
+          "sourceLoop": "center_east"
+        },
+        "LOWG_CIRCUIT_34C_CENTER_WEST": {
+          "altitudeFeet": 2500,
+          "direction": "LEFT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_34C_CENTER_WEST_UPWIND",
+          "id": "LOWG_CIRCUIT_34C_CENTER_WEST",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+              "type": "DOWNWIND"
+            },
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
+              "type": "BASE"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_WEST_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_WEST_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_WEST_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_WEST_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_34C_CENTER_WEST_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "34C",
+          "sourceLoop": "center_west"
+        },
+        "LOWG_CIRCUIT_34L_WEST_SIDE": {
+          "altitudeFeet": 2500,
+          "direction": "LEFT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_34L_WEST_SIDE_UPWIND",
+          "id": "LOWG_CIRCUIT_34L_WEST_SIDE",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+              "type": "CROSSWIND"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_34L_WEST_SIDE_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_34L_WEST_SIDE_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_34L_WEST_SIDE_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_34L_WEST_SIDE_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_34L_WEST_SIDE_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "34L",
+          "sourceLoop": "west_side"
+        },
+        "LOWG_CIRCUIT_34R_EAST_SIDE": {
+          "altitudeFeet": 2500,
+          "direction": "RIGHT_HAND",
+          "goAroundPathId": "LOWG_CIRCUIT_34R_EAST_SIDE_UPWIND",
+          "id": "LOWG_CIRCUIT_34R_EAST_SIDE",
+          "joinProcedures": [
+            {
+              "entryPathId": null,
+              "entryPointId": "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+              "type": "STRAIGHT_IN"
+            }
+          ],
+          "legs": [
+            {
+              "name": "UPWIND",
+              "pathId": "LOWG_CIRCUIT_34R_EAST_SIDE_UPWIND"
+            },
+            {
+              "name": "CROSSWIND",
+              "pathId": "LOWG_CIRCUIT_34R_EAST_SIDE_CROSSWIND"
+            },
+            {
+              "name": "DOWNWIND",
+              "pathId": "LOWG_CIRCUIT_34R_EAST_SIDE_DOWNWIND"
+            },
+            {
+              "name": "BASE",
+              "pathId": "LOWG_CIRCUIT_34R_EAST_SIDE_BASE"
+            },
+            {
+              "name": "FINAL",
+              "pathId": "LOWG_CIRCUIT_34R_EAST_SIDE_FINAL"
+            }
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "reportingPoints": {},
+          "runwayId": "34R",
+          "sourceLoop": "east_side"
         }
       },
       "elevationFeet": 1120,
@@ -1932,6 +2272,566 @@
           "surface": "GROUND",
           "widthMeters": 18.0
         },
+        "LOWG_CIRCUIT_16C_CENTER_EAST_BASE": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_EAST_BASE",
+          "note": "Projected LOWG circuit 16C center_east base leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14",
+            "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_16",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_17",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_EAST_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_EAST_CROSSWIND",
+          "note": "Projected LOWG circuit 16C center_east crosswind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_08",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_09",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_10",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_11",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_12",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_13",
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_EAST_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_EAST_DOWNWIND",
+          "note": "Projected LOWG circuit 16C center_east downwind leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_EAST_FINAL": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_EAST_FINAL",
+          "note": "Projected LOWG circuit 16C center_east final leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07",
+            "LOWG_CIRCUIT_CENTER_EAST_AXIS_02"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_EAST_UPWIND": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_EAST_UPWIND",
+          "note": "Projected LOWG circuit 16C center_east upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_CENTER_EAST_AXIS_02",
+            "LOWG_CIRCUIT_CENTER_EAST_AXIS_03",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_WEST_BASE": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_WEST_BASE",
+          "note": "Projected LOWG circuit 16C center_west base leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_01",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_02",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_18",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_WEST_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_WEST_CROSSWIND",
+          "note": "Projected LOWG circuit 16C center_west crosswind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_05",
+            "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_WEST_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_WEST_DOWNWIND",
+          "note": "Projected LOWG circuit 16C center_west downwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03",
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_WEST_FINAL": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_WEST_FINAL",
+          "note": "Projected LOWG circuit 16C center_west final leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07",
+            "LOWG_CIRCUIT_CENTER_WEST_AXIS_02"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16C_CENTER_WEST_UPWIND": {
+          "id": "LOWG_CIRCUIT_16C_CENTER_WEST_UPWIND",
+          "note": "Projected LOWG circuit 16C center_west upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_CENTER_WEST_AXIS_02",
+            "LOWG_CIRCUIT_CENTER_WEST_AXIS_03",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16L_EAST_SIDE_BASE": {
+          "id": "LOWG_CIRCUIT_16L_EAST_SIDE_BASE",
+          "note": "Projected LOWG circuit 16L east_side base leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_03",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16L_EAST_SIDE_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_16L_EAST_SIDE_CROSSWIND",
+          "note": "Projected LOWG circuit 16L east_side crosswind leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_02"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16L_EAST_SIDE_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_16L_EAST_SIDE_DOWNWIND",
+          "note": "Projected LOWG circuit 16L east_side downwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_02",
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16L_EAST_SIDE_FINAL": {
+          "id": "LOWG_CIRCUIT_16L_EAST_SIDE_FINAL",
+          "note": "Projected LOWG circuit 16L east_side final leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_02",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_03",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_04",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_05",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_06",
+            "LOWG_CIRCUIT_EAST_SIDE_AXIS_07"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16L_EAST_SIDE_UPWIND": {
+          "id": "LOWG_CIRCUIT_16L_EAST_SIDE_UPWIND",
+          "note": "Projected LOWG circuit 16L east_side upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_AXIS_07",
+            "LOWG_CIRCUIT_EAST_SIDE_AXIS_08",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_07",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_08",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_09",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_10",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_11",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_12",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_13",
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16R_WEST_SIDE_BASE": {
+          "id": "LOWG_CIRCUIT_16R_WEST_SIDE_BASE",
+          "note": "Projected LOWG circuit 16R west_side base leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_03",
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16R_WEST_SIDE_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_16R_WEST_SIDE_CROSSWIND",
+          "note": "Projected LOWG circuit 16R west_side crosswind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12",
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_02"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16R_WEST_SIDE_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_16R_WEST_SIDE_DOWNWIND",
+          "note": "Projected LOWG circuit 16R west_side downwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_02",
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16R_WEST_SIDE_FINAL": {
+          "id": "LOWG_CIRCUIT_16R_WEST_SIDE_FINAL",
+          "note": "Projected LOWG circuit 16R west_side final leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_02",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_03",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_04",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_05",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_06",
+            "LOWG_CIRCUIT_WEST_SIDE_AXIS_07"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_16R_WEST_SIDE_UPWIND": {
+          "id": "LOWG_CIRCUIT_16R_WEST_SIDE_UPWIND",
+          "note": "Projected LOWG circuit 16R west_side upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_AXIS_07",
+            "LOWG_CIRCUIT_WEST_SIDE_AXIS_08",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_07",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_08",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_09",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_10",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_11",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_EAST_BASE": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_EAST_BASE",
+          "note": "Projected LOWG circuit 34C center_east base leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_13",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_12",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_11",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_10",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_09",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_08",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_EAST_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_EAST_CROSSWIND",
+          "note": "Projected LOWG circuit 34C center_east crosswind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_17",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_16",
+            "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_EAST_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_EAST_DOWNWIND",
+          "note": "Projected LOWG circuit 34C center_east downwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14",
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_EAST_FINAL": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_EAST_FINAL",
+          "note": "Projected LOWG circuit 34C center_east final leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06",
+            "LOWG_CIRCUIT_CENTER_EAST_AXIS_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_EAST_UPWIND": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_EAST_UPWIND",
+          "note": "Projected LOWG circuit 34C center_east upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_CENTER_EAST_AXIS_03",
+            "LOWG_CIRCUIT_CENTER_EAST_AXIS_02",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_WEST_BASE": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_WEST_BASE",
+          "note": "Projected LOWG circuit 34C center_west base leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03",
+            "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_05",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_WEST_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_WEST_CROSSWIND",
+          "note": "Projected LOWG circuit 34C center_west crosswind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_18",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_02",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_01",
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_WEST_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_WEST_DOWNWIND",
+          "note": "Projected LOWG circuit 34C center_west downwind leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_WEST_FINAL": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_WEST_FINAL",
+          "note": "Projected LOWG circuit 34C center_west final leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06",
+            "LOWG_CIRCUIT_CENTER_WEST_AXIS_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34C_CENTER_WEST_UPWIND": {
+          "id": "LOWG_CIRCUIT_34C_CENTER_WEST_UPWIND",
+          "note": "Projected LOWG circuit 34C center_west upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_CENTER_WEST_AXIS_03",
+            "LOWG_CIRCUIT_CENTER_WEST_AXIS_02",
+            "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34L_WEST_SIDE_BASE": {
+          "id": "LOWG_CIRCUIT_34L_WEST_SIDE_BASE",
+          "note": "Projected LOWG circuit 34L west_side base leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_02",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34L_WEST_SIDE_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_34L_WEST_SIDE_CROSSWIND",
+          "note": "Projected LOWG circuit 34L west_side crosswind leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34L_WEST_SIDE_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_34L_WEST_SIDE_DOWNWIND",
+          "note": "Projected LOWG circuit 34L west_side downwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_03",
+            "LOWG_CIRCUIT_WEST_SIDE_OUTER_02"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34L_WEST_SIDE_FINAL": {
+          "id": "LOWG_CIRCUIT_34L_WEST_SIDE_FINAL",
+          "note": "Projected LOWG circuit 34L west_side final leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_11",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_10",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_09",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_08",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_07",
+            "LOWG_CIRCUIT_WEST_SIDE_AXIS_08"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34L_WEST_SIDE_UPWIND": {
+          "id": "LOWG_CIRCUIT_34L_WEST_SIDE_UPWIND",
+          "note": "Projected LOWG circuit 34L west_side upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_AXIS_08",
+            "LOWG_CIRCUIT_WEST_SIDE_AXIS_07",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_06",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_05",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_04",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_03",
+            "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_02",
+            "LOWG_ANCHOR_CIRCUIT_NW_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34R_EAST_SIDE_BASE": {
+          "id": "LOWG_CIRCUIT_34R_EAST_SIDE_BASE",
+          "note": "Projected LOWG circuit 34R east_side base leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_02",
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34R_EAST_SIDE_CROSSWIND": {
+          "id": "LOWG_CIRCUIT_34R_EAST_SIDE_CROSSWIND",
+          "note": "Projected LOWG circuit 34R east_side crosswind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01",
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_03"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34R_EAST_SIDE_DOWNWIND": {
+          "id": "LOWG_CIRCUIT_34R_EAST_SIDE_DOWNWIND",
+          "note": "Projected LOWG circuit 34R east_side downwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_03",
+            "LOWG_CIRCUIT_EAST_SIDE_OUTER_02"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34R_EAST_SIDE_FINAL": {
+          "id": "LOWG_CIRCUIT_34R_EAST_SIDE_FINAL",
+          "note": "Projected LOWG circuit 34R east_side final leg.",
+          "pointIds": [
+            "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_13",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_12",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_11",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_10",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_09",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_08",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_07",
+            "LOWG_CIRCUIT_EAST_SIDE_AXIS_08"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
+        "LOWG_CIRCUIT_34R_EAST_SIDE_UPWIND": {
+          "id": "LOWG_CIRCUIT_34R_EAST_SIDE_UPWIND",
+          "note": "Projected LOWG circuit 34R east_side upwind leg.",
+          "pointIds": [
+            "LOWG_CIRCUIT_EAST_SIDE_AXIS_08",
+            "LOWG_CIRCUIT_EAST_SIDE_AXIS_07",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_06",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_05",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_04",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_03",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_02",
+            "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01"
+          ],
+          "projectionStatus": "direct_runtime_circuit_entity",
+          "source": "cad_circuit_projection",
+          "surface": "SKY",
+          "widthMeters": 160.0
+        },
         "LOWG_PATH_RWY_16C": {
           "id": "LOWG_PATH_RWY_16C",
           "note": "Directional runway path using the full strip axis.",
@@ -2313,8 +3213,8 @@
           "label": "NE",
           "sources": [
             "cad_circuit",
-            "manifest",
-            "structured_vfr_route"
+            "cad_circuit_projection",
+            "manifest"
           ],
           "tags": [
             "named_anchor",
@@ -2324,13 +3224,29 @@
           "xMeters": 1128.024795,
           "yMeters": 2580.47703
         },
+        "LOWG_ANCHOR_CIRCUIT_NW_ENTRY": {
+          "id": "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
+          "label": "NW / AUTOBAHN-WEST",
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection",
+            "manifest"
+          ],
+          "tags": [
+            "named_anchor",
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2205.242555,
+          "yMeters": 608.061056
+        },
         "LOWG_ANCHOR_CIRCUIT_SE_ENTRY": {
           "id": "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
           "label": "SE",
           "sources": [
             "cad_circuit",
-            "manifest",
-            "structured_vfr_route"
+            "cad_circuit_projection",
+            "manifest"
           ],
           "tags": [
             "named_anchor",
@@ -2345,8 +3261,8 @@
           "label": "SW",
           "sources": [
             "cad_circuit",
-            "manifest",
-            "structured_vfr_route"
+            "cad_circuit_projection",
+            "manifest"
           ],
           "tags": [
             "named_anchor",
@@ -3136,17 +4052,730 @@
           "xMeters": 290.544405,
           "yMeters": 458.846498
         },
+        "LOWG_CIRCUIT_CENTER_EAST_AXIS_02": {
+          "id": "LOWG_CIRCUIT_CENTER_EAST_AXIS_02",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -240.901985,
+          "yMeters": 1249.351058
+        },
+        "LOWG_CIRCUIT_CENTER_EAST_AXIS_03": {
+          "id": "LOWG_CIRCUIT_CENTER_EAST_AXIS_03",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 312.396607,
+          "yMeters": -1697.695896
+        },
+        "LOWG_CIRCUIT_CENTER_WEST_AXIS_02": {
+          "id": "LOWG_CIRCUIT_CENTER_WEST_AXIS_02",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -240.901985,
+          "yMeters": 1249.351058
+        },
+        "LOWG_CIRCUIT_CENTER_WEST_AXIS_03": {
+          "id": "LOWG_CIRCUIT_CENTER_WEST_AXIS_03",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 312.396607,
+          "yMeters": -1697.695896
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_AXIS_07": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_AXIS_07",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 258.063801,
+          "yMeters": -273.581329
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_AXIS_08": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_AXIS_08",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 375.600957,
+          "yMeters": -902.175145
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_02": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_02",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2084.920414,
+          "yMeters": 748.879122
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_03": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_03",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -660.549061,
+          "yMeters": 1450.661798
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_04": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_04",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -568.739753,
+          "yMeters": 1424.486758
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_05": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_05",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -509.03037,
+          "yMeters": 1296.243403
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_06": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_06",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -475.424077,
+          "yMeters": 1153.734629
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_07": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_07",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 108.100242,
+          "yMeters": -1960.658539
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_08": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_08",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 126.514573,
+          "yMeters": -2086.02087
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_09": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_09",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 118.571282,
+          "yMeters": -2207.958044
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_10": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_10",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 50.486119,
+          "yMeters": -2270.789534
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_11": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_11",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2005.602405,
+          "yMeters": -2547.367548
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2170.553131,
+          "yMeters": -2467.19065
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_OUTER_02": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_OUTER_02",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 2504.267543,
+          "yMeters": -422.274396
+        },
+        "LOWG_CIRCUIT_EAST_SIDE_OUTER_03": {
+          "id": "LOWG_CIRCUIT_EAST_SIDE_OUTER_03",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 1956.399603,
+          "yMeters": 896.26444
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_01": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_01",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2214.463362,
+          "yMeters": 1425.494732
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_02": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_02",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2030.791504,
+          "yMeters": 1496.733229
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2169.134293,
+          "yMeters": -2592.972014
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_05": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_05",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 506.20764,
+          "yMeters": -3071.568357
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 542.515571,
+          "yMeters": -2923.383803
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -357.825847,
+          "yMeters": 1872.125301
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_08": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_08",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 588.972701,
+          "yMeters": -3045.580163
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_09": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_09",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 679.622321,
+          "yMeters": -3081.265644
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_10": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_10",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 864.448239,
+          "yMeters": -3087.722237
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_11": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_11",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 2870.170699,
+          "yMeters": -2309.191452
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_12": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_12",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 3154.641039,
+          "yMeters": -2183.918
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_13": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_13",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 3191.659936,
+          "yMeters": -2076.602933
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 1270.424252,
+          "yMeters": 2547.182622
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_16": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_16",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 109.086353,
+          "yMeters": 2167.448412
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_17": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_17",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -289.541709,
+          "yMeters": 1980.782207
+        },
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_18": {
+          "id": "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_18",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -519.329767,
+          "yMeters": 1895.181124
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_AXIS_07": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_AXIS_07",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -307.985787,
+          "yMeters": 260.08093
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_AXIS_08": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_AXIS_08",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -167.972838,
+          "yMeters": -487.197902
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 1408.531664,
+          "yMeters": 2214.803277
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_02": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_02",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 1192.336566,
+          "yMeters": 2249.623512
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_03": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_03",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -35.730682,
+          "yMeters": 1677.196724
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_04": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_04",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -103.411215,
+          "yMeters": 1562.623136
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_05": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_05",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -70.152518,
+          "yMeters": 1391.0715
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_06": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_06",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -20.49669,
+          "yMeters": 1216.172272
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_07": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_07",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 622.002912,
+          "yMeters": -2219.943502
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_08": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_08",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 666.260068,
+          "yMeters": -2331.250956
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_09": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_09",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 747.34481,
+          "yMeters": -2427.1858
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_10": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_10",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 850.670666,
+          "yMeters": -2487.391933
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_11": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_11",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 961.651163,
+          "yMeters": -2491.513254
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_12": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_12",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 2855.571341,
+          "yMeters": -1962.564947
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_13": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_13",
+          "label": null,
+          "sources": [
+            "cad_circuit",
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": 2958.799625,
+          "yMeters": -1889.742791
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_OUTER_02": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_OUTER_02",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2182.116272,
+          "yMeters": -1442.106748
+        },
+        "LOWG_CIRCUIT_WEST_SIDE_OUTER_03": {
+          "id": "LOWG_CIRCUIT_WEST_SIDE_OUTER_03",
+          "label": null,
+          "sources": [
+            "cad_circuit_projection"
+          ],
+          "tags": [
+            "path_point",
+            "sky"
+          ],
+          "xMeters": -2193.679414,
+          "yMeters": -417.022846
+        },
         "LOWG_FIX_AUTOBAHN_OST": {
           "id": "LOWG_FIX_AUTOBAHN_OST",
           "label": "AUTOBAHN-OST",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": 3539.415026,
@@ -3156,13 +4785,10 @@
           "id": "LOWG_FIX_AUTOBAHN_WEST",
           "label": "AUTOBAHN-WEST",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": -2401.746125,
@@ -3172,13 +4798,10 @@
           "id": "LOWG_FIX_GLEISDORF",
           "label": "GLEISDORF",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": 20836.200869,
@@ -3188,13 +4811,10 @@
           "id": "LOWG_FIX_GRAZ_NORD",
           "label": "GRAZ-NORD",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": -11692.711299,
@@ -3204,13 +4824,10 @@
           "id": "LOWG_FIX_GREEN_CITY",
           "label": "GREEN CITY",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": -3432.805107,
@@ -3221,14 +4838,11 @@
           "label": "KALSDORF",
           "sources": [
             "ofmx",
-            "structured_vfr_route",
             "working_airspace_dxf"
           ],
           "tags": [
             "fix",
             "operational_sector_boundary",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": 3960.774328,
@@ -3238,13 +4852,10 @@
           "id": "LOWG_FIX_LASSNITZH\u00d6HE",
           "label": "LASSNITZH\u00d6HE",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": 11755.915346,
@@ -3254,13 +4865,10 @@
           "id": "LOWG_FIX_SENDER_DOBL",
           "label": "SENDER DOBL",
           "sources": [
-            "ofmx",
-            "structured_vfr_route"
+            "ofmx"
           ],
           "tags": [
             "fix",
-            "path_point",
-            "sky",
             "vfr_reporting_point"
           ],
           "xMeters": -4529.609234,
@@ -4843,9 +6451,7 @@
             "working_airspace_dxf"
           ],
           "tags": [
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": 20177.658885,
           "yMeters": 2618.173893
@@ -4859,9 +6465,7 @@
           ],
           "tags": [
             "airspace_boundary",
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": 24944.451028,
           "yMeters": -23536.259399
@@ -4875,9 +6479,7 @@
           ],
           "tags": [
             "airspace_boundary",
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": 17781.348205,
           "yMeters": -24864.421641
@@ -4889,9 +6491,7 @@
             "working_airspace_dxf"
           ],
           "tags": [
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": 16736.088922,
           "yMeters": -19306.587776
@@ -4903,9 +6503,7 @@
             "working_airspace_dxf"
           ],
           "tags": [
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": -8578.417539,
           "yMeters": -18887.848961
@@ -4917,9 +6515,7 @@
             "working_airspace_dxf"
           ],
           "tags": [
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": -11753.901186,
           "yMeters": -2260.920151
@@ -4931,9 +6527,7 @@
             "working_airspace_dxf"
           ],
           "tags": [
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": -7686.584078,
           "yMeters": -4489.660204
@@ -4945,9 +6539,7 @@
             "working_airspace_dxf"
           ],
           "tags": [
-            "operational_sector_boundary",
-            "path_point",
-            "sky"
+            "operational_sector_boundary"
           ],
           "xMeters": -4532.693056,
           "yMeters": -4667.093419
@@ -4970,6 +6562,7 @@
         "LOWG_AIRSPACE_LO585_01_07",
         "LOWG_AIRSPACE_LO585_01_08",
         "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+        "LOWG_ANCHOR_CIRCUIT_NW_ENTRY",
         "LOWG_ANCHOR_CIRCUIT_SE_ENTRY",
         "LOWG_ANCHOR_CIRCUIT_SW_ENTRY",
         "LOWG_APRON_AUTHORED_01_02",
@@ -5032,6 +6625,58 @@
         "LOWG_APRON_AUTHORED_37_05",
         "LOWG_APRON_AUTHORED_38_01",
         "LOWG_APRON_AUTHORED_38_05",
+        "LOWG_CIRCUIT_CENTER_EAST_AXIS_02",
+        "LOWG_CIRCUIT_CENTER_EAST_AXIS_03",
+        "LOWG_CIRCUIT_CENTER_WEST_AXIS_02",
+        "LOWG_CIRCUIT_CENTER_WEST_AXIS_03",
+        "LOWG_CIRCUIT_EAST_SIDE_AXIS_07",
+        "LOWG_CIRCUIT_EAST_SIDE_AXIS_08",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_02",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_03",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_04",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_05",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_06",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_07",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_08",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_09",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_10",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_11",
+        "LOWG_CIRCUIT_EAST_SIDE_COMPONENT_12",
+        "LOWG_CIRCUIT_EAST_SIDE_OUTER_02",
+        "LOWG_CIRCUIT_EAST_SIDE_OUTER_03",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_01",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_02",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_03",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_05",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_06",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_08",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_09",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_10",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_11",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_12",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_13",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_14",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_16",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_17",
+        "LOWG_CIRCUIT_MAIN_SHARED_GRAPH_18",
+        "LOWG_CIRCUIT_WEST_SIDE_AXIS_07",
+        "LOWG_CIRCUIT_WEST_SIDE_AXIS_08",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_01",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_02",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_03",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_04",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_05",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_06",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_07",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_08",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_09",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_10",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_11",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_12",
+        "LOWG_CIRCUIT_WEST_SIDE_COMPONENT_13",
+        "LOWG_CIRCUIT_WEST_SIDE_OUTER_02",
+        "LOWG_CIRCUIT_WEST_SIDE_OUTER_03",
         "LOWG_FIX_AUTOBAHN_OST",
         "LOWG_FIX_AUTOBAHN_WEST",
         "LOWG_FIX_GLEISDORF",

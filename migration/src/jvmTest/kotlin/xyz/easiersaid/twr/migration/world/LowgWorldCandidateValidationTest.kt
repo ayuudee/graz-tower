@@ -23,6 +23,9 @@ import xyz.easiersaid.twr.core.world.Apron
 import xyz.easiersaid.twr.core.world.AerodromeAip
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.BoundaryRing
+import xyz.easiersaid.twr.core.world.CircuitJoin
+import xyz.easiersaid.twr.core.world.CircuitLeg
+import xyz.easiersaid.twr.core.world.CircuitProcedure
 import xyz.easiersaid.twr.core.world.ContactRequirement
 import xyz.easiersaid.twr.core.world.ContactTiming
 import xyz.easiersaid.twr.core.world.DeclaredDistances
@@ -34,6 +37,7 @@ import xyz.easiersaid.twr.core.world.FlightInformationRegion
 import xyz.easiersaid.twr.core.world.GeometrySegmentId
 import xyz.easiersaid.twr.core.world.HoldingPoint
 import xyz.easiersaid.twr.core.world.HoldingPointType
+import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.core.world.OperationalSector
 import xyz.easiersaid.twr.core.world.OperationalSectorAnchor
@@ -64,6 +68,7 @@ import xyz.easiersaid.twr.core.world.validate
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.ApronId
 import xyz.easiersaid.twr.protocol.AirspaceVolumeId
+import xyz.easiersaid.twr.protocol.CircuitDirection
 import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.DmeDistanceNm
 import xyz.easiersaid.twr.protocol.FirId
@@ -76,6 +81,7 @@ import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.StandId
 import xyz.easiersaid.twr.protocol.TaxiwayId
+import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.VfrRouteId
 
 class LowgWorldCandidateValidationTest {
@@ -276,6 +282,30 @@ class LowgWorldCandidateValidationTest {
         val publishedVfrProcedures = world.aerodrome.aip.publishedVfrProcedures.mapValues { (_, procedure) ->
             procedure.toPublishedVfrProcedure()
         }.mapKeys { (id, _) -> PublishedVfrProcedureId(id) }
+        val circuits = world.aerodrome.circuits.mapValues { (_, circuit) ->
+            CircuitProcedure(
+                id = CircuitProcedureId(circuit.id),
+                runway = RunwayId(circuit.runwayId),
+                direction = circuit.direction.toCircuitDirection(),
+                legs = circuit.legs.map { leg ->
+                    CircuitLeg(
+                        name = leg.name.toLegName(),
+                        path = paths.getValue(leg.pathId),
+                    )
+                },
+                altitude = Level.AltitudeFeet.unsafe(circuit.altitudeFeet),
+                reportingPoints = circuit.reportingPoints.mapKeys { (name, _) -> name.toLegName() }
+                    .mapValues { (_, pointId) -> PointId(pointId) },
+                joinProcedures = circuit.joinProcedures.map { join ->
+                    CircuitJoin(
+                        type = join.type.toJoinType(),
+                        entryPoint = PointId(join.entryPointId),
+                        entryPath = join.entryPathId?.let(paths::getValue),
+                    )
+                },
+                goAroundPath = paths.getValue(circuit.goAroundPathId),
+            )
+        }.mapKeys { (id, _) -> CircuitProcedureId(id) }
 
         val syntheticAirspace = world.syntheticAirspace
         val airspaceVolumeId = AirspaceVolumeId(syntheticAirspace.volumeId)
@@ -312,6 +342,7 @@ class LowgWorldCandidateValidationTest {
                 publishedVfrProcedures = publishedVfrProcedures,
             ),
             runways = runways,
+            circuits = circuits,
             taxiways = taxiways,
             stands = stands,
             aprons = aprons,
@@ -386,6 +417,35 @@ class LowgWorldCandidateValidationTest {
             "CIRCUIT_PUBLICATION" -> PublishedVfrProcedureKind.CIRCUIT_PUBLICATION
             "CIRCUIT_ATTACHED_HOLD" -> PublishedVfrProcedureKind.CIRCUIT_ATTACHED_HOLD
             else -> error("Unsupported published VFR procedure kind: $this")
+        }
+
+    private fun String.toCircuitDirection(): CircuitDirection =
+        when (this) {
+            "LEFT_HAND" -> CircuitDirection.LEFT_HAND
+            "RIGHT_HAND" -> CircuitDirection.RIGHT_HAND
+            else -> error("Unsupported circuit direction: $this")
+        }
+
+    private fun String.toLegName(): LegName =
+        when (this) {
+            "UPWIND" -> LegName.UPWIND
+            "CROSSWIND" -> LegName.CROSSWIND
+            "DOWNWIND" -> LegName.DOWNWIND
+            "BASE" -> LegName.BASE
+            "FINAL" -> LegName.FINAL
+            else -> error("Unsupported circuit leg name: $this")
+        }
+
+    private fun String.toJoinType(): JoinType =
+        when (this) {
+            "STRAIGHT_IN" -> JoinType.STRAIGHT_IN
+            "BASE" -> JoinType.BASE
+            "DOWNWIND" -> JoinType.DOWNWIND
+            "CROSSWIND" -> JoinType.CROSSWIND
+            "MID_DOWNWIND" -> JoinType.MID_DOWNWIND
+            "OVERHEAD" -> JoinType.OVERHEAD
+            "LONG_FINAL" -> JoinType.LONG_FINAL
+            else -> error("Unsupported join type: $this")
         }
 
     private fun CandidatePublishedPointReference.toPublishedPointReference(): PublishedPointReference =

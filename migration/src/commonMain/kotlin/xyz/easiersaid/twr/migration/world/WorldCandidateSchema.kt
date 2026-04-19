@@ -91,6 +91,7 @@ data class CandidateAerodrome(
     val transitionAltitudeFeet: Int,
     val aip: CandidateAerodromeAip = CandidateAerodromeAip(),
     val runways: Map<String, CandidateRunway>,
+    val circuits: Map<String, CandidateCircuitProcedure> = emptyMap(),
     val taxiways: Map<String, CandidateTaxiway>,
     val stands: Map<String, CandidateStand>,
     val aprons: Map<String, CandidateApron>,
@@ -116,6 +117,31 @@ data class CandidateDeclaredDistances(
     val todaMeters: Int,
     val asdaMeters: Int,
     val ldaMeters: Int,
+)
+
+@Serializable
+data class CandidateCircuitProcedure(
+    val id: String,
+    val runwayId: String,
+    val direction: String,
+    val legs: List<CandidateCircuitLeg>,
+    val altitudeFeet: Int,
+    val reportingPoints: Map<String, String> = emptyMap(),
+    val joinProcedures: List<CandidateCircuitJoin> = emptyList(),
+    val goAroundPathId: String,
+)
+
+@Serializable
+data class CandidateCircuitLeg(
+    val name: String,
+    val pathId: String,
+)
+
+@Serializable
+data class CandidateCircuitJoin(
+    val type: String,
+    val entryPointId: String,
+    val entryPathId: String? = null,
 )
 
 @Serializable

@@ -72,12 +72,11 @@ What already fits well:
   current-core candidate
 - VFR reporting points as `Fix`
 - explicit VFR reporting-point paths as candidate `VfrRoute` input
-- main circuit geometry as candidate `CircuitProcedure` input
+- runway-specific `CircuitProcedure` entities projected from the shared authored graph
 - basic aerodrome metadata, frequencies, and some AIP notes
 
 What does not yet fit cleanly:
 
-- directional circuit procedures compiled from the shared authored graph
 - broader surrounding-airspace projection beyond the worked LOWG CTR boundary
 - the east non-standard hold / loiter semantics
 
@@ -241,25 +240,26 @@ lossy.
 
 ### CircuitProcedure
 
-This is the most important "partial but viable" fit.
+This now fits directly for LOWG v1, with one explicit caveat.
 
-The current hand-authored circuit drawing is a shared graph, not a finished set of isolated
-procedures. That is still usable.
+The hand-authored circuit drawing remains a shared graph in CAD, but the migration compiler now
+projects that graph into explicit runway/direction-specific `CircuitProcedure` entities for:
 
-What it can support now:
+- `16C` west / `34C` west
+- `16C` east / `34C` east
+- `16R` west / `34L` west
+- `16L` east / `34R` east
 
-- a centre-runway east/west structure
-- side-runway circuit structures
-- explicit join anchors `NE`, `NW/AUTOBAHN-WEST`, `SE`, `SW`
-- runway attachments that now genuinely meet the runway geometry
+The projected procedures now carry:
 
-What still needs an explicit projection choice:
+- explicit `UPWIND`, `CROSSWIND`, `DOWNWIND`, `BASE`, and `FINAL` legs
+- runway attachments that genuinely meet the runway geometry
+- explicit join anchors `NE`, `NW/AUTOBAHN-WEST`, `SE`, `SW` where those anchors land on the
+  projected legs
 
-- which exact directional `CircuitProcedure` set we want to instantiate
-- which shared graph segments belong to each directional procedure
-- which join types each anchor corresponds to in domain terms
-
-So the fit is real, but a projection pass still has to choose final procedure objects.
+The remaining limitation is not that LOWG lacks circuit procedures. It is that the current
+projection is still LOWG-specific and driven by an explicit traversal/compiler spec for this
+shared graph rather than by a generalized airport-agnostic circuit compiler.
 
 ### Aerodrome / basic AIP
 

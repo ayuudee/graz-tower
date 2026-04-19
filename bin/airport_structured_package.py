@@ -54,9 +54,10 @@ class PointRegistry:
         label: str | None = None,
         tags: list[str] | None = None,
         sources: list[str] | None = None,
+        reuse_existing: bool = True,
     ) -> str:
         key = rounded_key(point)
-        existing_id = self._point_key_to_id.get(key)
+        existing_id = self._point_key_to_id.get(key) if reuse_existing else None
         if existing_id is not None:
             entry = self._points[existing_id]
             entry["tags"] = sorted(set(entry.get("tags", [])) | set(tags or []))
@@ -71,7 +72,7 @@ class PointRegistry:
             point_id = f"{preferred_id}_{suffix}"
             suffix += 1
 
-        self._point_key_to_id[key] = point_id
+        self._point_key_to_id.setdefault(key, point_id)
         self._points[point_id] = {
             "id": point_id,
             "xMeters": round(point.x, 6),
@@ -203,6 +204,41 @@ def insert_points_into_polyline(
 
 def polyline_length(points: list[report.XY]) -> float:
     return sum(points[index].distance_to(points[index + 1]) for index in range(len(points) - 1))
+
+
+def interpolate_along_polyline(points: list[report.XY], distance_m: float) -> report.XY:
+    if not points:
+        raise ValueError("Cannot interpolate an empty polyline")
+    if len(points) == 1:
+        return points[0]
+    remaining = distance_m
+    for start, end in zip(points, points[1:]):
+        segment_length = start.distance_to(end)
+        if segment_length <= 1e-9:
+            continue
+        if remaining <= segment_length:
+            ratio = remaining / segment_length
+            return report.XY(
+                start.x + (end.x - start.x) * ratio,
+                start.y + (end.y - start.y) * ratio,
+            )
+        remaining -= segment_length
+    return points[-1]
+
+
+def ensure_minimum_polyline_points(points: list[report.XY], minimum_points: int) -> list[report.XY]:
+    if len(points) >= minimum_points:
+        return points
+    if len(points) < 2:
+        raise ValueError("Cannot expand a polyline with fewer than two points")
+    total_length = polyline_length(points)
+    if total_length <= 1e-9:
+        raise ValueError("Cannot expand a zero-length polyline")
+    step = total_length / float(minimum_points - 1)
+    return [
+        interpolate_along_polyline(points, step * index)
+        for index in range(minimum_points)
+    ]
 
 
 def add_path(
@@ -571,21 +607,505 @@ def add_core_path_from_point_ids(
 ) -> dict[str, Any] | None:
     point_lookup = registry.point_lookup()
     points = [point_lookup[point_id] for point_id in point_ids if point_id in point_lookup]
-    if len(points) != len(point_ids):
+    if len(points) != len(point_ids) or len(point_ids) < 2:
         return None
-    return add_path(
-        geometry_paths,
-        registry,
-        path_id,
-        points,
-        surface=surface,
-        width_m=width_m,
-        source=source,
-        projection_status=projection_status,
-        point_id_prefix=path_id,
-        note=note,
-        preferred_ids={index: point_id for index, point_id in enumerate(point_ids, start=1)},
+    geometry_paths[path_id] = {
+        "id": path_id,
+        "pointIds": point_ids,
+        "surface": surface,
+        "widthMeters": round(width_m, 2),
+        "lengthMeters": round(polyline_length(points), 2),
+        "source": source,
+        "projectionStatus": projection_status,
+        "note": note,
+    }
+    return geometry_paths[path_id]
+
+
+def dedupe_consecutive_points(points: list[report.XY], tolerance_m: float = 1e-6) -> list[report.XY]:
+    if not points:
+        return []
+    deduped = [points[0]]
+    for point in points[1:]:
+        if distance(deduped[-1], point) <= tolerance_m:
+            continue
+        deduped.append(point)
+    return deduped
+
+
+def orient_polyline(points: list[report.XY], *, north_to_south: bool) -> list[report.XY]:
+    if len(points) < 2:
+        return list(points)
+    first_is_north = points[0].y >= points[-1].y
+    ordered = list(points)
+    if first_is_north != north_to_south:
+        ordered.reverse()
+    return ordered
+
+
+def component_graph(lines: list[report.DxfLine]) -> tuple[dict[tuple[float, float], report.XY], dict[tuple[float, float], set[tuple[float, float]]]]:
+    points: dict[tuple[float, float], report.XY] = {}
+    adjacency: dict[tuple[float, float], set[tuple[float, float]]] = defaultdict(set)
+    for line in lines:
+        start_key = rounded_key(line.start)
+        end_key = rounded_key(line.end)
+        points[start_key] = line.start
+        points[end_key] = line.end
+        adjacency[start_key].add(end_key)
+        adjacency[end_key].add(start_key)
+    return points, adjacency
+
+
+def simple_paths_between_vertices(
+    adjacency: dict[tuple[float, float], set[tuple[float, float]]],
+    start_key: tuple[float, float],
+    end_key: tuple[float, float],
+) -> list[list[tuple[float, float]]]:
+    ordered_adjacency = {
+        key: sorted(neighbours, key=lambda point_key: (point_key[1], point_key[0]))
+        for key, neighbours in adjacency.items()
+    }
+    paths: list[list[tuple[float, float]]] = []
+
+    def dfs(current: tuple[float, float], path: list[tuple[float, float]]) -> None:
+        if current == end_key:
+            paths.append(path.copy())
+            return
+        for neighbour in ordered_adjacency.get(current, []):
+            if neighbour in path:
+                continue
+            path.append(neighbour)
+            dfs(neighbour, path)
+            path.pop()
+
+    dfs(start_key, [start_key])
+    return paths
+
+
+def path_distance_to_targets(points: list[report.XY], targets: list[report.XY]) -> float:
+    return sum(
+        nearest_point_on_polyline(target, points)[0]
+        for target in targets
     )
+
+
+def mean_x(points: list[report.XY]) -> float:
+    return sum(point.x for point in points) / len(points)
+
+
+def nearest_index(points: list[report.XY], target: report.XY, tolerance_m: float = 1.0) -> int:
+    for index, point in enumerate(points):
+        if distance(point, target) <= tolerance_m:
+            return index
+    raise ValueError(f"Point {target} was not found on the projected polyline within {tolerance_m}m")
+
+
+def point_ids_for_polyline(
+    registry: PointRegistry,
+    points: list[report.XY],
+    *,
+    preferred_prefix: str,
+    source: str,
+    force_new_indexes: set[int] | None = None,
+    force_new_keys: set[tuple[float, float]] | None = None,
+) -> list[str]:
+    point_ids: list[str] = []
+    forced_keys = force_new_keys or set()
+    forced_indexes = force_new_indexes or set()
+    for index, point in enumerate(points, start=1):
+        force_new = index in forced_indexes or rounded_key(point) in forced_keys
+        existing_id = None if force_new else registry.lookup_id(point)
+        point_id = registry.register(
+            point,
+            existing_id or f"{preferred_prefix}_{index:02d}",
+            tags=["sky", "path_point"],
+            sources=[source],
+            reuse_existing=not force_new,
+        )
+        if point_ids and point_ids[-1] == point_id:
+            continue
+        point_ids.append(point_id)
+    return point_ids
+
+
+def split_outer_leg_point_ids(
+    point_ids: list[str],
+    point_lookup: dict[str, report.XY],
+) -> tuple[list[str], list[str], list[str]]:
+    if len(point_ids) < 4:
+        raise ValueError("Outer circuit path must contain at least four points")
+    if len(point_ids) == 4:
+        return (
+            point_ids[:2],
+            point_ids[1:3],
+            point_ids[2:],
+        )
+    segment_lengths = [
+        distance(point_lookup[point_ids[index]], point_lookup[point_ids[index + 1]])
+        for index in range(len(point_ids) - 1)
+    ]
+    longest_index = max(range(len(segment_lengths)), key=segment_lengths.__getitem__)
+    if longest_index == 0 or longest_index == len(point_ids) - 2:
+        segment_count = len(point_ids) - 1
+        first_break = max(1, segment_count // 3)
+        second_break = max(first_break + 1, (2 * segment_count) // 3)
+        return (
+            point_ids[: first_break + 1],
+            point_ids[first_break : second_break + 1],
+            point_ids[second_break:],
+        )
+    return (
+        point_ids[: longest_index + 1],
+        point_ids[longest_index : longest_index + 2],
+        point_ids[longest_index + 1 :],
+    )
+
+
+def join_type_for_point(
+    point_id: str,
+    *,
+    final_points: list[str],
+    base_points: list[str],
+    downwind_points: list[str],
+    crosswind_points: list[str],
+) -> str | None:
+    if point_id in final_points:
+        return "STRAIGHT_IN"
+    if point_id in base_points:
+        return "BASE"
+    if point_id in downwind_points:
+        return "DOWNWIND"
+    if point_id in crosswind_points:
+        return "CROSSWIND"
+    return None
+
+
+def projected_loop_specs(
+    scene: authoring.SceneContext,
+    threshold_points: dict[str, report.XY],
+) -> list[dict[str, Any]]:
+    main_component = scene.circuit_components[0]
+    component_points, adjacency = component_graph(main_component)
+    branch_keys = [key for key, neighbours in adjacency.items() if len(neighbours) > 2]
+    if len(branch_keys) != 2:
+        raise ValueError(f"Expected two branch vertices in the main circuit component, found {len(branch_keys)}")
+
+    main_paths = [
+        [component_points[key] for key in path]
+        for path in simple_paths_between_vertices(adjacency, branch_keys[0], branch_keys[1])
+    ]
+    if len(main_paths) != 3:
+        raise ValueError(f"Expected three simple branch-to-branch paths in the main circuit component, found {len(main_paths)}")
+
+    center_thresholds = [threshold_points["16C"], threshold_points["34C"]]
+    central_axis = orient_polyline(
+        min(main_paths, key=lambda path: path_distance_to_targets(path, center_thresholds)),
+        north_to_south=True,
+    )
+    outer_candidates = [path for path in main_paths if path != central_axis]
+    west_outer = orient_polyline(
+        min(outer_candidates, key=mean_x),
+        north_to_south=False,
+    )
+    east_outer = orient_polyline(
+        max(outer_candidates, key=mean_x),
+        north_to_south=False,
+    )
+
+    side_components = [
+        (
+            index,
+            orient_polyline(ordered_points_from_lines(component)[0], north_to_south=True),
+        )
+        for index, component in enumerate(scene.circuit_components[1:], start=2)
+    ]
+    west_component_index, west_axis = min(side_components, key=lambda item: mean_x(item[1]))
+    east_component_index, east_axis = max(side_components, key=lambda item: mean_x(item[1]))
+
+    attachments_by_component: dict[int, list[report.EndpointAttachment]] = defaultdict(list)
+    for attachment in scene.circuit_attachments:
+        attachments_by_component[attachment.source_component].append(attachment)
+
+    def complementary_outer_path(
+        outer_path: list[report.XY],
+        attachments: list[report.EndpointAttachment],
+    ) -> list[report.XY]:
+        if len(attachments) != 2:
+            raise ValueError(f"Expected two attachments for side component, found {len(attachments)}")
+        attachment_points = [attachment.endpoint for attachment in attachments]
+        inserted_outer_path, unplaced = insert_points_into_polyline(outer_path, attachment_points, SNAP_TOLERANCE_METERS)
+        if unplaced:
+            raise ValueError(f"Failed to insert attachment points into outer path: {unplaced}")
+        inserted_outer_path = dedupe_consecutive_points(inserted_outer_path)
+        south_attachment = min(attachment_points, key=lambda point: point.y)
+        north_attachment = max(attachment_points, key=lambda point: point.y)
+        south_index = nearest_index(inserted_outer_path, south_attachment)
+        north_index = nearest_index(inserted_outer_path, north_attachment)
+        if south_index > north_index:
+            inserted_outer_path = list(reversed(inserted_outer_path))
+            south_index = nearest_index(inserted_outer_path, south_attachment)
+            north_index = nearest_index(inserted_outer_path, north_attachment)
+        return inserted_outer_path[south_index : north_index + 1]
+
+    west_outer_remainder = complementary_outer_path(
+        west_outer,
+        attachments_by_component[west_component_index],
+    )
+    east_outer_remainder = complementary_outer_path(
+        east_outer,
+        attachments_by_component[east_component_index],
+    )
+
+    return [
+        {
+            "loopId": "center_west",
+            "axisPoints": central_axis,
+            "outerPoints": west_outer,
+            "runwayNorth": "16C",
+            "runwaySouth": "34C",
+            "thresholdNorth": "16C",
+            "thresholdSouth": "34C",
+            "axisAnchorIds": [],
+            "outerAnchorIds": ["circuit_nw_entry", "circuit_sw_entry"],
+            "northDirection": "RIGHT_HAND",
+            "southDirection": "LEFT_HAND",
+            "altitudeFeet": 2500,
+        },
+        {
+            "loopId": "center_east",
+            "axisPoints": central_axis,
+            "outerPoints": east_outer,
+            "runwayNorth": "16C",
+            "runwaySouth": "34C",
+            "thresholdNorth": "16C",
+            "thresholdSouth": "34C",
+            "axisAnchorIds": [],
+            "outerAnchorIds": ["circuit_ne_entry", "circuit_se_entry"],
+            "northDirection": "LEFT_HAND",
+            "southDirection": "RIGHT_HAND",
+            "altitudeFeet": 2500,
+        },
+        {
+            "loopId": "west_side",
+            "axisPoints": west_axis,
+            "outerPoints": west_outer_remainder,
+            "runwayNorth": "16R",
+            "runwaySouth": "34L",
+            "thresholdNorth": "16R",
+            "thresholdSouth": "34L",
+            "axisAnchorIds": ["circuit_nw_entry", "circuit_sw_entry"],
+            "outerAnchorIds": [],
+            "northDirection": "RIGHT_HAND",
+            "southDirection": "LEFT_HAND",
+            "altitudeFeet": 2500,
+        },
+        {
+            "loopId": "east_side",
+            "axisPoints": east_axis,
+            "outerPoints": east_outer_remainder,
+            "runwayNorth": "16L",
+            "runwaySouth": "34R",
+            "thresholdNorth": "16L",
+            "thresholdSouth": "34R",
+            "axisAnchorIds": ["circuit_ne_entry", "circuit_se_entry"],
+            "outerAnchorIds": [],
+            "northDirection": "LEFT_HAND",
+            "southDirection": "RIGHT_HAND",
+            "altitudeFeet": 2500,
+        },
+    ]
+
+
+def projected_circuit_procedures(
+    scene: authoring.SceneContext,
+    registry: PointRegistry,
+    geometry_paths: dict[str, dict[str, Any]],
+    core_entities: dict[str, Any],
+    candidate_entities: dict[str, Any],
+    airport_code: str,
+) -> dict[str, dict[str, Any]]:
+    point_lookup = registry.point_lookup()
+    threshold_ids = {
+        runway_id: runway["thresholdPointId"]
+        for runway_id, runway in core_entities["aerodrome"]["runways"].items()
+    }
+    threshold_points = {
+        runway_id: point_lookup[point_id]
+        for runway_id, point_id in threshold_ids.items()
+    }
+    anchor_points = {
+        anchor_id: point_lookup[anchor["pointId"]]
+        for anchor_id, anchor in candidate_entities["namedPoints"].items()
+        if isinstance(anchor, dict) and isinstance(anchor.get("pointId"), str) and anchor["pointId"] in point_lookup
+    }
+
+    circuits: dict[str, dict[str, Any]] = {}
+    published_circuit_ids_by_procedure: dict[str, list[str]] = {
+        "prc_4_west_traffic_circuit": [],
+        "prc_5_east_hold": [],
+    }
+
+    for loop_spec in projected_loop_specs(scene, threshold_points):
+        axis_points, axis_unplaced = insert_points_into_polyline(
+            loop_spec["axisPoints"],
+            [
+                threshold_points[loop_spec["thresholdNorth"]],
+                threshold_points[loop_spec["thresholdSouth"]],
+            ],
+            SNAP_TOLERANCE_METERS,
+        )
+        if axis_unplaced:
+            raise ValueError(f"Failed to place axis insertions for loop {loop_spec['loopId']}: {axis_unplaced}")
+        axis_points, _ = insert_points_into_polyline(
+            axis_points,
+            [
+                anchor_points[anchor_id]
+                for anchor_id in loop_spec.get("axisAnchorIds", [])
+                if anchor_id in anchor_points
+            ],
+            SNAP_TOLERANCE_METERS,
+        )
+
+        outer_points, _ = insert_points_into_polyline(
+            loop_spec["outerPoints"],
+            [
+                anchor_points[anchor_id]
+                for anchor_id in loop_spec.get("outerAnchorIds", [])
+                if anchor_id in anchor_points
+            ],
+            SNAP_TOLERANCE_METERS,
+        )
+
+        axis_points = dedupe_consecutive_points(orient_polyline(axis_points, north_to_south=True))
+        outer_points = dedupe_consecutive_points(orient_polyline(outer_points, north_to_south=False))
+        outer_points = ensure_minimum_polyline_points(outer_points, 4)
+        north_threshold_index = nearest_index(axis_points, threshold_points[loop_spec["thresholdNorth"]])
+        south_threshold_index = nearest_index(axis_points, threshold_points[loop_spec["thresholdSouth"]])
+
+        axis_point_ids = point_ids_for_polyline(
+            registry,
+            axis_points,
+            preferred_prefix=f"{airport_code}_CIRCUIT_{slugify(loop_spec['loopId']).upper()}_AXIS",
+            source="cad_circuit_projection",
+            force_new_indexes={north_threshold_index + 1, south_threshold_index + 1},
+        )
+        outer_point_ids = point_ids_for_polyline(
+            registry,
+            outer_points,
+            preferred_prefix=f"{airport_code}_CIRCUIT_{slugify(loop_spec['loopId']).upper()}_OUTER",
+            source="cad_circuit_projection",
+        )
+        point_lookup = registry.point_lookup()
+        north_threshold_point_id = axis_point_ids[north_threshold_index]
+        south_threshold_point_id = axis_point_ids[south_threshold_index]
+
+        def build_directional_circuit(
+            runway_id: str,
+            direction: str,
+            threshold_id: str,
+            axis_ids: list[str],
+            outer_ids: list[str],
+        ) -> dict[str, Any]:
+            threshold_index = axis_ids.index(threshold_id)
+            final_ids = axis_ids[: threshold_index + 1]
+            upwind_ids = axis_ids[threshold_index:]
+            crosswind_ids, downwind_ids, base_ids = split_outer_leg_point_ids(outer_ids, point_lookup)
+
+            circuit_id = f"{airport_code}_CIRCUIT_{runway_id}_{slugify(loop_spec['loopId']).upper()}"
+            leg_order = [
+                ("UPWIND", upwind_ids),
+                ("CROSSWIND", crosswind_ids),
+                ("DOWNWIND", downwind_ids),
+                ("BASE", base_ids),
+                ("FINAL", final_ids),
+            ]
+            legs: list[dict[str, Any]] = []
+            for leg_name, leg_point_ids in leg_order:
+                path_id = f"{circuit_id}_{leg_name}"
+                add_core_path_from_point_ids(
+                    geometry_paths,
+                    registry,
+                    path_id,
+                    leg_point_ids,
+                    surface="SKY",
+                    width_m=SKY_WIDTH_METERS,
+                    source="cad_circuit_projection",
+                    projection_status="direct_runtime_circuit_entity",
+                    note=f"Projected LOWG circuit {runway_id} {loop_spec['loopId']} {leg_name.lower()} leg.",
+                )
+                legs.append(
+                    {
+                        "name": leg_name,
+                        "pathId": path_id,
+                    }
+                )
+
+            join_procedures = [
+                {
+                    "type": join_type,
+                    "entryPointId": candidate_entities["namedPoints"][anchor_id]["pointId"],
+                    "entryPathId": None,
+                }
+                for anchor_id in [*loop_spec.get("axisAnchorIds", []), *loop_spec.get("outerAnchorIds", [])]
+                if anchor_id in candidate_entities["namedPoints"]
+                for point_id in [candidate_entities["namedPoints"][anchor_id]["pointId"]]
+                for join_type in [
+                    join_type_for_point(
+                        point_id,
+                        final_points=final_ids,
+                        base_points=base_ids,
+                        downwind_points=downwind_ids,
+                        crosswind_points=crosswind_ids,
+                    )
+                ]
+                if isinstance(join_type, str)
+            ]
+
+            return {
+                "id": circuit_id,
+                "runwayId": runway_id,
+                "direction": direction,
+                "legs": legs,
+                "altitudeFeet": loop_spec["altitudeFeet"],
+                "reportingPoints": {},
+                "joinProcedures": join_procedures,
+                "goAroundPathId": legs[0]["pathId"],
+                "projectionStatus": "direct_runtime_circuit_entity",
+                "sourceLoop": loop_spec["loopId"],
+            }
+
+        north_runway_id = loop_spec["runwayNorth"]
+        south_runway_id = loop_spec["runwaySouth"]
+
+        north_circuit = build_directional_circuit(
+            north_runway_id,
+            loop_spec["northDirection"],
+            north_threshold_point_id,
+            axis_point_ids,
+            outer_point_ids,
+        )
+        south_circuit = build_directional_circuit(
+            south_runway_id,
+            loop_spec["southDirection"],
+            south_threshold_point_id,
+            list(reversed(axis_point_ids)),
+            list(reversed(outer_point_ids)),
+        )
+
+        circuits[north_circuit["id"]] = north_circuit
+        circuits[south_circuit["id"]] = south_circuit
+
+        if loop_spec["loopId"] == "west_side":
+            published_circuit_ids_by_procedure["prc_4_west_traffic_circuit"].extend(
+                [north_circuit["id"], south_circuit["id"]]
+            )
+        elif loop_spec["loopId"] in {"center_east", "east_side"}:
+            published_circuit_ids_by_procedure["prc_5_east_hold"].extend(
+                [north_circuit["id"], south_circuit["id"]]
+            )
+
+    candidate_entities["publishedCircuitAssociations"] = published_circuit_ids_by_procedure
+    return circuits
 
 
 def lowg_vfr_airspace_profile(route_id: str, point_ids: list[str]) -> dict[str, Any] | None:
@@ -963,6 +1483,7 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
                 "publishedVfrProcedures": {},
             },
             "runways": {},
+            "circuits": {},
             "taxiways": {},
             "stands": {},
             "aprons": {},
@@ -1617,7 +2138,7 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             source="cad_circuit",
             projection_status="candidate_shared_circuit_graph",
             point_id_prefix=f"{airport_code}_CIRCUIT_{slugify(component_name).upper()}",
-            note="Candidate circuit graph component; not yet projected into directional CircuitProcedure entities.",
+            note="Candidate shared circuit graph component retained as source geometry for the projected LOWG directional circuits.",
         )
         candidate_entities["circuitGraphs"][component_name] = {
             "id": component_name,
@@ -1625,6 +2146,15 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             "closed": closed,
             "projectionStatus": "candidate_shared_circuit_graph",
         }
+
+    core_entities["aerodrome"]["circuits"] = projected_circuit_procedures(
+        scene,
+        registry,
+        geometry_paths,
+        core_entities,
+        candidate_entities,
+        airport_code,
+    )
 
     candidate_entities["publishedVfrProcedures"] = structured_published_vfr_procedures(
         manifest,
@@ -1778,7 +2308,13 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
                 for sector_id in procedure.get("associatedOperationalSectorIds", [])
                 if isinstance(sector_id, str)
             ],
-            "associatedCircuitIds": [],
+            "associatedCircuitIds": sorted(
+                {
+                    circuit_id
+                    for circuit_id in candidate_entities.get("publishedCircuitAssociations", {}).get(procedure_id, [])
+                    if isinstance(circuit_id, str) and circuit_id in core_entities["aerodrome"]["circuits"]
+                }
+            ),
             "contactRequirement": projected_contact_requirement(
                 procedure.get("contactRequirement") if isinstance(procedure.get("contactRequirement"), dict) else None,
                 core_entities["fixes"],
@@ -1867,7 +2403,6 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
     projection_gaps = [
         "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
         "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
-        "The current circuit drawing is still a shared graph and has not yet been projected into final directional CircuitProcedure entities.",
         "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
         "The east non-standard hold remains deferred to version 2 until the loiter model is corrected.",
     ]
@@ -1888,6 +2423,7 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
         "sourceManifest": str(resolved_manifest_path.relative_to(root)),
         "summary": {
             "runways": len(core_entities["aerodrome"]["runways"]),
+            "circuits": len(core_entities["aerodrome"]["circuits"]),
             "taxiways": len(core_entities["aerodrome"]["taxiways"]),
             "stands": len(core_entities["aerodrome"]["stands"]),
             "aprons": len(core_entities["aerodrome"]["aprons"]),

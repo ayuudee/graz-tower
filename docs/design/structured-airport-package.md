@@ -218,8 +218,9 @@ At that point, remaining failures are model failures, not airport-data failures.
 
 For LOWG, this means the next package-completion focus is now narrower:
 
-- finish directional circuit semantics from the shared graph
 - keep the east non-standard hold explicit as a structured blocked concept
+- keep the projected directional circuits honest and LOWG-specific until a second-airport
+  generalization pass exists
 - continue using the map to resolve remaining geometry and ownership issues
 - widen the surrounding-airspace projection only when the current-core subset
   needs it
