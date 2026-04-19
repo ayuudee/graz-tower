@@ -11,6 +11,7 @@
   ],
   "omittedFeatures": [
     "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
+    "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
     "The east non-standard hold remains deferred to version 2.",
     "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule."
   ],
@@ -1882,8 +1883,6 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -2192,8 +2191,6 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -2502,8 +2499,6 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -2812,8 +2807,6 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -3122,8 +3115,6 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -4813,13 +4804,11 @@
           "note": "User-confirmed path. The reporting-point portion is the literal join GLEISDORF -> LASSNITZH\u00d6HE -> AUTOBAHN-OST; the final join now targets the explicit NE circuit anchor from lowg_circuits.dxf.",
           "pointIds": [
             "LOWG_FIX_GLEISDORF",
-            "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
             "LOWG_FIX_LASSNITZH\u00d6HE",
-            "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
             "LOWG_FIX_AUTOBAHN_OST",
             "LOWG_ANCHOR_CIRCUIT_NE_ENTRY"
           ],
-          "projectionStatus": "direct",
+          "projectionStatus": "direct_geometry_airspace_profile_pending",
           "source": "structured_vfr_route",
           "surface": "SKY",
           "widthMeters": 160.0
@@ -7027,30 +7016,6 @@
           "xMeters": -4529.609234,
           "yMeters": -4664.009596
         },
-        "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01": {
-          "id": "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-          "label": null,
-          "sources": [
-            "projected_airspace_membership"
-          ],
-          "tags": [
-            "airspace_transition"
-          ],
-          "xMeters": 18461.635538,
-          "yMeters": 11103.008015
-        },
-        "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02": {
-          "id": "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
-          "label": null,
-          "sources": [
-            "projected_airspace_membership"
-          ],
-          "tags": [
-            "airspace_transition"
-          ],
-          "xMeters": 11689.425445,
-          "yMeters": 7527.44051
-        },
         "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01": {
           "id": "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "label": null,
@@ -8709,49 +8674,18 @@
     },
     "vfrRoutes": {
       "vfr_northeast_entry_path": {
-        "airspaceProfile": {
-          "kind": "SEGMENTED",
-          "segments": [
-            {
-              "airspaceVolumeId": "LO59D_E",
-              "fromPointId": "LOWG_FIX_GLEISDORF",
-              "toPointId": "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01"
-            },
-            {
-              "airspaceVolumeId": "LO80C_D",
-              "fromPointId": "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
-              "toPointId": "LOWG_FIX_LASSNITZH\u00d6HE"
-            },
-            {
-              "airspaceVolumeId": "LO80C_D",
-              "fromPointId": "LOWG_FIX_LASSNITZH\u00d6HE",
-              "toPointId": "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02"
-            },
-            {
-              "airspaceVolumeId": "LO585",
-              "fromPointId": "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
-              "toPointId": "LOWG_FIX_AUTOBAHN_OST"
-            },
-            {
-              "airspaceVolumeId": "LO585",
-              "fromPointId": "LOWG_FIX_AUTOBAHN_OST",
-              "toPointId": "LOWG_ANCHOR_CIRCUIT_NE_ENTRY"
-            }
-          ]
-        },
+        "airspaceProfile": null,
         "id": "vfr_northeast_entry_path",
         "name": "vfr_northeast_entry_path",
         "note": "User-confirmed path. The reporting-point portion is the literal join GLEISDORF -> LASSNITZH\u00d6HE -> AUTOBAHN-OST; the final join now targets the explicit NE circuit anchor from lowg_circuits.dxf.",
         "pathId": "LOWG_VFR_ROUTE_VFR_NORTHEAST_ENTRY_PATH",
         "pointIds": [
           "LOWG_FIX_GLEISDORF",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_FIX_LASSNITZH\u00d6HE",
-          "LOWG_ROUTE_VFR_NORTHEAST_ENTRY_PATH_AIRSPACE_TRANSITION_02",
           "LOWG_FIX_AUTOBAHN_OST",
           "LOWG_ANCHOR_CIRCUIT_NE_ENTRY"
         ],
-        "projectionStatus": "direct"
+        "projectionStatus": "direct_geometry_airspace_profile_pending"
       },
       "vfr_southeast_entry_path": {
         "airspaceProfile": {

@@ -1395,36 +1395,6 @@ def lowg_vfr_route_projection(
             ],
         )
 
-    if (
-        route_id == "vfr_northeast_entry_path"
-        and ctr_volume_id is not None
-        and "LO80C_D" in candidate_airspace_volumes
-        and "LO59D_E" in candidate_airspace_volumes
-    ):
-        return projected_segmented_route(
-            route_id,
-            point_ids,
-            registry,
-            candidate_airspace_volumes,
-            airport_code,
-            [
-                {
-                    "kind": "TRANSITION",
-                    "fromAirspaceVolumeId": "LO59D_E",
-                    "toAirspaceVolumeId": "LO80C_D",
-                },
-                {
-                    "kind": "TRANSITION",
-                    "fromAirspaceVolumeId": "LO80C_D",
-                    "toAirspaceVolumeId": ctr_volume_id,
-                },
-                {
-                    "kind": "IN_VOLUME",
-                    "airspaceVolumeId": ctr_volume_id,
-                },
-            ],
-        )
-
     return point_ids, None, "direct_geometry_airspace_profile_pending"
 
 

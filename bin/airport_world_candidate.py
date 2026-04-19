@@ -645,6 +645,7 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
     forced_assumptions.extend(holding_assumptions)
     omitted_features = [
         "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
+        "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
         "The east non-standard hold remains deferred to version 2.",
         "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule.",
     ]

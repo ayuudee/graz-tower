@@ -56,7 +56,9 @@ Status as of April 17, 2026:
 - the current LOWG route-airspace fit is now mixed by design:
   `InVolume(LO585)` for the southeast/southwest entries,
   segmented `LO585 -> LO0EF_E` for the western corridor,
-  and segmented `LO59D_E -> LO80C_D -> LO585` for the northeast entry
+  and no projected runtime profile yet for the northeast entry, where the
+  pre-CTR leg still cannot be assigned honestly under the current low-level
+  slice
 - the package still matters because it remains the only honest place to hold
   richer authoring/procedure truth before projection
 
@@ -226,8 +228,8 @@ For LOWG, this means the next package-completion focus is now narrower:
 - keep the projected directional circuits honest and LOWG-specific until a second-airport
   generalization pass exists
 - continue using the map to resolve remaining geometry and ownership issues
-- widen the surrounding-airspace projection only when the current-core subset
-  needs it
+- widen the remaining non-runtime special-use surrounding-airspace projection
+  only when the current-core subset needs it
 
 Only once that package is stable should the corresponding `core` changes be designed.
 

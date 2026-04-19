@@ -7,6 +7,8 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.math.hypot
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -98,6 +100,9 @@ class LowgWorldCandidateValidationTest {
         assertTrue(Files.exists(candidatePath), "Missing LOWG world candidate at $candidatePath")
 
         val document = json.decodeFromString<WorldCandidateDocument>(candidatePath.readText())
+        assertExpectedLowgAirspaceVolumes(document)
+        assertExpectedLowgVfrRouteProfiles(document)
+
         val world = document.toWorld()
         val report = world.validate()
         val structuralIssues = report.issues.filter { it.code in structuralCodes }
@@ -135,12 +140,72 @@ class LowgWorldCandidateValidationTest {
         }
         println(summary.trim())
 
+        assertEquals(
+            0,
+            report.issues.size,
+            buildString {
+                appendLine("Unexpected validation issues in LOWG world candidate:")
+                report.issues.forEach { issue -> appendLine("- ${issue.code}: ${issue.message}") }
+            }.trim(),
+        )
+
         assertTrue(
             structuralIssues.isEmpty(),
             buildString {
                 appendLine("Unexpected structural projection issues in LOWG world candidate:")
                 structuralIssues.forEach { issue -> appendLine("- ${issue.code}: ${issue.message}") }
             }.trim(),
+        )
+    }
+
+    private fun assertExpectedLowgAirspaceVolumes(document: WorldCandidateDocument) {
+        val expectedVolumeIds = setOf(
+            "LO0EF_E",
+            "LO585",
+            "LO59D_E",
+            "LO80C_D",
+            "LOCB1_E",
+            "LODDA_E",
+        )
+        assertEquals(
+            expectedVolumeIds,
+            document.world.airspaceVolumes.keys,
+            "LOWG current-core candidate should project the worked low-level runtime airspace subset only.",
+        )
+    }
+
+    private fun assertExpectedLowgVfrRouteProfiles(document: WorldCandidateDocument) {
+        val routes = document.world.vfrRoutes
+
+        val southeast = routes.getValue("vfr_southeast_entry_path")
+        assertEquals("IN_VOLUME", southeast.airspaceProfile?.kind)
+        assertEquals("LO585", southeast.airspaceProfile?.airspaceVolumeId)
+
+        val southwest = routes.getValue("vfr_southwest_entry_path")
+        assertEquals("IN_VOLUME", southwest.airspaceProfile?.kind)
+        assertEquals("LO585", southwest.airspaceProfile?.airspaceVolumeId)
+
+        val western = routes.getValue("vfr_western_corridor_path")
+        assertEquals("SEGMENTED", western.airspaceProfile?.kind)
+        assertEquals(
+            listOf("LO585", "LO585", "LO585", "LO0EF_E"),
+            western.airspaceProfile?.segments?.map { segment -> segment.airspaceVolumeId },
+        )
+        assertEquals(5, western.pointIds.size)
+
+        val northeast = routes.getValue("vfr_northeast_entry_path")
+        assertNull(
+            northeast.airspaceProfile,
+            "LOWG northeast arrival route should remain unassigned until its pre-CTR airspace can be modeled honestly.",
+        )
+        assertEquals(
+            listOf(
+                "LOWG_FIX_GLEISDORF",
+                "LOWG_FIX_LASSNITZHÖHE",
+                "LOWG_FIX_AUTOBAHN_OST",
+                "LOWG_ANCHOR_CIRCUIT_NE_ENTRY",
+            ),
+            northeast.pointIds,
         )
     }
 

@@ -124,14 +124,15 @@ correct. It is not.
 
 ### 4. Surrounding airspace is still selectively projected
 
-LOWG now carries real sector geometry and a worked low-level CTR/TMA slice in
-the runtime candidate, but the broader surrounding airspace set is still
+LOWG now carries real sector geometry and the worked low-level CTR/TMA slice in
+the runtime candidate, but the broader surrounding-airspace set is still
 selectively kept out of the current-core world candidate.
 
 That is a deliberate first-slice boundary:
 
 - enough runtime-owned geometry exists to drive the current LOWG pages honestly
-- not all airspace is yet projected into the candidate/runtime path
+- not all surrounding-airspace shapes map cleanly into current runtime airspace
+  volumes yet
 
 The remaining work here is projection breadth, not another immediate core-type
 addition.

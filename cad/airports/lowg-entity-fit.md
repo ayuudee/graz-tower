@@ -78,7 +78,7 @@ What already fits well:
 
 What does not yet fit cleanly:
 
-- broader surrounding-airspace projection beyond the worked LOWG low-level CTR/TMA subset
+- non-runtime special-use surrounding-airspace projection beyond the worked LOWG CTR/TMA class-layer set
 - altitude-aware airspace membership beyond the current 2D low-level projection
 - the east non-standard hold / loiter semantics
 
@@ -236,13 +236,13 @@ The current LOWG projection now lands in a mixed but honest state:
   `InVolume(LO585)`
 - `vfr_western_corridor_path` projects as segmented `LO585 -> LO0EF_E` with an
   explicit boundary transition point
-- `vfr_northeast_entry_path` now projects as segmented
-  `LO59D_E -> LO80C_D -> LO585` with explicit transition points at the
-  volume boundaries
+- `vfr_northeast_entry_path` remains intentionally unassigned in the current
+  candidate, because the pre-CTR leg still cannot be mapped to a runtime
+  airspace volume honestly under the current low-level slice
 
-So LOWG can now project real runtime `VfrRoute` entities, but the broader
-surrounding-airspace story is still intentionally incomplete rather than
-guessed.
+So LOWG can now project real runtime `VfrRoute` entities, but the non-runtime
+special-use surrounding-airspace story is still intentionally incomplete rather
+than guessed.
 
 ### CircuitProcedure
 
