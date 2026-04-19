@@ -236,12 +236,13 @@ The current LOWG projection now lands in a mixed but honest state:
   `InVolume(LO585)`
 - `vfr_western_corridor_path` projects as segmented `LO585 -> LO0EF_E` with an
   explicit boundary transition point
-- `vfr_northeast_entry_path` remains null because a more precise answer would
-  still require invented authority or more airspace-transition structure than
-  the current route projection carries
+- `vfr_northeast_entry_path` now projects as segmented
+  `LO59D_E -> LO80C_D -> LO585` with explicit transition points at the
+  volume boundaries
 
 So LOWG can now project real runtime `VfrRoute` entities, but the broader
-route-airspace story is still intentionally incomplete rather than guessed.
+surrounding-airspace story is still intentionally incomplete rather than
+guessed.
 
 ### CircuitProcedure
 

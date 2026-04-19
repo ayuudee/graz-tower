@@ -56,8 +56,7 @@ Status as of April 17, 2026:
 - the current LOWG route-airspace fit is now mixed by design:
   `InVolume(LO585)` for the southeast/southwest entries,
   segmented `LO585 -> LO0EF_E` for the western corridor,
-  and explicit null where the northeast route would still require invented
-  authority
+  and segmented `LO59D_E -> LO80C_D -> LO585` for the northeast entry
 - the package still matters because it remains the only honest place to hold
   richer authoring/procedure truth before projection
 

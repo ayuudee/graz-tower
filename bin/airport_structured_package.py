@@ -1260,6 +1260,98 @@ def route_boundary_transition_point(
     return min(unique_intersections, key=lambda point: distance(start, point))
 
 
+def projected_segmented_route(
+    route_id: str,
+    point_ids: list[str],
+    registry: PointRegistry,
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+    airport_code: str,
+    leg_specs: list[dict[str, str]],
+) -> tuple[list[str], dict[str, Any] | None, str]:
+    if len(point_ids) < 2 or len(leg_specs) != len(point_ids) - 1:
+        return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+    point_lookup = registry.point_lookup()
+    projected_point_ids = [point_ids[0]]
+    projected_segments: list[dict[str, str]] = []
+    transition_counter = 1
+
+    for leg_index, leg_spec in enumerate(leg_specs):
+        start_point_id = point_ids[leg_index]
+        end_point_id = point_ids[leg_index + 1]
+        kind = leg_spec.get("kind")
+
+        if kind == "IN_VOLUME":
+            volume_id = leg_spec.get("airspaceVolumeId")
+            if not isinstance(volume_id, str):
+                return point_ids, None, "direct_geometry_airspace_profile_pending"
+            projected_segments.append(
+                {
+                    "fromPointId": start_point_id,
+                    "toPointId": end_point_id,
+                    "airspaceVolumeId": volume_id,
+                }
+            )
+            projected_point_ids.append(end_point_id)
+            continue
+
+        if kind != "TRANSITION":
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+        from_volume_id = leg_spec.get("fromAirspaceVolumeId")
+        to_volume_id = leg_spec.get("toAirspaceVolumeId")
+        if not isinstance(from_volume_id, str) or not isinstance(to_volume_id, str):
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+        start_point = point_lookup.get(start_point_id)
+        end_point = point_lookup.get(end_point_id)
+        if start_point is None or end_point is None:
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+        transition_point = route_boundary_transition_point(
+            start_point,
+            end_point,
+            candidate_airspace_boundary_rings(candidate_airspace_volumes, to_volume_id, point_lookup)
+            or candidate_airspace_boundary_rings(candidate_airspace_volumes, from_volume_id, point_lookup),
+        )
+        if transition_point is None:
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+        transition_point_id = registry.register(
+            transition_point,
+            f"{airport_code}_ROUTE_{slugify(route_id).upper()}_AIRSPACE_TRANSITION_{transition_counter:02d}",
+            tags=["airspace_transition"],
+            sources=["projected_airspace_membership"],
+            reuse_existing=False,
+        )
+        transition_counter += 1
+
+        projected_segments.extend(
+            [
+                {
+                    "fromPointId": start_point_id,
+                    "toPointId": transition_point_id,
+                    "airspaceVolumeId": from_volume_id,
+                },
+                {
+                    "fromPointId": transition_point_id,
+                    "toPointId": end_point_id,
+                    "airspaceVolumeId": to_volume_id,
+                },
+            ]
+        )
+        projected_point_ids.extend([transition_point_id, end_point_id])
+
+    return (
+        projected_point_ids,
+        {
+            "kind": "SEGMENTED",
+            "segments": projected_segments,
+        },
+        "direct",
+    )
+
+
 def lowg_vfr_route_projection(
     route_id: str,
     point_ids: list[str],
@@ -1268,7 +1360,6 @@ def lowg_vfr_route_projection(
     airport_code: str,
 ) -> tuple[list[str], dict[str, Any] | None, str]:
     ctr_volume_id = "LO585" if "LO585" in candidate_airspace_volumes else None
-    point_lookup = registry.point_lookup()
 
     if route_id in {"vfr_southeast_entry_path", "vfr_southwest_entry_path"} and ctr_volume_id is not None:
         return (
@@ -1281,57 +1372,57 @@ def lowg_vfr_route_projection(
         )
 
     if route_id == "vfr_western_corridor_path" and ctr_volume_id is not None and "LO0EF_E" in candidate_airspace_volumes:
-        if len(point_ids) != 4:
-            return point_ids, None, "direct_geometry_airspace_profile_pending"
-        green_city = point_lookup.get(point_ids[2])
-        graz_nord = point_lookup.get(point_ids[3])
-        if green_city is None or graz_nord is None:
-            return point_ids, None, "direct_geometry_airspace_profile_pending"
-        target_volume_id = "LO0EF_E"
-        transition_point = route_boundary_transition_point(
-            green_city,
-            graz_nord,
-            candidate_airspace_boundary_rings(candidate_airspace_volumes, target_volume_id, point_lookup)
-            or candidate_airspace_boundary_rings(candidate_airspace_volumes, ctr_volume_id, point_lookup),
+        return projected_segmented_route(
+            route_id,
+            point_ids,
+            registry,
+            candidate_airspace_volumes,
+            airport_code,
+            [
+                {
+                    "kind": "IN_VOLUME",
+                    "airspaceVolumeId": ctr_volume_id,
+                },
+                {
+                    "kind": "IN_VOLUME",
+                    "airspaceVolumeId": ctr_volume_id,
+                },
+                {
+                    "kind": "TRANSITION",
+                    "fromAirspaceVolumeId": ctr_volume_id,
+                    "toAirspaceVolumeId": "LO0EF_E",
+                },
+            ],
         )
-        if transition_point is None:
-            return point_ids, None, "direct_geometry_airspace_profile_pending"
-        transition_point_id = registry.register(
-            transition_point,
-            f"{airport_code}_ROUTE_{slugify(route_id).upper()}_AIRSPACE_TRANSITION_01",
-            tags=["airspace_transition"],
-            sources=["projected_airspace_membership"],
-            reuse_existing=False,
-        )
-        projected_point_ids = point_ids[:3] + [transition_point_id] + point_ids[3:]
-        return (
-            projected_point_ids,
-            {
-                "kind": "SEGMENTED",
-                "segments": [
-                    {
-                        "fromPointId": projected_point_ids[0],
-                        "toPointId": projected_point_ids[1],
-                        "airspaceVolumeId": ctr_volume_id,
-                    },
-                    {
-                        "fromPointId": projected_point_ids[1],
-                        "toPointId": projected_point_ids[2],
-                        "airspaceVolumeId": ctr_volume_id,
-                    },
-                    {
-                        "fromPointId": projected_point_ids[2],
-                        "toPointId": projected_point_ids[3],
-                        "airspaceVolumeId": ctr_volume_id,
-                    },
-                    {
-                        "fromPointId": projected_point_ids[3],
-                        "toPointId": projected_point_ids[4],
-                        "airspaceVolumeId": target_volume_id,
-                    },
-                ],
-            },
-            "direct",
+
+    if (
+        route_id == "vfr_northeast_entry_path"
+        and ctr_volume_id is not None
+        and "LO80C_D" in candidate_airspace_volumes
+        and "LO59D_E" in candidate_airspace_volumes
+    ):
+        return projected_segmented_route(
+            route_id,
+            point_ids,
+            registry,
+            candidate_airspace_volumes,
+            airport_code,
+            [
+                {
+                    "kind": "TRANSITION",
+                    "fromAirspaceVolumeId": "LO59D_E",
+                    "toAirspaceVolumeId": "LO80C_D",
+                },
+                {
+                    "kind": "TRANSITION",
+                    "fromAirspaceVolumeId": "LO80C_D",
+                    "toAirspaceVolumeId": ctr_volume_id,
+                },
+                {
+                    "kind": "IN_VOLUME",
+                    "airspaceVolumeId": ctr_volume_id,
+                },
+            ],
         )
 
     return point_ids, None, "direct_geometry_airspace_profile_pending"
