@@ -45,4 +45,7 @@ data class AircraftState(
     val route: PilotRoute = PilotRoute.None,
     val pilotGoal: PilotGoal,
     val humanPiloted: Boolean = false,
+    /** Cognitive pilot mission plan. When non-null, the cognitive pilot generates
+     *  transmissions and advances through mission steps. When null, legacy DefaultPilot runs. */
+    val pilotMission: PilotMission? = null,
 )

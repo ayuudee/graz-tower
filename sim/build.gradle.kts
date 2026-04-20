@@ -19,5 +19,11 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        jvmTest {
+            dependencies {
+                implementation(project(":migration"))
+                implementation(libs.kotlinx.serialization.json)
+            }
+        }
     }
 }

@@ -77,25 +77,54 @@ private fun handlePhysicsTick(
     return state.copy(aircraft = advanced).emit(listOf(next))
 }
 
+@Suppress("NestedBlockDepth") // cognitive pilot layer adds one nesting level
 private fun handlePilotTick(
     state: SimState,
     event: SimEvent.PilotDecisionTick,
 ): Pair<SimState, List<SimEvent>> {
     val ac = state.aircraft[event.aircraftId]
-        ?: return state to emptyList() // aircraft removed — drop tick silently
+        ?: return state to emptyList()
+
+    // Physical layer: kinematics.
     val intent = DefaultPilot.decide(PilotView(state.now, ac, state.worldIndex))
-    val updated = ac.copy(
+    var updated = ac.copy(
         targetSpeedMps = intent.targetSpeedMps,
         phase = intent.phase,
         route = intent.route,
         targetAltitudeM = intent.targetAltitudeM,
     )
-    val aircraft = LinkedHashMap(state.aircraft).apply { put(event.aircraftId, updated) }
+
+    // Cognitive layer: mission step advancement + pilot transmissions.
+    var resultState = state
+    val mission = updated.pilotMission
+    if (mission != null && !mission.isComplete) {
+        val cognitive = pilotCognitiveDecide(updated, mission, state.worldIndex, state.now)
+        var updatedMission = cognitive.updatedMission
+        for (tx in cognitive.transmissions) {
+            if (tx is xyz.easiersaid.twr.protocol.Report) {
+                for (evt in tx.events) { updatedMission = updateAfterReport(updatedMission, evt) }
+            }
+        }
+        updated = updated.copy(pilotMission = updatedMission)
+
+        // Deposit transmissions directly into controller inbox (bypasses radio for prototype).
+        if (cognitive.transmissions.isNotEmpty()) {
+            val ctrl = state.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
+            if (ctrl != null) {
+                val messages = cognitive.transmissions.map { ReceivedMessage.Clear(event.aircraftId, it) }
+                val inbox = resultState.controllerInbox.toMutableMap()
+                inbox[ctrl.id] = (inbox[ctrl.id] ?: emptyList()) + messages
+                resultState = resultState.copy(controllerInbox = inbox)
+            }
+        }
+    }
+
+    val aircraft = LinkedHashMap(resultState.aircraft).apply { put(event.aircraftId, updated) }
     val next = SimEvent.PilotDecisionTick(
         time = event.time + PilotConstants.PILOT_DECISION_INTERVAL,
         aircraftId = event.aircraftId,
     )
-    return state.copy(aircraft = aircraft).emit(listOf(next))
+    return resultState.copy(aircraft = aircraft).emit(listOf(next))
 }
 
 private fun handleControllerTick(
@@ -242,7 +271,14 @@ private fun handlePilotProcessingComplete(
     // frequency for the new controller to step on the pilot.
     val controller = responsibleController(state, ac.id)
         ?: return state to emptyList()
-    val afterApply = applyPilotHeardInstruction(state, ac, instruct.instruction)
+    var afterApply = applyPilotHeardInstruction(state, ac, instruct.instruction)
+    // Cognitive pilot: update mission based on received instruction.
+    val missionAc = afterApply.aircraft[ac.id]
+    if (missionAc?.pilotMission != null) {
+        val updatedMission = processInstruction(instruct.instruction, missionAc.pilotMission, state.now)
+        val updatedAc = missionAc.copy(pilotMission = updatedMission)
+        afterApply = afterApply.copy(aircraft = LinkedHashMap(afterApply.aircraft).apply { put(ac.id, updatedAc) })
+    }
     val readback = buildReadback(instruct.instruction)
         ?: return afterApply to emptyList()
 
