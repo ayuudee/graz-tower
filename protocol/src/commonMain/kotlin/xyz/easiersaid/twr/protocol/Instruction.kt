@@ -226,6 +226,21 @@ enum class TurnDirection { LEFT, RIGHT }
 enum class OrbitDirection { LEFT, RIGHT }
 enum class CircuitDirection { LEFT_HAND, RIGHT_HAND }
 
+/**
+ * ICAO wake turbulence category (Doc 4444 §5.8, 17th ed.).
+ * Determines required separation minima between aircraft on approach and departure.
+ */
+enum class WakeCategory {
+    /** Super: A380, An-225. Added via Doc 4444 Amendment 7B (2014). */
+    J,
+    /** Heavy: MTOW > 136,000 kg. */
+    H,
+    /** Medium: 7,000–136,000 kg MTOW. */
+    M,
+    /** Light: MTOW < 7,000 kg. */
+    L,
+}
+
 enum class RoleName {
     CLEARANCE_DELIVERY,
     GROUND,
@@ -547,6 +562,17 @@ data class GoAround(
 data class HoldPositionCancelTakeoff(
     override val target: AircraftId
 ) : RunwayInstruction
+
+/**
+ * ATC-initiated discontinue approach. Distinct from [GoAround] which is pilot-initiated.
+ * Different obligation chains: BreakOff creates a missed-approach obligation per ICAO Doc 4444 §6.5.4
+ * (published procedure or alternative instructions); GoAround is a pilot report the controller
+ * must acknowledge and re-sequence around.
+ */
+data class BreakOff(
+    override val target: AircraftId,
+    val missedApproachInstructions: List<AtcInstruction> = emptyList(),
+) : RunwayInstruction, ApproachInstruction
 
 data class StopImmediately(
     override val target: AircraftId
@@ -1010,6 +1036,17 @@ data class SpecialVfrClearance(
 data class CancelClearance(
     override val target: AircraftId,
     val domain: ClearanceDomain? = null
+) : AtcInstruction
+
+/**
+ * Instruction rescission: "disregard [last instruction]". Required for compounding
+ * sequencing — "disregard extend downwind, turn base" is the natural corrective.
+ * Distinct from [CancelClearance] which cancels a clearance by domain; Disregard
+ * cancels a specific preceding instruction by reference.
+ */
+data class Disregard(
+    override val target: AircraftId,
+    val instruction: AtcInstruction? = null,
 ) : AtcInstruction
 
 // -----------------------------------------------------------------------------

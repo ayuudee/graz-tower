@@ -3,7 +3,14 @@ package xyz.easiersaid.twr.controller
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import xyz.easiersaid.twr.controller.assess.Feasibility
+import xyz.easiersaid.twr.controller.assess.assessSeparation
+import xyz.easiersaid.twr.controller.assess.emitReactiveOutputs
+import xyz.easiersaid.twr.controller.assess.reactiveInterventions
+import xyz.easiersaid.twr.controller.assess.checkFeasibility
 import xyz.easiersaid.twr.controller.assess.selectRunwayIntoWind
+import xyz.easiersaid.twr.controller.bdi.applySupersessionCleanup
+import xyz.easiersaid.twr.controller.assess.updateArrivalSequence
 import xyz.easiersaid.twr.controller.assess.updateRunwayDuty
 import xyz.easiersaid.twr.controller.bdi.*
 import xyz.easiersaid.twr.controller.observe.*
@@ -33,6 +40,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val beliefs = updateBeliefs(previousBeliefs, view)
         .gcOldPendingReadbacks(view.time)
         .withContactMarked(contactedAircraft)
+        .withLocEstablished(events)
         .withActiveRunway(view)
         .let { b ->
             val commitments = reconcileCommitments(
@@ -43,29 +51,53 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
             b.copy(commitments = commitments)
         }
         .let { b ->
+            if (view.role == RoleName.TOWER || view.role == RoleName.APPROACH) {
+                val sequence = updateArrivalSequence(b.arrivalSequence, b.activeRunway, b, view.worldIndex)
+                b.copy(arrivalSequence = sequence)
+            } else b
+        }
+        .let { b ->
+            // Phase 6b Phase A: early separation assessment → beliefs (with hysteresis).
+            val assessments = assessSeparation(b, view.worldIndex)
+            val updatedConcerns = updateRecentConcerns(b.recentConcerns, assessments, view.time)
+            b.copy(separationAssessments = assessments, recentConcerns = updatedConcerns)
+        }
+        .let { b ->
             if (view.role == RoleName.TOWER) {
-                val duty = updateRunwayDuty(b.runwayDuty, b.activeRunway, b, b.commitments, events, view.time, view.worldIndex)
+                val duty = updateRunwayDuty(
+                    b.runwayDuty, b.activeRunway, b, b.commitments,
+                    events, view.time, view.worldIndex, b.arrivalSequence,
+                )
                 b.copy(runwayDuty = duty)
             } else b
         }
 
     val ctx = OperatorContext(view, beliefs, events, world)
     val (runs, skipped) = executeAllProcedures(view.responsibilities, beliefs, ctx)
-    val (rawOutputs, committedAircraft) = arbitrate(runs)
+    val (rawOutputs, committedAircraft) = arbitrate(runs, beliefs, view)
     val outputs = rawOutputs.map { enrichInstruction(it, view.weather) }
     val companions = deriveCompanionOutputs(rawOutputs, runs)
+
+    // Phase 6b Phase B: reactive safety net — catch separation concerns not addressed by procedures.
+    val reactiveIntv = reactiveInterventions(beliefs, outputs)
+    val reactiveOutputs = emitReactiveOutputs(reactiveIntv, beliefs)
+    val reactiveInstructs = reactiveOutputs.filterIsInstance<ControllerOutput.Instruct>()
+
     val stageAdvancedBeliefs = advanceCommittedStages(beliefs, runs, committedAircraft)
 
-    // Readback pipeline: (1) validate incoming readbacks against pending, popping matches;
-    // (2) record this cycle's outgoing Instruct outputs as new pending. Stale pending
-    // entries were aged out at cycle start (see gcOldPendingReadbacks above) so that
-    // rule guards like NoPendingReadback evaluate against an already-GC'd register.
-    val (responses, afterValidation) = validatedReadbackResponses(view, stageAdvancedBeliefs)
+    // Supersession cleanup: procedural outputs first, then reactive outputs.
+    val proceduralInstructions = outputs.map { it.target to it.instruction }
+    val reactiveInstructions = reactiveInstructs.map { it.target to it.instruction }
+    val afterProceduralSupersession = applySupersessionCleanup(stageAdvancedBeliefs, proceduralInstructions)
+    val afterReactiveSupersession = applySupersessionCleanup(afterProceduralSupersession, reactiveInstructions)
+
+    val (responses, afterValidation) = validatedReadbackResponses(view, afterReactiveSupersession)
+    val allInstructs = outputs + reactiveInstructs
     val finalBeliefs = afterValidation
-        .recordPendingReadbacks(outputs, view.time)
+        .recordPendingReadbacks(allInstructs, view.time)
 
     return ControllerDecisionResult(
-        outputs = outputs + companions + responses,
+        outputs = outputs + reactiveOutputs + companions + responses,
         updatedBeliefs = finalBeliefs,
         trace = OverallDecisionTrace(
             controllerId = view.controllerId, time = view.time,
@@ -92,6 +124,52 @@ private fun BeliefState.withContactMarked(contacted: Set<AircraftId>): BeliefSta
     copy(commitments = commitments.mapValues { (acId, c) ->
         if (acId in contacted && !c.contacted) c.copy(contacted = true) else c
     })
+
+/**
+ * Update recent concerns for hysteresis. Concern can only escalate freely;
+ * de-escalation requires [BeliefState.CONCERN_COOLDOWN_MS] to have elapsed.
+ */
+private fun updateRecentConcerns(
+    existing: Map<AircraftId, xyz.easiersaid.twr.controller.observe.RecentConcern>,
+    assessments: List<xyz.easiersaid.twr.controller.observe.SeparationAssessment>,
+    now: SimTime,
+): Map<AircraftId, xyz.easiersaid.twr.controller.observe.RecentConcern> {
+    val updated = existing.toMutableMap()
+    for (assessment in assessments) {
+        val follower = assessment.other
+        val newConcern = assessment.concern
+        val old = updated[follower]
+        if (old == null) {
+            updated[follower] = xyz.easiersaid.twr.controller.observe.RecentConcern(newConcern, now)
+        } else if (newConcern is SeparationConcern.Severity && old.concern is SeparationConcern.Severity) {
+            val newLevel = (newConcern as SeparationConcern.Severity).level
+            val oldLevel = (old.concern as SeparationConcern.Severity).level
+            if (newLevel >= oldLevel) {
+                // Escalation: update immediately.
+                updated[follower] = xyz.easiersaid.twr.controller.observe.RecentConcern(newConcern, now)
+            } else if ((now.millis - old.since.millis) >= BeliefState.CONCERN_COOLDOWN_MS) {
+                // De-escalation after cooldown: allow.
+                updated[follower] = xyz.easiersaid.twr.controller.observe.RecentConcern(newConcern, now)
+            }
+            // Else: within cooldown, keep old concern (hysteresis applied in assessSeparation).
+        } else {
+            updated[follower] = xyz.easiersaid.twr.controller.observe.RecentConcern(newConcern, now)
+        }
+    }
+    // Prune entries for aircraft no longer in any assessment.
+    val activeFollowers = assessments.map { it.other }.toSet()
+    updated.keys.retainAll(activeFollowers)
+    return updated
+}
+
+private fun BeliefState.withLocEstablished(events: List<ControllerEvent>): BeliefState {
+    val newlyEstablished = events.mapNotNull { event ->
+        if (event is ControllerEvent.PositionReported && event.event is ReportEvent.EstablishedLocaliser)
+            event.aircraft else null
+    }.toSet()
+    return if (newlyEstablished.isEmpty()) this
+    else copy(establishedLocaliser = establishedLocaliser + newlyEstablished)
+}
 
 private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState =
     if ((view.role == RoleName.TOWER || view.role == RoleName.GROUND) &&
@@ -173,6 +251,8 @@ private data class ArbState(
 
 private fun arbitrate(
     runs: List<ProcedureRun>,
+    beliefs: BeliefState,
+    view: ControllerView,
 ): Pair<List<ControllerOutput.Instruct>, Set<AircraftId>> {
     val sorted = runs.sortedWith(
         compareBy<ProcedureRun> { it.result.urgency.ordinal }
@@ -184,6 +264,16 @@ private fun arbitrate(
         val isSafety = result.urgency == Urgency.SAFETY
         // SAFETY: unlimited. Other urgencies: one per level per cycle.
         if (!isSafety && result.urgency in state.committedByUrgency) return@fold state
+
+        // Feasibility check: is this instruction coherent for the aircraft's state?
+        // SAFETY-urgency outputs bypass feasibility — they must not be suppressed.
+        if (!isSafety) {
+            val ac = beliefs.trackedAircraft[action.aircraft]
+            if (ac != null) {
+                val feasibility = checkFeasibility(action.instruction, ac, view, beliefs)
+                if (feasibility is Feasibility.Infeasible) return@fold state
+            }
+        }
 
         val instruct = ControllerOutput.Instruct(
             target = action.aircraft, dispatch = action.dispatch,
@@ -291,14 +381,16 @@ private fun enrichInstruction(
 /**
  * Validate incoming readbacks against pending instructions.
  *
- * Three outcomes per readback, per ICAO Doc 4444 §12.3.2 / CAP 413 §1.5.6:
- *   • CORRECT      → emit `ReadBackCorrect`, pop the matched pending entry.
- *   • INCORRECT    → emit `ReadbackCorrection(kind = INCORRECT_ATOM)`, keep pending
- *                    (so the pilot's corrected readback still has a match to pop).
- *   • MISSING atom → emit `ReadbackCorrection(kind = MISSING_ATOM)`, keep pending.
+ * Four-state [ReadbackVerdict] model, per ICAO Doc 4444 §12.3.2 / CAP 413 §1.5.6:
+ *   • CORRECT  → emit `ReadBackCorrect`, pop the matched pending entry.
+ *   • INCORRECT → emit `ReadbackCorrection`, keep pending (pilot owes correct readback).
+ *   • MISSING  → pending ages out via GC ([gcOldPendingReadbacks]); after TTL, controller
+ *                may re-issue or emit "say again" at discretion. Not produced here.
+ *   • REFUSED  → pilot "unable"; pop pending, do NOT activate, route to re-sequencing.
+ *                Produced by PilotRequest.Unable processing, not by readback classification.
  *
- * Readbacks with no matching pending at all stay silent (no clearance to validate
- * against; receiving garbage under no pending state is an interpretation-layer issue).
+ * This function handles CORRECT and INCORRECT only (classification of actual Readback
+ * transmissions). MISSING and REFUSED arrive via separate paths.
  *
  * When multiple pendings are outstanding, we prefer a CORRECT match first (most-recent
  * wins); otherwise the most recent same-kind pending is the one we issue a correction

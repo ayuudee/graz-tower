@@ -323,4 +323,6 @@ data class WorldIndex(
     val entitiesByPoint: Map<PointId, Set<EntityRef>> = emptyMap(),
     val holdingPointsByRunway: Map<RunwayId, Set<PointId>> = emptyMap(),
     val circuitLegsByPoint: Map<PointId, Set<LegName>> = emptyMap(),
+    /** Runway threshold point, keyed by runway. Used for arrival distance computation. */
+    val thresholdByRunway: Map<RunwayId, PointId> = emptyMap(),
 )

@@ -58,6 +58,23 @@ sealed interface ReadbackVerdict {
     data class Incorrect(val defects: List<AtomDefect>) : ReadbackVerdict {
         init { require(defects.isNotEmpty()) { "Incorrect verdict must carry at least one defect" } }
     }
+
+    /**
+     * No readback received within [MAX_READBACK_AGE]. Pending ages out via GC;
+     * after TTL, controller may emit "say again" or re-issue at discretion.
+     * No immediate pop — the pending entry remains until explicitly GC'd.
+     */
+    data object Missing : ReadbackVerdict
+
+    /**
+     * Pilot explicitly refused the instruction ("unable [reason]").
+     *
+     * Not a readback defect — a goal-state change. processReadback routing:
+     * pop pending, do NOT activate clearance, route to re-sequencing via
+     * NeedsReplan on the commitment. Required for Phase 5c speed control
+     * ("unable due turbulence").
+     */
+    data class Refused(val reason: String?) : ReadbackVerdict
 }
 
 /** A single problem found while classifying a readback against an instruction. */
@@ -140,6 +157,7 @@ private enum class AtomKind {
     // classifier distinguishes "pilot read back the wrong hold variant" from
     // "pilot didn't acknowledge at all".
     HoldingAck, HoldingAckCancelTakeoff,
+    SequenceAck, BreakOff, DisregardAck,
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -172,6 +190,9 @@ private fun AtomicReadback.kind(): AtomKind = when (this) {
     is FreeTextReadback -> AtomKind.FreeText
     is HoldingAcknowledgementReadback ->
         if (cancelTakeoff) AtomKind.HoldingAckCancelTakeoff else AtomKind.HoldingAck
+    is SequenceAcknowledgementReadback -> AtomKind.SequenceAck
+    is BreakOffReadback -> AtomKind.BreakOff
+    is DisregardAcknowledgementReadback -> AtomKind.DisregardAck
 }
 
 /** Classifier-local kind tag for [ReadbackCondition]. */
@@ -239,6 +260,11 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is BacktrackRunway -> setOf(BacktrackReadback(instruction.runway))
     is HoldShortOf -> setOf(HoldShortReadback(instruction.runway))
     is GoAround -> setOf(GoAroundReadback(level = instruction.level, heading = instruction.heading))
+    is BreakOff -> setOf(BreakOffReadback(
+        level = instruction.missedApproachInstructions.filterIsInstance<ClimbTo>().firstOrNull()?.level,
+        heading = instruction.missedApproachInstructions.filterIsInstance<FlyHeading>().firstOrNull()?.heading
+            ?: instruction.missedApproachInstructions.filterIsInstance<TurnHeading>().firstOrNull()?.heading,
+    ))
     is AfterLandingVacateVia -> setOf(VacateReadback(via = instruction.exit))
     is VacateRunway -> setOf(VacateReadback(direction = instruction.direction, via = instruction.via))
 
@@ -281,7 +307,7 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is TurnByDegrees -> emptySet()
     is ContinuePresentHeading -> emptySet()
     is StopTurn -> emptySet()
-    is InterceptLocaliser -> emptySet()
+    is InterceptLocaliser -> setOf(RunwayReadback(instruction.runway))
 
     // ── Speed ────────────────────────────────────────────────────────────
     is MaintainSpeed -> setOf(SpeedReadback(instruction.speed))
@@ -295,7 +321,8 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is SetPressure -> setOf(PressureSettingReadback(instruction.pressure))
 
     // ── Route / approach / hold ──────────────────────────────────────────
-    is ClearedTo -> instruction.route?.let { setOf(RouteReadback(it)) } ?: emptySet()
+    is ClearedTo -> instruction.route?.let { setOf(RouteReadback(it)) }
+        ?: setOf(RouteReadback(RouteSpec.Direct(instruction.clearanceLimit)))
     is ProceedDirect -> setOf(RouteReadback(RouteSpec.Direct(instruction.fix)))
     is WhenAbleProceedDirect -> setOf(RouteReadback(RouteSpec.Direct(instruction.fix)))
     is ClearedApproach -> setOf(ClearedApproachReadback(instruction.approachType, instruction.runway))
@@ -314,9 +341,9 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is JoinCircuit -> emptySet()
     is MakeShortApproach -> emptySet()
     is MakeLongApproach -> emptySet()
-    is ExtendDownwind -> emptySet()
-    is TurnBase -> emptySet()
-    is Orbit -> emptySet()
+    is ExtendDownwind -> setOf(ExtendDownwindReadback())
+    is TurnBase -> emptySet() // no dedicated TurnBaseReadback atom yet — track for R2
+    is Orbit -> setOf(OrbitReadback(instruction.direction))
     is MakeAnotherCircuit -> emptySet()
     is CommenceApproachAt -> emptySet()
 
@@ -342,7 +369,7 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
 
     // ── Sequencing ───────────────────────────────────────────────────────
     is FollowTraffic -> emptySet()
-    is NumberInSequence -> emptySet()
+    is NumberInSequence -> setOf(SequenceAcknowledgementReadback(instruction.number, instruction.behindTraffic))
     is MaintainVisualSeparation -> emptySet()
 
     // ── Frequency / squawk ───────────────────────────────────────────────
@@ -366,6 +393,7 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is RemainOutsideControlledAirspace -> emptySet()
     is SpecialVfrClearance -> emptySet()
     is CancelClearance -> emptySet()
+    is Disregard -> setOf(DisregardAcknowledgementReadback)
     is AvoidArea -> emptySet()
 }
 

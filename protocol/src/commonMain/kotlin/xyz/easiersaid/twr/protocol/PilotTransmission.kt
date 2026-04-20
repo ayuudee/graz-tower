@@ -92,6 +92,31 @@ data class HoldingAcknowledgementReadback(
     val cancelTakeoff: Boolean = false,
 ) : AtomicReadback
 
+/**
+ * Acknowledgement of [NumberInSequence].
+ *
+ * Pilot confirms sequence number: "number [n], [callsign]". The readback atom
+ * carries the number so the classifier can detect a wrong-number readback
+ * ("number 2" read back as "number 3").
+ */
+data class SequenceAcknowledgementReadback(
+    val number: Int,
+    val behindTraffic: TrafficRef? = null,
+) : AtomicReadback
+
+/**
+ * Readback of ATC-initiated [BreakOff] (discontinue approach).
+ * Carries missed-approach level/heading when issued — these are readback-required
+ * per ICAO Doc 4444 §12.3.1 (same safety-critical status as go-around instructions).
+ */
+/** Acknowledgement of [Disregard] instruction. */
+data object DisregardAcknowledgementReadback : AtomicReadback
+
+data class BreakOffReadback(
+    val level: Level? = null,
+    val heading: Heading? = null,
+) : AtomicReadback
+
 // --- Readback conditions ---
 
 sealed interface ReadbackCondition
@@ -176,6 +201,10 @@ data object RequestSpecialVfr : RequestType
 data object RequestHolding : RequestType
 data class RequestRunwayChange(val runway: RunwayId) : RequestType
 data object RequestPriorityLanding : RequestType
+data object RequestShortApproach : RequestType
+data object RequestVisualApproach : RequestType
+data object RequestRightBase : RequestType
+data object RequestOrbit : RequestType
 
 data class RequestInformation(val topic: String) : RequestType
 

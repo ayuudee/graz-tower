@@ -4,6 +4,26 @@ import xyz.easiersaid.twr.protocol.*
 
 enum class TrafficType { DEPARTURE, ARRIVAL, TRANSIT, TAXI }
 
+/**
+ * Classification of the obligation this commitment fulfils.
+ *
+ * Tag on [Commitment], not a type split — the four kinds share nearly all state
+ * (aircraft, stage, formedAt, runway). Split into subtypes when a field is
+ * meaningful for exactly one kind (likely `spacingTarget` for SEQUENCING in Phase 6).
+ */
+enum class ObligationType {
+    /** Prescribed separation minima, wake, runway buffer. */
+    SEPARATION,
+    /** Number-in-sequence, follow-target, spacing. */
+    SEQUENCING,
+    /** Essential traffic, aerodrome traffic information. */
+    TRAFFIC_INFO,
+    /** Approach, landing, takeoff, taxi clearance. */
+    CLEARANCE,
+    /** Report position, call again, contact frequency. */
+    PROCEDURAL,
+}
+
 data class CommitmentKind(
     val role: RoleName,
     val trafficType: TrafficType,
@@ -45,6 +65,7 @@ data class Commitment(
     val runway: RunwayId? = null,
     val formedAt: SimTime,
     val contacted: Boolean = false,
+    val obligationType: ObligationType = ObligationType.CLEARANCE,
 ) {
     val isComplete: Boolean get() = stage.isComplete
 }

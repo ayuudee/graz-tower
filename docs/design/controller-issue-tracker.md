@@ -53,7 +53,7 @@ Generated 2026-04-15 from three adversarial self-reviews + three ATC agent revie
 - [ ] **32. Base turn / report base instruction**
 - [ ] **33. Belief-delta event derivation** (state-change detection without pilot report)
 - [ ] **34. Reactive safety layer** (proactive conflict detection — overlaps with #1)
-- [ ] **35. Pin ICAO Doc 4444 edition number**
+- [x] **35. Pin ICAO Doc 4444 edition number** — 17th ed. (2024) pinned in RegulationRef.ICAO_4444_EDITION; all 35 RegulationDatabase entries carry edition triples
 
 ## Tier 6 additions from Phase 4 sim-engine review (2026-04-17)
 
@@ -73,6 +73,71 @@ backlog) are:
 
 - [x] **43. Queue semantics regression test for mixed 3+ entries** — `RunwayDutyQueueTest` covers FIFO preservation, preemption-requeue, ARRIVAL-beats-DEPARTURE sort, commitment-pruning
 - [x] **44. Transmission-reception design doc v1 appendix** — Appendix A (v1 landing report) in `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
+
+## Phase 5 progress (2026-04-19)
+
+### Resolved in 5a–5b
+
+- [x] **35. Pin ICAO Doc 4444 edition number** (see above)
+- [x] **P5-R1. Instruction ADT expansion** — BreakOff, Disregard added; vectoring/level/speed/approach types already existed in protocol
+- [x] **P5-R2. Citation triples** — `edition` field on RegulationRef; all 35 DB entries updated
+- [x] **P5-R3. ReadbackVerdict 2→4** — Missing + Refused variants; processReadback routing specified
+- [x] **P5-R4. ArrivalSequence state** — ArrivalSlot, ArrivalGate sealed hierarchy, FollowTarget 5-state lifecycle
+- [x] **P5-R5. Atomic migration** — arrivals project from ArrivalSequence; TOWER_ARRIVAL self-enqueue deleted
+- [x] **P5-R6. Supersession semantics** — SupersessionRelation with ABANDON/ABSORB; TurnBase→ExtendDownwind landed
+- [x] **P5-R7. Coordination message ADT** — 8 CoordinationMessage variants + HandoffGate
+
+### Deferred from Phase 5 reviews (tracked)
+
+| # | Item | Status |
+|---|------|--------|
+| P5-D1 | `deriveApproachMode` — now derives from `issuedClearances` ClearedApproach/ClearedVisualApproach; flight-rules heuristic is fallback | **RESOLVED** |
+| P5-D2 | `deriveGate` — now produces `LocaliserEstablished` from `EstablishedLocaliser` report via `establishedLocaliser` belief set | **RESOLVED** |
+| P5-D3 | Distance — now BFS path-following along circuit adjacency graph; Euclidean fallback when off-graph | **RESOLVED** |
+| P5-D4 | FollowTarget — `UNABLE` state added to `AcquisitionState` enum | **RESOLVED** |
+| P5-D5 | BreakOff readback — dedicated `BreakOffReadback` atom replaces `GoAroundReadback(null,null)` | **RESOLVED** |
+| P5-D6 | Stable number reassignment — live: numbers shift on removal/insertion via `relativeOrderPreserved` check | **RESOLVED** |
+| P5-D7 | Supersession — 8 relations: Orbit→ExtendDownwind, TurnBase→Orbit, 4 speed pairs (ABSORB), ClearedToLand→TurnBase | **RESOLVED** |
+| P5-D8 | Disregard — universal superseder: ABANDON all pending readbacks for aircraft | **RESOLVED** |
+| P5-D9 | Inject relations — `applySupersessionCleanup` accepts `relationsIndex` parameter with default | **RESOLVED** |
+| P5-D10 | `RunwayStatusChange` coordination message (TWR→APP) for closures/re-openings | Phase 6+ |
+| P5-D11 | `var nextNumber` — replaced with fold-based `SlotAcc` accumulator | **RESOLVED** |
+
+## Phase 6 progress (2026-04-20)
+
+### Resolved in Phase 6
+
+- [x] **P6-R1. Wake categories** — WakeCategory enum (J/H/M/L) on AircraftObservation; ICAO baseline table (8 entries); unknown defaults to H
+- [x] **P6-R2. Separation engine** — two-phase: Phase A early assessment → beliefs, Phase B reactive safety net; absolute-margin comfort formula with closure adjustment
+- [x] **P6-R3. Intervention hierarchy** — SpeedControl → PathExtension → OrbitHold → GoAround; skip predicates (inside FAF, high closure)
+- [x] **P6-R4. Belief-delta detection** — ObservationDelta (speed trend, vertical rate) from observation history buffer
+- [x] **P6-R5. LVP infrastructure** — lvpMode flag on ControllerView
+- [x] **P6-R6. Visual separation decision** — canApplyVisualSeparation with geometry, LVP, FL100, FollowTarget gates
+- [x] **P6-R7. SeparationConcernAbove guard** — replaces SpacingNotAdequate; reads from separation assessments in beliefs
+
+### Deferred from Phase 6 reviews — resolved in root-cause fix phases R0-R3
+
+| # | Item | Status |
+|---|------|--------|
+| P6-D1 | Phase B emission wired: reactive GoAround/BreakOff by runway state + TrafficInfo companion | **RESOLVED** (R0a) |
+| P6-D2 | BreakOff when runway clear, GoAround when occupied — implemented in emitReactiveOutputs | **RESOLVED** (R0a) |
+| P6-D3 | Traffic info accompanies every reactive intervention (Doc 4444 §5.10.1.1) | **RESOLVED** (R0a) |
+| P6-D4 | `takeoffRollStartedAt` not populated — conservative stopgap using `lastOperationCompletedAt` | Acceptable permanent (R3b) |
+| P6-D5 | NM-scale test world built (`testWorldNmScale`) with realistic distances | **RESOLVED** (R2a) |
+| P6-D6 | All 8 ICAO wake table entries verified per-row | **RESOLVED** (R2c) |
+| P6-D7 | Intervention selection: 5 paths tested (GoAround, null, SpeedControl, PathExtension, FAF skip) | **RESOLVED** (R2c) |
+| P5-D10 | `RunwayStatusChange` coordination message (TWR→APP) for closures/re-openings | Phase 7+ |
+
+### Root-cause fixes (R0-R3)
+
+All 20 findings from the deep adversarial review resolved:
+
+| Phase | Fixes | Findings |
+|-------|-------|----------|
+| R0 | Reactive emission wired, TurnBase deadlock guard, SAFETY bypasses feasibility | S1, S3, D7 |
+| R1 | SeparationConcern sealed interface, computeConcern internal+positional, readback atoms wired, BreakOff compound | D5, D4, D6, S4, S5 |
+| R2 | NM-scale test world, all separation tests rewritten, all-pairs assessment, groundSpeed from sim | T1-4, D1, D3 partial |
+| R3 | Hysteresis (RecentDecision), wake timer in grantPhase, time-based ordering, readback enrichments, departure gap analysis | D2, S2, D3, P1-5, departure starvation |
 
 ## Cross-aircraft TrafficRef (resolved)
 

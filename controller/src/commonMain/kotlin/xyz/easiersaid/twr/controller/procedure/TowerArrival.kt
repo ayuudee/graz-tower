@@ -97,6 +97,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     OnCircuitLeg(LegName.DOWNWIND),
                     Not(RunwayAccessGranted),
+                    // Stop re-issuing once the controller judges spacing is adequate.
+                    // Uses the separation engine's comfort gradient from beliefs
+                    // (Phase 6b Phase A). Fires when concern is INTERVENTION or above.
+                    SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION),
                     // Retransmit via pending-readback horizon — ExtendDownwind has no
                     // required-atom readback, so the pending entry ages out after 30 s
                     // (MAX_READBACK_AGE), keeping re-issues to the CAP 413 §2.7 cadence.
@@ -105,15 +109,18 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 action = ExtendDownwindAction,
                 urgency = Urgency.TIME_SENSITIVE,
             ),
-            // Turn base — resolves persistent ExtendDownwind when aircraft reaches base/final
-            // with runway access. A ClearedToLand also resolves via domain supersession.
+            // Turn base — sequencing decision, NOT a runway-access decision. The controller
+            // tells the aircraft to turn base when spacing is adequate and the runway is
+            // physically clear. Decoupled from RunwayAccessGranted to avoid the deadlock
+            // where extended-downwind aircraft can't reach base gate for duty queue entry.
             AtcRule(
                 id = "ARR-TURN-BASE",
-                description = "Turn base when runway access granted after extend downwind",
+                description = "Turn base when spacing adequate and runway clear",
                 regulations = listOf(ICAO4444_7_10),
                 guard = AllOf(listOf(
-                    OnCircuitLeg(LegName.BASE),
-                    RunwayAccessGranted,
+                    AnyOf(listOf(OnCircuitLeg(LegName.DOWNWIND), OnCircuitLeg(LegName.BASE))),
+                    Not(SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION)),
+                    RunwayPhysicallyClear,
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TurnBase>()),
                 )),
                 action = TurnBaseAction,

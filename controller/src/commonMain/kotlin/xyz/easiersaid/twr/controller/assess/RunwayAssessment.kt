@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.WakeCategory
 
 data class RunwayDutyState(
     val runway: RunwayId,
@@ -23,6 +24,20 @@ data class RunwayDutyState(
      * Resets when [holder] changes.
      */
     val holderReachedRunway: Boolean = false,
+    /**
+     * When the last runway operation completed (holder released). Used for wake
+     * turbulence time-based separation on successive departures (2/3-minute rules).
+     * Null until first operation completes.
+     */
+    val lastOperationCompletedAt: SimTime? = null,
+    /** Wake category of the last aircraft that completed a runway operation. */
+    val lastOperationWakeCategory: WakeCategory? = null,
+    /**
+     * When the current departure holder commenced takeoff roll. ICAO Doc 4444 §5.8
+     * measures time-based wake separation from commencement of roll, not from clearing
+     * the runway. Set when the departure holder is first observed moving on the runway.
+     */
+    val takeoffRollStartedAt: SimTime? = null,
 )
 
 enum class RunwayOperation { DEPARTURE, ARRIVAL, CROSSING, BACKTRACK }
@@ -40,6 +55,7 @@ data class RunwayQueueEntry(
  *
  * Port of TWR1's three-phase runway duty logic with entity-aware checks.
  */
+@Suppress("LongParameterList") // Public entry point for 3-phase transformer; bundling premature
 fun updateRunwayDuty(
     prev: RunwayDutyState?,
     activeRunway: RunwayId?,
@@ -48,9 +64,10 @@ fun updateRunwayDuty(
     events: List<ControllerEvent>,
     time: SimTime,
     worldIndex: WorldIndex? = null,
+    arrivalSequence: ArrivalSequence? = null,
 ): RunwayDutyState? {
     val runway = activeRunway ?: return null
-    val ctx = RunwayDutyCtx(beliefs, commitments, events, time, worldIndex)
+    val ctx = RunwayDutyCtx(beliefs, commitments, events, time, worldIndex, arrivalSequence)
     val initial = prev?.takeIf { it.runway == runway } ?: RunwayDutyState(runway)
     return initial
         .let { releasePhase(it, ctx) }
@@ -65,6 +82,8 @@ private data class RunwayDutyCtx(
     val events: List<ControllerEvent>,
     val time: SimTime,
     val worldIndex: WorldIndex?,
+    /** Arrival sequence to project into the duty queue. Null if no sequence state yet. */
+    val arrivalSequence: ArrivalSequence?,
 )
 
 /**
@@ -122,30 +141,49 @@ private fun releasePhase(state: RunwayDutyState, ctx: RunwayDutyCtx): RunwayDuty
     val requeued = if (preemptedByArrival && holderCommitment != null)
         listOf(RunwayQueueEntry(holder, RunwayOperation.DEPARTURE, holderCommitment.formedAt))
     else emptyList()
+    val holderWake = ctx.beliefs.trackedAircraft[holder]?.wakeCategory
     return touched.copy(
         holder = null, operation = null, holderReachedRunway = false,
         queue = requeued + touched.queue,
+        lastOperationCompletedAt = ctx.time,
+        lastOperationWakeCategory = holderWake,
     )
 }
 
-/** Phase 2 — Admit newly-eligible aircraft into the queue, prune stale entries, resort. */
+/**
+ * Phase 2 — Admit newly-eligible aircraft into the queue, prune stale entries, resort.
+ *
+ * Arrivals are projected from [ArrivalSequence] (if available), NOT self-enqueued.
+ * Departures/crossings/backtracks still self-enqueue through [departureQueueEntry].
+ */
 private fun enqueuePhase(state: RunwayDutyState, ctx: RunwayDutyCtx): RunwayDutyState {
     val existingInQueue = state.queue.map { it.aircraft }.toSet()
-    val newEntries = ctx.commitments.mapNotNull { (acId, commitment) ->
+
+    // Non-arrival entries from commitments (departures, crossings, backtracks).
+    val newNonArrivalEntries = ctx.commitments.mapNotNull { (acId, commitment) ->
         if (acId == state.holder || acId in existingInQueue) null
-        else queueEntryFor(acId, commitment, ctx)
+        else departureQueueEntry(acId, commitment, ctx)
     }
+
+    // Arrival entries projected from ArrivalSequence (closest to threshold first).
+    val arrivalEntries = projectArrivalsFromSequence(ctx.arrivalSequence, state.holder, existingInQueue, ctx)
+
     // Prune entries for commitments that no longer exist.
     val prunedQueue = state.queue.filter { it.aircraft in ctx.commitments.keys }
+
     // Sort: landing > takeoff, then FIFO.
-    val fullQueue = (prunedQueue + newEntries).sortedWith(
+    val fullQueue = (prunedQueue + newNonArrivalEntries + arrivalEntries).sortedWith(
         compareBy<RunwayQueueEntry> { if (it.operation == RunwayOperation.ARRIVAL) 0 else 1 }
             .thenBy { it.requestedAt.millis }
     )
     return state.copy(queue = fullQueue)
 }
 
-private fun queueEntryFor(
+/**
+ * Non-arrival queue entries from commitments (departures only for now).
+ * The TOWER_ARRIVAL branch has been removed — arrivals come from ArrivalSequence projection.
+ */
+private fun departureQueueEntry(
     acId: AircraftId,
     commitment: Commitment,
     ctx: RunwayDutyCtx,
@@ -161,41 +199,113 @@ private fun queueEntryFor(
             commitment.stage == TowerDepartureStage.AwaitTakeoffObserved) ->
         RunwayQueueEntry(acId, RunwayOperation.DEPARTURE, commitment.formedAt)
 
-    commitment.kind == CommitmentKind.TOWER_ARRIVAL &&
-        commitment.stage == TowerArrivalStage.AwaitApproach ->
-        arrivalQueueEntry(acId, commitment, ctx)
-
     else -> null
 }
 
-private fun arrivalQueueEntry(
-    acId: AircraftId,
-    commitment: Commitment,
+/**
+ * Project arrivals from [ArrivalSequence] into runway queue entries.
+ *
+ * Only arrivals on base/final gates enter the duty queue — downwind arrivals are
+ * in the sequence but not yet competing for the runway. This preserves the ICAO
+ * 4444 §7.10 principle: arrivals queue when close to the runway, not from downwind.
+ */
+private fun projectArrivalsFromSequence(
+    sequence: ArrivalSequence?,
+    holder: AircraftId?,
+    existingInQueue: Set<AircraftId>,
     ctx: RunwayDutyCtx,
-): RunwayQueueEntry? {
-    val ac = ctx.beliefs.trackedAircraft[acId] ?: return null
-    if (ac.onGround) return null
-    val onApproach = ac.entities.any { it is EntityRef.ApproachRef }
-    val circuitLegs = ctx.worldIndex?.circuitLegsByPoint?.get(ac.position) ?: emptySet()
-    val onBaseOrFinal = LegName.BASE in circuitLegs || LegName.FINAL in circuitLegs
-    // Only enqueue when close to runway (base/final/approach), not on downwind.
-    return if (onApproach || onBaseOrFinal)
-        RunwayQueueEntry(acId, RunwayOperation.ARRIVAL, commitment.formedAt)
-    else null
+): List<RunwayQueueEntry> {
+    if (sequence == null) return emptyList()
+    return sequence.slots.mapNotNull { slot ->
+        if (slot.aircraft == holder || slot.aircraft in existingInQueue) return@mapNotNull null
+        val commitment = ctx.commitments[slot.aircraft] ?: return@mapNotNull null
+        // Commitment must be at AwaitApproach — matching the old arrivalQueueEntry semantics.
+        // At AwaitDownwind the procedures haven't advanced the commitment to runway competition.
+        if (commitment.kind == CommitmentKind.TOWER_ARRIVAL &&
+            commitment.stage != TowerArrivalStage.AwaitApproach) return@mapNotNull null
+        // Only project when on base or final (close to runway).
+        val isCloseToRunway = when (slot.gate) {
+            is ArrivalGate.BaseTurn, is ArrivalGate.Final, is ArrivalGate.LocaliserEstablished -> true
+            is ArrivalGate.Downwind, is ArrivalGate.Inbound -> false
+        }
+        if (!isCloseToRunway) return@mapNotNull null
+        RunwayQueueEntry(slot.aircraft, RunwayOperation.ARRIVAL, commitment.formedAt)
+    }
 }
 
 /** Phase 3 — If nobody holds the runway, hand it to the head of the queue. */
 private fun grantPhase(state: RunwayDutyState, ctx: RunwayDutyCtx): RunwayDutyState {
     if (state.holder != null || state.queue.isEmpty()) return state
     val granted = state.queue.first()
-    val ac = ctx.beliefs.trackedAircraft[granted.aircraft]
+
+    // Wake timer check: if previous operation was a DEPARTURE with a known wake category,
+    // ensure time-based wake separation has elapsed. Only applies when the last operation
+    // was a departure (ICAO §5.8 time-based wake for successive runway operations).
+    // Conservative: measures from release, not roll commencement.
+    val heavyPrecedingOp = state.lastOperationCompletedAt != null &&
+        state.lastOperationWakeCategory != null &&
+        (state.lastOperationWakeCategory == WakeCategory.J || state.lastOperationWakeCategory == WakeCategory.H)
+    if (heavyPrecedingOp) {
+        val followerWake = ctx.beliefs.trackedAircraft[granted.aircraft]?.wakeCategory
+        val required = requiredWakeSeparation(state.lastOperationWakeCategory, followerWake)
+        // Only enforce when the required time exceeds standard (extra wake delay needed).
+        if (required.timeMinutes > STANDARD_TIME_MINUTES) {
+            val elapsedMs = ctx.time.millis - state.lastOperationCompletedAt.millis
+            val requiredMs = (required.timeMinutes * 60_000).toLong()
+            if (elapsedMs < requiredMs) return state // wait — wake separation not yet met
+        }
+    }
+
+    // Departure gap analysis: if the queue head is an arrival but a departure is waiting,
+    // and the inter-arrival gap is large enough for a departure roll, grant the departure
+    // instead. Gated behind: lead arrival > 4nm from threshold (safe margin).
+    val grantTarget = if (granted.operation == RunwayOperation.ARRIVAL) {
+        val departure = state.queue.firstOrNull { it.operation == RunwayOperation.DEPARTURE }
+        if (departure != null) {
+            val gapOk = checkDepartureGap(granted.aircraft, state.queue, ctx)
+            if (gapOk) departure else null
+        } else null
+    } else null
+
+    val actualGranted = grantTarget ?: granted
+    val ac = ctx.beliefs.trackedAircraft[actualGranted.aircraft]
     val alreadyOnRunway = ac != null && ac.entities.any { it is EntityRef.RunwayRef }
     return state.copy(
-        holder = granted.aircraft,
-        operation = granted.operation,
-        queue = state.queue.drop(1),
+        holder = actualGranted.aircraft,
+        operation = actualGranted.operation,
+        queue = state.queue.filter { it.aircraft != actualGranted.aircraft },
         holderReachedRunway = alreadyOnRunway,
     )
+}
+
+/**
+ * Check if there's a sufficient gap between the lead arrival and the next arrival
+ * to slot a departure. Requires: lead arrival > 4nm from threshold AND inter-arrival
+ * spacing > 60 seconds (estimated departure roll + initial climb time).
+ */
+private fun checkDepartureGap(
+    leadArrival: AircraftId,
+    queue: List<RunwayQueueEntry>,
+    ctx: RunwayDutyCtx,
+): Boolean {
+    val sequence = ctx.arrivalSequence ?: return false
+    val leadSlot = sequence.slots.firstOrNull { it.aircraft == leadArrival } ?: return false
+    val leadDistM = leadSlot.distanceToThresholdM ?: return false
+    val leadDistNm = metresToNm(leadDistM)
+
+    // Lead arrival must be > 4nm from threshold (safe margin for departure roll).
+    if (leadDistNm < 4.0) return false
+
+    // Find the next arrival in the queue after the lead.
+    val nextArrival = queue.drop(1).firstOrNull { it.operation == RunwayOperation.ARRIVAL }
+    if (nextArrival != null) {
+        val nextSlot = sequence.slots.firstOrNull { it.aircraft == nextArrival.aircraft }
+        val spacing = nextSlot?.spacingAheadSeconds
+        // Inter-arrival gap must be > 60 seconds (typical departure roll + initial climb).
+        if (spacing != null && spacing < 60.0) return false
+    }
+
+    return true
 }
 
 /** Is this arrival physically committed to the runway (on approach or base/final leg)? */

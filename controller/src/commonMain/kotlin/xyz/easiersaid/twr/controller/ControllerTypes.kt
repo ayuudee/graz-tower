@@ -20,6 +20,11 @@ data class ControllerView(
     val weather: WeatherObservation?,
     val pendingInboundHandoffs: List<PendingHandoff>,
     val worldIndex: WorldIndex,
+    /**
+     * Low Visibility Procedures active. Derived from visibility < 550m or RVR < 550m.
+     * When true: no conditional clearances, one-on-runway, time-based wake, no visual sep.
+     */
+    val lvpMode: Boolean = false,
 )
 
 /** What the controller knows about one aircraft. */
@@ -30,11 +35,17 @@ data class AircraftObservation(
     val entities: Set<EntityRef>,
     val altitude: Level?,
     val speed: Speed?,
+    /** Aircraft magnetic heading, if observable. Required for sequence ETA derivation. */
+    val heading: Heading? = null,
+    /** Ground speed in knots, if observable. Required for sequence spacing calculation. */
+    val groundSpeed: Knots? = null,
     val onGround: Boolean,
     val flightRules: FlightRules?,
     val pilotGoal: PilotGoal?,
     val humanPiloted: Boolean,
     val typeDescription: String? = null,
+    /** ICAO wake turbulence category. Null = unknown; separation engine defaults to H (worst-case). */
+    val wakeCategory: WakeCategory? = null,
 )
 
 enum class FlightRules { VFR, IFR }

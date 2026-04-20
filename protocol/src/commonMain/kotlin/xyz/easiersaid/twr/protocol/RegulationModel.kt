@@ -18,10 +18,12 @@ enum class ObligationSource {
 /** What kind of regulatory content: procedural (when to do it), phraseology (how to say it), law (what's required), guidance (supplementary). */
 enum class RegulationCategory { PROCEDURE, PHRASEOLOGY, LAW, GUIDANCE }
 
-/** A reference to a specific regulatory source. */
+/** A reference to a specific regulatory source. Citation triple: (document, edition, section). */
 data class RegulationRef(
     /** Machine-readable document ID: "ICAO_4444", "SERA", "CAP_413" */
     val document: String,
+    /** Edition or amendment: "17th ed. (2024)", "EU 923/2012 as amended", etc. */
+    val edition: String,
     /** Section within the document: "§7.9", "SERA.5001" */
     val section: String,
     /** Short title: "Take-off clearance", "VMC minima" */
@@ -37,6 +39,11 @@ data class RegulationRef(
     fun formatShort(): String = "$authority $section — $title"
 
     companion object {
+        // Pinned editions for citation stability (resolves tracker #35).
+        const val ICAO_4444_EDITION = "17th ed. (2024)"
+        const val ICAO_9432_EDITION = "7th ed. (2020)"
+        const val SERA_EDITION = "EU 923/2012 as amended"
+
         private val AUTHORITY_NAMES = mapOf(
             "SERA" to "SERA",
             "ICAO_ANNEX_2" to "ICAO Annex 2",

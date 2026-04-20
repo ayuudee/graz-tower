@@ -38,7 +38,20 @@ fun instructionMetadata(instruction: AtcInstruction): InstructionMetadata = when
     is ClearedToLand -> InstructionMetadata(null, ClearanceDomain.RUNWAY, CompletionCategory.SELF_COMPLETING, mayBeConditional = true)
     is ClearedTouchAndGo -> InstructionMetadata(null, ClearanceDomain.RUNWAY, CompletionCategory.SELF_COMPLETING, mayBeConditional = true)
     is ClearedLowApproach -> InstructionMetadata(null, ClearanceDomain.RUNWAY, CompletionCategory.SELF_COMPLETING, mayBeConditional = true)
-    is GoAround -> InstructionMetadata(null, ClearanceDomain.RUNWAY, null, mayBeConditional = false, supersedesOverride = setOf(ClearanceDomain.RUNWAY, ClearanceDomain.ROUTE, ClearanceDomain.LEVEL, ClearanceDomain.SPEED))
+    is GoAround -> InstructionMetadata(
+        null,
+        ClearanceDomain.RUNWAY,
+        null,
+        mayBeConditional = false,
+        supersedesOverride = setOf(ClearanceDomain.RUNWAY, ClearanceDomain.ROUTE, ClearanceDomain.LEVEL, ClearanceDomain.SPEED),
+    )
+    is BreakOff -> InstructionMetadata(
+        null,
+        ClearanceDomain.RUNWAY,
+        null,
+        mayBeConditional = false,
+        supersedesOverride = setOf(ClearanceDomain.RUNWAY, ClearanceDomain.ROUTE, ClearanceDomain.LEVEL, ClearanceDomain.SPEED),
+    )
     is HoldPositionCancelTakeoff -> InstructionMetadata(null, ClearanceDomain.RUNWAY, null, mayBeConditional = false)
     is StopImmediately -> InstructionMetadata(null, ClearanceDomain.RUNWAY, null, mayBeConditional = false)
     is TakeoffImmediatelyOrVacateRunway -> InstructionMetadata(null, ClearanceDomain.RUNWAY, null, mayBeConditional = false)
@@ -138,6 +151,7 @@ fun instructionMetadata(instruction: AtcInstruction): InstructionMetadata = when
     // B: DivertTo supersedes route, level, and speed — pilot needs full authority when diverting.
     is DivertTo -> InstructionMetadata(null, ClearanceDomain.ROUTE, null, mayBeConditional = false, supersedesOverride = setOf(ClearanceDomain.ROUTE, ClearanceDomain.LEVEL, ClearanceDomain.SPEED))
     is CancelClearance -> InstructionMetadata(InstructionTiming.IMMEDIATE, null, CompletionCategory.ON_ACTIVATION, mayBeConditional = false)
+    is Disregard -> InstructionMetadata(InstructionTiming.IMMEDIATE, null, CompletionCategory.ON_ACTIVATION, mayBeConditional = false)
     is AvoidArea -> InstructionMetadata(null, null, null, mayBeConditional = false)
 }
 

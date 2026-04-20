@@ -63,12 +63,15 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
 /**
  * Project one aircraft into the controller's observation.
  *
- * 4e-A populates altitude (converted from metres to feet AGL) and leaves
- * speed null — controllers don't yet reason on airspeed. Type description is
- * still null until the aircraft-type slice.
+ * Populates altitude (metres → feet AGL) and groundSpeed (m/s → knots).
+ * Heading and type description still null until the respective slices.
  */
 private fun toObservation(ac: AircraftState, state: SimState): AircraftObservation {
     val entities = state.worldIndex.entitiesByPoint[ac.positionPoint] ?: emptySet()
+    val groundSpeedKt = if (ac.speedMps > 0) {
+        val kt = (ac.speedMps * 3600.0 / 1852.0).toInt()
+        if (kt > 0) xyz.easiersaid.twr.protocol.Knots.unsafe(kt) else null
+    } else null
     return AircraftObservation(
         id = ac.id,
         callsign = ac.callsign,
@@ -76,6 +79,7 @@ private fun toObservation(ac: AircraftState, state: SimState): AircraftObservati
         entities = entities,
         altitude = toAltitudeFeet(ac.altitudeM),
         speed = null,
+        groundSpeed = groundSpeedKt,
         onGround = isGroundPhase(ac.phase),
         flightRules = null,
         pilotGoal = ac.pilotGoal,

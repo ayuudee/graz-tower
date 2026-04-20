@@ -123,7 +123,8 @@ class RunwayDutyQueueTest {
             "dep1 granted first — arr1 still at AwaitDownwind in the enqueue phase")
 
         // Cycle 2: dep2 reports ready and joins the queue. arr1 is now
-        // AwaitApproach but still held off the runway (dep1 remains holder).
+        // AwaitApproach — preemption fires this cycle (arr1 on final preempts
+        // grounded dep1). dep2 joins the queue behind the requeued dep1.
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(

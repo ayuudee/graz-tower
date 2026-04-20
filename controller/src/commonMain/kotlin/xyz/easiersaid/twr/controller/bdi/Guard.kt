@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.controller.RunwayStatus
 import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.ControllerEvent
+import xyz.easiersaid.twr.controller.observe.isSeverityAtLeast
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
@@ -292,6 +293,30 @@ data object OtherTrafficOnShortFinal : RuleGuard {
                     val onApproach = otherAc.entities.any { it is EntityRef.ApproachRef }
                     LegName.FINAL in legs || onApproach
                 }
+        }
+    }
+}
+
+/**
+ * Separation concern for this aircraft is above [threshold].
+ *
+ * Reads from [BeliefState.separationAssessments] (computed by the separation engine
+ * in Phase A, early in the pipeline). True when any assessment involving this aircraft
+ * has a concern level ≥ threshold. Used to gate sequencing interventions — e.g.,
+ * ExtendDownwind fires when concern is INTERVENTION or higher.
+ *
+ * Replaces the Phase 5 `SpacingNotAdequate` guard with the Phase 6 comfort-gradient model.
+ */
+data class SeparationConcernAbove(
+    val threshold: xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity,
+) : RuleGuard {
+    override val failureMessage = "Separation concern below ${threshold.name}"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val assessments = ctx.beliefs.separationAssessments
+        if (assessments.isEmpty()) return true // no assessments = assume concern (be conservative)
+        return assessments.any { assessment ->
+            (assessment.aircraft == ac.id || assessment.other == ac.id) &&
+                assessment.concern.isSeverityAtLeast(threshold)
         }
     }
 }
