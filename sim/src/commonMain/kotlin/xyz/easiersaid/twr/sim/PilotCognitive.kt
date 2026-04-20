@@ -190,11 +190,18 @@ fun processInstruction(
         instruction is TurnBase ->
             mission.copy(activeConstraints = mission.activeConstraints - ActiveConstraint.ExtendingDownwind)
 
-        instruction is ClearedToLand && step == MissionStep.AWAIT_LANDING_CLEARANCE ->
-            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
-
-        instruction is ClearedTouchAndGo && step == MissionStep.AWAIT_LANDING_CLEARANCE ->
-            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
+        instruction is ClearedToLand || instruction is ClearedTouchAndGo -> {
+            // Landing clearance can arrive at any point during the approach sequence.
+            // Mark all approach steps up to AWAIT_LANDING_CLEARANCE as complete.
+            var root = mission.root
+            for (s in listOf(
+                MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.REPORT_BASE,
+                MissionStep.FLY_FINAL, MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE,
+            )) {
+                root = root.markComplete(s)
+            }
+            mission.copy(root = root, stepEnteredAt = now)
+        }
 
         instruction is AfterLandingVacateVia && step == MissionStep.AWAIT_VACATE_INSTRUCTION ->
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)

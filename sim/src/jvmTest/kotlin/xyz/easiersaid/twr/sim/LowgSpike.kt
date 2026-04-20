@@ -196,7 +196,7 @@ class LowgSpike {
                 SimEvent.Spawn(SimTime.ZERO, arr2),
                 SimEvent.ControllerCycle(SimTime.ZERO, twr.id),
             ),
-            until = SimTime.ofSeconds(120),
+            until = SimTime.ofSeconds(300), // 5 minutes — enough for radio pipeline delays
         )
 
         println("=== t=${result.now.millis / 1000}s ===")
