@@ -264,7 +264,12 @@ fun emitReactiveOutputs(
                 val runwayClear = beliefs.runwayBeliefs.values.all {
                     it.status == xyz.easiersaid.twr.controller.RunwayStatus.CLEAR
                 }
-                if (runwayClear) xyz.easiersaid.twr.protocol.BreakOff(target)
+                if (runwayClear) xyz.easiersaid.twr.protocol.BreakOff(
+                    target,
+                    missedApproachInstructions = listOf(
+                        xyz.easiersaid.twr.protocol.ClimbTo(target, xyz.easiersaid.twr.protocol.Level.AltitudeFeet.unsafe(2000)),
+                    ),
+                )
                 else xyz.easiersaid.twr.protocol.GoAround(target)
             }
             // Non-SAFETY interventions are handled by procedure rules, not emitted reactively.

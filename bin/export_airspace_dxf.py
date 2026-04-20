@@ -202,7 +202,7 @@ def write_entities(
     airspace_label_height = max(max_span * 0.006, 160.0)
     label_offset = max(point_cross_half * 1.4, 120.0)
 
-    lines.extend(dxf_pair(0, "SECTION") + dxf_pair(2, "ENTITIES"))
+    lines.extend(dxf.dxf_pair(0, "SECTION") + dxf.dxf_pair(2, "ENTITIES"))
 
     for runway in runways:
         write_line_entity(lines, "RUNWAYS", runway.start, runway.end)
@@ -227,7 +227,7 @@ def write_entities(
         label = airspace.label if not airspace.has_curve_vertices else f"{airspace.label} (FNT)"
         write_text_entity(lines, "AIRSPACE_LABELS", centroid(label_points), label, airspace_label_height)
 
-    lines.extend(dxf_pair(0, "ENDSEC") + dxf_pair(0, "EOF"))
+    lines.extend(dxf.dxf_pair(0, "ENDSEC") + dxf.dxf_pair(0, "EOF"))
 
 
 def export_airspace_dxf(manifest_path: Path, output_path: Path) -> None:

@@ -201,6 +201,30 @@ def choose_transform(
     return forward if orientation == "forward" else reverse
 
 
+def identity_transform() -> report.Similarity:
+    return report.Similarity(
+        scale=1.0,
+        rotation_rad=0.0,
+        translation=report.XY(0.0, 0.0),
+    )
+
+
+def empty_dxf_document() -> report.DxfDocument:
+    return report.DxfDocument(
+        lines=[],
+        points=[],
+        entity_counts={},
+        entity_layers={},
+    )
+
+
+def manifest_drawing(manifest: dict, drawing_id: str) -> dict | None:
+    return next(
+        (drawing for drawing in manifest.get("drawings", []) if drawing.get("id") == drawing_id),
+        None,
+    )
+
+
 def unique_runways(runways: dict[str, report.RunwayRecord], project) -> list[RunwayShape]:
     unique_records = {id(record): record for record in runways.values()}
     runway_shapes = [
@@ -1713,86 +1737,122 @@ def build_context(manifest_path: Path) -> SceneContext:
     reference_runway = manifest["geometricControl"]["referenceRunway"]
     runway_axis_start, runway_axis_end = report.runway_axis_xy(runways, reference_runway, project)
 
-    ground_manifest = next(drawing for drawing in manifest["drawings"] if drawing["id"] == "ground")
-    circuit_manifest = next(drawing for drawing in manifest["drawings"] if drawing["id"] == "vfr_circuit")
-    ground_document = report.parse_dxf(report.resolve_path(root, ground_manifest["path"]))
-    circuit_document = report.parse_dxf(report.resolve_path(root, circuit_manifest["path"]))
-
-    longest_ground = max(ground_document.lines, key=lambda line: line.length)
-    ground_transform = choose_transform(
-        ground_manifest["transform"]["orientation"],
-        report.fit_similarity(longest_ground.start, longest_ground.end, runway_axis_start, runway_axis_end),
-        report.fit_similarity(longest_ground.end, longest_ground.start, runway_axis_start, runway_axis_end),
+    ground_manifest = manifest_drawing(manifest, "ground")
+    circuit_manifest = manifest_drawing(manifest, "vfr_circuit")
+    ground_document = (
+        report.parse_dxf(report.resolve_path(root, ground_manifest["path"]))
+        if ground_manifest is not None
+        else empty_dxf_document()
+    )
+    circuit_document = (
+        report.parse_dxf(report.resolve_path(root, circuit_manifest["path"]))
+        if circuit_manifest is not None
+        else empty_dxf_document()
     )
 
-    declared_circuit_anchor_pair = report.drawing_anchor_pair_from_manifest(
-        manifest,
-        circuit_manifest["id"],
-        circuit_document,
-    )
-    if declared_circuit_anchor_pair is None:
-        circuit_anchor_a, circuit_anchor_b = farthest_pair(circuit_document.points)
-    else:
-        (_, circuit_anchor_a), (_, circuit_anchor_b) = declared_circuit_anchor_pair
-    circuit_transform = choose_transform(
-        circuit_manifest["transform"]["orientation"],
-        report.fit_similarity(circuit_anchor_a, circuit_anchor_b, runway_axis_start, runway_axis_end),
-        report.fit_similarity(circuit_anchor_b, circuit_anchor_a, runway_axis_start, runway_axis_end),
-    )
-
-    ground_lines = transform_lines(ground_document.lines, ground_transform)
-    ground_points = transform_points(ground_document.points, ground_transform)
-    ground_components = transform_components(report.connected_components(ground_document.lines), ground_transform)
-    ground_report = report.ground_alignment_report(
-        ground_manifest,
-        ground_document,
-        runway_axis_start,
-        runway_axis_end,
-        taxi_nodes,
-        taxi_edges,
-        project,
-        manifest["reportThresholds"],
-        manifest.get("reconciliationOverrides", {}).get("ground"),
-    )
-    ground_component_status = {
-        component["index"]: component["classification"]
-        for component in ground_report["components"]
-    }
-    ground_component_label = {
-        component["index"]: component["label"]
-        for component in ground_report["components"]
-        if component.get("label") is not None
-    }
-    ground_marker_status = {
-        marker["index"]: marker["classification"]
-        for marker in ground_report["markers"]
-    }
-    ground_marker_label = {
-        marker["index"]: marker["label"]
-        for marker in ground_report["markers"]
-        if marker.get("label") is not None
-    }
-
-    raw_circuit_components = sorted(report.connected_components(circuit_document.lines), key=lambda component: len(component), reverse=True)
-    circuit_components = transform_components(raw_circuit_components, circuit_transform)
-    circuit_lines = [line for component in circuit_components for line in component]
-    circuit_points = transform_points(circuit_document.points, circuit_transform)
-    raw_attachments = report.find_endpoint_attachments(
-        raw_circuit_components,
-        manifest["reportThresholds"]["segmentJoinToleranceDrawingUnits"],
-    )
-    circuit_attachments = [
-        report.EndpointAttachment(
-            source_component=attachment.source_component,
-            target_component=attachment.target_component,
-            endpoint=circuit_transform.apply(attachment.endpoint),
-            target_segment_start=circuit_transform.apply(attachment.target_segment_start),
-            target_segment_end=circuit_transform.apply(attachment.target_segment_end),
-            distance=attachment.distance,
-            segment_position=attachment.segment_position,
+    if ground_manifest is not None and ground_document.lines:
+        longest_ground = max(ground_document.lines, key=lambda line: line.length)
+        ground_transform = choose_transform(
+            ground_manifest["transform"]["orientation"],
+            report.fit_similarity(longest_ground.start, longest_ground.end, runway_axis_start, runway_axis_end),
+            report.fit_similarity(longest_ground.end, longest_ground.start, runway_axis_start, runway_axis_end),
         )
-        for attachment in raw_attachments
-    ]
+        ground_lines = transform_lines(ground_document.lines, ground_transform)
+        ground_points = transform_points(ground_document.points, ground_transform)
+        ground_components = transform_components(report.connected_components(ground_document.lines), ground_transform)
+        if "reportThresholds" in manifest:
+            ground_report = report.ground_alignment_report(
+                ground_manifest,
+                ground_document,
+                runway_axis_start,
+                runway_axis_end,
+                taxi_nodes,
+                taxi_edges,
+                project,
+                manifest["reportThresholds"],
+                manifest.get("reconciliationOverrides", {}).get("ground"),
+            )
+            ground_component_status = {
+                component["index"]: component["classification"]
+                for component in ground_report["components"]
+            }
+            ground_component_label = {
+                component["index"]: component["label"]
+                for component in ground_report["components"]
+                if component.get("label") is not None
+            }
+            ground_marker_status = {
+                marker["index"]: marker["classification"]
+                for marker in ground_report["markers"]
+            }
+            ground_marker_label = {
+                marker["index"]: marker["label"]
+                for marker in ground_report["markers"]
+                if marker.get("label") is not None
+            }
+        else:
+            ground_component_status = {}
+            ground_component_label = {}
+            ground_marker_status = {}
+            ground_marker_label = {}
+    else:
+        ground_transform = identity_transform()
+        ground_lines = []
+        ground_points = []
+        ground_components = []
+        ground_component_status = {}
+        ground_component_label = {}
+        ground_marker_status = {}
+        ground_marker_label = {}
+
+    if circuit_manifest is not None and (circuit_document.points or circuit_document.lines):
+        declared_circuit_anchor_pair = report.drawing_anchor_pair_from_manifest(
+            manifest,
+            circuit_manifest["id"],
+            circuit_document,
+        )
+        if declared_circuit_anchor_pair is None:
+            circuit_anchor_a, circuit_anchor_b = farthest_pair(circuit_document.points)
+        else:
+            (_, circuit_anchor_a), (_, circuit_anchor_b) = declared_circuit_anchor_pair
+        circuit_transform = choose_transform(
+            circuit_manifest["transform"]["orientation"],
+            report.fit_similarity(circuit_anchor_a, circuit_anchor_b, runway_axis_start, runway_axis_end),
+            report.fit_similarity(circuit_anchor_b, circuit_anchor_a, runway_axis_start, runway_axis_end),
+        )
+        raw_circuit_components = sorted(
+            report.connected_components(circuit_document.lines),
+            key=lambda component: len(component),
+            reverse=True,
+        )
+        circuit_components = transform_components(raw_circuit_components, circuit_transform)
+        circuit_lines = [line for component in circuit_components for line in component]
+        circuit_points = transform_points(circuit_document.points, circuit_transform)
+        if "reportThresholds" in manifest:
+            raw_attachments = report.find_endpoint_attachments(
+                raw_circuit_components,
+                manifest["reportThresholds"]["segmentJoinToleranceDrawingUnits"],
+            )
+            circuit_attachments = [
+                report.EndpointAttachment(
+                    source_component=attachment.source_component,
+                    target_component=attachment.target_component,
+                    endpoint=circuit_transform.apply(attachment.endpoint),
+                    target_segment_start=circuit_transform.apply(attachment.target_segment_start),
+                    target_segment_end=circuit_transform.apply(attachment.target_segment_end),
+                    distance=attachment.distance,
+                    segment_position=attachment.segment_position,
+                )
+                for attachment in raw_attachments
+            ]
+        else:
+            circuit_attachments = []
+    else:
+        circuit_transform = identity_transform()
+        circuit_components = []
+        circuit_lines = []
+        circuit_points = []
+        circuit_attachments = []
 
     ofmx_data = report.parse_ofmx(ofmx_path, manifest["airportCode"])
     reporting_points = [
@@ -1812,6 +1872,8 @@ def build_context(manifest_path: Path) -> SceneContext:
     )
     vfr_route_segments = build_vfr_route_segments(manifest, reporting_points, procedure_anchors)
     working_airspace_path = root / "cad/airports" / f"{manifest['airportCode'].lower()}_airspace_working_normalized.dxf"
+    if not working_airspace_path.exists():
+        working_airspace_path = root / "cad/airports" / f"{manifest['airportCode'].lower()}_airspace_working.dxf"
     working_airspace_sector_lines: list[report.DxfLine] = []
     if working_airspace_path.exists():
         working_airspace_document = report.parse_dxf(working_airspace_path)

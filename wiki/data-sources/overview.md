@@ -24,7 +24,7 @@ Operational/airspace data. AIXM 4.5 XML with VFR extensions. Regional snapshots 
 
 **Note on OFM maps:** The OFM web viewer shows accurate circuit patterns and VFR routes rendered into raster tiles. This geometry exists in OFM's rendering pipeline but is NOT in the downloadable OFMX data. The tiles are pre-rendered at `nwy-tiles-api.prod.newaydata.com`.
 
-**Repo data:** `data/ofm/austria/ofmx_extracted/` (full Austria), `migration/src/commonTest/resources/ofmx/lowg_subset.ofmx`
+**Repo data:** `data/ofm/austria/ofmx_extracted/` (full Austria), local Slovenia bundles under `data/charts/LJMB/` and extracted Slovenia data under `data/ofm/slovenia/ofmx_extracted/`, `migration/src/commonTest/resources/ofmx/lowg_subset.ofmx`
 
 **Current parser scope:** The extracted Austria package also contains `ofmx_lo_ofmShapeExtension.xml`, but the current parser only consumes `isolated/ofmx_lo.ofmx`.
 
@@ -49,3 +49,19 @@ Global waypoint and navaid position database. Needed because CIFP references fix
 **Not yet parsed.** Simple line-oriented formats, trivial to add once sourced.
 
 **Gap:** Some newer CIFP waypoints (PIBIP, XIBAR, RONOT) were not found in the previously inspected 2017-vintage `earth_fix.dat`. We would need a current version or manual lookup.
+
+## Local chart / nav bundles
+
+Some airports may also have local chart/navigation bundles that are not yet part of the general migration pipeline.
+
+Current example:
+
+- `data/charts/LJMB/`
+  - Jepp trip kit PDF
+  - OFMX Slovenia bundle
+  - ARINC bundle
+  - OpenAir bundle
+  - CUP bundle
+  - clipped raster/tile underlays
+
+These are useful bootstrap sources, but today only the OFMX and chart/PDF material fit directly into the existing migration flow.

@@ -115,6 +115,9 @@ def collect_extents(context: authoring.SceneContext) -> tuple[report.XY, report.
         points.append(anchor.point)
     for line in context.working_airspace_sector_lines:
         points.extend([line.start, line.end])
+    for shape in context.airspace_shapes:
+        for boundary in shape.boundaries:
+            points.extend(boundary)
     min_x = min(point.x for point in points)
     max_x = max(point.x for point in points)
     min_y = min(point.y for point in points)
@@ -286,6 +289,36 @@ def write_reference_entities(
             },
         )
 
+    for shape in context.airspace_shapes:
+        boundary_layer = "REF_AIRSPACE_PRIMARY" if shape.category == "primary" else "REF_AIRSPACE_SECONDARY"
+        label_layer = (
+            "REF_AIRSPACE_PRIMARY_LABELS"
+            if shape.category == "primary"
+            else "REF_AIRSPACE_SECONDARY_LABELS"
+        )
+        for boundary in shape.boundaries:
+            for start, end in safe_close_boundary(boundary):
+                modelspace.add_line(
+                    (start.x, start.y),
+                    (end.x, end.y),
+                    dxfattribs={"layer": boundary_layer},
+                )
+        if shape.boundaries:
+            label_boundary = max(shape.boundaries, key=len)
+            label_point = report.XY(
+                sum(point.x for point in label_boundary) / len(label_boundary),
+                sum(point.y for point in label_boundary) / len(label_boundary),
+            )
+            label_text = shape.code_id or shape.name
+            modelspace.add_text(
+                label_text,
+                dxfattribs={
+                    "layer": label_layer,
+                    "height": small_label_height,
+                    "insert": (label_point.x, label_point.y),
+                },
+            )
+
     osm_point_cross_half = max(point_cross_half * 0.45, 12.0)
     osm_label_height = max(small_label_height * 0.8, 18.0)
     for feature in osm_features:
@@ -383,8 +416,13 @@ def safe_close_boundary(points: list[report.XY], tolerance: float = 1e-6) -> lis
 
 def read_raster_underlay_placement(manifest_path: Path) -> dict[str, object] | None:
     airport_code = report.load_manifest(manifest_path)["airportCode"].lower()
-    placement_path = report.repo_root() / "cad/airports" / f"{airport_code}_osm_underlay_placement.json"
-    if not placement_path.exists():
+    root = report.repo_root() / "cad/airports"
+    placement_candidates = [
+        root / f"{airport_code}_raster_underlay_placement.json",
+        root / f"{airport_code}_osm_underlay_placement.json",
+    ]
+    placement_path = next((path for path in placement_candidates if path.exists()), None)
+    if placement_path is None:
         return None
     return json.loads(placement_path.read_text())
 
@@ -571,6 +609,10 @@ def export_airport_working_dxf(
     layer_colors: dict[str, int] = {
         "0": 7,
         "REF_OSM_RASTER": 8,
+        "REF_AIRSPACE_PRIMARY": 4,
+        "REF_AIRSPACE_PRIMARY_LABELS": 4,
+        "REF_AIRSPACE_SECONDARY": 6,
+        "REF_AIRSPACE_SECONDARY_LABELS": 6,
         "REF_RUNWAYS": 8,
         "REF_RUNWAY_LABELS": 8,
         "REF_TOWER": 7,

@@ -11,6 +11,7 @@ import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.GoAround
+import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.Report
@@ -136,24 +137,32 @@ private fun stepTransmission(
     mission: PilotMission,
     step: MissionStep,
     now: SimTime,
-): PilotTransmission? = when (step) {
-    MissionStep.REQUEST_STARTUP -> Request(RequestStartup())
-    MissionStep.REQUEST_TAXI -> Request(RequestTaxi())
-    MissionStep.REPORT_READY -> Report(listOf(ReportEvent.Ready))
-    MissionStep.CALL_INBOUND -> Report(listOf(ReportEvent.Downwind)) // inbound call as downwind report for now
+): PilotTransmission? {
+    // Guard: only transmit once per step entry. Prevents flooding the frequency
+    // with repeated requests/reports on every tick.
+    val isFirstTick = (now.millis - mission.stepEnteredAt.millis) < 1500 // within first 1.5s of step
+
+    return when (step) {
+    MissionStep.REQUEST_STARTUP -> if (isFirstTick) Request(RequestStartup()) else null
+    MissionStep.REQUEST_TAXI -> if (isFirstTick) Request(RequestTaxi()) else null
+    MissionStep.REPORT_READY -> if (isFirstTick) Report(listOf(ReportEvent.Ready)) else null
+    MissionStep.CALL_INBOUND -> if (isFirstTick) InitialContact(stationCalled = xyz.easiersaid.twr.protocol.RoleName.TOWER) else null
     MissionStep.REPORT_DOWNWIND -> if (mission.lastReportedLeg != LegName.DOWNWIND) Report(listOf(ReportEvent.Downwind)) else null
     MissionStep.REPORT_BASE -> if (mission.lastReportedLeg != LegName.BASE) Report(listOf(ReportEvent.Base)) else null
     MissionStep.REPORT_FINAL -> if (mission.lastReportedLeg != LegName.FINAL) Report(listOf(ReportEvent.Final)) else null
     MissionStep.AWAIT_LANDING_CLEARANCE -> {
         val elapsed = now.millis - mission.stepEnteredAt.millis
-        if (elapsed > 15_000) Report(listOf(ReportEvent.Final)) else null // escalation prompt
+        // Escalation: query controller after 15s with no clearance.
+        // Real pilot would say "[callsign], final, request landing clearance" — not repeat the position report.
+        if (elapsed in 15_000..16_500) Report(listOf(ReportEvent.Final)) else null
     }
     MissionStep.REPORT_RUNWAY_VACATED -> {
         val isOff = aircraft.phase is PilotPhase.ClearOfRunway || aircraft.phase is PilotPhase.Taxiing
         if (isOff) Report(listOf(ReportEvent.RunwayVacated)) else null
     }
-    MissionStep.GOING_AROUND -> Report(listOf(ReportEvent.GoingAround))
+    MissionStep.GOING_AROUND -> if (isFirstTick) Report(listOf(ReportEvent.GoingAround)) else null
     else -> null
+}
 }
 
 // ── Instruction processing ───────────────────────────────────────────
@@ -236,6 +245,13 @@ fun processInstruction(
 }
 
 /** Update lastReportedLeg after a position report transmission. */
+/** Update mission after any pilot transmission. */
+fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): PilotMission = when (tx) {
+    is Report -> tx.events.fold(mission) { m, evt -> updateAfterReport(m, evt) }
+    is InitialContact -> mission.copy(contactedOnFrequency = true)
+    else -> mission
+}
+
 fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission = when (event) {
     is ReportEvent.Downwind -> mission.copy(lastReportedLeg = LegName.DOWNWIND)
     is ReportEvent.Base -> mission.copy(lastReportedLeg = LegName.BASE)

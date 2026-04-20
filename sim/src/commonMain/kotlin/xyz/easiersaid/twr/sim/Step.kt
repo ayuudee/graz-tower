@@ -116,9 +116,7 @@ private fun handlePilotTick(
     if (rawMission != null) {
         var mission: PilotMission = rawMission
         for (tx in decision.transmissions) {
-            if (tx is xyz.easiersaid.twr.protocol.Report) {
-                for (evt in tx.events) { mission = updateAfterReport(mission, evt) }
-            }
+            mission = updateAfterTransmission(mission, tx)
         }
         updated = updated.copy(pilotMission = mission)
     }

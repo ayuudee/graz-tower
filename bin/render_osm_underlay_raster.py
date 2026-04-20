@@ -18,6 +18,7 @@ import export_osm_geojson_dxf as osm_underlay
 
 
 DEFAULT_WIDTH_PX = 4096
+DEFAULT_MARGIN_M = 4000.0
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,14 @@ class RasterCanvas:
             (point.x - self.extmin.x) * self.scale,
             (self.extmax.y - point.y) * self.scale,
         )
+
+
+@dataclass(frozen=True)
+class Extents:
+    min_x: float
+    min_y: float
+    max_x: float
+    max_y: float
 
 
 def parse_args() -> argparse.Namespace:
@@ -63,6 +72,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help="Placement metadata JSON path. Defaults to cad/airports/<airport>_osm_underlay_placement.json.",
+    )
+    parser.add_argument(
+        "--margin-m",
+        type=float,
+        default=DEFAULT_MARGIN_M,
+        help=f"Airport-local raster margin in meters. Defaults to {DEFAULT_MARGIN_M:.0f}.",
     )
     return parser.parse_args()
 
@@ -169,8 +184,9 @@ def feature_sort_key(feature: dict[str, object]) -> tuple[int, int]:
     return (2, 0)
 
 
-def build_canvas(features: list[dict[str, object]], width_px: int) -> RasterCanvas:
-    extmin, extmax = osm_underlay.collect_extents(features)
+def build_canvas(extents: Extents, width_px: int) -> RasterCanvas:
+    extmin = report.XY(extents.min_x, extents.min_y)
+    extmax = report.XY(extents.max_x, extents.max_y)
     span_x = max(extmax.x - extmin.x, 1.0)
     span_y = max(extmax.y - extmin.y, 1.0)
     scale = width_px / span_x
@@ -182,6 +198,26 @@ def build_canvas(features: list[dict[str, object]], width_px: int) -> RasterCanv
         height_px=height_px,
         scale=scale,
     )
+
+
+def airport_extents(manifest_path: Path, margin_m: float) -> Extents:
+    manifest = report.load_manifest(manifest_path)
+    apt_path = report.resolve_path(report.repo_root(), manifest["sources"]["aptDat"])
+    runways, tower, taxi_nodes, _, apt_metadata, parking_positions = report.parse_apt(apt_path)
+    origin = report.Geo(float(apt_metadata["datum_lat"]), float(apt_metadata["datum_lon"]))
+    project = report.projector(origin)
+    points: list[report.XY] = []
+    for runway in {id(record): record for record in runways.values()}.values():
+        points.extend([project(runway.end_a), project(runway.end_b)])
+    points.extend(project(node.position) for node in taxi_nodes.values())
+    points.extend(project(position.position) for position in parking_positions)
+    if tower is not None:
+        points.append(project(tower.position))
+    min_x = min(point.x for point in points) - margin_m
+    max_x = max(point.x for point in points) + margin_m
+    min_y = min(point.y for point in points) - margin_m
+    max_y = max(point.y for point in points) + margin_m
+    return Extents(min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y)
 
 
 def draw_feature(draw, canvas: RasterCanvas, feature: dict[str, object]) -> None:
@@ -208,6 +244,7 @@ def render_raster(
     output_path: Path,
     placement_path: Path,
     width_px: int,
+    margin_m: float,
 ) -> None:
     try:
         from PIL import Image, ImageDraw
@@ -220,7 +257,7 @@ def render_raster(
     if not features:
         raise ValueError("No usable OSM features were found for raster rendering.")
 
-    canvas = build_canvas(features, width_px)
+    canvas = build_canvas(airport_extents(manifest_path, margin_m), width_px)
     image = Image.new("RGBA", (canvas.width_px, canvas.height_px), (244, 243, 238, 255))
     draw = ImageDraw.Draw(image, "RGBA")
 
@@ -250,6 +287,7 @@ def render_raster(
             "widthMeters": canvas.extmax.x - canvas.extmin.x,
             "heightMeters": canvas.extmax.y - canvas.extmin.y,
         },
+        "cropMarginMeters": margin_m,
         "metersPerPixel": {
             "x": (canvas.extmax.x - canvas.extmin.x) / canvas.width_px,
             "y": (canvas.extmax.y - canvas.extmin.y) / canvas.height_px,
@@ -276,6 +314,7 @@ def main() -> None:
         output_path=output_path,
         placement_path=placement_path,
         width_px=args.width_px,
+        margin_m=args.margin_m,
     )
     print(output_path)
 

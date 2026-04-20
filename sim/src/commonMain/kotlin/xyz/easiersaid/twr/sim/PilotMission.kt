@@ -40,6 +40,7 @@ data class CompoundTask(
     val name: String,
     val children: List<TaskNode>,
 ) : TaskNode {
+    init { require(children.isNotEmpty()) { "CompoundTask '$name' must have at least one child" } }
     override val isComplete: Boolean get() = children.all { it.isComplete }
 
     /** Find the leftmost incomplete primitive leaf. */
@@ -64,15 +65,25 @@ data class CompoundTask(
         return markComplete(current.step)
     }
 
-    /** Mark a specific step as complete in the tree. */
-    fun markComplete(step: MissionStep): CompoundTask = copy(
-        children = children.map { child ->
+    /** Mark the first incomplete instance of [step] in the tree. Only one node is marked per call. */
+    fun markComplete(step: MissionStep): CompoundTask {
+        var found = false
+        val updated = children.map { child ->
+            if (found) return@map child
             when (child) {
-                is PrimitiveTask -> if (child.step == step && !child.completed) child.copy(completed = true) else child
-                is CompoundTask -> child.markComplete(step)
+                is PrimitiveTask -> if (child.step == step && !child.completed) {
+                    found = true; child.copy(completed = true)
+                } else child
+                is CompoundTask -> {
+                    val before = child
+                    val after = child.markComplete(step)
+                    if (after !== before) found = true
+                    after
+                }
             }
         }
-    )
+        return copy(children = updated)
+    }
 }
 
 /**

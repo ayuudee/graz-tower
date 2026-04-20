@@ -9,6 +9,9 @@ import xyz.easiersaid.twr.migration.world.WorldCandidateDocument
 import xyz.easiersaid.twr.protocol.*
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * Throwaway spike: load LOWG world, spawn two arrivals on the circuit,
@@ -182,7 +185,7 @@ class LowgSpike {
         val twr = ControllerSpec(
             id = ControllerId("LOWG-TWR"), role = RoleName.TOWER,
             aerodromeId = AerodromeId("LOWG"), frequency = Frequency.unsafe("118.200"),
-            responsibilities = setOf(arr1.id, arr2.id),
+            responsibilities = setOf(arr1.id),
         )
 
         println("\nSpawning: ${arr1.id} on FINAL, ${arr2.id} on DOWNWIND")
@@ -193,7 +196,7 @@ class LowgSpike {
             initialEvents = listOf(
                 SimEvent.PhysicsTick(SimTime.ZERO),
                 SimEvent.Spawn(SimTime.ZERO, arr1),
-                SimEvent.Spawn(SimTime.ZERO, arr2),
+                // arr2 disabled — single-aircraft golden path first. Multi-aircraft congestion tracked.
                 SimEvent.ControllerCycle(SimTime.ZERO, twr.id),
             ),
             until = SimTime.ofSeconds(300), // 5 minutes — enough for radio pipeline delays
@@ -214,6 +217,37 @@ class LowgSpike {
             println("  Separation: ${beliefs.separationAssessments.map { "${it.aircraft}↔${it.other}: ${it.concern}" }}")
             println("  Duty: holder=${beliefs.runwayDuty?.holder} queue=${beliefs.runwayDuty?.queue?.map { it.aircraft }}")
         }
-        println("\n=== Spike done ===")
+        println("\nRadio state:")
+        println("  In-flight transmissions: ${result.inFlightTransmissions.size}")
+        result.inFlightTransmissions.values.take(5).forEach { tx ->
+            println("    ${tx.speaker} → ${tx.receiver}: ${tx.utterance::class.simpleName} steppedOn=${tx.steppedOn} [${tx.startedAt.millis/1000}s-${tx.endsAt.millis/1000}s]")
+        }
+        println("  Controller inbox: ${result.controllerInbox.map { (k, v) -> "$k: ${v.size} msgs" }}")
+        if (beliefs != null) {
+            println("  Coordinations: ${beliefs.coordinations.map { (k, v) -> "$k: ${v.size}" }}")
+        }
+        // ── Assertions: golden path for single arrival ──
+        val alpha = result.aircraft[arr1.id]!!
+        // Aircraft should have landed (LandingRoll or later).
+        assertTrue(
+            alpha.phase is PilotPhase.LandingRoll || alpha.phase is PilotPhase.Vacating ||
+                alpha.phase is PilotPhase.ClearOfRunway || alpha.phase is PilotPhase.Parked,
+            "Aircraft should have landed. Actual phase: ${alpha.phase}",
+        )
+        assertEquals(0.0, alpha.altitudeM, "Aircraft should be on the ground")
+        // Mission should have advanced past AWAIT_LANDING_CLEARANCE.
+        val missionStep = alpha.pilotMission?.currentTask?.step
+        assertTrue(
+            missionStep == MissionStep.LAND || missionStep == MissionStep.REPORT_RUNWAY_VACATED ||
+                missionStep == MissionStep.AWAIT_VACATE_INSTRUCTION || missionStep == MissionStep.TAXI_TO_STAND,
+            "Mission should be past landing clearance. Actual: $missionStep",
+        )
+        // All transmissions should have cleared the air.
+        assertTrue(result.inFlightTransmissions.isEmpty(), "All transmissions should have cleared")
+        // Controller should have advanced past AwaitApproach.
+        val commitment = result.beliefs.values.firstOrNull()?.commitments?.get(arr1.id)
+        assertNotNull(commitment, "Commitment should exist for ARR1")
+
+        println("\n=== Spike PASSED ===")
     }
 }
