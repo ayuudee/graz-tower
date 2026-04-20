@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -37,6 +38,15 @@ def _copy_path(path: dict[str, Any]) -> dict[str, Any]:
         "source": path.get("source"),
         "projectionStatus": path.get("projectionStatus"),
         "note": path.get("note"),
+    }
+
+
+def _copy_fix(fix: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": fix["id"],
+        "name": fix["name"],
+        "pointId": fix["pointId"],
+        "type": fix["type"],
     }
 
 
@@ -109,6 +119,23 @@ def _point_in_ring(point: report.XY, ring: list[report.XY]) -> bool:
 
 def _point_in_any_ring(point: report.XY, rings: list[list[report.XY]]) -> bool:
     return any(_point_in_ring(point, ring) for ring in rings)
+
+
+def _heading_unit(heading_degrees: float) -> report.XY:
+    radians = math.radians(heading_degrees)
+    return report.XY(math.sin(radians), math.cos(radians))
+
+
+def _scaled(point: report.XY, scalar: float) -> report.XY:
+    return report.XY(point.x * scalar, point.y * scalar)
+
+
+def _translated(point: report.XY, delta: report.XY) -> report.XY:
+    return report.XY(point.x + delta.x, point.y + delta.y)
+
+
+def _left_normal(vector: report.XY) -> report.XY:
+    return report.XY(-vector.y, vector.x)
 
 
 def _candidate_airspace_rings(
@@ -451,6 +478,484 @@ def _projected_current_core_holding_points(
     return holding_points, assumptions
 
 
+def _candidate_waypoint_altitude_constraint(
+    candidate: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    if not isinstance(candidate, dict):
+        return None
+    altitude_1 = candidate.get("altitude1Feet")
+    altitude_2 = candidate.get("altitude2Feet")
+    raw_type = candidate.get("rawType")
+    if not isinstance(altitude_1, int):
+        return None
+    if raw_type == "+":
+        return {"kind": "AT_OR_ABOVE", "minimumFeet": altitude_1}
+    if raw_type == "-":
+        return {"kind": "AT_OR_BELOW", "maximumFeet": altitude_1}
+    if isinstance(altitude_2, int) and altitude_1 != altitude_2:
+        return {
+            "kind": "BETWEEN",
+            "minimumFeet": min(altitude_1, altitude_2),
+            "maximumFeet": max(altitude_1, altitude_2),
+        }
+    return {"kind": "AT", "valueFeet": altitude_1}
+
+
+def _candidate_waypoint_speed_constraint(
+    candidate: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    if not isinstance(candidate, dict):
+        return None
+    speed_knots = candidate.get("speedKnots")
+    raw_type = candidate.get("rawType")
+    if not isinstance(speed_knots, int):
+        return None
+    if raw_type == "+":
+        return {"kind": "AT_OR_ABOVE", "minimumKnots": speed_knots}
+    if raw_type == "-":
+        return {"kind": "AT_OR_BELOW", "maximumKnots": speed_knots}
+    return {"kind": "AT", "valueKnots": speed_knots}
+
+
+def _runtime_ifr_subset(
+    airport_code: str,
+    *,
+    core_entities: dict[str, Any],
+    candidate_entities: dict[str, Any],
+) -> tuple[
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    list[str],
+]:
+    ifr_procedures = candidate_entities.get("ifrProcedures", {})
+    tower_scope = ifr_procedures.get("towerScopeApproaches", {})
+    approaches_by_name = tower_scope.get("byName", {})
+    holding_candidates = tower_scope.get("holdingPatternCandidates", {}).get("byId", {})
+    sid_candidates = ifr_procedures.get("sidCandidates", {}).get("byId", {})
+    star_candidates = ifr_procedures.get("starCandidates", {}).get("byId", {})
+    runways = core_entities["aerodrome"]["runways"]
+    existing_fixes = {
+        fix_id: _copy_fix(fix)
+        for fix_id, fix in core_entities.get("fixes", {}).items()
+    }
+    points: dict[str, dict[str, Any]] = {}
+    paths: dict[str, dict[str, Any]] = {}
+    fixes: dict[str, dict[str, Any]] = {}
+    sids: dict[str, dict[str, Any]] = {}
+    stars: dict[str, dict[str, Any]] = {}
+    approaches: dict[str, dict[str, Any]] = {}
+    assumptions: list[str] = []
+
+    point_ids_by_fix_name = {
+        fix.get("name"): fix.get("pointId")
+        for fix in existing_fixes.values()
+        if isinstance(fix.get("name"), str) and isinstance(fix.get("pointId"), str)
+    }
+
+    def ensure_point(point_id: str, xy: report.XY, *, label: str, source: str) -> None:
+        if point_id in points or point_id in core_entities["geometry"]["points"]:
+            return
+        points[point_id] = {
+            "id": point_id,
+            "xMeters": round(xy.x, 6),
+            "yMeters": round(xy.y, 6),
+            "label": label,
+            "tags": ["ifr"],
+            "sources": [source],
+        }
+
+    def ensure_fix(fix_id: str, point_id: str, *, fix_type: str = "WAYPOINT") -> None:
+        if fix_id in existing_fixes or fix_id in fixes:
+            return
+        fixes[fix_id] = {
+            "id": fix_id,
+            "name": fix_id,
+            "pointId": point_id,
+            "type": fix_type,
+        }
+
+    def point_id_for_leg(approach_name: str, leg: dict[str, Any]) -> str | None:
+        identifier = leg.get("fixIdentifier")
+        if isinstance(identifier, str) and identifier.startswith("RW"):
+            runway_id = identifier[2:]
+            runway = runways.get(runway_id)
+            if isinstance(runway, dict):
+                return runway["thresholdPointId"]
+
+        if isinstance(identifier, str) and identifier in point_ids_by_fix_name:
+            return point_ids_by_fix_name[identifier]
+
+        position = leg.get("position")
+        if not isinstance(position, dict):
+            return None
+        local_position = position.get("localPosition")
+        if not isinstance(local_position, dict):
+            return None
+        xy = report.XY(float(local_position["xMeters"]), float(local_position["yMeters"]))
+        point_id = (
+            f"{airport_code}_IFR_FIX_{_slugify(identifier).upper()}"
+            if isinstance(identifier, str)
+            else f"{airport_code}_IFR_{_slugify(approach_name).upper()}_{leg['sequence']}"
+        )
+        ensure_point(
+            point_id,
+            xy,
+            label=identifier or f"{approach_name} {leg['sequence']}",
+            source=str(position.get("sourceKind") or "candidate_ifr_leg"),
+        )
+        if isinstance(identifier, str) and not identifier.startswith("RW"):
+            fix_type = (
+                "NDB" if identifier == "GBG"
+                else "VOR" if identifier == "GRZ"
+                else "WAYPOINT"
+            )
+            ensure_fix(identifier, point_id, fix_type=fix_type)
+            point_ids_by_fix_name[identifier] = point_id
+        return point_id
+
+    def candidate_waypoint(approach_name: str, leg: dict[str, Any]) -> dict[str, Any] | None:
+        point_id = point_id_for_leg(approach_name, leg)
+        if point_id is None:
+            return None
+        return {
+            "pointId": point_id,
+            "name": leg.get("fixIdentifier") or f"{approach_name}_{leg['sequence']}",
+            "altitudeConstraint": _candidate_waypoint_altitude_constraint(leg.get("altitudeConstraint")),
+            "speedConstraint": _candidate_waypoint_speed_constraint(leg.get("speedConstraint")),
+        }
+
+    def route_waypoints(route_name: str, candidate_waypoint_legs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        waypoints = [
+            waypoint
+            for leg in candidate_waypoint_legs
+            if isinstance(leg, dict)
+            for waypoint in [candidate_waypoint(route_name, leg)]
+            if waypoint is not None
+        ]
+        deduped_waypoints: list[dict[str, Any]] = []
+        for waypoint in waypoints:
+            if deduped_waypoints and deduped_waypoints[-1]["pointId"] == waypoint["pointId"]:
+                continue
+            deduped_waypoints.append(waypoint)
+        return deduped_waypoints
+
+    def selected_transition_legs(candidate: dict[str, Any]) -> tuple[str | None, list[dict[str, Any]]]:
+        runtime_policy = candidate.get("runtimeProjectionPolicy")
+        if not isinstance(runtime_policy, dict):
+            return None, []
+        selected_transition = runtime_policy.get("selectedTransition")
+        if not isinstance(selected_transition, str):
+            return None, []
+        transition_legs_by_name = candidate.get("transitionLegsByName")
+        if not isinstance(transition_legs_by_name, dict):
+            return selected_transition, []
+        legs = transition_legs_by_name.get(selected_transition)
+        if not isinstance(legs, list):
+            return selected_transition, []
+        return selected_transition, [leg for leg in legs if isinstance(leg, dict)]
+
+    holding_candidate = holding_candidates.get("LOWG_GBG_MISSED_HOLD")
+    holding_patterns: dict[str, dict[str, Any]] = {}
+    if isinstance(holding_candidate, dict):
+        position = holding_candidate.get("position")
+        if isinstance(position, dict) and isinstance(position.get("localPosition"), dict):
+            fix_point_id = point_id_for_leg(
+                "LOWG_GBG_MISSED_HOLD",
+                {
+                    "fixIdentifier": holding_candidate.get("fixIdentifier"),
+                    "position": position,
+                    "sequence": "FIX",
+                },
+            )
+            if isinstance(fix_point_id, str):
+                fix_xy = _xy_for_point(points.get(fix_point_id, core_entities["geometry"]["points"].get(fix_point_id)))
+                inbound = _heading_unit(float(holding_candidate.get("inboundTrackMagneticDegrees") or 0.0))
+                side = _left_normal(inbound)
+                if holding_candidate.get("turnDirection") == "RIGHT":
+                    side = _scaled(side, -1.0)
+                outbound = _scaled(inbound, -1.0)
+                leg_length_meters = (
+                    float(holding_candidate["legDistanceNm"]) * 1852.0
+                    if isinstance(holding_candidate.get("legDistanceNm"), (int, float))
+                    else 3000.0
+                )
+                radius_meters = 900.0
+                loop_points_xy = [
+                    fix_xy,
+                    _translated(fix_xy, _scaled(side, radius_meters)),
+                    _translated(
+                        _translated(fix_xy, _scaled(side, radius_meters)),
+                        _scaled(outbound, leg_length_meters),
+                    ),
+                    _translated(
+                        _translated(fix_xy, _scaled(side, -radius_meters)),
+                        _scaled(outbound, leg_length_meters),
+                    ),
+                    _translated(fix_xy, _scaled(side, -radius_meters)),
+                    fix_xy,
+                ]
+                loop_point_ids = [fix_point_id]
+                for index, xy in enumerate(loop_points_xy[1:-1], start=1):
+                    point_id = f"{airport_code}_IFR_HOLD_GBG_LOOP_{index:02d}"
+                    ensure_point(
+                        point_id,
+                        xy,
+                        label=f"GBG hold {index}",
+                        source="compiled_nominal_holding_loop",
+                    )
+                    loop_point_ids.append(point_id)
+                loop_point_ids.append(fix_point_id)
+                loop_path_id = f"{airport_code}_IFR_HOLD_GBG_LOOP"
+                paths[loop_path_id] = {
+                    "id": loop_path_id,
+                    "pointIds": loop_point_ids,
+                    "surface": "SKY",
+                    "widthMeters": 1600.0,
+                    "source": "compiled_nominal_holding_loop",
+                    "projectionStatus": "current_core_runtime_ifr_subset",
+                    "note": "Nominal GBG missed-approach holding racetrack compiled from inbound course and published one-minute hold timing.",
+                }
+                holding_patterns["LOWG_GBG_MISSED_HOLD"] = {
+                    "id": "LOWG_GBG_MISSED_HOLD",
+                    "fixId": "GBG",
+                    "inboundCourseDegrees": float(holding_candidate.get("inboundTrackMagneticDegrees") or 0.0),
+                    "turnDirection": str(holding_candidate.get("turnDirection") or "LEFT"),
+                    "loopPathId": loop_path_id,
+                    "legTimeMinutes": int(round(float(holding_candidate.get("legTimeMinutes") or 1.0))),
+                    "altitudeFeet": int(holding_candidate.get("minimumAltitudeFeet") or 5000),
+                    "projectionStatus": "current_core_runtime_ifr_subset",
+                }
+                assumptions.append(
+                    "LOWG GBG missed-approach hold loop geometry is a nominal compiled racetrack from the published inbound track and one-minute hold timing, because the current runtime model requires explicit loop geometry."
+                )
+
+    for sid_id, candidate in sorted(sid_candidates.items()):
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("runtimeProjectionBlockers") or candidate.get("unresolvedFixIdentifiers"):
+            continue
+        runway_id = candidate.get("runwayId")
+        if not isinstance(runway_id, str) or runway_id not in runways:
+            continue
+        waypoints = route_waypoints(str(candidate.get("name") or sid_id), candidate.get("waypoints", []))
+        if not waypoints:
+            continue
+        runway_threshold_point_id = runways.get(runway_id, {}).get("thresholdPointId")
+        if (
+            isinstance(runway_threshold_point_id, str) and
+            waypoints[0].get("pointId") != runway_threshold_point_id
+        ):
+            waypoints = [
+                {
+                    "pointId": runway_threshold_point_id,
+                    "name": f"RW{runway_id}",
+                    "altitudeConstraint": None,
+                    "speedConstraint": None,
+                },
+                *waypoints,
+            ]
+            assumptions.append(
+                f"{sid_id}: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix."
+            )
+        sids[sid_id] = {
+            "id": sid_id,
+            "name": candidate.get("name") or sid_id,
+            "runwayId": runway_id,
+            "waypoints": waypoints,
+            "transitions": {},
+            "projectionStatus": "current_core_runtime_ifr_subset",
+        }
+        if len(waypoints) >= 2:
+            sid_path_id = f"{sid_id}_PATH"
+            paths[sid_path_id] = {
+                "id": sid_path_id,
+                "pointIds": [waypoint["pointId"] for waypoint in waypoints],
+                "surface": "SKY",
+                "widthMeters": 1200.0,
+                "source": "compiled_runtime_ifr_sid_chain",
+                "projectionStatus": "current_core_runtime_ifr_subset",
+                "note": f"Compiled SID geometry chain for {sid_id}.",
+            }
+        for assumption in candidate.get("compilationAssumptions", []):
+            if isinstance(assumption, str):
+                assumptions.append(f"{sid_id}: {assumption}")
+
+    for procedure_name, candidate in sorted(approaches_by_name.items()):
+        if not isinstance(candidate, dict):
+            continue
+        runtime_policy = candidate.get("runtimeProjectionPolicy")
+        if not isinstance(runtime_policy, dict):
+            continue
+        hold_id = candidate.get("missedApproachHoldCandidateId")
+        if hold_id not in holding_patterns:
+            continue
+
+        selected_transition, feeder_legs = selected_transition_legs(candidate)
+        deduped_waypoints = route_waypoints(
+            procedure_name,
+            [
+                *feeder_legs,
+                *[
+                    leg
+                    for leg in candidate.get("finalApproachLegs", [])
+                    if isinstance(leg, dict)
+                ],
+            ],
+        )
+        if not deduped_waypoints:
+            continue
+        runway = runways.get(candidate["runwayId"])
+        threshold_point_id = runway["thresholdPointId"] if isinstance(runway, dict) else None
+        if (
+            isinstance(threshold_point_id, str) and
+            deduped_waypoints[-1]["pointId"] != threshold_point_id
+        ):
+            deduped_waypoints.append(
+                {
+                    "pointId": threshold_point_id,
+                    "name": f"RW{candidate['runwayId']}",
+                    "altitudeConstraint": None,
+                    "speedConstraint": None,
+                }
+            )
+
+        missed_waypoints = [
+            waypoint
+            for leg in candidate.get("missedApproachLegs", [])
+            if isinstance(leg, dict) and leg.get("pathTerminator") != "HM"
+            for waypoint in [candidate_waypoint(procedure_name, leg)]
+            if waypoint is not None
+        ]
+        threshold_waypoint = {
+            "pointId": deduped_waypoints[-1]["pointId"],
+            "name": deduped_waypoints[-1]["name"],
+            "altitudeConstraint": None,
+            "speedConstraint": None,
+        }
+        if not missed_waypoints or missed_waypoints[0]["pointId"] != threshold_waypoint["pointId"]:
+            missed_waypoints = [threshold_waypoint] + missed_waypoints
+
+        approach_id = {
+            "D16C": "LOWG_VOR_16C",
+            "D34C": "LOWG_VOR_34C",
+            "R16C": "LOWG_RNP_16C",
+            "R34C": "LOWG_RNP_34C",
+            "I34C": "LOWG_ILS_34C",
+        }.get(procedure_name)
+        if approach_id is None:
+            continue
+        if feeder_legs:
+            assumptions.append(
+                f"{approach_id}: Runtime IFR projection prepends feeder transition {selected_transition} so the "
+                "selected LOWG STAR terminal fix is shared with the approach entry point set."
+            )
+        approaches[approach_id] = {
+            "id": approach_id,
+            "name": {
+                "D16C": "VOR RWY 16C",
+                "D34C": "VOR RWY 34C",
+                "R16C": "RNP RWY 16C",
+                "R34C": "RNP RWY 34C",
+                "I34C": "ILS RWY 34C",
+            }[procedure_name],
+            "type": runtime_policy["selectedApproachType"],
+            "runwayId": candidate["runwayId"],
+            "waypoints": deduped_waypoints,
+            "minimumAltitude": runtime_policy["minimum"],
+            "missedApproach": {
+                "waypoints": missed_waypoints,
+                "holdAtId": str(hold_id),
+            },
+            "projectionStatus": "current_core_runtime_ifr_subset",
+            "note": runtime_policy.get("selectionNote"),
+        }
+        final_path_id = f"{approach_id}_FINAL"
+        if len(deduped_waypoints) >= 2:
+            paths[final_path_id] = {
+                "id": final_path_id,
+                "pointIds": [waypoint["pointId"] for waypoint in deduped_waypoints],
+                "surface": "SKY",
+                "widthMeters": 1200.0,
+                "source": "compiled_runtime_ifr_approach_chain",
+                "projectionStatus": "current_core_runtime_ifr_subset",
+                "note": f"Compiled final approach geometry chain for {approach_id}.",
+            }
+        missed_path_id = f"{approach_id}_MISSED"
+        if len(missed_waypoints) >= 2:
+            paths[missed_path_id] = {
+                "id": missed_path_id,
+                "pointIds": [waypoint["pointId"] for waypoint in missed_waypoints],
+                "surface": "SKY",
+                "widthMeters": 1200.0,
+                "source": "compiled_runtime_ifr_missed_chain",
+                "projectionStatus": "current_core_runtime_ifr_subset",
+                "note": f"Compiled missed-approach geometry chain for {approach_id}.",
+            }
+
+    holding_fix_ids = {
+        holding_pattern["fixId"]
+        for holding_pattern in holding_patterns.values()
+        if isinstance(holding_pattern, dict) and isinstance(holding_pattern.get("fixId"), str)
+    }
+    holding_fix_point_ids = {
+        fix.get("pointId")
+        for fix_id, fix in {**existing_fixes, **fixes}.items()
+        if fix_id in holding_fix_ids and isinstance(fix, dict) and isinstance(fix.get("pointId"), str)
+    }
+    approach_entry_point_ids = {
+        waypoints[0]["pointId"]
+        for approach in approaches.values()
+        if isinstance(approach, dict)
+        for waypoints in [approach.get("waypoints", [])]
+        if isinstance(waypoints, list) and waypoints
+        if isinstance(waypoints[0], dict) and isinstance(waypoints[0].get("pointId"), str)
+    }
+
+    for star_id, candidate in sorted(star_candidates.items()):
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("runtimeProjectionBlockers") or candidate.get("unresolvedFixIdentifiers"):
+            continue
+        waypoints = route_waypoints(str(candidate.get("name") or star_id), candidate.get("waypoints", []))
+        if not waypoints:
+            continue
+        terminal_point_id = waypoints[-1]["pointId"]
+        if terminal_point_id not in approach_entry_point_ids and terminal_point_id not in holding_fix_point_ids:
+            assumptions.append(
+                f"{star_id}: Runtime STAR projection skipped because terminal point {terminal_point_id} is not yet "
+                "shared with any projected approach entry point or holding fix."
+            )
+            continue
+        stars[star_id] = {
+            "id": star_id,
+            "name": candidate.get("name") or star_id,
+            "waypoints": waypoints,
+            "transitions": {},
+            "projectionStatus": "current_core_runtime_ifr_subset",
+        }
+        if len(waypoints) >= 2:
+            star_path_id = f"{star_id}_PATH"
+            paths[star_path_id] = {
+                "id": star_path_id,
+                "pointIds": [waypoint["pointId"] for waypoint in waypoints],
+                "surface": "SKY",
+                "widthMeters": 1200.0,
+                "source": "compiled_runtime_ifr_star_chain",
+                "projectionStatus": "current_core_runtime_ifr_subset",
+                "note": f"Compiled STAR geometry chain for {star_id}.",
+            }
+        for assumption in candidate.get("compilationAssumptions", []):
+            if isinstance(assumption, str):
+                assumptions.append(f"{star_id}: {assumption}")
+
+    return points, paths, fixes, sids, stars, approaches, holding_patterns, assumptions
+
+
 def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
     bundle = projection.build_projection_bundle(manifest_path)
     core_entities = bundle["coreEntities"]
@@ -489,6 +994,11 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
     candidate_airspace_volumes = _low_level_runtime_airspace_volumes(
         candidate_entities.get("airspaceVolumes", {})
     )
+    runtime_ifr_points, runtime_ifr_paths, runtime_ifr_fixes, runtime_ifr_sids, runtime_ifr_stars, runtime_ifr_approaches, runtime_ifr_holding_patterns, ifr_assumptions = _runtime_ifr_subset(
+        airport_code,
+        core_entities=core_entities,
+        candidate_entities=candidate_entities,
+    )
     projected_airspace_boundary_paths, boundary_path_ids_by_volume = _boundary_path_documents(
         airport_code,
         candidate_airspace_volumes,
@@ -507,11 +1017,14 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         | circuit_path_ids
         | sector_boundary_path_ids
         | set(projected_airspace_boundary_paths.keys())
+        | set(runtime_ifr_paths.keys())
     )
     included_paths = {
         path_id: (
             _copy_path(geometry_paths[path_id])
             if path_id in geometry_paths
+            else _copy_path(runtime_ifr_paths[path_id])
+            if path_id in runtime_ifr_paths
             else projected_airspace_boundary_paths[path_id]
         )
         for path_id in sorted(included_path_ids)
@@ -574,9 +1087,35 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
             ),
         ]
         if isinstance(point_id, str)
+    } | {
+        waypoint["pointId"]
+        for sid in runtime_ifr_sids.values()
+        for waypoint in sid.get("waypoints", [])
+        if isinstance(waypoint, dict) and isinstance(waypoint.get("pointId"), str)
+    } | {
+        waypoint["pointId"]
+        for star in runtime_ifr_stars.values()
+        for waypoint in star.get("waypoints", [])
+        if isinstance(waypoint, dict) and isinstance(waypoint.get("pointId"), str)
+    } | {
+        waypoint["pointId"]
+        for approach in runtime_ifr_approaches.values()
+        for waypoint in [
+            *approach.get("waypoints", []),
+            *approach.get("missedApproach", {}).get("waypoints", []),
+        ]
+        if isinstance(waypoint, dict) and isinstance(waypoint.get("pointId"), str)
+    } | {
+        fix["pointId"]
+        for fix in runtime_ifr_fixes.values()
+        if isinstance(fix, dict) and isinstance(fix.get("pointId"), str)
     }
     included_points = {
-        point_id: _copy_point(geometry_points[point_id])
+        point_id: (
+            _copy_point(geometry_points[point_id])
+            if point_id in geometry_points
+            else _copy_point(runtime_ifr_points[point_id])
+        )
         for point_id in sorted(included_point_ids)
     }
 
@@ -643,9 +1182,24 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
     ]
     forced_assumptions.extend(airspace_assumptions)
     forced_assumptions.extend(holding_assumptions)
+    forced_assumptions.extend(ifr_assumptions)
+    if runtime_ifr_approaches:
+        forced_assumptions.append(
+            "LOWG runtime IFR approaches use waypoint-only final and missed-approach sequences. "
+            "Altitude-only and DME-triggered CIFP legs are collapsed to the current-core waypoint model where necessary."
+        )
+    if runtime_ifr_sids:
+        forced_assumptions.append(
+            "LOWG runtime SID projection compiles leading fixless climb legs as runway-threshold waypoints where necessary, because the current SID model is waypoint-based rather than path-terminator based."
+        )
+    if runtime_ifr_stars:
+        forced_assumptions.append(
+            "LOWG runtime STAR projection currently uses the published STAR trunks only, and relies on explicitly selected feeder transitions on the projected approach subset so STAR terminal fixes are shared with the approach entry-point set."
+        )
     omitted_features = [
         "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
         "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
+        "LOWG IFR runtime projection currently includes the LOWG SID set, the LOWG STAR set, VOR RWY 16C, VOR RWY 34C, RNP RWY 16C, RNP RWY 34C, ILS RWY 34C, and the shared GBG missed-approach hold. LOC 34C and richer minima variants remain outside the current-core subset.",
         "The east non-standard hold remains deferred to version 2.",
         "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule.",
     ]
@@ -665,7 +1219,10 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
                 "points": included_points,
                 "paths": included_paths,
             },
-            "fixes": dict(sorted(core_entities["fixes"].items())),
+            "fixes": dict(sorted({
+                **core_entities["fixes"],
+                **runtime_ifr_fixes,
+            }.items())),
             "vfrRoutes": dict(sorted(core_entities.get("vfrRoutes", {}).items())),
             "aerodrome": {
                 "icao": aerodrome["icao"],
@@ -679,6 +1236,10 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
                 "taxiways": world_taxiways,
                 "stands": dict(sorted(aerodrome["stands"].items())),
                 "aprons": dict(sorted(aerodrome["aprons"].items())),
+                "sids": dict(sorted(runtime_ifr_sids.items())),
+                "stars": dict(sorted(runtime_ifr_stars.items())),
+                "approaches": dict(sorted(runtime_ifr_approaches.items())),
+                "holdingPatterns": dict(sorted(runtime_ifr_holding_patterns.items())),
             },
             "airspaceVolumes": dict(sorted(projected_airspace_volumes.items())),
             "firs": dict(sorted(projected_firs.items())),

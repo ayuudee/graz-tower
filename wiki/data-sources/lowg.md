@@ -32,12 +32,23 @@ Primary test airport. Complex enough to exercise most features.
 - **Approaches (5 types):** D16C (VOR/DME), D34C (VOR/DME), I34C (ILS cat III), R16C (RNAV), R34C (RNAV) -- with multiple approach transitions each
 - **ILS:** OEG localizer on 34C, cat III
 - **Runway thresholds:** 16C at N47000722/E015261181 elev 1117ft, 34C at N46584003/E015263581 elev 1088ft
+- **Structured IFR inventory:** The generated LOWG structured package now carries this CIFP procedure inventory as an explicit candidate IFR block, together with CIFP runway-threshold positions, a fix-resolution scan against checked-in OFMX designated points, navaids, and chart coding tables, compiled SID/STAR candidate routes, and tower-scope default approach candidates for `D16C`, `D34C`, `I34C`, `R16C`, and `R34C`.
 
 ## Known gaps
 
 - **Circuit geometry:** Not in any downloadable data source. apt.dat gives direction (left-hand for 16C). OFM renders accurate circuits in their tiles but geometry is not exported. Needs hand-authoring.
 - **VFR routes:** OFMX has the reporting points but not the route geometry connecting them. OFM map shows routes labelled PRC-1 through PRC-5 (PRC-4/5 appear to be the circuit patterns). Route geometry needs hand-authoring.
-- **IFR fix positions:** The checked-in OFMX designated-point inventory is not enough to anchor LOWG IFR content by itself. In the current lightweight scan, only `GOTAR` appears among the `46` distinct LOWG CIFP identifiers. A further nav source or manual lookup is still needed.
+- **IFR fix positions:** LOWG IFR identifier resolution is now effectively complete for v1. All `46` distinct CIFP identifiers resolve from checked-in sources or conservative CIFP-derived approach geometry: `GOTAR` from OFMX designated points, `GBG` and `GRZ` from parsed OFMX navaids, `35` identifiers from local IFR chart coding tables, and the remaining approach-structure identifiers from CIFP-derived geometry anchored on known runway/navaid positions.
+- **Runtime IFR projection:** The current LOWG runtime candidate now includes a first IFR subset:
+  - the LOWG SID set
+  - the LOWG STAR set
+  - `VOR RWY 16C`
+  - `VOR RWY 34C`
+  - `RNP RWY 16C`
+  - `RNP RWY 34C`
+  - `ILS RWY 34C`
+  - the shared `LOWG_GBG_MISSED_HOLD`
+  Remaining IFR content stays outside the current-core subset: `LOC 34C` and richer published minima variants still live in the structured package only.
 
 ## CAD authoring status
 

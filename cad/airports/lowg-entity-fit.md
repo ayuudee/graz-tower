@@ -404,6 +404,20 @@ If we want plates to be driven by entities first and supplements second, LOWG no
 
 ### Still explicitly outside version 1
 
+- IFR procedures
+  - the structured package now carries CIFP-derived SID / STAR / approach inventory, full LOWG fix-resolution diagnostics, explicit SID/STAR candidate route compilations, and tower-scope default approach candidates plus a shared `GBG` missed-approach hold candidate
+  - the current-core candidate now projects a first IFR subset:
+    - the LOWG SID set
+    - the LOWG STAR set
+    - `VOR RWY 16C`
+    - `VOR RWY 34C`
+    - `RNP RWY 16C`
+    - `RNP RWY 34C`
+    - `ILS RWY 34C`
+    - `LOWG_GBG_MISSED_HOLD`
+  - the remaining IFR boundary is now narrower:
+    - `LOC 34C` remains structured-package only
+    - richer published minima variants remain outside the current runtime model
 - `PRC-5`
   - east traffic circuit can be shown
   - east non-standard hold should remain deferred until the loiter model is fixed

@@ -96,6 +96,10 @@ data class CandidateAerodrome(
     val taxiways: Map<String, CandidateTaxiway>,
     val stands: Map<String, CandidateStand>,
     val aprons: Map<String, CandidateApron>,
+    val sids: Map<String, CandidateSid> = emptyMap(),
+    val stars: Map<String, CandidateStar> = emptyMap(),
+    val approaches: Map<String, CandidateInstrumentApproach> = emptyMap(),
+    val holdingPatterns: Map<String, CandidateHoldingPattern> = emptyMap(),
 )
 
 @Serializable
@@ -175,6 +179,85 @@ data class CandidateApron(
     val name: String,
     val pathIds: List<String>,
     val standIds: List<String> = emptyList(),
+)
+
+@Serializable
+data class CandidateSid(
+    val id: String,
+    val name: String,
+    val runwayId: String,
+    val waypoints: List<CandidateWaypoint>,
+    val transitions: Map<String, List<CandidateWaypoint>> = emptyMap(),
+)
+
+@Serializable
+data class CandidateStar(
+    val id: String,
+    val name: String,
+    val waypoints: List<CandidateWaypoint>,
+    val transitions: Map<String, List<CandidateWaypoint>> = emptyMap(),
+)
+
+@Serializable
+data class CandidateInstrumentApproach(
+    val id: String,
+    val name: String,
+    val type: String,
+    val runwayId: String,
+    val waypoints: List<CandidateWaypoint>,
+    val minimumAltitude: CandidateApproachMinimum,
+    val missedApproach: CandidateMissedApproachProcedure,
+)
+
+@Serializable
+data class CandidateApproachMinimum(
+    val type: String,
+    val altitudeFeet: Int,
+    val heightFeet: Int? = null,
+)
+
+@Serializable
+data class CandidateMissedApproachProcedure(
+    val waypoints: List<CandidateWaypoint>,
+    val holdAtId: String,
+)
+
+@Serializable
+data class CandidateHoldingPattern(
+    val id: String,
+    val fixId: String,
+    val inboundCourseDegrees: Double,
+    val turnDirection: String,
+    val loopPathId: String,
+    val legTimeMinutes: Int? = null,
+    val legDistanceNm: Double? = null,
+    val maxSpeedKnots: Int? = null,
+    val altitudeFeet: Int,
+    val stackSeparationFeet: Int? = null,
+)
+
+@Serializable
+data class CandidateWaypoint(
+    val pointId: String,
+    val name: String? = null,
+    val altitudeConstraint: CandidateWaypointAltitudeConstraint? = null,
+    val speedConstraint: CandidateWaypointSpeedConstraint? = null,
+)
+
+@Serializable
+data class CandidateWaypointAltitudeConstraint(
+    val kind: String,
+    val valueFeet: Int? = null,
+    val minimumFeet: Int? = null,
+    val maximumFeet: Int? = null,
+)
+
+@Serializable
+data class CandidateWaypointSpeedConstraint(
+    val kind: String,
+    val valueKnots: Int? = null,
+    val minimumKnots: Int? = null,
+    val maximumKnots: Int? = null,
 )
 
 @Serializable

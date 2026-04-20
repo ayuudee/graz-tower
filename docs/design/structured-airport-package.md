@@ -61,6 +61,18 @@ Status as of April 17, 2026:
   slice
 - the package still matters because it remains the only honest place to hold
   richer authoring/procedure truth before projection
+- LOWG now also uses this layer to hold IFR inventory truth that is not yet
+  projectable into the runtime subset: CIFP-derived SID / STAR / approach
+  inventory, runway-threshold positions, and explicit fix-resolution gaps;
+  the current LOWG scan now resolves all `46` CIFP identifiers from checked-in
+  sources or conservative CIFP-derived approach geometry, and the package now
+  also carries compiled SID/STAR candidate routes, tower-scope default
+  approach candidates, and a shared GBG missed-approach hold candidate; the
+  current-core candidate now projects the full LOWG SID set, full LOWG STAR
+  set, and the first approach/hold IFR subset (`VOR RWY 16C`, `VOR RWY 34C`,
+  `RNP RWY 16C`, `RNP RWY 34C`, `ILS RWY 34C`, and the GBG missed-approach
+  hold), so the remaining IFR boundary is now `LOC 34C` and the richer
+  published minima variants that still sit outside the runtime subset
 
 ## Why this layer exists
 

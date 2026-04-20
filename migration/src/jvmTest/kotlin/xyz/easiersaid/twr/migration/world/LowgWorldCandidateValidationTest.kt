@@ -21,8 +21,10 @@ import xyz.easiersaid.twr.core.world.AirspaceVolume
 import xyz.easiersaid.twr.core.world.AirspaceVolumeType
 import xyz.easiersaid.twr.core.world.AltitudeBand
 import xyz.easiersaid.twr.core.world.AltitudeBoundary
+import xyz.easiersaid.twr.core.world.AltitudeConstraint
 import xyz.easiersaid.twr.core.world.Apron
 import xyz.easiersaid.twr.core.world.AerodromeAip
+import xyz.easiersaid.twr.core.world.ApproachMinimum
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.BoundaryRing
 import xyz.easiersaid.twr.core.world.CircuitJoin
@@ -39,8 +41,12 @@ import xyz.easiersaid.twr.core.world.FlightInformationRegion
 import xyz.easiersaid.twr.core.world.GeometrySegmentId
 import xyz.easiersaid.twr.core.world.HoldingPoint
 import xyz.easiersaid.twr.core.world.HoldingPointType
+import xyz.easiersaid.twr.core.world.HoldingPattern
+import xyz.easiersaid.twr.core.world.InstrumentApproach
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
+import xyz.easiersaid.twr.core.world.MinimumType
+import xyz.easiersaid.twr.core.world.MissedApproachProcedure
 import xyz.easiersaid.twr.core.world.OperationalSector
 import xyz.easiersaid.twr.core.world.OperationalSectorAnchor
 import xyz.easiersaid.twr.core.world.OperationalSectorCtrRelation
@@ -57,7 +63,10 @@ import xyz.easiersaid.twr.core.world.PublishedVfrProcedure
 import xyz.easiersaid.twr.core.world.PublishedVfrProcedureKind
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.SegmentGeometry
+import xyz.easiersaid.twr.core.world.SpeedConstraint
+import xyz.easiersaid.twr.core.world.Sid
 import xyz.easiersaid.twr.core.world.Stand
+import xyz.easiersaid.twr.core.world.Star
 import xyz.easiersaid.twr.core.world.SurfaceType
 import xyz.easiersaid.twr.core.world.Taxiway
 import xyz.easiersaid.twr.core.world.VfrRoute
@@ -68,6 +77,7 @@ import xyz.easiersaid.twr.core.world.WorldValidationCode
 import xyz.easiersaid.twr.core.world.asBoundaryRing
 import xyz.easiersaid.twr.core.world.validate
 import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.ApproachId
 import xyz.easiersaid.twr.protocol.ApronId
 import xyz.easiersaid.twr.protocol.AirspaceVolumeId
 import xyz.easiersaid.twr.protocol.CircuitDirection
@@ -75,16 +85,24 @@ import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.DmeDistanceNm
 import xyz.easiersaid.twr.protocol.FirId
 import xyz.easiersaid.twr.protocol.FixId
+import xyz.easiersaid.twr.protocol.HoldingPatternId
 import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.Knots
+import xyz.easiersaid.twr.protocol.Minutes
 import xyz.easiersaid.twr.protocol.OperationalSectorId
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.PublishedVfrProcedureId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SidId
+import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.StandId
+import xyz.easiersaid.twr.protocol.StarId
 import xyz.easiersaid.twr.protocol.TaxiwayId
 import xyz.easiersaid.twr.protocol.JoinType
+import xyz.easiersaid.twr.protocol.TurnDirection
 import xyz.easiersaid.twr.protocol.VfrRouteId
+import xyz.easiersaid.twr.protocol.ApproachType
 
 class LowgWorldCandidateValidationTest {
 
@@ -102,6 +120,7 @@ class LowgWorldCandidateValidationTest {
         val document = json.decodeFromString<WorldCandidateDocument>(candidatePath.readText())
         assertExpectedLowgAirspaceVolumes(document)
         assertExpectedLowgVfrRouteProfiles(document)
+        assertExpectedLowgIfrSubset(document)
 
         val world = document.toWorld()
         val report = world.validate()
@@ -207,6 +226,45 @@ class LowgWorldCandidateValidationTest {
             ),
             northeast.pointIds,
         )
+    }
+
+    private fun assertExpectedLowgIfrSubset(document: WorldCandidateDocument) {
+        val sids = document.world.aerodrome.sids
+        assertEquals(21, sids.size, "LOWG current-core candidate should project the full LOWG SID set.")
+        assertTrue(sids.containsKey("LOWG_SID_GOTA5G_16C"))
+        assertTrue(sids.containsKey("LOWG_SID_ABIR3V_34C"))
+
+        val stars = document.world.aerodrome.stars
+        assertEquals(
+            8,
+            stars.size,
+            "LOWG current-core candidate should project the full LOWG STAR set once PIBIP and XIBAR are shared with the selected approach entry-point set.",
+        )
+        assertTrue(stars.containsKey("LOWG_STAR_ABIR1M"))
+        assertTrue(stars.containsKey("LOWG_STAR_GBG1M"))
+        assertEquals("XIBAR", stars.getValue("LOWG_STAR_ABIR1M").waypoints.last().name)
+        assertEquals("PIBIP", stars.getValue("LOWG_STAR_GBG1M").waypoints.last().name)
+
+        val holdingPatterns = document.world.aerodrome.holdingPatterns
+        assertEquals(
+            setOf("LOWG_GBG_MISSED_HOLD"),
+            holdingPatterns.keys,
+            "LOWG current-core candidate should project exactly the shared GBG missed-approach hold.",
+        )
+
+        val approaches = document.world.aerodrome.approaches
+        assertEquals(
+            setOf("LOWG_ILS_34C", "LOWG_RNP_16C", "LOWG_RNP_34C", "LOWG_VOR_16C", "LOWG_VOR_34C"),
+            approaches.keys,
+            "LOWG current-core candidate should project the first IFR runtime subset only.",
+        )
+        assertEquals("ILS", approaches.getValue("LOWG_ILS_34C").type)
+        assertEquals("RNP", approaches.getValue("LOWG_RNP_16C").type)
+        assertEquals("RNP", approaches.getValue("LOWG_RNP_34C").type)
+        assertEquals("VOR", approaches.getValue("LOWG_VOR_16C").type)
+        assertEquals("VOR", approaches.getValue("LOWG_VOR_34C").type)
+        assertEquals("PIBIP", approaches.getValue("LOWG_VOR_34C").waypoints.first().name)
+        assertEquals("XIBAR", approaches.getValue("LOWG_ILS_34C").waypoints.first().name)
     }
 
     private fun resolveProjectRoot(): Path {
@@ -409,6 +467,18 @@ class LowgWorldCandidateValidationTest {
             taxiways = taxiways,
             stands = stands,
             aprons = aprons,
+            sids = world.aerodrome.sids.mapValues { (_, sid) ->
+                sid.toSid()
+            }.mapKeys { (id, _) -> SidId(id) },
+            stars = world.aerodrome.stars.mapValues { (_, star) ->
+                star.toStar()
+            }.mapKeys { (id, _) -> StarId(id) },
+            approaches = world.aerodrome.approaches.mapValues { (_, approach) ->
+                approach.toInstrumentApproach()
+            }.mapKeys { (id, _) -> ApproachId(id) },
+            holdingPatterns = world.aerodrome.holdingPatterns.mapValues { (_, holdingPattern) ->
+                holdingPattern.toHoldingPattern(paths)
+            }.mapKeys { (id, _) -> HoldingPatternId(id) },
         )
 
         return AviationWorld(
@@ -472,6 +542,96 @@ class LowgWorldCandidateValidationTest {
             applicableRunways = applicableRunwayIds.map(::RunwayId).toSet(),
         )
 
+    private fun CandidateInstrumentApproach.toInstrumentApproach(): InstrumentApproach =
+        InstrumentApproach(
+            id = ApproachId(id),
+            name = name,
+            type = type.toApproachType(),
+            runway = RunwayId(runwayId),
+            waypoints = waypoints.map { waypoint -> waypoint.toWaypoint() },
+            minimumAltitude = minimumAltitude.toApproachMinimum(),
+            missedApproach = MissedApproachProcedure(
+                waypoints = missedApproach.waypoints.map { waypoint -> waypoint.toWaypoint() },
+                holdAt = HoldingPatternId(missedApproach.holdAtId),
+            ),
+        )
+
+    private fun CandidateSid.toSid(): Sid =
+        Sid(
+            id = SidId(id),
+            name = name,
+            runway = RunwayId(runwayId),
+            waypoints = waypoints.map { waypoint -> waypoint.toWaypoint() },
+            transitions = transitions.mapValues { (_, transitionWaypoints) ->
+                transitionWaypoints.map { waypoint -> waypoint.toWaypoint() }
+            },
+        )
+
+    private fun CandidateStar.toStar(): Star =
+        Star(
+            id = StarId(id),
+            name = name,
+            waypoints = waypoints.map { waypoint -> waypoint.toWaypoint() },
+            transitions = transitions.mapValues { (_, transitionWaypoints) ->
+                transitionWaypoints.map { waypoint -> waypoint.toWaypoint() }
+            },
+        )
+
+    private fun CandidateHoldingPattern.toHoldingPattern(
+        paths: Map<String, WorldPath>,
+    ): HoldingPattern =
+        HoldingPattern(
+            id = HoldingPatternId(id),
+            fix = FixId(fixId),
+            inboundCourse = Degrees(inboundCourseDegrees),
+            turnDirection = turnDirection.toTurnDirection(),
+            loop = paths.getValue(loopPathId),
+            legTime = legTimeMinutes?.let(Minutes::unsafe),
+            legDistance = legDistanceNm?.let(DmeDistanceNm::unsafe),
+            maxSpeed = maxSpeedKnots?.let(Knots::unsafe),
+            altitude = Level.AltitudeFeet.unsafe(altitudeFeet),
+            stackSeparation = stackSeparationFeet?.let(::Feet),
+        )
+
+    private fun CandidateWaypoint.toWaypoint(): Waypoint =
+        Waypoint(
+            point = PointId(pointId),
+            name = name,
+            altitudeConstraint = altitudeConstraint?.toAltitudeConstraint(),
+            speedConstraint = speedConstraint?.toSpeedConstraint(),
+        )
+
+    private fun CandidateApproachMinimum.toApproachMinimum(): ApproachMinimum =
+        ApproachMinimum(
+            type = type.toMinimumType(),
+            altitude = Level.AltitudeFeet.unsafe(altitudeFeet),
+            height = heightFeet?.let(Level.HeightFeet::unsafe),
+        )
+
+    private fun CandidateWaypointAltitudeConstraint.toAltitudeConstraint(): AltitudeConstraint =
+        when (kind) {
+            "AT" -> AltitudeConstraint.At(Level.AltitudeFeet.unsafe(requireNotNull(valueFeet)))
+            "AT_OR_ABOVE" -> AltitudeConstraint.AtOrAbove(Level.AltitudeFeet.unsafe(requireNotNull(minimumFeet)))
+            "AT_OR_BELOW" -> AltitudeConstraint.AtOrBelow(Level.AltitudeFeet.unsafe(requireNotNull(maximumFeet)))
+            "BETWEEN" -> AltitudeConstraint.Between(
+                minimum = Level.AltitudeFeet.unsafe(requireNotNull(minimumFeet)),
+                maximum = Level.AltitudeFeet.unsafe(requireNotNull(maximumFeet)),
+            )
+            else -> error("Unsupported waypoint altitude constraint kind: $kind")
+        }
+
+    private fun CandidateWaypointSpeedConstraint.toSpeedConstraint(): SpeedConstraint =
+        when (kind) {
+            "AT" -> SpeedConstraint.At(Speed.InKnots(Knots.unsafe(requireNotNull(valueKnots))))
+            "AT_OR_ABOVE" -> SpeedConstraint.AtOrAbove(Speed.InKnots(Knots.unsafe(requireNotNull(minimumKnots))))
+            "AT_OR_BELOW" -> SpeedConstraint.AtOrBelow(Speed.InKnots(Knots.unsafe(requireNotNull(maximumKnots))))
+            "BETWEEN" -> SpeedConstraint.Between(
+                minimum = Speed.InKnots(Knots.unsafe(requireNotNull(minimumKnots))),
+                maximum = Speed.InKnots(Knots.unsafe(requireNotNull(maximumKnots))),
+            )
+            else -> error("Unsupported waypoint speed constraint kind: $kind")
+        }
+
     private fun String.toPublishedVfrProcedureKind(): PublishedVfrProcedureKind =
         when (this) {
             "ARRIVAL" -> PublishedVfrProcedureKind.ARRIVAL
@@ -509,6 +669,33 @@ class LowgWorldCandidateValidationTest {
             "OVERHEAD" -> JoinType.OVERHEAD
             "LONG_FINAL" -> JoinType.LONG_FINAL
             else -> error("Unsupported join type: $this")
+        }
+
+    private fun String.toApproachType(): ApproachType =
+        when (this) {
+            "ILS" -> ApproachType.ILS
+            "LOC" -> ApproachType.LOC
+            "RNAV" -> ApproachType.RNAV
+            "RNP" -> ApproachType.RNP
+            "VOR" -> ApproachType.VOR
+            "NDB" -> ApproachType.NDB
+            "SRA" -> ApproachType.SRA
+            "PAR" -> ApproachType.PAR
+            else -> error("Unsupported approach type: $this")
+        }
+
+    private fun String.toMinimumType(): MinimumType =
+        when (this) {
+            "DECISION_ALTITUDE" -> MinimumType.DECISION_ALTITUDE
+            "MINIMUM_DESCENT_ALTITUDE" -> MinimumType.MINIMUM_DESCENT_ALTITUDE
+            else -> error("Unsupported minimum type: $this")
+        }
+
+    private fun String.toTurnDirection(): TurnDirection =
+        when (this) {
+            "LEFT" -> TurnDirection.LEFT
+            "RIGHT" -> TurnDirection.RIGHT
+            else -> error("Unsupported turn direction: $this")
         }
 
     private fun CandidatePublishedPointReference.toPublishedPointReference(): PublishedPointReference =

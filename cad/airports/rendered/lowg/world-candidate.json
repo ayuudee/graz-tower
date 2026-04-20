@@ -7,11 +7,39 @@
     "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
     "Apron access now uses the authored NEW_Parking graph and NEW_Parking_Points stand set, with direct authored attachments onto taxiway A from the working DXF.",
     "Current-core runway-protection holding points are projected only onto the connected taxiway-A spine because the present validator requires every holding point to reach every stand through the ground graph.",
-    "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly."
+    "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly.",
+    "LOWG GBG missed-approach hold loop geometry is a nominal compiled racetrack from the published inbound track and one-minute hold timing, because the current runtime model requires explicit loop geometry.",
+    "LOWG_SID_ABIR3V_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_ABIR4G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_ABIR5U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GBG5Y_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GBG7X_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GOLV4U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GOLV5G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GOTA5G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GOTA5U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_GRZ4X_16C: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+    "LOWG_SID_GRZ4Y_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_MILG3H_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_MILG5U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_MILG6G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_MURE4U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_MURE5G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_RADL4V_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_RADL5G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_RADL6U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_ROPA4G_16C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_SID_ROPA4U_34C: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LOWG_VOR_34C: Runtime IFR projection prepends feeder transition PIB2S so the selected LOWG STAR terminal fix is shared with the approach entry point set.",
+    "LOWG_ILS_34C: Runtime IFR projection prepends feeder transition XIB2S so the selected LOWG STAR terminal fix is shared with the approach entry point set.",
+    "LOWG runtime IFR approaches use waypoint-only final and missed-approach sequences. Altitude-only and DME-triggered CIFP legs are collapsed to the current-core waypoint model where necessary.",
+    "LOWG runtime SID projection compiles leading fixless climb legs as runway-threshold waypoints where necessary, because the current SID model is waypoint-based rather than path-terminator based.",
+    "LOWG runtime STAR projection currently uses the published STAR trunks only, and relies on explicitly selected feeder transitions on the projected approach subset so STAR terminal fixes are shared with the approach entry-point set."
   ],
   "omittedFeatures": [
     "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
     "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
+    "LOWG IFR runtime projection currently includes the LOWG SID set, the LOWG STAR set, VOR RWY 16C, VOR RWY 34C, RNP RWY 16C, RNP RWY 34C, ILS RWY 34C, and the shared GBG missed-approach hold. LOC 34C and richer minima variants remain outside the current-core subset.",
     "The east non-standard hold remains deferred to version 2.",
     "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule."
   ],
@@ -19,6 +47,7 @@
     "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
     "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
     "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
+    "LOWG IFR identifier resolution is now good enough for a broader runtime subset, but STARs, LOC 34C, and richer published minima variants still remain outside the current-core projection.",
     "The east non-standard hold remains deferred to version 2 until the loiter model is corrected."
   ],
   "projectionStatus": "v1_current_core_fit_subset",
@@ -711,6 +740,456 @@
         },
         "specialInstructions": []
       },
+      "approaches": {
+        "LOWG_ILS_34C": {
+          "id": "LOWG_ILS_34C",
+          "minimumAltitude": {
+            "altitudeFeet": 1303,
+            "heightFeet": 215,
+            "type": "DECISION_ALTITUDE"
+          },
+          "missedApproach": {
+            "holdAtId": "LOWG_GBG_MISSED_HOLD",
+            "waypoints": [
+              {
+                "altitudeConstraint": null,
+                "name": "RW34C",
+                "pointId": "LOWG_RWY_34C_THR",
+                "speedConstraint": null
+              },
+              {
+                "altitudeConstraint": {
+                  "kind": "AT",
+                  "valueFeet": 5000
+                },
+                "name": "GBG",
+                "pointId": "LOWG_IFR_FIX_GBG",
+                "speedConstraint": {
+                  "kind": "AT_OR_BELOW",
+                  "maximumKnots": 210
+                }
+              }
+            ]
+          },
+          "name": "ILS RWY 34C",
+          "note": "Version 1 runtime projection uses ILS CAT I minima only. LOC-DME and CAT II/III remain publication-only and are not projected into the runtime candidate.",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "type": "ILS",
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "XIBAR",
+              "pointId": "LOWG_IFR_FIX_XIBAR",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 200
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "WG832",
+              "pointId": "LOWG_IFR_FIX_WG832",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 200
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "VAGIL",
+              "pointId": "LOWG_IFR_FIX_VAGIL",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "CI34C",
+              "pointId": "LOWG_IFR_FIX_CI34C",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT",
+                "valueFeet": 3500
+              },
+              "name": "FF34C",
+              "pointId": "LOWG_IFR_FIX_FF34C",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT",
+                "valueFeet": 1141
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_RNP_16C": {
+          "id": "LOWG_RNP_16C",
+          "minimumAltitude": {
+            "altitudeFeet": 1510,
+            "heightFeet": 400,
+            "type": "MINIMUM_DESCENT_ALTITUDE"
+          },
+          "missedApproach": {
+            "holdAtId": "LOWG_GBG_MISSED_HOLD",
+            "waypoints": [
+              {
+                "altitudeConstraint": null,
+                "name": "RW16C",
+                "pointId": "LOWG_RWY_16C_THR",
+                "speedConstraint": null
+              },
+              {
+                "altitudeConstraint": {
+                  "kind": "AT_OR_ABOVE",
+                  "minimumFeet": 5000
+                },
+                "name": "GBG",
+                "pointId": "LOWG_IFR_FIX_GBG",
+                "speedConstraint": null
+              }
+            ]
+          },
+          "name": "RNP RWY 16C",
+          "note": "Version 1 runtime projection uses the published LNAV straight-in minima as the single runtime minimum for RNP RWY 16C.",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "type": "RNP",
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "RONOT",
+              "pointId": "LOWG_IFR_FIX_RONOT",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 220
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5500
+              },
+              "name": "WG814",
+              "pointId": "LOWG_IFR_FIX_WG814",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 4700
+              },
+              "name": "WG815",
+              "pointId": "LOWG_IFR_FIX_WG815",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 4000
+              },
+              "name": "WG816",
+              "pointId": "LOWG_IFR_FIX_WG816",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3300
+              },
+              "name": "WG817",
+              "pointId": "LOWG_IFR_FIX_WG817",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 160
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT",
+                "valueFeet": 1167
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_RNP_34C": {
+          "id": "LOWG_RNP_34C",
+          "minimumAltitude": {
+            "altitudeFeet": 1470,
+            "heightFeet": 382,
+            "type": "MINIMUM_DESCENT_ALTITUDE"
+          },
+          "missedApproach": {
+            "holdAtId": "LOWG_GBG_MISSED_HOLD",
+            "waypoints": [
+              {
+                "altitudeConstraint": null,
+                "name": "RW34C",
+                "pointId": "LOWG_RWY_34C_THR",
+                "speedConstraint": null
+              },
+              {
+                "altitudeConstraint": null,
+                "name": "WG836",
+                "pointId": "LOWG_IFR_FIX_WG836",
+                "speedConstraint": null
+              },
+              {
+                "altitudeConstraint": {
+                  "kind": "AT_OR_ABOVE",
+                  "minimumFeet": 5000
+                },
+                "name": "GBG",
+                "pointId": "LOWG_IFR_FIX_GBG",
+                "speedConstraint": null
+              }
+            ]
+          },
+          "name": "RNP RWY 34C",
+          "note": "Version 1 runtime projection uses the published LNAV straight-in minima at the standard 2.5 percent missed-approach climb gradient as the single runtime minimum for RNP RWY 34C.",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "type": "RNP",
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "VAGIL",
+              "pointId": "LOWG_IFR_FIX_VAGIL",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3000
+              },
+              "name": "WG835",
+              "pointId": "LOWG_IFR_FIX_WG835",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT",
+                "valueFeet": 1141
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_VOR_16C": {
+          "id": "LOWG_VOR_16C",
+          "minimumAltitude": {
+            "altitudeFeet": 1780,
+            "heightFeet": 660,
+            "type": "MINIMUM_DESCENT_ALTITUDE"
+          },
+          "missedApproach": {
+            "holdAtId": "LOWG_GBG_MISSED_HOLD",
+            "waypoints": [
+              {
+                "altitudeConstraint": null,
+                "name": "RW16C",
+                "pointId": "LOWG_RWY_16C_THR",
+                "speedConstraint": null
+              },
+              {
+                "altitudeConstraint": {
+                  "kind": "AT",
+                  "valueFeet": 5000
+                },
+                "name": "GBG",
+                "pointId": "LOWG_IFR_FIX_GBG",
+                "speedConstraint": null
+              }
+            ]
+          },
+          "name": "VOR RWY 16C",
+          "note": "Version 1 runtime projection uses the published straight-in VOR/DME minima for VOR RWY 16C.",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "type": "VOR",
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7000
+              },
+              "name": "CD16C",
+              "pointId": "LOWG_IFR_FIX_CD16C",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5200
+              },
+              "name": "FD16C",
+              "pointId": "LOWG_IFR_FIX_FD16C",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2900
+              },
+              "name": "67VOR",
+              "pointId": "LOWG_IFR_FIX_67VOR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2100
+              },
+              "name": "49VOR",
+              "pointId": "LOWG_IFR_FIX_49VOR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT",
+                "valueFeet": 1235
+              },
+              "name": "MD16C",
+              "pointId": "LOWG_IFR_FIX_MD16C",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_VOR_34C": {
+          "id": "LOWG_VOR_34C",
+          "minimumAltitude": {
+            "altitudeFeet": 1480,
+            "heightFeet": 392,
+            "type": "MINIMUM_DESCENT_ALTITUDE"
+          },
+          "missedApproach": {
+            "holdAtId": "LOWG_GBG_MISSED_HOLD",
+            "waypoints": [
+              {
+                "altitudeConstraint": null,
+                "name": "RW34C",
+                "pointId": "LOWG_RWY_34C_THR",
+                "speedConstraint": null
+              },
+              {
+                "altitudeConstraint": {
+                  "kind": "AT",
+                  "valueFeet": 5000
+                },
+                "name": "GBG",
+                "pointId": "LOWG_IFR_FIX_GBG",
+                "speedConstraint": null
+              }
+            ]
+          },
+          "name": "VOR RWY 34C",
+          "note": "Version 1 runtime projection uses the published straight-in VOR/DME minima for VOR RWY 34C.",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "type": "VOR",
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "PIBIP",
+              "pointId": "LOWG_IFR_FIX_PIBIP",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 200
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "WG833",
+              "pointId": "LOWG_IFR_FIX_WG833",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 200
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "VAGIL",
+              "pointId": "LOWG_IFR_FIX_VAGIL",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "FD34C",
+              "pointId": "LOWG_IFR_FIX_FD34C",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2250
+              },
+              "name": "21VOR",
+              "pointId": "LOWG_IFR_FIX_21VOR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT",
+                "valueFeet": 1579
+              },
+              "name": "GRZ",
+              "pointId": "LOWG_IFR_FIX_GRZ",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            }
+          ]
+        }
+      },
       "aprons": {
         "LOWG_APRON_AUTHORED_PARKING": {
           "id": "LOWG_APRON_AUTHORED_PARKING",
@@ -1135,6 +1614,18 @@
         }
       },
       "elevationFeet": 1120,
+      "holdingPatterns": {
+        "LOWG_GBG_MISSED_HOLD": {
+          "altitudeFeet": 5000,
+          "fixId": "GBG",
+          "id": "LOWG_GBG_MISSED_HOLD",
+          "inboundCourseDegrees": 195.0,
+          "legTimeMinutes": 1,
+          "loopPathId": "LOWG_IFR_HOLD_GBG_LOOP",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "turnDirection": "LEFT"
+        }
+      },
       "icao": "LOWG",
       "magneticVariationDegrees": 5,
       "name": "Graz Airport",
@@ -1216,6 +1707,683 @@
           "pathId": "LOWG_PATH_RWY_34R",
           "projectionStatus": "direct",
           "thresholdPointId": "LOWG_RWY_34R_THR"
+        }
+      },
+      "sids": {
+        "LOWG_SID_ABIR3V_34C": {
+          "id": "LOWG_SID_ABIR3V_34C",
+          "name": "ABIR3V",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG608",
+              "pointId": "LOWG_IFR_FIX_WG608",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 9000
+              },
+              "name": "ABIRI",
+              "pointId": "LOWG_IFR_FIX_ABIRI",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 265
+              }
+            }
+          ]
+        },
+        "LOWG_SID_ABIR4G_16C": {
+          "id": "LOWG_SID_ABIR4G_16C",
+          "name": "ABIR4G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2700
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG607",
+              "pointId": "LOWG_IFR_FIX_WG607",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 205
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 9000
+              },
+              "name": "ABIRI",
+              "pointId": "LOWG_IFR_FIX_ABIRI",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_ABIR5U_34C": {
+          "id": "LOWG_SID_ABIR5U_34C",
+          "name": "ABIR5U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 4500
+              },
+              "name": "GRZ",
+              "pointId": "LOWG_IFR_FIX_GRZ",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG608",
+              "pointId": "LOWG_IFR_FIX_WG608",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 9000
+              },
+              "name": "ABIRI",
+              "pointId": "LOWG_IFR_FIX_ABIRI",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GBG5Y_34C": {
+          "id": "LOWG_SID_GBG5Y_34C",
+          "name": "GBG5Y",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "GBG",
+              "pointId": "LOWG_IFR_FIX_GBG",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GBG7X_16C": {
+          "id": "LOWG_SID_GBG7X_16C",
+          "name": "GBG7X",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "GBG",
+              "pointId": "LOWG_IFR_FIX_GBG",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GOLV4U_34C": {
+          "id": "LOWG_SID_GOLV4U_34C",
+          "name": "GOLV4U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 6000
+              },
+              "name": "GOLVA",
+              "pointId": "LOWG_IFR_FIX_GOLVA",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GOLV5G_16C": {
+          "id": "LOWG_SID_GOLV5G_16C",
+          "name": "GOLV5G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG604",
+              "pointId": "LOWG_IFR_FIX_WG604",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 220
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 6000
+              },
+              "name": "GOLVA",
+              "pointId": "LOWG_IFR_FIX_GOLVA",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GOTA5G_16C": {
+          "id": "LOWG_SID_GOTA5G_16C",
+          "name": "GOTA5G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7000
+              },
+              "name": "GOTAR",
+              "pointId": "LOWG_IFR_FIX_GOTAR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GOTA5U_34C": {
+          "id": "LOWG_SID_GOTA5U_34C",
+          "name": "GOTA5U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7000
+              },
+              "name": "GOTAR",
+              "pointId": "LOWG_IFR_FIX_GOTAR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GRZ4X_16C": {
+          "id": "LOWG_SID_GRZ4X_16C",
+          "name": "GRZ4X",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": null,
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "GRZ",
+              "pointId": "LOWG_IFR_FIX_GRZ",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_GRZ4Y_34C": {
+          "id": "LOWG_SID_GRZ4Y_34C",
+          "name": "GRZ4Y",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 4000
+              },
+              "name": "GRZ",
+              "pointId": "LOWG_IFR_FIX_GRZ",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 220
+              }
+            }
+          ]
+        },
+        "LOWG_SID_MILG3H_16C": {
+          "id": "LOWG_SID_MILG3H_16C",
+          "name": "MILG3H",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "WG603",
+              "pointId": "LOWG_IFR_FIX_WG603",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 205
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 10000
+              },
+              "name": "MILGO",
+              "pointId": "LOWG_IFR_FIX_MILGO",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_MILG5U_34C": {
+          "id": "LOWG_SID_MILG5U_34C",
+          "name": "MILG5U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 10000
+              },
+              "name": "MILGO",
+              "pointId": "LOWG_IFR_FIX_MILGO",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_MILG6G_16C": {
+          "id": "LOWG_SID_MILG6G_16C",
+          "name": "MILG6G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG609",
+              "pointId": "LOWG_IFR_FIX_WG609",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 205
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 10000
+              },
+              "name": "MILGO",
+              "pointId": "LOWG_IFR_FIX_MILGO",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_MURE4U_34C": {
+          "id": "LOWG_SID_MURE4U_34C",
+          "name": "MURE4U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "MUREG",
+              "pointId": "LOWG_IFR_FIX_MUREG",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_MURE5G_16C": {
+          "id": "LOWG_SID_MURE5G_16C",
+          "name": "MURE5G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG604",
+              "pointId": "LOWG_IFR_FIX_WG604",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 220
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "MUREG",
+              "pointId": "LOWG_IFR_FIX_MUREG",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_RADL4V_34C": {
+          "id": "LOWG_SID_RADL4V_34C",
+          "name": "RADL4V",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG608",
+              "pointId": "LOWG_IFR_FIX_WG608",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8500
+              },
+              "name": "RADLY",
+              "pointId": "LOWG_IFR_FIX_RADLY",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_RADL5G_16C": {
+          "id": "LOWG_SID_RADL5G_16C",
+          "name": "RADL5G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": null,
+              "name": "WG607",
+              "pointId": "LOWG_IFR_FIX_WG607",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 205
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8500
+              },
+              "name": "RADLY",
+              "pointId": "LOWG_IFR_FIX_RADLY",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_RADL6U_34C": {
+          "id": "LOWG_SID_RADL6U_34C",
+          "name": "RADL6U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2000
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 4500
+              },
+              "name": "GRZ",
+              "pointId": "LOWG_IFR_FIX_GRZ",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8500
+              },
+              "name": "RADLY",
+              "pointId": "LOWG_IFR_FIX_RADLY",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_ROPA4G_16C": {
+          "id": "LOWG_SID_ROPA4G_16C",
+          "name": "ROPA4G",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "16C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2200
+              },
+              "name": "RW16C",
+              "pointId": "LOWG_RWY_16C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8000
+              },
+              "name": "ROPAG",
+              "pointId": "LOWG_IFR_FIX_ROPAG",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_SID_ROPA4U_34C": {
+          "id": "LOWG_SID_ROPA4U_34C",
+          "name": "ROPA4U",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "runwayId": "34C",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 2700
+              },
+              "name": "RW34C",
+              "pointId": "LOWG_RWY_34C_THR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5500
+              },
+              "name": "WG602",
+              "pointId": "LOWG_IFR_FIX_WG602",
+              "speedConstraint": {
+                "kind": "AT_OR_BELOW",
+                "maximumKnots": 205
+              }
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8000
+              },
+              "name": "ROPAG",
+              "pointId": "LOWG_IFR_FIX_ROPAG",
+              "speedConstraint": null
+            }
+          ]
         }
       },
       "stands": {
@@ -1562,6 +2730,288 @@
           "projectionStatus": "direct_authored_geometry_with_reference_attrs"
         }
       },
+      "stars": {
+        "LOWG_STAR_ABIR1M": {
+          "id": "LOWG_STAR_ABIR1M",
+          "name": "ABIR1M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 9000
+              },
+              "name": "ABIRI",
+              "pointId": "LOWG_IFR_FIX_ABIRI",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8000
+              },
+              "name": "WG508",
+              "pointId": "LOWG_IFR_FIX_WG508",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "XIBAR",
+              "pointId": "LOWG_IFR_FIX_XIBAR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_GBG1M": {
+          "id": "LOWG_STAR_GBG1M",
+          "name": "GBG1M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "GBG",
+              "pointId": "LOWG_IFR_FIX_GBG",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "PIBIP",
+              "pointId": "LOWG_IFR_FIX_PIBIP",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_GOLV1M": {
+          "id": "LOWG_STAR_GOLV1M",
+          "name": "GOLV1M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 6000
+              },
+              "name": "GOLVA",
+              "pointId": "LOWG_IFR_FIX_GOLVA",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "WG833",
+              "pointId": "LOWG_IFR_FIX_WG833",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "PIBIP",
+              "pointId": "LOWG_IFR_FIX_PIBIP",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_GOTA2M": {
+          "id": "LOWG_STAR_GOTA2M",
+          "name": "GOTA2M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7000
+              },
+              "name": "GOTAR",
+              "pointId": "LOWG_IFR_FIX_GOTAR",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "WG503",
+              "pointId": "LOWG_IFR_FIX_WG503",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "PIBIP",
+              "pointId": "LOWG_IFR_FIX_PIBIP",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_LEOB1M": {
+          "id": "LOWG_STAR_LEOB1M",
+          "name": "LEOB1M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 9000
+              },
+              "name": "LEOBE",
+              "pointId": "LOWG_IFR_FIX_LEOBE",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8000
+              },
+              "name": "WG821",
+              "pointId": "LOWG_IFR_FIX_WG821",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "XIBAR",
+              "pointId": "LOWG_IFR_FIX_XIBAR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_MURE1M": {
+          "id": "LOWG_STAR_MURE1M",
+          "name": "MURE1M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 5000
+              },
+              "name": "MUREG",
+              "pointId": "LOWG_IFR_FIX_MUREG",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "WG833",
+              "pointId": "LOWG_IFR_FIX_WG833",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "PIBIP",
+              "pointId": "LOWG_IFR_FIX_PIBIP",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_RADL2M": {
+          "id": "LOWG_STAR_RADL2M",
+          "name": "RADL2M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 8500
+              },
+              "name": "RADLY",
+              "pointId": "LOWG_IFR_FIX_RADLY",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "WG832",
+              "pointId": "LOWG_IFR_FIX_WG832",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "XIBAR",
+              "pointId": "LOWG_IFR_FIX_XIBAR",
+              "speedConstraint": null
+            }
+          ]
+        },
+        "LOWG_STAR_RUPE2M": {
+          "id": "LOWG_STAR_RUPE2M",
+          "name": "RUPE2M",
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "transitions": {},
+          "waypoints": [
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 9000
+              },
+              "name": "RUPET",
+              "pointId": "LOWG_IFR_FIX_RUPET",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 7500
+              },
+              "name": "WG822",
+              "pointId": "LOWG_IFR_FIX_WG822",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 6500
+              },
+              "name": "WG501",
+              "pointId": "LOWG_IFR_FIX_WG501",
+              "speedConstraint": null
+            },
+            {
+              "altitudeConstraint": {
+                "kind": "AT_OR_ABOVE",
+                "minimumFeet": 3500
+              },
+              "name": "PIBIP",
+              "pointId": "LOWG_IFR_FIX_PIBIP",
+              "speedConstraint": null
+            }
+          ]
+        }
+      },
       "taxiways": {
         "A": {
           "bidirectional": true,
@@ -1693,6 +3143,13 @@
           "LOWG_AIRSPACE_LO80C_01_07",
           "LOWG_AIRSPACE_LO80C_01_12",
           "LOWG_FIX_GRAZ_NORD",
+          "LOWG_IFR_FIX_GBG",
+          "LOWG_IFR_FIX_WG608",
+          "LOWG_IFR_FIX_WG815",
+          "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "LOWG_IFR_HOLD_GBG_LOOP_04",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01"
         ],
         "name": "LOWG 2",
@@ -1883,6 +3340,53 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
+          "LOWG_IFR_FIX_21VOR",
+          "LOWG_IFR_FIX_49VOR",
+          "LOWG_IFR_FIX_67VOR",
+          "LOWG_IFR_FIX_ABIRI",
+          "LOWG_IFR_FIX_CD16C",
+          "LOWG_IFR_FIX_CI34C",
+          "LOWG_IFR_FIX_FD16C",
+          "LOWG_IFR_FIX_FD34C",
+          "LOWG_IFR_FIX_FF34C",
+          "LOWG_IFR_FIX_GBG",
+          "LOWG_IFR_FIX_GOLVA",
+          "LOWG_IFR_FIX_GOTAR",
+          "LOWG_IFR_FIX_GRZ",
+          "LOWG_IFR_FIX_LEOBE",
+          "LOWG_IFR_FIX_MD16C",
+          "LOWG_IFR_FIX_MILGO",
+          "LOWG_IFR_FIX_MUREG",
+          "LOWG_IFR_FIX_PIBIP",
+          "LOWG_IFR_FIX_RADLY",
+          "LOWG_IFR_FIX_RONOT",
+          "LOWG_IFR_FIX_ROPAG",
+          "LOWG_IFR_FIX_RUPET",
+          "LOWG_IFR_FIX_VAGIL",
+          "LOWG_IFR_FIX_WG501",
+          "LOWG_IFR_FIX_WG503",
+          "LOWG_IFR_FIX_WG508",
+          "LOWG_IFR_FIX_WG602",
+          "LOWG_IFR_FIX_WG603",
+          "LOWG_IFR_FIX_WG604",
+          "LOWG_IFR_FIX_WG607",
+          "LOWG_IFR_FIX_WG608",
+          "LOWG_IFR_FIX_WG609",
+          "LOWG_IFR_FIX_WG814",
+          "LOWG_IFR_FIX_WG815",
+          "LOWG_IFR_FIX_WG816",
+          "LOWG_IFR_FIX_WG817",
+          "LOWG_IFR_FIX_WG821",
+          "LOWG_IFR_FIX_WG822",
+          "LOWG_IFR_FIX_WG832",
+          "LOWG_IFR_FIX_WG833",
+          "LOWG_IFR_FIX_WG835",
+          "LOWG_IFR_FIX_WG836",
+          "LOWG_IFR_FIX_XIBAR",
+          "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "LOWG_IFR_HOLD_GBG_LOOP_04",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -2191,6 +3695,53 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
+          "LOWG_IFR_FIX_21VOR",
+          "LOWG_IFR_FIX_49VOR",
+          "LOWG_IFR_FIX_67VOR",
+          "LOWG_IFR_FIX_ABIRI",
+          "LOWG_IFR_FIX_CD16C",
+          "LOWG_IFR_FIX_CI34C",
+          "LOWG_IFR_FIX_FD16C",
+          "LOWG_IFR_FIX_FD34C",
+          "LOWG_IFR_FIX_FF34C",
+          "LOWG_IFR_FIX_GBG",
+          "LOWG_IFR_FIX_GOLVA",
+          "LOWG_IFR_FIX_GOTAR",
+          "LOWG_IFR_FIX_GRZ",
+          "LOWG_IFR_FIX_LEOBE",
+          "LOWG_IFR_FIX_MD16C",
+          "LOWG_IFR_FIX_MILGO",
+          "LOWG_IFR_FIX_MUREG",
+          "LOWG_IFR_FIX_PIBIP",
+          "LOWG_IFR_FIX_RADLY",
+          "LOWG_IFR_FIX_RONOT",
+          "LOWG_IFR_FIX_ROPAG",
+          "LOWG_IFR_FIX_RUPET",
+          "LOWG_IFR_FIX_VAGIL",
+          "LOWG_IFR_FIX_WG501",
+          "LOWG_IFR_FIX_WG503",
+          "LOWG_IFR_FIX_WG508",
+          "LOWG_IFR_FIX_WG602",
+          "LOWG_IFR_FIX_WG603",
+          "LOWG_IFR_FIX_WG604",
+          "LOWG_IFR_FIX_WG607",
+          "LOWG_IFR_FIX_WG608",
+          "LOWG_IFR_FIX_WG609",
+          "LOWG_IFR_FIX_WG814",
+          "LOWG_IFR_FIX_WG815",
+          "LOWG_IFR_FIX_WG816",
+          "LOWG_IFR_FIX_WG817",
+          "LOWG_IFR_FIX_WG821",
+          "LOWG_IFR_FIX_WG822",
+          "LOWG_IFR_FIX_WG832",
+          "LOWG_IFR_FIX_WG833",
+          "LOWG_IFR_FIX_WG835",
+          "LOWG_IFR_FIX_WG836",
+          "LOWG_IFR_FIX_XIBAR",
+          "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "LOWG_IFR_HOLD_GBG_LOOP_04",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -2499,6 +4050,53 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
+          "LOWG_IFR_FIX_21VOR",
+          "LOWG_IFR_FIX_49VOR",
+          "LOWG_IFR_FIX_67VOR",
+          "LOWG_IFR_FIX_ABIRI",
+          "LOWG_IFR_FIX_CD16C",
+          "LOWG_IFR_FIX_CI34C",
+          "LOWG_IFR_FIX_FD16C",
+          "LOWG_IFR_FIX_FD34C",
+          "LOWG_IFR_FIX_FF34C",
+          "LOWG_IFR_FIX_GBG",
+          "LOWG_IFR_FIX_GOLVA",
+          "LOWG_IFR_FIX_GOTAR",
+          "LOWG_IFR_FIX_GRZ",
+          "LOWG_IFR_FIX_LEOBE",
+          "LOWG_IFR_FIX_MD16C",
+          "LOWG_IFR_FIX_MILGO",
+          "LOWG_IFR_FIX_MUREG",
+          "LOWG_IFR_FIX_PIBIP",
+          "LOWG_IFR_FIX_RADLY",
+          "LOWG_IFR_FIX_RONOT",
+          "LOWG_IFR_FIX_ROPAG",
+          "LOWG_IFR_FIX_RUPET",
+          "LOWG_IFR_FIX_VAGIL",
+          "LOWG_IFR_FIX_WG501",
+          "LOWG_IFR_FIX_WG503",
+          "LOWG_IFR_FIX_WG508",
+          "LOWG_IFR_FIX_WG602",
+          "LOWG_IFR_FIX_WG603",
+          "LOWG_IFR_FIX_WG604",
+          "LOWG_IFR_FIX_WG607",
+          "LOWG_IFR_FIX_WG608",
+          "LOWG_IFR_FIX_WG609",
+          "LOWG_IFR_FIX_WG814",
+          "LOWG_IFR_FIX_WG815",
+          "LOWG_IFR_FIX_WG816",
+          "LOWG_IFR_FIX_WG817",
+          "LOWG_IFR_FIX_WG821",
+          "LOWG_IFR_FIX_WG822",
+          "LOWG_IFR_FIX_WG832",
+          "LOWG_IFR_FIX_WG833",
+          "LOWG_IFR_FIX_WG835",
+          "LOWG_IFR_FIX_WG836",
+          "LOWG_IFR_FIX_XIBAR",
+          "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "LOWG_IFR_HOLD_GBG_LOOP_04",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -2807,6 +4405,53 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
+          "LOWG_IFR_FIX_21VOR",
+          "LOWG_IFR_FIX_49VOR",
+          "LOWG_IFR_FIX_67VOR",
+          "LOWG_IFR_FIX_ABIRI",
+          "LOWG_IFR_FIX_CD16C",
+          "LOWG_IFR_FIX_CI34C",
+          "LOWG_IFR_FIX_FD16C",
+          "LOWG_IFR_FIX_FD34C",
+          "LOWG_IFR_FIX_FF34C",
+          "LOWG_IFR_FIX_GBG",
+          "LOWG_IFR_FIX_GOLVA",
+          "LOWG_IFR_FIX_GOTAR",
+          "LOWG_IFR_FIX_GRZ",
+          "LOWG_IFR_FIX_LEOBE",
+          "LOWG_IFR_FIX_MD16C",
+          "LOWG_IFR_FIX_MILGO",
+          "LOWG_IFR_FIX_MUREG",
+          "LOWG_IFR_FIX_PIBIP",
+          "LOWG_IFR_FIX_RADLY",
+          "LOWG_IFR_FIX_RONOT",
+          "LOWG_IFR_FIX_ROPAG",
+          "LOWG_IFR_FIX_RUPET",
+          "LOWG_IFR_FIX_VAGIL",
+          "LOWG_IFR_FIX_WG501",
+          "LOWG_IFR_FIX_WG503",
+          "LOWG_IFR_FIX_WG508",
+          "LOWG_IFR_FIX_WG602",
+          "LOWG_IFR_FIX_WG603",
+          "LOWG_IFR_FIX_WG604",
+          "LOWG_IFR_FIX_WG607",
+          "LOWG_IFR_FIX_WG608",
+          "LOWG_IFR_FIX_WG609",
+          "LOWG_IFR_FIX_WG814",
+          "LOWG_IFR_FIX_WG815",
+          "LOWG_IFR_FIX_WG816",
+          "LOWG_IFR_FIX_WG817",
+          "LOWG_IFR_FIX_WG821",
+          "LOWG_IFR_FIX_WG822",
+          "LOWG_IFR_FIX_WG832",
+          "LOWG_IFR_FIX_WG833",
+          "LOWG_IFR_FIX_WG835",
+          "LOWG_IFR_FIX_WG836",
+          "LOWG_IFR_FIX_XIBAR",
+          "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "LOWG_IFR_HOLD_GBG_LOOP_04",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -3115,6 +4760,53 @@
           "LOWG_FIX_KALSDORF",
           "LOWG_FIX_LASSNITZH\u00d6HE",
           "LOWG_FIX_SENDER_DOBL",
+          "LOWG_IFR_FIX_21VOR",
+          "LOWG_IFR_FIX_49VOR",
+          "LOWG_IFR_FIX_67VOR",
+          "LOWG_IFR_FIX_ABIRI",
+          "LOWG_IFR_FIX_CD16C",
+          "LOWG_IFR_FIX_CI34C",
+          "LOWG_IFR_FIX_FD16C",
+          "LOWG_IFR_FIX_FD34C",
+          "LOWG_IFR_FIX_FF34C",
+          "LOWG_IFR_FIX_GBG",
+          "LOWG_IFR_FIX_GOLVA",
+          "LOWG_IFR_FIX_GOTAR",
+          "LOWG_IFR_FIX_GRZ",
+          "LOWG_IFR_FIX_LEOBE",
+          "LOWG_IFR_FIX_MD16C",
+          "LOWG_IFR_FIX_MILGO",
+          "LOWG_IFR_FIX_MUREG",
+          "LOWG_IFR_FIX_PIBIP",
+          "LOWG_IFR_FIX_RADLY",
+          "LOWG_IFR_FIX_RONOT",
+          "LOWG_IFR_FIX_ROPAG",
+          "LOWG_IFR_FIX_RUPET",
+          "LOWG_IFR_FIX_VAGIL",
+          "LOWG_IFR_FIX_WG501",
+          "LOWG_IFR_FIX_WG503",
+          "LOWG_IFR_FIX_WG508",
+          "LOWG_IFR_FIX_WG602",
+          "LOWG_IFR_FIX_WG603",
+          "LOWG_IFR_FIX_WG604",
+          "LOWG_IFR_FIX_WG607",
+          "LOWG_IFR_FIX_WG608",
+          "LOWG_IFR_FIX_WG609",
+          "LOWG_IFR_FIX_WG814",
+          "LOWG_IFR_FIX_WG815",
+          "LOWG_IFR_FIX_WG816",
+          "LOWG_IFR_FIX_WG817",
+          "LOWG_IFR_FIX_WG821",
+          "LOWG_IFR_FIX_WG822",
+          "LOWG_IFR_FIX_WG832",
+          "LOWG_IFR_FIX_WG833",
+          "LOWG_IFR_FIX_WG835",
+          "LOWG_IFR_FIX_WG836",
+          "LOWG_IFR_FIX_XIBAR",
+          "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "LOWG_IFR_HOLD_GBG_LOOP_04",
           "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",
           "LOWG_RWY_16C_THR",
           "LOWG_RWY_16L_THR",
@@ -3255,6 +4947,30 @@
       }
     },
     "fixes": {
+      "21VOR": {
+        "id": "21VOR",
+        "name": "21VOR",
+        "pointId": "LOWG_IFR_FIX_21VOR",
+        "type": "WAYPOINT"
+      },
+      "49VOR": {
+        "id": "49VOR",
+        "name": "49VOR",
+        "pointId": "LOWG_IFR_FIX_49VOR",
+        "type": "WAYPOINT"
+      },
+      "67VOR": {
+        "id": "67VOR",
+        "name": "67VOR",
+        "pointId": "LOWG_IFR_FIX_67VOR",
+        "type": "WAYPOINT"
+      },
+      "ABIRI": {
+        "id": "ABIRI",
+        "name": "ABIRI",
+        "pointId": "LOWG_IFR_FIX_ABIRI",
+        "type": "WAYPOINT"
+      },
       "AUTOBAHN-OST": {
         "id": "AUTOBAHN-OST",
         "name": "AUTOBAHN-OST",
@@ -3271,12 +4987,60 @@
         "reportingType": "VFR-RP",
         "type": "WAYPOINT"
       },
+      "CD16C": {
+        "id": "CD16C",
+        "name": "CD16C",
+        "pointId": "LOWG_IFR_FIX_CD16C",
+        "type": "WAYPOINT"
+      },
+      "CI34C": {
+        "id": "CI34C",
+        "name": "CI34C",
+        "pointId": "LOWG_IFR_FIX_CI34C",
+        "type": "WAYPOINT"
+      },
+      "FD16C": {
+        "id": "FD16C",
+        "name": "FD16C",
+        "pointId": "LOWG_IFR_FIX_FD16C",
+        "type": "WAYPOINT"
+      },
+      "FD34C": {
+        "id": "FD34C",
+        "name": "FD34C",
+        "pointId": "LOWG_IFR_FIX_FD34C",
+        "type": "WAYPOINT"
+      },
+      "FF34C": {
+        "id": "FF34C",
+        "name": "FF34C",
+        "pointId": "LOWG_IFR_FIX_FF34C",
+        "type": "WAYPOINT"
+      },
+      "GBG": {
+        "id": "GBG",
+        "name": "GBG",
+        "pointId": "LOWG_IFR_FIX_GBG",
+        "type": "NDB"
+      },
       "GLEISDORF": {
         "id": "GLEISDORF",
         "name": "GLEISDORF",
         "pointId": "LOWG_FIX_GLEISDORF",
         "projectionStatus": "direct",
         "reportingType": "VFR-MRP",
+        "type": "WAYPOINT"
+      },
+      "GOLVA": {
+        "id": "GOLVA",
+        "name": "GOLVA",
+        "pointId": "LOWG_IFR_FIX_GOLVA",
+        "type": "WAYPOINT"
+      },
+      "GOTAR": {
+        "id": "GOTAR",
+        "name": "GOTAR",
+        "pointId": "LOWG_IFR_FIX_GOTAR",
         "type": "WAYPOINT"
       },
       "GRAZ-NORD": {
@@ -3295,6 +5059,12 @@
         "reportingType": "VFR-RP",
         "type": "WAYPOINT"
       },
+      "GRZ": {
+        "id": "GRZ",
+        "name": "GRZ",
+        "pointId": "LOWG_IFR_FIX_GRZ",
+        "type": "VOR"
+      },
       "KALSDORF": {
         "id": "KALSDORF",
         "name": "KALSDORF",
@@ -3311,12 +5081,192 @@
         "reportingType": "VFR-MRP",
         "type": "WAYPOINT"
       },
+      "LEOBE": {
+        "id": "LEOBE",
+        "name": "LEOBE",
+        "pointId": "LOWG_IFR_FIX_LEOBE",
+        "type": "WAYPOINT"
+      },
+      "MD16C": {
+        "id": "MD16C",
+        "name": "MD16C",
+        "pointId": "LOWG_IFR_FIX_MD16C",
+        "type": "WAYPOINT"
+      },
+      "MILGO": {
+        "id": "MILGO",
+        "name": "MILGO",
+        "pointId": "LOWG_IFR_FIX_MILGO",
+        "type": "WAYPOINT"
+      },
+      "MUREG": {
+        "id": "MUREG",
+        "name": "MUREG",
+        "pointId": "LOWG_IFR_FIX_MUREG",
+        "type": "WAYPOINT"
+      },
+      "PIBIP": {
+        "id": "PIBIP",
+        "name": "PIBIP",
+        "pointId": "LOWG_IFR_FIX_PIBIP",
+        "type": "WAYPOINT"
+      },
+      "RADLY": {
+        "id": "RADLY",
+        "name": "RADLY",
+        "pointId": "LOWG_IFR_FIX_RADLY",
+        "type": "WAYPOINT"
+      },
+      "RONOT": {
+        "id": "RONOT",
+        "name": "RONOT",
+        "pointId": "LOWG_IFR_FIX_RONOT",
+        "type": "WAYPOINT"
+      },
+      "ROPAG": {
+        "id": "ROPAG",
+        "name": "ROPAG",
+        "pointId": "LOWG_IFR_FIX_ROPAG",
+        "type": "WAYPOINT"
+      },
+      "RUPET": {
+        "id": "RUPET",
+        "name": "RUPET",
+        "pointId": "LOWG_IFR_FIX_RUPET",
+        "type": "WAYPOINT"
+      },
       "SENDER DOBL": {
         "id": "SENDER DOBL",
         "name": "SENDER DOBL",
         "pointId": "LOWG_FIX_SENDER_DOBL",
         "projectionStatus": "direct",
         "reportingType": "VFR-RP",
+        "type": "WAYPOINT"
+      },
+      "VAGIL": {
+        "id": "VAGIL",
+        "name": "VAGIL",
+        "pointId": "LOWG_IFR_FIX_VAGIL",
+        "type": "WAYPOINT"
+      },
+      "WG501": {
+        "id": "WG501",
+        "name": "WG501",
+        "pointId": "LOWG_IFR_FIX_WG501",
+        "type": "WAYPOINT"
+      },
+      "WG503": {
+        "id": "WG503",
+        "name": "WG503",
+        "pointId": "LOWG_IFR_FIX_WG503",
+        "type": "WAYPOINT"
+      },
+      "WG508": {
+        "id": "WG508",
+        "name": "WG508",
+        "pointId": "LOWG_IFR_FIX_WG508",
+        "type": "WAYPOINT"
+      },
+      "WG602": {
+        "id": "WG602",
+        "name": "WG602",
+        "pointId": "LOWG_IFR_FIX_WG602",
+        "type": "WAYPOINT"
+      },
+      "WG603": {
+        "id": "WG603",
+        "name": "WG603",
+        "pointId": "LOWG_IFR_FIX_WG603",
+        "type": "WAYPOINT"
+      },
+      "WG604": {
+        "id": "WG604",
+        "name": "WG604",
+        "pointId": "LOWG_IFR_FIX_WG604",
+        "type": "WAYPOINT"
+      },
+      "WG607": {
+        "id": "WG607",
+        "name": "WG607",
+        "pointId": "LOWG_IFR_FIX_WG607",
+        "type": "WAYPOINT"
+      },
+      "WG608": {
+        "id": "WG608",
+        "name": "WG608",
+        "pointId": "LOWG_IFR_FIX_WG608",
+        "type": "WAYPOINT"
+      },
+      "WG609": {
+        "id": "WG609",
+        "name": "WG609",
+        "pointId": "LOWG_IFR_FIX_WG609",
+        "type": "WAYPOINT"
+      },
+      "WG814": {
+        "id": "WG814",
+        "name": "WG814",
+        "pointId": "LOWG_IFR_FIX_WG814",
+        "type": "WAYPOINT"
+      },
+      "WG815": {
+        "id": "WG815",
+        "name": "WG815",
+        "pointId": "LOWG_IFR_FIX_WG815",
+        "type": "WAYPOINT"
+      },
+      "WG816": {
+        "id": "WG816",
+        "name": "WG816",
+        "pointId": "LOWG_IFR_FIX_WG816",
+        "type": "WAYPOINT"
+      },
+      "WG817": {
+        "id": "WG817",
+        "name": "WG817",
+        "pointId": "LOWG_IFR_FIX_WG817",
+        "type": "WAYPOINT"
+      },
+      "WG821": {
+        "id": "WG821",
+        "name": "WG821",
+        "pointId": "LOWG_IFR_FIX_WG821",
+        "type": "WAYPOINT"
+      },
+      "WG822": {
+        "id": "WG822",
+        "name": "WG822",
+        "pointId": "LOWG_IFR_FIX_WG822",
+        "type": "WAYPOINT"
+      },
+      "WG832": {
+        "id": "WG832",
+        "name": "WG832",
+        "pointId": "LOWG_IFR_FIX_WG832",
+        "type": "WAYPOINT"
+      },
+      "WG833": {
+        "id": "WG833",
+        "name": "WG833",
+        "pointId": "LOWG_IFR_FIX_WG833",
+        "type": "WAYPOINT"
+      },
+      "WG835": {
+        "id": "WG835",
+        "name": "WG835",
+        "pointId": "LOWG_IFR_FIX_WG835",
+        "type": "WAYPOINT"
+      },
+      "WG836": {
+        "id": "WG836",
+        "name": "WG836",
+        "pointId": "LOWG_IFR_FIX_WG836",
+        "type": "WAYPOINT"
+      },
+      "XIBAR": {
+        "id": "XIBAR",
+        "name": "XIBAR",
+        "pointId": "LOWG_IFR_FIX_XIBAR",
         "type": "WAYPOINT"
       }
     },
@@ -4580,6 +6530,50 @@
           "surface": "SKY",
           "widthMeters": 160.0
         },
+        "LOWG_IFR_HOLD_GBG_LOOP": {
+          "id": "LOWG_IFR_HOLD_GBG_LOOP",
+          "note": "Nominal GBG missed-approach holding racetrack compiled from inbound course and published one-minute hold timing.",
+          "pointIds": [
+            "LOWG_IFR_FIX_GBG",
+            "LOWG_IFR_HOLD_GBG_LOOP_01",
+            "LOWG_IFR_HOLD_GBG_LOOP_02",
+            "LOWG_IFR_HOLD_GBG_LOOP_03",
+            "LOWG_IFR_HOLD_GBG_LOOP_04",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_nominal_holding_loop",
+          "surface": "SKY",
+          "widthMeters": 1600.0
+        },
+        "LOWG_ILS_34C_FINAL": {
+          "id": "LOWG_ILS_34C_FINAL",
+          "note": "Compiled final approach geometry chain for LOWG_ILS_34C.",
+          "pointIds": [
+            "LOWG_IFR_FIX_XIBAR",
+            "LOWG_IFR_FIX_WG832",
+            "LOWG_IFR_FIX_VAGIL",
+            "LOWG_IFR_FIX_CI34C",
+            "LOWG_IFR_FIX_FF34C",
+            "LOWG_RWY_34C_THR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_approach_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_ILS_34C_MISSED": {
+          "id": "LOWG_ILS_34C_MISSED",
+          "note": "Compiled missed-approach geometry chain for LOWG_ILS_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_missed_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
         "LOWG_PATH_RWY_16C": {
           "id": "LOWG_PATH_RWY_16C",
           "note": "Directional runway path using the full strip axis.",
@@ -4768,6 +6762,60 @@
           "surface": "GROUND",
           "widthMeters": 18.0
         },
+        "LOWG_RNP_16C_FINAL": {
+          "id": "LOWG_RNP_16C_FINAL",
+          "note": "Compiled final approach geometry chain for LOWG_RNP_16C.",
+          "pointIds": [
+            "LOWG_IFR_FIX_RONOT",
+            "LOWG_IFR_FIX_WG814",
+            "LOWG_IFR_FIX_WG815",
+            "LOWG_IFR_FIX_WG816",
+            "LOWG_IFR_FIX_WG817",
+            "LOWG_RWY_16C_THR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_approach_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_RNP_16C_MISSED": {
+          "id": "LOWG_RNP_16C_MISSED",
+          "note": "Compiled missed-approach geometry chain for LOWG_RNP_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_missed_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_RNP_34C_FINAL": {
+          "id": "LOWG_RNP_34C_FINAL",
+          "note": "Compiled final approach geometry chain for LOWG_RNP_34C.",
+          "pointIds": [
+            "LOWG_IFR_FIX_VAGIL",
+            "LOWG_IFR_FIX_WG835",
+            "LOWG_RWY_34C_THR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_approach_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_RNP_34C_MISSED": {
+          "id": "LOWG_RNP_34C_MISSED",
+          "note": "Compiled missed-approach geometry chain for LOWG_RNP_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_WG836",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_missed_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
         "LOWG_SECTOR_SECTOR_ECHO_01": {
           "id": "LOWG_SECTOR_SECTOR_ECHO_01",
           "note": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume.",
@@ -4798,6 +6846,374 @@
           "source": "working_airspace_dxf",
           "surface": "SKY",
           "widthMeters": 160.0
+        },
+        "LOWG_SID_ABIR3V_34C_PATH": {
+          "id": "LOWG_SID_ABIR3V_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_ABIR3V_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_WG608",
+            "LOWG_IFR_FIX_ABIRI"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_ABIR4G_16C_PATH": {
+          "id": "LOWG_SID_ABIR4G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_ABIR4G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_WG607",
+            "LOWG_IFR_FIX_ABIRI"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_ABIR5U_34C_PATH": {
+          "id": "LOWG_SID_ABIR5U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_ABIR5U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GRZ",
+            "LOWG_IFR_FIX_WG608",
+            "LOWG_IFR_FIX_ABIRI"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GBG5Y_34C_PATH": {
+          "id": "LOWG_SID_GBG5Y_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GBG5Y_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GBG7X_16C_PATH": {
+          "id": "LOWG_SID_GBG7X_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GBG7X_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GOLV4U_34C_PATH": {
+          "id": "LOWG_SID_GOLV4U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GOLV4U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GOLVA"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GOLV5G_16C_PATH": {
+          "id": "LOWG_SID_GOLV5G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GOLV5G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_WG604",
+            "LOWG_IFR_FIX_GOLVA"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GOTA5G_16C_PATH": {
+          "id": "LOWG_SID_GOTA5G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GOTA5G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_GOTAR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GOTA5U_34C_PATH": {
+          "id": "LOWG_SID_GOTA5U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GOTA5U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GOTAR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GRZ4X_16C_PATH": {
+          "id": "LOWG_SID_GRZ4X_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GRZ4X_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_GRZ"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_GRZ4Y_34C_PATH": {
+          "id": "LOWG_SID_GRZ4Y_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_GRZ4Y_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GRZ"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_MILG3H_16C_PATH": {
+          "id": "LOWG_SID_MILG3H_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_MILG3H_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_WG603",
+            "LOWG_IFR_FIX_MILGO"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_MILG5U_34C_PATH": {
+          "id": "LOWG_SID_MILG5U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_MILG5U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_MILGO"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_MILG6G_16C_PATH": {
+          "id": "LOWG_SID_MILG6G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_MILG6G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_WG609",
+            "LOWG_IFR_FIX_MILGO"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_MURE4U_34C_PATH": {
+          "id": "LOWG_SID_MURE4U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_MURE4U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_MUREG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_MURE5G_16C_PATH": {
+          "id": "LOWG_SID_MURE5G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_MURE5G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_WG604",
+            "LOWG_IFR_FIX_MUREG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_RADL4V_34C_PATH": {
+          "id": "LOWG_SID_RADL4V_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_RADL4V_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_WG608",
+            "LOWG_IFR_FIX_RADLY"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_RADL5G_16C_PATH": {
+          "id": "LOWG_SID_RADL5G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_RADL5G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_WG607",
+            "LOWG_IFR_FIX_RADLY"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_RADL6U_34C_PATH": {
+          "id": "LOWG_SID_RADL6U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_RADL6U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GRZ",
+            "LOWG_IFR_FIX_RADLY"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_ROPA4G_16C_PATH": {
+          "id": "LOWG_SID_ROPA4G_16C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_ROPA4G_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_ROPAG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_SID_ROPA4U_34C_PATH": {
+          "id": "LOWG_SID_ROPA4U_34C_PATH",
+          "note": "Compiled SID geometry chain for LOWG_SID_ROPA4U_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_WG602",
+            "LOWG_IFR_FIX_ROPAG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_sid_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_ABIR1M_PATH": {
+          "id": "LOWG_STAR_ABIR1M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_ABIR1M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_ABIRI",
+            "LOWG_IFR_FIX_WG508",
+            "LOWG_IFR_FIX_XIBAR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_GBG1M_PATH": {
+          "id": "LOWG_STAR_GBG1M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_GBG1M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_GBG",
+            "LOWG_IFR_FIX_PIBIP"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_GOLV1M_PATH": {
+          "id": "LOWG_STAR_GOLV1M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_GOLV1M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_GOLVA",
+            "LOWG_IFR_FIX_WG833",
+            "LOWG_IFR_FIX_PIBIP"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_GOTA2M_PATH": {
+          "id": "LOWG_STAR_GOTA2M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_GOTA2M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_GOTAR",
+            "LOWG_IFR_FIX_WG503",
+            "LOWG_IFR_FIX_PIBIP"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_LEOB1M_PATH": {
+          "id": "LOWG_STAR_LEOB1M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_LEOB1M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_LEOBE",
+            "LOWG_IFR_FIX_WG821",
+            "LOWG_IFR_FIX_XIBAR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_MURE1M_PATH": {
+          "id": "LOWG_STAR_MURE1M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_MURE1M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_MUREG",
+            "LOWG_IFR_FIX_WG833",
+            "LOWG_IFR_FIX_PIBIP"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_RADL2M_PATH": {
+          "id": "LOWG_STAR_RADL2M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_RADL2M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_RADLY",
+            "LOWG_IFR_FIX_WG832",
+            "LOWG_IFR_FIX_XIBAR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_STAR_RUPE2M_PATH": {
+          "id": "LOWG_STAR_RUPE2M_PATH",
+          "note": "Compiled STAR geometry chain for LOWG_STAR_RUPE2M.",
+          "pointIds": [
+            "LOWG_IFR_FIX_RUPET",
+            "LOWG_IFR_FIX_WG822",
+            "LOWG_IFR_FIX_WG501",
+            "LOWG_IFR_FIX_PIBIP"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_star_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
         },
         "LOWG_VFR_ROUTE_VFR_NORTHEAST_ENTRY_PATH": {
           "id": "LOWG_VFR_ROUTE_VFR_NORTHEAST_ENTRY_PATH",
@@ -4851,6 +7267,63 @@
           "source": "structured_vfr_route",
           "surface": "SKY",
           "widthMeters": 160.0
+        },
+        "LOWG_VOR_16C_FINAL": {
+          "id": "LOWG_VOR_16C_FINAL",
+          "note": "Compiled final approach geometry chain for LOWG_VOR_16C.",
+          "pointIds": [
+            "LOWG_IFR_FIX_CD16C",
+            "LOWG_IFR_FIX_FD16C",
+            "LOWG_IFR_FIX_67VOR",
+            "LOWG_IFR_FIX_49VOR",
+            "LOWG_IFR_FIX_MD16C",
+            "LOWG_RWY_16C_THR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_approach_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_VOR_16C_MISSED": {
+          "id": "LOWG_VOR_16C_MISSED",
+          "note": "Compiled missed-approach geometry chain for LOWG_VOR_16C.",
+          "pointIds": [
+            "LOWG_RWY_16C_THR",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_missed_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_VOR_34C_FINAL": {
+          "id": "LOWG_VOR_34C_FINAL",
+          "note": "Compiled final approach geometry chain for LOWG_VOR_34C.",
+          "pointIds": [
+            "LOWG_IFR_FIX_PIBIP",
+            "LOWG_IFR_FIX_WG833",
+            "LOWG_IFR_FIX_VAGIL",
+            "LOWG_IFR_FIX_FD34C",
+            "LOWG_IFR_FIX_21VOR",
+            "LOWG_IFR_FIX_GRZ",
+            "LOWG_RWY_34C_THR"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_approach_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
+        },
+        "LOWG_VOR_34C_MISSED": {
+          "id": "LOWG_VOR_34C_MISSED",
+          "note": "Compiled missed-approach geometry chain for LOWG_VOR_34C.",
+          "pointIds": [
+            "LOWG_RWY_34C_THR",
+            "LOWG_IFR_FIX_GBG"
+          ],
+          "projectionStatus": "current_core_runtime_ifr_subset",
+          "source": "compiled_runtime_ifr_missed_chain",
+          "surface": "SKY",
+          "widthMeters": 1200.0
         }
       },
       "points": {
@@ -7015,6 +9488,570 @@
           ],
           "xMeters": -4529.609234,
           "yMeters": -4664.009596
+        },
+        "LOWG_IFR_FIX_21VOR": {
+          "id": "LOWG_IFR_FIX_21VOR",
+          "label": "21VOR",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 1850.093816,
+          "yMeters": -7935.626758
+        },
+        "LOWG_IFR_FIX_49VOR": {
+          "id": "LOWG_IFR_FIX_49VOR",
+          "label": "49VOR",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -1723.746853,
+          "yMeters": 4525.739594
+        },
+        "LOWG_IFR_FIX_67VOR": {
+          "id": "LOWG_IFR_FIX_67VOR",
+          "label": "67VOR",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -2645.160311,
+          "yMeters": 7729.743569
+        },
+        "LOWG_IFR_FIX_ABIRI": {
+          "id": "LOWG_IFR_FIX_ABIRI",
+          "label": "ABIRI",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -35767.898639,
+          "yMeters": -25636.299015
+        },
+        "LOWG_IFR_FIX_CD16C": {
+          "id": "LOWG_IFR_FIX_CD16C",
+          "label": "CD16C",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -8143.090849,
+          "yMeters": 26772.801011
+        },
+        "LOWG_IFR_FIX_CI34C": {
+          "id": "LOWG_IFR_FIX_CI34C",
+          "label": "CI34C",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -4363.413207,
+          "yMeters": 14880.453568
+        },
+        "LOWG_IFR_FIX_FD16C": {
+          "id": "LOWG_IFR_FIX_FD16C",
+          "label": "FD16C",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -5209.877777,
+          "yMeters": 16629.000462
+        },
+        "LOWG_IFR_FIX_FD34C": {
+          "id": "LOWG_IFR_FIX_FD34C",
+          "label": "FD34C",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 3834.753193,
+          "yMeters": -14879.317379
+        },
+        "LOWG_IFR_FIX_FF34C": {
+          "id": "LOWG_IFR_FIX_FF34C",
+          "label": "FF34C",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -3355.841027,
+          "yMeters": 11315.500854
+        },
+        "LOWG_IFR_FIX_GBG": {
+          "id": "LOWG_IFR_FIX_GBG",
+          "label": "GBG",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 27391.492542,
+          "yMeters": -11794.075145
+        },
+        "LOWG_IFR_FIX_GOLVA": {
+          "id": "LOWG_IFR_FIX_GOLVA",
+          "label": "GOLVA",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 16170.492799,
+          "yMeters": -31611.173815
+        },
+        "LOWG_IFR_FIX_GOTAR": {
+          "id": "LOWG_IFR_FIX_GOTAR",
+          "label": "GOTAR",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 59583.317875,
+          "yMeters": 536.515966
+        },
+        "LOWG_IFR_FIX_GRZ": {
+          "id": "LOWG_IFR_FIX_GRZ",
+          "label": "GRZ",
+          "sources": [
+            "ofmx_navaid"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 779.513723,
+          "yMeters": -4196.990904
+        },
+        "LOWG_IFR_FIX_LEOBE": {
+          "id": "LOWG_IFR_FIX_LEOBE",
+          "label": "LEOBE",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -31263.360373,
+          "yMeters": 41212.546386
+        },
+        "LOWG_IFR_FIX_MD16C": {
+          "id": "LOWG_IFR_FIX_MD16C",
+          "label": "MD16C",
+          "sources": [
+            "derived_approach_geometry"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -752.2221,
+          "yMeters": 1143.581332
+        },
+        "LOWG_IFR_FIX_MILGO": {
+          "id": "LOWG_IFR_FIX_MILGO",
+          "label": "MILGO",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -26357.267351,
+          "yMeters": 34320.931685
+        },
+        "LOWG_IFR_FIX_MUREG": {
+          "id": "LOWG_IFR_FIX_MUREG",
+          "label": "MUREG",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 27977.813879,
+          "yMeters": -31837.269795
+        },
+        "LOWG_IFR_FIX_PIBIP": {
+          "id": "LOWG_IFR_FIX_PIBIP",
+          "label": "PIBIP",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 10523.229526,
+          "yMeters": -5728.391897
+        },
+        "LOWG_IFR_FIX_RADLY": {
+          "id": "LOWG_IFR_FIX_RADLY",
+          "label": "RADLY",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -17443.62913,
+          "yMeters": -38495.37515
+        },
+        "LOWG_IFR_FIX_RONOT": {
+          "id": "LOWG_IFR_FIX_RONOT",
+          "label": "RONOT",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -6749.116907,
+          "yMeters": 35675.039039
+        },
+        "LOWG_IFR_FIX_ROPAG": {
+          "id": "LOWG_IFR_FIX_ROPAG",
+          "label": "ROPAG",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 27319.23007,
+          "yMeters": 24525.894024
+        },
+        "LOWG_IFR_FIX_RUPET": {
+          "id": "LOWG_IFR_FIX_RUPET",
+          "label": "RUPET",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 22247.753317,
+          "yMeters": 52508.715558
+        },
+        "LOWG_IFR_FIX_VAGIL": {
+          "id": "LOWG_IFR_FIX_VAGIL",
+          "label": "VAGIL",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 3602.197681,
+          "yMeters": -19280.582704
+        },
+        "LOWG_IFR_FIX_WG501": {
+          "id": "LOWG_IFR_FIX_WG501",
+          "label": "WG501",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 7445.41263,
+          "yMeters": 10660.195793
+        },
+        "LOWG_IFR_FIX_WG503": {
+          "id": "LOWG_IFR_FIX_WG503",
+          "label": "WG503",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 20532.400718,
+          "yMeters": -4418.145382
+        },
+        "LOWG_IFR_FIX_WG508": {
+          "id": "LOWG_IFR_FIX_WG508",
+          "label": "WG508",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -23067.296385,
+          "yMeters": -18138.363954
+        },
+        "LOWG_IFR_FIX_WG602": {
+          "id": "LOWG_IFR_FIX_WG602",
+          "label": "WG602",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 9545.254947,
+          "yMeters": 13907.087651
+        },
+        "LOWG_IFR_FIX_WG603": {
+          "id": "LOWG_IFR_FIX_WG603",
+          "label": "WG603",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 8646.917971,
+          "yMeters": 2202.895368
+        },
+        "LOWG_IFR_FIX_WG604": {
+          "id": "LOWG_IFR_FIX_WG604",
+          "label": "WG604",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 11203.724085,
+          "yMeters": -14742.285199
+        },
+        "LOWG_IFR_FIX_WG607": {
+          "id": "LOWG_IFR_FIX_WG607",
+          "label": "WG607",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -4805.177744,
+          "yMeters": -13608.096947
+        },
+        "LOWG_IFR_FIX_WG608": {
+          "id": "LOWG_IFR_FIX_WG608",
+          "label": "WG608",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -13668.674333,
+          "yMeters": -12622.786471
+        },
+        "LOWG_IFR_FIX_WG609": {
+          "id": "LOWG_IFR_FIX_WG609",
+          "label": "WG609",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -8778.592867,
+          "yMeters": -1797.342118
+        },
+        "LOWG_IFR_FIX_WG814": {
+          "id": "LOWG_IFR_FIX_WG814",
+          "label": "WG814",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -4561.210651,
+          "yMeters": 24151.538512
+        },
+        "LOWG_IFR_FIX_WG815": {
+          "id": "LOWG_IFR_FIX_WG815",
+          "label": "WG815",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -3688.365808,
+          "yMeters": 19541.581437
+        },
+        "LOWG_IFR_FIX_WG816": {
+          "id": "LOWG_IFR_FIX_WG816",
+          "label": "WG816",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -2925.916593,
+          "yMeters": 15507.985473
+        },
+        "LOWG_IFR_FIX_WG817": {
+          "id": "LOWG_IFR_FIX_WG817",
+          "label": "WG817",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -2165.363493,
+          "yMeters": 11473.772377
+        },
+        "LOWG_IFR_FIX_WG821": {
+          "id": "LOWG_IFR_FIX_WG821",
+          "label": "WG821",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -15875.541742,
+          "yMeters": 33942.559813
+        },
+        "LOWG_IFR_FIX_WG822": {
+          "id": "LOWG_IFR_FIX_WG822",
+          "label": "WG822",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 2382.995516,
+          "yMeters": 37394.236032
+        },
+        "LOWG_IFR_FIX_WG832": {
+          "id": "LOWG_IFR_FIX_WG832",
+          "label": "WG832",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -4312.819541,
+          "yMeters": -24006.676208
+        },
+        "LOWG_IFR_FIX_WG833": {
+          "id": "LOWG_IFR_FIX_WG833",
+          "label": "WG833",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 12682.483204,
+          "yMeters": -20796.230711
+        },
+        "LOWG_IFR_FIX_WG835": {
+          "id": "LOWG_IFR_FIX_WG835",
+          "label": "WG835",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 2241.418651,
+          "yMeters": -11996.388755
+        },
+        "LOWG_IFR_FIX_WG836": {
+          "id": "LOWG_IFR_FIX_WG836",
+          "label": "WG836",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -363.000436,
+          "yMeters": 1898.344695
+        },
+        "LOWG_IFR_FIX_XIBAR": {
+          "id": "LOWG_IFR_FIX_XIBAR",
+          "label": "XIBAR",
+          "sources": [
+            "chart_coding_table"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": -7736.150366,
+          "yMeters": -9151.342018
+        },
+        "LOWG_IFR_HOLD_GBG_LOOP_01": {
+          "id": "LOWG_IFR_HOLD_GBG_LOOP_01",
+          "label": "GBG hold 1",
+          "sources": [
+            "compiled_nominal_holding_loop"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 28260.825786,
+          "yMeters": -12027.012286
+        },
+        "LOWG_IFR_HOLD_GBG_LOOP_02": {
+          "id": "LOWG_IFR_HOLD_GBG_LOOP_02",
+          "label": "GBG hold 2",
+          "sources": [
+            "compiled_nominal_holding_loop"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 29037.282921,
+          "yMeters": -9129.234807
+        },
+        "LOWG_IFR_HOLD_GBG_LOOP_03": {
+          "id": "LOWG_IFR_HOLD_GBG_LOOP_03",
+          "label": "GBG hold 3",
+          "sources": [
+            "compiled_nominal_holding_loop"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 27298.616434,
+          "yMeters": -8663.360526
+        },
+        "LOWG_IFR_HOLD_GBG_LOOP_04": {
+          "id": "LOWG_IFR_HOLD_GBG_LOOP_04",
+          "label": "GBG hold 4",
+          "sources": [
+            "compiled_nominal_holding_loop"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 26522.159298,
+          "yMeters": -11561.138004
         },
         "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01": {
           "id": "LOWG_ROUTE_VFR_WESTERN_CORRIDOR_PATH_AIRSPACE_TRANSITION_01",

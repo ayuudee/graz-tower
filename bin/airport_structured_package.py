@@ -1425,6 +1425,771 @@ def published_point_reference(
     return result
 
 
+def group_cifp_procedures(
+    procedure_refs: list[report.CifpProcedureRef],
+    *,
+    include_runway_from_transition: bool = False,
+    include_runway_from_name: bool = False,
+) -> dict[str, dict[str, Any]]:
+    grouped: dict[str, dict[str, Any]] = {}
+    for procedure in procedure_refs:
+        entry = grouped.setdefault(
+            procedure.name,
+            {
+                "name": procedure.name,
+                "routeTypes": set(),
+                "transitions": set(),
+                "runwayIds": set(),
+            },
+        )
+        entry["routeTypes"].add(procedure.route_type)
+        entry["transitions"].add(procedure.transition)
+        if include_runway_from_transition and procedure.transition.startswith("RW"):
+            entry["runwayIds"].add(procedure.transition.removeprefix("RW"))
+        if include_runway_from_name and len(procedure.name) > 1:
+            candidate = procedure.name[1:]
+            if candidate[:2].isdigit():
+                entry["runwayIds"].add(candidate)
+
+    return {
+        name: {
+            "name": name,
+            "routeTypes": sorted(entry["routeTypes"]),
+            "transitions": sorted(entry["transitions"]),
+            "runwayIds": sorted(entry["runwayIds"]),
+        }
+        for name, entry in sorted(grouped.items())
+    }
+
+
+def cifp_runway_thresholds(cifp_data: dict[str, Any]) -> dict[str, dict[str, float]]:
+    return {
+        designator: {
+            "latitude": round(position.lat, 8),
+            "longitude": round(position.lon, 8),
+        }
+        for designator, position in sorted(cifp_data.get("runways", {}).items())
+    }
+
+
+def cifp_fix_resolution_detail(
+    cifp_data: dict[str, Any],
+    ofmx_data: dict[str, Any],
+    chart_fix_data: dict[str, Any],
+) -> dict[str, Any]:
+    resolution = report.cifp_fix_resolution(cifp_data, ofmx_data, chart_fix_data)
+    resolved_designated_points = {
+        identifier: {
+            "codeId": point.code_id,
+            "name": point.name,
+            "codeType": point.code_type,
+            "latitude": round(point.position.lat, 8),
+            "longitude": round(point.position.lon, 8),
+        }
+        for identifier, point in sorted(ofmx_data["allDesignatedPoints"].items())
+        if identifier in resolution["presentInOfmxDesignatedPoints"]
+    }
+    resolved_navaids = {
+        identifier: {
+            "codeId": navaid.code_id,
+            "name": navaid.name,
+            "kind": navaid.kind,
+            "frequency": navaid.frequency,
+            "latitude": round(navaid.position.lat, 8),
+            "longitude": round(navaid.position.lon, 8),
+        }
+        for identifier, navaid in sorted(ofmx_data.get("allNavaids", {}).items())
+        if identifier in resolution["presentInOfmxNavaids"]
+    }
+    resolved_chart_points = {
+        identifier: {
+            **entry,
+        }
+        for identifier, entry in sorted(chart_fix_data.get("resolvedFixes", {}).items())
+        if identifier in resolution["presentInChartCodingTables"]
+    }
+    references_by_identifier = {
+        identifier: sorted(
+            {
+                f"{fix_ref.section}:{fix_ref.kind}:{fix_ref.section}/{fix_ref.subsection}"
+                for fix_ref in fix_refs
+            },
+        )
+        for identifier, fix_refs in sorted(cifp_data["fixRefs"].items())
+    }
+    return {
+        **resolution,
+        "resolvedDesignatedPoints": resolved_designated_points,
+        "resolvedNavaids": resolved_navaids,
+        "resolvedChartPoints": resolved_chart_points,
+        "chartSourceFiles": chart_fix_data.get("filesScanned", []),
+        "conflictingChartIdentifiers": chart_fix_data.get("conflictingIdentifiers", []),
+        "referencesByIdentifier": references_by_identifier,
+    }
+
+
+def ifr_fix_position_lookup(
+    fix_resolution: dict[str, Any],
+    runway_thresholds: dict[str, dict[str, float]],
+) -> dict[str, dict[str, Any]]:
+    lookup: dict[str, dict[str, Any]] = {}
+
+    def register(identifier: str, entry: dict[str, Any], source_kind: str) -> None:
+        latitude = entry.get("latitude")
+        longitude = entry.get("longitude")
+        if not isinstance(latitude, (int, float)) or not isinstance(longitude, (int, float)):
+            return
+        lookup[identifier] = {
+            "identifier": identifier,
+            "latitude": float(latitude),
+            "longitude": float(longitude),
+            "sourceKind": source_kind,
+            "sourceCharts": entry.get("sourceCharts", []),
+            "derivationMethod": entry.get("derivationMethod"),
+        }
+
+    for key, source_kind in (
+        ("resolvedDesignatedPoints", "ofmx_designated_point"),
+        ("resolvedNavaids", "ofmx_navaid"),
+        ("resolvedChartPoints", "chart_coding_table"),
+        ("resolvedDerivedApproachGeometry", "derived_approach_geometry"),
+    ):
+        for identifier, entry in sorted(fix_resolution.get(key, {}).items()):
+            if isinstance(entry, dict):
+                register(identifier, entry, source_kind)
+
+    for designator, entry in sorted(runway_thresholds.items()):
+        if not isinstance(entry, dict):
+            continue
+        register(f"RW{designator}", entry, "cifp_runway_threshold")
+
+    return lookup
+
+
+def local_position_document(project, latitude: float, longitude: float) -> dict[str, float]:
+    xy = project(report.Geo(latitude, longitude))
+    return {
+        "xMeters": round(xy.x, 6),
+        "yMeters": round(xy.y, 6),
+    }
+
+
+def candidate_altitude_constraint(record: report.CifpApproachRecord) -> dict[str, Any] | None:
+    if (
+        not record.altitude_constraint_type
+        and record.altitude_1 is None
+        and record.altitude_2 is None
+    ):
+        return None
+    return {
+        "rawType": record.altitude_constraint_type or None,
+        "altitude1Feet": record.altitude_1,
+        "altitude2Feet": record.altitude_2,
+    }
+
+
+def candidate_speed_constraint(record: report.CifpApproachRecord) -> dict[str, Any] | None:
+    if not record.speed_constraint_type and record.speed_limit is None:
+        return None
+    return {
+        "rawType": record.speed_constraint_type or None,
+        "speedKnots": record.speed_limit,
+    }
+
+
+def candidate_ifr_leg(
+    record: report.CifpApproachRecord,
+    position_lookup: dict[str, dict[str, Any]],
+    project,
+    *,
+    override_fix_identifier: str | None = None,
+    override_position_entry: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    identifier = override_fix_identifier if override_fix_identifier is not None else record.fix_identifier or None
+    position_entry = (
+        override_position_entry
+        if override_position_entry is not None
+        else position_lookup.get(record.fix_identifier) if record.fix_identifier else None
+    )
+    position_document = None
+    if position_entry is not None:
+        position_document = {
+            "latitude": round(position_entry["latitude"], 8),
+            "longitude": round(position_entry["longitude"], 8),
+            "localPosition": local_position_document(project, position_entry["latitude"], position_entry["longitude"]),
+            "sourceKind": position_entry["sourceKind"],
+        }
+        source_charts = position_entry.get("sourceCharts")
+        if isinstance(source_charts, list) and source_charts:
+            position_document["sourceCharts"] = source_charts
+        derivation_method = position_entry.get("derivationMethod")
+        if isinstance(derivation_method, str):
+            position_document["derivationMethod"] = derivation_method
+
+    return {
+        "sequence": record.sequence,
+        "fixIdentifier": identifier,
+        "waypointDescription": record.waypoint_description or None,
+        "turnDirection": record.turn_direction_code,
+        "pathTerminator": record.path_terminator,
+        "referenceIdentifier": record.reference_identifier,
+        "referenceCodeType": record.reference_code_type,
+        "referenceSubtype": record.reference_subtype,
+        "primaryCourseDegrees": (
+            record.primary_course_tenths / 10.0
+            if record.primary_course_tenths is not None
+            else None
+        ),
+        "primaryCourseRaw": record.primary_course_raw,
+        "primaryDistanceNm": (
+            record.primary_distance_tenths / 10.0
+            if record.primary_distance_tenths is not None
+            else None
+        ),
+        "primaryDistanceRaw": record.primary_distance_raw,
+        "secondaryCourseDegrees": (
+            record.secondary_course_tenths / 10.0
+            if record.secondary_course_tenths is not None
+            else None
+        ),
+        "secondaryCourseRaw": record.secondary_course_raw,
+        "secondaryDistanceNm": (
+            record.secondary_distance_tenths / 10.0
+            if record.secondary_distance_tenths is not None
+            else None
+        ),
+        "secondaryDistanceRaw": record.secondary_distance_raw,
+        "altitudeConstraint": candidate_altitude_constraint(record),
+        "speedConstraint": candidate_speed_constraint(record),
+        "position": position_document,
+    }
+
+
+def ordered_cifp_leg_sequences(
+    cifp_data: dict[str, Any],
+    section: str,
+) -> dict[tuple[str, str], list[report.CifpProcedureLegRecord]]:
+    grouped: dict[tuple[str, str], list[report.CifpProcedureLegRecord]] = defaultdict(list)
+    for record in cifp_data.get("procedureLegRecords", {}).get(section, []):
+        grouped[(record.procedure_name, record.transition)].append(record)
+    return {
+        key: sorted(
+            records,
+            key=lambda record: int(record.sequence),
+        )
+        for key, records in sorted(grouped.items())
+    }
+
+
+def compiled_ifr_route_waypoints(
+    records: list[report.CifpProcedureLegRecord],
+    position_lookup: dict[str, dict[str, Any]],
+    project,
+    *,
+    runway_id: str | None = None,
+) -> tuple[list[dict[str, Any]], list[str], list[str], list[str]]:
+    waypoints: list[dict[str, Any]] = []
+    unresolved_fix_identifiers: set[str] = set()
+    runtime_projection_blockers: set[str] = set()
+    compilation_assumptions: list[str] = []
+
+    threshold_identifier = f"RW{runway_id}" if isinstance(runway_id, str) and runway_id else None
+    threshold_position = (
+        position_lookup.get(threshold_identifier)
+        if isinstance(threshold_identifier, str)
+        else None
+    )
+
+    for index, record in enumerate(records):
+        if record.fix_identifier:
+            if record.fix_identifier in position_lookup:
+                waypoints.append(candidate_ifr_leg(record, position_lookup, project))
+            else:
+                unresolved_fix_identifiers.add(record.fix_identifier)
+            continue
+
+        if index == 0 and threshold_identifier is not None and threshold_position is not None:
+            waypoints.append(
+                candidate_ifr_leg(
+                    record,
+                    position_lookup,
+                    project,
+                    override_fix_identifier=threshold_identifier,
+                    override_position_entry=threshold_position,
+                )
+            )
+            compilation_assumptions.append(
+                "Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based."
+            )
+            continue
+
+        runtime_projection_blockers.add("fixless_leg_unrepresentable_in_waypoint_route_model")
+
+    deduped_waypoints: list[dict[str, Any]] = []
+    for waypoint in waypoints:
+        if deduped_waypoints and deduped_waypoints[-1].get("fixIdentifier") == waypoint.get("fixIdentifier"):
+            continue
+        deduped_waypoints.append(waypoint)
+
+    return (
+        deduped_waypoints,
+        sorted(unresolved_fix_identifiers),
+        sorted(runtime_projection_blockers),
+        compilation_assumptions,
+    )
+
+
+def sid_candidate_routes(
+    airport_code: str,
+    cifp_data: dict[str, Any],
+    fix_resolution: dict[str, Any],
+    runway_thresholds: dict[str, dict[str, float]],
+    project,
+) -> dict[str, Any]:
+    position_lookup = ifr_fix_position_lookup(fix_resolution, runway_thresholds)
+    by_id: dict[str, Any] = {}
+
+    for (name, transition), records in ordered_cifp_leg_sequences(cifp_data, "SID").items():
+        runway_id = transition.removeprefix("RW") if transition.startswith("RW") else None
+        waypoints, unresolved_fix_identifiers, runtime_projection_blockers, compilation_assumptions = compiled_ifr_route_waypoints(
+            records,
+            position_lookup,
+            project,
+            runway_id=runway_id,
+        )
+        if runway_id is None:
+            runtime_projection_blockers = sorted(runtime_projection_blockers + ["sid_missing_runway_transition"])
+        sid_id = f"{airport_code}_SID_{name}_{runway_id or transition.replace('/', '_')}"
+        by_id[sid_id] = {
+            "id": sid_id,
+            "name": name,
+            "runwayId": runway_id,
+            "sourceTransition": transition,
+            "routeType": records[0].route_type if records else None,
+            "waypoints": waypoints,
+            "transitions": {},
+            "unresolvedFixIdentifiers": unresolved_fix_identifiers,
+            "runtimeProjectionBlockers": runtime_projection_blockers,
+            "compilationAssumptions": compilation_assumptions,
+            "projectionStatus": (
+                "candidate_ifr_sid_ready_for_runtime_projection"
+                if runway_id is not None and not runtime_projection_blockers and not unresolved_fix_identifiers and waypoints
+                else "candidate_ifr_sid_with_runtime_blockers"
+            ),
+        }
+
+    return {
+        "status": "candidate_ifr_sid_routes_from_cifp_sequences",
+        "note": (
+            "LOWG SIDs currently compile from CIFP as single-transition runway-specific waypoint routes. "
+            "Fixless initial departure legs are anchored to the runway threshold where necessary."
+        ),
+        "byId": by_id,
+    }
+
+
+def star_candidate_routes(
+    airport_code: str,
+    cifp_data: dict[str, Any],
+    fix_resolution: dict[str, Any],
+    runway_thresholds: dict[str, dict[str, float]],
+    project,
+) -> dict[str, Any]:
+    position_lookup = ifr_fix_position_lookup(fix_resolution, runway_thresholds)
+    by_id: dict[str, Any] = {}
+
+    for (name, transition), records in ordered_cifp_leg_sequences(cifp_data, "STAR").items():
+        waypoints, unresolved_fix_identifiers, runtime_projection_blockers, compilation_assumptions = compiled_ifr_route_waypoints(
+            records,
+            position_lookup,
+            project,
+        )
+        star_id = f"{airport_code}_STAR_{name}"
+        by_id[star_id] = {
+            "id": star_id,
+            "name": name,
+            "sourceTransition": transition,
+            "routeType": records[0].route_type if records else None,
+            "waypoints": waypoints,
+            "transitions": {},
+            "unresolvedFixIdentifiers": unresolved_fix_identifiers,
+            "runtimeProjectionBlockers": runtime_projection_blockers,
+            "compilationAssumptions": compilation_assumptions,
+            "projectionStatus": (
+                "candidate_ifr_star_ready_for_runtime_projection"
+                if not runtime_projection_blockers and not unresolved_fix_identifiers and waypoints
+                else "candidate_ifr_star_with_runtime_blockers"
+            ),
+        }
+
+    return {
+        "status": "candidate_ifr_star_routes_from_cifp_sequences",
+        "note": (
+            "LOWG STARs currently compile from CIFP as single-transition waypoint routes using resolved published fix positions."
+        ),
+        "byId": by_id,
+    }
+
+
+def hold_leg_time_minutes(record: report.CifpApproachRecord) -> float | None:
+    raw = record.secondary_distance_raw or record.primary_distance_raw
+    if not isinstance(raw, str) or not raw.startswith("T"):
+        return None
+    numeric = raw[1:]
+    if not numeric.isdigit():
+        return None
+    return int(numeric) / 10.0
+
+
+LOWG_RUNTIME_IFR_MINIMA_POLICY: dict[str, dict[str, Any]] = {
+    "D16C": {
+        "selectedApproachType": "VOR",
+        "minimum": {
+            "type": "MINIMUM_DESCENT_ALTITUDE",
+            "altitudeFeet": 1780,
+            "heightFeet": 660,
+        },
+        "sourceChart": "LOWG_Approach_VOR16C_04092025.pdf",
+        "selectionNote": (
+            "Version 1 runtime projection uses the published straight-in VOR/DME minima for VOR RWY 16C."
+        ),
+    },
+    "D34C": {
+        "selectedApproachType": "VOR",
+        "selectedTransition": "PIB2S",
+        "minimum": {
+            "type": "MINIMUM_DESCENT_ALTITUDE",
+            "altitudeFeet": 1480,
+            "heightFeet": 392,
+        },
+        "sourceChart": "LOWG_Approach_VOR34C_04092025.pdf",
+        "selectionNote": (
+            "Version 1 runtime projection uses the published straight-in VOR/DME minima for VOR RWY 34C."
+        ),
+    },
+    "R16C": {
+        "selectedApproachType": "RNP",
+        "minimum": {
+            "type": "MINIMUM_DESCENT_ALTITUDE",
+            "altitudeFeet": 1510,
+            "heightFeet": 400,
+        },
+        "sourceChart": "LOWG_Approach_RNP RWY16C_04092025.pdf",
+        "selectionNote": (
+            "Version 1 runtime projection uses the published LNAV straight-in minima as the single "
+            "runtime minimum for RNP RWY 16C."
+        ),
+    },
+    "R34C": {
+        "selectedApproachType": "RNP",
+        "minimum": {
+            "type": "MINIMUM_DESCENT_ALTITUDE",
+            "altitudeFeet": 1470,
+            "heightFeet": 382,
+        },
+        "sourceChart": "LOWG_Approach_RNP RWY34C_04092025.pdf",
+        "selectionNote": (
+            "Version 1 runtime projection uses the published LNAV straight-in minima at the standard "
+            "2.5 percent missed-approach climb gradient as the single runtime minimum for RNP RWY 34C."
+        ),
+    },
+    "I34C": {
+        "selectedApproachType": "ILS",
+        "selectedTransition": "XIB2S",
+        "minimum": {
+            "type": "DECISION_ALTITUDE",
+            "altitudeFeet": 1303,
+            "heightFeet": 215,
+        },
+        "sourceChart": "LOWG_Approach_ILS CAT II-III or LOC 34C_04092025.pdf",
+        "selectionNote": (
+            "Version 1 runtime projection uses ILS CAT I minima only. LOC-DME and CAT II/III remain "
+            "publication-only and are not projected into the runtime candidate."
+        ),
+    },
+}
+
+
+def tower_scope_ifr_holding_patterns(
+    default_approaches: dict[str, list[report.CifpApproachRecord]],
+    position_lookup: dict[str, dict[str, Any]],
+    project,
+) -> dict[str, Any]:
+    gbg_holds = [
+        record
+        for records in default_approaches.values()
+        for record in records
+        if record.fix_identifier == "GBG" and record.path_terminator == "HM"
+    ]
+    if not gbg_holds:
+        return {
+            "status": "missing_default_missed_approach_hold_data",
+            "byId": {},
+        }
+
+    first = gbg_holds[0]
+    position_entry = position_lookup.get("GBG")
+    position_document = None
+    if position_entry is not None:
+        position_document = {
+            "latitude": round(position_entry["latitude"], 8),
+            "longitude": round(position_entry["longitude"], 8),
+            "localPosition": local_position_document(project, position_entry["latitude"], position_entry["longitude"]),
+            "sourceKind": position_entry["sourceKind"],
+        }
+
+    return {
+        "status": "candidate_shared_missed_approach_hold_without_runtime_loop",
+        "byId": {
+            "LOWG_GBG_MISSED_HOLD": {
+                "id": "LOWG_GBG_MISSED_HOLD",
+                "fixIdentifier": "GBG",
+                "position": position_document,
+                "turnDirection": (
+                    "LEFT"
+                    if first.turn_direction_code == "L"
+                    else "RIGHT" if first.turn_direction_code == "R" else None
+                ),
+                "inboundTrackMagneticDegrees": (
+                    first.secondary_course_tenths / 10.0
+                    if first.secondary_course_tenths is not None
+                    else None
+                ),
+                "legTimeMinutes": hold_leg_time_minutes(first),
+                "minimumAltitudeFeet": first.altitude_1,
+                "sourceProcedures": sorted(default_approaches.keys()),
+                "projectionStatus": "candidate_ifr_hold_without_runtime_loop",
+                "runtimeProjectionBlockers": [
+                    "holding_pattern_loop_geometry_unavailable",
+                ],
+            }
+        },
+    }
+
+
+def approach_type_candidates(name: str) -> list[str]:
+    if name.startswith("I"):
+        return ["ILS", "LOC"]
+    if name.startswith("D"):
+        return ["VOR"]
+    if name.startswith("R"):
+        return ["RNP"]
+    return []
+
+
+def runtime_ifr_projection_policy(name: str) -> dict[str, Any] | None:
+    policy = LOWG_RUNTIME_IFR_MINIMA_POLICY.get(name)
+    return dict(policy) if isinstance(policy, dict) else None
+
+
+def tower_scope_ifr_approaches(
+    cifp_data: dict[str, Any],
+    fix_resolution: dict[str, Any],
+    runway_thresholds: dict[str, dict[str, float]],
+    project,
+) -> dict[str, Any]:
+    default_approaches: dict[str, list[report.CifpApproachRecord]] = defaultdict(list)
+    feeder_transitions: dict[str, set[str]] = defaultdict(set)
+    transition_approaches: dict[str, dict[str, list[report.CifpApproachRecord]]] = defaultdict(lambda: defaultdict(list))
+
+    for procedure in cifp_data.get("procedureRefs", {}).get("APPCH", []):
+        feeder_transitions[procedure.name].add(procedure.transition)
+
+    for record in cifp_data.get("approachRecords", []):
+        if record.transition != "(default)":
+            transition_approaches[record.procedure_name][record.transition].append(record)
+            continue
+        if record.route_type not in {"D", "I", "R"}:
+            continue
+        if not record.procedure_name.startswith(record.route_type):
+            continue
+        default_approaches[record.procedure_name].append(record)
+
+    position_lookup = ifr_fix_position_lookup(fix_resolution, runway_thresholds)
+    holding_patterns = tower_scope_ifr_holding_patterns(default_approaches, position_lookup, project)
+    approaches_by_name: dict[str, Any] = {}
+
+    for name, records in sorted(default_approaches.items()):
+        ordered_records = sorted(records, key=lambda record: int(record.sequence))
+        runway_id = name[1:] if len(name) > 1 else ""
+        explicit_runway_threshold = f"RW{runway_id}"
+        explicit_runway_indexes = [
+            index
+            for index, record in enumerate(ordered_records)
+            if record.fix_identifier == explicit_runway_threshold
+        ]
+        split_index = next(
+            iter(explicit_runway_indexes[-1:] or []),
+            None,
+        )
+        if split_index is not None:
+            split_index += 1
+        else:
+            split_index = next(
+                (
+                    index
+                    for index, record in enumerate(ordered_records)
+                    if record.path_terminator in {"CA", "DF", "HM"} and record.fix_identifier in {"", "GBG"}
+                ),
+                len(ordered_records),
+            )
+        final_records = ordered_records[:split_index]
+        missed_records = ordered_records[split_index:]
+        approach_types = approach_type_candidates(name)
+
+        runtime_projection_blockers = ["minimum_altitude_unavailable"]
+        if len(approach_types) > 1:
+            runtime_projection_blockers.append("runtime_approach_type_selection_required")
+        if not final_records or final_records[-1].fix_identifier != explicit_runway_threshold:
+            runtime_projection_blockers.append("final_path_terminator_compilation_required")
+        if missed_records:
+            runtime_projection_blockers.append("missed_approach_leg_compilation_required")
+        if holding_patterns.get("byId"):
+            runtime_projection_blockers.append("holding_pattern_loop_geometry_unavailable")
+
+        unresolved_fix_identifiers = sorted(
+            {
+                record.fix_identifier
+                for record in ordered_records
+                if record.fix_identifier and record.fix_identifier not in position_lookup
+            }
+        )
+        if unresolved_fix_identifiers:
+            runtime_projection_blockers.append("unresolved_fix_positions")
+
+        runtime_policy = runtime_ifr_projection_policy(name)
+        if runtime_policy is not None:
+            runtime_projection_blockers = [
+                blocker
+                for blocker in runtime_projection_blockers
+                if blocker != "minimum_altitude_unavailable"
+            ]
+            if (
+                runtime_policy.get("selectedApproachType") in approach_types and
+                "runtime_approach_type_selection_required" in runtime_projection_blockers
+            ):
+                runtime_projection_blockers = [
+                    blocker
+                    for blocker in runtime_projection_blockers
+                    if blocker != "runtime_approach_type_selection_required"
+                ]
+
+        approaches_by_name[name] = {
+            "name": name,
+            "runwayId": runway_id,
+            "approachTypes": approach_types,
+            "defaultRouteType": ordered_records[0].route_type if ordered_records else None,
+            "availableTransitions": sorted(
+                transition
+                for transition in feeder_transitions.get(name, set())
+                if transition != "(default)"
+            ),
+            "transitionLegsByName": {
+                transition: [
+                    candidate_ifr_leg(record, position_lookup, project)
+                    for record in sorted(records, key=lambda record: int(record.sequence))
+                ]
+                for transition, records in sorted(transition_approaches.get(name, {}).items())
+            },
+            "finalApproachLegs": [
+                candidate_ifr_leg(record, position_lookup, project)
+                for record in final_records
+            ],
+            "missedApproachLegs": [
+                candidate_ifr_leg(record, position_lookup, project)
+                for record in missed_records
+            ],
+            "missedApproachHoldCandidateId": (
+                "LOWG_GBG_MISSED_HOLD"
+                if any(record.fix_identifier == "GBG" for record in missed_records)
+                else None
+            ),
+            "runtimeProjectionPolicy": runtime_policy,
+            "runtimeProjectionBlockers": runtime_projection_blockers,
+            "unresolvedFixIdentifiers": unresolved_fix_identifiers,
+            "projectionStatus": (
+                "candidate_tower_scope_ifr_with_selected_runtime_policy"
+                if runtime_policy is not None
+                else "candidate_tower_scope_ifr_minima_unavailable"
+            ),
+        }
+
+    return {
+        "status": "candidate_tower_scope_ifr_with_runtime_blockers",
+        "note": (
+            "LOWG default approach and missed-approach sequences are now projected as tower-scope IFR candidates. "
+            "Chart-derived minima and a runtime-selection policy are now attached for the first current-core subset "
+            "(VOR 16C, VOR 34C, RNP 16C, RNP 34C, ILS 34C), while LOC remains publication-only. Final/missed leg "
+            "compilation and GBG hold-loop geometry are still handled later in the runtime candidate projection step."
+        ),
+        "byName": approaches_by_name,
+        "holdingPatternCandidates": holding_patterns,
+    }
+
+
+def build_ifr_inventory(
+    cifp_data: dict[str, Any],
+    ofmx_data: dict[str, Any],
+    chart_fix_data: dict[str, Any],
+    project,
+) -> dict[str, Any]:
+    procedures = cifp_data["procedures"]
+    procedure_refs = cifp_data["procedureRefs"]
+    runway_thresholds = cifp_runway_thresholds(cifp_data)
+    fix_resolution = cifp_fix_resolution_detail(cifp_data, ofmx_data, chart_fix_data)
+    airport_code = ofmx_data["airport"].code_id if ofmx_data.get("airport") is not None else "AIRPORT"
+    return {
+        "status": "inventory_plus_tower_scope_candidates",
+        "note": (
+            "CIFP procedure content is available and inventoried here, but the current LOWG runtime "
+            "projection only includes a first IFR subset after chart-derived minima selection and migration-side "
+            "compilation. SIDs and STARs now compile into candidate waypoint-route structures here; the current-core "
+            "candidate already imports the full LOWG SID set, while STARs, LOC 34C, and richer published minima "
+            "variants remain outside the current-core projection."
+        ),
+        "sids": {
+            "summary": procedures["SID"],
+            "byName": group_cifp_procedures(
+                procedure_refs["SID"],
+                include_runway_from_transition=True,
+            ),
+        },
+        "sidCandidates": sid_candidate_routes(
+            airport_code,
+            cifp_data,
+            fix_resolution,
+            runway_thresholds,
+            project,
+        ),
+        "stars": {
+            "summary": procedures["STAR"],
+            "byName": group_cifp_procedures(procedure_refs["STAR"]),
+        },
+        "starCandidates": star_candidate_routes(
+            airport_code,
+            cifp_data,
+            fix_resolution,
+            runway_thresholds,
+            project,
+        ),
+        "approaches": {
+            "summary": procedures["APPCH"],
+            "byName": group_cifp_procedures(
+                procedure_refs["APPCH"],
+                include_runway_from_name=True,
+            ),
+        },
+        "towerScopeApproaches": tower_scope_ifr_approaches(
+            cifp_data,
+            fix_resolution,
+            runway_thresholds,
+            project,
+        ),
+        "runwayThresholds": runway_thresholds,
+        "fixResolution": fix_resolution,
+    }
+
+
 def published_map_label(
     label: str | None,
     point_ref: str | None,
@@ -1740,10 +2505,16 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
     airport_code = manifest["airportCode"]
 
     apt_path = report.resolve_path(root, manifest["sources"]["aptDat"])
+    cifp_path = report.resolve_path(root, manifest["sources"]["cifp"])
     ofmx_path = report.resolve_path(root, manifest["sources"]["ofmx"])
-    runways, _, _, _, _, _ = report.parse_apt(apt_path)
+    runways, _, _, _, apt_metadata, _ = report.parse_apt(apt_path)
+    cifp_data = report.parse_cifp(cifp_path)
     ofmx_data = report.parse_ofmx(ofmx_path, airport_code)
+    charts_directory = report.resolve_path(root, manifest["sources"].get("chartsDirectory"))
+    chart_fix_data = report.extract_chart_coding_table_fixes(charts_directory)
     airport = ofmx_data["airport"]
+    origin = report.Geo(float(apt_metadata["datum_lat"]), float(apt_metadata["datum_lon"]))
+    project = report.projector(origin)
 
     registry = PointRegistry()
     geometry_paths: dict[str, dict[str, Any]] = {}
@@ -1783,6 +2554,7 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
         "operationalSectors": {},
         "publishedVfrProcedures": {},
         "airspaceVolumes": {},
+        "ifrProcedures": {},
     }
 
     runway_shapes_by_pair = {shape.pair: shape for shape in scene.apt_runways}
@@ -2670,10 +3442,13 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
         "operationalSectors": sector_shapes(scene),
     }
 
+    candidate_entities["ifrProcedures"] = build_ifr_inventory(cifp_data, ofmx_data, chart_fix_data, project)
+
     projection_gaps = [
         "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
         "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
         "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
+        "LOWG IFR identifier resolution is now good enough for a broader runtime subset, but STARs, LOC 34C, and richer published minima variants still remain outside the current-core projection.",
         "The east non-standard hold remains deferred to version 2 until the loiter model is corrected.",
     ]
     if authored_parking_attachment_mode == "projected":
@@ -2705,6 +3480,15 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             "candidateOperationalSectors": len(candidate_entities["operationalSectors"]),
             "candidatePublishedVfrProcedures": len(candidate_entities["publishedVfrProcedures"]),
             "candidateCircuitGraphs": len(candidate_entities["circuitGraphs"]),
+            "candidateIfrProcedureNames": sum(
+                len(candidate_entities["ifrProcedures"][section]["byName"])
+                for section in ("sids", "stars", "approaches")
+            ),
+            "candidateTowerScopeApproaches": len(
+                candidate_entities["ifrProcedures"]
+                .get("towerScopeApproaches", {})
+                .get("byName", {})
+            ),
         },
         "directCoreFitEntities": core_entities,
         "candidateOperationalStructures": candidate_entities,

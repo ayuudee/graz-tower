@@ -6,6 +6,8 @@ import argparse
 import json
 import math
 import re
+import shutil
+import subprocess
 import xml.etree.ElementTree as element_tree
 from collections import defaultdict
 from dataclasses import dataclass
@@ -161,6 +163,38 @@ class CifpFixRef:
 
 
 @dataclass(frozen=True)
+class CifpProcedureLegRecord:
+    section: str
+    sequence: str
+    route_type: str
+    procedure_name: str
+    transition: str
+    fix_identifier: str
+    waypoint_description: str
+    turn_direction_code: str | None
+    path_terminator: str
+    reference_identifier: str | None
+    reference_code_type: str | None
+    reference_subtype: str | None
+    primary_course_raw: str | None
+    primary_distance_raw: str | None
+    secondary_course_raw: str | None
+    secondary_distance_raw: str | None
+    primary_course_tenths: int | None
+    primary_distance_tenths: int | None
+    secondary_course_tenths: int | None
+    secondary_distance_tenths: int | None
+    altitude_constraint_type: str
+    altitude_1: int | None
+    altitude_2: int | None
+    speed_constraint_type: str
+    speed_limit: int | None
+
+
+CifpApproachRecord = CifpProcedureLegRecord
+
+
+@dataclass(frozen=True)
 class OfmxAirport:
     code_id: str
     name: str
@@ -193,6 +227,15 @@ class OfmxDesignatedPoint:
     position: Geo
     code_type: str | None
     associated_airport_code: str | None
+
+
+@dataclass(frozen=True)
+class OfmxNavaid:
+    code_id: str
+    name: str | None
+    position: Geo
+    kind: str
+    frequency: str | None
 
 
 @dataclass(frozen=True)
@@ -739,8 +782,19 @@ def parse_cifp_coordinate(value: str) -> Geo | None:
 def parse_cifp(path: Path) -> dict[str, Any]:
     procedures_by_section: dict[str, set[tuple[str, str]]] = defaultdict(set)
     procedure_refs: dict[str, list[CifpProcedureRef]] = defaultdict(list)
+    procedure_leg_records: dict[str, list[CifpProcedureLegRecord]] = defaultdict(list)
     fix_refs: dict[str, list[CifpFixRef]] = defaultdict(list)
     runways: dict[str, Geo] = {}
+    approach_records: list[CifpApproachRecord] = []
+
+    def parse_optional_int(value: str) -> int | None:
+        stripped = value.strip()
+        if not stripped:
+            return None
+        try:
+            return int(stripped)
+        except ValueError:
+            return None
 
     for raw_line in path.read_text().splitlines():
         trimmed = raw_line.strip()
@@ -787,6 +841,36 @@ def parse_cifp(path: Path) -> dict[str, Any]:
                             kind=kind,
                         ),
                     )
+            record = CifpProcedureLegRecord(
+                section=prefix,
+                sequence=parts[0].strip(),
+                route_type=parts[1].strip(),
+                procedure_name=parts[2].strip(),
+                transition=transition,
+                fix_identifier=parts[4].strip(),
+                waypoint_description=parts[8].strip(),
+                turn_direction_code=parts[9].strip() or None,
+                path_terminator=parts[11].strip(),
+                reference_identifier=parts[13].strip() or None,
+                reference_code_type=parts[15].strip() or None,
+                reference_subtype=parts[16].strip() or None,
+                primary_course_raw=parts[18].strip() or None,
+                primary_distance_raw=parts[19].strip() or None,
+                secondary_course_raw=parts[20].strip() or None,
+                secondary_distance_raw=parts[21].strip() or None,
+                primary_course_tenths=parse_optional_int(parts[18]),
+                primary_distance_tenths=parse_optional_int(parts[19]),
+                secondary_course_tenths=parse_optional_int(parts[20]),
+                secondary_distance_tenths=parse_optional_int(parts[21]),
+                altitude_constraint_type=parts[22].strip(),
+                altitude_1=parse_optional_int(parts[23]),
+                altitude_2=parse_optional_int(parts[24]),
+                speed_constraint_type=parts[26].strip(),
+                speed_limit=parse_optional_int(parts[27]),
+            )
+            procedure_leg_records[prefix].append(record)
+            if prefix == "APPCH":
+                approach_records.append(record)
         elif prefix == "RWY":
             semicolon_parts = rest.split(";")
             main_parts = semicolon_parts[0].split(",")
@@ -819,8 +903,10 @@ def parse_cifp(path: Path) -> dict[str, Any]:
             "APPCH": summarize("APPCH"),
         },
         "procedureRefs": procedure_refs,
+        "procedureLegRecords": procedure_leg_records,
         "fixRefs": fix_refs,
         "runways": runways,
+        "approachRecords": approach_records,
     }
 
 
@@ -878,12 +964,19 @@ def parse_ofmx(path: Path, airport_code: str) -> dict[str, Any]:
     runway_directions: dict[str, OfmxRunwayDirection] = {}
     all_designated_points: dict[str, OfmxDesignatedPoint] = {}
     airport_designated_points: list[OfmxDesignatedPoint] = []
+    all_navaids: dict[str, OfmxNavaid] = {}
     units: dict[str, OfmxUnit] = {}
     services: dict[str, OfmxService] = {}
     frequencies: list[OfmxFrequency] = []
     airspaces: dict[str, OfmxAirspace] = {}
     all_airspace_boundaries: dict[str, list[OfmxAirspaceBoundary]] = defaultdict(list)
     service_airspace_associations: list[tuple[str, str]] = []
+
+    def register_navaid(navaid: OfmxNavaid) -> None:
+        priority = {"VOR": 0, "NDB": 1, "DME": 2}
+        existing = all_navaids.get(navaid.code_id)
+        if existing is None or priority.get(navaid.kind, 99) < priority.get(existing.kind, 99):
+            all_navaids[navaid.code_id] = navaid
 
     for ahp in root.findall("Ahp"):
         code_id = child_text(ahp, "AhpUid/codeId")
@@ -941,6 +1034,54 @@ def parse_ofmx(path: Path, airport_code: str) -> dict[str, Any]:
         all_designated_points[point.code_id] = point
         if point.associated_airport_code == airport_code:
             airport_designated_points.append(point)
+
+    for vor in root.findall("Vor"):
+        vor_uid = vor.find("VorUid")
+        code_id = child_text(vor_uid, "codeId")
+        position = child_geo(vor_uid, "geoLat", "geoLong") if vor_uid is not None else None
+        if code_id is None or position is None:
+            continue
+        register_navaid(
+            OfmxNavaid(
+                code_id=code_id,
+                name=child_text(vor, "txtName"),
+                position=position,
+                kind="VOR",
+                frequency=child_text(vor, "valFreq"),
+            )
+        )
+
+    for ndb in root.findall("Ndb"):
+        ndb_uid = ndb.find("NdbUid")
+        code_id = child_text(ndb_uid, "codeId")
+        position = child_geo(ndb_uid, "geoLat", "geoLong") if ndb_uid is not None else None
+        if code_id is None or position is None:
+            continue
+        register_navaid(
+            OfmxNavaid(
+                code_id=code_id,
+                name=child_text(ndb, "txtName"),
+                position=position,
+                kind="NDB",
+                frequency=child_text(ndb, "valFreq"),
+            )
+        )
+
+    for dme in root.findall("Dme"):
+        dme_uid = dme.find("DmeUid")
+        code_id = child_text(dme_uid, "codeId")
+        position = child_geo(dme_uid, "geoLat", "geoLong") if dme_uid is not None else None
+        if code_id is None or position is None:
+            continue
+        register_navaid(
+            OfmxNavaid(
+                code_id=code_id,
+                name=child_text(dme, "txtName"),
+                position=position,
+                kind="DME",
+                frequency=child_text(dme, "valGhostFreq") or child_text(dme, "valFreq"),
+            )
+        )
 
     for uni in root.findall("Uni"):
         airport_code_id = child_text(uni, "AhpUid/codeId")
@@ -1086,6 +1227,7 @@ def parse_ofmx(path: Path, airport_code: str) -> dict[str, Any]:
         "runways": runways,
         "runwayDirections": runway_directions,
         "allDesignatedPoints": all_designated_points,
+        "allNavaids": dict(sorted(all_navaids.items())),
         "airportDesignatedPoints": sorted(
             airport_designated_points,
             key=lambda point: (point.code_type or "", point.code_id),
@@ -1453,16 +1595,305 @@ def chart_inventory(charts_directory: Path | None) -> dict[str, Any]:
     return {"count": len(files), "files": files}
 
 
-def cifp_fix_resolution(cifp_data: dict[str, Any], ofmx_data: dict[str, Any]) -> dict[str, Any]:
-    all_codes = set(ofmx_data["allDesignatedPoints"].keys())
+def parse_chart_coordinate(value: str) -> float | None:
+    trimmed = value.strip().upper()
+    if not trimmed:
+        return None
+    hemisphere = trimmed[0]
+    numeric = trimmed[1:]
+    if hemisphere in {"N", "S"}:
+        degree_digits = 2
+    elif hemisphere in {"E", "W"}:
+        degree_digits = 3
+    else:
+        return None
+    try:
+        degrees = int(numeric[:degree_digits])
+        minutes = int(numeric[degree_digits : degree_digits + 2])
+        seconds = float(numeric[degree_digits + 2 :])
+    except ValueError:
+        return None
+    decimal = degrees + minutes / 60.0 + seconds / 3600.0
+    return -decimal if hemisphere in {"S", "W"} else decimal
+
+
+def parse_chart_geo(lat_text: str, lon_text: str) -> Geo | None:
+    lat = parse_chart_coordinate(lat_text)
+    lon = parse_chart_coordinate(lon_text)
+    if lat is None or lon is None:
+        return None
+    return Geo(lat=lat, lon=lon)
+
+
+def extract_chart_coding_table_fixes(charts_directory: Path | None) -> dict[str, Any]:
+    if charts_directory is None or not charts_directory.exists():
+        return {
+            "available": False,
+            "filesScanned": [],
+            "resolvedFixes": {},
+            "conflictingIdentifiers": [],
+            "note": "No chart directory available.",
+        }
+    if shutil.which("pdftotext") is None:
+        return {
+            "available": False,
+            "filesScanned": [],
+            "resolvedFixes": {},
+            "conflictingIdentifiers": [],
+            "note": "pdftotext is not available in PATH.",
+        }
+
+    lat_pattern = re.compile(r"^\s*([NS]\d{6}\.\d{2})\b")
+    lat_inline_pattern = re.compile(r"\b([NS]\d{6}\.\d{2})\b")
+    lon_pattern = re.compile(r"\b([EW]\d{7}\.\d{2})\b")
+    row_pattern = re.compile(
+        r"^\s*[A-Z]{2}\s+([A-Z0-9]{2,10})(?:\s+[A-Za-z0-9]+)?\s+(yes|no)\b",
+    )
+    collected: dict[str, dict[tuple[float, float], set[str]]] = defaultdict(lambda: defaultdict(set))
+    files_scanned: list[str] = []
+
+    for pdf_path in sorted(charts_directory.glob("*.pdf")):
+        files_scanned.append(pdf_path.name)
+        try:
+            text = subprocess.check_output(
+                ["pdftotext", "-layout", str(pdf_path), "-"],
+                text=True,
+            )
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            continue
+        pending_lat: str | None = None
+        pending_identifier: str | None = None
+        pending_identifier_lat: str | None = None
+        for raw_line in text.splitlines():
+            if pending_identifier is not None:
+                lon_match = lon_pattern.search(raw_line)
+                if lon_match is not None and pending_identifier_lat is not None:
+                    position = parse_chart_geo(pending_identifier_lat, lon_match.group(1))
+                    if position is not None:
+                        key = (round(position.lat, 8), round(position.lon, 8))
+                        collected[pending_identifier][key].add(pdf_path.name)
+                    pending_identifier = None
+                    pending_identifier_lat = None
+                    continue
+            stripped = raw_line.strip()
+            lat_match = lat_pattern.match(raw_line)
+            if lat_match is not None:
+                pending_identifier = None
+                pending_identifier_lat = None
+                pending_lat = lat_match.group(1)
+                continue
+            match = row_pattern.match(raw_line)
+            row_lat = pending_lat
+            if row_lat is None and match is not None:
+                inline_lat_match = lat_inline_pattern.search(raw_line)
+                if inline_lat_match is not None:
+                    row_lat = inline_lat_match.group(1)
+            if row_lat is not None and match is not None:
+                identifier = match.group(1)
+                lon_match = lon_pattern.search(raw_line)
+                if lon_match is not None:
+                    position = parse_chart_geo(row_lat, lon_match.group(1))
+                    if position is not None:
+                        key = (round(position.lat, 8), round(position.lon, 8))
+                        collected[identifier][key].add(pdf_path.name)
+                else:
+                    pending_identifier = identifier
+                    pending_identifier_lat = row_lat
+                pending_lat = None
+                continue
+            if stripped:
+                pending_lat = None
+                pending_identifier = None
+                pending_identifier_lat = None
+
+    resolved_fixes: dict[str, dict[str, Any]] = {}
+    conflicting_identifiers: list[str] = []
+    for identifier, positions in sorted(collected.items()):
+        if len(positions) != 1:
+            conflicting_identifiers.append(identifier)
+            continue
+        (latitude, longitude), source_charts = next(iter(positions.items()))
+        resolved_fixes[identifier] = {
+            "codeId": identifier,
+            "latitude": latitude,
+            "longitude": longitude,
+            "sourceCharts": sorted(source_charts),
+        }
+
+    return {
+        "available": True,
+        "filesScanned": files_scanned,
+        "resolvedFixes": resolved_fixes,
+        "conflictingIdentifiers": conflicting_identifiers,
+        "note": "Chart coding-table extraction is based on local pdf-to-text parsing of published IFR charts.",
+    }
+
+
+def destination_geo(origin: Geo, bearing_deg: float, distance_nm: float) -> Geo:
+    angular_distance = (distance_nm * 1852.0) / EARTH_RADIUS_METERS
+    bearing = math.radians(bearing_deg)
+    lat1 = math.radians(origin.lat)
+    lon1 = math.radians(origin.lon)
+    lat2 = math.asin(
+        math.sin(lat1) * math.cos(angular_distance)
+        + math.cos(lat1) * math.sin(angular_distance) * math.cos(bearing)
+    )
+    lon2 = lon1 + math.atan2(
+        math.sin(bearing) * math.sin(angular_distance) * math.cos(lat1),
+        math.cos(angular_distance) - math.sin(lat1) * math.sin(lat2),
+    )
+    return Geo(lat=math.degrees(lat2), lon=math.degrees(lon2))
+
+
+def derive_cifp_approach_geometry(
+    cifp_data: dict[str, Any],
+    ofmx_data: dict[str, Any],
+    chart_fix_data: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    known_positions: dict[str, Geo] = {
+        identifier: point.position
+        for identifier, point in ofmx_data["allDesignatedPoints"].items()
+    }
+    known_positions.update(
+        {
+            identifier: navaid.position
+            for identifier, navaid in ofmx_data.get("allNavaids", {}).items()
+        }
+    )
+    known_positions.update(
+        {
+            identifier: Geo(
+                lat=float(entry["latitude"]),
+                lon=float(entry["longitude"]),
+            )
+            for identifier, entry in (chart_fix_data or {}).get("resolvedFixes", {}).items()
+            if entry.get("latitude") is not None and entry.get("longitude") is not None
+        }
+    )
+    known_positions.update(
+        {
+            f"RW{designator}": position
+            for designator, position in cifp_data.get("runways", {}).items()
+        }
+    )
+
+    derived: dict[str, dict[str, Any]] = {}
+
+    def register(identifier: str, position: Geo, method: str, record: CifpApproachRecord) -> bool:
+        if identifier in known_positions:
+            return False
+        existing = derived.get(identifier)
+        position_payload = {
+            "codeId": identifier,
+            "latitude": round(position.lat, 8),
+            "longitude": round(position.lon, 8),
+            "derivationMethod": method,
+            "procedure": record.procedure_name,
+            "transition": record.transition,
+            "pathTerminator": record.path_terminator,
+            "referenceIdentifier": record.reference_identifier,
+        }
+        if existing is not None:
+            if (
+                existing["latitude"] == position_payload["latitude"]
+                and existing["longitude"] == position_payload["longitude"]
+            ):
+                return False
+            return False
+        derived[identifier] = position_payload
+        known_positions[identifier] = position
+        return True
+
+    changed = True
+    while changed:
+        changed = False
+        for record in cifp_data.get("approachRecords", []):
+            reference_identifier = record.reference_identifier
+            if reference_identifier and reference_identifier in known_positions:
+                reference_position = known_positions[reference_identifier]
+                if (
+                    record.fix_identifier
+                    and record.fix_identifier not in known_positions
+                    and record.primary_course_tenths is not None
+                    and record.primary_distance_tenths is not None
+                ):
+                    course_deg = record.primary_course_tenths / 10.0
+                    distance_nm = record.primary_distance_tenths / 10.0
+                    if record.reference_code_type == "D":
+                        bearing = course_deg
+                    elif (record.reference_code_type, record.reference_subtype) == ("P", "I"):
+                        bearing = (course_deg + 180.0) % 360.0
+                    else:
+                        continue
+                    changed = (
+                        register(
+                            record.fix_identifier,
+                            destination_geo(reference_position, bearing, distance_nm),
+                            "approach_reference_projection",
+                            record,
+                        )
+                        or changed
+                    )
+            elif (
+                reference_identifier
+                and reference_identifier not in known_positions
+                and record.fix_identifier in known_positions
+                and record.primary_course_tenths is not None
+                and record.primary_distance_tenths is not None
+                and (record.reference_code_type, record.reference_subtype) == ("P", "I")
+            ):
+                fix_position = known_positions[record.fix_identifier]
+                changed = (
+                    register(
+                        reference_identifier,
+                        destination_geo(
+                            fix_position,
+                            record.primary_course_tenths / 10.0,
+                            record.primary_distance_tenths / 10.0,
+                        ),
+                        "localizer_reference_back_projection",
+                        record,
+                    )
+                    or changed
+                )
+
+    return {
+        "resolvedFixes": dict(sorted(derived.items())),
+        "note": "Derived approach geometry is inferred from CIFP APPCH reference course/distance pairs and known runway/navaid positions.",
+    }
+
+
+def cifp_fix_resolution(
+    cifp_data: dict[str, Any],
+    ofmx_data: dict[str, Any],
+    chart_fix_data: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    designated_codes = set(ofmx_data["allDesignatedPoints"].keys())
+    navaid_codes = set(ofmx_data.get("allNavaids", {}).keys())
+    chart_codes = set((chart_fix_data or {}).get("resolvedFixes", {}).keys())
+    derived_fix_data = derive_cifp_approach_geometry(cifp_data, ofmx_data, chart_fix_data)
+    derived_codes = set(derived_fix_data["resolvedFixes"].keys())
+    ofmx_codes = designated_codes | navaid_codes
+    all_codes = ofmx_codes | chart_codes | derived_codes
     identifiers = sorted(cifp_data["fixRefs"].keys())
     present = [identifier for identifier in identifiers if identifier in all_codes]
+    present_in_ofmx = [identifier for identifier in identifiers if identifier in ofmx_codes]
+    present_in_designated_points = [identifier for identifier in identifiers if identifier in designated_codes]
+    present_in_navaids = [identifier for identifier in identifiers if identifier in navaid_codes]
+    present_in_chart_tables = [identifier for identifier in identifiers if identifier in chart_codes]
+    present_in_derived_approach_geometry = [identifier for identifier in identifiers if identifier in derived_codes]
     missing = [identifier for identifier in identifiers if identifier not in all_codes]
     return {
         "totalDistinctIdentifiers": len(identifiers),
-        "presentInOfmxDesignatedPoints": present,
-        "missingFromOfmxDesignatedPoints": missing,
-        "note": "This scan only checks OFMX designated points. Navaids and synthetic procedure fixes are not resolved here.",
+        "presentInCheckedInSources": present,
+        "presentInOfmxSources": present_in_ofmx,
+        "presentInOfmxDesignatedPoints": present_in_designated_points,
+        "presentInOfmxNavaids": present_in_navaids,
+        "presentInChartCodingTables": present_in_chart_tables,
+        "presentInDerivedApproachGeometry": present_in_derived_approach_geometry,
+        "missingFromCheckedInSources": missing,
+        "resolvedDerivedApproachGeometry": derived_fix_data["resolvedFixes"],
+        "note": "This scan checks checked-in OFMX designated points, parsed VOR/NDB/DME records, local IFR chart coding tables, and derived CIFP approach geometry. Some localizer/final-approach identifiers may still remain unresolved where no honest source or derivation is available.",
     }
 
 
@@ -1489,6 +1920,7 @@ def build_report(manifest_path: Path) -> dict[str, Any]:
 
     ofmx_data = parse_ofmx(ofmx_path, manifest["airportCode"])
     cifp_data = parse_cifp(cifp_path)
+    chart_fix_data = extract_chart_coding_table_fixes(charts_directory)
     apt_positions = apt_runway_positions(runways)
     runway_cross_check = runway_position_cross_check(
         apt_positions,
@@ -1601,7 +2033,7 @@ def build_report(manifest_path: Path) -> dict[str, Any]:
                     designator: {"lat": position.lat, "lon": position.lon}
                     for designator, position in sorted(cifp_data["runways"].items())
                 },
-                "fixResolution": cifp_fix_resolution(cifp_data, ofmx_data),
+                "fixResolution": cifp_fix_resolution(cifp_data, ofmx_data, chart_fix_data),
             },
             "runwayCrossCheck": runway_cross_check,
         },
@@ -1676,13 +2108,17 @@ def render_markdown(report: dict[str, Any]) -> str:
     )
     lines.append(
         f"- CIFP fix identifiers: {cifp['fixResolution']['totalDistinctIdentifiers']} distinct; "
-        f"{len(cifp['fixResolution']['presentInOfmxDesignatedPoints'])} found in OFMX designated points; "
-        f"{len(cifp['fixResolution']['missingFromOfmxDesignatedPoints'])} missing from that scan"
+        f"{len(cifp['fixResolution']['presentInCheckedInSources'])} found in checked-in sources "
+        f"({len(cifp['fixResolution']['presentInOfmxDesignatedPoints'])} designated points, "
+        f"{len(cifp['fixResolution']['presentInOfmxNavaids'])} navaids, "
+        f"{len(cifp['fixResolution']['presentInChartCodingTables'])} chart coding-table fixes, "
+        f"{len(cifp['fixResolution']['presentInDerivedApproachGeometry'])} derived approach fixes); "
+        f"{len(cifp['fixResolution']['missingFromCheckedInSources'])} missing from that scan"
     )
-    if cifp["fixResolution"]["missingFromOfmxDesignatedPoints"]:
+    if cifp["fixResolution"]["missingFromCheckedInSources"]:
         lines.append(
-            "- CIFP identifiers not found in OFMX designated points: "
-            + ", ".join(cifp["fixResolution"]["missingFromOfmxDesignatedPoints"][:20])
+            "- CIFP identifiers not found in parsed OFMX sources or chart coding tables: "
+            + ", ".join(cifp["fixResolution"]["missingFromCheckedInSources"][:20])
         )
         lines.append(f"  - {cifp['fixResolution']['note']}")
     lines.append("")

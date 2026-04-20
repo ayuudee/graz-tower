@@ -274,9 +274,44 @@ Status:
 
 Status:
 
-- Procedure content exists in CIFP.
+- Procedure content now exists in the structured package as an inventory-plus-candidate IFR block derived from CIFP.
+- The current LOWG package now carries:
+  - `21` SID names
+  - `8` STAR names
+  - `5` approach families
+  - CIFP runway-threshold positions
+  - an explicit fix-resolution scan against checked-in OFMX designated points, navaids, and chart coding tables
 - Geometry is not yet authored / reconciled into the local world graph.
-- A further nav source is still needed for most fix positions, or they must be anchored manually.
+- The current fix-resolution boundary is effectively closed for LOWG v1: all `46` distinct CIFP identifiers now resolve from checked-in sources or conservative CIFP-derived approach geometry.
+  - `GOTAR` resolves from OFMX designated points.
+  - `GBG` and `GRZ` resolve from parsed OFMX navaids.
+  - `35` identifiers resolve from local IFR chart coding tables, with overlap on `GBG`, `GOTAR`, `GRZ`, and other published fixes.
+  - the remaining approach-structure identifiers (`OEG`, `21VOR`, `49VOR`, `67VOR`, `CD16C`, `CI34C`, `FD16C`, `FD34C`, `FF34C`, `MD16C`) now resolve from conservative CIFP-derived geometry using known runway/navaid anchors.
+- The chart-driven part of this scan currently depends on `pdftotext` being available; regenerate the structured package under `nix-shell -p python3 poppler-utils` when updating IFR source coverage.
+- The remaining IFR boundary is no longer identifier resolution. It is projection:
+  - the LOWG package now carries explicit tower-scope default approach candidates for `D16C`, `D34C`, `I34C`, `R16C`, and `R34C`
+  - the LOWG package now also carries compiled CIFP-derived SID and STAR candidates:
+    - `21` runway-specific SID candidates
+    - `8` STAR candidates
+  - those candidates include final-approach legs, missed-approach legs, and a shared `LOWG_GBG_MISSED_HOLD` candidate
+  - chart-derived minima and a runtime-selection policy are now attached for the first runtime subset:
+    - `D16C` projected as `VOR RWY 16C` using the published straight-in VOR/DME minima
+    - `D34C` projected as `VOR RWY 34C` using the published straight-in VOR/DME minima
+    - `R16C` projected as `RNP RWY 16C` using the published LNAV minima
+    - `R34C` projected as `RNP RWY 34C` using the published LNAV minima at the standard `2.5%` climb gradient
+    - `I34C` projected as `ILS RWY 34C` only; `LOC` remains publication-only for v1
+  - the current LOWG runtime candidate now includes:
+    - the full LOWG SID set
+    - the full LOWG STAR set
+    - `VOR RWY 16C`
+    - `VOR RWY 34C`
+    - `RNP RWY 16C`
+    - `RNP RWY 34C`
+    - `ILS RWY 34C`
+    - the shared `LOWG_GBG_MISSED_HOLD`
+  - remaining IFR omissions are now narrower:
+    - `LOC 34C` remains structured-package only
+    - richer published minima variants remain outside the current runtime model
 
 ### Airspace / operational metadata
 
@@ -298,11 +333,16 @@ Status:
 4. Decide whether the remaining non-runtime special-use surrounding-airspace shapes should stay outside the LOWG current-core candidate or drive another deliberate `core` widening.
 5. Keep the `16/34L` glider-use area explicitly annotated as a known X-Plane divergence in the manifest/report/render outputs.
 6. Defer the east non-standard hold to version 2 until the loiter / hold model is corrected.
-7. Continue CAD authoring only for genuinely missing local geometry:
+7. Treat the current IFR block as a mixed state:
+   - inventory-plus-candidate truth for `LOC 34C` and richer published minima variants
+   - current-core truth for the LOWG SID set, LOWG STAR set, `VOR RWY 16C`, `VOR RWY 34C`, `RNP RWY 16C`, `RNP RWY 34C`, `ILS RWY 34C`, and the shared `GBG` missed-approach hold
+8. The next IFR slice should stay narrow:
+   - decide whether `LOC 34C` is worth projecting, or should remain publication-only
+   - leave CAT II/III and richer minima modeling outside v1 unless the runtime model grows
+9. Continue CAD authoring only for genuinely missing local geometry:
    - additional controller-training routes
    - directional circuit refinements
    - future version-2 hold geometry
-9. Decide the next IFR fix-position source beyond the current OFMX designated-point scan.
 10. Continue tightening the generated LOWG plate pack until it is the primary review artifact for the airport package.
 
 ## Open questions
@@ -310,4 +350,4 @@ Status:
 - How should glider-use semantics for the `16/34L` area and taxiway link be represented in the eventual ground model?
 - Which named VFR routes outside the immediate circuit need explicit geometry first?
 - What is the minimum importer manifest needed to keep future airport packages consistent?
-- Which source should provide IFR fix and navaid positions once the geometry work reaches that stage?
+- Which IFR procedures beyond `R16C`, `R34C`, and `ILS 34C` are worth projecting into the runtime subset for version 1?
