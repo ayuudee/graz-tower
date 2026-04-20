@@ -24,6 +24,8 @@ data class PilotMission(
     val contactedOnFrequency: Boolean = false,
     /** Timer for missing-clearance escalation (millis since step entered). */
     val stepEnteredAt: SimTime = SimTime.ZERO,
+    /** Active runway for circuit reports. Set from the aircraft's assigned circuit. */
+    val activeRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
 ) {
     /** The current primitive task being executed (leftmost incomplete leaf). */
     val currentTask: PrimitiveTask? get() = root.currentPrimitive()

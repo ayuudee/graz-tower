@@ -215,7 +215,9 @@ data class RequestFreeText(val text: String) : RequestType
 // -----------------------------------------------------------------------------
 
 data class Report(
-    val events: List<ReportEvent>
+    val events: List<ReportEvent>,
+    /** Runway designator for circuit position reports. Null for non-circuit reports. */
+    val runway: RunwayId? = null,
 ) : PilotTransmission
 
 // -----------------------------------------------------------------------------

@@ -929,6 +929,10 @@ def projected_circuit_procedures(
     candidate_entities: dict[str, Any],
     airport_code: str,
 ) -> dict[str, dict[str, Any]]:
+    if len(scene.circuit_components) < 3:
+        candidate_entities["publishedCircuitAssociations"] = {}
+        return {}
+
     point_lookup = registry.point_lookup()
     threshold_ids = {
         runway_id: runway["thresholdPointId"]
@@ -2148,7 +2152,6 @@ def build_ifr_inventory(
         for section in ("SID", "STAR", "APPCH")
     )
     if total_procedure_names == 0:
-        empty_by_name = {"summary": procedures["SID"], "byName": {}}
         return {
             "status": "not_available_no_cifp_source",
             "note": (
@@ -2611,13 +2614,18 @@ def apply_authored_working_ground(
 
     used_stand_names: set[str] = set()
     stand_ids: list[str] = []
-    for stand_index, stand_point in enumerate(sorted(stand_points, key=lambda point: (point.y, point.x)), start=1):
-        stand_name, reference_parking, reference_distance = authored_stand_name(
-            stand_index,
-            stand_point,
-            scene.parking_positions,
-            used_stand_names,
+    ordered_stand_points = sorted(stand_points, key=lambda point: (point.y, point.x))
+    stand_reference_assignments = assign_authored_stand_references(ordered_stand_points, scene.parking_positions)
+    for stand_index, (stand_point, (reference_parking, reference_distance)) in enumerate(
+        zip(ordered_stand_points, stand_reference_assignments),
+        start=1,
+    ):
+        base_name = (
+            str(reference_parking.name)
+            if reference_parking is not None and isinstance(reference_parking.name, str) and reference_parking.name
+            else f"AUTH_{stand_index:02d}"
         )
+        stand_name = unique_name(base_name, used_stand_names)
         stand_id = f"{airport_code}_STAND_{slugify(stand_name).upper()}"
         point_id = registry.register(
             stand_point,
@@ -2923,6 +2931,38 @@ def authored_stand_name(
         else f"AUTH_{index:02d}"
     )
     return unique_name(base_name, used_names), reference_parking, reference_distance
+
+
+def assign_authored_stand_references(
+    stand_points: list[report.XY],
+    references: list[authoring.ProjectedParkingPosition],
+) -> list[tuple[authoring.ProjectedParkingPosition | None, float]]:
+    if not stand_points:
+        return []
+    if not references:
+        return [(None, float("inf")) for _ in stand_points]
+
+    all_candidates = sorted(
+        (
+            (reference.point.distance_to(point), stand_index, reference_index)
+            for stand_index, point in enumerate(stand_points)
+            for reference_index, reference in enumerate(references)
+        ),
+        key=lambda item: (item[0], item[1], item[2]),
+    )
+
+    assignments: list[tuple[authoring.ProjectedParkingPosition | None, float] | None] = [None] * len(stand_points)
+    used_references: set[int] = set()
+    for distance_m, stand_index, reference_index in all_candidates:
+        if assignments[stand_index] is not None or reference_index in used_references:
+            continue
+        assignments[stand_index] = (references[reference_index], distance_m)
+        used_references.add(reference_index)
+
+    return [
+        assignment if assignment is not None else (None, float("inf"))
+        for assignment in assignments
+    ]
 
 
 def split_authored_working_graph(
@@ -3310,266 +3350,283 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             "note": component_notes.get(component_index),
         }
 
-    stand_lookup_by_name: dict[str, str] = {}
     authored_parking_notes: list[str] = []
     authored_parking_attachment_mode = "reference_only"
-    authored_named_stands, authored_parking_lines, authored_parking_diagnostics = authored_parking_rows(manifest, root)
+    authored_working_ground_notes = apply_authored_working_ground(
+        manifest,
+        root,
+        scene,
+        registry,
+        geometry_paths,
+        core_entities,
+        candidate_entities,
+        airport_code,
+        working_document,
+        runway_shapes_by_pair,
+    )
 
-    if authored_named_stands and authored_parking_lines:
-        for stand_name, stand_point in authored_named_stands:
-            reference_parking, reference_distance = nearest_reference_parking(scene.parking_positions, stand_point)
-            stand_id = f"{airport_code}_STAND_{slugify(stand_name).upper()}"
-            point_id = registry.register(
-                stand_point,
-                f"{stand_id}_POINT",
-                label=stand_name,
-                tags=["stand", parking_location_type(stand_name, reference_parking)],
-                sources=["cad_working_dxf", "authored_parking"],
-            )
-            stand_lookup_by_name[stand_name] = stand_id
-            core_entities["aerodrome"]["stands"][stand_id] = {
-                "id": stand_id,
-                "name": stand_name,
-                "pointId": point_id,
-                "locationType": parking_location_type(stand_name, reference_parking),
-                "aircraftTypes": reference_parking.aircraft_types if reference_parking is not None else "",
-                "projectionStatus": "direct_authored_geometry_with_reference_attrs" if reference_parking is not None else "direct_authored_geometry",
-                "note": (
-                    f"Authored stand point from NEW_Parking_Points; nearest apt.dat reference is {reference_distance:.1f}m away."
-                    if reference_parking is not None
-                    else "Authored stand point from NEW_Parking_Points."
-                ),
-            }
+    if authored_working_ground_notes:
+        authored_parking_notes.extend(authored_working_ground_notes)
+        authored_parking_attachment_mode = "authored_ground_graph"
+    else:
+        stand_lookup_by_name: dict[str, str] = {}
+        authored_named_stands, authored_parking_lines, authored_parking_diagnostics = authored_parking_rows(manifest, root)
 
-        authored_graph_insertions: dict[int, list[report.XY]] = defaultdict(list)
-        stand_points = [stand_point for _, stand_point in authored_named_stands]
-        current_a_polyline = ordered_component_points.get(a_component_index, []) if a_component_index is not None else []
-        direct_a_attachment_points: list[report.XY] = []
-        for line_index, line in enumerate(authored_parking_lines):
-            for point in stand_points:
-                distance_m, _ = authoring.nearest_point_on_segment(point, line.start, line.end)
-                if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
-                    authored_graph_insertions[line_index].append(point)
-            for other_index, other_line in enumerate(authored_parking_lines):
-                if other_index == line_index:
-                    continue
-                for endpoint in (other_line.start, other_line.end):
-                    distance_m, _ = authoring.nearest_point_on_segment(endpoint, line.start, line.end)
-                    if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
-                        authored_graph_insertions[line_index].append(endpoint)
-            for other_index in range(line_index + 1, len(authored_parking_lines)):
-                other_line = authored_parking_lines[other_index]
-                intersection = segment_intersection_point(
-                    line.start,
-                    line.end,
-                    other_line.start,
-                    other_line.end,
+        if authored_named_stands and authored_parking_lines:
+            for stand_name, stand_point in authored_named_stands:
+                reference_parking, reference_distance = nearest_reference_parking(scene.parking_positions, stand_point)
+                stand_id = f"{airport_code}_STAND_{slugify(stand_name).upper()}"
+                point_id = registry.register(
+                    stand_point,
+                    f"{stand_id}_POINT",
+                    label=stand_name,
+                    tags=["stand", parking_location_type(stand_name, reference_parking)],
+                    sources=["cad_working_dxf", "authored_parking"],
                 )
-                if intersection is None:
-                    continue
-                authored_graph_insertions[line_index].append(intersection)
-                authored_graph_insertions[other_index].append(intersection)
-            if current_a_polyline:
-                for endpoint in (line.start, line.end):
-                    distance_m, projected_point, _, _ = nearest_point_on_polyline(endpoint, current_a_polyline)
+                stand_lookup_by_name[stand_name] = stand_id
+                core_entities["aerodrome"]["stands"][stand_id] = {
+                    "id": stand_id,
+                    "name": stand_name,
+                    "pointId": point_id,
+                    "locationType": parking_location_type(stand_name, reference_parking),
+                    "aircraftTypes": reference_parking.aircraft_types if reference_parking is not None else "",
+                    "projectionStatus": "direct_authored_geometry_with_reference_attrs" if reference_parking is not None else "direct_authored_geometry",
+                    "note": (
+                        f"Authored stand point from NEW_Parking_Points; nearest apt.dat reference is {reference_distance:.1f}m away."
+                        if reference_parking is not None
+                        else "Authored stand point from NEW_Parking_Points."
+                    ),
+                }
+
+            authored_graph_insertions: dict[int, list[report.XY]] = defaultdict(list)
+            stand_points = [stand_point for _, stand_point in authored_named_stands]
+            current_a_polyline = ordered_component_points.get(a_component_index, []) if a_component_index is not None else []
+            direct_a_attachment_points: list[report.XY] = []
+            for line_index, line in enumerate(authored_parking_lines):
+                for point in stand_points:
+                    distance_m, _ = authoring.nearest_point_on_segment(point, line.start, line.end)
                     if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
-                        authored_graph_insertions[line_index].append(projected_point)
-                        direct_a_attachment_points.append(projected_point)
-                for a_start, a_end in zip(current_a_polyline, current_a_polyline[1:]):
+                        authored_graph_insertions[line_index].append(point)
+                for other_index, other_line in enumerate(authored_parking_lines):
+                    if other_index == line_index:
+                        continue
+                    for endpoint in (other_line.start, other_line.end):
+                        distance_m, _ = authoring.nearest_point_on_segment(endpoint, line.start, line.end)
+                        if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
+                            authored_graph_insertions[line_index].append(endpoint)
+                for other_index in range(line_index + 1, len(authored_parking_lines)):
+                    other_line = authored_parking_lines[other_index]
                     intersection = segment_intersection_point(
                         line.start,
                         line.end,
-                        a_start,
-                        a_end,
+                        other_line.start,
+                        other_line.end,
                     )
                     if intersection is None:
                         continue
                     authored_graph_insertions[line_index].append(intersection)
-                    direct_a_attachment_points.append(intersection)
+                    authored_graph_insertions[other_index].append(intersection)
+                if current_a_polyline:
+                    for endpoint in (line.start, line.end):
+                        distance_m, projected_point, _, _ = nearest_point_on_polyline(endpoint, current_a_polyline)
+                        if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
+                            authored_graph_insertions[line_index].append(projected_point)
+                            direct_a_attachment_points.append(projected_point)
+                    for a_start, a_end in zip(current_a_polyline, current_a_polyline[1:]):
+                        intersection = segment_intersection_point(
+                            line.start,
+                            line.end,
+                            a_start,
+                            a_end,
+                        )
+                        if intersection is None:
+                            continue
+                        authored_graph_insertions[line_index].append(intersection)
+                        direct_a_attachment_points.append(intersection)
 
-        taxiway_join_paths: list[str] = []
-        taxiway_join_notes: list[str] = []
-        direct_a_attachment_points = unique_xy(direct_a_attachment_points)
-        join_targets: list[tuple[report.XY, report.XY, float]] = []
+            taxiway_join_paths: list[str] = []
+            taxiway_join_notes: list[str] = []
+            direct_a_attachment_points = unique_xy(direct_a_attachment_points)
+            join_targets: list[tuple[report.XY, report.XY, float]] = []
 
-        if a_component_index is not None and current_a_polyline and direct_a_attachment_points:
-            augmented_a_points, _ = insert_points_into_polyline(
-                current_a_polyline,
-                direct_a_attachment_points,
-                tolerance_m=PARKING_GRAPH_SPLIT_TOLERANCE_METERS,
-            )
-            ordered_component_points[a_component_index] = augmented_a_points
-            path_id = component_paths[a_component_index]
-            geometry_paths.pop(path_id, None)
-            direct_attachment_note = f"Includes {len(direct_a_attachment_points)} direct authored parking attachment point(s)."
-            note = (
-                f"{component_notes[a_component_index]} {direct_attachment_note}".strip()
-                if component_notes[a_component_index]
-                else direct_attachment_note
-            )
-            add_path(
-                geometry_paths,
-                registry,
-                path_id,
-                augmented_a_points,
-                surface="GROUND",
-                width_m=GROUND_WIDTH_METERS,
-                source="cad_ground",
-                projection_status="provisional_mixed_taxiway_cluster" if component_notes[a_component_index] else "direct",
-                point_id_prefix=f"{airport_code}_TWY_A",
-                point_label_prefix="A",
-                note=note,
-            )
-            authored_parking_attachment_mode = "direct"
-        else:
-            projected_join_points = unique_xy([branch_builder["joinPoint"] for branch_builder in apron_branch_builders])
-            for join_point in projected_join_points:
-                best = nearest_point_on_lines(join_point, authored_parking_lines)
-                if best is None:
-                    continue
-                distance_m, projected_point, line_index = best
-                authored_graph_insertions[line_index].append(projected_point)
-                join_targets.append((join_point, projected_point, distance_m))
-                taxiway_join_notes.append(
-                    f"Projected taxiway-A apron join inserted at {distance_m:.1f}m from the authored parking graph."
+            if a_component_index is not None and current_a_polyline and direct_a_attachment_points:
+                augmented_a_points, _ = insert_points_into_polyline(
+                    current_a_polyline,
+                    direct_a_attachment_points,
+                    tolerance_m=PARKING_GRAPH_SPLIT_TOLERANCE_METERS,
                 )
-            if join_targets:
-                authored_parking_attachment_mode = "projected"
+                ordered_component_points[a_component_index] = augmented_a_points
+                path_id = component_paths[a_component_index]
+                geometry_paths.pop(path_id, None)
+                direct_attachment_note = f"Includes {len(direct_a_attachment_points)} direct authored parking attachment point(s)."
+                note = (
+                    f"{component_notes[a_component_index]} {direct_attachment_note}".strip()
+                    if component_notes[a_component_index]
+                    else direct_attachment_note
+                )
+                add_path(
+                    geometry_paths,
+                    registry,
+                    path_id,
+                    augmented_a_points,
+                    surface="GROUND",
+                    width_m=GROUND_WIDTH_METERS,
+                    source="cad_ground",
+                    projection_status="provisional_mixed_taxiway_cluster" if component_notes[a_component_index] else "direct",
+                    point_id_prefix=f"{airport_code}_TWY_A",
+                    point_label_prefix="A",
+                    note=note,
+                )
+                authored_parking_attachment_mode = "direct"
             else:
-                authored_parking_attachment_mode = "unattached"
+                projected_join_points = unique_xy([branch_builder["joinPoint"] for branch_builder in apron_branch_builders])
+                for join_point in projected_join_points:
+                    best = nearest_point_on_lines(join_point, authored_parking_lines)
+                    if best is None:
+                        continue
+                    distance_m, projected_point, line_index = best
+                    authored_graph_insertions[line_index].append(projected_point)
+                    join_targets.append((join_point, projected_point, distance_m))
+                    taxiway_join_notes.append(
+                        f"Projected taxiway-A apron join inserted at {distance_m:.1f}m from the authored parking graph."
+                    )
+                if join_targets:
+                    authored_parking_attachment_mode = "projected"
+                else:
+                    authored_parking_attachment_mode = "unattached"
 
-        apron_path_ids: list[str] = []
-        for line_index, line in enumerate(authored_parking_lines, start=1):
-            split_points, _ = insert_points_into_polyline(
-                [line.start, line.end],
-                unique_xy(authored_graph_insertions.get(line_index - 1, [])),
-                tolerance_m=PARKING_GRAPH_SPLIT_TOLERANCE_METERS,
-            )
-            path_id = f"{airport_code}_APRON_AUTHORED_{line_index:02d}"
-            add_path(
-                geometry_paths,
-                registry,
-                path_id,
-                split_points,
-                surface="GROUND",
-                width_m=GROUND_WIDTH_METERS,
-                source="cad_working_dxf",
-                projection_status="direct_authored_parking_graph",
-                point_id_prefix=f"{airport_code}_APRON_AUTHORED_{line_index:02d}",
-                note="Authored parking/apron geometry from NEW_Parking.",
-            )
-            apron_path_ids.append(path_id)
-
-        for connector_index, (join_point, attach_point, distance_m) in enumerate(join_targets, start=1):
-            if distance(join_point, attach_point) <= 1e-6:
-                continue
-            connector_path_id = f"{airport_code}_APRON_AUTHORED_JOIN_{connector_index:02d}"
-            add_path(
-                geometry_paths,
-                registry,
-                connector_path_id,
-                [join_point, attach_point],
-                surface="GROUND",
-                width_m=GROUND_WIDTH_METERS,
-                source="projected_taxiway_apron_join",
-                projection_status="provisional_projected_apron_join",
-                point_id_prefix=f"{airport_code}_APRON_AUTHORED_JOIN_{connector_index:02d}",
-                note=f"Projected join from taxiway A into the authored parking graph ({distance_m:.1f}m gap).",
-            )
-            taxiway_join_paths.append(connector_path_id)
-
-        apron_projection_status = "direct_authored_parking_graph"
-        apron_note = "Authored apron graph from NEW_Parking."
-        if authored_parking_attachment_mode == "direct":
-            apron_projection_status = "direct_authored_parking_graph_with_direct_taxiway_a_attachments"
-            apron_note = "Authored apron graph from NEW_Parking with direct taxiway A attachments from the working DXF."
-        elif authored_parking_attachment_mode == "projected":
-            apron_projection_status = "direct_authored_parking_graph_with_projected_taxiway_joins"
-            apron_note = "Authored apron graph from NEW_Parking with projected joins back to taxiway A for version 1 current-core connectivity."
-        elif authored_parking_attachment_mode == "unattached":
-            apron_projection_status = "direct_authored_parking_graph_without_taxiway_a_attachment"
-            apron_note = "Authored apron graph from NEW_Parking, but no taxiway A attachment could be derived."
-
-        core_entities["aerodrome"]["aprons"][f"{airport_code}_APRON_AUTHORED_PARKING"] = {
-            "id": f"{airport_code}_APRON_AUTHORED_PARKING",
-            "name": "Authored Parking",
-            "pathIds": apron_path_ids + taxiway_join_paths,
-            "standIds": sorted(stand_lookup_by_name.values()),
-            "projectionStatus": apron_projection_status,
-            "note": apron_note,
-        }
-        authored_parking_notes.extend(authored_parking_diagnostics)
-        authored_parking_notes.extend(taxiway_join_notes)
-    else:
-        for parking in scene.parking_positions:
-            stand_id = f"{airport_code}_STAND_{slugify(parking.name).upper()}"
-            point_id = registry.register(
-                parking.point,
-                f"{stand_id}_POINT",
-                label=parking.name,
-                tags=["stand", parking.location_type],
-                sources=["apt.dat"],
-            )
-            stand_lookup_by_name[parking.name] = stand_id
-            core_entities["aerodrome"]["stands"][stand_id] = {
-                "id": stand_id,
-                "name": parking.name,
-                "pointId": point_id,
-                "locationType": parking.location_type,
-                "aircraftTypes": parking.aircraft_types,
-                "projectionStatus": "direct",
-            }
-
-        for branch_builder in apron_branch_builders:
-            branch = branch_builder["branch"]
-            branch_points = branch_builder["points"]
-            join_point = branch_builder["joinPoint"]
-            display_name = branch.display_name
-            apron_id = f"{airport_code}_APRON_{slugify(display_name).upper()}"
-            main_points = [join_point] + branch_points if distance(join_point, branch_points[0]) > 1e-6 else branch_points
-            main_path_id = f"{apron_id}_MAIN"
             apron_path_ids: list[str] = []
-            add_path(
-                geometry_paths,
-                registry,
-                main_path_id,
-                main_points,
-                surface="GROUND",
-                width_m=GROUND_WIDTH_METERS,
-                source="xplane_parking_branch",
-                projection_status="provisional_synthetic_apron_attachment",
-                point_id_prefix=f"{apron_id}_PATH_MAIN",
-                note="X-Plane branch geometry attached to taxiway A by a projected join point.",
-            )
-            apron_path_ids.append(main_path_id)
-            stand_ids: list[str] = []
-            for connector_index, connector in enumerate(branch.connectors, start=1):
-                stand_id = stand_lookup_by_name.get(connector.stand_name)
-                if stand_id is None:
+            for line_index, line in enumerate(authored_parking_lines, start=1):
+                split_points, _ = insert_points_into_polyline(
+                    [line.start, line.end],
+                    unique_xy(authored_graph_insertions.get(line_index - 1, [])),
+                    tolerance_m=PARKING_GRAPH_SPLIT_TOLERANCE_METERS,
+                )
+                path_id = f"{airport_code}_APRON_AUTHORED_{line_index:02d}"
+                add_path(
+                    geometry_paths,
+                    registry,
+                    path_id,
+                    split_points,
+                    surface="GROUND",
+                    width_m=GROUND_WIDTH_METERS,
+                    source="cad_working_dxf",
+                    projection_status="direct_authored_parking_graph",
+                    point_id_prefix=f"{airport_code}_APRON_AUTHORED_{line_index:02d}",
+                    note="Authored parking/apron geometry from NEW_Parking.",
+                )
+                apron_path_ids.append(path_id)
+
+            for connector_index, (join_point, attach_point, distance_m) in enumerate(join_targets, start=1):
+                if distance(join_point, attach_point) <= 1e-6:
                     continue
-                stand_ids.append(stand_id)
-                connector_path_id = f"{apron_id}_STAND_{connector_index:02d}"
+                connector_path_id = f"{airport_code}_APRON_AUTHORED_JOIN_{connector_index:02d}"
                 add_path(
                     geometry_paths,
                     registry,
                     connector_path_id,
-                    [connector.attach_point, connector.stand_point],
+                    [join_point, attach_point],
                     surface="GROUND",
                     width_m=GROUND_WIDTH_METERS,
-                    source="synthetic_parking_connector",
-                    projection_status="provisional_synthetic_stand_leadin",
-                    point_id_prefix=f"{apron_id}_PATH_STAND_{connector_index:02d}",
-                    note="Synthetic nearest-branch stand lead-in used for version 1 parking access.",
+                    source="projected_taxiway_apron_join",
+                    projection_status="provisional_projected_apron_join",
+                    point_id_prefix=f"{airport_code}_APRON_AUTHORED_JOIN_{connector_index:02d}",
+                    note=f"Projected join from taxiway A into the authored parking graph ({distance_m:.1f}m gap).",
                 )
-                apron_path_ids.append(connector_path_id)
-            core_entities["aerodrome"]["aprons"][apron_id] = {
-                "id": apron_id,
-                "name": display_name,
-                "pathIds": apron_path_ids,
-                "standIds": sorted(set(stand_ids)),
-                "projectionStatus": "provisional_synthetic_stand_leadins",
-                "note": "Branch spine comes from X-Plane taxi-route geometry; stand lead-ins are synthetic nearest-branch connectors.",
+                taxiway_join_paths.append(connector_path_id)
+
+            apron_projection_status = "direct_authored_parking_graph"
+            apron_note = "Authored apron graph from NEW_Parking."
+            if authored_parking_attachment_mode == "direct":
+                apron_projection_status = "direct_authored_parking_graph_with_direct_taxiway_a_attachments"
+                apron_note = "Authored apron graph from NEW_Parking with direct taxiway A attachments from the working DXF."
+            elif authored_parking_attachment_mode == "projected":
+                apron_projection_status = "direct_authored_parking_graph_with_projected_taxiway_joins"
+                apron_note = "Authored apron graph from NEW_Parking with projected joins back to taxiway A for version 1 current-core connectivity."
+            elif authored_parking_attachment_mode == "unattached":
+                apron_projection_status = "direct_authored_parking_graph_without_taxiway_a_attachment"
+                apron_note = "Authored apron graph from NEW_Parking, but no taxiway A attachment could be derived."
+
+            core_entities["aerodrome"]["aprons"][f"{airport_code}_APRON_AUTHORED_PARKING"] = {
+                "id": f"{airport_code}_APRON_AUTHORED_PARKING",
+                "name": "Authored Parking",
+                "pathIds": apron_path_ids + taxiway_join_paths,
+                "standIds": sorted(stand_lookup_by_name.values()),
+                "projectionStatus": apron_projection_status,
+                "note": apron_note,
             }
+            authored_parking_notes.extend(authored_parking_diagnostics)
+            authored_parking_notes.extend(taxiway_join_notes)
+        else:
+            for parking in scene.parking_positions:
+                stand_id = f"{airport_code}_STAND_{slugify(parking.name).upper()}"
+                point_id = registry.register(
+                    parking.point,
+                    f"{stand_id}_POINT",
+                    label=parking.name,
+                    tags=["stand", parking.location_type],
+                    sources=["apt.dat"],
+                )
+                stand_lookup_by_name[parking.name] = stand_id
+                core_entities["aerodrome"]["stands"][stand_id] = {
+                    "id": stand_id,
+                    "name": parking.name,
+                    "pointId": point_id,
+                    "locationType": parking.location_type,
+                    "aircraftTypes": parking.aircraft_types,
+                    "projectionStatus": "direct",
+                }
+
+            for branch_builder in apron_branch_builders:
+                branch = branch_builder["branch"]
+                branch_points = branch_builder["points"]
+                join_point = branch_builder["joinPoint"]
+                display_name = branch.display_name
+                apron_id = f"{airport_code}_APRON_{slugify(display_name).upper()}"
+                main_points = [join_point] + branch_points if distance(join_point, branch_points[0]) > 1e-6 else branch_points
+                main_path_id = f"{apron_id}_MAIN"
+                apron_path_ids: list[str] = []
+                add_path(
+                    geometry_paths,
+                    registry,
+                    main_path_id,
+                    main_points,
+                    surface="GROUND",
+                    width_m=GROUND_WIDTH_METERS,
+                    source="xplane_parking_branch",
+                    projection_status="provisional_synthetic_apron_attachment",
+                    point_id_prefix=f"{apron_id}_PATH_MAIN",
+                    note="X-Plane branch geometry attached to taxiway A by a projected join point.",
+                )
+                apron_path_ids.append(main_path_id)
+                stand_ids: list[str] = []
+                for connector_index, connector in enumerate(branch.connectors, start=1):
+                    stand_id = stand_lookup_by_name.get(connector.stand_name)
+                    if stand_id is None:
+                        continue
+                    stand_ids.append(stand_id)
+                    connector_path_id = f"{apron_id}_STAND_{connector_index:02d}"
+                    add_path(
+                        geometry_paths,
+                        registry,
+                        connector_path_id,
+                        [connector.attach_point, connector.stand_point],
+                        surface="GROUND",
+                        width_m=GROUND_WIDTH_METERS,
+                        source="synthetic_parking_connector",
+                        projection_status="provisional_synthetic_stand_leadin",
+                        point_id_prefix=f"{apron_id}_PATH_STAND_{connector_index:02d}",
+                        note="Synthetic nearest-branch stand lead-in used for version 1 parking access.",
+                    )
+                    apron_path_ids.append(connector_path_id)
+                core_entities["aerodrome"]["aprons"][apron_id] = {
+                    "id": apron_id,
+                    "name": display_name,
+                    "pathIds": apron_path_ids,
+                    "standIds": sorted(set(stand_ids)),
+                    "projectionStatus": "provisional_synthetic_stand_leadins",
+                    "note": "Branch spine comes from X-Plane taxi-route geometry; stand lead-ins are synthetic nearest-branch connectors.",
+                }
 
     for reporting_point in scene.reporting_points:
         point_id = registry.register(
@@ -3929,21 +3986,36 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
 
     candidate_entities["ifrProcedures"] = build_ifr_inventory(cifp_data, ofmx_data, chart_fix_data, project)
 
-    projection_gaps = [
-        "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
-        "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
-        "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
-        "LOWG IFR identifier resolution is now good enough for a broader runtime subset, but STARs, LOC 34C, and richer published minima variants still remain outside the current-core projection.",
-        "The east non-standard hold remains deferred to version 2 until the loiter model is corrected.",
-    ]
-    if authored_parking_attachment_mode == "projected":
-        projection_gaps.append(
-            "Version-1 apron access uses authored NEW_Parking geometry for the internal apron graph, but the joins back to taxiway A are still projected."
-        )
-    elif authored_parking_attachment_mode == "unattached":
-        projection_gaps.append(
-            "Version-1 apron access uses authored NEW_Parking geometry, but no taxiway A attachment could be derived from the authored graph."
-        )
+    if airport_code == "LOWG":
+        projection_gaps = [
+            "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
+            "Holding-point candidates exist, but runway-protection assignment and HoldingPointType are not yet encoded strongly enough for the current validator.",
+            "Airspace boundary geometry is available, but point-to-volume membership for all projected points is not yet assigned.",
+            "LOWG IFR identifier resolution is now good enough for a broader runtime subset, but STARs, LOC 34C, and richer published minima variants still remain outside the current-core projection.",
+            "The east non-standard hold remains deferred to version 2 until the loiter model is corrected.",
+        ]
+        if authored_parking_attachment_mode == "projected":
+            projection_gaps.append(
+                "Version-1 apron access uses authored NEW_Parking geometry for the internal apron graph, but the joins back to taxiway A are still projected."
+            )
+        elif authored_parking_attachment_mode == "unattached":
+            projection_gaps.append(
+                "Version-1 apron access uses authored NEW_Parking geometry, but no taxiway A attachment could be derived from the authored graph."
+            )
+    else:
+        projection_gaps = []
+        if candidate_entities["ifrProcedures"].get("status") == "not_available_no_cifp_source":
+            projection_gaps.append(
+                f"No CIFP-style IFR source is configured for {airport_code}, so IFR inventory and runtime IFR projection remain unavailable."
+            )
+        if not candidate_entities["operationalSectors"] and not core_entities["aerodrome"]["aip"]["operationalSectors"]:
+            projection_gaps.append(
+                f"{airport_code} operational sectors and working airspace geometry have not yet been projected."
+            )
+        if not candidate_entities["publishedVfrProcedures"] and not core_entities["aerodrome"]["aip"]["publishedVfrProcedures"]:
+            projection_gaps.append(
+                f"{airport_code} published VFR procedures have not yet been structured."
+            )
     projection_gaps.extend(authored_parking_notes)
 
     return {

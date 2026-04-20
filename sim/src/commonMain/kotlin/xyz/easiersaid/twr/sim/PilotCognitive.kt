@@ -147,9 +147,12 @@ private fun stepTransmission(
     MissionStep.REQUEST_TAXI -> if (isFirstTick) Request(RequestTaxi()) else null
     MissionStep.REPORT_READY -> if (isFirstTick) Report(listOf(ReportEvent.Ready)) else null
     MissionStep.CALL_INBOUND -> if (isFirstTick) InitialContact(stationCalled = xyz.easiersaid.twr.protocol.RoleName.TOWER) else null
-    MissionStep.REPORT_DOWNWIND -> if (mission.lastReportedLeg != LegName.DOWNWIND) Report(listOf(ReportEvent.Downwind)) else null
-    MissionStep.REPORT_BASE -> if (mission.lastReportedLeg != LegName.BASE) Report(listOf(ReportEvent.Base)) else null
-    MissionStep.REPORT_FINAL -> if (mission.lastReportedLeg != LegName.FINAL) Report(listOf(ReportEvent.Final)) else null
+    MissionStep.REPORT_DOWNWIND ->
+        if (mission.lastReportedLeg != LegName.DOWNWIND) Report(listOf(ReportEvent.Downwind), mission.activeRunway) else null
+    MissionStep.REPORT_BASE ->
+        if (mission.lastReportedLeg != LegName.BASE) Report(listOf(ReportEvent.Base), mission.activeRunway) else null
+    MissionStep.REPORT_FINAL ->
+        if (mission.lastReportedLeg != LegName.FINAL) Report(listOf(ReportEvent.Final), mission.activeRunway) else null
     MissionStep.AWAIT_LANDING_CLEARANCE -> {
         val elapsed = now.millis - mission.stepEnteredAt.millis
         // Escalation: query controller after 15s with no clearance.
