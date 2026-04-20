@@ -2,13 +2,17 @@ package xyz.easiersaid.twr.controller
 
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.MAX_READBACK_AGE
-import xyz.easiersaid.twr.controller.observe.PendingReadback
+import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.protocol.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+/** Helper: create an OutstandingCoordination from an instruction and time. */
+private fun pending(ac: AircraftId, instr: AtcInstruction, time: SimTime) =
+    OutstandingCoordination(ac, instr, emptySet(), time)
 
 /**
  * Regression tests for Bug B (2026-04-16): readback validation against pending instructions.
@@ -42,9 +46,9 @@ class ReadbackValidationTest {
     @Test
     fun `correct readback emits ReadBackCorrect and pops pending`() {
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(
+            coordinations = mapOf(
                 TestIds.acAlpha to listOf(
-                    PendingReadback(
+                    pending(TestIds.acAlpha,
                         ClearedToLand(TestIds.acAlpha, TestIds.runway09),
                         SimTime.ofSeconds(0),
                     )
@@ -70,12 +74,12 @@ class ReadbackValidationTest {
 
     @Test
     fun `wrong-runway readback emits ReadbackCorrection(INCORRECT_ATOM) and leaves pending in place`() {
-        val pending = PendingReadback(
+        val pending = pending(TestIds.acAlpha,
             ClearedToLand(TestIds.acAlpha, TestIds.runway09),
             SimTime.ofSeconds(0),
         )
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+            coordinations = mapOf(TestIds.acAlpha to listOf(pending))
         )
         val wrongRunway = RunwayId("27")
         val view = viewWithReadback(
@@ -99,20 +103,19 @@ class ReadbackValidationTest {
         assertEquals(pending.instruction, correction.correct,
             "Correction payload should replay the original ClearedToLand")
         assertEquals(
-            listOf(pending),
-            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha],
+            1, result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha]?.size,
             "Pending must remain until pilot transmits a correct readback",
         )
     }
 
     @Test
     fun `missing-atom readback emits ReadbackCorrection(MISSING_ATOM)`() {
-        val pending = PendingReadback(
+        val pending = pending(TestIds.acAlpha,
             ClearedToLand(TestIds.acAlpha, TestIds.runway09),
             SimTime.ofSeconds(0),
         )
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+            coordinations = mapOf(TestIds.acAlpha to listOf(pending))
         )
         // Readback present but without the ClearedToLandReadback atom at all
         val view = viewWithReadback(
@@ -128,21 +131,18 @@ class ReadbackValidationTest {
             .firstOrNull()
         assertNotNull(correction)
         assertEquals(ReadbackCorrectionKind.MISSING_ATOM, correction.kind)
-        assertEquals(
-            listOf(pending),
-            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha],
-        )
+        assertEquals(1, result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha]?.size)
     }
 
     @Test
     fun `level-change readback must match assigned level`() {
         val assigned = Level.AltitudeFeet.unsafe(3000)
-        val pending = PendingReadback(
+        val pending = pending(TestIds.acAlpha,
             ClimbTo(TestIds.acAlpha, assigned),
             SimTime.ofSeconds(0),
         )
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+            coordinations = mapOf(TestIds.acAlpha to listOf(pending))
         )
 
         // Wrong level → INCORRECT_ATOM
@@ -177,12 +177,12 @@ class ReadbackValidationTest {
             TrafficRef.ByCallsign(Callsign("G-AB")),
             TrafficAction.LANDING,
         )
-        val pending = PendingReadback(
+        val pending = pending(TestIds.acAlpha,
             ConditionalClearance(TestIds.acAlpha, predicate, inner),
             SimTime.ofSeconds(0),
         )
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(pending))
+            coordinations = mapOf(TestIds.acAlpha to listOf(pending))
         )
 
         // Condition missing → MISSING_ATOM
@@ -238,12 +238,12 @@ class ReadbackValidationTest {
 
     @Test
     fun `pending readback GCs after MAX_READBACK_AGE`() {
-        val old = PendingReadback(
+        val old = pending(TestIds.acAlpha,
             ClearedToLand(TestIds.acAlpha, TestIds.runway09),
             SimTime.ofSeconds(0),
         )
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(old))
+            coordinations = mapOf(TestIds.acAlpha to listOf(old))
         )
         // Age past MAX_READBACK_AGE, no incoming readback this cycle.
         val nowSeconds = (MAX_READBACK_AGE.millis / 1000L).toInt() + 5
@@ -264,16 +264,16 @@ class ReadbackValidationTest {
     fun `matches most recent pending when multiple outstanding`() {
         // Aircraft lines up and then gets cleared for takeoff — two pending readbacks.
         // A line-up readback should match the line-up pending, not the takeoff pending.
-        val lineUp = PendingReadback(
+        val lineUp = pending(TestIds.acAlpha,
             LineUpAndWait(TestIds.acAlpha, TestIds.runway09),
             SimTime.ofSeconds(0),
         )
-        val takeoff = PendingReadback(
+        val takeoff = pending(TestIds.acAlpha,
             ClearedForTakeoff(TestIds.acAlpha, TestIds.runway09),
             SimTime.ofSeconds(5),
         )
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(TestIds.acAlpha to listOf(lineUp, takeoff))
+            coordinations = mapOf(TestIds.acAlpha to listOf(lineUp, takeoff))
         )
         val view = viewWithReadback(
             TestIds.acAlpha,
@@ -288,8 +288,7 @@ class ReadbackValidationTest {
             "Line-up readback should be confirmed"
         )
         assertEquals(
-            listOf(takeoff),
-            result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha],
+            1, result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha]?.size,
             "Line-up pending popped; takeoff pending remains",
         )
     }

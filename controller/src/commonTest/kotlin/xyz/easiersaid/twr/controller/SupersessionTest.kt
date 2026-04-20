@@ -2,7 +2,7 @@ package xyz.easiersaid.twr.controller
 
 import xyz.easiersaid.twr.controller.bdi.applySupersessionCleanup
 import xyz.easiersaid.twr.controller.observe.BeliefState
-import xyz.easiersaid.twr.controller.observe.PendingReadback
+import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Disregard
 import xyz.easiersaid.twr.protocol.ExtendDownwind
@@ -14,116 +14,66 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * Tests for [applySupersessionCleanup] — the post-arbitration pending-readback
- * cleanup when a committed instruction supersedes an active one.
- */
 class SupersessionTest {
 
     private val aircraft = AircraftId("G-TEST")
     private val t0 = SimTime.ofSeconds(10)
 
+    private fun coord(ac: AircraftId, instr: xyz.easiersaid.twr.protocol.AtcInstruction) =
+        OutstandingCoordination(ac, instr, emptySet(), t0)
+
     @Test
-    fun `TurnBase supersedes ExtendDownwind — pending readback abandoned`() {
+    fun `TurnBase supersedes ExtendDownwind — coordination abandoned`() {
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(
-                aircraft to listOf(PendingReadback(ExtendDownwind(aircraft), t0))
-            ),
+            coordinations = mapOf(aircraft to listOf(coord(aircraft, ExtendDownwind(aircraft)))),
         )
-
-        val result = applySupersessionCleanup(
-            beliefs,
-            committedInstructions = listOf(aircraft to TurnBase(aircraft)),
-        )
-
-        assertTrue(
-            result.pendingReadbacks[aircraft].isNullOrEmpty(),
-            "ExtendDownwind pending should be abandoned when TurnBase is committed",
-        )
+        val result = applySupersessionCleanup(beliefs, listOf(aircraft to TurnBase(aircraft)))
+        assertTrue(result.pendingReadbacks[aircraft].isNullOrEmpty())
     }
 
     @Test
-    fun `non-superseding instruction leaves pending readback intact`() {
+    fun `non-superseding instruction leaves coordination intact`() {
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(
-                aircraft to listOf(PendingReadback(ExtendDownwind(aircraft), t0))
-            ),
+            coordinations = mapOf(aircraft to listOf(coord(aircraft, ExtendDownwind(aircraft)))),
         )
-
-        // HoldPosition does not supersede ExtendDownwind — no relation registered.
-        val result = applySupersessionCleanup(
-            beliefs,
-            committedInstructions = listOf(aircraft to HoldPosition(aircraft)),
-        )
-
-        assertEquals(
-            1, result.pendingReadbacks[aircraft]?.size,
-            "ExtendDownwind pending should survive when a non-superseding instruction commits",
-        )
+        val result = applySupersessionCleanup(beliefs, listOf(aircraft to HoldPosition(aircraft)))
+        assertEquals(1, result.pendingReadbacks[aircraft]?.size)
     }
 
     @Test
     fun `supersession only affects the targeted aircraft`() {
         val other = AircraftId("G-OTHER")
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(
-                aircraft to listOf(PendingReadback(ExtendDownwind(aircraft), t0)),
-                other to listOf(PendingReadback(ExtendDownwind(other), t0)),
+            coordinations = mapOf(
+                aircraft to listOf(coord(aircraft, ExtendDownwind(aircraft))),
+                other to listOf(coord(other, ExtendDownwind(other))),
             ),
         )
-
-        val result = applySupersessionCleanup(
-            beliefs,
-            committedInstructions = listOf(aircraft to TurnBase(aircraft)),
-        )
-
-        assertTrue(
-            result.pendingReadbacks[aircraft].isNullOrEmpty(),
-            "targeted aircraft's pending should be abandoned",
-        )
-        assertEquals(
-            1, result.pendingReadbacks[other]?.size,
-            "other aircraft's pending must not be affected",
-        )
+        val result = applySupersessionCleanup(beliefs, listOf(aircraft to TurnBase(aircraft)))
+        assertTrue(result.pendingReadbacks[aircraft].isNullOrEmpty())
+        assertEquals(1, result.pendingReadbacks[other]?.size)
     }
 
     @Test
     fun `empty committed instructions returns beliefs unchanged`() {
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(
-                aircraft to listOf(PendingReadback(ExtendDownwind(aircraft), t0))
-            ),
+            coordinations = mapOf(aircraft to listOf(coord(aircraft, ExtendDownwind(aircraft)))),
         )
-
-        val result = applySupersessionCleanup(beliefs, committedInstructions = emptyList())
-
-        assertTrue(
-            result.pendingReadbacks === beliefs.pendingReadbacks,
-            "should return same reference when no instructions committed",
-        )
+        val result = applySupersessionCleanup(beliefs, emptyList())
+        assertTrue(result.coordinations === beliefs.coordinations)
     }
 
     @Test
-    fun `Disregard universally abandons ALL pending readbacks for aircraft`() {
+    fun `Disregard universally abandons ALL coordinations for aircraft`() {
         val beliefs = BeliefState.EMPTY.copy(
-            pendingReadbacks = mapOf(
-                aircraft to listOf(
-                    PendingReadback(ExtendDownwind(aircraft), t0),
-                    PendingReadback(MaintainSpeed(aircraft, xyz.easiersaid.twr.protocol.Speed.InKnots(
-                        xyz.easiersaid.twr.protocol.Knots.unsafe(160),
-                    )), t0),
-                ),
-            ),
+            coordinations = mapOf(aircraft to listOf(
+                coord(aircraft, ExtendDownwind(aircraft)),
+                coord(aircraft, MaintainSpeed(aircraft, xyz.easiersaid.twr.protocol.Speed.InKnots(
+                    xyz.easiersaid.twr.protocol.Knots.unsafe(160),
+                ))),
+            )),
         )
-
-        val result = applySupersessionCleanup(
-            beliefs,
-            committedInstructions = listOf(aircraft to Disregard(aircraft)),
-        )
-
-        assertTrue(
-            result.pendingReadbacks[aircraft].isNullOrEmpty(),
-            "Disregard should abandon ALL pending readbacks, not just specific types",
-        )
+        val result = applySupersessionCleanup(beliefs, listOf(aircraft to Disregard(aircraft)))
+        assertTrue(result.pendingReadbacks[aircraft].isNullOrEmpty())
     }
 }

@@ -424,6 +424,7 @@ private fun validatedReadbackResponses(
     return final.responses to final.beliefs
 }
 
+@Suppress("ReturnCount") // guard-clause pattern with coordination matching
 private fun processReadback(
     msg: ReceivedMessage,
     responsibilities: Set<AircraftId>,
