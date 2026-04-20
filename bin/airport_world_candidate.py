@@ -418,11 +418,46 @@ def _communication_failure_point_ids(communication_failure: dict[str, Any] | Non
 def _projected_current_core_holding_points(
     manifest_path: Path,
     bundle: dict[str, Any],
-) -> tuple[list[dict[str, Any]], list[str]]:
+) -> tuple[dict[str, list[dict[str, Any]]], list[str]]:
+    taxiways = bundle["coreEntities"]["aerodrome"]["taxiways"]
+    geometry_paths = bundle["coreEntities"]["geometry"]["paths"]
+    holding_points_by_taxiway = {
+        taxiway_id: []
+        for taxiway_id in sorted(taxiways)
+    }
+
+    if bundle["airportCode"] != "LOWG" or "A" not in taxiways:
+        assumptions: list[str] = []
+        for hold_id, candidate in sorted(bundle["candidateEntities"].get("holdingPoints", {}).items()):
+            if not isinstance(candidate, dict):
+                continue
+            point_id = candidate.get("pointId")
+            runway_id = candidate.get("runwayId")
+            if not isinstance(point_id, str) or not isinstance(runway_id, str):
+                assumptions.append(f"{hold_id}: candidate holding point is missing pointId/runwayId.")
+                continue
+            holding_point = {
+                "pointId": point_id,
+                "name": candidate.get("name") if isinstance(candidate.get("name"), str) else runway_id,
+                "type": candidate.get("type") if isinstance(candidate.get("type"), str) else "CAT_A",
+                "runwayId": runway_id,
+            }
+            attached_taxiways = [
+                taxiway_id
+                for taxiway_id, taxiway in sorted(taxiways.items())
+                if point_id in geometry_paths.get(taxiway.get("pathId"), {}).get("pointIds", [])
+            ]
+            if not attached_taxiways:
+                assumptions.append(f"{hold_id}: no taxiway path contained holding point {point_id}.")
+                continue
+            for taxiway_id in attached_taxiways:
+                holding_points_by_taxiway[taxiway_id].append(dict(holding_point))
+        return holding_points_by_taxiway, assumptions
+
     context = authoring.build_context(manifest_path)
     geometry_points = bundle["coreEntities"]["geometry"]["points"]
-    taxiway_a = bundle["coreEntities"]["aerodrome"]["taxiways"]["A"]
-    taxiway_a_path = bundle["coreEntities"]["geometry"]["paths"][taxiway_a["pathId"]]
+    taxiway_a = taxiways["A"]
+    taxiway_a_path = geometry_paths[taxiway_a["pathId"]]
     point_ids = taxiway_a_path["pointIds"]
 
     holding_candidates = {
@@ -475,7 +510,8 @@ def _projected_current_core_holding_points(
             }
         )
 
-    return holding_points, assumptions
+    holding_points_by_taxiway["A"] = holding_points
+    return holding_points_by_taxiway, assumptions
 
 
 def _candidate_waypoint_altitude_constraint(
@@ -1130,7 +1166,7 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         transition_altitude_feet=transition_altitude_feet,
     )
 
-    forced_holding_points, holding_assumptions = _projected_current_core_holding_points(
+    holding_points_by_taxiway, holding_assumptions = _projected_current_core_holding_points(
         manifest_path,
         bundle,
     )
@@ -1141,7 +1177,7 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
             "name": taxiway["name"],
             "pathId": taxiway["pathId"],
             "bidirectional": taxiway.get("bidirectional", True),
-            "holdingPoints": forced_holding_points if taxiway_id == "A" else [],
+            "holdingPoints": holding_points_by_taxiway.get(taxiway_id, []),
             "projectionStatus": taxiway.get("projectionStatus"),
             "note": taxiway.get("note"),
         }
@@ -1173,36 +1209,68 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         )
 
     forced_assumptions = [
-        "LOWG current-core airspace membership is now projected from the worked CTR/TMA boundary geometry as an explicit low-level point-to-volume assignment. This remains a 2D plan-view approximation, not altitude-aware polygon reasoning.",
-        "OFMX class-layer volumes reuse their parent CTR/TMA boundary geometry where the class records carry no separate boundary of their own.",
-        "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
+        f"{airport_code} current-core airspace membership is projected from explicit low-level point-to-volume assignment over worked boundary geometry. This remains a 2D plan-view approximation, not altitude-aware polygon reasoning.",
         apron_access_assumption,
-        "Current-core runway-protection holding points are projected only onto the connected taxiway-A spine because the present validator requires every holding point to reach every stand through the ground graph.",
-        "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly.",
     ]
+    if any(
+        isinstance(volume, dict)
+        and volume.get("codeType") == "CLASS"
+        and isinstance(volume.get("baseCodeId"), str)
+        and volume.get("baseCodeId") != volume.get("codeId")
+        for volume in candidate_airspace_volumes.values()
+    ):
+        forced_assumptions.append(
+            "Class-layer airspace volumes reuse their parent CTR/TMA boundary geometry where the class records carry no separate boundary of their own."
+        )
+    if airport_code == "LOWG":
+        forced_assumptions.extend(
+            [
+                "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
+                "Current-core runway-protection holding points are projected only onto the connected taxiway-A spine because the present validator requires every holding point to reach every stand through the ground graph.",
+                "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly.",
+            ],
+        )
+    elif any(holding_points_by_taxiway.values()):
+        forced_assumptions.append(
+            "Current-core holding points are attached to whichever taxiway paths already contain the authored holding-point geometry. This remains a path-level assignment, not a richer runway-entry area model."
+        )
     forced_assumptions.extend(airspace_assumptions)
     forced_assumptions.extend(holding_assumptions)
     forced_assumptions.extend(ifr_assumptions)
     if runtime_ifr_approaches:
         forced_assumptions.append(
-            "LOWG runtime IFR approaches use waypoint-only final and missed-approach sequences. "
+            f"{airport_code} runtime IFR approaches use waypoint-only final and missed-approach sequences. "
             "Altitude-only and DME-triggered CIFP legs are collapsed to the current-core waypoint model where necessary."
         )
     if runtime_ifr_sids:
         forced_assumptions.append(
-            "LOWG runtime SID projection compiles leading fixless climb legs as runway-threshold waypoints where necessary, because the current SID model is waypoint-based rather than path-terminator based."
+            f"{airport_code} runtime SID projection compiles leading fixless climb legs as runway-threshold waypoints where necessary, because the current SID model is waypoint-based rather than path-terminator based."
         )
     if runtime_ifr_stars:
         forced_assumptions.append(
-            "LOWG runtime STAR projection currently uses the published STAR trunks only, and relies on explicitly selected feeder transitions on the projected approach subset so STAR terminal fixes are shared with the approach entry-point set."
+            f"{airport_code} runtime STAR projection currently uses the published STAR trunks only, and relies on explicitly selected feeder transitions on the projected approach subset so STAR terminal fixes are shared with the approach entry-point set."
         )
     omitted_features = [
-        "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
-        "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
-        "LOWG IFR runtime projection currently includes the LOWG SID set, the LOWG STAR set, VOR RWY 16C, VOR RWY 34C, RNP RWY 16C, RNP RWY 34C, ILS RWY 34C, and the shared GBG missed-approach hold. LOC 34C and richer minima variants remain outside the current-core subset.",
-        "The east non-standard hold remains deferred to version 2.",
-        "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule.",
+        "Only runtime-usable classed low-level airspace volumes are projected into the current candidate; boundary-only/special-use geometry and altitude-aware membership still remain outside the current-core subset.",
     ]
+    if any(
+        isinstance(route, dict) and route.get("airspaceProfile") is None
+        for route in core_entities.get("vfrRoutes", {}).values()
+    ):
+        omitted_features.append(
+            f"{airport_code} mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the InVolume / InClass / Segmented model."
+        )
+    if runtime_ifr_sids or runtime_ifr_stars or runtime_ifr_approaches or runtime_ifr_holding_patterns:
+        omitted_features.append(
+            f"{airport_code} richer IFR publication variants remain outside the current-core subset where the runtime model still collapses them to a single selected minima/profile path."
+        )
+    if airport_code == "LOWG":
+        omitted_features.extend(
+            [
+                "The east non-standard hold remains deferred to version 2.",
+                "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule.",
+            ],
+        )
 
     return {
         "airportCode": airport_code,

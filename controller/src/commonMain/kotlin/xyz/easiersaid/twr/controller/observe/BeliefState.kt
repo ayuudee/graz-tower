@@ -29,8 +29,8 @@ data class BeliefState(
      * Outstanding instruction-readback coordinations, keyed by aircraft.
      *
      * Replaces the former `pendingReadbacks` with a richer lifecycle:
-     * ISSUED → CONFIRMED (on correct readback → stage advances) or
-     * QUERYING (on timeout → controller queries/re-issues).
+     * ISSUED → removed on correct readback (stage advances via acceptReadback).
+     * GC'd after MAX_READBACK_AGE if no readback arrives.
      *
      * `pendingReadbacks` is now a projection: filter for state == ISSUED.
      */
@@ -72,7 +72,7 @@ data class BeliefState(
     /** Backward-compatible projection: pending (unconfirmed) coordinations as PendingReadback. */
     val pendingReadbacks: Map<AircraftId, List<PendingReadback>> get() =
         coordinations.mapValues { (_, coords) ->
-            coords.filter { it.state == CoordinationState.ISSUED || it.state == CoordinationState.QUERYING }
+            coords.filter { it.state == CoordinationState.ISSUED }
                 .map { PendingReadback(it.instruction, it.issuedAt) }
         }.filterValues { it.isNotEmpty() }
     companion object {

@@ -96,11 +96,9 @@ private fun determineServiceKind(role: RoleName, ac: AircraftObservation): Commi
             else -> CommitmentKind.APPROACH_TRANSIT
         }
         RoleName.AREA_CONTROL -> CommitmentKind.AREA_TRANSIT
-        // Not yet modelled in Phase 4 — all three roles have their own
-        // backlog tickets (see atc-agent-review-tracker / Phase-5 scope).
-        RoleName.CLEARANCE_DELIVERY -> null
-        RoleName.DEPARTURE -> null
-        RoleName.AFIS -> null
+        RoleName.CLEARANCE_DELIVERY -> error("${RoleName.CLEARANCE_DELIVERY} commitments not yet modelled")
+        RoleName.DEPARTURE -> error("${RoleName.DEPARTURE} commitments not yet modelled")
+        RoleName.AFIS -> error("${RoleName.AFIS} commitments not yet modelled")
     }
 }
 
@@ -176,13 +174,9 @@ private fun createCommitment(
             // live in a later slice; until then Approach is a pure handoff point.
             Commitment(acId, kind, ApproachArrivalStage.AwaitDownwind, activeRunway, time)
         }
-        // Phase-4 scope: only the four kinds above create commitments. Approach
-        // transit and area transit will get their own stage machines in later
-        // slices; returning null here means reconcile leaves the aircraft
-        // without a commitment for now.
-        CommitmentKind.APPROACH_TRANSIT -> null
-        CommitmentKind.AREA_TRANSIT -> null
-        else -> null
+        CommitmentKind.APPROACH_TRANSIT -> error("APPROACH_TRANSIT stage machine not yet modelled")
+        CommitmentKind.AREA_TRANSIT -> error("AREA_TRANSIT stage machine not yet modelled")
+        else -> error("Unknown commitment kind: $kind")
     }
 }
 

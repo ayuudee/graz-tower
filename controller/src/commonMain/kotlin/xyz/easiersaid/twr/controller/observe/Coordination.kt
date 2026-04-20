@@ -34,12 +34,9 @@ data class OutstandingCoordination(
 enum class CoordinationState {
     /** Instruction transmitted, awaiting readback. */
     ISSUED,
-    /** Correct readback received — coordination complete. */
-    CONFIRMED,
-    /** No readback within timeout — controller has queried "did you copy?" */
-    QUERYING,
-    /** Superseded by a later instruction — no longer tracked. */
-    CANCELLED,
+    // CONFIRMED: not stored — acceptReadback removes the entry on confirmation.
+    // QUERYING: not yet implemented — controller query/re-issue logic is future work.
+    // CANCELLED: not yet implemented — supersession removes entries directly.
 }
 
 /**
@@ -60,8 +57,5 @@ sealed interface AdvancementPolicy {
     data object OnReadbackConfirmed : AdvancementPolicy
 }
 
-/** First timeout: query the pilot. */
-val COORDINATION_QUERY_TIMEOUT: SimDuration = SimDuration.ofSeconds(10)
-
-/** Second timeout: re-issue the instruction. */
-val COORDINATION_REISSUE_TIMEOUT: SimDuration = SimDuration.ofSeconds(20)
+// Query/re-issue timeouts will be added when controller-side escalation is implemented.
+// Do not declare constants for unimplemented features.

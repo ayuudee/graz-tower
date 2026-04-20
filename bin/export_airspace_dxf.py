@@ -90,6 +90,16 @@ def build_shapes(manifest_path: Path) -> tuple[list[RunwayShape], report.XY | No
     origin = report.Geo(float(apt_metadata["datum_lat"]), float(apt_metadata["datum_lon"]))
     project = report.projector(origin)
     ofmx_data = report.parse_ofmx(ofmx_path, manifest["airportCode"])
+    openair_data = None
+    if not ofmx_data["airspaces"]:
+        openair_source = manifest["sources"].get("openAirBundle")
+        if isinstance(openair_source, str):
+            openair_data = report.parse_openair_bundle(
+                report.resolve_path(root, openair_source),
+                origin,
+                manifest["airportCode"],
+                manifest.get("airportName") or manifest["airportCode"],
+            )
 
     reporting_points = sorted(
         [
@@ -102,35 +112,54 @@ def build_shapes(manifest_path: Path) -> tuple[list[RunwayShape], report.XY | No
 
     used_layer_names = {"0", "DEFPOINTS", "RUNWAYS", "RUNWAY_LABELS", "TOWER", "TOWER_LABELS", "VFR_POINTS", "VFR_LABELS", "AIRSPACE_LABELS"}
     airspace_shapes: list[AirspaceShape] = []
-    for airspace in ofmx_data["airspaces"]:
-        boundaries = ofmx_data["airspaceBoundaries"].get(airspace.mid, [])
-        if not boundaries:
-            continue
-        category_color = 4 if (airspace.name or "").startswith(manifest["airportCode"]) else 6
-        layer_name = dxf.sanitize_layer_name(
-            f"ASP_{airspace.code_id or airspace.name or airspace.mid}",
-            used_layer_names,
-        )
-        projected_boundaries = [
-            [project(vertex.position) for vertex in boundary.vertices]
-            for boundary in boundaries
-            if len(boundary.vertices) >= 2
-        ]
-        if not projected_boundaries:
-            continue
-        airspace_shapes.append(
-            AirspaceShape(
-                layer_name=layer_name,
-                label=airspace_display_label(airspace),
-                color_index=category_color,
-                boundaries=projected_boundaries,
-                has_curve_vertices=any(
-                    vertex.code_type != "GRC"
-                    for boundary in boundaries
-                    for vertex in boundary.vertices
+    if ofmx_data["airspaces"]:
+        for airspace in ofmx_data["airspaces"]:
+            boundaries = ofmx_data["airspaceBoundaries"].get(airspace.mid, [])
+            if not boundaries:
+                continue
+            category_color = 4 if (airspace.name or "").startswith(manifest["airportCode"]) else 6
+            layer_name = dxf.sanitize_layer_name(
+                f"ASP_{airspace.code_id or airspace.name or airspace.mid}",
+                used_layer_names,
+            )
+            projected_boundaries = [
+                [project(vertex.position) for vertex in boundary.vertices]
+                for boundary in boundaries
+                if len(boundary.vertices) >= 2
+            ]
+            if not projected_boundaries:
+                continue
+            airspace_shapes.append(
+                AirspaceShape(
+                    layer_name=layer_name,
+                    label=airspace_display_label(airspace),
+                    color_index=category_color,
+                    boundaries=projected_boundaries,
+                    has_curve_vertices=any(
+                        vertex.code_type != "GRC"
+                        for boundary in boundaries
+                        for vertex in boundary.vertices
+                    ),
                 ),
-            ),
-        )
+            )
+    elif openair_data is not None:
+        for airspace in openair_data["airspaces"]:
+            layer_name = dxf.sanitize_layer_name(
+                f"ASP_{airspace.name}",
+                used_layer_names,
+            )
+            airspace_shapes.append(
+                AirspaceShape(
+                    layer_name=layer_name,
+                    label=airspace.name,
+                    color_index=4 if "MARIBOR" in airspace.name.upper() else 6,
+                    boundaries=[
+                        [project(point) for point in boundary]
+                        for boundary in airspace.boundaries
+                    ],
+                    has_curve_vertices=False,
+                ),
+            )
 
     return (
         unique_runways(runways, project),

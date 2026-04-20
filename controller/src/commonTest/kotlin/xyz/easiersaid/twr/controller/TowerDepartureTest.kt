@@ -52,8 +52,19 @@ class TowerDepartureTest {
         assertTrue(instruct2.trace.regulations.any { it.document == "ICAO_4444" },
             "Should cite ICAO 4444")
 
-        // Verify commitment advanced to AwaitTakeoffObserved
-        assertEquals(TowerDepartureStage.AwaitTakeoffObserved, beliefs.commitments[TestIds.acAlpha]?.stage)
+        // Stage stays at AwaitLineUpObserved until readback arrives (OnReadbackConfirmed).
+        assertEquals(TowerDepartureStage.AwaitLineUpObserved, beliefs.commitments[TestIds.acAlpha]?.stage)
+
+        // ── Cycle 2b: Pilot reads back ClearedForTakeoff ──
+        val view2b = towerView(
+            aircraft = mapOf(TestIds.acAlpha to ac2),
+            receivedMessages = listOf(readbackFor(instruct2)),
+            time = SimTime.ofSeconds(25),
+        )
+        val result2b = testControllerDecide(view2b, beliefs)
+        beliefs = result2b.updatedBeliefs
+        assertEquals(TowerDepartureStage.AwaitTakeoffObserved, beliefs.commitments[TestIds.acAlpha]?.stage,
+            "Stage should advance after readback confirmation")
 
         // ── Cycle 3: Aircraft airborne ──
         val ac3 = aircraftAt(TestIds.acAlpha, TestIds.upwind, worldIndex, onGround = false, goal = PilotGoal.DEPART)
@@ -126,8 +137,19 @@ class TowerDepartureTest {
         ).updatedBeliefs
 
         val ac2 = aircraftAt(TestIds.acAlpha, TestIds.rwyMid, worldIndex, onGround = true, goal = PilotGoal.DEPART)
-        beliefs = testControllerDecide(
+        val result2 = testControllerDecide(
             towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = SimTime.ofSeconds(20)),
+            beliefs,
+        )
+        beliefs = result2.updatedBeliefs
+        // Deliver readback for ClearedForTakeoff so stage advances (OnReadbackConfirmed).
+        val takeoffInstruct = result2.instructs().first { it.instruction is ClearedForTakeoff }
+        beliefs = testControllerDecide(
+            towerView(
+                aircraft = mapOf(TestIds.acAlpha to ac2),
+                receivedMessages = listOf(readbackFor(takeoffInstruct)),
+                time = SimTime.ofSeconds(22),
+            ),
             beliefs,
         ).updatedBeliefs
 

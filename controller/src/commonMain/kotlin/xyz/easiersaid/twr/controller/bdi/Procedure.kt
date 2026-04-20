@@ -43,7 +43,7 @@ data class AtcRule(
      * Default: if the rule has an action AND a nextStage, default to OnReadbackConfirmed.
      * If no action (stage-only) or no nextStage, default to Immediate.
      */
-    val advancementPolicy: AdvancementPolicy = AdvancementPolicy.Immediate,
+    val advancementPolicy: AdvancementPolicy,
 )
 
 /**

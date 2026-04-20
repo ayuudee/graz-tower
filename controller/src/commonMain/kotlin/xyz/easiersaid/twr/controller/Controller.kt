@@ -433,7 +433,7 @@ private fun processReadback(
     val readback = msg.transmission as? Readback ?: return state
     if (msg.aircraft !in responsibilities) return state
     val coords = state.beliefs.coordinations[msg.aircraft]?.filter {
-        it.state == CoordinationState.ISSUED || it.state == CoordinationState.QUERYING
+        it.state == CoordinationState.ISSUED
     } ?: return state
     if (coords.isEmpty()) return state
 

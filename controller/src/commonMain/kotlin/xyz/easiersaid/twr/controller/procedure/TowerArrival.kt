@@ -20,6 +20,7 @@ import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.ContinueApproach
 import xyz.easiersaid.twr.protocol.Urgency
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
     kind = CommitmentKind.TOWER_ARRIVAL,
@@ -53,6 +54,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO9432_CIRCUIT_REPORTS),
                 guard = AllOf(listOf(InCircuit, PositionReported)),
                 nextStage = TowerArrivalStage.AwaitApproach,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             AtcRule(
                 id = "ARR-ADVANCE-APPROACH",
@@ -60,6 +62,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_10),
                 guard = OnApproach,
                 nextStage = TowerArrivalStage.AwaitApproach,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Fallback for AI aircraft in circuit without position report
             AtcRule(
@@ -68,6 +71,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_10),
                 guard = AllOf(listOf(InCircuit, AiProactive)),
                 nextStage = TowerArrivalStage.AwaitApproach,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         // ── AwaitApproach: sequence, delay, or clear to land ─────────
@@ -85,6 +89,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 action = GoAroundAction,
                 nextStage = TowerArrivalStage.AwaitDownwind,
                 urgency = Urgency.SAFETY,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Extend downwind for spacing when no runway access yet
             AtcRule(
@@ -108,6 +113,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = ExtendDownwindAction,
                 urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Turn base — sequencing decision, NOT a runway-access decision. The controller
             // tells the aircraft to turn base when spacing is adequate and the runway is
@@ -125,6 +131,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = TurnBaseAction,
                 urgency = Urgency.PROGRESSION,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Clear to land — VFR, not touch-and-go
             AtcRule(
@@ -141,6 +148,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 action = ClearLandAction,
                 nextStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.OnReadbackConfirmed,
             ),
             // Clear touch-and-go
             AtcRule(
@@ -157,6 +165,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.OnReadbackConfirmed,
             ),
             // Continue approach when runway not yet clear
             AtcRule(
@@ -170,6 +179,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = ContinueApproachAction,
                 urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         // ── AwaitLandedObserved: aircraft on runway → handoff ────────
@@ -187,6 +197,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_10),
                 guard = AllOf(listOf(PilotGoalIs(PilotGoal.TOUCH_AND_GO), Airborne)),
                 nextStage = TowerArrivalStage.Complete,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Vacate instruction — direct aircraft off the runway. Skipped for
             // touch-and-go: the pilot's plan is to roll and lift off again.
@@ -212,6 +223,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = VacateAction,
                 nextStage = TowerArrivalStage.AwaitVacating,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         // ── AwaitVacating: aircraft leaving runway, hand off to ground ─
@@ -236,6 +248,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.GROUND),
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
     ),

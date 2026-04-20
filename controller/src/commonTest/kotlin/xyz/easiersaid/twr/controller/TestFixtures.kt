@@ -417,6 +417,20 @@ fun positionReportMessage(aircraft: AircraftId, event: ReportEvent): ReceivedMes
 fun goAroundMessage(aircraft: AircraftId): ReceivedMessage =
     ReceivedMessage.Clear(aircraft, Report(listOf(ReportEvent.GoingAround)))
 
+/**
+ * Build a correct readback message for an instruction.
+ * Used in tests where OnReadbackConfirmed rules need readback delivery.
+ */
+fun readbackFor(output: ControllerOutput.Instruct): ReceivedMessage {
+    val atoms = xyz.easiersaid.twr.controller.observe.requiredReadbackAtoms(output.instruction)
+    val elements = atoms.map { SimpleElement(it) }
+    return ReceivedMessage.Clear(output.target, Readback(elements))
+}
+
+/** Extract Instruct outputs from a decision result. */
+fun ControllerDecisionResult.instructs(): List<ControllerOutput.Instruct> =
+    outputs.filterIsInstance<ControllerOutput.Instruct>()
+
 /** Convenience: call controllerDecide with the test world. */
 fun testControllerDecide(
     view: ControllerView,

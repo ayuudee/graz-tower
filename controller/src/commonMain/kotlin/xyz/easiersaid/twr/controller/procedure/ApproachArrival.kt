@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_10_1
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_FREQUENCY_CHANGE
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 /**
  * Approach-arrival procedure — a single-stage handoff procedure for 4e-B.
@@ -49,6 +50,7 @@ fun approachArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = HandoffAction(RoleName.TOWER),
                 nextStage = ApproachArrivalStage.Complete,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
     ),

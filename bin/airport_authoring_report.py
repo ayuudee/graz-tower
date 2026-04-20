@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import xml.etree.ElementTree as element_tree
+import zipfile
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -291,6 +292,17 @@ class OfmxAirspaceBoundary:
 
 
 @dataclass(frozen=True)
+class OpenAirAirspace:
+    airspace_class: str
+    kind: str | None
+    name: str
+    lower_limit: str | None
+    upper_limit: str | None
+    boundaries: list[list[Geo]]
+    source_path: str
+
+
+@dataclass(frozen=True)
 class EndpointAttachment:
     source_component: int
     target_component: int
@@ -453,6 +465,27 @@ def projector(origin: Geo):
         return XY(x, y)
 
     return project
+
+
+def point_in_polygon(point: XY, polygon: list[XY]) -> bool:
+    inside = False
+    for start, end in zip(polygon, polygon[1:] + polygon[:1]):
+        if ((start.y > point.y) != (end.y > point.y)) and (
+            point.x < (end.x - start.x) * (point.y - start.y) / ((end.y - start.y) or 1e-12) + start.x
+        ):
+            inside = not inside
+    return inside
+
+
+def nearest_point_on_segment(point: XY, start: XY, end: XY) -> tuple[float, XY]:
+    dx = end.x - start.x
+    dy = end.y - start.y
+    if dx == 0.0 and dy == 0.0:
+        return point.distance_to(start), start
+    segment_position = (((point.x - start.x) * dx) + ((point.y - start.y) * dy)) / ((dx * dx) + (dy * dy))
+    clamped_position = max(0.0, min(1.0, segment_position))
+    projected = XY(start.x + (clamped_position * dx), start.y + (clamped_position * dy))
+    return point.distance_to(projected), projected
 
 
 def read_dxf_text(path: Path) -> str:
@@ -1244,6 +1277,197 @@ def parse_ofmx(path: Path, airport_code: str) -> dict[str, Any]:
         ),
         "airportAirspacesByMid": airport_airspaces_by_mid,
         "airspaceBoundaries": airport_airspace_boundaries,
+    }
+
+
+def parse_openair_coordinate(value: str) -> Geo | None:
+    parts = value.strip().split()
+    if len(parts) != 4:
+        return None
+    lat_text, lat_hemi, lon_text, lon_hemi = parts
+
+    def convert(component_text: str, hemisphere: str) -> float | None:
+        pieces = component_text.split(":")
+        if len(pieces) != 3:
+            return None
+        try:
+            degrees, minutes, seconds = [float(piece) for piece in pieces]
+        except ValueError:
+            return None
+        value = degrees + (minutes / 60.0) + (seconds / 3600.0)
+        return -value if hemisphere in {"S", "W"} else value
+
+    latitude = convert(lat_text, lat_hemi.upper())
+    longitude = convert(lon_text, lon_hemi.upper())
+    if latitude is None or longitude is None:
+        return None
+    return Geo(latitude, longitude)
+
+
+def canonical_openair_name(name: str) -> str:
+    cleaned = re.sub(r"\s+\(\d+/\d+\)", "", name.strip())
+    cleaned = re.sub(r"(?:\s+\d{3}\.\d{1,3})+$", "", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def openair_kind(name: str) -> str | None:
+    upper = name.upper()
+    for prefix in ("CTR", "TMA", "CTA", "RMZ", "TMZ", "ATZ"):
+        if upper.startswith(prefix):
+            return prefix
+    return None
+
+
+def openair_relevance(
+    name: str,
+    points: list[Geo],
+    airport_position: Geo,
+    airport_code: str,
+    airport_name: str,
+) -> bool:
+    if len(points) < 3:
+        return False
+    name_upper = name.upper()
+    airport_tokens = {
+        airport_code.upper(),
+        *{
+            token
+            for token in re.split(r"[^A-Z0-9]+", airport_name.upper())
+            if len(token) >= 4 and token not in {"AIRPORT", "AERODROME"}
+        },
+    }
+    if any(token and token in name_upper for token in airport_tokens):
+        return True
+
+    project = projector(airport_position)
+    airport_xy = XY(0.0, 0.0)
+    boundary_xy = [project(point) for point in points]
+    if point_in_polygon(airport_xy, boundary_xy):
+        return True
+
+    nearest_distance = min(
+        nearest_point_on_segment(airport_xy, start, end)[0]
+        for start, end in zip(boundary_xy, boundary_xy[1:] + boundary_xy[:1])
+    )
+    return nearest_distance <= 25_000.0
+
+
+def parse_openair_bundle(
+    path: Path,
+    airport_position: Geo,
+    airport_code: str,
+    airport_name: str,
+) -> dict[str, Any]:
+    with zipfile.ZipFile(path) as archive:
+        candidate_names = [
+            name
+            for name in archive.namelist()
+            if name.lower().endswith(".openair.txt") and "/isolated/" in name.lower()
+        ]
+        if not candidate_names:
+            candidate_names = [
+                name
+                for name in archive.namelist()
+                if name.lower().endswith(".openair.txt")
+            ]
+        if not candidate_names:
+            return {
+                "sourcePath": None,
+                "airspaces": [],
+            }
+        source_name = next(
+            (name for name in candidate_names if "seeyou" in name.lower()),
+            candidate_names[0],
+        )
+        text = archive.read(source_name).decode("utf-8", errors="replace")
+
+    grouped_airspaces: dict[tuple[str, str | None, str, str | None, str | None], dict[str, Any]] = {}
+    current: dict[str, Any] | None = None
+
+    def flush_current() -> None:
+        if current is None or len(current["points"]) < 3:
+            return
+        points = current["points"]
+        if not openair_relevance(current["name"], points, airport_position, airport_code, airport_name):
+            return
+        canonical_name = canonical_openair_name(current["name"])
+        key = (
+            current["airspaceClass"],
+            current["kind"],
+            canonical_name,
+            current["lowerLimit"],
+            current["upperLimit"],
+        )
+        existing = grouped_airspaces.get(key)
+        if existing is None:
+            grouped_airspaces[key] = {
+                "airspaceClass": current["airspaceClass"],
+                "kind": current["kind"],
+                "name": canonical_name,
+                "lowerLimit": current["lowerLimit"],
+                "upperLimit": current["upperLimit"],
+                "boundaries": [points],
+            }
+        else:
+            existing["boundaries"].append(points)
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("*"):
+            continue
+        if line.startswith("AC "):
+            flush_current()
+            current = {
+                "airspaceClass": line[3:].strip().upper(),
+                "kind": None,
+                "name": "OPENAIR",
+                "lowerLimit": None,
+                "upperLimit": None,
+                "points": [],
+            }
+            continue
+        if current is None:
+            continue
+        if line.startswith("AY "):
+            current["kind"] = line[3:].strip().upper()
+        elif line.startswith("AN "):
+            current["name"] = line[3:].strip()
+        elif line.startswith("AL "):
+            current["lowerLimit"] = line[3:].strip()
+        elif line.startswith("AH "):
+            current["upperLimit"] = line[3:].strip()
+        elif line.startswith("DP "):
+            point = parse_openair_coordinate(line[3:])
+            if point is not None:
+                current["points"].append(point)
+
+    flush_current()
+
+    parsed_airspaces = [
+        OpenAirAirspace(
+            airspace_class=str(entry["airspaceClass"]),
+            kind=str(entry["kind"]) if entry["kind"] is not None else None,
+            name=str(entry["name"]),
+            lower_limit=str(entry["lowerLimit"]) if entry["lowerLimit"] is not None else None,
+            upper_limit=str(entry["upperLimit"]) if entry["upperLimit"] is not None else None,
+            boundaries=list(entry["boundaries"]),
+            source_path=source_name,
+        )
+        for _, entry in sorted(
+            grouped_airspaces.items(),
+            key=lambda item: (
+                item[0][0],
+                item[0][1] or "",
+                item[0][2],
+                item[0][3] or "",
+                item[0][4] or "",
+            ),
+        )
+    ]
+
+    return {
+        "sourcePath": source_name,
+        "airspaces": parsed_airspaces,
     }
 
 

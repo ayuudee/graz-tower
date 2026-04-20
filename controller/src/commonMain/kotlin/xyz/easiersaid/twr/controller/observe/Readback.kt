@@ -275,12 +275,9 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     // does not satisfy a cancel-takeoff pending entry.
     is HoldPosition -> setOf(HoldingAcknowledgementReadback(cancelTakeoff = false))
     is HoldPositionCancelTakeoff -> setOf(HoldingAcknowledgementReadback(cancelTakeoff = true))
-    // The "stop / immediate takeoff or vacate / immediate takeoff or hold short"
-    // family still pending a dedicated readback atom — see Phase-4 deferred
-    // tracker. Empty set here keeps the current behaviour unchanged.
-    is StopImmediately -> emptySet()
-    is TakeoffImmediatelyOrVacateRunway -> emptySet()
-    is TakeoffImmediatelyOrHoldShort -> emptySet()
+    is StopImmediately -> error("Readback atoms not yet implemented for StopImmediately")
+    is TakeoffImmediatelyOrVacateRunway -> error("Readback atoms not yet implemented for TakeoffImmediatelyOrVacateRunway")
+    is TakeoffImmediatelyOrHoldShort -> error("Readback atoms not yet implemented for TakeoffImmediatelyOrHoldShort")
 
     // ── Level / climb / descent ──────────────────────────────────────────
     is ClimbTo -> setOf(LevelReadback(instruction.level))
@@ -375,10 +372,10 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     // ── Frequency / squawk ───────────────────────────────────────────────
     is ContactFrequency -> instruction.frequency?.let {
         setOf(FrequencyReadback(it, instruction.role))
-    } ?: emptySet()
+    } ?: error("ContactFrequency issued without frequency")
     is MonitorFrequency -> instruction.frequency?.let {
         setOf(FrequencyReadback(it, instruction.role))
-    } ?: emptySet()
+    } ?: error("MonitorFrequency issued without frequency")
     is SetSquawk -> setOf(SquawkReadback(instruction.squawk))
     // Transponder-mode ops: pilot echoes the word, no digit match.
     is ConfirmSquawk -> emptySet()
@@ -388,13 +385,13 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is StopSquawk -> emptySet()
 
     // ── Airspace / emergency / misc ──────────────────────────────────────
-    is DivertTo -> emptySet()
-    is ClearedToEnterControlZone -> emptySet()
-    is RemainOutsideControlledAirspace -> emptySet()
-    is SpecialVfrClearance -> emptySet()
-    is CancelClearance -> emptySet()
+    is DivertTo -> error("Readback atoms not yet implemented for DivertTo")
+    is ClearedToEnterControlZone -> error("Readback atoms not yet implemented for ClearedToEnterControlZone")
+    is RemainOutsideControlledAirspace -> error("Readback atoms not yet implemented for RemainOutsideControlledAirspace")
+    is SpecialVfrClearance -> error("Readback atoms not yet implemented for SpecialVfrClearance")
+    is CancelClearance -> error("Readback atoms not yet implemented for CancelClearance")
     is Disregard -> setOf(DisregardAcknowledgementReadback)
-    is AvoidArea -> emptySet()
+    is AvoidArea -> error("Readback atoms not yet implemented for AvoidArea")
 }
 
 /**

@@ -814,6 +814,24 @@ def render_ground_divergence_zoom(context: SceneContext, output_path: Path) -> N
     for index, point in enumerate(context.ground_points, start=1):
         if context.ground_marker_status.get(index) in {"known_divergence", "suspect"}:
             focus_points.append(point.point)
+    if not focus_points:
+        focus_points = [
+            point
+            for component in context.ground_components
+            for point in collect_points_from_lines(component)
+        ]
+        if not focus_points:
+            focus_points = [point.point for point in context.ground_points]
+    if not focus_points:
+        focus_points = [
+            point
+            for runway in context.apt_runways
+            for point in [runway.start, runway.end]
+        ] + [
+            point
+            for start, end in context.taxi_edges
+            for point in [start, end]
+        ]
     bounds = scene_bounds(focus_points, margin=220.0)
     canvas = make_canvas(bounds)
 
@@ -1855,6 +1873,16 @@ def build_context(manifest_path: Path) -> SceneContext:
         circuit_attachments = []
 
     ofmx_data = report.parse_ofmx(ofmx_path, manifest["airportCode"])
+    openair_data = None
+    if not ofmx_data["airspaces"]:
+        openair_source = manifest["sources"].get("openAirBundle")
+        if isinstance(openair_source, str):
+            openair_data = report.parse_openair_bundle(
+                report.resolve_path(root, openair_source),
+                origin,
+                manifest["airportCode"],
+                manifest.get("airportName") or manifest["airportCode"],
+            )
     reporting_points = [
         ReportingPoint(
             code_id=point.code_id,
@@ -1890,29 +1918,49 @@ def build_context(manifest_path: Path) -> SceneContext:
         (edge.start, edge.end)
         for edge in projected_taxi_route_edges
     ]
-    airspace_shapes = [
-        AirspaceShape(
-            mid=airspace.mid,
-            code_id=airspace.code_id,
-            name=airspace.name or airspace.code_id or airspace.mid,
-            label=airspace.name or airspace.code_id or airspace.mid,
-            lower_limit=report.format_limit(airspace.lower_value, airspace.lower_unit, airspace.lower_reference),
-            upper_limit=report.format_limit(airspace.upper_value, airspace.upper_unit, airspace.upper_reference),
-            category="primary" if (airspace.name or "").startswith(manifest["airportCode"]) else "secondary",
-            has_curve_vertices=any(
-                vertex.code_type != "GRC"
-                for boundary in ofmx_data["airspaceBoundaries"].get(airspace.mid, [])
-                for vertex in boundary.vertices
-            ),
-            boundaries=[
-                [project(vertex.position) for vertex in boundary.vertices]
-                for boundary in ofmx_data["airspaceBoundaries"].get(airspace.mid, [])
-                if len(boundary.vertices) >= 3
-            ],
-        )
-        for airspace in ofmx_data["airspaces"]
-        if ofmx_data["airspaceBoundaries"].get(airspace.mid)
-    ]
+    if ofmx_data["airspaces"]:
+        airspace_shapes = [
+            AirspaceShape(
+                mid=airspace.mid,
+                code_id=airspace.code_id,
+                name=airspace.name or airspace.code_id or airspace.mid,
+                label=airspace.name or airspace.code_id or airspace.mid,
+                lower_limit=report.format_limit(airspace.lower_value, airspace.lower_unit, airspace.lower_reference),
+                upper_limit=report.format_limit(airspace.upper_value, airspace.upper_unit, airspace.upper_reference),
+                category="primary" if (airspace.name or "").startswith(manifest["airportCode"]) else "secondary",
+                has_curve_vertices=any(
+                    vertex.code_type != "GRC"
+                    for boundary in ofmx_data["airspaceBoundaries"].get(airspace.mid, [])
+                    for vertex in boundary.vertices
+                ),
+                boundaries=[
+                    [project(vertex.position) for vertex in boundary.vertices]
+                    for boundary in ofmx_data["airspaceBoundaries"].get(airspace.mid, [])
+                    if len(boundary.vertices) >= 3
+                ],
+            )
+            for airspace in ofmx_data["airspaces"]
+            if ofmx_data["airspaceBoundaries"].get(airspace.mid)
+        ]
+    else:
+        airspace_shapes = [
+            AirspaceShape(
+                mid=f"OPENAIR_{index:03d}",
+                code_id=None,
+                name=airspace.name,
+                label=airspace.name,
+                lower_limit=airspace.lower_limit or "?",
+                upper_limit=airspace.upper_limit or "?",
+                category="primary" if "MARIBOR" in airspace.name.upper() else "secondary",
+                has_curve_vertices=False,
+                boundaries=[
+                    [project(point) for point in boundary]
+                    for boundary in airspace.boundaries
+                    if len(boundary) >= 3
+                ],
+            )
+            for index, airspace in enumerate((openair_data or {"airspaces": []})["airspaces"], start=1)
+        ]
 
     return SceneContext(
         root=root,
@@ -1961,11 +2009,12 @@ def main() -> None:
     default_output = context.root / "cad/airports/rendered" / context.manifest["airportCode"].lower()
     output_dir = args.output_dir.resolve() if args.output_dir is not None else default_output
     output_dir.mkdir(parents=True, exist_ok=True)
+    airport_slug = context.manifest["airportCode"].lower()
 
     files = [
-        output_dir / "lowg_ground_overlay.svg",
-        output_dir / "lowg_ground_glider_area_zoom.svg",
-        output_dir / "lowg_vfr_circuit_overlay.svg",
+        output_dir / f"{airport_slug}_ground_overlay.svg",
+        output_dir / f"{airport_slug}_ground_divergence_zoom.svg",
+        output_dir / f"{airport_slug}_vfr_circuit_overlay.svg",
     ]
     render_ground_overlay(context, files[0])
     render_ground_divergence_zoom(context, files[1])

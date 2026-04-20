@@ -15,6 +15,7 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9870_RUNWAY_INCURSION
 import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_5001
 import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_5005
 import xyz.easiersaid.twr.protocol.Urgency
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 private val DepartureTrigger = AnyOf(listOf(PilotReady, AiProactive))
 
@@ -36,6 +37,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(OnRunway, NoRunwayClearanceIssued)),
                 action = HoldPositionAction,
                 urgency = Urgency.SAFETY,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             AtcRule(
                 id = "DEP-HOLD-IMC",
@@ -46,6 +48,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(SERA_5005),
                 guard = AllOf(listOf(DepartureTrigger, ContactEstablished, Not(WeatherPermitsVfr))),
                 action = HoldPositionAction,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             AtcRule(
                 id = "DEP-LUAW",
@@ -64,6 +67,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 action = LineUpAction,
                 nextStage = TowerDepartureStage.AwaitLineUpObserved,
                 stampReadyAt = true,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Conditional line-up: runway occupied but access granted
             AtcRule(
@@ -82,6 +86,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 action = ConditionalLineUpAction,
                 nextStage = TowerDepartureStage.AwaitLineUpObserved,
                 stampReadyAt = true,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         TowerDepartureStage.AwaitLineUpObserved to listOf(
@@ -91,6 +96,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(SERA_5001, SERA_5005),
                 guard = AllOf(listOf(OnRunway, OnGround, Not(WeatherPermitsVfr))),
                 action = HoldPositionAction,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             AtcRule(
                 id = "DEP-TAKEOFF",
@@ -104,6 +110,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = ClearTakeoffAction,
                 nextStage = TowerDepartureStage.AwaitTakeoffObserved,
+                advancementPolicy = AdvancementPolicy.OnReadbackConfirmed,
             ),
             AtcRule(
                 id = "DEP-HOLD-LINEUP",
@@ -114,6 +121,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     NoActiveInstruction(instructionOfType<xyz.easiersaid.twr.protocol.HoldPosition>()),
                 )),
                 action = HoldPositionAction,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         TowerDepartureStage.AwaitTakeoffObserved to listOf(
@@ -127,6 +135,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(OnRunway, OnGround, Not(RunwayPhysicallyClear))),
                 action = CancelTakeoffAction,
                 urgency = Urgency.SAFETY,
+                advancementPolicy = AdvancementPolicy.Immediate,
                 // Stay at AWAIT_TAKEOFF_OBSERVED — re-evaluate next cycle
             ),
             AtcRule(
@@ -148,6 +157,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ContactFrequency>()),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
     ),

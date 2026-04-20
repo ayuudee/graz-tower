@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -1222,6 +1223,119 @@ def structured_airspace_volumes(
         }
 
     return dict(sorted(volumes.items()))
+
+
+def structured_openair_airspace_volumes(
+    openair_data: dict[str, Any],
+    registry: PointRegistry,
+    airport_code: str,
+    project,
+) -> dict[str, dict[str, Any]]:
+    def projected_openair_volume_type(kind: str | None, name: str) -> str | None:
+        upper_kind = (kind or "").upper()
+        upper_name = name.upper()
+        if upper_kind in {"CTR", "TMA"}:
+            return upper_kind
+        if upper_name.startswith("CTR "):
+            return "CTR"
+        if upper_name.startswith("TMA "):
+            return "TMA"
+        return None
+
+    def parse_openair_limit(limit: str | None) -> tuple[int | None, str | None, str | None]:
+        if not isinstance(limit, str):
+            return (None, None, None)
+        normalized = re.sub(r"\s+", "", limit.upper())
+        if not normalized:
+            return (None, None, None)
+        if normalized in {"GND", "SFC", "0AGL"}:
+            return (0, "FT", "HEI")
+        if normalized.startswith("FL") and normalized[2:].isdigit():
+            return (int(normalized[2:]), "FL", "STD")
+        if normalized.endswith("MSL") and normalized[:-3].isdigit():
+            return (int(normalized[:-3]), "FT", "ALT")
+        if normalized.endswith("AGL") and normalized[:-3].isdigit():
+            return (int(normalized[:-3]), "FT", "HEI")
+        return (None, None, None)
+
+    def display_openair_limit(limit: str | None, value: int | None, unit: str | None, reference: str | None) -> str:
+        if value is not None and unit == "FL" and reference == "STD":
+            return f"FL {value}"
+        if value is not None and unit == "FT" and reference == "ALT":
+            return f"{value} MSL"
+        if value is not None and unit == "FT" and reference == "HEI":
+            return f"{value} AGL"
+        if isinstance(limit, str) and limit.strip():
+            return limit.strip().upper()
+        return "?"
+
+    volumes: dict[str, dict[str, Any]] = {}
+    used_ids: set[str] = set()
+    for index, airspace in enumerate(openair_data.get("airspaces", []), start=1):
+        slug = slugify(airspace.name).upper()
+        base_runtime_id = f"{airport_code}_OPENAIR_{slug or f'{index:03d}'}"
+        runtime_id = base_runtime_id
+        suffix = 2
+        while runtime_id in used_ids:
+            runtime_id = f"{base_runtime_id}_{suffix}"
+            suffix += 1
+        used_ids.add(runtime_id)
+        boundary_point_ids: list[list[str]] = []
+        for boundary_index, boundary in enumerate(airspace.boundaries, start=1):
+            if len(boundary) < 3:
+                continue
+            point_ids: list[str] = []
+            for point_index, point in enumerate(boundary, start=1):
+                point_ids.append(
+                    registry.register(
+                        project(point),
+                        f"{airport_code}_AIRSPACE_{slugify(runtime_id).upper()}_{boundary_index:02d}_{point_index:02d}",
+                        tags=["airspace_boundary"],
+                        sources=["openair"],
+                    )
+                )
+            boundary_point_ids.append(point_ids)
+        if not boundary_point_ids:
+            continue
+        volume_type = projected_openair_volume_type(airspace.kind, airspace.name)
+        airspace_class = airspace.airspace_class if airspace.airspace_class in {"A", "B", "C", "D", "E", "F", "G"} else None
+        lower_value, lower_unit, lower_reference = parse_openair_limit(airspace.lower_limit)
+        upper_value, upper_unit, upper_reference = parse_openair_limit(airspace.upper_limit)
+        upper_name = airspace.name.upper()
+        category = "primary" if airport_code in upper_name or "MARIBOR" in upper_name else "secondary"
+        note = (
+            f"Runtime-usable airspace volume projected from OpenAir boundary geometry ({airspace.source_path})."
+            if volume_type is not None and airspace_class is not None
+            else f"Boundary geometry is available from OpenAir ({airspace.source_path}), but this record does not yet map cleanly to a runtime airspace volume."
+        )
+        volumes[runtime_id] = {
+            "id": runtime_id,
+            "sourceMid": None,
+            "codeId": None,
+            "baseCodeId": None,
+            "codeType": airspace.kind,
+            "name": airspace.name,
+            "label": airspace.name,
+            "lowerValue": lower_value,
+            "lowerUnit": lower_unit,
+            "lowerReference": lower_reference,
+            "upperValue": upper_value,
+            "upperUnit": upper_unit,
+            "upperReference": upper_reference,
+            "lowerLimit": display_openair_limit(airspace.lower_limit, lower_value, lower_unit, lower_reference),
+            "upperLimit": display_openair_limit(airspace.upper_limit, upper_value, upper_unit, upper_reference),
+            "volumeType": volume_type,
+            "airspaceClass": airspace_class,
+            "boundaryPointIds": boundary_point_ids,
+            "category": category,
+            "projectionStatus": (
+                "candidate_runtime_airspace_volume_from_openair"
+                if volume_type is not None and airspace_class is not None
+                else "candidate_boundary_geometry_from_openair"
+            ),
+            "note": note,
+        }
+    return volumes
 
 
 def candidate_airspace_boundary_rings(
@@ -3686,6 +3800,21 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
         registry,
         airport_code,
     )
+    if not candidate_entities["airspaceVolumes"]:
+        openair_source = manifest["sources"].get("openAirBundle")
+        if isinstance(openair_source, str):
+            openair_data = report.parse_openair_bundle(
+                report.resolve_path(root, openair_source),
+                origin,
+                airport_code,
+                manifest.get("airportName") or airport.name,
+            )
+            candidate_entities["airspaceVolumes"] = structured_openair_airspace_volumes(
+                openair_data,
+                registry,
+                airport_code,
+                project,
+            )
 
     for route in manifest_named_mapping(manifest, "vfrRoutes"):
         route_id = route.get("routeId")
@@ -4009,9 +4138,14 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
                 f"No CIFP-style IFR source is configured for {airport_code}, so IFR inventory and runtime IFR projection remain unavailable."
             )
         if not candidate_entities["operationalSectors"] and not core_entities["aerodrome"]["aip"]["operationalSectors"]:
-            projection_gaps.append(
-                f"{airport_code} operational sectors and working airspace geometry have not yet been projected."
-            )
+            if candidate_entities["airspaceVolumes"]:
+                projection_gaps.append(
+                    f"{airport_code} operational sectors are not yet structured, even though a first candidate working-airspace set is now available."
+                )
+            else:
+                projection_gaps.append(
+                    f"{airport_code} operational sectors and working airspace geometry have not yet been projected."
+                )
         if not candidate_entities["publishedVfrProcedures"] and not core_entities["aerodrome"]["aip"]["publishedVfrProcedures"]:
             projection_gaps.append(
                 f"{airport_code} published VFR procedures have not yet been structured."

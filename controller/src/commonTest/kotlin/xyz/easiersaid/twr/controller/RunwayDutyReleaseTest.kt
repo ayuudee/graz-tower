@@ -54,6 +54,19 @@ class RunwayDutyReleaseTest {
 
         assertEquals(TestIds.acBravo, beliefs.runwayDuty?.holder,
             "Arrival should hold the runway after ClearedToLand")
+        // Stage stays at AwaitApproach until readback (OnReadbackConfirmed).
+        val landInstruct = result2.instructs().firstOrNull { it.instruction is ClearedToLand }
+        if (landInstruct != null) {
+            // Deliver readback so stage advances.
+            beliefs = testControllerDecide(
+                towerView(
+                    aircraft = mapOf(TestIds.acAlpha to dep2, TestIds.acBravo to arr2),
+                    receivedMessages = listOf(readbackFor(landInstruct)),
+                    time = SimTime.ofSeconds(22),
+                ),
+                beliefs,
+            ).updatedBeliefs
+        }
         assertEquals(TowerArrivalStage.AwaitLandedObserved,
             beliefs.commitments[TestIds.acBravo]?.stage)
 

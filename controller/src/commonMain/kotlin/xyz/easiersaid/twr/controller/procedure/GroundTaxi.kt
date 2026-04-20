@@ -8,6 +8,7 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_FREQUENCY_CHANGE
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_TAXI
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 /**
  * Ground taxi procedure — handles both departure and arrival flows.
@@ -36,6 +37,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AnyOf(listOf(TaxiRequested, AiProactive)),
                 action = TaxiToHoldingAction,
                 nextStage = GroundDepartureStage.AwaitAtHolding,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         GroundDepartureStage.AwaitAtHolding to listOf(
@@ -58,6 +60,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
                 )),
                 action = HandoffAction(RoleName.TOWER),
+                advancementPolicy = AdvancementPolicy.Immediate,
                 // Stay at AwaitAtHolding. Pruning happens when responsibility actually
                 // transfers (orphan-prune in reconcileCommitments).
             ),
@@ -74,6 +77,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = NoActiveInstruction(instructionOfType<TaxiTo>()),
                 action = TaxiToStandAction,
                 nextStage = GroundArrivalStage.AwaitParked,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         GroundArrivalStage.AwaitParked to listOf(
@@ -83,6 +87,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO9432_TAXI),
                 guard = AtStand,
                 nextStage = GroundArrivalStage.Complete,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
     ),
