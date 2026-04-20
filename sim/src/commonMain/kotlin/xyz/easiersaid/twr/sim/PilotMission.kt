@@ -75,9 +75,9 @@ data class CompoundTask(
                     found = true; child.copy(completed = true)
                 } else child
                 is CompoundTask -> {
-                    val before = child
                     val after = child.markComplete(step)
-                    if (after !== before) found = true
+                    // Check structural equality — copy() creates a new object even if nothing changed
+                    if (after != child) found = true
                     after
                 }
             }

@@ -200,15 +200,12 @@ fun processInstruction(
             mission.copy(activeConstraints = mission.activeConstraints - ActiveConstraint.ExtendingDownwind)
 
         instruction is ClearedToLand || instruction is ClearedTouchAndGo -> {
-            // Landing clearance can arrive at any point during the approach sequence.
-            // Mark all approach steps up to AWAIT_LANDING_CLEARANCE as complete.
             var root = mission.root
-            for (s in listOf(
+            val stepsToMark = listOf(
                 MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.REPORT_BASE,
                 MissionStep.FLY_FINAL, MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE,
-            )) {
-                root = root.markComplete(s)
-            }
+            )
+            for (s in stepsToMark) { root = root.markComplete(s) }
             mission.copy(root = root, stepEnteredAt = now)
         }
 

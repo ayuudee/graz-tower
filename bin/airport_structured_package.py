@@ -29,6 +29,11 @@ def manifest_named_mapping(manifest: dict[str, Any], key: str) -> list[dict[str,
     return manifest.get("namedMappings", {}).get(key, [])
 
 
+def working_dxf_config(manifest: dict[str, Any]) -> dict[str, Any] | None:
+    working_dxf = manifest.get("workingDxf")
+    return working_dxf if isinstance(working_dxf, dict) else None
+
+
 def slugify(text: str) -> str:
     return "".join(character.lower() if character.isalnum() else "_" for character in text).strip("_")
 
@@ -2431,12 +2436,66 @@ def parking_location_type(name: str, reference: authoring.ProjectedParkingPositi
     return "gate" if name[:1].isdigit() else "misc"
 
 
+def working_dxf_document(
+    manifest: dict[str, Any],
+    root: Path,
+) -> report.DxfDocument | None:
+    working_dxf = working_dxf_config(manifest)
+    if working_dxf is None:
+        return None
+    path_value = working_dxf.get("path")
+    if not isinstance(path_value, str):
+        return None
+    return report.parse_dxf(report.resolve_path(root, path_value))
+
+
+def working_dxf_lines(
+    document: report.DxfDocument | None,
+    layer_name: str | None,
+) -> list[report.DxfLine]:
+    if document is None or not isinstance(layer_name, str):
+        return []
+    return [line for line in document.lines if line.layer == layer_name]
+
+
+def working_dxf_points(
+    document: report.DxfDocument | None,
+    layer_name: str | None,
+) -> list[report.DxfPoint]:
+    if document is None or not isinstance(layer_name, str):
+        return []
+    return [point for point in document.points if point.layer == layer_name]
+
+
+def empty_cifp_data() -> dict[str, Any]:
+    return {
+        "procedures": {
+            "SID": {"nameCount": 0, "transitionCount": 0, "names": [], "transitions": []},
+            "STAR": {"nameCount": 0, "transitionCount": 0, "names": [], "transitions": []},
+            "APPCH": {"nameCount": 0, "transitionCount": 0, "names": [], "transitions": []},
+        },
+        "procedureRefs": {
+            "SID": [],
+            "STAR": [],
+            "APPCH": [],
+        },
+        "procedureLegRecords": {
+            "SID": [],
+            "STAR": [],
+            "APPCH": [],
+        },
+        "fixRefs": {},
+        "runways": {},
+        "approachRecords": [],
+    }
+
+
 def authored_parking_rows(
     manifest: dict[str, Any],
     root: Path,
 ) -> tuple[list[tuple[str, report.XY]], list[report.DxfLine], list[str]]:
-    working_dxf = manifest.get("workingDxf")
-    if not isinstance(working_dxf, dict):
+    working_dxf = working_dxf_config(manifest)
+    if working_dxf is None:
         return [], [], []
 
     path_value = working_dxf.get("path")
@@ -2485,6 +2544,110 @@ def authored_parking_rows(
     return named_points, graph_lines, diagnostics
 
 
+def canonical_reference_taxiway_name(
+    kind: str,
+    name: str,
+) -> str | None:
+    stripped_name = str(name).strip()
+    if stripped_name:
+        return stripped_name.upper()
+    if kind.startswith("taxiway_"):
+        return kind.split("_", 1)[1].upper()
+    return None
+
+
+def nearest_reference_taxiway(
+    line: report.DxfLine,
+    reference_edges: list[authoring.ProjectedTaxiRouteEdge],
+) -> tuple[str | None, str | None]:
+    best: tuple[float, float, authoring.ProjectedTaxiRouteEdge] | None = None
+    for edge in reference_edges:
+        if not edge.kind.startswith("taxiway_"):
+            continue
+        start_distance, _ = authoring.nearest_point_on_segment(line.start, edge.start, edge.end)
+        end_distance, _ = authoring.nearest_point_on_segment(line.end, edge.start, edge.end)
+        score = (start_distance + end_distance, max(start_distance, end_distance))
+        if best is None or score < (best[0], best[1]):
+            best = (score[0], score[1], edge)
+    if best is None:
+        return None, None
+
+    edge = best[2]
+    label = canonical_reference_taxiway_name(edge.kind, edge.name)
+    reference_hint = edge.kind if not edge.name else f"{edge.kind}:{edge.name}"
+    return label, reference_hint
+
+
+def unique_name(base_name: str, used_names: set[str]) -> str:
+    if base_name not in used_names:
+        used_names.add(base_name)
+        return base_name
+    suffix = 2
+    while f"{base_name}_{suffix}" in used_names:
+        suffix += 1
+    unique = f"{base_name}_{suffix}"
+    used_names.add(unique)
+    return unique
+
+
+def authored_stand_name(
+    index: int,
+    point: report.XY,
+    references: list[authoring.ProjectedParkingPosition],
+    used_names: set[str],
+) -> tuple[str, authoring.ProjectedParkingPosition | None, float]:
+    reference_parking, reference_distance = nearest_reference_parking(references, point)
+    base_name = (
+        str(reference_parking.name)
+        if reference_parking is not None and isinstance(reference_parking.name, str) and reference_parking.name
+        else f"AUTH_{index:02d}"
+    )
+    return unique_name(base_name, used_names), reference_parking, reference_distance
+
+
+def split_authored_working_graph(
+    lines: list[report.DxfLine],
+    split_points: list[report.XY],
+) -> dict[int, list[report.XY]]:
+    insertions: dict[int, list[report.XY]] = defaultdict(list)
+
+    for line_index, line in enumerate(lines):
+        for point in split_points:
+            distance_m, _ = authoring.nearest_point_on_segment(point, line.start, line.end)
+            if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
+                insertions[line_index].append(point)
+        for other_index, other_line in enumerate(lines):
+            if other_index == line_index:
+                continue
+            for endpoint in (other_line.start, other_line.end):
+                distance_m, _ = authoring.nearest_point_on_segment(endpoint, line.start, line.end)
+                if distance_m <= PARKING_GRAPH_SPLIT_TOLERANCE_METERS:
+                    insertions[line_index].append(endpoint)
+        for other_index in range(line_index + 1, len(lines)):
+            other_line = lines[other_index]
+            intersection = segment_intersection_point(
+                line.start,
+                line.end,
+                other_line.start,
+                other_line.end,
+            )
+            if intersection is None:
+                continue
+            insertions[line_index].append(intersection)
+            insertions[other_index].append(intersection)
+
+    return {
+        line_index: insert_points_into_polyline(
+            [line.start, line.end],
+            unique_xy(points),
+            tolerance_m=PARKING_GRAPH_SPLIT_TOLERANCE_METERS,
+        )[0]
+        for line_index, (line, points) in enumerate(
+            [(line, insertions.get(index, [])) for index, line in enumerate(lines)]
+        )
+    }
+
+
 def nearest_point_on_lines(
     point: report.XY,
     lines: list[report.DxfLine],
@@ -2505,16 +2668,18 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
     airport_code = manifest["airportCode"]
 
     apt_path = report.resolve_path(root, manifest["sources"]["aptDat"])
-    cifp_path = report.resolve_path(root, manifest["sources"]["cifp"])
+    cifp_source = manifest["sources"].get("cifp")
+    cifp_path = report.resolve_path(root, cifp_source) if isinstance(cifp_source, str) else None
     ofmx_path = report.resolve_path(root, manifest["sources"]["ofmx"])
     runways, _, _, _, apt_metadata, _ = report.parse_apt(apt_path)
-    cifp_data = report.parse_cifp(cifp_path)
+    cifp_data = report.parse_cifp(cifp_path) if cifp_path is not None else empty_cifp_data()
     ofmx_data = report.parse_ofmx(ofmx_path, airport_code)
     charts_directory = report.resolve_path(root, manifest["sources"].get("chartsDirectory"))
     chart_fix_data = report.extract_chart_coding_table_fixes(charts_directory)
     airport = ofmx_data["airport"]
     origin = report.Geo(float(apt_metadata["datum_lat"]), float(apt_metadata["datum_lon"]))
     project = report.projector(origin)
+    working_document = working_dxf_document(manifest, root)
 
     registry = PointRegistry()
     geometry_paths: dict[str, dict[str, Any]] = {}

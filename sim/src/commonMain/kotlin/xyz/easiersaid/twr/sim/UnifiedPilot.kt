@@ -23,7 +23,7 @@ data class UnifiedPilotDecision(
     val updatedMission: PilotMission?,
 )
 
-/** Decision altitude threshold — below this, pilot must have clearance or go around. */
+/** Decision altitude threshold — below this without clearance → go around. */
 private const val DECISION_ALTITUDE_M = 100.0
 
 /**
@@ -74,13 +74,14 @@ private fun applyCognitiveOverrides(
     // Override 1: No landing clearance at decision altitude → go around.
     // The physical layer would descend to landing; the cognitive layer knows
     // we don't have clearance. The pilot decides: go around.
-    val awaitingClearance = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE ||
-        currentStep == MissionStep.REPORT_FINAL || currentStep == MissionStep.FLY_FINAL
+    // Only go around when the pilot has REACHED the waiting-for-clearance step,
+    // not when still reporting or flying the approach. The pilot won't go around
+    // while still at REPORT_FINAL — the clearance might arrive any moment.
+    val awaitingClearance = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE
     val belowDecisionAlt = aircraft.altitudeM in 0.01..DECISION_ALTITUDE_M
     val notYetLanded = aircraft.phase !is PilotPhase.LandingRoll && aircraft.phase !is PilotPhase.Vacating
     if (awaitingClearance) {
         if (belowDecisionAlt && notYetLanded) {
-            // Go around: climb, maintain speed, don't descend to landing.
             return kinematic.copy(
                 targetAltitudeM = PilotConstants.CLIMB_SPEED_MPS * 10, // climb to pattern altitude
                 targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
