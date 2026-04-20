@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.controller.bdi
 
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.DecisionTrace
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Urgency
 
@@ -12,6 +13,7 @@ data class OperatorResult(
     val nextStage: Stage?,
     val trace: DecisionTrace,
     val stampReadyAt: SimTime? = null,
+    val advancementPolicy: AdvancementPolicy = AdvancementPolicy.Immediate,
 )
 
 private fun operatorResultFor(rule: AtcRule, action: ProposedAction?, time: SimTime): OperatorResult =
@@ -25,6 +27,7 @@ private fun operatorResultFor(rule: AtcRule, action: ProposedAction?, time: SimT
             regulations = rule.regulations,
         ),
         stampReadyAt = if (rule.stampReadyAt) time else null,
+        advancementPolicy = rule.advancementPolicy,
     )
 
 /** A rule whose guard passed but whose action failed to resolve. Surfaced in traces. */

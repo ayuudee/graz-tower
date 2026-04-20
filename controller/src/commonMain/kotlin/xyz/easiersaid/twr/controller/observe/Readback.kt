@@ -397,25 +397,43 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is AvoidArea -> emptySet()
 }
 
-/** Record outgoing instructions as pending readbacks. Called after arbitration. */
-internal fun BeliefState.recordPendingReadbacks(
+/**
+ * Record outgoing instructions as outstanding coordinations. Called after arbitration.
+ *
+ * For instructions with [AdvancementPolicy.OnReadbackConfirmed], the coordination
+ * carries the advanceToStage. The readback validator will advance the stage when
+ * a correct readback is received.
+ */
+internal fun BeliefState.recordCoordinations(
     outputs: List<xyz.easiersaid.twr.controller.ControllerOutput.Instruct>,
     time: SimTime,
 ): BeliefState {
     if (outputs.isEmpty()) return this
-    val updated = pendingReadbacks.toMutableMap()
+    val updated = coordinations.toMutableMap()
     for (output in outputs) {
-        val entry = PendingReadback(output.instruction, time)
-        updated[output.target] = (updated[output.target] ?: emptyList()) + entry
+        val atoms = requiredReadbackAtoms(output.instruction)
+        val coord = OutstandingCoordination(
+            aircraft = output.target,
+            instruction = output.instruction,
+            expectedReadback = atoms,
+            issuedAt = time,
+            advanceToStage = if (output.advancementPolicy is AdvancementPolicy.OnReadbackConfirmed)
+                output.advanceToStage else null,
+        )
+        updated[output.target] = (updated[output.target] ?: emptyList()) + coord
     }
-    return copy(pendingReadbacks = updated)
+    return copy(coordinations = updated)
 }
 
-/** Drop pending readbacks older than [MAX_READBACK_AGE]. */
-internal fun BeliefState.gcOldPendingReadbacks(now: SimTime): BeliefState {
-    if (pendingReadbacks.isEmpty()) return this
-    val kept = pendingReadbacks.mapValues { (_, entries) ->
-        entries.filter { (now - it.issuedAt) <= MAX_READBACK_AGE }
+/** Drop coordinations older than [MAX_READBACK_AGE] that are still ISSUED. */
+internal fun BeliefState.gcOldCoordinations(now: SimTime): BeliefState {
+    if (coordinations.isEmpty()) return this
+    val kept = coordinations.mapValues { (_, coords) ->
+        coords.filter { coord ->
+            coord.state == CoordinationState.CONFIRMED ||
+                coord.state == CoordinationState.CANCELLED ||
+                (now - coord.issuedAt) <= MAX_READBACK_AGE
+        }
     }.filterValues { it.isNotEmpty() }
-    return if (kept == pendingReadbacks) this else copy(pendingReadbacks = kept)
+    return if (kept == coordinations) this else copy(coordinations = kept)
 }

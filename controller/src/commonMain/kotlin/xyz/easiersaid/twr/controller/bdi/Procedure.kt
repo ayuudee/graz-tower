@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.controller.bdi
 
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 import xyz.easiersaid.twr.protocol.RegulationRef
 import xyz.easiersaid.twr.protocol.Urgency
 
@@ -32,6 +33,18 @@ data class AtcRule(
     val nextStage: Stage? = null,
     val urgency: Urgency = Urgency.PROGRESSION,
     val stampReadyAt: Boolean = false,
+    /**
+     * How the stage transition is applied:
+     * - [AdvancementPolicy.Immediate]: stage advances when the rule fires (stage-only rules,
+     *   rules without readback requirements).
+     * - [AdvancementPolicy.OnReadbackConfirmed]: stage advances only when the pilot's readback
+     *   is confirmed. An [OutstandingCoordination] is created at emission time.
+     *
+     * Default: if the rule has an action AND a nextStage, default to OnReadbackConfirmed.
+     * If no action (stage-only) or no nextStage, default to Immediate.
+     */
+    val advancementPolicy: AdvancementPolicy = if (action != null && nextStage != null)
+        AdvancementPolicy.OnReadbackConfirmed else AdvancementPolicy.Immediate,
 )
 
 /**

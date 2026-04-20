@@ -89,24 +89,22 @@ fun applySupersessionCleanup(
 ): BeliefState {
     if (committedInstructions.isEmpty()) return beliefs
 
-    val pendingReadbacks = committedInstructions.fold(beliefs.pendingReadbacks) { acc, (aircraft, instruction) ->
-        // Disregard is a universal superseder: abandon ALL pending readbacks for this aircraft.
-        // Simplification: real "disregard" can target a specific instruction ("disregard the speed
-        // restriction"). Blanket wipe is acceptable for tower sim where instruction overlap is low.
+    val coordinations = committedInstructions.fold(beliefs.coordinations) { acc, (aircraft, instruction) ->
+        // Disregard is a universal superseder: cancel ALL coordinations for this aircraft.
         if (instruction is Disregard) return@fold acc - aircraft
 
         val relations = relationsIndex[instruction::class] ?: return@fold acc
-        val pending = acc[aircraft] ?: return@fold acc
+        val coords = acc[aircraft] ?: return@fold acc
         val abandonTypes = relations
             .filter { it.pendingReadbackPolicy == PendingReadbackPolicy.ABANDON }
             .map { it.superseded }
             .toSet()
         if (abandonTypes.isEmpty()) return@fold acc
-        val cleaned = pending.filterNot { entry ->
-            abandonTypes.any { type -> type.isInstance(entry.instruction) }
+        val cleaned = coords.filterNot { coord ->
+            abandonTypes.any { type -> type.isInstance(coord.instruction) }
         }
         if (cleaned.isEmpty()) acc - aircraft else acc + (aircraft to cleaned)
     }
-    return if (pendingReadbacks === beliefs.pendingReadbacks) beliefs
-        else beliefs.copy(pendingReadbacks = pendingReadbacks)
+    return if (coordinations === beliefs.coordinations) beliefs
+        else beliefs.copy(coordinations = coordinations)
 }

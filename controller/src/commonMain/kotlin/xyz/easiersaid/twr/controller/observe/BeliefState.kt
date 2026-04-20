@@ -26,11 +26,15 @@ data class BeliefState(
      */
     val arrivalSequence: ArrivalSequence? = null,
     /**
-     * Instructions awaiting readback, keyed by aircraft. Most-recent last.
-     * Populated after arbitration from outgoing [xyz.easiersaid.twr.controller.ControllerOutput.Instruct],
-     * consumed by the readback validator, GC'd by age.
+     * Outstanding instruction-readback coordinations, keyed by aircraft.
+     *
+     * Replaces the former `pendingReadbacks` with a richer lifecycle:
+     * ISSUED → CONFIRMED (on correct readback → stage advances) or
+     * QUERYING (on timeout → controller queries/re-issues).
+     *
+     * `pendingReadbacks` is now a projection: filter for state == ISSUED.
      */
-    val pendingReadbacks: Map<AircraftId, List<PendingReadback>> = emptyMap(),
+    val coordinations: Map<AircraftId, List<OutstandingCoordination>> = emptyMap(),
     /**
      * Reports the controller is expecting from pilots ("call base", "report final",
      * "report 4 miles"). Keyed by (aircraft, expected event) — consumed by the
@@ -65,6 +69,12 @@ data class BeliefState(
      */
     val recentConcerns: Map<AircraftId, RecentConcern> = emptyMap(),
 ) {
+    /** Backward-compatible projection: pending (unconfirmed) coordinations as PendingReadback. */
+    val pendingReadbacks: Map<AircraftId, List<PendingReadback>> get() =
+        coordinations.mapValues { (_, coords) ->
+            coords.filter { it.state == CoordinationState.ISSUED || it.state == CoordinationState.QUERYING }
+                .map { PendingReadback(it.instruction, it.issuedAt) }
+        }.filterValues { it.isNotEmpty() }
     companion object {
         val EMPTY = BeliefState()
         const val MAX_OBSERVATION_HISTORY = 5

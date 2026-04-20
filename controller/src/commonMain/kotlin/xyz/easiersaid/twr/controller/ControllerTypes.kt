@@ -96,6 +96,11 @@ sealed interface ControllerOutput {
         val obligation: ObligationId? = null,
         val urgency: Urgency,
         val trace: DecisionTrace,
+        /** Stage to advance to when readback is confirmed. Null = no stage change. */
+        val advanceToStage: xyz.easiersaid.twr.controller.bdi.Stage? = null,
+        /** Whether this instruction's stage advancement is gated on readback confirmation. */
+        val advancementPolicy: xyz.easiersaid.twr.controller.observe.AdvancementPolicy =
+            xyz.easiersaid.twr.controller.observe.AdvancementPolicy.Immediate,
     ) : ControllerOutput {
         val instruction: AtcInstruction get() = dispatch.instruction
         val condition: ConditionalPredicate?

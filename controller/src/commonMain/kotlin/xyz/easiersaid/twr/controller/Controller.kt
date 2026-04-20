@@ -4,6 +4,9 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import xyz.easiersaid.twr.controller.assess.Feasibility
+import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
+import xyz.easiersaid.twr.controller.observe.CoordinationState
+import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.controller.assess.assessSeparation
 import xyz.easiersaid.twr.controller.assess.emitReactiveOutputs
 import xyz.easiersaid.twr.controller.assess.reactiveInterventions
@@ -38,7 +41,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val contactedAircraft = events.contactedAircraft()
 
     val beliefs = updateBeliefs(previousBeliefs, view)
-        .gcOldPendingReadbacks(view.time)
+        .gcOldCoordinations(view.time)
         .withContactMarked(contactedAircraft)
         .withLocEstablished(events)
         .withActiveRunway(view)
@@ -94,7 +97,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val (responses, afterValidation) = validatedReadbackResponses(view, afterReactiveSupersession)
     val allInstructs = outputs + reactiveInstructs
     val finalBeliefs = afterValidation
-        .recordPendingReadbacks(allInstructs, view.time)
+        .recordCoordinations(allInstructs, view.time)
 
     return ControllerDecisionResult(
         outputs = outputs + reactiveOutputs + companions + responses,
@@ -279,6 +282,8 @@ private fun arbitrate(
             target = action.aircraft, dispatch = action.dispatch,
             obligation = null,
             urgency = result.urgency, trace = result.trace,
+            advanceToStage = result.nextStage,
+            advancementPolicy = result.advancementPolicy,
         )
         state.copy(
             outputs = state.outputs + instruct,
@@ -290,6 +295,13 @@ private fun arbitrate(
     return final.outputs to final.committed
 }
 
+/**
+ * Advance committed stages — but only for rules with [AdvancementPolicy.Immediate].
+ *
+ * For [AdvancementPolicy.OnReadbackConfirmed], the stage advancement is deferred
+ * to the readback validation pipeline. The coordination ledger carries the
+ * advanceToStage; the readback validator applies it when confirmed.
+ */
 private fun advanceCommittedStages(
     beliefs: BeliefState,
     runs: List<ProcedureRun>,
@@ -301,9 +313,9 @@ private fun advanceCommittedStages(
     val isStageOnlyAdvance = result.action == null
     if (!wasCommitted && !isStageOnlyAdvance) return@fold acc
 
-    // Pick up any amendments earlier fold iterations may have made to this
-    // aircraft's commitment; fall back to the cycle-start commitment captured
-    // in the run when it hasn't been touched yet.
+    // OnReadbackConfirmed: stage advancement deferred to readback validation.
+    if (result.advancementPolicy is AdvancementPolicy.OnReadbackConfirmed) return@fold acc
+
     val current = acc.commitments[run.aircraft] ?: run.commitment
     acc.copy(
         commitments = acc.commitments + (run.aircraft to current.copy(
@@ -419,26 +431,33 @@ private fun processReadback(
 ): ReadbackFoldState {
     val readback = msg.transmission as? Readback ?: return state
     if (msg.aircraft !in responsibilities) return state
-    val pending = state.beliefs.pendingReadbacks[msg.aircraft].orEmpty()
-    if (pending.isEmpty()) return state
+    val coords = state.beliefs.coordinations[msg.aircraft]?.filter {
+        it.state == CoordinationState.ISSUED || it.state == CoordinationState.QUERYING
+    } ?: return state
+    if (coords.isEmpty()) return state
 
     // Prefer a CORRECT match (most recent wins). Otherwise find the most recent
     // Incorrect so we correct against the instruction the pilot likely intended.
-    val classified = pending.mapIndexed { i, p -> i to classifyReadback(p.instruction, readback) }
+    val classified = coords.mapIndexed { i, c -> i to classifyReadback(c.instruction, readback) }
     val correctIdx = classified.lastOrNull { it.second is ReadbackVerdict.Correct }?.first
-    if (correctIdx != null) return acceptReadback(msg.aircraft, pending, correctIdx, state)
+    if (correctIdx != null) return acceptReadback(msg.aircraft, coords, correctIdx, state)
 
     val correctionTarget = classified.lastOrNull { it.second is ReadbackVerdict.Incorrect }
         ?: return state
-    return correctReadback(msg.aircraft, pending, correctionTarget, state)
+    return correctReadback(msg.aircraft, coords, correctionTarget, state)
 }
 
+/**
+ * Accept a correct readback: mark the coordination CONFIRMED, advance the
+ * commitment stage if the coordination carries an advanceToStage.
+ */
 private fun acceptReadback(
     aircraft: AircraftId,
-    pending: List<PendingReadback>,
+    coords: List<OutstandingCoordination>,
     correctIdx: Int,
     state: ReadbackFoldState,
 ): ReadbackFoldState {
+    val confirmed = coords[correctIdx]
     val response = ControllerOutput.Respond(
         target = aircraft,
         response = ReadBackCorrect(aircraft),
@@ -448,30 +467,41 @@ private fun acceptReadback(
             regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
         ),
     )
-    val remaining = pending.filterIndexed { i, _ -> i != correctIdx }
-    val newPending = if (remaining.isEmpty())
-        state.beliefs.pendingReadbacks - aircraft
-    else state.beliefs.pendingReadbacks + (aircraft to remaining)
+    // Mark the coordination CONFIRMED and remove it from the active list.
+    val remaining = coords.filterIndexed { i, _ -> i != correctIdx }
+    val allCoords = state.beliefs.coordinations.toMutableMap()
+    if (remaining.isEmpty()) allCoords.remove(aircraft)
+    else allCoords[aircraft] = remaining
+    var beliefs = state.beliefs.copy(coordinations = allCoords)
+
+    // If the coordination carries a stage advancement, apply it now.
+    if (confirmed.advanceToStage != null) {
+        val commitment = beliefs.commitments[aircraft]
+        if (commitment != null) {
+            beliefs = beliefs.copy(
+                commitments = beliefs.commitments + (aircraft to commitment.copy(stage = confirmed.advanceToStage)),
+            )
+        }
+    }
+
     return ReadbackFoldState(
         responses = state.responses + response,
-        beliefs = state.beliefs.copy(pendingReadbacks = newPending),
+        beliefs = beliefs,
     )
 }
 
 private fun correctReadback(
     aircraft: AircraftId,
-    pending: List<PendingReadback>,
+    coords: List<OutstandingCoordination>,
     target: Pair<Int, ReadbackVerdict>,
     state: ReadbackFoldState,
 ): ReadbackFoldState {
     val (idx, verdict) = target
-    // Prefer the stronger correction ("you read back X wrong") when any defect is a
-    // wrong value; fall back to MISSING when the pilot simply omitted atoms.
     val kind = if ((verdict as ReadbackVerdict.Incorrect).hasWrongValue)
         ReadbackCorrectionKind.INCORRECT_ATOM else ReadbackCorrectionKind.MISSING_ATOM
     val response = ControllerOutput.Respond(
         target = aircraft,
-        response = ReadbackCorrection(aircraft, pending[idx].instruction, kind),
+        response = ReadbackCorrection(aircraft, coords[idx].instruction, kind),
         trace = DecisionTrace(
             ruleId = "READBACK-CORRECTION",
             description = "Negative — re-transmit correct ${kind.name.lowercase().replace('_', ' ')}",
