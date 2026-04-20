@@ -161,7 +161,8 @@ private fun stepTransmission(
     }
     MissionStep.REPORT_RUNWAY_VACATED -> {
         val isOff = aircraft.phase is PilotPhase.ClearOfRunway || aircraft.phase is PilotPhase.Taxiing
-        if (isOff) Report(listOf(ReportEvent.RunwayVacated)) else null
+        // Real pilot combines: "runway vacated, request taxi to stand"
+        if (isOff && isFirstTick) Report(listOf(ReportEvent.RunwayVacated)) else null
     }
     MissionStep.GOING_AROUND -> if (isFirstTick) Report(listOf(ReportEvent.GoingAround)) else null
     else -> null
