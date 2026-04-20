@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions") // step handlers + radio helpers
+
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
@@ -77,7 +79,19 @@ private fun handlePhysicsTick(
     return state.copy(aircraft = advanced).emit(listOf(next))
 }
 
-@Suppress("NestedBlockDepth") // transmission deposit adds one level
+/** Earliest moment at or after [earliest] when [frequency] is clear of in-flight transmissions. */
+private fun pilotFrequencyFreeFrom(
+    state: SimState,
+    frequency: xyz.easiersaid.twr.protocol.Frequency,
+    earliest: xyz.easiersaid.twr.protocol.SimTime,
+): xyz.easiersaid.twr.protocol.SimTime {
+    val blocking = state.inFlightTransmissions.values
+        .filter { it.frequency == frequency && it.endsAt > earliest }
+        .maxByOrNull { it.endsAt.millis }
+    return blocking?.endsAt ?: earliest
+}
+
+@Suppress("NestedBlockDepth")
 private fun handlePilotTick(
     state: SimState,
     event: SimEvent.PilotDecisionTick,
@@ -109,14 +123,31 @@ private fun handlePilotTick(
         updated = updated.copy(pilotMission = mission)
     }
 
-    // Deposit transmissions into controller inbox (radio bypass for now — R2 will fix).
+    // Transmit through the radio pipeline — symmetric with controller transmissions.
+    val commEvents = mutableListOf<SimEvent>()
     if (decision.transmissions.isNotEmpty()) {
         val ctrl = state.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
         if (ctrl != null) {
-            val messages = decision.transmissions.map { ReceivedMessage.Clear(event.aircraftId, it) }
-            val inbox = resultState.controllerInbox.toMutableMap()
-            inbox[ctrl.id] = (inbox[ctrl.id] ?: emptyList()) + messages
-            resultState = resultState.copy(controllerInbox = inbox)
+            var txState = resultState
+            var nextFreeAt = state.now
+            for (tx in decision.transmissions) {
+                val proposedStart = maxOf(nextFreeAt, pilotFrequencyFreeFrom(txState, ctrl.frequency, nextFreeAt))
+                val utterance = Utterance.FromPilot(tx)
+                val (withId, txId) = txState.mintTransmissionId()
+                txState = withId
+                val ift = InFlightTransmission(
+                    id = txId,
+                    speaker = SpeakerRef.Pilot(event.aircraftId),
+                    receiver = ReceiverRef.Controller(ctrl.id),
+                    frequency = ctrl.frequency,
+                    utterance = utterance,
+                    startedAt = proposedStart,
+                    endsAt = proposedStart + utteranceDuration(utterance),
+                )
+                commEvents.add(SimEvent.TransmissionStart(time = ift.startedAt, transmission = ift))
+                nextFreeAt = ift.endsAt
+            }
+            resultState = txState
         }
     }
 
@@ -125,7 +156,7 @@ private fun handlePilotTick(
         time = event.time + PilotConstants.PILOT_DECISION_INTERVAL,
         aircraftId = event.aircraftId,
     )
-    return resultState.copy(aircraft = aircraft).emit(listOf(next))
+    return resultState.copy(aircraft = aircraft).emit(commEvents + next)
 }
 
 private fun handleControllerTick(
