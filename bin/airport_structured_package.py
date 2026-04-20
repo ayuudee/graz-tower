@@ -2143,6 +2143,45 @@ def build_ifr_inventory(
     runway_thresholds = cifp_runway_thresholds(cifp_data)
     fix_resolution = cifp_fix_resolution_detail(cifp_data, ofmx_data, chart_fix_data)
     airport_code = ofmx_data["airport"].code_id if ofmx_data.get("airport") is not None else "AIRPORT"
+    total_procedure_names = sum(
+        int(procedures[section].get("nameCount", 0))
+        for section in ("SID", "STAR", "APPCH")
+    )
+    if total_procedure_names == 0:
+        empty_by_name = {"summary": procedures["SID"], "byName": {}}
+        return {
+            "status": "not_available_no_cifp_source",
+            "note": (
+                f"No CIFP-style procedure source is configured for {airport_code}, so IFR inventory and "
+                "runtime IFR projection are not available yet."
+            ),
+            "sids": {
+                "summary": procedures["SID"],
+                "byName": {},
+            },
+            "sidCandidates": {
+                "projectionStatus": "not_available_no_cifp_source",
+                "byName": {},
+            },
+            "stars": {
+                "summary": procedures["STAR"],
+                "byName": {},
+            },
+            "starCandidates": {
+                "projectionStatus": "not_available_no_cifp_source",
+                "byName": {},
+            },
+            "approaches": {
+                "summary": procedures["APPCH"],
+                "byName": {},
+            },
+            "towerScopeApproaches": {
+                "projectionStatus": "not_available_no_cifp_source",
+                "byName": {},
+            },
+            "runwayThresholds": runway_thresholds,
+            "fixResolution": fix_resolution,
+        }
     return {
         "status": "inventory_plus_tower_scope_candidates",
         "note": (
@@ -2434,6 +2473,287 @@ def parking_location_type(name: str, reference: authoring.ProjectedParkingPositi
     if reference is not None and reference.location_type:
         return reference.location_type
     return "gate" if name[:1].isdigit() else "misc"
+
+
+def nearest_runway_pair_name(
+    point: report.XY,
+    runway_shapes_by_pair: dict[str, authoring.RunwayShape],
+) -> str | None:
+    best_pair: tuple[float, str] | None = None
+    for pair_name, runway_shape in runway_shapes_by_pair.items():
+        distance_m, _ = authoring.nearest_point_on_segment(point, runway_shape.start, runway_shape.end)
+        if best_pair is None or distance_m < best_pair[0]:
+            best_pair = (distance_m, pair_name)
+    return best_pair[1] if best_pair is not None else None
+
+
+def nearest_threshold_runway_id(
+    point: report.XY,
+    runway_ids: list[str],
+    registry: PointRegistry,
+    core_entities: dict[str, Any],
+) -> str | None:
+    point_lookup = registry.point_lookup()
+    best_runway: tuple[float, str] | None = None
+    for runway_id in runway_ids:
+        runway = core_entities["aerodrome"]["runways"].get(runway_id)
+        if not isinstance(runway, dict):
+            continue
+        threshold_point_id = runway.get("thresholdPointId")
+        if not isinstance(threshold_point_id, str) or threshold_point_id not in point_lookup:
+            continue
+        distance_m = distance(point, point_lookup[threshold_point_id])
+        if best_runway is None or distance_m < best_runway[0]:
+            best_runway = (distance_m, runway_id)
+    return best_runway[1] if best_runway is not None else None
+
+
+def apply_authored_working_ground(
+    manifest: dict[str, Any],
+    root: Path,
+    scene: authoring.SceneContext,
+    registry: PointRegistry,
+    geometry_paths: dict[str, dict[str, Any]],
+    core_entities: dict[str, Any],
+    candidate_entities: dict[str, Any],
+    airport_code: str,
+    working_document: report.DxfDocument | None,
+    runway_shapes_by_pair: dict[str, authoring.RunwayShape],
+) -> list[str]:
+    working_dxf = working_dxf_config(manifest)
+    if working_dxf is None or working_document is None:
+        return []
+    layers = working_dxf.get("layers")
+    if not isinstance(layers, dict):
+        return []
+
+    ground_layer = layers.get("authoredGroundGraph")
+    stand_layer = layers.get("authoredStandPoints")
+    holding_layer = layers.get("authoredHoldingPoints")
+    manoeuvring_layer = layers.get("authoredManoeuvringAreas")
+    if not isinstance(ground_layer, str):
+        return []
+
+    ground_lines = working_dxf_lines(working_document, ground_layer)
+    stand_points = [point.point for point in working_dxf_points(working_document, stand_layer if isinstance(stand_layer, str) else None)]
+    holding_points = [point.point for point in working_dxf_points(working_document, holding_layer if isinstance(holding_layer, str) else None)]
+    manoeuvring_lines = working_dxf_lines(working_document, manoeuvring_layer if isinstance(manoeuvring_layer, str) else None)
+
+    if not ground_lines:
+        return [f"Working-DXF layer {ground_layer} is configured as authoredGroundGraph but contains no lines."]
+
+    split_polylines = split_authored_working_graph(ground_lines, stand_points + holding_points)
+
+    core_entities["aerodrome"]["taxiways"] = {}
+    core_entities["aerodrome"]["stands"] = {}
+    core_entities["aerodrome"]["aprons"] = {}
+    candidate_entities["holdingPoints"] = {}
+
+    taxiways: dict[str, dict[str, Any]] = {}
+    taxiway_segments: list[dict[str, Any]] = []
+    taxiway_name_counts: dict[str, int] = defaultdict(int)
+    apron_path_ids: list[str] = []
+    notes: list[str] = [
+        f"Authored ground graph imported from working-DXF layer {ground_layer}.",
+    ]
+
+    for line_index, line in enumerate(ground_lines, start=1):
+        split_points = dedupe_consecutive_points(split_polylines.get(line_index - 1, [line.start, line.end]))
+        if len(split_points) < 2:
+            continue
+        for segment_index, (segment_start, segment_end) in enumerate(zip(split_points, split_points[1:]), start=1):
+            if distance(segment_start, segment_end) <= 1e-6:
+                continue
+            segment_line = report.DxfLine(layer=ground_layer, start=segment_start, end=segment_end)
+            taxiway_name, reference_hint = nearest_reference_taxiway(segment_line, scene.taxi_route_edges)
+            display_name = taxiway_name or "AUTH"
+            taxiway_name_counts[display_name] += 1
+            taxiway_id = f"{airport_code}_TWY_{slugify(display_name).upper()}_{taxiway_name_counts[display_name]:02d}"
+            path_id = f"{taxiway_id}_PATH"
+            note_parts = [f"Authored ground segment from {ground_layer}."]
+            if reference_hint is not None:
+                note_parts.append(f"Nearest apt.dat route reference: {reference_hint}.")
+            add_path(
+                geometry_paths,
+                registry,
+                path_id,
+                [segment_start, segment_end],
+                surface="GROUND",
+                width_m=GROUND_WIDTH_METERS,
+                source="cad_working_dxf",
+                projection_status="direct_authored_ground_graph",
+                point_id_prefix=taxiway_id,
+                point_label_prefix=display_name,
+                note=" ".join(note_parts),
+            )
+            taxiway_record = {
+                "id": taxiway_id,
+                "name": display_name,
+                "pathId": path_id,
+                "bidirectional": True,
+                "holdingPoints": [],
+                "projectionStatus": "direct_authored_ground_graph",
+                "note": " ".join(note_parts),
+            }
+            taxiways[taxiway_id] = taxiway_record
+            taxiway_segments.append(
+                {
+                    "taxiwayId": taxiway_id,
+                    "pathId": path_id,
+                    "lineIndex": line_index,
+                    "segmentIndex": segment_index,
+                    "start": segment_start,
+                    "end": segment_end,
+                    "displayName": display_name,
+                }
+            )
+            apron_path_ids.append(path_id)
+
+    used_stand_names: set[str] = set()
+    stand_ids: list[str] = []
+    for stand_index, stand_point in enumerate(sorted(stand_points, key=lambda point: (point.y, point.x)), start=1):
+        stand_name, reference_parking, reference_distance = authored_stand_name(
+            stand_index,
+            stand_point,
+            scene.parking_positions,
+            used_stand_names,
+        )
+        stand_id = f"{airport_code}_STAND_{slugify(stand_name).upper()}"
+        point_id = registry.register(
+            stand_point,
+            f"{stand_id}_POINT",
+            label=stand_name,
+            tags=["stand", parking_location_type(stand_name, reference_parking)],
+            sources=["cad_working_dxf"],
+        )
+        core_entities["aerodrome"]["stands"][stand_id] = {
+            "id": stand_id,
+            "name": stand_name,
+            "pointId": point_id,
+            "locationType": parking_location_type(stand_name, reference_parking),
+            "aircraftTypes": reference_parking.aircraft_types if reference_parking is not None else "",
+            "projectionStatus": "direct_authored_ground_graph",
+            "note": (
+                f"Authored parking point from {stand_layer}; nearest apt.dat reference is {reference_distance:.1f}m away."
+                if reference_parking is not None and isinstance(stand_layer, str)
+                else (
+                    f"Authored parking point from {stand_layer}."
+                    if isinstance(stand_layer, str)
+                    else "Authored parking point from the working DXF."
+                )
+            ),
+        }
+        stand_ids.append(stand_id)
+
+    hold_points_by_pair: dict[str, list[report.XY]] = defaultdict(list)
+    for hold_point in holding_points:
+        pair_name = nearest_runway_pair_name(hold_point, runway_shapes_by_pair)
+        if pair_name is None:
+            continue
+        hold_points_by_pair[pair_name].append(hold_point)
+
+    for pair_name, pair_hold_points in sorted(hold_points_by_pair.items()):
+        pair_runway_ids = pair_name.split("/")
+        for hold_index, hold_point in enumerate(sorted(pair_hold_points, key=lambda point: (point.y, point.x)), start=1):
+            if len(pair_hold_points) == 1 and len(pair_runway_ids) == 2:
+                assigned_runway_ids = pair_runway_ids
+                hold_status = "provisional_shared_pair_hold"
+                hold_note = (
+                    f"Single authored holding point on runway pair {pair_name}; duplicated onto both directions for version 1."
+                )
+            else:
+                assigned_runway_id = nearest_threshold_runway_id(hold_point, pair_runway_ids, registry, core_entities)
+                assigned_runway_ids = [assigned_runway_id] if assigned_runway_id is not None else []
+                hold_status = "direct_authored_hold_point"
+                hold_note = f"Authored holding point from {holding_layer}."
+
+            nearest_segment = min(
+                (
+                    (
+                        authoring.nearest_point_on_segment(hold_point, segment["start"], segment["end"])[0],
+                        segment,
+                    )
+                    for segment in taxiway_segments
+                ),
+                default=None,
+                key=lambda item: item[0],
+            )
+            attached_taxiway_id = nearest_segment[1]["taxiwayId"] if nearest_segment is not None else None
+
+            if not assigned_runway_ids:
+                notes.append(
+                    f"Holding point {hold_index} on runway pair {pair_name} could not be assigned to a runway threshold."
+                )
+
+            for runway_id in assigned_runway_ids:
+                hold_suffix = slugify(runway_id).upper() if isinstance(runway_id, str) else f"PAIR_{hold_index:02d}"
+                holding_point_id = f"{airport_code}_HOLD_{hold_suffix}"
+                point_id = registry.register(
+                    hold_point,
+                    f"{holding_point_id}_POINT",
+                    label=runway_id if isinstance(runway_id, str) else None,
+                    tags=["holding_point", "ground"],
+                    sources=["cad_working_dxf"],
+                )
+                holding_point = {
+                    "id": holding_point_id,
+                    "pointId": point_id,
+                    "name": runway_id if isinstance(runway_id, str) else None,
+                    "type": "CAT_A",
+                    "runwayId": runway_id,
+                    "projectionStatus": hold_status,
+                    "note": hold_note,
+                }
+                candidate_entities["holdingPoints"][holding_point_id] = holding_point
+                if attached_taxiway_id is not None and attached_taxiway_id in taxiways:
+                    taxiways[attached_taxiway_id]["holdingPoints"].append(holding_point)
+
+    core_entities["aerodrome"]["taxiways"] = dict(sorted(taxiways.items()))
+
+    if apron_path_ids or stand_ids:
+        core_entities["aerodrome"]["aprons"][f"{airport_code}_APRON_AUTHORED_GROUND"] = {
+            "id": f"{airport_code}_APRON_AUTHORED_GROUND",
+            "name": "Authored Ground",
+            "pathIds": sorted(apron_path_ids),
+            "standIds": sorted(stand_ids),
+            "projectionStatus": "direct_authored_ground_graph",
+            "note": "Version-1 apron/support geometry projected directly from the authored working-DXF ground graph.",
+        }
+
+    if manoeuvring_lines:
+        for area_index, component in enumerate(report.connected_components(manoeuvring_lines), start=1):
+            component_path_ids: list[str] = []
+            for line_index, line in enumerate(component, start=1):
+                path_id = f"{airport_code}_MANOEUVRING_{area_index:02d}_{line_index:02d}"
+                add_path(
+                    geometry_paths,
+                    registry,
+                    path_id,
+                    [line.start, line.end],
+                    surface="GROUND",
+                    width_m=GROUND_WIDTH_METERS,
+                    source="cad_working_dxf",
+                    projection_status="candidate_authored_manoeuvring_area_perimeter",
+                    point_id_prefix=f"{airport_code}_MANOEUVRING_{area_index:02d}_{line_index:02d}",
+                    note=f"Authored manoeuvring-area perimeter from {manoeuvring_layer}.",
+                )
+                component_path_ids.append(path_id)
+            core_entities["aerodrome"]["aprons"][f"{airport_code}_MANOEUVRING_AREA_{area_index:02d}"] = {
+                "id": f"{airport_code}_MANOEUVRING_AREA_{area_index:02d}",
+                "name": f"Manoeuvring Area {area_index}",
+                "pathIds": component_path_ids,
+                "standIds": [],
+                "projectionStatus": "candidate_authored_manoeuvring_area_perimeter",
+                "note": "Authored manoeuvring area perimeter retained as apron-style geometry because the current core model has no dedicated manoeuvring-area primitive.",
+            }
+        notes.append(
+            f"Manoeuvring-area perimeter from {manoeuvring_layer} retained as apron-style candidate geometry."
+        )
+
+    notes.append(
+        "Taxiway names are currently inferred from the nearest apt.dat route edges and should be confirmed explicitly later."
+    )
+    return notes
 
 
 def working_dxf_document(

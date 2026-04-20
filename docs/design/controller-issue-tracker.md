@@ -139,6 +139,28 @@ All 20 findings from the deep adversarial review resolved:
 | R2 | NM-scale test world, all separation tests rewritten, all-pairs assessment, groundSpeed from sim | T1-4, D1, D3 partial |
 | R3 | Hysteresis (RecentDecision), wake timer in grantPhase, time-based ordering, readback enrichments, departure gap analysis | D2, S2, D3, P1-5, departure starvation |
 
+### Pilot agent + architectural redesign (R1-R3 v2)
+
+| Item | Status |
+|------|--------|
+| R1: Unified pilot (one brain) | **RESOLVED** — unifiedPilotDecide, clearance gate, go-around override |
+| R2: Symmetric radio | **RESOLVED** — both directions through TransmissionStart→End pipeline |
+| R3: Coordination ledger | **RESOLVED** — OutstandingCoordination replaces pendingReadbacks, AdvancementPolicy on AtcRule |
+| R3.3: Tag rules OnReadbackConfirmed | Infrastructure ready, per-rule opt-in tracked |
+| R4: markComplete first-only | **RESOLVED** — structural equality fix (!=  not !==) |
+| R5: BreakOff missed approach | **RESOLVED** — ClimbTo(2000ft) |
+| R6: CALL_INBOUND InitialContact | **RESOLVED** |
+| R7-R9: Tests | Golden path with assertions passes. Pilot cognitive unit tests tracked. |
+| R10: Report runway designator | Tracked — data model enrichment |
+| R11: Escalation prompt | **RESOLVED** — fires once in 15-16.5s window |
+| R12: Combined vacated+taxi | Tracked — data model enrichment |
+| R13: stepEnteredAt | Confirmed safe (same sim-time) |
+| R14: Batch-complete skip | Tracked — saved by go-around replacement |
+| R15: Empty CompoundTask | **RESOLVED** — require(children.isNotEmpty()) |
+| markComplete structural equality | **RESOLVED** — root cause of golden path failure |
+
+Golden path: single-aircraft LOWG arrival → report final → ClearedToLand via radio → land → vacate. Passes with assertions.
+
 ## Cross-aircraft TrafficRef (resolved)
 
 Items 12, 15, and 17 were resolved using compound ProposedAction with optional companion fields
