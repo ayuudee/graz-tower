@@ -201,10 +201,10 @@ class LowgSpike {
 
         println("=== t=${result.now.millis / 1000}s ===")
         result.aircraft.forEach { (id, ac) ->
-            val mStep = ac.pilotMission?.currentStep?.name ?: "no-mission"
-            val mIdx = ac.pilotMission?.currentStepIndex ?: -1
+            val mStep = ac.pilotMission?.currentTask?.step?.name ?: "no-mission"
+            val mComplete = ac.pilotMission?.isComplete ?: false
             val lastReport = ac.pilotMission?.lastReportedLeg
-            println("  $id: phase=${ac.phase} point=${ac.positionPoint} alt=${"%.0f".format(ac.altitudeM)}m spd=${"%.1f".format(ac.speedMps)}m/s mission=$mStep($mIdx) lastReport=$lastReport")
+            println("  $id: phase=${ac.phase} point=${ac.positionPoint} alt=${"%.0f".format(ac.altitudeM)}m spd=${"%.1f".format(ac.speedMps)}m/s mission=$mStep(done=$mComplete) lastReport=$lastReport")
         }
         val beliefs = result.beliefs.values.firstOrNull()
         if (beliefs != null) {

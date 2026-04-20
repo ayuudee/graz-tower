@@ -23,23 +23,15 @@ import xyz.easiersaid.twr.protocol.StartupApproved
 import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TurnBase
 
-/**
- * Pilot cognitive decision function.
- *
- * Sits above the physical pilot (DefaultPilot). Decides what to SAY and when to
- * advance the mission. The physical pilot handles kinematic intent (speed, altitude,
- * waypoints). The cognitive pilot handles communication and step progression.
- *
- * Pure: (AircraftState, PilotMission, WorldIndex, SimTime) → (transmissions, updated mission)
- */
 data class CognitiveDecision(
     val transmissions: List<PilotTransmission>,
     val updatedMission: PilotMission,
 )
 
 /**
- * Main cognitive decision: check step advancement, generate transmissions, process constraints.
+ * Main cognitive decision: advance the HTN, generate transmissions.
  */
+@Suppress("LoopWithTooManyJumpStatements")
 fun pilotCognitiveDecide(
     aircraft: AircraftState,
     mission: PilotMission,
@@ -47,233 +39,188 @@ fun pilotCognitiveDecide(
     now: SimTime,
 ): CognitiveDecision {
     if (mission.isComplete) return CognitiveDecision(emptyList(), mission)
+    val task = mission.currentTask ?: return CognitiveDecision(emptyList(), mission)
 
-    val step = mission.currentStep ?: return CognitiveDecision(emptyList(), mission)
     val transmissions = mutableListOf<PilotTransmission>()
 
-    // Check if current step is complete → advance.
-    val (advanced, advanceTransmissions) = advanceIfComplete(aircraft, mission, worldIndex, now)
-    transmissions.addAll(advanceTransmissions)
-
-    // Generate step-driven transmissions for the CURRENT step (after advancement).
-    val currentStep = advanced.currentStep
-    if (currentStep != null) {
-        val stepTx = stepTransmission(aircraft, advanced, currentStep, worldIndex, now)
-        if (stepTx != null) transmissions.add(stepTx)
+    // Advance completed steps in the tree.
+    var updated = mission
+    var safety = 0
+    while (!updated.isComplete && safety < 5) {
+        val current = updated.currentTask ?: break
+        if (!isStepComplete(aircraft, updated, current, worldIndex, now)) break
+        updated = updated.copy(root = updated.root.markComplete(current.step), stepEnteredAt = now)
+        safety++
     }
 
-    return CognitiveDecision(transmissions, advanced)
-}
-
-// ── Step advancement ─────────────────────────────────────────────────
-
-/**
- * Check if the current step's completion condition is met. If so, advance and
- * check the next step too (multiple steps can complete in one cycle — e.g.,
- * RunUp checks are instant for AI, AwaitLineUp completes if LUAW already received).
- */
-@Suppress("LoopWithTooManyJumpStatements") // multi-step advancement naturally breaks/continues
-private fun advanceIfComplete(
-    aircraft: AircraftState,
-    mission: PilotMission,
-    worldIndex: WorldIndex,
-    now: SimTime,
-): Pair<PilotMission, List<PilotTransmission>> {
-    var current = mission
-    val transmissions = mutableListOf<PilotTransmission>()
-    var safetyCounter = 0
-
-    while (!current.isComplete && safetyCounter < 5) {
-        val step = current.currentStep ?: break
-        if (!isStepComplete(aircraft, current, step, worldIndex, now)) break
-
-        // Step completed — advance.
-        current = current.copy(
-            currentStepIndex = current.currentStepIndex + 1,
-            stepEnteredAt = now,
-            // Clear constraints that don't carry across steps.
-            activeConstraints = current.activeConstraints.filter {
-                it is ActiveConstraint.SpeedRestriction // speed persists
-            }.toSet(),
-        )
-        safetyCounter++
+    // Generate transmission for current step.
+    val currentAfterAdvance = updated.currentTask
+    if (currentAfterAdvance != null) {
+        val tx = stepTransmission(aircraft, updated, currentAfterAdvance.step, now)
+        if (tx != null) transmissions.add(tx)
     }
-    return current to transmissions
+
+    return CognitiveDecision(transmissions, updated)
 }
 
-/** Is this step's completion condition met? */
+// ── Step completion ──────────────────────────────────────────────────
+
 @Suppress("CyclomaticComplexMethod")
 private fun isStepComplete(
     aircraft: AircraftState,
     mission: PilotMission,
-    step: MissionStep,
+    task: PrimitiveTask,
     worldIndex: WorldIndex,
     now: SimTime,
-): Boolean = when (step) {
-    MissionStep.REQUEST_STARTUP -> false // completes when approval received (instruction processing)
-    MissionStep.AWAIT_STARTUP_APPROVAL -> false // instruction-driven
-    MissionStep.REQUEST_TAXI -> false // completes when TaxiTo received
-    MissionStep.TAXI_TO_HOLDING -> aircraft.phase is PilotPhase.HoldingShort
-    MissionStep.RUN_UP_CHECKS -> {
-        // AI: instant. Human: real dwell time.
-        !aircraft.humanPiloted || (now.millis - mission.stepEnteredAt.millis > 10_000)
-    }
-    MissionStep.REPORT_READY -> false // completes after transmitting (see stepTransmission)
-    MissionStep.AWAIT_LINE_UP -> aircraft.phase is PilotPhase.LinedUp
-    MissionStep.AWAIT_TAKEOFF_CLEARANCE -> aircraft.phase is PilotPhase.TakeoffRoll || aircraft.phase is PilotPhase.Climbing
-    MissionStep.FLY_DEPARTURE -> {
-        // Complete when on downwind (circuit) or when leaving controlled airspace (depart).
-        val legs = worldIndex.circuitLegsByPoint[aircraft.positionPoint] ?: emptySet()
-        val isDeparting = mission.goal == xyz.easiersaid.twr.controller.PilotGoal.DEPART
-        LegName.DOWNWIND in legs || (isDeparting && aircraft.phase is PilotPhase.Climbing)
-    }
-    MissionStep.FLY_DOWNWIND -> {
-        val legs = worldIndex.circuitLegsByPoint[aircraft.positionPoint] ?: emptySet()
-        LegName.DOWNWIND in legs // stay until we're established on downwind
-    }
-    MissionStep.REPORT_DOWNWIND -> mission.lastReportedLeg == LegName.DOWNWIND
-    MissionStep.AWAIT_SEQUENCING -> {
-        // Complete when: no extend constraint active AND aircraft is past downwind.
-        val extending = ActiveConstraint.ExtendingDownwind in mission.activeConstraints
-        val legs = worldIndex.circuitLegsByPoint[aircraft.positionPoint] ?: emptySet()
-        val pastDownwind = LegName.BASE in legs || LegName.FINAL in legs
-        !extending && pastDownwind
-    }
-    MissionStep.FLY_BASE -> {
-        val legs = worldIndex.circuitLegsByPoint[aircraft.positionPoint] ?: emptySet()
-        LegName.FINAL in legs
-    }
-    MissionStep.FLY_FINAL -> {
-        // Always advance — landing clearance check is in AWAIT_LANDING_CLEARANCE.
-        val legs = worldIndex.circuitLegsByPoint[aircraft.positionPoint] ?: emptySet()
-        LegName.FINAL in legs
-    }
-    MissionStep.AWAIT_LANDING_CLEARANCE -> false // instruction-driven or escalation
-    MissionStep.LAND -> aircraft.phase is PilotPhase.Vacating || aircraft.phase is PilotPhase.ClearOfRunway
-    MissionStep.REPORT_RUNWAY_VACATED -> {
-        // Complete after transmitting runway-vacated report.
-        val isOff = aircraft.phase is PilotPhase.ClearOfRunway || aircraft.phase is PilotPhase.Taxiing
-        isOff && mission.lastReportedLeg == null // cleared after reporting
-    }
-    MissionStep.AWAIT_VACATE_INSTRUCTION -> false // instruction-driven
-    MissionStep.TAXI_TO_STAND -> aircraft.phase is PilotPhase.Parked
-    MissionStep.SHUTDOWN -> true // terminal
-    MissionStep.GOING_AROUND -> false // transitions to AWAITING_ATC_INSTRUCTION
-    MissionStep.AWAITING_ATC_INSTRUCTION -> false // instruction-driven
+): Boolean = when (task.completionMode) {
+    CompletionMode.INSTANT -> true
+    CompletionMode.TIMED -> !aircraft.humanPiloted || (now.millis - mission.stepEnteredAt.millis > 10_000)
+    CompletionMode.INSTRUCTION_GATED -> false // only completed by processInstruction
+    CompletionMode.REPORTED -> isReportComplete(mission, task.step)
+    CompletionMode.PHYSICAL -> isPhysicallyComplete(aircraft, mission, task.step, worldIndex)
 }
 
-// ── Transmission generation ──────────────────────────────────────────
+private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean = when (step) {
+    MissionStep.REPORT_DOWNWIND -> mission.lastReportedLeg == LegName.DOWNWIND
+    MissionStep.REPORT_BASE -> mission.lastReportedLeg == LegName.BASE
+    MissionStep.REPORT_FINAL -> mission.lastReportedLeg == LegName.FINAL
+    MissionStep.REPORT_READY -> false // completes after transmitting — handled via transmission trigger
+    MissionStep.REPORT_RUNWAY_VACATED -> {
+        val isOff = aircraft@ run {
+            // Can't check aircraft here — we don't have it. Use lastReportedLeg as proxy.
+            mission.lastReportedLeg == null // cleared after runway-vacated report
+        }
+        isOff
+    }
+    MissionStep.CALL_INBOUND -> mission.contactedOnFrequency
+    MissionStep.GOING_AROUND -> true // reported immediately, advance to AWAITING_ATC_INSTRUCTION
+    else -> false
+}
 
-/** Generate the transmission for entering or being in the current step (if any). */
-@Suppress("CyclomaticComplexMethod", "UnusedParameter")
-private fun stepTransmission(
+@Suppress("CyclomaticComplexMethod")
+private fun isPhysicallyComplete(
     aircraft: AircraftState,
     mission: PilotMission,
     step: MissionStep,
     worldIndex: WorldIndex,
+): Boolean {
+    val legs = worldIndex.circuitLegsByPoint[aircraft.positionPoint] ?: emptySet()
+    return when (step) {
+        MissionStep.TAXI_TO_HOLDING -> aircraft.phase is PilotPhase.HoldingShort
+        MissionStep.FLY_DEPARTURE -> {
+            val isDeparting = mission.goal == xyz.easiersaid.twr.controller.PilotGoal.DEPART
+            LegName.DOWNWIND in legs || (isDeparting && aircraft.phase is PilotPhase.Climbing)
+        }
+        MissionStep.FLY_DOWNWIND -> LegName.DOWNWIND in legs
+        MissionStep.AWAIT_SEQUENCING -> {
+            val extending = ActiveConstraint.ExtendingDownwind in mission.activeConstraints
+            !extending && (LegName.BASE in legs || LegName.FINAL in legs)
+        }
+        MissionStep.FLY_BASE -> LegName.FINAL in legs
+        MissionStep.FLY_FINAL -> {
+            // Not a no-op: complete only when past a meaningful distance on final.
+            // Use phase as proxy — aircraft must be physically on Final phase.
+            LegName.FINAL in legs && aircraft.phase is PilotPhase.Final
+        }
+        MissionStep.LAND -> aircraft.phase is PilotPhase.Vacating || aircraft.phase is PilotPhase.ClearOfRunway
+        MissionStep.TAXI_TO_STAND -> aircraft.phase is PilotPhase.Parked
+        else -> false
+    }
+}
+
+// ── Transmission generation ──────────────────────────────────────────
+
+@Suppress("CyclomaticComplexMethod")
+private fun stepTransmission(
+    aircraft: AircraftState,
+    mission: PilotMission,
+    step: MissionStep,
     now: SimTime,
 ): PilotTransmission? = when (step) {
     MissionStep.REQUEST_STARTUP -> Request(RequestStartup())
     MissionStep.REQUEST_TAXI -> Request(RequestTaxi())
     MissionStep.REPORT_READY -> Report(listOf(ReportEvent.Ready))
-    MissionStep.REPORT_DOWNWIND -> {
-        if (mission.lastReportedLeg != LegName.DOWNWIND) {
-            Report(listOf(ReportEvent.Downwind))
-        } else null
-    }
-    MissionStep.FLY_BASE -> {
-        // Report base if not already reported.
-        if (mission.lastReportedLeg != LegName.BASE) {
-            Report(listOf(ReportEvent.Base))
-        } else null
-    }
-    MissionStep.FLY_FINAL -> {
-        // Report final if not already reported.
-        if (mission.lastReportedLeg != LegName.FINAL) {
-            Report(listOf(ReportEvent.Final))
-        } else null
-    }
+    MissionStep.CALL_INBOUND -> Report(listOf(ReportEvent.Downwind)) // inbound call as downwind report for now
+    MissionStep.REPORT_DOWNWIND -> if (mission.lastReportedLeg != LegName.DOWNWIND) Report(listOf(ReportEvent.Downwind)) else null
+    MissionStep.REPORT_BASE -> if (mission.lastReportedLeg != LegName.BASE) Report(listOf(ReportEvent.Base)) else null
+    MissionStep.REPORT_FINAL -> if (mission.lastReportedLeg != LegName.FINAL) Report(listOf(ReportEvent.Final)) else null
     MissionStep.AWAIT_LANDING_CLEARANCE -> {
-        // Escalation: query at threshold. Go-around handled separately.
         val elapsed = now.millis - mission.stepEnteredAt.millis
-        if (elapsed > 15_000) { // 15s without clearance — query
-            Report(listOf(ReportEvent.Final)) // re-report final as a prompt
-        } else null
+        if (elapsed > 15_000) Report(listOf(ReportEvent.Final)) else null // escalation prompt
     }
     MissionStep.REPORT_RUNWAY_VACATED -> {
         val isOff = aircraft.phase is PilotPhase.ClearOfRunway || aircraft.phase is PilotPhase.Taxiing
         if (isOff) Report(listOf(ReportEvent.RunwayVacated)) else null
     }
     MissionStep.GOING_AROUND -> Report(listOf(ReportEvent.GoingAround))
-    // Steps that don't generate transmissions.
     else -> null
 }
 
 // ── Instruction processing ───────────────────────────────────────────
 
 /**
- * Process an ATC instruction received by the pilot. Updates the mission state.
- * Called from Step.kt when the pilot hears an instruction.
+ * Process an ATC instruction. Updates the mission by marking steps complete
+ * or modifying constraints. Uses step identity (name), not index arithmetic.
  */
-@Suppress("CyclomaticComplexMethod") // instruction dispatch — one branch per instruction type
+@Suppress("CyclomaticComplexMethod")
 fun processInstruction(
     instruction: AtcInstruction,
     mission: PilotMission,
     now: SimTime,
 ): PilotMission {
-    val step = mission.currentStep ?: return mission
+    val task = mission.currentTask ?: return mission
+    val step = task.step
+
     return when {
-        // Startup approval → advance past AWAIT_STARTUP_APPROVAL.
         instruction is StartupApproved && step == MissionStep.AWAIT_STARTUP_APPROVAL ->
-            mission.copy(currentStepIndex = mission.currentStepIndex + 1, stepEnteredAt = now)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // TaxiTo → advance past REQUEST_TAXI.
         instruction is TaxiTo && step == MissionStep.REQUEST_TAXI ->
-            mission.copy(currentStepIndex = mission.currentStepIndex + 1, stepEnteredAt = now)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // LineUpAndWait → advance past AWAIT_LINE_UP.
         instruction is LineUpAndWait && step == MissionStep.AWAIT_LINE_UP ->
-            mission.copy(currentStepIndex = mission.currentStepIndex + 1, stepEnteredAt = now)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // ClearedForTakeoff → advance past AWAIT_TAKEOFF_CLEARANCE.
-        instruction is ClearedForTakeoff &&
-            (step == MissionStep.AWAIT_TAKEOFF_CLEARANCE || step == MissionStep.AWAIT_LINE_UP) -> {
-            val depIdx = mission.steps.indexOf(MissionStep.FLY_DEPARTURE)
-            mission.copy(currentStepIndex = depIdx.coerceAtLeast(mission.currentStepIndex + 1), stepEnteredAt = now)
-        }
+        instruction is ClearedForTakeoff && (step == MissionStep.AWAIT_TAKEOFF_CLEARANCE || step == MissionStep.AWAIT_LINE_UP) ->
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // ExtendDownwind → add constraint, stay on downwind.
         instruction is ExtendDownwind ->
             mission.copy(activeConstraints = mission.activeConstraints + ActiveConstraint.ExtendingDownwind)
 
-        // TurnBase → remove extend constraint, resume base turn.
         instruction is TurnBase ->
             mission.copy(activeConstraints = mission.activeConstraints - ActiveConstraint.ExtendingDownwind)
 
-        // ClearedToLand → advance past AWAIT_LANDING_CLEARANCE.
         instruction is ClearedToLand && step == MissionStep.AWAIT_LANDING_CLEARANCE ->
-            mission.copy(currentStepIndex = mission.currentStepIndex + 1, stepEnteredAt = now)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // ClearedTouchAndGo → same as ClearedToLand for mission advancement.
         instruction is ClearedTouchAndGo && step == MissionStep.AWAIT_LANDING_CLEARANCE ->
-            mission.copy(currentStepIndex = mission.currentStepIndex + 1, stepEnteredAt = now)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // AfterLandingVacateVia → advance past AWAIT_VACATE_INSTRUCTION.
         instruction is AfterLandingVacateVia && step == MissionStep.AWAIT_VACATE_INSTRUCTION ->
-            mission.copy(currentStepIndex = mission.currentStepIndex + 1, stepEnteredAt = now)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // TaxiTo (post-landing) → advance past AWAIT_VACATE_INSTRUCTION or TAXI_TO_STAND entry.
-        instruction is TaxiTo &&
-            (step == MissionStep.AWAIT_VACATE_INSTRUCTION || step == MissionStep.TAXI_TO_STAND) -> {
-            val taxiIdx = mission.steps.indexOf(MissionStep.TAXI_TO_STAND)
-            mission.copy(currentStepIndex = taxiIdx.coerceAtLeast(mission.currentStepIndex), stepEnteredAt = now)
+        instruction is TaxiTo && (step == MissionStep.AWAIT_VACATE_INSTRUCTION || step == MissionStep.TAXI_TO_STAND) ->
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
+
+        // Go-around: replace the CIRCUIT compound with GO_AROUND + fresh CIRCUIT.
+        instruction is GoAround || instruction is BreakOff -> {
+            val newRoot = mission.root.replaceChild(
+                predicate = { it is CompoundTask && it.name == "CIRCUIT" },
+                replacement = CompoundTask("CIRCUIT_AFTER_GA", listOf(
+                    goAroundTask(),
+                    circuitTask(), // single source of truth — reuses the same decomposition
+                )),
+            )
+            mission.copy(
+                root = newRoot, stepEnteredAt = now,
+                activeConstraints = emptySet(), lastReportedLeg = null,
+            )
         }
 
-        // GoAround → interrupt to GOING_AROUND state.
-        instruction is GoAround -> goAroundMission(mission, now)
-        instruction is BreakOff -> goAroundMission(mission, now)
+        // Joining instructions for arriving aircraft.
+        instruction is TaxiTo && step == MissionStep.AWAIT_JOINING_INSTRUCTIONS ->
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // ContactFrequency → reset contact flag.
         instruction is ContactFrequency ->
             mission.copy(contactedOnFrequency = false)
 
@@ -281,42 +228,12 @@ fun processInstruction(
     }
 }
 
-/** Transition mission to go-around state. Pilot notifies tower, then awaits instruction. */
-private fun goAroundMission(mission: PilotMission, now: SimTime): PilotMission {
-    // Insert GOING_AROUND + AWAITING_ATC_INSTRUCTION at current position,
-    // then append remaining circuit steps for the re-sequence.
-    val circuitSteps = listOf(
-        MissionStep.GOING_AROUND,
-        MissionStep.AWAITING_ATC_INSTRUCTION,
-        MissionStep.FLY_DEPARTURE,
-        MissionStep.FLY_DOWNWIND,
-        MissionStep.REPORT_DOWNWIND,
-        MissionStep.AWAIT_SEQUENCING,
-        MissionStep.FLY_BASE,
-        MissionStep.FLY_FINAL,
-        MissionStep.AWAIT_LANDING_CLEARANCE,
-        MissionStep.LAND,
-        MissionStep.REPORT_RUNWAY_VACATED,
-        MissionStep.AWAIT_VACATE_INSTRUCTION,
-        MissionStep.TAXI_TO_STAND,
-        MissionStep.SHUTDOWN,
-    )
-    return mission.copy(
-        steps = circuitSteps,
-        currentStepIndex = 0,
-        stepEnteredAt = now,
-        activeConstraints = emptySet(),
-        lastReportedLeg = null,
-    )
-}
-
-/**
- * Update lastReportedLeg after a position report transmission.
- */
+/** Update lastReportedLeg after a position report transmission. */
 fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission = when (event) {
     is ReportEvent.Downwind -> mission.copy(lastReportedLeg = LegName.DOWNWIND)
     is ReportEvent.Base -> mission.copy(lastReportedLeg = LegName.BASE)
     is ReportEvent.Final -> mission.copy(lastReportedLeg = LegName.FINAL)
-    is ReportEvent.RunwayVacated -> mission.copy(lastReportedLeg = null) // clear for next circuit
+    is ReportEvent.RunwayVacated -> mission.copy(lastReportedLeg = null)
+    is ReportEvent.Ready -> mission.copy(root = mission.root.markComplete(MissionStep.REPORT_READY))
     else -> mission
 }
