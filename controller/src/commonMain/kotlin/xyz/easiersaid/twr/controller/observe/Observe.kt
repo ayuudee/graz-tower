@@ -20,6 +20,11 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
     // Append current observations to history buffer (bounded ring, last MAX_OBSERVATION_HISTORY).
     val history = buildObservationHistory(current.previousPositions, observed, view.time, tracked)
 
+    // Prune per-aircraft maps for aircraft no longer tracked.
+    val prunedConcerns = current.recentConcerns.filterKeys { it in tracked }
+    val prunedReports = current.outstandingReports.filterKeys { it in tracked }
+    val prunedCoords = current.coordinations.filterKeys { it in tracked }
+
     return current.copy(
         trackedAircraft = tracked,
         runwayBeliefs = view.runways,
@@ -27,6 +32,9 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
         aircraftLastObserved = lastObserved,
         establishedLocaliser = locEstablished,
         previousPositions = history,
+        recentConcerns = prunedConcerns,
+        outstandingReports = prunedReports,
+        coordinations = prunedCoords,
     )
 }
 

@@ -26,6 +26,10 @@ data class PilotMission(
     val stepEnteredAt: SimTime = SimTime.ZERO,
     /** Active runway for circuit reports. Set from the aircraft's assigned circuit. */
     val activeRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
+    /** Set true when pilot has reported runway vacated. Used by REPORT_RUNWAY_VACATED completion. */
+    val reportedVacated: Boolean = false,
+    /** Set true when ClearedToLand/ClearedTouchAndGo received. Used by go-around decision. */
+    val hasClearance: Boolean = false,
 ) {
     /** The current primitive task being executed (leftmost incomplete leaf). */
     val currentTask: PrimitiveTask? get() = root.currentPrimitive()

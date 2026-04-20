@@ -86,13 +86,7 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     MissionStep.REPORT_BASE -> mission.lastReportedLeg == LegName.BASE
     MissionStep.REPORT_FINAL -> mission.lastReportedLeg == LegName.FINAL
     MissionStep.REPORT_READY -> false // completes after transmitting — handled via transmission trigger
-    MissionStep.REPORT_RUNWAY_VACATED -> {
-        val isOff = aircraft@ run {
-            // Can't check aircraft here — we don't have it. Use lastReportedLeg as proxy.
-            mission.lastReportedLeg == null // cleared after runway-vacated report
-        }
-        isOff
-    }
+    MissionStep.REPORT_RUNWAY_VACATED -> mission.reportedVacated
     MissionStep.CALL_INBOUND -> mission.contactedOnFrequency
     MissionStep.GOING_AROUND -> true // reported immediately, advance to AWAITING_ATC_INSTRUCTION
     else -> false
@@ -204,13 +198,14 @@ fun processInstruction(
             mission.copy(activeConstraints = mission.activeConstraints - ActiveConstraint.ExtendingDownwind)
 
         instruction is ClearedToLand || instruction is ClearedTouchAndGo -> {
-            var root = mission.root
+            val withClearance = mission.copy(hasClearance = true)
+            var root = withClearance.root
             val stepsToMark = listOf(
                 MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.REPORT_BASE,
                 MissionStep.FLY_FINAL, MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE,
             )
             for (s in stepsToMark) { root = root.markComplete(s) }
-            mission.copy(root = root, stepEnteredAt = now)
+            withClearance.copy(root = root, stepEnteredAt = now)
         }
 
         instruction is AfterLandingVacateVia && step == MissionStep.AWAIT_VACATE_INSTRUCTION ->
@@ -257,7 +252,7 @@ fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission =
     is ReportEvent.Downwind -> mission.copy(lastReportedLeg = LegName.DOWNWIND)
     is ReportEvent.Base -> mission.copy(lastReportedLeg = LegName.BASE)
     is ReportEvent.Final -> mission.copy(lastReportedLeg = LegName.FINAL)
-    is ReportEvent.RunwayVacated -> mission.copy(lastReportedLeg = null)
+    is ReportEvent.RunwayVacated -> mission.copy(lastReportedLeg = null, reportedVacated = true)
     is ReportEvent.Ready -> mission.copy(root = mission.root.markComplete(MissionStep.REPORT_READY))
     else -> mission
 }

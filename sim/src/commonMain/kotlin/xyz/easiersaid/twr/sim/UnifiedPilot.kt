@@ -74,10 +74,12 @@ private fun applyCognitiveOverrides(
     // Override 1: No landing clearance at decision altitude → go around.
     // The physical layer would descend to landing; the cognitive layer knows
     // we don't have clearance. The pilot decides: go around.
-    // Only go around when the pilot has REACHED the waiting-for-clearance step,
-    // not when still reporting or flying the approach. The pilot won't go around
-    // while still at REPORT_FINAL — the clearance might arrive any moment.
-    val awaitingClearance = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE
+    // Go around at any approach step below decision altitude without clearance.
+    // The hasClearance flag is set by processInstruction when ClearedToLand received.
+    val onApproach = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE ||
+        currentStep == MissionStep.REPORT_FINAL || currentStep == MissionStep.FLY_FINAL ||
+        currentStep == MissionStep.FLY_BASE || currentStep == MissionStep.REPORT_BASE
+    val awaitingClearance = onApproach && !mission.hasClearance
     val belowDecisionAlt = aircraft.altitudeM in 0.01..DECISION_ALTITUDE_M
     val notYetLanded = aircraft.phase !is PilotPhase.LandingRoll && aircraft.phase !is PilotPhase.Vacating
     if (awaitingClearance) {

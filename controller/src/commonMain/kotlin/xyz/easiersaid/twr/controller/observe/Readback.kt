@@ -426,14 +426,11 @@ internal fun BeliefState.recordCoordinations(
 }
 
 /** Drop coordinations older than [MAX_READBACK_AGE] that are still ISSUED. */
+/** Drop ISSUED coordinations older than [MAX_READBACK_AGE]. CONFIRMED/CANCELLED are never stored. */
 internal fun BeliefState.gcOldCoordinations(now: SimTime): BeliefState {
     if (coordinations.isEmpty()) return this
     val kept = coordinations.mapValues { (_, coords) ->
-        coords.filter { coord ->
-            coord.state == CoordinationState.CONFIRMED ||
-                coord.state == CoordinationState.CANCELLED ||
-                (now - coord.issuedAt) <= MAX_READBACK_AGE
-        }
+        coords.filter { (now - it.issuedAt) <= MAX_READBACK_AGE }
     }.filterValues { it.isNotEmpty() }
     return if (kept == coordinations) this else copy(coordinations = kept)
 }

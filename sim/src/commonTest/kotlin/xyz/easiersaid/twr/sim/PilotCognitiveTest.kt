@@ -202,6 +202,29 @@ class PilotCognitiveTest {
     }
 
     @Test
+    fun `markComplete traverses past unchanged compound siblings`() {
+        // This is the exact bug shape: ARRIVAL_JOIN (compound, all complete, structurally unchanged
+        // after markComplete) followed by CIRCUIT (compound, containing the target step).
+        // The old reference-identity check (!==) would set found=true after ARRIVAL_JOIN
+        // because copy() creates a new object, and skip CIRCUIT entirely.
+        val tree = CompoundTask("ARRIVE", listOf(
+            CompoundTask("ARRIVAL_JOIN", listOf(
+                PrimitiveTask(MissionStep.CALL_INBOUND, CompletionMode.REPORTED, completed = true),
+                PrimitiveTask(MissionStep.AWAIT_JOINING_INSTRUCTIONS, CompletionMode.INSTRUCTION_GATED, completed = true),
+            )),
+            CompoundTask("CIRCUIT", listOf(
+                PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL, completed = true),
+                PrimitiveTask(MissionStep.REPORT_FINAL, CompletionMode.REPORTED), // target — incomplete
+                PrimitiveTask(MissionStep.AWAIT_LANDING_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+            )),
+        ))
+        val marked = tree.markComplete(MissionStep.REPORT_FINAL)
+        val circuit = marked.children[1] as CompoundTask
+        val reportFinal = circuit.children[1] as PrimitiveTask
+        assertTrue(reportFinal.completed, "REPORT_FINAL in CIRCUIT should be marked despite ARRIVAL_JOIN being unchanged")
+    }
+
+    @Test
     fun `markComplete does not mark already-complete instances`() {
         val tree = CompoundTask("ROOT", listOf(
             PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL, completed = true),
