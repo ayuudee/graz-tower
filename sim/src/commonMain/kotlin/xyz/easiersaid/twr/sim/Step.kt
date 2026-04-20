@@ -77,7 +77,7 @@ private fun handlePhysicsTick(
     return state.copy(aircraft = advanced).emit(listOf(next))
 }
 
-@Suppress("NestedBlockDepth") // cognitive pilot layer adds one nesting level
+@Suppress("NestedBlockDepth") // transmission deposit adds one level
 private fun handlePilotTick(
     state: SimState,
     event: SimEvent.PilotDecisionTick,
@@ -85,37 +85,38 @@ private fun handlePilotTick(
     val ac = state.aircraft[event.aircraftId]
         ?: return state to emptyList()
 
-    // Physical layer: kinematics.
-    val intent = DefaultPilot.decide(PilotView(state.now, ac, state.worldIndex))
+    // One pilot, one brain, one decision.
+    val decision = unifiedPilotDecide(ac, state.worldIndex, state.now)
+
+    // Apply intent to aircraft state.
     var updated = ac.copy(
-        targetSpeedMps = intent.targetSpeedMps,
-        phase = intent.phase,
-        route = intent.route,
-        targetAltitudeM = intent.targetAltitudeM,
+        targetSpeedMps = decision.intent.targetSpeedMps,
+        phase = decision.intent.phase,
+        route = decision.intent.route,
+        targetAltitudeM = decision.intent.targetAltitudeM,
     )
 
-    // Cognitive layer: mission step advancement + pilot transmissions.
+    // Update mission (with report tracking).
     var resultState = state
-    val mission = updated.pilotMission
-    if (mission != null && !mission.isComplete) {
-        val cognitive = pilotCognitiveDecide(updated, mission, state.worldIndex, state.now)
-        var updatedMission = cognitive.updatedMission
-        for (tx in cognitive.transmissions) {
+    val rawMission: PilotMission? = decision.updatedMission
+    if (rawMission != null) {
+        var mission: PilotMission = rawMission
+        for (tx in decision.transmissions) {
             if (tx is xyz.easiersaid.twr.protocol.Report) {
-                for (evt in tx.events) { updatedMission = updateAfterReport(updatedMission, evt) }
+                for (evt in tx.events) { mission = updateAfterReport(mission, evt) }
             }
         }
-        updated = updated.copy(pilotMission = updatedMission)
+        updated = updated.copy(pilotMission = mission)
+    }
 
-        // Deposit transmissions directly into controller inbox (bypasses radio for prototype).
-        if (cognitive.transmissions.isNotEmpty()) {
-            val ctrl = state.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
-            if (ctrl != null) {
-                val messages = cognitive.transmissions.map { ReceivedMessage.Clear(event.aircraftId, it) }
-                val inbox = resultState.controllerInbox.toMutableMap()
-                inbox[ctrl.id] = (inbox[ctrl.id] ?: emptyList()) + messages
-                resultState = resultState.copy(controllerInbox = inbox)
-            }
+    // Deposit transmissions into controller inbox (radio bypass for now — R2 will fix).
+    if (decision.transmissions.isNotEmpty()) {
+        val ctrl = state.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
+        if (ctrl != null) {
+            val messages = decision.transmissions.map { ReceivedMessage.Clear(event.aircraftId, it) }
+            val inbox = resultState.controllerInbox.toMutableMap()
+            inbox[ctrl.id] = (inbox[ctrl.id] ?: emptyList()) + messages
+            resultState = resultState.copy(controllerInbox = inbox)
         }
     }
 
