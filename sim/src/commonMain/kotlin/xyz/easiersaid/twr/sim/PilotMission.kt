@@ -39,14 +39,32 @@ data class PilotMission(
 // ── Task tree ────────────────────────────────────────────────────────
 
 /**
+ * Typed task name for compound tasks. Eliminates stringly-typed dispatch
+ * in [derivePilotGoal] and go-around subtree replacement.
+ */
+sealed interface TaskName {
+    data object Depart : TaskName
+    data object Arrive : TaskName
+    data object TouchAndGo : TaskName
+    data object Transit : TaskName
+    data object GroundDeparture : TaskName
+    data object GroundArrival : TaskName
+    data object Circuit : TaskName
+    data object CircuitAfterGoAround : TaskName
+    data object CircuitTraining : TaskName
+    data object ArrivalJoin : TaskName
+    data object GoAround : TaskName
+}
+
+/**
  * A compound task that decomposes into ordered children.
  * Children are executed left-to-right. The compound is complete when all children are complete.
  */
 data class CompoundTask(
-    val name: String,
+    val name: TaskName,
     val children: List<TaskNode>,
 ) : TaskNode {
-    init { require(children.isNotEmpty()) { "CompoundTask '$name' must have at least one child" } }
+    init { require(children.isNotEmpty()) { "CompoundTask '${name::class.simpleName}' must have at least one child" } }
     override val isComplete: Boolean get() = children.all { it.isComplete }
 
     /** Find the leftmost incomplete primitive leaf. */
@@ -155,7 +173,7 @@ enum class MissionStep {
 // ── Task tree construction ───────────────────────────────────────────
 
 /** Build the GROUND_DEPARTURE compound task. */
-fun groundDepartureTask(): CompoundTask = CompoundTask("GROUND_DEPARTURE", listOf(
+fun groundDepartureTask(): CompoundTask = CompoundTask(TaskName.GroundDeparture, listOf(
     PrimitiveTask(MissionStep.REQUEST_STARTUP, CompletionMode.INSTRUCTION_GATED),
     PrimitiveTask(MissionStep.AWAIT_STARTUP_APPROVAL, CompletionMode.INSTRUCTION_GATED),
     PrimitiveTask(MissionStep.REQUEST_TAXI, CompletionMode.INSTRUCTION_GATED),
@@ -167,7 +185,7 @@ fun groundDepartureTask(): CompoundTask = CompoundTask("GROUND_DEPARTURE", listO
 ))
 
 /** Build the CIRCUIT compound task (downwind through landing). */
-fun circuitTask(): CompoundTask = CompoundTask("CIRCUIT", listOf(
+fun circuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
     PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
     PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
     PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
@@ -181,13 +199,13 @@ fun circuitTask(): CompoundTask = CompoundTask("CIRCUIT", listOf(
 ))
 
 /** Build the ARRIVAL_JOIN compound task (inbound call + joining). */
-fun arrivalJoinTask(): CompoundTask = CompoundTask("ARRIVAL_JOIN", listOf(
+fun arrivalJoinTask(): CompoundTask = CompoundTask(TaskName.ArrivalJoin, listOf(
     PrimitiveTask(MissionStep.CALL_INBOUND, CompletionMode.REPORTED),
     PrimitiveTask(MissionStep.AWAIT_JOINING_INSTRUCTIONS, CompletionMode.INSTRUCTION_GATED),
 ))
 
 /** Build the GROUND_ARRIVAL compound task. */
-fun groundArrivalTask(): CompoundTask = CompoundTask("GROUND_ARRIVAL", listOf(
+fun groundArrivalTask(): CompoundTask = CompoundTask(TaskName.GroundArrival, listOf(
     PrimitiveTask(MissionStep.REPORT_RUNWAY_VACATED, CompletionMode.REPORTED),
     PrimitiveTask(MissionStep.AWAIT_VACATE_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
     PrimitiveTask(MissionStep.TAXI_TO_STAND, CompletionMode.PHYSICAL),
@@ -195,29 +213,29 @@ fun groundArrivalTask(): CompoundTask = CompoundTask("GROUND_ARRIVAL", listOf(
 ))
 
 /** Build the GO_AROUND compound task. */
-fun goAroundTask(): CompoundTask = CompoundTask("GO_AROUND", listOf(
+fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
     PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
     PrimitiveTask(MissionStep.AWAITING_ATC_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
 ))
 
 /** Decompose a pilot goal into the full HTN tree. */
 fun decomposeMission(goal: xyz.easiersaid.twr.controller.PilotGoal): CompoundTask = when (goal) {
-    xyz.easiersaid.twr.controller.PilotGoal.DEPART -> CompoundTask("DEPART", listOf(
+    xyz.easiersaid.twr.controller.PilotGoal.DEPART -> CompoundTask(TaskName.Depart, listOf(
         groundDepartureTask(),
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
-    xyz.easiersaid.twr.controller.PilotGoal.ARRIVE -> CompoundTask("ARRIVE", listOf(
+    xyz.easiersaid.twr.controller.PilotGoal.ARRIVE -> CompoundTask(TaskName.Arrive, listOf(
         arrivalJoinTask(),
         circuitTask().let { it.copy(children = it.children.drop(1)) }, // skip FLY_DEPARTURE for arrivals
         groundArrivalTask(),
     ))
-    xyz.easiersaid.twr.controller.PilotGoal.TOUCH_AND_GO -> CompoundTask("TOUCH_AND_GO", listOf(
+    xyz.easiersaid.twr.controller.PilotGoal.TOUCH_AND_GO -> CompoundTask(TaskName.TouchAndGo, listOf(
         groundDepartureTask(),
         circuitTask(),
         groundArrivalTask(),
     ))
-    xyz.easiersaid.twr.controller.PilotGoal.TRANSIT -> CompoundTask("TRANSIT", listOf(
+    xyz.easiersaid.twr.controller.PilotGoal.TRANSIT -> CompoundTask(TaskName.Transit, listOf(
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))

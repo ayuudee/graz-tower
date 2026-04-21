@@ -187,9 +187,9 @@ class PilotCognitiveTest {
     @Test
     fun `markComplete marks only the first incomplete instance`() {
         // Create a tree with FLY_DEPARTURE in two places (like go-around re-sequence).
-        val tree = CompoundTask("ROOT", listOf(
+        val tree = CompoundTask(TaskName.Depart, listOf(
             PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL, completed = true),
-            CompoundTask("CIRCUIT", listOf(
+            CompoundTask(TaskName.Circuit, listOf(
                 PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL), // incomplete
                 PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
             )),
@@ -207,12 +207,12 @@ class PilotCognitiveTest {
         // after markComplete) followed by CIRCUIT (compound, containing the target step).
         // The old reference-identity check (!==) would set found=true after ARRIVAL_JOIN
         // because copy() creates a new object, and skip CIRCUIT entirely.
-        val tree = CompoundTask("ARRIVE", listOf(
-            CompoundTask("ARRIVAL_JOIN", listOf(
+        val tree = CompoundTask(TaskName.Arrive, listOf(
+            CompoundTask(TaskName.ArrivalJoin, listOf(
                 PrimitiveTask(MissionStep.CALL_INBOUND, CompletionMode.REPORTED, completed = true),
                 PrimitiveTask(MissionStep.AWAIT_JOINING_INSTRUCTIONS, CompletionMode.INSTRUCTION_GATED, completed = true),
             )),
-            CompoundTask("CIRCUIT", listOf(
+            CompoundTask(TaskName.Circuit, listOf(
                 PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL, completed = true),
                 PrimitiveTask(MissionStep.REPORT_FINAL, CompletionMode.REPORTED), // target — incomplete
                 PrimitiveTask(MissionStep.AWAIT_LANDING_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
@@ -226,7 +226,7 @@ class PilotCognitiveTest {
 
     @Test
     fun `markComplete does not mark already-complete instances`() {
-        val tree = CompoundTask("ROOT", listOf(
+        val tree = CompoundTask(TaskName.Depart, listOf(
             PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL, completed = true),
             PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
         ))

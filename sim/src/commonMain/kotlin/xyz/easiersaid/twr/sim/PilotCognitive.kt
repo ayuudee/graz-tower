@@ -217,8 +217,8 @@ fun processInstruction(
         // Go-around: replace the CIRCUIT compound with GO_AROUND + fresh CIRCUIT.
         instruction is GoAround || instruction is BreakOff -> {
             val newRoot = mission.root.replaceChild(
-                predicate = { it is CompoundTask && it.name == "CIRCUIT" },
-                replacement = CompoundTask("CIRCUIT_AFTER_GA", listOf(
+                predicate = { it is CompoundTask && (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },
+                replacement = CompoundTask(TaskName.CircuitAfterGoAround, listOf(
                     goAroundTask(),
                     circuitTask(), // single source of truth — reuses the same decomposition
                 )),
