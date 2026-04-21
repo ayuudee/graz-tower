@@ -141,22 +141,17 @@ private fun createCommitment(
 
     return when (kind) {
         CommitmentKind.TOWER_DEPARTURE -> {
-            val stage = when {
-                onRunway && ac.onGround -> TowerDepartureStage.AwaitLineUpObserved
-                !ac.onGround -> TowerDepartureStage.AwaitTakeoffObserved
-                else -> TowerDepartureStage.AwaitReady
-            }
-            Commitment(acId, kind, stage, activeRunway, time)
+            // Always start at AwaitReady. The reconciliation function will
+            // advance the stage based on the observed position in the same
+            // cycle. This ensures that an aircraft on the runway without a
+            // line-up clearance gets TransitionKind.ANOMALOUS (incursion),
+            // not a silent skip to AwaitLineUpObserved.
+            Commitment(acId, kind, TowerDepartureStage.AwaitReady, activeRunway, time)
         }
         CommitmentKind.TOWER_ARRIVAL -> {
-            val stage = when {
-                // Already off the runway — only the handoff remains; start in AwaitVacating.
-                ac.onGround && !onRunway -> TowerArrivalStage.AwaitVacating
-                ac.onGround && onRunway -> TowerArrivalStage.AwaitLandedObserved
-                onApproach -> TowerArrivalStage.AwaitApproach
-                else -> TowerArrivalStage.AwaitDownwind
-            }
-            Commitment(acId, kind, stage, activeRunway, time)
+            // Always start at AwaitDownwind. The reconciliation function will
+            // advance the stage based on the observed position in the same cycle.
+            Commitment(acId, kind, TowerArrivalStage.AwaitDownwind, activeRunway, time)
         }
         CommitmentKind.GROUND_TAXI -> {
             val wantsToDepart = ac.pilotGoal == PilotGoal.DEPART || ac.pilotGoal == PilotGoal.TOUCH_AND_GO

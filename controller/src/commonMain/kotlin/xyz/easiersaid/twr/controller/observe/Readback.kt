@@ -397,8 +397,8 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
 /**
  * Record outgoing instructions as outstanding coordinations. Called after arbitration.
  *
- * For instructions with [AdvancementPolicy.OnReadbackConfirmed], the coordination
- * carries the advanceToStage. The readback validator will advance the stage when
+ * If [ControllerOutput.Instruct.readbackAdvancesToStage] is set, the coordination
+ * carries the target stage. The readback validator advances the commitment when
  * a correct readback is received.
  */
 internal fun BeliefState.recordCoordinations(
@@ -409,13 +409,7 @@ internal fun BeliefState.recordCoordinations(
     val updated = coordinations.toMutableMap()
     for (output in outputs) {
         val atoms = requiredReadbackAtoms(output.instruction)
-        // readbackAdvancesToStage is the stage the readback should advance to.
-        // OnReadbackConfirmed is deprecated — no procedure rules use it. The
-        // fallback is retained as defensive code until it's removed from the
-        // AdvancementPolicy sealed interface.
         val readbackStage = output.readbackAdvancesToStage
-            ?: if (output.advancementPolicy is AdvancementPolicy.OnReadbackConfirmed)
-                output.advanceToStage else null
         val coord = OutstandingCoordination(
             aircraft = output.target,
             instruction = output.instruction,

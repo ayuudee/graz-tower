@@ -22,7 +22,7 @@ import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
 fun reconcileDepartureStage(
     current: TowerDepartureStage,
     position: DeparturePosition,
-): ReconciledStage = when (current) {
+): ReconciledStage<TowerDepartureStage> = when (current) {
     is TowerDepartureStage.AwaitReady -> reconcileAwaitReady(position)
     is TowerDepartureStage.AwaitLineUpObserved -> reconcileAwaitLineUp(current, position)
     is TowerDepartureStage.TakeoffClearanceIssued -> reconcileTakeoffIssued(current, position)
@@ -34,7 +34,7 @@ fun reconcileDepartureStage(
 
 private fun reconcileAwaitReady(
     position: DeparturePosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerDepartureStage> = when (position) {
     // Expected: at the holding point, waiting.
     is DeparturePosition.AtHolding -> ReconciledStage(
         TowerDepartureStage.AwaitReady, TransitionKind.UNCHANGED,
@@ -64,7 +64,7 @@ private fun reconcileAwaitReady(
 private fun reconcileAwaitLineUp(
     current: TowerDepartureStage,
     position: DeparturePosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerDepartureStage> = when (position) {
     // Still taxiing toward the runway — expected while line-up in progress.
     is DeparturePosition.AtHolding -> ReconciledStage(current, TransitionKind.UNCHANGED)
     // On the runway — expected progression after LUAW.
@@ -88,7 +88,7 @@ private fun reconcileAwaitLineUp(
 private fun reconcileTakeoffIssued(
     current: TowerDepartureStage,
     position: DeparturePosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerDepartureStage> = when (position) {
     // Still at holding after clearance? Don't regress. Unusual but not impossible
     // (pilot queried the clearance, hasn't moved yet).
     is DeparturePosition.AtHolding -> ReconciledStage(current, TransitionKind.UNCHANGED)
@@ -110,7 +110,7 @@ private fun reconcileTakeoffIssued(
 private fun reconcileAwaitTakeoff(
     current: TowerDepartureStage,
     position: DeparturePosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerDepartureStage> = when (position) {
     // Ground observations when we expected airborne — possible rejected takeoff.
     // Don't regress the stage. The DEP-CANCEL-TAKEOFF rule handles this case.
     // Future: named regression to AwaitLineUpObserved for confirmed rejected takeoff.
@@ -126,7 +126,7 @@ private fun reconcileAwaitTakeoff(
 private fun reconcileComplete(
     current: TowerDepartureStage,
     position: DeparturePosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerDepartureStage> = when (position) {
     // Terminal state. Nothing moves us out. The commitment will be pruned
     // by reconciliation when responsibility transfers.
     is DeparturePosition.AtHolding -> ReconciledStage(current, TransitionKind.UNCHANGED)

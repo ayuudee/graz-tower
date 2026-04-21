@@ -142,7 +142,7 @@ class TowerDepartureTest {
             beliefs,
         )
         beliefs = result2.updatedBeliefs
-        // Deliver readback for ClearedForTakeoff so stage advances (OnReadbackConfirmed).
+        // Deliver readback for ClearedForTakeoff so stage advances (readbackAdvancesToStage).
         val takeoffInstruct = result2.instructs().first { it.instruction is ClearedForTakeoff }
         beliefs = testControllerDecide(
             towerView(
@@ -205,6 +205,31 @@ class TowerDepartureTest {
                 is ControllerOutput.InitiateHandoff -> {}
             }
         }
+    }
+
+    @Test
+    fun `anomalous runway incursion — hold position before evaluating takeoff`() {
+        var beliefs = BeliefState.EMPTY
+
+        // Aircraft appears on the runway without any line-up clearance.
+        // Reconciliation advances from AwaitReady to AwaitLineUpObserved (ANOMALOUS).
+        // The incursion rule should fire before the takeoff rule.
+        val ac = aircraftAt(TestIds.acAlpha, TestIds.rwyMid, worldIndex, onGround = true, goal = PilotGoal.DEPART)
+        val result = testControllerDecide(
+            towerView(
+                aircraft = mapOf(TestIds.acAlpha to ac),
+                receivedMessages = listOf(readyForDepartureMessage(TestIds.acAlpha)),
+                time = SimTime.ofSeconds(10),
+            ),
+            beliefs,
+        )
+
+        val instruct = result.instructs().firstOrNull { it.target == TestIds.acAlpha }
+        assertNotNull(instruct, "Should issue an instruction for the aircraft on the runway")
+        assertTrue(instruct.instruction is HoldPosition,
+            "Anomalous incursion must get HoldPosition before any takeoff clearance, got ${instruct.instruction::class.simpleName}")
+        assertTrue(instruct.trace.ruleId == "DEP-HOLD-INCURSION",
+            "Should be the incursion rule, got ${instruct.trace.ruleId}")
     }
 
     @Test

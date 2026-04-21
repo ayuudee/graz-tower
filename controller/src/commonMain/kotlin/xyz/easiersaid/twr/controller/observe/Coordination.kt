@@ -42,19 +42,14 @@ enum class CoordinationState {
 /**
  * How a rule's stage transition should be applied.
  *
- * Declared on [xyz.easiersaid.twr.controller.bdi.AtcRule] to distinguish
- * stage-only rules (immediate) from instruction-bearing rules (confirmation-gated).
+ * All rules now use [Immediate]. Readback-gated advancement is handled by
+ * [xyz.easiersaid.twr.controller.bdi.AtcRule.readbackAdvancesToStage] which
+ * records the confirmation stage on the coordination ledger while the
+ * initial stage advances immediately.
  */
 sealed interface AdvancementPolicy {
-    /** Stage advances immediately when the rule fires (no instruction / no readback needed). */
+    /** Stage advances immediately when the rule fires. */
     data object Immediate : AdvancementPolicy
-
-    /**
-     * Stage advances only when the pilot's readback is confirmed.
-     * The rule creates an [OutstandingCoordination]; the readback validator
-     * resolves it; the pipeline then advances the stage.
-     */
-    data object OnReadbackConfirmed : AdvancementPolicy
 }
 
 // Query/re-issue timeouts will be added when controller-side escalation is implemented.

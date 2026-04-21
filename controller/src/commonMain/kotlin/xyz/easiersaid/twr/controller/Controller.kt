@@ -374,11 +374,10 @@ private fun arbitrate(
 }
 
 /**
- * Advance committed stages — but only for rules with [AdvancementPolicy.Immediate].
+ * Advance committed stages for rules with [AdvancementPolicy.Immediate].
  *
- * For [AdvancementPolicy.OnReadbackConfirmed], the stage advancement is deferred
- * to the readback validation pipeline. The coordination ledger carries the
- * advanceToStage; the readback validator applies it when confirmed.
+ * Readback-gated advancement is handled separately by [readbackAdvancesToStage]
+ * on the coordination ledger — the readback validator applies it when confirmed.
  */
 private fun advanceCommittedStages(
     beliefs: BeliefState,
@@ -390,9 +389,6 @@ private fun advanceCommittedStages(
     val wasCommitted = run.aircraft in committedAircraft
     val isStageOnlyAdvance = result.action == null
     if (!wasCommitted && !isStageOnlyAdvance) return@fold acc
-
-    // OnReadbackConfirmed: stage advancement deferred to readback validation.
-    if (result.advancementPolicy is AdvancementPolicy.OnReadbackConfirmed) return@fold acc
 
     val current = acc.commitments[run.aircraft] ?: run.commitment
     acc.copy(

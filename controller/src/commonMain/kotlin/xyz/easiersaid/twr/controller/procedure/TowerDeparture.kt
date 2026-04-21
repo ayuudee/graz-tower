@@ -98,6 +98,18 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             ),
         ),
         TowerDepartureStage.AwaitLineUpObserved to listOf(
+            // Safety: if reconciliation detected an anomalous transition to this stage
+            // (pilot on runway without line-up clearance), hold position before evaluating
+            // normal progression. Prevents clearing for takeoff an aircraft that just incurred.
+            AtcRule(
+                id = "DEP-HOLD-INCURSION",
+                description = "Hold position — anomalous transition detected (possible runway incursion)",
+                regulations = listOf(ICAO4444_7_6, ICAO9870_RUNWAY_INCURSION),
+                guard = AllOf(listOf(OnRunway, OnGround, AnomalousTransition)),
+                action = HoldPositionAction,
+                urgency = Urgency.SAFETY,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
             AtcRule(
                 id = "DEP-HOLD-LINEUP-IMC",
                 description = "Hold on runway when weather deteriorates below VMC",

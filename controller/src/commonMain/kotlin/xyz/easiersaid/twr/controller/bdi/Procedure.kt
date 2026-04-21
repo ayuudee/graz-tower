@@ -39,14 +39,10 @@ data class AtcRule(
     val urgency: Urgency = Urgency.PROGRESSION,
     val stampReadyAt: Boolean = false,
     /**
-     * How the stage transition is applied:
-     * - [AdvancementPolicy.Immediate]: stage advances when the rule fires (stage-only rules,
-     *   rules without readback requirements).
-     * - [AdvancementPolicy.OnReadbackConfirmed]: stage advances only when the pilot's readback
-     *   is confirmed. An [OutstandingCoordination] is created at emission time.
-     *
-     * Default: if the rule has an action AND a nextStage, default to OnReadbackConfirmed.
-     * If no action (stage-only) or no nextStage, default to Immediate.
+     * How the stage transition is applied. All rules use [AdvancementPolicy.Immediate].
+     * Readback-gated advancement is handled by [readbackAdvancesToStage] — the
+     * initial stage advances immediately, and the readback confirmation advances
+     * to a further stage via the coordination ledger.
      */
     val advancementPolicy: AdvancementPolicy,
 ) {

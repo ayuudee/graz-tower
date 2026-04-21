@@ -11,7 +11,7 @@ import xyz.easiersaid.twr.controller.bdi.GroundDepartureStage
 fun reconcileGroundDepartureStage(
     current: GroundDepartureStage,
     position: GroundPosition,
-): ReconciledStage = when (current) {
+): ReconciledStage<GroundDepartureStage> = when (current) {
     is GroundDepartureStage.AwaitTaxiRequest -> when (position) {
         is GroundPosition.AtStand -> ReconciledStage(current, TransitionKind.UNCHANGED)
         is GroundPosition.Taxiing -> ReconciledStage(current, TransitionKind.EXPECTED)
@@ -53,7 +53,7 @@ fun reconcileGroundDepartureStage(
 fun reconcileGroundArrivalStage(
     current: GroundArrivalStage,
     position: GroundPosition,
-): ReconciledStage = when (current) {
+): ReconciledStage<GroundArrivalStage> = when (current) {
     is GroundArrivalStage.TaxiToStand -> when (position) {
         // Already at the stand — reconcile forward.
         is GroundPosition.AtStand -> ReconciledStage(

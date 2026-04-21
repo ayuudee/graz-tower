@@ -8,8 +8,8 @@ import xyz.easiersaid.twr.controller.bdi.Stage
  * Carries both the reconciled stage and how we got there, so the action
  * layer can respond differently to expected vs anomalous transitions.
  */
-data class ReconciledStage(
-    val stage: Stage,
+data class ReconciledStage<out S : Stage>(
+    val stage: S,
     val transition: TransitionKind,
 )
 

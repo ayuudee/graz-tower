@@ -17,7 +17,7 @@ import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 fun reconcileArrivalStage(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (current) {
+): ReconciledStage<TowerArrivalStage> = when (current) {
     is TowerArrivalStage.AwaitDownwind -> reconcileAwaitDownwind(current, position)
     is TowerArrivalStage.AwaitApproach -> reconcileAwaitApproach(current, position)
     is TowerArrivalStage.LandingClearanceIssued -> reconcileLandingIssued(current, position)
@@ -31,7 +31,7 @@ fun reconcileArrivalStage(
 private fun reconcileAwaitDownwind(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerArrivalStage> = when (position) {
     // Expected: on the downwind leg.
     is ArrivalPosition.OnDownwind -> ReconciledStage(current, TransitionKind.UNCHANGED)
     // Advanced: already on base — skipped downwind report or joined on base.
@@ -63,7 +63,7 @@ private fun reconcileAwaitDownwind(
 private fun reconcileAwaitApproach(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerArrivalStage> = when (position) {
     // Go-around: aircraft observed back on downwind after being on approach.
     // This is a defined regression path, not an anomaly.
     is ArrivalPosition.OnDownwind -> ReconciledStage(
@@ -91,7 +91,7 @@ private fun reconcileAwaitApproach(
 private fun reconcileLandingIssued(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerArrivalStage> = when (position) {
     // Go-around: aircraft observed back on downwind after landing clearance issued.
     is ArrivalPosition.OnDownwind -> ReconciledStage(
         TowerArrivalStage.AwaitDownwind, TransitionKind.EXPECTED,
@@ -115,7 +115,7 @@ private fun reconcileLandingIssued(
 private fun reconcileAwaitLanded(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerArrivalStage> = when (position) {
     // Go-around: aircraft observed back on downwind after landing clearance.
     // Late go-around — pilot decided not to land. Regression to AwaitDownwind.
     is ArrivalPosition.OnDownwind -> ReconciledStage(
@@ -142,7 +142,7 @@ private fun reconcileAwaitLanded(
 private fun reconcileAwaitVacating(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerArrivalStage> = when (position) {
     // Still on the runway — vacate instruction issued but not yet off.
     is ArrivalPosition.OnRunway -> ReconciledStage(current, TransitionKind.UNCHANGED)
     // Expected: clear of the runway, awaiting handoff to ground.
@@ -160,7 +160,7 @@ private fun reconcileAwaitVacating(
 private fun reconcileArrivalComplete(
     current: TowerArrivalStage,
     position: ArrivalPosition,
-): ReconciledStage = when (position) {
+): ReconciledStage<TowerArrivalStage> = when (position) {
     is ArrivalPosition.OnDownwind -> ReconciledStage(current, TransitionKind.UNCHANGED)
     is ArrivalPosition.OnBase -> ReconciledStage(current, TransitionKind.UNCHANGED)
     is ArrivalPosition.OnFinal -> ReconciledStage(current, TransitionKind.UNCHANGED)

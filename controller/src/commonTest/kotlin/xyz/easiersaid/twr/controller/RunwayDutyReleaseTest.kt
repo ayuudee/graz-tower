@@ -54,7 +54,7 @@ class RunwayDutyReleaseTest {
 
         assertEquals(TestIds.acBravo, beliefs.runwayDuty?.holder,
             "Arrival should hold the runway after ClearedToLand")
-        // Stage stays at AwaitApproach until readback (OnReadbackConfirmed).
+        // Stage advances to LandingClearanceIssued; readback confirms to AwaitLandedObserved.
         val landInstruct = result2.instructs().firstOrNull { it.instruction is ClearedToLand }
         if (landInstruct != null) {
             // Deliver readback so stage advances.

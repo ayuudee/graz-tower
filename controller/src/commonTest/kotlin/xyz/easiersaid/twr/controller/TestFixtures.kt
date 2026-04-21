@@ -419,7 +419,7 @@ fun goAroundMessage(aircraft: AircraftId): ReceivedMessage =
 
 /**
  * Build a correct readback message for an instruction.
- * Used in tests where OnReadbackConfirmed rules need readback delivery.
+ * Used in tests where readback-gated rules need readback delivery.
  */
 fun readbackFor(output: ControllerOutput.Instruct): ReceivedMessage {
     val atoms = xyz.easiersaid.twr.controller.observe.requiredReadbackAtoms(output.instruction)
