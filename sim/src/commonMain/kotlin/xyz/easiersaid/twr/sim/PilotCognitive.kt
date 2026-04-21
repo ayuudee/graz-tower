@@ -117,7 +117,8 @@ private fun isPhysicallyComplete(
             // Use phase as proxy — aircraft must be physically on Final phase.
             LegName.FINAL in legs && aircraft.phase is PilotPhase.Final
         }
-        MissionStep.LAND -> aircraft.phase is PilotPhase.Vacating || aircraft.phase is PilotPhase.ClearOfRunway
+        MissionStep.LAND -> aircraft.phase is PilotPhase.LandingRoll ||
+            aircraft.phase is PilotPhase.Vacating || aircraft.phase is PilotPhase.ClearOfRunway
         MissionStep.TAXI_TO_STAND -> aircraft.phase is PilotPhase.Parked
         else -> false
     }

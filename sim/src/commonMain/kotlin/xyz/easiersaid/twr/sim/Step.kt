@@ -100,7 +100,11 @@ private fun handlePilotTick(
         ?: return state to emptyList()
 
     // One pilot, one brain, one decision.
-    val decision = unifiedPilotDecide(ac, state.worldIndex, state.now)
+    // Derive active runway from beliefs (any controller that has a commitment for this aircraft).
+    val runway = state.beliefs.values
+        .flatMap { it.commitments.entries }
+        .firstOrNull { it.key == ac.id }?.value?.runway
+    val decision = unifiedPilotDecide(ac, state.worldIndex, state.now, state.world, runway)
 
     // Apply intent to aircraft state.
     var updated = ac.copy(
@@ -431,24 +435,25 @@ private fun applyLineUpAndWait(
 }
 
 /**
- * "Cleared for takeoff" at the threshold: switch to a departure route that
- * runs through the runway departure end → upwind → crosswind circuit points.
- * Target altitude comes from [DepartureDefaults.TARGET_ALTITUDE_M]; 4e-B may
- * parameterise this from a SID or circuit procedure.
+ * Build a departure route from the active runway through upwind and crosswind
+ * circuit points. Used by both [applyClearedForTakeoff] (initial takeoff) and
+ * the pilot's T&G decision loop (subsequent circuits).
+ *
+ * Returns null if no runway or circuit geometry is available.
  */
-private fun applyClearedForTakeoff(
-    state: SimState,
-    ac: AircraftState,
-    instruction: ClearedForTakeoff,
-): SimState {
-    val runway = state.world.aerodromes.values
-        .firstNotNullOfOrNull { it.runways[instruction.runway] } ?: return state
+internal fun buildDepartureRoute(
+    world: xyz.easiersaid.twr.core.world.AviationWorld,
+    worldIndex: WorldIndex,
+    runwayId: RunwayId,
+): PilotRoute.Airborne? {
+    val runway = world.aerodromes.values
+        .firstNotNullOfOrNull { it.runways[runwayId] } ?: return null
     val runwayPath = runway.path.points
-    if (runwayPath.size < 2) return state
+    if (runwayPath.size < 2) return null
     val departureEnd = runwayPath.last()
 
-    val upwind = pointsWithLeg(state.worldIndex, circuitLeg = xyz.easiersaid.twr.core.world.LegName.UPWIND)
-    val crosswind = pointsWithLeg(state.worldIndex, circuitLeg = xyz.easiersaid.twr.core.world.LegName.CROSSWIND)
+    val upwind = pointsWithLeg(worldIndex, circuitLeg = xyz.easiersaid.twr.core.world.LegName.UPWIND)
+    val crosswind = pointsWithLeg(worldIndex, circuitLeg = xyz.easiersaid.twr.core.world.LegName.CROSSWIND)
 
     val segments = buildList {
         add(departureEnd)
@@ -456,11 +461,24 @@ private fun applyClearedForTakeoff(
         crosswind.forEach { add(it) }
     }.distinct()
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
-    val route = PilotRoute.Airborne(
+    return PilotRoute.Airborne(
         waypoints = waypoints,
         targetAltitudeM = DepartureDefaults.TARGET_ALTITUDE_M,
         arrivalPhase = PilotPhase.Crosswind,
     )
+}
+
+/**
+ * "Cleared for takeoff" at the threshold: switch to a departure route and
+ * transition to [PilotPhase.TakeoffRoll].
+ */
+private fun applyClearedForTakeoff(
+    state: SimState,
+    ac: AircraftState,
+    instruction: ClearedForTakeoff,
+): SimState {
+    val route = buildDepartureRoute(state.world, state.worldIndex, instruction.runway)
+        ?: return state
     val updated = ac.copy(
         phase = PilotPhase.TakeoffRoll,
         route = route,
@@ -553,7 +571,7 @@ private fun deriveArrivalPhase(worldIndex: WorldIndex, destination: PointId): Pi
 }
 
 /** Slice-4e-A defaults for departure climb. Per-aircraft-type values land later. */
-private object DepartureDefaults {
+internal object DepartureDefaults {
     const val TARGET_ALTITUDE_M: Double = 300.0 // ~1000 ft circuit altitude
 }
 
