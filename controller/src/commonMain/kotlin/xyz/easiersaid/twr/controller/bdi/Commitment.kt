@@ -66,6 +66,11 @@ data class Commitment(
     val formedAt: SimTime,
     val contacted: Boolean = false,
     val obligationType: ObligationType = ObligationType.CLEARANCE,
+    /** How the current stage was reached by observation reconciliation.
+     *  ANOMALOUS means the aircraft is somewhere the controller didn't expect
+     *  (e.g. runway incursion). Reset to null after one cycle so it's a
+     *  single-cycle flag, not persistent state. */
+    val lastTransition: xyz.easiersaid.twr.controller.procedure.TransitionKind? = null,
 ) {
     val isComplete: Boolean get() = stage.isComplete
 }

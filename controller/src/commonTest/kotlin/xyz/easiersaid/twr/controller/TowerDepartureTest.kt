@@ -52,8 +52,8 @@ class TowerDepartureTest {
         assertTrue(instruct2.trace.regulations.any { it.document == "ICAO_4444" },
             "Should cite ICAO 4444")
 
-        // Stage stays at AwaitLineUpObserved until readback arrives (OnReadbackConfirmed).
-        assertEquals(TowerDepartureStage.AwaitLineUpObserved, beliefs.commitments[TestIds.acAlpha]?.stage)
+        // Stage advances immediately to TakeoffClearanceIssued; readback confirms to AwaitTakeoffObserved.
+        assertEquals(TowerDepartureStage.TakeoffClearanceIssued, beliefs.commitments[TestIds.acAlpha]?.stage)
 
         // ── Cycle 2b: Pilot reads back ClearedForTakeoff ──
         val view2b = towerView(
@@ -205,5 +205,51 @@ class TowerDepartureTest {
                 is ControllerOutput.InitiateHandoff -> {}
             }
         }
+    }
+
+    @Test
+    fun `DEP-TAKEOFF-REISSUE fires after readback timeout`() {
+        var beliefs = BeliefState.EMPTY
+
+        // Cycle 1: Ready → LUAW.
+        val ac1 = aircraftAt(TestIds.acAlpha, TestIds.holdShort, worldIndex, onGround = true, goal = PilotGoal.DEPART)
+        beliefs = testControllerDecide(
+            towerView(
+                aircraft = mapOf(TestIds.acAlpha to ac1),
+                receivedMessages = listOf(readyForDepartureMessage(TestIds.acAlpha)),
+                time = SimTime.ofSeconds(10),
+            ),
+            beliefs,
+        ).updatedBeliefs
+
+        // Cycle 2: On runway → ClearedForTakeoff.
+        val ac2 = aircraftAt(TestIds.acAlpha, TestIds.rwyMid, worldIndex, onGround = true, goal = PilotGoal.DEPART)
+        val result2 = testControllerDecide(
+            towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = SimTime.ofSeconds(20)),
+            beliefs,
+        )
+        beliefs = result2.updatedBeliefs
+        val takeoff = result2.instructs().first { it.instruction is ClearedForTakeoff }
+        assertNotNull(takeoff)
+        assertEquals(TowerDepartureStage.TakeoffClearanceIssued, beliefs.commitments[TestIds.acAlpha]?.stage)
+
+        // Cycle 3: No readback, coordination still active → no re-issue yet.
+        beliefs = testControllerDecide(
+            towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = SimTime.ofSeconds(25)),
+            beliefs,
+        ).updatedBeliefs
+        // Coordination for ClearedForTakeoff is pending → re-issue guard blocked by NoPendingReadback.
+
+        // Cycle 4: After MAX_READBACK_AGE, coordination GCs → re-issue fires.
+        val reissueTime = SimTime.ofSeconds(20 + 35) // well past 30s GC
+        val result4 = testControllerDecide(
+            towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = reissueTime),
+            beliefs,
+        )
+        val reissue = result4.instructs().firstOrNull { it.instruction is ClearedForTakeoff }
+        assertNotNull(reissue, "ClearedForTakeoff should be re-issued after readback timeout")
+        assertEquals(TowerDepartureStage.TakeoffClearanceIssued,
+            result4.updatedBeliefs.commitments[TestIds.acAlpha]?.stage,
+            "Stage stays at TakeoffClearanceIssued after re-issue")
     }
 }

@@ -14,6 +14,8 @@ data class OperatorResult(
     val trace: DecisionTrace,
     val stampReadyAt: SimTime? = null,
     val advancementPolicy: AdvancementPolicy = AdvancementPolicy.Immediate,
+    /** Stage to advance to on readback confirmation. See [AtcRule.readbackAdvancesToStage]. */
+    val readbackAdvancesToStage: Stage? = null,
 )
 
 private fun operatorResultFor(rule: AtcRule, action: ProposedAction?, time: SimTime): OperatorResult =
@@ -28,6 +30,7 @@ private fun operatorResultFor(rule: AtcRule, action: ProposedAction?, time: SimT
         ),
         stampReadyAt = if (rule.stampReadyAt) time else null,
         advancementPolicy = rule.advancementPolicy,
+        readbackAdvancesToStage = rule.readbackAdvancesToStage,
     )
 
 /** A rule whose guard passed but whose action failed to resolve. Surfaced in traces. */

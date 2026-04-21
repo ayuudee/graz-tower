@@ -31,6 +31,11 @@ data class AtcRule(
     val guard: RuleGuard,
     val action: RuleAction? = null,
     val nextStage: Stage? = null,
+    /** Stage to advance to when readback is confirmed. Used with [AdvancementPolicy.Immediate]
+     *  when the rule should advance immediately to [nextStage] AND advance further on readback.
+     *  Example: DEP-TAKEOFF advances to TakeoffClearanceIssued immediately, then to
+     *  AwaitTakeoffObserved on readback confirmation. */
+    val readbackAdvancesToStage: Stage? = null,
     val urgency: Urgency = Urgency.PROGRESSION,
     val stampReadyAt: Boolean = false,
     /**
@@ -44,7 +49,13 @@ data class AtcRule(
      * If no action (stage-only) or no nextStage, default to Immediate.
      */
     val advancementPolicy: AdvancementPolicy,
-)
+) {
+    init {
+        require(readbackAdvancesToStage == null || nextStage != null) {
+            "Rule $id: readbackAdvancesToStage requires nextStage to be set"
+        }
+    }
+}
 
 /**
  * Procedure-level interrupt — fires across multiple stages.

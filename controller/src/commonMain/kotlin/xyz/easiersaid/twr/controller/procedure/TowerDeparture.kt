@@ -19,6 +19,14 @@ import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 private val DepartureTrigger = AnyOf(listOf(PilotReady, AiProactive))
 
+/** Shared guard: conditions for issuing or re-issuing a takeoff clearance. */
+private val TakeoffConditions = AllOf(listOf(
+    OnRunway, OnGround,
+    WeatherPermitsVfr,
+    RunwayAccessGranted,
+    RunwayPhysicallyClear,
+))
+
 fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
     kind = CommitmentKind.TOWER_DEPARTURE,
     stageExpectations = mapOf(
@@ -102,15 +110,15 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "DEP-TAKEOFF",
                 description = "Cleared for takeoff when lined up, runway clear, and weather permits",
                 regulations = listOf(ICAO4444_7_9, ICAO9432_TAKEOFF),
-                guard = AllOf(listOf(
-                    OnRunway, OnGround,
-                    WeatherPermitsVfr,
-                    RunwayAccessGranted,
-                    RunwayPhysicallyClear,
-                )),
+                guard = TakeoffConditions,
                 action = ClearTakeoffAction,
-                nextStage = TowerDepartureStage.AwaitTakeoffObserved,
-                advancementPolicy = AdvancementPolicy.OnReadbackConfirmed,
+                // Advance immediately to TakeoffClearanceIssued (the instruction is now
+                // in play). Readback confirmation advances to AwaitTakeoffObserved.
+                // Observation-based reconciliation may also advance past this stage
+                // if the aircraft is observed airborne before the readback arrives.
+                nextStage = TowerDepartureStage.TakeoffClearanceIssued,
+                readbackAdvancesToStage = TowerDepartureStage.AwaitTakeoffObserved,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             AtcRule(
                 id = "DEP-HOLD-LINEUP",
@@ -121,6 +129,41 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     NoActiveInstruction(instructionOfType<xyz.easiersaid.twr.protocol.HoldPosition>()),
                 )),
                 action = HoldPositionAction,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+        ),
+        // ── TakeoffClearanceIssued: awaiting readback or observing takeoff roll ──
+        TowerDepartureStage.TakeoffClearanceIssued to listOf(
+            // Hold position when runway becomes unsafe before the pilot has confirmed
+            // the takeoff clearance. "Hold position" not "cancel takeoff" because the
+            // pilot may not have heard ClearedForTakeoff — you can't cancel what wasn't
+            // acknowledged (ICAO Doc 9432). DEP-CANCEL-TAKEOFF at AwaitTakeoffObserved
+            // (readback confirmed) correctly uses CancelTakeoffAction.
+            AtcRule(
+                id = "DEP-HOLD-TAKEOFF-UNCONFIRMED",
+                description = "Hold position — runway no longer clear before takeoff readback confirmed",
+                regulations = listOf(ICAO4444_7_9),
+                guard = AllOf(listOf(OnRunway, OnGround, Not(RunwayPhysicallyClear))),
+                action = HoldPositionAction,
+                urgency = Urgency.SAFETY,
+                nextStage = TowerDepartureStage.AwaitLineUpObserved,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Re-issue: if the ClearedForTakeoff transmission was stepped on,
+            // the coordination GCs after MAX_READBACK_AGE. Once there's no
+            // pending readback, re-issue the clearance.
+            AtcRule(
+                id = "DEP-TAKEOFF-REISSUE",
+                description = "Re-issue takeoff clearance after readback timeout",
+                regulations = listOf(ICAO4444_7_9, ICAO9432_TAKEOFF),
+                guard = AllOf(listOf(
+                    TakeoffConditions,
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedForTakeoff>()),
+                )),
+                action = ClearTakeoffAction,
+                // Stay at TakeoffClearanceIssued; a new coordination will be recorded.
+                nextStage = TowerDepartureStage.TakeoffClearanceIssued,
+                readbackAdvancesToStage = TowerDepartureStage.AwaitTakeoffObserved,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),

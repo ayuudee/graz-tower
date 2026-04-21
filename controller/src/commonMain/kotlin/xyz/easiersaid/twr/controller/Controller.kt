@@ -18,7 +18,14 @@ import xyz.easiersaid.twr.controller.assess.updateRunwayDuty
 import xyz.easiersaid.twr.controller.bdi.*
 import xyz.easiersaid.twr.controller.observe.*
 import xyz.easiersaid.twr.controller.procedure.approachArrivalProcedure
+import xyz.easiersaid.twr.controller.procedure.classifyArrivalPosition
+import xyz.easiersaid.twr.controller.procedure.classifyDeparturePosition
+import xyz.easiersaid.twr.controller.procedure.classifyGroundPosition
 import xyz.easiersaid.twr.controller.procedure.groundTaxiProcedure
+import xyz.easiersaid.twr.controller.procedure.reconcileArrivalStage
+import xyz.easiersaid.twr.controller.procedure.reconcileDepartureStage
+import xyz.easiersaid.twr.controller.procedure.reconcileGroundArrivalStage
+import xyz.easiersaid.twr.controller.procedure.reconcileGroundDepartureStage
 import xyz.easiersaid.twr.controller.procedure.towerArrivalProcedure
 import xyz.easiersaid.twr.controller.procedure.towerDepartureProcedure
 import xyz.easiersaid.twr.core.world.AviationWorld
@@ -52,6 +59,14 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
                 time = view.time, worldIndex = view.worldIndex, contactedThisCycle = contactedAircraft,
             )
             b.copy(commitments = commitments)
+        }
+        .let { b ->
+            // Observation-driven stage reconciliation: advance commitment stages
+            // to match what the controller actually observes. Runs after
+            // reconcileCommitments (which creates/prunes) and before procedure
+            // execution (which evaluates rules against the reconciled stage).
+            val reconciled = reconcileObservedStages(b, view.worldIndex)
+            b.copy(commitments = reconciled)
         }
         .let { b ->
             if (view.role == RoleName.TOWER || view.role == RoleName.APPROACH) {
@@ -181,6 +196,68 @@ private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState =
     else this
 
 /**
+ * Observation-driven stage reconciliation. For each active commitment,
+ * classify the aircraft's observed position and reconcile the stage.
+ *
+ * Observation always wins: if the aircraft is somewhere ahead of the
+ * expected stage, the stage advances. This prevents commitments from
+ * getting stuck when readbacks are lost or pilots act out of sequence.
+ *
+ * Currently wired for TOWER_DEPARTURE only. Arrival and ground procedures
+ * will be added as their reconciliation functions are implemented.
+ */
+private fun reconcileObservedStages(
+    beliefs: BeliefState,
+    worldIndex: xyz.easiersaid.twr.core.world.WorldIndex,
+): Map<AircraftId, Commitment> {
+    if (beliefs.commitments.isEmpty()) return beliefs.commitments
+    return beliefs.commitments.mapValues { (acId, commitment) ->
+        // Clear the single-cycle transition flag from the previous cycle.
+        val cleared = if (commitment.lastTransition != null) commitment.copy(lastTransition = null) else commitment
+        if (cleared.isComplete) return@mapValues cleared
+        val ac = beliefs.trackedAircraft[acId] ?: return@mapValues cleared
+        when (cleared.kind) {
+            CommitmentKind.TOWER_DEPARTURE -> {
+                val stage = cleared.stage as? TowerDepartureStage
+                    ?: return@mapValues cleared
+                val position = classifyDeparturePosition(ac, worldIndex)
+                val reconciled = reconcileDepartureStage(stage, position)
+                if (reconciled.stage != stage) {
+                    cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
+                } else cleared
+            }
+            CommitmentKind.TOWER_ARRIVAL -> {
+                val stage = cleared.stage as? TowerArrivalStage
+                    ?: return@mapValues cleared
+                val position = classifyArrivalPosition(ac, worldIndex)
+                val reconciled = reconcileArrivalStage(stage, position)
+                if (reconciled.stage != stage) {
+                    cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
+                } else cleared
+            }
+            CommitmentKind.GROUND_TAXI -> {
+                val activeRunway = beliefs.activeRunway
+                val position = classifyGroundPosition(ac, activeRunway, worldIndex)
+                when (val stage = cleared.stage) {
+                    is GroundDepartureStage -> {
+                        val reconciled = reconcileGroundDepartureStage(stage, position)
+                        if (reconciled.stage != stage) cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
+                        else cleared
+                    }
+                    is GroundArrivalStage -> {
+                        val reconciled = reconcileGroundArrivalStage(stage, position)
+                        if (reconciled.stage != stage) cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
+                        else cleared
+                    }
+                    else -> cleared
+                }
+            }
+            else -> cleared
+        }
+    }
+}
+
+/**
  * One aircraft's procedure-cycle outcome: the commitment that the rule fired against
  * and the [OperatorResult] it produced. Carrying the commitment along removes the
  * partial-function lookup that [arbitrate] and [advanceCommittedStages] would
@@ -284,6 +361,7 @@ private fun arbitrate(
             urgency = result.urgency, trace = result.trace,
             advanceToStage = result.nextStage,
             advancementPolicy = result.advancementPolicy,
+            readbackAdvancesToStage = result.readbackAdvancesToStage,
         )
         state.copy(
             outputs = state.outputs + instruct,

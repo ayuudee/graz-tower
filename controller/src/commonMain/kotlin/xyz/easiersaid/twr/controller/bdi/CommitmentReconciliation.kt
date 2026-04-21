@@ -174,33 +174,69 @@ private fun createCommitment(
             // live in a later slice; until then Approach is a pure handoff point.
             Commitment(acId, kind, ApproachArrivalStage.AwaitDownwind, activeRunway, time)
         }
-        CommitmentKind.APPROACH_TRANSIT -> error("APPROACH_TRANSIT stage machine not yet modelled")
-        CommitmentKind.AREA_TRANSIT -> error("AREA_TRANSIT stage machine not yet modelled")
+        // Transit: approach/area monitors the aircraft but doesn't issue instructions.
+        // No commitment → no procedure → no outputs. The aircraft just passes through.
+        CommitmentKind.APPROACH_TRANSIT -> null
+        CommitmentKind.AREA_TRANSIT -> null
         else -> error("Unknown commitment kind: $kind")
     }
 }
 
-/** Tower-departure stage hierarchy. */
+/**
+ * Tower-departure stage hierarchy.
+ *
+ * [ordinal] defines the forward-only ordering for observation-driven
+ * reconciliation. Reconciliation may advance the stage (observation wins)
+ * but never regresses it, enforced by `maxOf(current.ordinal, observed.ordinal)`.
+ *
+ * Named regression paths (e.g. rejected takeoff → back to AwaitLineUpObserved)
+ * are explicit transitions in the reconciliation function, not violations
+ * of the ordering.
+ */
 sealed interface TowerDepartureStage : Stage {
-    data object AwaitReady : TowerDepartureStage { override val name = "AwaitReady" }
+    /** Monotonic ordering for forward-only reconciliation. */
+    val ordinal: Int
+    data object AwaitReady : TowerDepartureStage {
+        override val name = "AwaitReady"; override val ordinal = 0
+    }
     data object AwaitLineUpObserved : TowerDepartureStage {
-        override val name = "AwaitLineUpObserved"
+        override val name = "AwaitLineUpObserved"; override val ordinal = 1
+    }
+    /** ClearedForTakeoff issued, awaiting readback confirmation. Explicit state
+     *  that was previously invisible in the coordination ledger. */
+    data object TakeoffClearanceIssued : TowerDepartureStage {
+        override val name = "TakeoffClearanceIssued"; override val ordinal = 2
     }
     data object AwaitTakeoffObserved : TowerDepartureStage {
-        override val name = "AwaitTakeoffObserved"
+        override val name = "AwaitTakeoffObserved"; override val ordinal = 3
     }
     data object Complete : TowerDepartureStage {
         override val name = "Complete"
-        override val isComplete = true
+        override val isComplete = true; override val ordinal = 4
     }
 }
 
-/** Tower-arrival stage hierarchy. */
+/**
+ * Tower-arrival stage hierarchy.
+ *
+ * [ordinal] defines the forward-only ordering for reconciliation.
+ * Go-around is a defined regression path (AwaitApproach/AwaitLandedObserved → AwaitDownwind)
+ * that is a named exception to the forward-only invariant, not a violation of it.
+ */
 sealed interface TowerArrivalStage : Stage {
-    data object AwaitDownwind : TowerArrivalStage { override val name = "AwaitDownwind" }
-    data object AwaitApproach : TowerArrivalStage { override val name = "AwaitApproach" }
+    val ordinal: Int
+    data object AwaitDownwind : TowerArrivalStage {
+        override val name = "AwaitDownwind"; override val ordinal = 0
+    }
+    data object AwaitApproach : TowerArrivalStage {
+        override val name = "AwaitApproach"; override val ordinal = 1
+    }
+    /** Landing clearance issued (ClearedToLand or ClearedTouchAndGo), awaiting readback. */
+    data object LandingClearanceIssued : TowerArrivalStage {
+        override val name = "LandingClearanceIssued"; override val ordinal = 2
+    }
     data object AwaitLandedObserved : TowerArrivalStage {
-        override val name = "AwaitLandedObserved"
+        override val name = "AwaitLandedObserved"; override val ordinal = 3
     }
     /**
      * Aircraft has been instructed to vacate; awaiting the post-runway handoff
@@ -209,34 +245,42 @@ sealed interface TowerArrivalStage : Stage {
      * handoff) or by re-firing the handoff rule if the pending ContactFrequency
      * readback times out (stepped-on transmission).
      */
-    data object AwaitVacating : TowerArrivalStage { override val name = "AwaitVacating" }
+    data object AwaitVacating : TowerArrivalStage {
+        override val name = "AwaitVacating"; override val ordinal = 4
+    }
     data object Complete : TowerArrivalStage {
         override val name = "Complete"
-        override val isComplete = true
+        override val isComplete = true; override val ordinal = 5
     }
 }
 
 /** Ground-departure stage hierarchy. */
 sealed interface GroundDepartureStage : Stage {
+    val ordinal: Int
     data object AwaitTaxiRequest : GroundDepartureStage {
-        override val name = "AwaitTaxiRequest"
+        override val name = "AwaitTaxiRequest"; override val ordinal = 0
     }
     data object AwaitAtHolding : GroundDepartureStage {
-        override val name = "AwaitAtHolding"
+        override val name = "AwaitAtHolding"; override val ordinal = 1
     }
     data object Complete : GroundDepartureStage {
         override val name = "Complete"
-        override val isComplete = true
+        override val isComplete = true; override val ordinal = 2
     }
 }
 
 /** Ground-arrival stage hierarchy. */
 sealed interface GroundArrivalStage : Stage {
-    data object TaxiToStand : GroundArrivalStage { override val name = "TaxiToStand" }
-    data object AwaitParked : GroundArrivalStage { override val name = "AwaitParked" }
+    val ordinal: Int
+    data object TaxiToStand : GroundArrivalStage {
+        override val name = "TaxiToStand"; override val ordinal = 0
+    }
+    data object AwaitParked : GroundArrivalStage {
+        override val name = "AwaitParked"; override val ordinal = 1
+    }
     data object Complete : GroundArrivalStage {
         override val name = "Complete"
-        override val isComplete = true
+        override val isComplete = true; override val ordinal = 2
     }
 }
 

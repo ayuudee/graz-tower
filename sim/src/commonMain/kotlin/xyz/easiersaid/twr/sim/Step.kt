@@ -314,7 +314,16 @@ private fun handlePilotProcessingComplete(
 
     val utterance = Utterance.FromPilot(readback)
     val (withReadbackId, readbackTxId) = afterApply.mintTransmissionId()
-    val readbackStartAt = event.time + CommsConstants.PILOT_READBACK_PREP
+    // Listen-before-talk: the readback must not start while the controller
+    // (or anyone else) is still transmitting on the same frequency. Without
+    // this, a ReadBackCorrect queued behind the original instruction will
+    // overlap the readback, causing both to be stepped-on and the readback
+    // to never reach the controller.
+    val earliestReadback = event.time + CommsConstants.PILOT_READBACK_PREP
+    val readbackStartAt = maxOf(
+        earliestReadback,
+        pilotFrequencyFreeFrom(withReadbackId, controller.frequency, earliestReadback),
+    )
     val readbackTx = InFlightTransmission(
         id = readbackTxId,
         speaker = SpeakerRef.Pilot(ac.id),

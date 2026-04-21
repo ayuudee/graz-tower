@@ -101,4 +101,84 @@ class TowerArrivalTest {
         assertEquals(TowerArrivalStage.AwaitDownwind, beliefs.commitments[TestIds.acAlpha]?.stage,
             "Go-around should reset commitment to AwaitDownwind")
     }
+
+    @Test
+    fun `ARR-LAND advances to LandingClearanceIssued then AwaitLandedObserved on readback`() {
+        var beliefs = BeliefState.EMPTY
+
+        // Cycle 1: downwind report → AwaitApproach.
+        val ac1 = aircraftAt(TestIds.acAlpha, TestIds.downwind, worldIndex,
+            onGround = false, goal = PilotGoal.ARRIVE)
+        beliefs = testControllerDecide(
+            towerView(
+                aircraft = mapOf(TestIds.acAlpha to ac1),
+                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+                time = SimTime.ofSeconds(10),
+            ),
+            beliefs,
+        ).updatedBeliefs
+
+        // Cycle 2: on final → ClearedToLand → LandingClearanceIssued.
+        val ac2 = aircraftAt(TestIds.acAlpha, TestIds.finalApproach, worldIndex,
+            onGround = false, goal = PilotGoal.ARRIVE)
+        val result2 = testControllerDecide(
+            towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = SimTime.ofSeconds(20)),
+            beliefs,
+        )
+        beliefs = result2.updatedBeliefs
+        val landInstruct = result2.instructs().firstOrNull { it.instruction is ClearedToLand }
+        assertNotNull(landInstruct, "Should issue ClearedToLand")
+        assertEquals(TowerArrivalStage.LandingClearanceIssued, beliefs.commitments[TestIds.acAlpha]?.stage,
+            "Stage should advance to LandingClearanceIssued immediately")
+
+        // Cycle 3: readback → AwaitLandedObserved.
+        beliefs = testControllerDecide(
+            towerView(
+                aircraft = mapOf(TestIds.acAlpha to ac2),
+                receivedMessages = listOf(readbackFor(landInstruct)),
+                time = SimTime.ofSeconds(22),
+            ),
+            beliefs,
+        ).updatedBeliefs
+        assertEquals(TowerArrivalStage.AwaitLandedObserved, beliefs.commitments[TestIds.acAlpha]?.stage,
+            "Readback should advance to AwaitLandedObserved")
+    }
+
+    @Test
+    fun `ARR-LAND-REISSUE fires after readback timeout`() {
+        var beliefs = BeliefState.EMPTY
+
+        // Cycle 1: downwind → AwaitApproach.
+        val ac1 = aircraftAt(TestIds.acAlpha, TestIds.downwind, worldIndex,
+            onGround = false, goal = PilotGoal.ARRIVE)
+        beliefs = testControllerDecide(
+            towerView(
+                aircraft = mapOf(TestIds.acAlpha to ac1),
+                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+                time = SimTime.ofSeconds(10),
+            ),
+            beliefs,
+        ).updatedBeliefs
+
+        // Cycle 2: on final → ClearedToLand → LandingClearanceIssued.
+        val ac2 = aircraftAt(TestIds.acAlpha, TestIds.finalApproach, worldIndex,
+            onGround = false, goal = PilotGoal.ARRIVE)
+        beliefs = testControllerDecide(
+            towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = SimTime.ofSeconds(20)),
+            beliefs,
+        ).updatedBeliefs
+        assertEquals(TowerArrivalStage.LandingClearanceIssued, beliefs.commitments[TestIds.acAlpha]?.stage)
+
+        // Cycle 3: after MAX_READBACK_AGE (30s), coordination GC'd → re-issue fires.
+        val reissueTime = SimTime.ofSeconds(20 + 35)
+        val result3 = testControllerDecide(
+            towerView(aircraft = mapOf(TestIds.acAlpha to ac2), time = reissueTime),
+            beliefs,
+        )
+        val reissue = result3.instructs().firstOrNull { it.instruction is ClearedToLand }
+        assertNotNull(reissue, "ClearedToLand should be re-issued after readback timeout")
+        assertEquals(TowerArrivalStage.LandingClearanceIssued,
+            result3.updatedBeliefs.commitments[TestIds.acAlpha]?.stage,
+            "Stage stays at LandingClearanceIssued after re-issue")
+    }
 }

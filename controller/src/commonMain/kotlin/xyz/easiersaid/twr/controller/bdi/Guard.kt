@@ -84,6 +84,13 @@ data object Airborne : RuleGuard {
         !ac.onGround
 }
 
+/** Last observation reconciliation was anomalous (e.g. runway incursion). Single-cycle flag. */
+data object AnomalousTransition : RuleGuard {
+    override val failureMessage = "Last reconciliation was not anomalous"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        commitment.lastTransition == xyz.easiersaid.twr.controller.procedure.TransitionKind.ANOMALOUS
+}
+
 /** Aircraft is at a known holding point for the commitment's runway. */
 data object AtHoldingPoint : RuleGuard {
     override val failureMessage = "Aircraft is not at a holding point for this runway"

@@ -103,28 +103,27 @@ class RunwayDutyQueueTest {
     fun `preempted departure requeues ahead of later departures`() {
         var beliefs = BeliefState.EMPTY
 
-        // Cycle 1: dep1 ready, arr1 already on final (still AwaitDownwind this
-        // cycle — procedures haven't advanced it yet). dep1 grabs the runway.
+        // Cycle 1: dep1 ready, arr1 on downwind (not yet on approach — reconciliation
+        // keeps it at AwaitDownwind). dep1 grabs the runway.
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(
                     dep1 to depAt(dep1),
-                    arr1 to arrAt(arr1, TestIds.finalApproach),
+                    arr1 to arrAt(arr1, TestIds.downwind),
                 ),
                 receivedMessages = listOf(
                     readyForDepartureMessage(dep1),
-                    positionReportMessage(arr1, ReportEvent.Final),
+                    positionReportMessage(arr1, ReportEvent.Downwind),
                 ),
                 time = SimTime.ofSeconds(10),
             ),
             beliefs,
         ).updatedBeliefs
         assertEquals(dep1, beliefs.runwayDuty?.holder,
-            "dep1 granted first — arr1 still at AwaitDownwind in the enqueue phase")
+            "dep1 granted first — arr1 still on downwind, not yet in queue")
 
-        // Cycle 2: dep2 reports ready and joins the queue. arr1 is now
-        // AwaitApproach — preemption fires this cycle (arr1 on final preempts
-        // grounded dep1). dep2 joins the queue behind the requeued dep1.
+        // Cycle 2: dep2 reports ready. arr1 moves to final — reconciliation
+        // advances to AwaitApproach, entering the duty queue.
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(
@@ -138,7 +137,7 @@ class RunwayDutyQueueTest {
             beliefs,
         ).updatedBeliefs
 
-        // Cycle 3: arr1 still on final with AwaitApproach commitment —
+        // Cycle 3: arr1 on final with AwaitApproach commitment —
         // preempts dep1 (not yet rolling). dep1 requeues ahead of dep2.
         val result = testControllerDecide(
             towerView(

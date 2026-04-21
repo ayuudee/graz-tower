@@ -22,6 +22,14 @@ import xyz.easiersaid.twr.protocol.ContinueApproach
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
+/** Shared guard: conditions for issuing or re-issuing a landing clearance (non-T&G). */
+private val LandingConditions = AllOf(listOf(
+    AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
+    WeatherPermitsVfr,
+    RunwayAccessGranted,
+    RunwayPhysicallyClear,
+))
+
 fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
     kind = CommitmentKind.TOWER_ARRIVAL,
     interrupts = listOf(
@@ -37,7 +45,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             id = "GA-POST-CLEAR",
             description = "Go-around detected after landing clearance",
             regulations = listOf(ICAO4444_7_10_2),
-            fromStages = setOf(TowerArrivalStage.AwaitLandedObserved),
+            fromStages = setOf(TowerArrivalStage.LandingClearanceIssued, TowerArrivalStage.AwaitLandedObserved),
             guard = GoAroundEvent,
             targetStage = TowerArrivalStage.AwaitDownwind,
         ),
@@ -138,34 +146,24 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "ARR-LAND",
                 description = "Clear to land when on final and runway available",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(
-                    AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
-                    WeatherPermitsVfr,
-                    RunwayAccessGranted,
-                    RunwayPhysicallyClear,
-                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
-                )),
+                guard = AllOf(listOf(LandingConditions, Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)))),
                 action = ClearLandAction,
-                nextStage = TowerArrivalStage.AwaitLandedObserved,
+                nextStage = TowerArrivalStage.LandingClearanceIssued,
+                readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
-                advancementPolicy = AdvancementPolicy.OnReadbackConfirmed,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Clear touch-and-go
             AtcRule(
                 id = "ARR-LAND-TNG",
                 description = "Clear touch-and-go when on final and runway available",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(
-                    AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
-                    WeatherPermitsVfr,
-                    RunwayAccessGranted,
-                    RunwayPhysicallyClear,
-                    PilotGoalIs(PilotGoal.TOUCH_AND_GO),
-                )),
+                guard = AllOf(listOf(LandingConditions, PilotGoalIs(PilotGoal.TOUCH_AND_GO))),
                 action = ClearTouchAndGoAction,
-                nextStage = TowerArrivalStage.AwaitLandedObserved,
+                nextStage = TowerArrivalStage.LandingClearanceIssued,
+                readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
-                advancementPolicy = AdvancementPolicy.OnReadbackConfirmed,
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Continue approach when runway not yet clear
             AtcRule(
@@ -179,6 +177,60 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 )),
                 action = ContinueApproachAction,
                 urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+        ),
+        // ── LandingClearanceIssued: clearance transmitted, awaiting readback ──
+        // The aircraft is on final/approach. The controller watches for the
+        // readback (handled by coordination ledger) or for the aircraft to
+        // touch down (handled by observation reconciliation).
+        // Go-around from this stage is handled by the GA-POST-CLEAR interrupt.
+        TowerArrivalStage.LandingClearanceIssued to listOf(
+            // Controller-initiated go-around: runway was cleared but is no longer safe
+            AtcRule(
+                id = "ARR-GO-AROUND-CLEARANCE-ISSUED",
+                description = "Instruct go-around — runway not clear after clearance issued",
+                regulations = listOf(ICAO4444_7_10_2, ICAO9432_GO_AROUND),
+                guard = AllOf(listOf(
+                    AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
+                    Not(RunwayPhysicallyClear),
+                )),
+                action = GoAroundAction,
+                nextStage = TowerArrivalStage.AwaitDownwind,
+                urgency = Urgency.SAFETY,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Re-issue: ClearedToLand was stepped on → coordination GC'd → re-issue.
+            AtcRule(
+                id = "ARR-LAND-REISSUE",
+                description = "Re-issue landing clearance after readback timeout",
+                regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
+                guard = AllOf(listOf(
+                    LandingConditions,
+                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
+                    NoPendingReadback(InstructionMatcher.AnyOf(listOf(
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
+                    ))),
+                )),
+                action = ClearLandAction,
+                nextStage = TowerArrivalStage.LandingClearanceIssued,
+                readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Re-issue T&G variant
+            AtcRule(
+                id = "ARR-LAND-TNG-REISSUE",
+                description = "Re-issue touch-and-go clearance after readback timeout",
+                regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
+                guard = AllOf(listOf(
+                    LandingConditions,
+                    PilotGoalIs(PilotGoal.TOUCH_AND_GO),
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
+                )),
+                action = ClearTouchAndGoAction,
+                nextStage = TowerArrivalStage.LandingClearanceIssued,
+                readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),

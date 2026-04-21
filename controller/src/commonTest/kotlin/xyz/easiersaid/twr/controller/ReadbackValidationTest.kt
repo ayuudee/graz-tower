@@ -38,7 +38,11 @@ class ReadbackValidationTest {
         time: SimTime,
         messages: List<ReceivedMessage>,
     ): ControllerView = towerView(
-        aircraft = mapOf(aircraft to aircraftAt(aircraft, TestIds.finalApproach, testWorldIndex(), onGround = false)),
+        // Position at holding point (ground, human-piloted) so the departure
+        // reconciliation produces UNCHANGED and no procedure rules fire.
+        // The readback tests care about readback matching, not aircraft position.
+        aircraft = mapOf(aircraft to aircraftAt(aircraft, TestIds.holdShort, testWorldIndex(),
+            onGround = true, humanPiloted = true)),
         time = time,
         receivedMessages = messages,
     )
@@ -199,7 +203,8 @@ class ReadbackValidationTest {
 
         // Both atoms + condition → CORRECT
         val full = towerView(
-            aircraft = mapOf(TestIds.acAlpha to aircraftAt(TestIds.acAlpha, TestIds.finalApproach, testWorldIndex(), onGround = false)),
+            aircraft = mapOf(TestIds.acAlpha to aircraftAt(TestIds.acAlpha, TestIds.holdShort, testWorldIndex(),
+                onGround = true, humanPiloted = true)),
             time = SimTime.ofSeconds(5),
             receivedMessages = listOf(
                 ReceivedMessage.Clear(

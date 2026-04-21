@@ -409,13 +409,19 @@ internal fun BeliefState.recordCoordinations(
     val updated = coordinations.toMutableMap()
     for (output in outputs) {
         val atoms = requiredReadbackAtoms(output.instruction)
+        // readbackAdvancesToStage is the stage the readback should advance to.
+        // OnReadbackConfirmed is deprecated — no procedure rules use it. The
+        // fallback is retained as defensive code until it's removed from the
+        // AdvancementPolicy sealed interface.
+        val readbackStage = output.readbackAdvancesToStage
+            ?: if (output.advancementPolicy is AdvancementPolicy.OnReadbackConfirmed)
+                output.advanceToStage else null
         val coord = OutstandingCoordination(
             aircraft = output.target,
             instruction = output.instruction,
             expectedReadback = atoms,
             issuedAt = time,
-            advanceToStage = if (output.advancementPolicy is AdvancementPolicy.OnReadbackConfirmed)
-                output.advanceToStage else null,
+            advanceToStage = readbackStage,
         )
         updated[output.target] = (updated[output.target] ?: emptyList()) + coord
     }
