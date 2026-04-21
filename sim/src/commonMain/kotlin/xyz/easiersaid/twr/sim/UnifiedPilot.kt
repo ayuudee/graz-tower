@@ -70,12 +70,17 @@ fun unifiedPilotDecide(
 
 /**
  * If the mission's current step is [MissionStep.FLY_DEPARTURE] and the aircraft
- * is on the ground after landing, build a departure route and start the takeoff
+ * is on the ground, build a departure route and start (or continue) the takeoff
  * roll. Returns null if this isn't a departure initiation moment.
  *
- * This handles the touch-and-go lift-off: the pilot planned to do a circuit,
- * landed, and the next step in the plan is to fly the departure leg. The pilot
- * builds the route from circuit geometry — no new clearance needed.
+ * Handles two cases:
+ * - **T&G lift-off**: aircraft landed (LandingRoll), next step is FLY_DEPARTURE.
+ *   The pilot builds the full circuit route and transitions to TakeoffRoll.
+ * - **Initial takeoff for circuit**: the sim wrote a short departure route
+ *   (upwind → crosswind) via applyClearedForTakeoff. The pilot replaces it
+ *   with a full circuit route so it reaches downwind (where FLY_DEPARTURE completes).
+ *
+ * This is plan execution — the pilot planned to do a circuit and acts on it.
  */
 private fun initiateDepartureIfPlanned(
     mission: PilotMission?,
@@ -86,10 +91,26 @@ private fun initiateDepartureIfPlanned(
 ): PilotIntent? {
     val step = mission?.currentTask?.step ?: return null
     if (step != MissionStep.FLY_DEPARTURE) return null
-    if (aircraft.phase !is PilotPhase.LandingRoll) return null
+    // Only for circuit missions — pure departures use the sim-written route as-is.
+    if (mission.goal !is HighLevelGoal.CircuitTraining) return null
     if (world == null || activeRunway == null) return null
 
-    val route = buildDepartureRoute(world, worldIndex, activeRunway) ?: return null
+    // Only fire once: when transitioning from LandingRoll to TakeoffRoll (T&G),
+    // or when the sim wrote a short departure route that needs upgrading to the
+    // full circuit. Once the full circuit route is in place, return null and let
+    // the kinematic handler (onTakeoffRoll) manage acceleration and rotation.
+    when (aircraft.phase) {
+        is PilotPhase.LandingRoll -> Unit // T&G: need to initiate takeoff
+        is PilotPhase.TakeoffRoll -> {
+            // Check if the route already covers the full circuit (arrivalPhase = LandingRoll).
+            // If so, the pilot already has the right route — let kinematics handle it.
+            val current = aircraft.route as? PilotRoute.Airborne ?: return null
+            if (current.arrivalPhase is PilotPhase.LandingRoll) return null // already upgraded
+        }
+        else -> return null
+    }
+
+    val route = buildCircuitDepartureRoute(world, worldIndex, activeRunway) ?: return null
     return PilotIntent(
         targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
         phase = PilotPhase.TakeoffRoll,

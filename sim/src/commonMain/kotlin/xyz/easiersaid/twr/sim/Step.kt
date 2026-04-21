@@ -469,6 +469,46 @@ internal fun buildDepartureRoute(
 }
 
 /**
+ * Build a full circuit departure route: departure end → upwind → crosswind →
+ * downwind → base → final → threshold. For circuit training, the pilot needs
+ * a route that goes all the way around and lands.
+ *
+ * Filters the threshold from intermediate segments (it sits on the
+ * UPWIND/FINAL boundary; .distinct() would consume it early).
+ */
+internal fun buildCircuitDepartureRoute(
+    world: xyz.easiersaid.twr.core.world.AviationWorld,
+    worldIndex: WorldIndex,
+    runwayId: RunwayId,
+): PilotRoute.Airborne? {
+    val runway = world.aerodromes.values
+        .firstNotNullOfOrNull { it.runways[runwayId] } ?: return null
+    val runwayPath = runway.path.points
+    if (runwayPath.size < 2) return null
+    val departureEnd = runwayPath.last()
+    val threshold = runway.threshold
+
+    fun leg(name: xyz.easiersaid.twr.core.world.LegName) =
+        pointsWithLeg(worldIndex, name).filter { it != threshold }
+
+    val segments = buildList {
+        add(departureEnd)
+        leg(xyz.easiersaid.twr.core.world.LegName.UPWIND).forEach { add(it) }
+        leg(xyz.easiersaid.twr.core.world.LegName.CROSSWIND).forEach { add(it) }
+        leg(xyz.easiersaid.twr.core.world.LegName.DOWNWIND).forEach { add(it) }
+        leg(xyz.easiersaid.twr.core.world.LegName.BASE).forEach { add(it) }
+        leg(xyz.easiersaid.twr.core.world.LegName.FINAL).forEach { add(it) }
+        add(threshold)
+    }.distinct()
+    val waypoints = NonEmptyList(segments.first(), segments.drop(1))
+    return PilotRoute.Airborne(
+        waypoints = waypoints,
+        targetAltitudeM = DepartureDefaults.TARGET_ALTITUDE_M,
+        arrivalPhase = PilotPhase.LandingRoll,
+    )
+}
+
+/**
  * "Cleared for takeoff" at the threshold: switch to a departure route and
  * transition to [PilotPhase.TakeoffRoll].
  */

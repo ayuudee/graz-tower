@@ -655,8 +655,12 @@ class DepartureConditionSpaceTest {
             total++
         }
         assertEquals(32, total)
+        // DEP-CIRCUIT-COMPLETE requires PilotGoalIs(TOUCH_AND_GO) + OnCircuitLeg(DOWNWIND),
+        // which are outside this test's boolean space (departure-focused, not circuit-focused).
+        // The rule is exercised by the FullCircuitTest golden test instead.
+        val excludedFromDeadRuleCheck = setOf("DEP-CIRCUIT-COMPLETE")
         val stageRuleIds = spec.stageRules[TowerDepartureStage.AwaitTakeoffObserved]!!.map { it.id }.toSet()
-        for (ruleId in stageRuleIds) {
+        for (ruleId in stageRuleIds - excludedFromDeadRuleCheck) {
             assertTrue(ruleId in ruleDistribution,
                 "Rule $ruleId never fires across all 32 combinations — possible dead rule")
         }

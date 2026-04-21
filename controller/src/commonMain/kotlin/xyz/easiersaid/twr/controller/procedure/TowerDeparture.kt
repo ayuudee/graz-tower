@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.controller.procedure
 
+import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.bdi.*
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_10_1
@@ -193,6 +194,21 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
                 // Stay at AWAIT_TAKEOFF_OBSERVED — re-evaluate next cycle
             ),
+            // Circuit training: departure is complete when the aircraft reaches
+            // downwind. Tower retains the aircraft and forms a fresh TOWER_ARRIVAL
+            // for the circuit. No handoff to approach — circuit traffic stays with tower.
+            AtcRule(
+                id = "DEP-CIRCUIT-COMPLETE",
+                description = "Departure complete — circuit traffic reaching downwind, tower retains",
+                regulations = listOf(ICAO4444_7_9),
+                guard = AllOf(listOf(
+                    Airborne,
+                    OnCircuitLeg(LegName.DOWNWIND),
+                    PilotGoalIs(PilotGoal.TOUCH_AND_GO),
+                )),
+                nextStage = TowerDepartureStage.Complete,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
             AtcRule(
                 id = "DEP-HANDOFF",
                 description = "Hand departing traffic to approach/area control after climb-out",
@@ -202,13 +218,11 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 // Wait until the aircraft is on the upwind/crosswind climb-out rather
                 // than handing off the moment the wheels leave the ground — tower needs
                 // to watch the initial climb for aborts / engine failures (CAP 413 §4.46).
-                // Idempotent: the ContactFrequency is in-flight for several cycles,
-                // so we gate on NoPendingReadback to avoid queueing duplicates. The
-                // 30 s GC horizon in the pending register doubles as the retransmit
-                // timer (CAP 413 §2.7).
+                // Circuit traffic (T&G) stays with tower — DEP-CIRCUIT-COMPLETE handles it.
                 guard = AllOf(listOf(
                     Airborne,
                     AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
+                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ContactFrequency>()),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.APPROACH),

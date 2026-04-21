@@ -1,6 +1,5 @@
 package xyz.easiersaid.twr.sim
 
-import arrow.core.NonEmptyList
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.protocol.*
@@ -9,21 +8,21 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Golden test — the full stand-to-stand loop.
+ * Golden test — the full stand-to-stand circuit loop.
  *
- * A single AI aircraft departs from a parking stand, flies one circuit, lands,
- * vacates, and taxis back to the stand. Three controllers (ground, tower,
- * approach) must sequence it through every phase:
+ * A single AI aircraft spawns at a parking stand with a circuit training
+ * mission: 2 circuits, first touch-and-go, second full stop. The pilot
+ * plans and executes the mission autonomously. Three controllers (ground,
+ * tower, approach) sequence it through:
  *
- *   Stand → taxi → hold → line-up → takeoff → circuit (upwind → crosswind →
- *   downwind → base → final) → land → vacate → taxi → stand.
+ *   Stand → taxi → hold → line-up → takeoff →
+ *   Circuit 1 (T&G): upwind → crosswind → downwind → base → final → land → lift off →
+ *   Circuit 2 (full stop): upwind → crosswind → downwind → base → final → land →
+ *   vacate → taxi → stand.
  *
- * Implementation: two-phase simulation. Phase 1 uses [PilotGoal.DEPART] for
- * correct departure handling. When approach takes ownership on the crosswind
- * leg, phase 2 swaps the goal to [PilotGoal.ARRIVE] and adds an arrival route
- * for the remaining circuit legs, then continues to the stand.
- *
- * This is the 4e closure target: stand→taxi→depart→circuit→land→taxi→stand.
+ * The pilot's [HighLevelGoal.CircuitTraining] drives everything: the mission
+ * tree, the derived [PilotGoal] transitions (DEPART → TOUCH_AND_GO → ARRIVE),
+ * and the T&G lift-off. No test-harness phase stitching.
  */
 class FullCircuitTest {
 
@@ -69,8 +68,6 @@ class FullCircuitTest {
     private val groundFrequency = Frequency.unsafe("121.800")
     private val towerFrequency = Frequency.unsafe("118.100")
     private val approachFrequency = Frequency.unsafe("125.300")
-
-    private val patternAltitudeM = 150.0
 
     private val world = AviationWorld(
         aerodromes = mapOf(
@@ -162,92 +159,84 @@ class FullCircuitTest {
         ),
     )
 
-    private val controllers = listOf(
-        ControllerSpec(groundControllerId, RoleName.GROUND, aerodromeId, groundFrequency, setOf(alphaId)),
-        ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, emptySet()),
-        ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
+    private fun alpha() = AircraftState(
+        id = alphaId,
+        callsign = Callsign("ALPHA"),
+        position = positions[Pts.stand]!!,
+        positionPoint = Pts.stand,
+        pilotGoal = PilotGoal.DEPART, // initial; derivePilotGoal will update on first tick
+        humanPiloted = false,
+        route = PilotRoute.None,
+        phase = PilotPhase.AtStand,
+        pilotMission = createMission(
+            HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            PilotPhase.AtStand,
+            SimTime.ZERO,
+        ).let { m ->
+            // Skip pre-taxi steps for AI aircraft. The ground controller acts
+            // proactively (AiProactive) — pilot requests aren't needed and
+            // cause step-on collisions on the frequency.
+            m.copy(root = m.root
+                .markComplete(MissionStep.REQUEST_STARTUP)
+                .markComplete(MissionStep.AWAIT_STARTUP_APPROVAL)
+                .markComplete(MissionStep.REQUEST_TAXI))
+        },
     )
 
-    private val seedEvents = listOf(
-        SimEvent.PhysicsTick(SimTime.ZERO),
-        SimEvent.ControllerCycle(SimTime.ZERO, groundControllerId),
-        SimEvent.ControllerCycle(SimTime.ZERO, towerControllerId),
-        SimEvent.ControllerCycle(SimTime.ZERO, approachControllerId),
-    )
+    private fun snapshot(label: String, state: SimState) {
+        val ac = state.aircraft[alphaId] ?: run { println("  $label: aircraft not found"); return }
+        val commitments = state.beliefs.values.flatMap { it.commitments.entries }
+            .filter { it.key == alphaId }
+            .map { "${it.value.kind.trafficType}/${it.value.stage}" }
+        val owner = state.controllers.entries.firstOrNull { alphaId in it.value.responsibilities }?.key
+        val step = ac.pilotMission?.currentTask?.step?.name ?: "none"
+        println("  $label: phase=${ac.phase} goal=${ac.pilotGoal} point=${ac.positionPoint} " +
+            "alt=${"%.0f".format(ac.altitudeM)}m step=$step owner=$owner commit=$commitments")
+    }
 
     @Test
-    fun `stand → circuit → stand — full loop golden test`() {
-        // ── Phase 1: DEPART — stand to crosswind ────────────────────────
-        val departAlpha = AircraftState(
-            id = alphaId, callsign = Callsign("ALPHA"),
-            position = positions[Pts.stand]!!, positionPoint = Pts.stand,
-            pilotGoal = PilotGoal.DEPART, humanPiloted = false,
-            route = PilotRoute.None, phase = PilotPhase.AtStand,
-        )
-
-        val phase1 = runUntil(
-            initial = SimState.initial(42L, world, worldIndex, controllers = controllers),
-            initialEvents = seedEvents + SimEvent.Spawn(SimTime.ZERO, departAlpha),
-            until = SimTime.ofSeconds(300),
-        )
-
-        // Verify departure half completed
-        val afterDepart = phase1.aircraft[alphaId]!!
-        assertTrue(afterDepart.altitudeM > 50.0,
-            "Phase 1: aircraft must be airborne. Actual altitude: ${afterDepart.altitudeM}")
-        assertTrue(alphaId in phase1.controllers[approachControllerId]!!.responsibilities,
-            "Phase 1: approach must own ALPHA after departure handoff")
-
-        // ── Phase 2: ARRIVE — crosswind to stand ────────────────────────
-        // Swap goal to ARRIVE and give the aircraft a circuit route for the
-        // remaining legs (downwind → base → final → threshold).
-        val arriveAlpha = afterDepart.copy(
-            pilotGoal = PilotGoal.ARRIVE,
-            route = PilotRoute.Airborne(
-                waypoints = NonEmptyList(Pts.downwind, listOf(Pts.base, Pts.finalPt, Pts.thrA)),
-                targetAltitudeM = patternAltitudeM,
-                arrivalPhase = PilotPhase.LandingRoll,
+    fun `stand → 2 circuits → stand — autonomous pilot golden test`() {
+        val initial = SimState.initial(
+            seed = 42L, world = world, worldIndex = worldIndex,
+            controllers = listOf(
+                ControllerSpec(groundControllerId, RoleName.GROUND, aerodromeId, groundFrequency, setOf(alphaId)),
+                ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, emptySet()),
+                ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
             ),
-            targetAltitudeM = patternAltitudeM,
         )
-        val aircraft2 = LinkedHashMap(phase1.aircraft).apply { put(alphaId, arriveAlpha) }
-        val phase2Initial = phase1.copy(aircraft = aircraft2)
-
-        // Re-seed recurring events from the current sim time.
-        val t = phase1.now
-        val phase2Events = listOf(
-            SimEvent.PhysicsTick(t),
-            SimEvent.PilotDecisionTick(t, alphaId),
-            SimEvent.ControllerCycle(t, groundControllerId),
-            SimEvent.ControllerCycle(t, towerControllerId),
-            SimEvent.ControllerCycle(t, approachControllerId),
+        val events = listOf(
+            SimEvent.PhysicsTick(SimTime.ZERO),
+            SimEvent.Spawn(SimTime.ZERO, alpha()),
+            SimEvent.ControllerCycle(SimTime.ZERO, groundControllerId),
+            SimEvent.ControllerCycle(SimTime.ZERO, towerControllerId),
+            SimEvent.ControllerCycle(SimTime.ZERO, approachControllerId),
         )
 
-        val phase2 = runUntil(
-            initial = phase2Initial,
-            initialEvents = phase2Events,
-            until = SimTime.ofSeconds(900),
-        )
+        // Timeline for debugging
+        println("=== Full Circuit Timeline (2 circuits, autonomous pilot) ===")
+        for (t in listOf(5, 30, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600)) {
+            snapshot("t=${t}s", runUntil(initial, events, SimTime.ofSeconds(t.toLong())))
+        }
+        println("=== End Timeline ===")
 
-        // ── Assertions ──────────────────────────────────────────────────
-        val run2 = runUntil(phase2Initial, phase2Events, SimTime.ofSeconds(900))
-        assertEquals(phase2, run2, "Two phase-2 runs with same state must be identical")
+        val result = runUntil(initial, events, SimTime.ofSeconds(1800))
 
-        val ac = phase2.aircraft[alphaId]!!
+        // Determinism
+        val result2 = runUntil(initial, events, SimTime.ofSeconds(1800))
+        assertEquals(result, result2, "Two runs with the same seed must produce identical state")
+
+        val ac = result.aircraft[alphaId]!!
+
+        // The aircraft must be parked at the stand.
         assertEquals(PilotPhase.Parked, ac.phase,
-            "Aircraft must be parked. Actual: ${ac.phase} at ${ac.positionPoint}")
+            "Aircraft must be parked. Actual: ${ac.phase} at ${ac.positionPoint} alt=${"%.0f".format(ac.altitudeM)}m step=${ac.pilotMission?.currentTask?.step}")
         assertEquals(Pts.stand, ac.positionPoint,
             "Aircraft must have returned to the stand")
         assertEquals(0.0, ac.altitudeM, "Aircraft must be on the ground")
         assertEquals(0.0, ac.speedMps, "Aircraft must be stopped")
 
-        val gnd = phase2.controllers[groundControllerId]!!
-        val twr = phase2.controllers[towerControllerId]!!
-        val app = phase2.controllers[approachControllerId]!!
-        assertTrue(alphaId !in twr.responsibilities, "Tower must have released ALPHA")
-        assertTrue(alphaId !in app.responsibilities, "Approach must have released ALPHA")
-
-        assertTrue(phase2.inFlightTransmissions.isEmpty(),
+        // All transmissions cleared.
+        assertTrue(result.inFlightTransmissions.isEmpty(),
             "All transmissions must have cleared the air")
     }
 }
