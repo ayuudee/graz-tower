@@ -3,7 +3,7 @@
 `research/fm` is the proof-authoritative research spike for the split
 certification architecture described in [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md).
 
-As of April 18, 2026, the product-authoritative world and clearance design for
+As of April 21, 2026, the product-authoritative world and clearance design for
 the next project lives in
 [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
 and
@@ -40,7 +40,7 @@ Read `research/fm` in this order of importance:
 
 ## Current Status
 
-As of April 18, 2026:
+As of April 21, 2026:
 
 - architecture contract: frozen
 - generic runway kernel: implemented and proved locally
@@ -718,6 +718,21 @@ The Lean project is organized as:
   Proof-side world-to-resolved relation for the current execution boundary.
 - [GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
   Structured completion-observation layer over resolved steps.
+- the observation-regression layer over that completion model is now also in
+  the tracked Lean tree:
+  [GreenfieldObservationInstructionRunwayRadio.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionRunwayRadio.lean),
+  [GreenfieldObservationInstructionLevelSpeedA.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedA.lean),
+  [GreenfieldObservationInstructionLevelSpeedB.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedB.lean),
+  [GreenfieldObservationInstructionTransponder.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionTransponder.lean),
+  [GreenfieldObservationResolvedGroundRunway.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedGroundRunway.lean),
+  [GreenfieldObservationResolvedRouteProcedure.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedRouteProcedure.lean),
+  [GreenfieldObservationResolvedAirspaceFrequency.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedAirspaceFrequency.lean),
+  and
+  [GreenfieldObservationPlainInstructionSteps.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationPlainInstructionSteps.lean);
+  those theorem-only modules pin the current instruction-level and
+  resolved-step observation semantics for runway/radio, level/speed,
+  transponder, plain-step, ground/runway, route/procedure, and
+  airspace/frequency families without widening the execution model itself
 - [GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
   Resolved active-clearance execution and reconciliation layer.
 - [GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)

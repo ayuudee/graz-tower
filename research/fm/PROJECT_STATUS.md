@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: April 18, 2026
+Last updated: April 21, 2026
 
 This file is the current execution status for `research/fm`.
 
@@ -256,6 +256,14 @@ It now contains:
   the delivered runway-operation family is now widened through a first narrow
   current-shape compound slice, and the broadened current-shape runway family
   now packages that slice together with single-step `BacktrackRunway`
+- the observation-completion regression layer now also exists as tracked Lean
+  source above `GreenfieldCompletion.lean`:
+  eight theorem-only files now pin the current instruction-level and
+  resolved-step observation semantics for runway/radio, level/speed,
+  transponder, plain-step, ground/runway, route/procedure, and
+  airspace/frequency families; this does not widen the proof-visible runtime,
+  but it does close the currently prepared observation backlog into explicit
+  checked regressions on the tracked tree
 - the delivered runway branch is now stronger than that historical phase-3
   closure:
   `GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean` is now the

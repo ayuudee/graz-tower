@@ -12,19 +12,21 @@ nix-shell -p lean4 --run 'cd research/fm/lean && lake build'
 
 ## Default Next Work
 
-The delivered-branch refinement / drift-control closure is now in place.
+The prepared observation-regression queue has now been promoted and exhausted.
 
 - keep
-  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md),
-  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md),
+  [CertifiedAtc.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc.lean),
+  [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md),
   and
-  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
-  current if metadata, authority, completion, supersession, or family status
-  changes
-- there is no longer one automatic low-risk widening branch of exactly the
-  same shape
-- choose the next deliberate widening branch as a genuinely semantic branch
-  beyond the current models
+  [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
+  aligned when observation-regression files are added or retired
+- treat `research/fm/r1-smoke/` as the ignored operations workspace only:
+  regenerate queue artifacts there, but review and manually promote successful
+  theorem files back into tracked `research/fm/lean`
+- author the next 3-8 coherent graphs / roughly 15-40 micro-units before the
+  next overnight proof run
+- beyond queue maintenance, choose the next deliberate widening branch as a
+  genuinely semantic branch beyond the current models
 
 ## Module Order
 
@@ -67,6 +69,16 @@ Read modules in roughly this order:
     Optional. This is the proof-side world-to-resolved relation: it states what world facts justify a resolved step/clearance.
 17. [CertifiedAtc/GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
     Optional. This evaluates structured observations against resolved steps: reached point, runway transition, circuit membership, altitude/speed, radio role/frequency, and transponder state.
+    For checked observation regressions over that layer, also read
+    [CertifiedAtc/GreenfieldObservationInstructionRunwayRadio.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionRunwayRadio.lean),
+    [CertifiedAtc/GreenfieldObservationInstructionLevelSpeedA.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedA.lean),
+    [CertifiedAtc/GreenfieldObservationInstructionLevelSpeedB.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedB.lean),
+    [CertifiedAtc/GreenfieldObservationInstructionTransponder.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionTransponder.lean),
+    [CertifiedAtc/GreenfieldObservationResolvedGroundRunway.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedGroundRunway.lean),
+    [CertifiedAtc/GreenfieldObservationResolvedRouteProcedure.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedRouteProcedure.lean),
+    [CertifiedAtc/GreenfieldObservationResolvedAirspaceFrequency.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedAirspaceFrequency.lean),
+    and
+    [CertifiedAtc/GreenfieldObservationPlainInstructionSteps.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationPlainInstructionSteps.lean).
 18. [CertifiedAtc/GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
     Optional. This is the resolved active-clearance layer: managed resolved clearances, resolved completion, and active-set reconciliation.
 19. [CertifiedAtc/GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
@@ -336,6 +348,11 @@ Read modules in roughly this order:
   extracted runtime.
 - `GreenfieldCompletion`
   Structured completion-observation layer over `GreenfieldResolved`: evaluates proof-side observations against resolved step payloads while keeping unsupported families explicit.
+- `GreenfieldObservation*`
+  Theorem-only regression slices over `GreenfieldCompletion`: they pin the
+  current instruction-level and resolved-step observation behavior for
+  runway/radio, level/speed, transponder, plain-step, ground/runway,
+  route/procedure, and airspace/frequency families.
 - `GreenfieldExecution`
   Resolved active-clearance layer over `GreenfieldResolved` and `GreenfieldCompletion`: managed resolved clearances, resolved completion, supersession bridging, and active-set reconciliation.
   The current theorem surface also makes the unique-clearance-id assumption
@@ -805,6 +822,13 @@ Use `GreenfieldCompletion.lean` when you want to:
 - connect proof-side observations to resolved step completion
 - model point arrival, runway transitions, circuit membership, radio handoff, altitude/speed, and transponder completion
 - keep unsupported families explicit rather than silently approximating them
+
+Use the `GreenfieldObservation*.lean` files when you want to:
+
+- lock the current observation semantics in small checked theorem slices
+- extend the overnight queue with more theorem-only completion regressions
+- review promoted queue output without having to diff the larger semantic
+  modules first
 
 Use `GreenfieldExecution.lean` when you want to:
 
