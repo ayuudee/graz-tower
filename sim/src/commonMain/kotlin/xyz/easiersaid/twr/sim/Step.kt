@@ -488,8 +488,11 @@ internal fun buildCircuitDepartureRoute(
     val departureEnd = runwayPath.last()
     val threshold = runway.threshold
 
-    fun leg(name: xyz.easiersaid.twr.core.world.LegName) =
-        pointsWithLeg(worldIndex, name).filter { it != threshold }
+    fun leg(name: xyz.easiersaid.twr.core.world.LegName): List<PointId> {
+        val points = pointsWithLeg(worldIndex, name).filter { it != threshold }
+        require(points.isNotEmpty()) { "Circuit leg $name has no points in world index for runway $runwayId" }
+        return points
+    }
 
     val segments = buildList {
         add(departureEnd)

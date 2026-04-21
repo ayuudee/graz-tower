@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
  * 3. **No blind spots**: critical conditions always produce controller action.
  * 4. **No silent failures**: action resolution never fails in any cell.
  *
- * Total combinations across all departure stages: ~736.
+ * Total combinations across all departure stages: ~832.
  */
 class DepartureConditionSpaceTest {
 
@@ -565,21 +565,31 @@ class DepartureConditionSpaceTest {
     // physically occupy both a runway point and a circuit point simultaneously.
     // The onRunway flag takes priority in the when-branch below.
 
+    // 7 booleans = 128 combinations. Includes circuit-specific dimensions
+    // (touchAndGo, onDownwind) so DEP-CIRCUIT-COMPLETE is covered naturally.
+    //
+    // Position priority: onRunway > onDownwind > onClimboutLeg > holdShort.
+    // An aircraft cannot physically be at two positions simultaneously.
+
     data class AwaitTakeoffConditions(
         val onRunway: Boolean,
         val onGround: Boolean,
         val runwayClear: Boolean,
         val onClimboutLeg: Boolean,
+        val onDownwind: Boolean,
+        val touchAndGo: Boolean,
         val handoffReadbackPending: Boolean,
     )
 
     private fun execute(c: AwaitTakeoffConditions): Pair<ExecutionOutcome, List<Pair<String, Boolean>>> {
         val point = when {
             c.onRunway -> TestIds.rwyMid
+            c.onDownwind -> TestIds.downwind
             c.onClimboutLeg -> TestIds.upwind
             else -> TestIds.holdShort
         }
-        val acObs = aircraft(point, onGround = c.onGround)
+        val goal = if (c.touchAndGo) PilotGoal.TOUCH_AND_GO else PilotGoal.DEPART
+        val acObs = aircraftAt(ac, point, worldIndex, onGround = c.onGround, goal = goal)
         val commit = commitment(TowerDepartureStage.AwaitTakeoffObserved)
         val pending = if (c.handoffReadbackPending)
             ContactFrequency(ac, RoleName.APPROACH, frequency = Frequency.unsafe("120.500")) else null
@@ -598,8 +608,9 @@ class DepartureConditionSpaceTest {
         var tested = 0
         for (onRunway in bools) for (onGround in bools)
         for (clear in bools) for (climbout in bools)
+        for (downwind in bools) for (tng in bools)
         for (pending in bools) {
-            val c = AwaitTakeoffConditions(onRunway, onGround, clear, climbout, pending)
+            val c = AwaitTakeoffConditions(onRunway, onGround, clear, climbout, downwind, tng, pending)
             val (outcome, guards) = execute(c)
 
             val safetyPassing = guards.filter { (id, passed) -> passed && id in awaitTakeoffSafetyRules }
@@ -611,16 +622,18 @@ class DepartureConditionSpaceTest {
             }
             tested++
         }
-        assertEquals(32, tested)
+        assertEquals(128, tested)
     }
 
     @Test
     fun `AwaitTakeoffObserved — critical conditions always produce action`() {
         // On runway + on ground + not clear → cancel takeoff
-        for (climbout in bools) for (pending in bools) {
+        for (climbout in bools) for (downwind in bools)
+        for (tng in bools) for (pending in bools) {
             val c = AwaitTakeoffConditions(
                 onRunway = true, onGround = true, runwayClear = false,
-                onClimboutLeg = climbout, handoffReadbackPending = pending,
+                onClimboutLeg = climbout, onDownwind = downwind,
+                touchAndGo = tng, handoffReadbackPending = pending,
             )
             val (outcome, _) = execute(c)
             assertNotNull(outcome.result,
@@ -628,14 +641,25 @@ class DepartureConditionSpaceTest {
             assertEquals("DEP-CANCEL-TAKEOFF", outcome.result!!.trace.ruleId)
         }
 
-        // Airborne on climbout + no pending → handoff
+        // Airborne on climbout + no pending + not T&G → handoff
         val handoff = AwaitTakeoffConditions(
             onRunway = false, onGround = false, runwayClear = true,
-            onClimboutLeg = true, handoffReadbackPending = false,
+            onClimboutLeg = true, onDownwind = false,
+            touchAndGo = false, handoffReadbackPending = false,
         )
-        val (outcome, _) = execute(handoff)
-        assertNotNull(outcome.result)
-        assertEquals("DEP-HANDOFF", outcome.result!!.trace.ruleId)
+        val (handoffOutcome, _) = execute(handoff)
+        assertNotNull(handoffOutcome.result)
+        assertEquals("DEP-HANDOFF", handoffOutcome.result!!.trace.ruleId)
+
+        // Airborne on downwind + T&G → circuit complete
+        val circuitComplete = AwaitTakeoffConditions(
+            onRunway = false, onGround = false, runwayClear = true,
+            onClimboutLeg = false, onDownwind = true,
+            touchAndGo = true, handoffReadbackPending = false,
+        )
+        val (circuitOutcome, _) = execute(circuitComplete)
+        assertNotNull(circuitOutcome.result)
+        assertEquals("DEP-CIRCUIT-COMPLETE", circuitOutcome.result!!.trace.ruleId)
     }
 
     @Test
@@ -644,9 +668,10 @@ class DepartureConditionSpaceTest {
         val ruleDistribution = mutableMapOf<String?, Int>()
         for (onRunway in bools) for (onGround in bools)
         for (clear in bools) for (climbout in bools)
+        for (downwind in bools) for (tng in bools)
         for (pending in bools) {
-            val c = AwaitTakeoffConditions(onRunway, onGround, clear, climbout, pending)
-            val (outcome, guards) = execute(c)
+            val c = AwaitTakeoffConditions(onRunway, onGround, clear, climbout, downwind, tng, pending)
+            val (outcome, _) = execute(c)
             ruleDistribution[outcome.result?.trace?.ruleId] =
                 (ruleDistribution[outcome.result?.trace?.ruleId] ?: 0) + 1
 
@@ -654,15 +679,11 @@ class DepartureConditionSpaceTest {
                 "AwaitTakeoffObserved $c: unexpected action failures: ${outcome.actionFailures.map { it.ruleId + ": " + it.reason }}")
             total++
         }
-        assertEquals(32, total)
-        // DEP-CIRCUIT-COMPLETE requires PilotGoalIs(TOUCH_AND_GO) + OnCircuitLeg(DOWNWIND),
-        // which are outside this test's boolean space (departure-focused, not circuit-focused).
-        // The rule is exercised by the FullCircuitTest golden test instead.
-        val excludedFromDeadRuleCheck = setOf("DEP-CIRCUIT-COMPLETE")
+        assertEquals(128, total)
         val stageRuleIds = spec.stageRules[TowerDepartureStage.AwaitTakeoffObserved]!!.map { it.id }.toSet()
-        for (ruleId in stageRuleIds - excludedFromDeadRuleCheck) {
+        for (ruleId in stageRuleIds) {
             assertTrue(ruleId in ruleDistribution,
-                "Rule $ruleId never fires across all 32 combinations — possible dead rule")
+                "Rule $ruleId never fires across all 128 combinations — possible dead rule")
         }
     }
 

@@ -1,3 +1,37 @@
+# Commandments
+
+These are non-negotiable. Every agent — main conversation, subagent, review agent — must follow them. **If you are a subagent, confirm you have read the commandments before proceeding.**
+
+## 1. No corners cut
+
+Do not take shortcuts that defer problems, hide failures, or create future surprises. If something cannot be done correctly right now, either do it correctly or make the incomplete state **loudly visible** (throw an exception, fail the test, leave a compile error). Silent workarounds — skip lists, `@Suppress`, `TODO` comments that disable checks, catch-all `else` branches that swallow unexpected cases — are forbidden.
+
+**Test example**: if a new production rule isn't covered by an exhaustive condition-space test, expand the condition space. Do not add the rule ID to an exclusion list.
+
+**Code example**: if a sealed `when` gains a new branch, handle it. Do not add `else -> Unit` or `else -> null`. If the handler isn't written yet, `else -> error("${branch::class.simpleName} not yet handled")`.
+
+## 2. No half-baked work
+
+Every commit must leave the codebase in a state where all tests pass and no known-incorrect behavior is silently accepted. If a feature is partially implemented, the unfinished part must fail loudly — not pass silently by being excluded from checks.
+
+## 3. Throw on the unimplemented
+
+When code encounters a state it doesn't handle, it must throw, not return a default. `error()` is the right response to "this shouldn't happen." Returning `null`, `emptyList()`, or a no-op is only correct when the absence is a defined, documented part of the domain.
+
+## 4. Tests prove the real job
+
+Tests must exercise real behavior, not structural properties that the type system or compiler already guarantees. If a test can only pass by checking something the code already enforces, it adds no confidence and should not exist. When a test needs to exclude cases, that is a signal that the test's scope is wrong — fix the scope, don't carve exceptions.
+
+## 5. The pilot owns the plan
+
+The pilot agent receives a high-level goal and plans how to achieve it. The test harness does not decompose the goal, stitch phases together, or swap goals mid-flight. If the test needs to do this, the pilot's planning capability is incomplete — fix the pilot, don't work around it in the test.
+
+## 6. Protocol is source of truth
+
+Controller and pilot behavior must be traceable to ATC regulations (ICAO, SERA, CAP 413). Every rule carries regulation references. Every pilot transmission follows standard phraseology. Invented behaviors that have no regulatory basis are bugs, not features.
+
+---
+
 # Environment
 
 Nix development shell (`nix-shell` or direnv). JDK 21, Gradle 8, Lean 4, TLA+.

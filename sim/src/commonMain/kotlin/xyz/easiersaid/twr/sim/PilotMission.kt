@@ -95,8 +95,12 @@ data class CompoundTask(
     }
 
     /** Replace the first child matching [predicate] with [replacement]. */
-    fun replaceChild(predicate: (TaskNode) -> Boolean, replacement: TaskNode): CompoundTask =
-        copy(children = children.map { if (predicate(it)) replacement else it })
+    fun replaceChild(predicate: (TaskNode) -> Boolean, replacement: TaskNode): CompoundTask {
+        var replaced = false
+        return copy(children = children.map { child ->
+            if (!replaced && predicate(child)) { replaced = true; replacement } else child
+        })
+    }
 
     /** Mark the current primitive as complete and return the updated tree. */
     fun advanceCurrent(): CompoundTask {
@@ -187,17 +191,30 @@ enum class MissionStep {
 
 // ── Task tree construction ───────────────────────────────────────────
 
-/** Build the GROUND_DEPARTURE compound task. */
-fun groundDepartureTask(): CompoundTask = CompoundTask(TaskName.GroundDeparture, listOf(
-    PrimitiveTask(MissionStep.REQUEST_STARTUP, CompletionMode.INSTRUCTION_GATED),
-    PrimitiveTask(MissionStep.AWAIT_STARTUP_APPROVAL, CompletionMode.INSTRUCTION_GATED),
-    PrimitiveTask(MissionStep.REQUEST_TAXI, CompletionMode.INSTRUCTION_GATED),
-    PrimitiveTask(MissionStep.TAXI_TO_HOLDING, CompletionMode.PHYSICAL),
-    PrimitiveTask(MissionStep.RUN_UP_CHECKS, CompletionMode.TIMED),
-    PrimitiveTask(MissionStep.REPORT_READY, CompletionMode.REPORTED),
-    PrimitiveTask(MissionStep.AWAIT_LINE_UP, CompletionMode.INSTRUCTION_GATED),
-    PrimitiveTask(MissionStep.AWAIT_TAKEOFF_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
-))
+/**
+ * Build the GROUND_DEPARTURE compound task.
+ *
+ * For AI aircraft ([humanPiloted] = false), startup and taxi request steps are
+ * omitted — the ground controller acts proactively via [AiProactive] and issues
+ * TaxiTo without waiting for a request. Including these steps for AI would cause
+ * step-on collisions on the frequency (pilot transmits request at the same time
+ * the controller transmits the proactive instruction).
+ */
+fun groundDepartureTask(humanPiloted: Boolean = true): CompoundTask {
+    val steps = buildList {
+        if (humanPiloted) {
+            add(PrimitiveTask(MissionStep.REQUEST_STARTUP, CompletionMode.INSTRUCTION_GATED))
+            add(PrimitiveTask(MissionStep.AWAIT_STARTUP_APPROVAL, CompletionMode.INSTRUCTION_GATED))
+            add(PrimitiveTask(MissionStep.REQUEST_TAXI, CompletionMode.INSTRUCTION_GATED))
+        }
+        add(PrimitiveTask(MissionStep.TAXI_TO_HOLDING, CompletionMode.PHYSICAL))
+        add(PrimitiveTask(MissionStep.RUN_UP_CHECKS, CompletionMode.TIMED))
+        add(PrimitiveTask(MissionStep.REPORT_READY, CompletionMode.REPORTED))
+        add(PrimitiveTask(MissionStep.AWAIT_LINE_UP, CompletionMode.INSTRUCTION_GATED))
+        add(PrimitiveTask(MissionStep.AWAIT_TAKEOFF_CLEARANCE, CompletionMode.INSTRUCTION_GATED))
+    }
+    return CompoundTask(TaskName.GroundDeparture, steps)
+}
 
 /** Build the CIRCUIT compound task (downwind through landing). */
 fun circuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
@@ -240,9 +257,9 @@ fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
  * The controller never sees this tree; it only sees [derivePilotGoal] which
  * produces the controller-visible [PilotGoal] from the current mission state.
  */
-fun planMission(goal: HighLevelGoal): CompoundTask = when (goal) {
+fun planMission(goal: HighLevelGoal, humanPiloted: Boolean = true): CompoundTask = when (goal) {
     is HighLevelGoal.Departure -> CompoundTask(TaskName.Depart, listOf(
-        groundDepartureTask(),
+        groundDepartureTask(humanPiloted),
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
@@ -257,7 +274,8 @@ fun planMission(goal: HighLevelGoal): CompoundTask = when (goal) {
             if (isLast) circuitTask() // full stop: includes LAND
             else touchAndGoCircuitTask() // T&G: includes LAND then lifts off
         }
-        CompoundTask(TaskName.CircuitTraining, listOf(groundDepartureTask()) + circuitTasks + listOf(groundArrivalTask()))
+        CompoundTask(TaskName.CircuitTraining,
+            listOf(groundDepartureTask(humanPiloted)) + circuitTasks + listOf(groundArrivalTask()))
     }
     is HighLevelGoal.Transit -> CompoundTask(TaskName.Transit, listOf(
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
@@ -291,16 +309,25 @@ fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listO
  */
 fun derivePilotGoal(mission: PilotMission): PilotGoal {
     val activeCompound = mission.root.activeCompound()?.name
-    return when {
-        activeCompound is TaskName.GroundDeparture -> PilotGoal.DEPART
-        activeCompound is TaskName.GroundArrival -> PilotGoal.ARRIVE
-        activeCompound is TaskName.ArrivalJoin -> PilotGoal.ARRIVE
-        // Circuit: T&G unless this is the last circuit of a CircuitTraining with fullStopOnLast
-        activeCompound is TaskName.Circuit && isLastActiveCircuit(mission) -> PilotGoal.ARRIVE
-        activeCompound is TaskName.Circuit -> PilotGoal.TOUCH_AND_GO
-        activeCompound is TaskName.CircuitAfterGoAround -> PilotGoal.TOUCH_AND_GO
-        activeCompound is TaskName.GoAround -> PilotGoal.TOUCH_AND_GO
-        else -> PilotGoal.DEPART
+    // Exhaustive over TaskName? — compiler forces a decision when new TaskNames are added.
+    return when (activeCompound) {
+        is TaskName.GroundDeparture -> PilotGoal.DEPART
+        is TaskName.GroundArrival -> PilotGoal.ARRIVE
+        is TaskName.ArrivalJoin -> PilotGoal.ARRIVE
+        is TaskName.Circuit ->
+            if (isLastActiveCircuit(mission)) PilotGoal.ARRIVE else PilotGoal.TOUCH_AND_GO
+        is TaskName.CircuitAfterGoAround -> PilotGoal.TOUCH_AND_GO
+        is TaskName.GoAround -> PilotGoal.TOUCH_AND_GO
+        is TaskName.Arrive -> PilotGoal.ARRIVE
+        is TaskName.TouchAndGo -> PilotGoal.TOUCH_AND_GO
+        is TaskName.Depart -> PilotGoal.DEPART
+        is TaskName.Transit -> PilotGoal.DEPART
+        // CircuitTraining is never the active compound — it's the root, and
+        // activeCompound() returns its first incomplete child, not itself.
+        is TaskName.CircuitTraining -> error("CircuitTraining should not be the active compound")
+        // No active compound: all compound children complete, only top-level primitives remain
+        // (e.g., FLY_DEPARTURE + SHUTDOWN at end of a Departure mission).
+        null -> PilotGoal.DEPART
     }
 }
 
@@ -330,8 +357,9 @@ fun createMission(
     goal: HighLevelGoal,
     startPhase: PilotPhase,
     time: SimTime,
+    humanPiloted: Boolean = true,
 ): PilotMission {
-    var root = planMission(goal)
+    var root = planMission(goal, humanPiloted)
     root = skipCompletedSteps(root, startPhase)
     return PilotMission(goal = goal, root = root, stepEnteredAt = time)
 }
@@ -360,7 +388,7 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
     )
 
     val stepsToSkip = when (startPhase) {
-        is PilotPhase.AtStand -> emptySet()
+        is PilotPhase.AtStand, is PilotPhase.Parked -> emptySet()
         is PilotPhase.Taxiing -> preTaxi
         is PilotPhase.HoldingShort -> preHold
         is PilotPhase.LinedUp -> preLineUp
@@ -368,7 +396,10 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
         is PilotPhase.Base -> preBase
         is PilotPhase.Final -> preFinal
         is PilotPhase.LandingRoll -> preLand
-        else -> emptySet()
+        is PilotPhase.TakeoffRoll, is PilotPhase.Climbing, is PilotPhase.Crosswind ->
+            error("Cannot create mission at mid-departure phase: $startPhase")
+        is PilotPhase.Vacating, is PilotPhase.ClearOfRunway ->
+            error("Cannot create mission at mid-vacate phase: $startPhase")
     }
     return markStepsComplete(root, stepsToSkip)
 }

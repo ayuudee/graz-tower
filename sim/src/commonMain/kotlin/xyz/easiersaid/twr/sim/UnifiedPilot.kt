@@ -93,7 +93,8 @@ private fun initiateDepartureIfPlanned(
     if (step != MissionStep.FLY_DEPARTURE) return null
     // Only for circuit missions — pure departures use the sim-written route as-is.
     if (mission.goal !is HighLevelGoal.CircuitTraining) return null
-    if (world == null || activeRunway == null) return null
+    requireNotNull(world) { "CircuitTraining FLY_DEPARTURE requires world geometry" }
+    requireNotNull(activeRunway) { "CircuitTraining FLY_DEPARTURE requires activeRunway" }
 
     // Only fire once: when transitioning from LandingRoll to TakeoffRoll (T&G),
     // or when the sim wrote a short departure route that needs upgrading to the
@@ -110,7 +111,8 @@ private fun initiateDepartureIfPlanned(
         else -> return null
     }
 
-    val route = buildCircuitDepartureRoute(world, worldIndex, activeRunway) ?: return null
+    val route = buildCircuitDepartureRoute(world, worldIndex, activeRunway)
+        ?: error("Cannot build circuit departure route for runway $activeRunway")
     return PilotIntent(
         targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
         phase = PilotPhase.TakeoffRoll,

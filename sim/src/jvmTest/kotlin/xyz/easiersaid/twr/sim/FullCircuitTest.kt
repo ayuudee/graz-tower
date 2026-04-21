@@ -169,18 +169,11 @@ class FullCircuitTest {
         route = PilotRoute.None,
         phase = PilotPhase.AtStand,
         pilotMission = createMission(
-            HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
-            PilotPhase.AtStand,
-            SimTime.ZERO,
-        ).let { m ->
-            // Skip pre-taxi steps for AI aircraft. The ground controller acts
-            // proactively (AiProactive) — pilot requests aren't needed and
-            // cause step-on collisions on the frequency.
-            m.copy(root = m.root
-                .markComplete(MissionStep.REQUEST_STARTUP)
-                .markComplete(MissionStep.AWAIT_STARTUP_APPROVAL)
-                .markComplete(MissionStep.REQUEST_TAXI))
-        },
+            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            startPhase = PilotPhase.AtStand,
+            time = SimTime.ZERO,
+            humanPiloted = false,
+        ),
     )
 
     private fun snapshot(label: String, state: SimState) {

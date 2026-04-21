@@ -47,7 +47,6 @@ class DfaConformanceTest {
     private val arrSpec = towerArrivalProcedure()
     private val gndSpec = groundTaxiProcedure()
 
-    @Suppress("UNCHECKED_CAST")
     private fun dep() = Fixture(
         name = "TowerDeparture",
         allStages = listOf(
@@ -62,11 +61,11 @@ class DfaConformanceTest {
         ),
         initialStage = TowerDepartureStage.AwaitReady,
         reconcile = ::reconcileDepartureStage,
-        stageRules = depSpec.stageRules.filterKeys { it is TowerDepartureStage }
-            as Map<TowerDepartureStage, List<AtcRule>>,
+        stageRules = depSpec.stageRules.entries
+            .filter { it.key is TowerDepartureStage }
+            .associate { (it.key as TowerDepartureStage) to it.value },
     )
 
-    @Suppress("UNCHECKED_CAST")
     private fun arr() = Fixture(
         name = "TowerArrival",
         allStages = listOf(
@@ -82,12 +81,12 @@ class DfaConformanceTest {
         ),
         initialStage = TowerArrivalStage.AwaitDownwind,
         reconcile = ::reconcileArrivalStage,
-        stageRules = arrSpec.stageRules.filterKeys { it is TowerArrivalStage }
-            as Map<TowerArrivalStage, List<AtcRule>>,
+        stageRules = arrSpec.stageRules.entries
+            .filter { it.key is TowerArrivalStage }
+            .associate { (it.key as TowerArrivalStage) to it.value },
         interrupts = arrSpec.interrupts,
     )
 
-    @Suppress("UNCHECKED_CAST")
     private fun gndDep() = Fixture(
         name = "GroundDeparture",
         allStages = listOf(
@@ -101,11 +100,11 @@ class DfaConformanceTest {
         ),
         initialStage = GroundDepartureStage.AwaitTaxiRequest,
         reconcile = ::reconcileGroundDepartureStage,
-        stageRules = gndSpec.stageRules.filterKeys { it is GroundDepartureStage }
-            as Map<GroundDepartureStage, List<AtcRule>>,
+        stageRules = gndSpec.stageRules.entries
+            .filter { it.key is GroundDepartureStage }
+            .associate { (it.key as GroundDepartureStage) to it.value },
     )
 
-    @Suppress("UNCHECKED_CAST")
     private fun gndArr() = Fixture(
         name = "GroundArrival",
         allStages = listOf(
@@ -119,8 +118,9 @@ class DfaConformanceTest {
         ),
         initialStage = GroundArrivalStage.TaxiToStand,
         reconcile = ::reconcileGroundArrivalStage,
-        stageRules = gndSpec.stageRules.filterKeys { it is GroundArrivalStage }
-            as Map<GroundArrivalStage, List<AtcRule>>,
+        stageRules = gndSpec.stageRules.entries
+            .filter { it.key is GroundArrivalStage }
+            .associate { (it.key as GroundArrivalStage) to it.value },
     )
 
     // ── Helpers ──────────────────────────────────────────────────────────
@@ -216,11 +216,12 @@ class DfaConformanceTest {
     // ── Property 5: ANOMALOUS → SAFETY coverage ─────────────────────────
 
     // Allow-list for ANOMALOUS stage-change cells where the target intentionally
-    // has no SAFETY rules. Key format: "ProcedureName: InputStage→OutputStage".
+    // has no SAFETY rules. Type-safe: uses actual stage objects, not strings.
+    private data class AnomalousAllowEntry(val from: Stage, val to: Stage)
     private val anomalousSafetyAllowList = setOf(
         // Ground controller has no authority over runway incursions — tower handles
         // the runway. Marked ANOMALOUS for observability only.
-        "GroundDeparture: AwaitTaxiRequest→AwaitAtHolding",
+        AnomalousAllowEntry(GroundDepartureStage.AwaitTaxiRequest, GroundDepartureStage.AwaitAtHolding),
     )
 
     private fun <S : Stage, P> checkAnomalousSafety(f: Fixture<S, P>) {
@@ -229,13 +230,11 @@ class DfaConformanceTest {
             if (result.transition != TransitionKind.ANOMALOUS) continue
             if (result.stage == s) continue
 
-            val key = "${f.name}: $s→${result.stage}"
-            if (key in anomalousSafetyAllowList) continue
+            if (AnomalousAllowEntry(s, result.stage) in anomalousSafetyAllowList) continue
 
             val targetRules = f.stageRules[result.stage] ?: emptyList()
             assertTrue(targetRules.any { it.urgency == Urgency.SAFETY },
-                "$key: ANOMALOUS ($s, $p) → ${result.stage} but no SAFETY rule at target. " +
-                    "Add one or document in anomalousSafetyAllowList.")
+                "${f.name}: ANOMALOUS ($s, $p) → ${result.stage} but no SAFETY rule at target.")
         }
     }
 
