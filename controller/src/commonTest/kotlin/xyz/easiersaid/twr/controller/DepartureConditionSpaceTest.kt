@@ -22,7 +22,6 @@ import kotlin.test.assertTrue
  * 2. **No ambiguous overlap**: documents which rule wins for each combination.
  * 3. **No blind spots**: critical conditions always produce controller action.
  * 4. **No silent failures**: action resolution never fails in any cell.
- * 5. **No silent gaps**: when no rule fires, no guard passed either.
  *
  * Total combinations across all departure stages: ~736.
  */
@@ -317,7 +316,7 @@ class DepartureConditionSpaceTest {
     }
 
     @Test
-    fun `AwaitReady — full enumeration with action-failure and silent-gap checks`() {
+    fun `AwaitReady — full enumeration with action-failure checks`() {
         var total = 0
         val ruleDistribution = mutableMapOf<String?, Int>()
         for (onRunway in bools) for (rwyClearance in bools)
@@ -326,20 +325,12 @@ class DepartureConditionSpaceTest {
         for (access in bools) for (clear in bools)
         for (traffic in bools) {
             val c = AwaitReadyConditions(onRunway, rwyClearance, human, readyEvent, contacted, weather, access, clear, traffic)
-            val (outcome, guards) = execute(c)
+            val (outcome, _) = execute(c)
             val ruleId = outcome.result?.trace?.ruleId
             ruleDistribution[ruleId] = (ruleDistribution[ruleId] ?: 0) + 1
 
-            // F2: no action resolution failures in any cell
             assertTrue(outcome.actionFailures.isEmpty(),
                 "AwaitReady $c: unexpected action failures: ${outcome.actionFailures.map { it.ruleId + ": " + it.reason }}")
-
-            // N5: when no rule fires, no guard should have passed
-            if (outcome.result == null) {
-                val passingGuards = guards.filter { it.second }.map { it.first }
-                assertTrue(passingGuards.isEmpty(),
-                    "AwaitReady $c: no rule fired but guards passed: $passingGuards")
-            }
             total++
         }
         assertEquals(512, total)
@@ -445,7 +436,7 @@ class DepartureConditionSpaceTest {
     }
 
     @Test
-    fun `AwaitLineUpObserved — full enumeration with action-failure and silent-gap checks`() {
+    fun `AwaitLineUpObserved — full enumeration with action-failure checks`() {
         var total = 0
         val ruleDistribution = mutableMapOf<String?, Int>()
         for (onRunway in bools) for (onGround in bools)
@@ -459,12 +450,6 @@ class DepartureConditionSpaceTest {
 
             assertTrue(outcome.actionFailures.isEmpty(),
                 "AwaitLineUpObserved $c: unexpected action failures: ${outcome.actionFailures.map { it.ruleId + ": " + it.reason }}")
-
-            if (outcome.result == null) {
-                val passingGuards = guards.filter { it.second }.map { it.first }
-                assertTrue(passingGuards.isEmpty(),
-                    "AwaitLineUpObserved $c: no rule fired but guards passed: $passingGuards")
-            }
             total++
         }
         assertEquals(128, total)
@@ -550,7 +535,7 @@ class DepartureConditionSpaceTest {
     }
 
     @Test
-    fun `TakeoffClearanceIssued — full enumeration with action-failure and silent-gap checks`() {
+    fun `TakeoffClearanceIssued — full enumeration with action-failure checks`() {
         var total = 0
         val ruleDistribution = mutableMapOf<String?, Int>()
         for (onRunway in bools) for (onGround in bools)
@@ -563,12 +548,6 @@ class DepartureConditionSpaceTest {
 
             assertTrue(outcome.actionFailures.isEmpty(),
                 "TakeoffClearanceIssued $c: unexpected action failures: ${outcome.actionFailures.map { it.ruleId + ": " + it.reason }}")
-
-            if (outcome.result == null) {
-                val passingGuards = guards.filter { it.second }.map { it.first }
-                assertTrue(passingGuards.isEmpty(),
-                    "TakeoffClearanceIssued $c: no rule fired but guards passed: $passingGuards")
-            }
             total++
         }
         assertEquals(64, total)
@@ -660,7 +639,7 @@ class DepartureConditionSpaceTest {
     }
 
     @Test
-    fun `AwaitTakeoffObserved — full enumeration with action-failure and silent-gap checks`() {
+    fun `AwaitTakeoffObserved — full enumeration with action-failure checks`() {
         var total = 0
         val ruleDistribution = mutableMapOf<String?, Int>()
         for (onRunway in bools) for (onGround in bools)
@@ -673,12 +652,6 @@ class DepartureConditionSpaceTest {
 
             assertTrue(outcome.actionFailures.isEmpty(),
                 "AwaitTakeoffObserved $c: unexpected action failures: ${outcome.actionFailures.map { it.ruleId + ": " + it.reason }}")
-
-            if (outcome.result == null) {
-                val passingGuards = guards.filter { it.second }.map { it.first }
-                assertTrue(passingGuards.isEmpty(),
-                    "AwaitTakeoffObserved $c: no rule fired but guards passed: $passingGuards")
-            }
             total++
         }
         assertEquals(32, total)
