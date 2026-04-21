@@ -31,8 +31,12 @@ sealed interface HighLevelGoal {
 data class PilotMission(
     val goal: HighLevelGoal,
     val root: CompoundTask,
+    /** How the pilot derives their route — set at creation, updated on ATC amendments. */
+    val navigationMode: NavigationMode? = null,
     /** Instructions received from ATC that modify current step behaviour. */
     val activeConstraints: Set<ActiveConstraint> = emptySet(),
+    /** Temporary route replacement — suspends FPL-based routing when active. */
+    val routeOverride: RouteOverride? = null,
     /** Last circuit leg where a position report was made (suppress duplicates). */
     val lastReportedLeg: xyz.easiersaid.twr.core.world.LegName? = null,
     /** Whether initial contact has been made on the current frequency. */
@@ -172,15 +176,31 @@ sealed interface ActiveConstraint {
     data class SpeedRestriction(val targetKnots: Int) : ActiveConstraint
 }
 
+/**
+ * A temporary route replacement — suspends FPL-based routing.
+ *
+ * Distinct from [ActiveConstraint]: constraints modify HOW the pilot follows
+ * their route; overrides REPLACE the route entirely. When the override is
+ * cleared (resume own navigation / leave hold), FPL-based routing resumes.
+ */
+sealed interface RouteOverride {
+    /** Pilot flies a heading assigned by ATC (radar vectors). */
+    data class Vectoring(val heading: xyz.easiersaid.twr.protocol.Heading) : RouteOverride
+    /** Pilot flies a holding pattern at a fix. */
+    data class Holding(val hold: xyz.easiersaid.twr.protocol.HoldSpec) : RouteOverride
+}
+
 // ── Mission step enum ────────────────────────────────────────────────
 
 enum class MissionStep {
     // Ground (pre-departure)
     REQUEST_STARTUP, AWAIT_STARTUP_APPROVAL, REQUEST_TAXI, TAXI_TO_HOLDING,
     RUN_UP_CHECKS, REPORT_READY, AWAIT_LINE_UP, AWAIT_TAKEOFF_CLEARANCE,
-    // Airborne (circuit)
+    // Airborne (VFR circuit)
     FLY_DEPARTURE, FLY_DOWNWIND, REPORT_DOWNWIND, AWAIT_SEQUENCING,
     FLY_BASE, REPORT_BASE, FLY_FINAL, REPORT_FINAL, AWAIT_LANDING_CLEARANCE,
+    // Airborne (IFR)
+    FLY_SID, FLY_EN_ROUTE, FLY_STAR, FLY_APPROACH, FLY_MISSED_APPROACH,
     // Landing + post-landing
     LAND, REPORT_RUNWAY_VACATED, AWAIT_VACATE_INSTRUCTION, TAXI_TO_STAND, SHUTDOWN,
     // Arrival (pre-circuit)
@@ -244,9 +264,16 @@ fun groundArrivalTask(): CompoundTask = CompoundTask(TaskName.GroundArrival, lis
     PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
 ))
 
-/** Build the GO_AROUND compound task. */
+/** Build the GO_AROUND compound task (VFR — rejoin circuit). */
 fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
     PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAITING_ATC_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
+))
+
+/** Build the GO_AROUND compound task (IFR — fly published missed approach). */
+fun ifrGoAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
+    PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.FLY_MISSED_APPROACH, CompletionMode.PHYSICAL),
     PrimitiveTask(MissionStep.AWAITING_ATC_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
 ))
 
@@ -257,18 +284,29 @@ fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
  * The controller never sees this tree; it only sees [derivePilotGoal] which
  * produces the controller-visible [PilotGoal] from the current mission state.
  */
-fun planMission(goal: HighLevelGoal, humanPiloted: Boolean = true): CompoundTask = when (goal) {
-    is HighLevelGoal.Departure -> CompoundTask(TaskName.Depart, listOf(
+fun planMission(goal: HighLevelGoal, humanPiloted: Boolean = true, ifr: Boolean = false): CompoundTask = when (goal) {
+    is HighLevelGoal.Departure -> if (!ifr) CompoundTask(TaskName.Depart, listOf(
         groundDepartureTask(humanPiloted),
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+    )) else CompoundTask(TaskName.Depart, listOf(
+        groundDepartureTask(humanPiloted),
+        PrimitiveTask(MissionStep.FLY_SID, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
-    is HighLevelGoal.Arrival -> CompoundTask(TaskName.Arrive, listOf(
+    is HighLevelGoal.Arrival -> if (!ifr) CompoundTask(TaskName.Arrive, listOf(
         arrivalJoinTask(),
         circuitTask().let { it.copy(children = it.children.drop(1)) }, // skip FLY_DEPARTURE for arrivals
         groundArrivalTask(),
+    )) else CompoundTask(TaskName.Arrive, listOf(
+        PrimitiveTask(MissionStep.FLY_STAR, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.FLY_APPROACH, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL),
+        groundArrivalTask(),
     ))
     is HighLevelGoal.CircuitTraining -> {
+        // Circuit training is always VFR — ifr parameter is ignored.
         val circuitTasks = (1..goal.circuits).map { i ->
             val isLast = i == goal.circuits && goal.fullStopOnLast
             if (isLast) circuitTask() // full stop: includes LAND
@@ -277,8 +315,12 @@ fun planMission(goal: HighLevelGoal, humanPiloted: Boolean = true): CompoundTask
         CompoundTask(TaskName.CircuitTraining,
             listOf(groundDepartureTask(humanPiloted)) + circuitTasks + listOf(groundArrivalTask()))
     }
-    is HighLevelGoal.Transit -> CompoundTask(TaskName.Transit, listOf(
+    is HighLevelGoal.Transit -> if (!ifr) CompoundTask(TaskName.Transit, listOf(
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+    )) else CompoundTask(TaskName.Transit, listOf(
+        PrimitiveTask(MissionStep.FLY_SID, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
 }

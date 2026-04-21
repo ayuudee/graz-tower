@@ -20,7 +20,7 @@ class TowerArrivalTest {
         val ac1 = aircraftAt(TestIds.acAlpha, TestIds.downwind, worldIndex, onGround = false, goal = PilotGoal.ARRIVE)
         val view1 = towerView(
             aircraft = mapOf(TestIds.acAlpha to ac1),
-            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
             time = SimTime.ofSeconds(10),
         )
         val result1 = testControllerDecide(view1, beliefs)
@@ -56,7 +56,7 @@ class TowerArrivalTest {
         val ac = aircraftAt(TestIds.acAlpha, TestIds.downwind, worldIndex, onGround = false, goal = PilotGoal.TOUCH_AND_GO)
         val view1 = towerView(
             aircraft = mapOf(TestIds.acAlpha to ac),
-            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
             time = SimTime.ofSeconds(10),
         )
         val result1 = testControllerDecide(view1, beliefs)
@@ -83,7 +83,7 @@ class TowerArrivalTest {
         val ac1 = aircraftAt(TestIds.acAlpha, TestIds.downwind, worldIndex, onGround = false, goal = PilotGoal.ARRIVE)
         val view1 = towerView(
             aircraft = mapOf(TestIds.acAlpha to ac1),
-            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
             time = SimTime.ofSeconds(10),
         )
         beliefs = testControllerDecide(view1, beliefs).updatedBeliefs
@@ -112,7 +112,7 @@ class TowerArrivalTest {
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(TestIds.acAlpha to ac1),
-                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
                 time = SimTime.ofSeconds(10),
             ),
             beliefs,
@@ -154,7 +154,7 @@ class TowerArrivalTest {
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(TestIds.acAlpha to ac1),
-                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
                 time = SimTime.ofSeconds(10),
             ),
             beliefs,

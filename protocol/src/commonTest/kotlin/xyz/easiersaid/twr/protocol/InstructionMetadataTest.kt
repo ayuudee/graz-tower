@@ -44,7 +44,7 @@ class InstructionMetadataTest {
     @Test
     fun domainlessInstructionsReturnNull() {
         assertNull(instructionDomain(SetPressure(target, PressureSetting.Standard)))
-        assertNull(instructionDomain(ReportWhen(target, ReportEvent.Downwind)))
+        assertNull(instructionDomain(ReportWhen(target, ReportEvent.Downwind())))
         assertNull(instructionDomain(ReportTrafficInSight(target, TrafficRef.ByCallsign(Callsign("SHT456")))))
     }
 
@@ -110,7 +110,7 @@ class InstructionMetadataTest {
 
     @Test
     fun domainlessInstructionSupersedesNothing() {
-        assertTrue(instructionSupersedesIn(ReportWhen(target, ReportEvent.Downwind)).isEmpty())
+        assertTrue(instructionSupersedesIn(ReportWhen(target, ReportEvent.Downwind())).isEmpty())
     }
 
     // ---- Conditional eligibility ----

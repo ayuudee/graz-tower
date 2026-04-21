@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.PilotTransmission
@@ -55,34 +56,29 @@ fun unifiedPilotDecide(
     // Cognitive layer: advance mission, generate transmissions.
     val cognitive = pilotCognitiveDecide(aircraft, mission, worldIndex, now)
 
-    // Plan execution: the pilot acts on the current mission step.
-    // T&G lift-off: the pilot landed, the mission advanced to FLY_DEPARTURE,
-    // the pilot builds a departure route and starts the takeoff roll.
-    // This is normal plan execution — the pilot planned to do a circuit.
-    val departureIntent = initiateDepartureIfPlanned(
+    // Plan execution: if the current task needs an airborne route the pilot
+    // doesn't have yet, the route planner builds one. Replaces the old
+    // circuit-specific initiateDepartureIfPlanned with a general mechanism.
+    val plannedIntent = planRouteIfNeeded(
         cognitive.updatedMission, aircraft, world, worldIndex, activeRunway,
     )
-    val finalIntent = departureIntent
+    val finalIntent = plannedIntent
         ?: applyCognitiveOverrides(kinematicIntent, cognitive.updatedMission, aircraft)
 
     return UnifiedPilotDecision(finalIntent, cognitive.transmissions, cognitive.updatedMission)
 }
 
 /**
- * If the mission's current step is [MissionStep.FLY_DEPARTURE] and the aircraft
- * is on the ground, build a departure route and start (or continue) the takeoff
- * roll. Returns null if this isn't a departure initiation moment.
+ * If the current task needs an airborne route the pilot doesn't yet have,
+ * build one via [buildAirborneRoute] and return an intent that applies it.
+ * Returns null when no route action is needed (ground task, route already
+ * correct, or navigation mode unknown).
  *
- * Handles two cases:
- * - **T&G lift-off**: aircraft landed (LandingRoll), next step is FLY_DEPARTURE.
- *   The pilot builds the full circuit route and transitions to TakeoffRoll.
- * - **Initial takeoff for circuit**: the sim wrote a short departure route
- *   (upwind → crosswind) via applyClearedForTakeoff. The pilot replaces it
- *   with a full circuit route so it reaches downwind (where FLY_DEPARTURE completes).
- *
- * This is plan execution — the pilot planned to do a circuit and acts on it.
+ * Currently fires for:
+ * - **Circuit mode + FLY_DEPARTURE**: T&G lift-off (LandingRoll → TakeoffRoll)
+ *   or route upgrade (short departure route → full circuit).
  */
-private fun initiateDepartureIfPlanned(
+private fun planRouteIfNeeded(
     mission: PilotMission?,
     aircraft: AircraftState,
     world: AviationWorld?,
@@ -91,33 +87,38 @@ private fun initiateDepartureIfPlanned(
 ): PilotIntent? {
     val step = mission?.currentTask?.step ?: return null
     if (step != MissionStep.FLY_DEPARTURE) return null
-    // Only for circuit missions — pure departures use the sim-written route as-is.
-    if (mission.goal !is HighLevelGoal.CircuitTraining) return null
-    requireNotNull(world) { "CircuitTraining FLY_DEPARTURE requires world geometry" }
-    requireNotNull(activeRunway) { "CircuitTraining FLY_DEPARTURE requires activeRunway" }
 
-    // Only fire once: when transitioning from LandingRoll to TakeoffRoll (T&G),
-    // or when the sim wrote a short departure route that needs upgrading to the
-    // full circuit. Once the full circuit route is in place, return null and let
-    // the kinematic handler (onTakeoffRoll) manage acceleration and rotation.
+    // Derive navigation mode from goal + runway. Requires both world and runway.
+    val w = world ?: return null
+    val rwy = activeRunway ?: return null
+    val mode = mission.navigationMode
+        ?: deriveNavigationMode(mission.goal, rwy, w).getOrElse { return null }
+
+    // Only circuit mode needs pilot-initiated route building on FLY_DEPARTURE.
+    // Visual/Instrument departures use the sim-written route from applyClearedForTakeoff.
+    if (mode !is NavigationMode.Circuit) return null
+
+    // Only fire when the pilot needs a new route: T&G lift-off or short-route upgrade.
     when (aircraft.phase) {
         is PilotPhase.LandingRoll -> Unit // T&G: need to initiate takeoff
         is PilotPhase.TakeoffRoll -> {
-            // Check if the route already covers the full circuit (arrivalPhase = LandingRoll).
-            // If so, the pilot already has the right route — let kinematics handle it.
             val current = aircraft.route as? PilotRoute.Airborne ?: return null
             if (current.arrivalPhase is PilotPhase.LandingRoll) return null // already upgraded
         }
         else -> return null
     }
 
-    val route = buildCircuitDepartureRoute(world, worldIndex, activeRunway)
-        ?: error("Cannot build circuit departure route for runway $activeRunway")
+    // Get the active compound task name for dispatch.
+    val taskName = mission.root.activeCompound()?.name ?: return null
+
+    val route = buildAirborneRoute(mode, taskName, w, worldIndex)
+        .getOrElse { return null } // routing failure → kinematic fallback
+
     return PilotIntent(
         targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
         phase = PilotPhase.TakeoffRoll,
         route = route,
-        targetAltitudeM = DepartureDefaults.TARGET_ALTITUDE_M,
+        targetAltitudeM = CIRCUIT_ALTITUDE_M,
     )
 }
 

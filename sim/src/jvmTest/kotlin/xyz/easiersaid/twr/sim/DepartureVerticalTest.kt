@@ -11,8 +11,12 @@ import xyz.easiersaid.twr.core.world.Feet
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Path
 import xyz.easiersaid.twr.core.world.Position
+import xyz.easiersaid.twr.core.world.CircuitLeg
+import xyz.easiersaid.twr.core.world.CircuitProcedure
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.protocol.CircuitDirection
+import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AuthorityEntityType
@@ -63,6 +67,9 @@ class DepartureVerticalTest {
         val thresholdB: PointId = PointId("THR-27")
         val upwind: PointId = PointId("UPWIND-1")
         val crosswind: PointId = PointId("CROSSWIND-1")
+        val downwind: PointId = PointId("DOWNWIND-1")
+        val base: PointId = PointId("BASE-1")
+        val finalPt: PointId = PointId("FINAL-1")
 
         val standPos: Position = Position(xMeters = 0.0, yMeters = 0.0)
         val holdPos: Position = Position(xMeters = 100.0, yMeters = 0.0)
@@ -93,6 +100,22 @@ class DepartureVerticalTest {
                         id = runwayId,
                         path = Path(listOf(TestPoints.thresholdA, TestPoints.thresholdB)),
                         threshold = TestPoints.thresholdA,
+                    ),
+                ),
+                circuits = mapOf(
+                    CircuitProcedureId("CCT-09") to CircuitProcedure(
+                        id = CircuitProcedureId("CCT-09"),
+                        runway = runwayId,
+                        direction = CircuitDirection.LEFT_HAND,
+                        legs = listOf(
+                            CircuitLeg(LegName.UPWIND, Path(listOf(TestPoints.thresholdA, TestPoints.upwind))),
+                            CircuitLeg(LegName.CROSSWIND, Path(listOf(TestPoints.upwind, TestPoints.crosswind))),
+                            CircuitLeg(LegName.DOWNWIND, Path(listOf(TestPoints.crosswind, TestPoints.downwind))),
+                            CircuitLeg(LegName.BASE, Path(listOf(TestPoints.downwind, TestPoints.base))),
+                            CircuitLeg(LegName.FINAL, Path(listOf(TestPoints.base, TestPoints.finalPt, TestPoints.thresholdA))),
+                        ),
+                        altitude = Level.AltitudeFeet.unsafe(500),
+                        goAroundPath = Path(listOf(TestPoints.thresholdA, TestPoints.upwind)),
                     ),
                 ),
                 roles = mapOf(
@@ -134,6 +157,9 @@ class DepartureVerticalTest {
             TestPoints.thresholdB to TestPoints.thrBPos,
             TestPoints.upwind to TestPoints.upwindPos,
             TestPoints.crosswind to TestPoints.crosswindPos,
+            TestPoints.downwind to Position(0.0, 500.0),
+            TestPoints.base to Position(-200.0, 250.0),
+            TestPoints.finalPt to Position(-200.0, 20.0),
         ),
         adjacency = mapOf(
             TestPoints.stand to setOf(TestPoints.hold),

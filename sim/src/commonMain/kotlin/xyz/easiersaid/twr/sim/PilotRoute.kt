@@ -1,6 +1,8 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import xyz.easiersaid.twr.core.world.AltitudeConstraint
+import xyz.easiersaid.twr.core.world.SpeedConstraint
 import xyz.easiersaid.twr.protocol.PointId
 
 /**
@@ -53,5 +55,17 @@ sealed interface PilotRoute {
         val waypoints: NonEmptyList<PointId>,
         val targetAltitudeM: Double,
         val arrivalPhase: PilotPhase,
+        /** Per-waypoint altitude/speed constraints. Empty for VFR routes. */
+        val waypointConstraints: Map<PointId, WaypointConstraints> = emptyMap(),
     ) : PilotRoute
 }
+
+/**
+ * Altitude and speed constraints at a specific waypoint.
+ * Populated from published procedure definitions (SID, STAR, approach)
+ * when building IFR routes. VFR routes never carry constraints.
+ */
+data class WaypointConstraints(
+    val altitude: AltitudeConstraint? = null,
+    val speed: SpeedConstraint? = null,
+)

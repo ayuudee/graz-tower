@@ -874,8 +874,17 @@ data class MaintainAltitudeUntilEstablished(
 // Reporting instructions
 // -----------------------------------------------------------------------------
 
+/**
+ * Circuit intent qualifier for position reports.
+ *
+ * CAP 413 para 4.50: "downwind touch and go" — pilot requests touch-and-go.
+ * CAP 413 para 4.51: "downwind to land" — pilot announces last circuit / full stop.
+ * Null intent means plain position report (e.g., first arrival, non-circuit traffic).
+ */
+enum class CircuitIntent { TOUCH_AND_GO, FULL_STOP }
+
 sealed interface ReportEvent {
-    data object Downwind : ReportEvent
+    data class Downwind(val circuitIntent: CircuitIntent? = null) : ReportEvent
     data object Base : ReportEvent
     data object Final : ReportEvent
     data object LongFinal : ReportEvent

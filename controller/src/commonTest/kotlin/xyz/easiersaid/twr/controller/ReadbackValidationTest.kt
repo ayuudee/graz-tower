@@ -310,7 +310,7 @@ class ReadbackValidationTest {
         val view1 = towerView(
             aircraft = mapOf(TestIds.acAlpha to ac1),
             time = SimTime.ofSeconds(0),
-            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+            receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
         )
         beliefs = controllerDecide(view1, beliefs, world).updatedBeliefs
 

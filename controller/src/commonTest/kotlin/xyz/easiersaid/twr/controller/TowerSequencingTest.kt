@@ -21,7 +21,7 @@ class TowerSequencingTest {
             aircraft = mapOf(TestIds.acAlpha to dep1, TestIds.acBravo to arr1),
             receivedMessages = listOf(
                 readyForDepartureMessage(TestIds.acAlpha),
-                positionReportMessage(TestIds.acBravo, ReportEvent.Downwind),
+                positionReportMessage(TestIds.acBravo, ReportEvent.Downwind()),
             ),
             time = SimTime.ofSeconds(10),
         )

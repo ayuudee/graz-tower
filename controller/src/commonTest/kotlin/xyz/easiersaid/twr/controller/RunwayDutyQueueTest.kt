@@ -113,7 +113,7 @@ class RunwayDutyQueueTest {
                 ),
                 receivedMessages = listOf(
                     readyForDepartureMessage(dep1),
-                    positionReportMessage(arr1, ReportEvent.Downwind),
+                    positionReportMessage(arr1, ReportEvent.Downwind()),
                 ),
                 time = SimTime.ofSeconds(10),
             ),

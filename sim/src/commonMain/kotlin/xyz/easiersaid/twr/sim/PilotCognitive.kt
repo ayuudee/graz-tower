@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim
 
+import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
@@ -10,13 +11,27 @@ import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
+import xyz.easiersaid.twr.protocol.FlyHeading
 import xyz.easiersaid.twr.protocol.GoAround
+import xyz.easiersaid.twr.protocol.HoldAt
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.Acknowledge
+import xyz.easiersaid.twr.protocol.CancelEmergency
+import xyz.easiersaid.twr.protocol.CircuitIntent
+import xyz.easiersaid.twr.protocol.amendFpl
+import xyz.easiersaid.twr.protocol.Confirm
+import xyz.easiersaid.twr.protocol.Emergency
+import xyz.easiersaid.twr.protocol.NegativeContact
 import xyz.easiersaid.twr.protocol.PilotTransmission
+import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.ResumeOwnNavigation
+import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.SayAgain
+import xyz.easiersaid.twr.protocol.TrafficInSight
 import xyz.easiersaid.twr.protocol.RequestStartup
 import xyz.easiersaid.twr.protocol.RequestTaxi
 import xyz.easiersaid.twr.protocol.SimTime
@@ -89,7 +104,16 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     MissionStep.REPORT_RUNWAY_VACATED -> mission.reportedVacated
     MissionStep.CALL_INBOUND -> mission.contactedOnFrequency
     MissionStep.GOING_AROUND -> true // reported immediately, advance to AWAITING_ATC_INSTRUCTION
-    else -> false
+    // Steps that should never reach isReportComplete (wrong CompletionMode).
+    MissionStep.REQUEST_STARTUP, MissionStep.AWAIT_STARTUP_APPROVAL, MissionStep.REQUEST_TAXI,
+    MissionStep.TAXI_TO_HOLDING, MissionStep.RUN_UP_CHECKS, MissionStep.AWAIT_LINE_UP,
+    MissionStep.AWAIT_TAKEOFF_CLEARANCE, MissionStep.FLY_DEPARTURE, MissionStep.FLY_DOWNWIND,
+    MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
+    MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND, MissionStep.AWAIT_VACATE_INSTRUCTION,
+    MissionStep.TAXI_TO_STAND, MissionStep.SHUTDOWN, MissionStep.AWAIT_JOINING_INSTRUCTIONS,
+    MissionStep.AWAITING_ATC_INSTRUCTION,
+    MissionStep.FLY_SID, MissionStep.FLY_EN_ROUTE, MissionStep.FLY_STAR,
+    MissionStep.FLY_APPROACH, MissionStep.FLY_MISSED_APPROACH -> false
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -113,14 +137,36 @@ private fun isPhysicallyComplete(
         }
         MissionStep.FLY_BASE -> LegName.FINAL in legs
         MissionStep.FLY_FINAL -> {
-            // Not a no-op: complete only when past a meaningful distance on final.
-            // Use phase as proxy — aircraft must be physically on Final phase.
             LegName.FINAL in legs && aircraft.phase is PilotPhase.Final
         }
         MissionStep.LAND -> aircraft.phase is PilotPhase.LandingRoll ||
             aircraft.phase is PilotPhase.Vacating || aircraft.phase is PilotPhase.ClearOfRunway
         MissionStep.TAXI_TO_STAND -> aircraft.phase is PilotPhase.Parked
-        else -> false
+        // IFR steps — completion logic lands with IFR-2/3/4.
+        MissionStep.FLY_SID,
+        MissionStep.FLY_EN_ROUTE,
+        MissionStep.FLY_STAR,
+        MissionStep.FLY_APPROACH,
+        MissionStep.FLY_MISSED_APPROACH -> false
+        // Steps that should never reach isPhysicallyComplete (wrong CompletionMode).
+        MissionStep.REQUEST_STARTUP,
+        MissionStep.AWAIT_STARTUP_APPROVAL,
+        MissionStep.REQUEST_TAXI,
+        MissionStep.RUN_UP_CHECKS,
+        MissionStep.REPORT_READY,
+        MissionStep.AWAIT_LINE_UP,
+        MissionStep.AWAIT_TAKEOFF_CLEARANCE,
+        MissionStep.REPORT_DOWNWIND,
+        MissionStep.REPORT_BASE,
+        MissionStep.REPORT_FINAL,
+        MissionStep.AWAIT_LANDING_CLEARANCE,
+        MissionStep.REPORT_RUNWAY_VACATED,
+        MissionStep.AWAIT_VACATE_INSTRUCTION,
+        MissionStep.SHUTDOWN,
+        MissionStep.CALL_INBOUND,
+        MissionStep.AWAIT_JOINING_INSTRUCTIONS,
+        MissionStep.GOING_AROUND,
+        MissionStep.AWAITING_ATC_INSTRUCTION -> false
     }
 }
 
@@ -143,7 +189,15 @@ private fun stepTransmission(
     MissionStep.REPORT_READY -> if (isFirstTick) Report(listOf(ReportEvent.Ready)) else null
     MissionStep.CALL_INBOUND -> if (isFirstTick) InitialContact(stationCalled = xyz.easiersaid.twr.protocol.RoleName.TOWER) else null
     MissionStep.REPORT_DOWNWIND ->
-        if (mission.lastReportedLeg != LegName.DOWNWIND) Report(listOf(ReportEvent.Downwind), mission.activeRunway) else null
+        if (mission.lastReportedLeg != LegName.DOWNWIND) {
+            // CAP 413 para 4.50/4.51: qualify downwind with circuit intent.
+            val intent = when (derivePilotGoal(mission)) {
+                PilotGoal.TOUCH_AND_GO -> CircuitIntent.TOUCH_AND_GO
+                PilotGoal.ARRIVE -> CircuitIntent.FULL_STOP
+                PilotGoal.DEPART, PilotGoal.TRANSIT -> null
+            }
+            Report(listOf(ReportEvent.Downwind(intent)), mission.activeRunway)
+        } else null
     MissionStep.REPORT_BASE ->
         if (mission.lastReportedLeg != LegName.BASE) Report(listOf(ReportEvent.Base), mission.activeRunway) else null
     MissionStep.REPORT_FINAL ->
@@ -160,7 +214,29 @@ private fun stepTransmission(
         if (isOff && isFirstTick) Report(listOf(ReportEvent.RunwayVacated)) else null
     }
     MissionStep.GOING_AROUND -> if (isFirstTick) Report(listOf(ReportEvent.GoingAround)) else null
-    else -> null
+    // Steps with no pilot-initiated transmission.
+    MissionStep.AWAIT_STARTUP_APPROVAL,
+    MissionStep.TAXI_TO_HOLDING,
+    MissionStep.RUN_UP_CHECKS,
+    MissionStep.AWAIT_LINE_UP,
+    MissionStep.AWAIT_TAKEOFF_CLEARANCE,
+    MissionStep.FLY_DEPARTURE,
+    MissionStep.FLY_DOWNWIND,
+    MissionStep.AWAIT_SEQUENCING,
+    MissionStep.FLY_BASE,
+    MissionStep.FLY_FINAL,
+    MissionStep.LAND,
+    MissionStep.AWAIT_VACATE_INSTRUCTION,
+    MissionStep.TAXI_TO_STAND,
+    MissionStep.SHUTDOWN,
+    MissionStep.AWAIT_JOINING_INSTRUCTIONS,
+    MissionStep.AWAITING_ATC_INSTRUCTION,
+    // IFR steps — transmissions land with IFR implementation.
+    MissionStep.FLY_SID,
+    MissionStep.FLY_EN_ROUTE,
+    MissionStep.FLY_STAR,
+    MissionStep.FLY_APPROACH,
+    MissionStep.FLY_MISSED_APPROACH -> null
 }
 }
 
@@ -237,8 +313,42 @@ fun processInstruction(
         instruction is ContactFrequency ->
             mission.copy(contactedOnFrequency = false)
 
+        // Route overrides: vectors and holds temporarily suspend FPL-based routing.
+        instruction is FlyHeading ->
+            mission.copy(routeOverride = RouteOverride.Vectoring(instruction.heading))
+        instruction is TurnHeading ->
+            mission.copy(routeOverride = RouteOverride.Vectoring(instruction.heading))
+        instruction is HoldAt ->
+            mission.copy(routeOverride = RouteOverride.Holding(instruction.hold))
+        instruction is ResumeOwnNavigation ->
+            mission.copy(routeOverride = null)
+
+        // Intentional catch-all: an instruction arriving when the mission is at an
+        // irrelevant step is normal (e.g., TaxiTo at FLY_DEPARTURE). The contract is
+        // "apply if relevant to the current step, otherwise ignore." This differs from
+        // updateAfterReport where every event type must be consciously handled. A
+        // condition-based when cannot be compiler-exhaustive over ~40 AtcInstruction
+        // subtypes × ~20 MissionSteps, so this else is the designed default.
         else -> mission
-    }
+    }.let { result -> applyFplAmendment(result, instruction) }
+}
+
+/**
+ * For IFR missions, apply FPL amendments from ATC instructions.
+ *
+ * Called after the main processInstruction logic. If the mission has a
+ * [NavigationMode.Instrument], runs [amendFpl] and updates the navigation
+ * mode. Non-IFR missions are returned unchanged. Amendment errors are
+ * silently ignored (the instruction may not be an FPL-relevant instruction).
+ */
+private fun applyFplAmendment(
+    mission: PilotMission,
+    instruction: AtcInstruction,
+): PilotMission {
+    val mode = mission.navigationMode as? NavigationMode.Instrument ?: return mission
+    val amended = amendFpl(mode.fpl, instruction).getOrNull() ?: return mission
+    if (amended == mode.fpl) return mission // no change
+    return mission.copy(navigationMode = NavigationMode.Instrument(amended))
 }
 
 /** Update lastReportedLeg after a position report transmission. */
@@ -246,7 +356,17 @@ fun processInstruction(
 fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): PilotMission = when (tx) {
     is Report -> tx.events.fold(mission) { m, evt -> updateAfterReport(m, evt) }
     is InitialContact -> mission.copy(contactedOnFrequency = true)
-    else -> mission
+    // Readbacks, acknowledgements, requests, and comms management — no mission effect.
+    is Readback,
+    is Request,
+    is Acknowledge,
+    is TrafficInSight,
+    is NegativeContact,
+    is SayAgain,
+    is Confirm -> mission
+    // Emergency state changes — must trigger mission replanning when implemented.
+    is Emergency -> error("Emergency transmission not yet handled in mission")
+    is CancelEmergency -> error("CancelEmergency transmission not yet handled in mission")
 }
 
 fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission = when (event) {
@@ -255,5 +375,21 @@ fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission =
     is ReportEvent.Final -> mission.copy(lastReportedLeg = LegName.FINAL)
     is ReportEvent.RunwayVacated -> mission.copy(lastReportedLeg = null, reportedVacated = true)
     is ReportEvent.Ready -> mission.copy(root = mission.root.markComplete(MissionStep.REPORT_READY))
-    else -> mission
+    // Position/state reports — no mission effect (pilot's position is tracked by physics).
+    is ReportEvent.LongFinal,
+    is ReportEvent.Airborne,
+    is ReportEvent.Established,
+    is ReportEvent.EstablishedLocaliser,
+    is ReportEvent.EstablishedGlidepath,
+    is ReportEvent.VisualWithField,
+    is ReportEvent.EstablishedInHold,
+    is ReportEvent.PassingLevel,
+    is ReportEvent.LeavingLevel,
+    is ReportEvent.DistanceDme,
+    is ReportEvent.OverFix -> mission
+    // Go-around: mission replanning happens in processInstruction(GoAround), not the report path.
+    is ReportEvent.GoingAround -> mission
+    // Safety/urgency reports — must trigger mission replanning when implemented.
+    is ReportEvent.TcasRa -> error("${event::class.simpleName} report not yet handled in mission")
+    is ReportEvent.MinimumFuel -> error("${event::class.simpleName} report not yet handled in mission")
 }

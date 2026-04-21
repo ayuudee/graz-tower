@@ -119,6 +119,85 @@ class PilotCognitiveTest {
         assertEquals(mission.currentTask?.step, result.currentTask?.step)
     }
 
+    // ── Route override lifecycle (IFR-5) ──────────────────────────────
+
+    @Test
+    fun `FlyHeading sets Vectoring override`() {
+        val mission = arriveMission(PilotPhase.Final)
+        val result = processInstruction(FlyHeading(AircraftId("TEST"), Heading.unsafe(270)), mission, t10)
+        assertTrue(result.routeOverride is RouteOverride.Vectoring)
+        assertEquals(Heading.unsafe(270), (result.routeOverride as RouteOverride.Vectoring).heading)
+    }
+
+    @Test
+    fun `TurnHeading sets Vectoring override`() {
+        val mission = arriveMission(PilotPhase.Final)
+        val result = processInstruction(
+            TurnHeading(AircraftId("TEST"), TurnDirection.LEFT, Heading.unsafe(180)), mission, t10,
+        )
+        assertTrue(result.routeOverride is RouteOverride.Vectoring)
+    }
+
+    @Test
+    fun `HoldAt sets Holding override`() {
+        val mission = arriveMission(PilotPhase.Final)
+        val hold = HoldSpec.Published(FixId("FIX"))
+        val result = processInstruction(HoldAt(AircraftId("TEST"), hold), mission, t10)
+        assertTrue(result.routeOverride is RouteOverride.Holding)
+        assertEquals(hold, (result.routeOverride as RouteOverride.Holding).hold)
+    }
+
+    @Test
+    fun `ResumeOwnNavigation clears override`() {
+        val mission = arriveMission(PilotPhase.Final)
+            .copy(routeOverride = RouteOverride.Vectoring(Heading.unsafe(270)))
+        val result = processInstruction(ResumeOwnNavigation(AircraftId("TEST")), mission, t10)
+        assertEquals(null, result.routeOverride)
+    }
+
+    // ── FPL amendment wiring (IFR-6) ────────────────────────────────
+
+    @Test
+    fun `processInstruction ClearedApproach updates IFR mission FPL`() {
+        // Start with an IFR mission that has en-route clearance.
+        val fpl = FlightPlan(
+            departureAerodrome = AerodromeId("LOWG"),
+            arrivalAerodrome = AerodromeId("LJLJ"),
+            requestedLevel = Level.FlightLevel.unsafe(100),
+            enRouteWaypoints = emptyList(),
+            clearance = ClearanceState.EnRouteClearance(
+                clearanceLimit = FixId("WP1"),
+                departureRunway = RunwayId("09"),
+            ),
+        )
+        val mission = arriveMission(PilotPhase.Final)
+            .copy(navigationMode = NavigationMode.Instrument(fpl))
+
+        // Issue ClearedApproach — should advance to ApproachClearance.
+        val result = processInstruction(
+            ClearedApproach(AircraftId("TEST"), ApproachType.ILS, RunwayId("09")),
+            mission, t10,
+        )
+
+        val updatedMode = result.navigationMode as? NavigationMode.Instrument
+        assertNotNull(updatedMode, "Navigation mode should still be Instrument")
+        val clearance = updatedMode.fpl.clearance
+        assertTrue(clearance is ClearanceState.ApproachClearance,
+            "Clearance should advance to ApproachClearance, was ${clearance::class.simpleName}")
+        assertEquals(ApproachType.ILS, clearance.approachType)
+    }
+
+    @Test
+    fun `processInstruction on VFR mission does not call amendFpl`() {
+        val mission = arriveMission(PilotPhase.Final) // VFR mission, no NavigationMode.Instrument
+        val result = processInstruction(
+            ClearedApproach(AircraftId("TEST"), ApproachType.ILS, RunwayId("09")),
+            mission, t10,
+        )
+        // VFR mission should be unchanged — no FPL to amend.
+        assertEquals(mission.navigationMode, result.navigationMode)
+    }
+
     // ── Transmission generation ──────────────────────────────────────
 
     @Test
@@ -234,5 +313,68 @@ class PilotCognitiveTest {
         // FLY_DOWNWIND was already complete, REPORT_DOWNWIND should still be incomplete.
         val report = marked.children[1] as PrimitiveTask
         assertTrue(!report.completed)
+    }
+
+    // ── IFR mission decomposition ───────────────────────────────────
+
+    @Test
+    fun `IFR Departure decomposes to GroundDeparture + FLY_SID + FLY_EN_ROUTE + SHUTDOWN`() {
+        val root = planMission(HighLevelGoal.Departure(), humanPiloted = true, ifr = true)
+        val steps = collectPrimitiveSteps(root)
+        assertTrue(MissionStep.FLY_SID in steps, "IFR departure should include FLY_SID")
+        assertTrue(MissionStep.FLY_EN_ROUTE in steps, "IFR departure should include FLY_EN_ROUTE")
+        assertTrue(MissionStep.FLY_DEPARTURE !in steps, "IFR departure should not include VFR FLY_DEPARTURE")
+    }
+
+    @Test
+    fun `IFR Arrival decomposes to FLY_STAR + FLY_APPROACH + LAND + GroundArrival`() {
+        val root = planMission(HighLevelGoal.Arrival(), humanPiloted = true, ifr = true)
+        val steps = collectPrimitiveSteps(root)
+        assertTrue(MissionStep.FLY_STAR in steps, "IFR arrival should include FLY_STAR")
+        assertTrue(MissionStep.FLY_APPROACH in steps, "IFR arrival should include FLY_APPROACH")
+        assertTrue(MissionStep.LAND in steps, "IFR arrival should include LAND")
+    }
+
+    @Test
+    fun `VFR Departure unchanged — still uses FLY_DEPARTURE`() {
+        val root = planMission(HighLevelGoal.Departure(), humanPiloted = true, ifr = false)
+        val steps = collectPrimitiveSteps(root)
+        assertTrue(MissionStep.FLY_DEPARTURE in steps)
+        assertTrue(MissionStep.FLY_SID !in steps)
+    }
+
+    @Test
+    fun `CircuitTraining ignores ifr flag`() {
+        val root = planMission(HighLevelGoal.CircuitTraining(1), humanPiloted = true, ifr = true)
+        val steps = collectPrimitiveSteps(root)
+        assertTrue(MissionStep.FLY_DEPARTURE in steps, "Circuit training should still use VFR steps")
+        assertTrue(MissionStep.FLY_SID !in steps, "Circuit training should not have IFR steps")
+    }
+
+    // ── MissionStep coverage guard ──────────────────────────────────
+
+    @Test
+    fun `every MissionStep appears in at least one planMission decomposition`() {
+        val allSteps = mutableSetOf<MissionStep>()
+        // Collect from all goal × ifr combinations.
+        for (ifr in listOf(false, true)) {
+            allSteps += collectPrimitiveSteps(planMission(HighLevelGoal.Departure(), ifr = ifr))
+            allSteps += collectPrimitiveSteps(planMission(HighLevelGoal.Arrival(), ifr = ifr))
+            allSteps += collectPrimitiveSteps(planMission(HighLevelGoal.Transit(), ifr = ifr))
+        }
+        allSteps += collectPrimitiveSteps(planMission(HighLevelGoal.CircuitTraining(2)))
+        // Also add steps from go-around tasks (used in runtime replanning, not initial decomposition).
+        allSteps += collectPrimitiveSteps(goAroundTask())
+        allSteps += collectPrimitiveSteps(ifrGoAroundTask())
+
+        val missing = MissionStep.entries.toSet() - allSteps
+        assertTrue(missing.isEmpty(),
+            "MissionStep values not in any planMission decomposition: $missing. " +
+            "Add them to a task tree or update skipCompletedSteps.")
+    }
+
+    private fun collectPrimitiveSteps(node: TaskNode): Set<MissionStep> = when (node) {
+        is PrimitiveTask -> setOf(node.step)
+        is CompoundTask -> node.children.flatMap { collectPrimitiveSteps(it) }.toSet()
     }
 }

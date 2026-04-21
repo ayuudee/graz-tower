@@ -39,7 +39,7 @@ class ArrivalSequenceTest {
                     arr2 to arrAt(arr2, TestIds.finalApproach),
                 ),
                 receivedMessages = listOf(
-                    positionReportMessage(arr1, ReportEvent.Downwind),
+                    positionReportMessage(arr1, ReportEvent.Downwind()),
                     positionReportMessage(arr2, ReportEvent.Final),
                 ),
                 time = SimTime.ofSeconds(10),
@@ -105,7 +105,7 @@ class ArrivalSequenceTest {
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(arr1 to arrAt(arr1, TestIds.downwind)),
-                receivedMessages = listOf(positionReportMessage(arr1, ReportEvent.Downwind)),
+                receivedMessages = listOf(positionReportMessage(arr1, ReportEvent.Downwind())),
                 time = SimTime.ofSeconds(10),
             ),
             beliefs,
@@ -151,7 +151,7 @@ class ArrivalSequenceTest {
                     arr2 to arrAt(arr2, TestIds.finalApproach),
                 ),
                 receivedMessages = listOf(
-                    positionReportMessage(arr1, ReportEvent.Downwind), // crosswind is pre-downwind
+                    positionReportMessage(arr1, ReportEvent.Downwind()), // crosswind is pre-downwind
                     positionReportMessage(arr2, ReportEvent.Final),
                 ),
                 time = SimTime.ofSeconds(10),

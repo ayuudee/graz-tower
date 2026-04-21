@@ -96,7 +96,7 @@ class TowerDepartureTest {
             aircraft = mapOf(TestIds.acAlpha to dep, TestIds.acBravo to arr),
             receivedMessages = listOf(
                 readyForDepartureMessage(TestIds.acAlpha),
-                positionReportMessage(TestIds.acBravo, ReportEvent.Downwind),
+                positionReportMessage(TestIds.acBravo, ReportEvent.Downwind()),
             ),
             time = SimTime.ofSeconds(10),
         )

@@ -10,22 +10,36 @@ import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.protocol.AerodromeInstruction
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ApproachInstruction
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.EmergencyInstruction
+import xyz.easiersaid.twr.protocol.FrequencyInstruction
+import xyz.easiersaid.twr.protocol.GroundInstruction
 import xyz.easiersaid.twr.protocol.InitialContact
+import xyz.easiersaid.twr.protocol.LevelInstruction
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.ReadbackElement
+import xyz.easiersaid.twr.protocol.ReportInstruction
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.RouteInstruction
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.RunwayInstruction
+import xyz.easiersaid.twr.protocol.SequencingInstruction
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimpleElement
+import xyz.easiersaid.twr.protocol.SpeedInstruction
+import xyz.easiersaid.twr.protocol.SurveillanceInstruction
 import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.VectorInstruction
 
 /** Default 1 Hz physics-integration cadence. */
 val PHYSICS_TICK_INTERVAL: SimDuration = SimDuration.ofMillis(1000)
@@ -399,11 +413,30 @@ private fun applyPilotHeardInstruction(
     ac: AircraftState,
     instruction: AtcInstruction,
 ): SimState = when (instruction) {
+    // Leaf types with sim-side effects — matched first.
     is TaxiTo -> applyTaxiTo(state, ac, instruction)
     is LineUpAndWait -> applyLineUpAndWait(state, ac, instruction)
     is ClearedForTakeoff -> applyClearedForTakeoff(state, ac, instruction)
     is AfterLandingVacateVia -> applyAfterLandingVacateVia(state, ac, instruction)
     is ContactFrequency -> applyContactFrequency(state, ac, instruction)
+    // Category interfaces — remaining members have no Phase-4 sim effect.
+    // Leaf types with effects (above) are matched first; these catch the rest.
+    is Clearance -> state
+    is GroundInstruction -> state
+    is RunwayInstruction -> state
+    is RouteInstruction -> state
+    is VectorInstruction -> state
+    is LevelInstruction -> state
+    is SpeedInstruction -> state
+    is ApproachInstruction -> state
+    is ReportInstruction -> state
+    is FrequencyInstruction -> state
+    is SurveillanceInstruction -> state
+    is SequencingInstruction -> state
+    is AerodromeInstruction -> state
+    is EmergencyInstruction -> state
+    // Uncategorised instructions (SetPressure, CancelClearance, Disregard, etc.)
+    // that implement AtcInstruction directly without an intermediate interface.
     else -> state
 }
 
@@ -436,80 +469,29 @@ private fun applyLineUpAndWait(
 
 /**
  * Build a departure route from the active runway through upwind and crosswind
- * circuit points. Used by both [applyClearedForTakeoff] (initial takeoff) and
- * the pilot's T&G decision loop (subsequent circuits).
+ * circuit points. Used by [applyClearedForTakeoff] (initial takeoff).
  *
- * Returns null if no runway or circuit geometry is available.
+ * Delegates to [buildVisualDepartureRoute] in the route planner. Returns null
+ * on any routing error (backward-compatible with the instruction-effect layer).
  */
 internal fun buildDepartureRoute(
     world: xyz.easiersaid.twr.core.world.AviationWorld,
     worldIndex: WorldIndex,
     runwayId: RunwayId,
-): PilotRoute.Airborne? {
-    val runway = world.aerodromes.values
-        .firstNotNullOfOrNull { it.runways[runwayId] } ?: return null
-    val runwayPath = runway.path.points
-    if (runwayPath.size < 2) return null
-    val departureEnd = runwayPath.last()
-
-    val upwind = pointsWithLeg(worldIndex, circuitLeg = xyz.easiersaid.twr.core.world.LegName.UPWIND)
-    val crosswind = pointsWithLeg(worldIndex, circuitLeg = xyz.easiersaid.twr.core.world.LegName.CROSSWIND)
-
-    val segments = buildList {
-        add(departureEnd)
-        upwind.forEach { add(it) }
-        crosswind.forEach { add(it) }
-    }.distinct()
-    val waypoints = NonEmptyList(segments.first(), segments.drop(1))
-    return PilotRoute.Airborne(
-        waypoints = waypoints,
-        targetAltitudeM = DepartureDefaults.TARGET_ALTITUDE_M,
-        arrivalPhase = PilotPhase.Crosswind,
-    )
-}
+): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world, worldIndex).getOrNull()
 
 /**
  * Build a full circuit departure route: departure end → upwind → crosswind →
- * downwind → base → final → threshold. For circuit training, the pilot needs
- * a route that goes all the way around and lands.
+ * downwind → base → final → threshold.
  *
- * Filters the threshold from intermediate segments (it sits on the
- * UPWIND/FINAL boundary; .distinct() would consume it early).
+ * Delegates to [buildCircuitPatternRoute] in the route planner. Returns null
+ * on any routing error (backward-compatible with the instruction-effect layer).
  */
 internal fun buildCircuitDepartureRoute(
     world: xyz.easiersaid.twr.core.world.AviationWorld,
     worldIndex: WorldIndex,
     runwayId: RunwayId,
-): PilotRoute.Airborne? {
-    val runway = world.aerodromes.values
-        .firstNotNullOfOrNull { it.runways[runwayId] } ?: return null
-    val runwayPath = runway.path.points
-    if (runwayPath.size < 2) return null
-    val departureEnd = runwayPath.last()
-    val threshold = runway.threshold
-
-    fun leg(name: xyz.easiersaid.twr.core.world.LegName): List<PointId> {
-        val points = pointsWithLeg(worldIndex, name).filter { it != threshold }
-        require(points.isNotEmpty()) { "Circuit leg $name has no points in world index for runway $runwayId" }
-        return points
-    }
-
-    val segments = buildList {
-        add(departureEnd)
-        leg(xyz.easiersaid.twr.core.world.LegName.UPWIND).forEach { add(it) }
-        leg(xyz.easiersaid.twr.core.world.LegName.CROSSWIND).forEach { add(it) }
-        leg(xyz.easiersaid.twr.core.world.LegName.DOWNWIND).forEach { add(it) }
-        leg(xyz.easiersaid.twr.core.world.LegName.BASE).forEach { add(it) }
-        leg(xyz.easiersaid.twr.core.world.LegName.FINAL).forEach { add(it) }
-        add(threshold)
-    }.distinct()
-    val waypoints = NonEmptyList(segments.first(), segments.drop(1))
-    return PilotRoute.Airborne(
-        waypoints = waypoints,
-        targetAltitudeM = DepartureDefaults.TARGET_ALTITUDE_M,
-        arrivalPhase = PilotPhase.LandingRoll,
-    )
-}
+): PilotRoute.Airborne? = buildCircuitPatternRoute(runwayId, world, worldIndex).getOrNull()
 
 /**
  * "Cleared for takeoff" at the threshold: switch to a departure route and
@@ -526,7 +508,7 @@ private fun applyClearedForTakeoff(
         phase = PilotPhase.TakeoffRoll,
         route = route,
         targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
-        targetAltitudeM = DepartureDefaults.TARGET_ALTITUDE_M,
+        targetAltitudeM = CIRCUIT_ALTITUDE_M,
     )
     val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, updated) }
     return state.copy(aircraft = aircraft)
@@ -598,24 +580,10 @@ private fun runwayThreshold(
     return aerodrome.runways[runwayId]?.threshold
 }
 
-private fun pointsWithLeg(
-    worldIndex: WorldIndex,
-    circuitLeg: xyz.easiersaid.twr.core.world.LegName,
-): List<PointId> = worldIndex.circuitLegsByPoint
-    .asSequence()
-    .filter { (_, legs) -> circuitLeg in legs }
-    .map { it.key }
-    .toList()
-
 private fun deriveArrivalPhase(worldIndex: WorldIndex, destination: PointId): PilotPhase {
     val entities = worldIndex.entitiesByPoint[destination] ?: emptySet()
     if (entities.any { it is EntityRef.StandRef }) return PilotPhase.Parked
     return PilotPhase.HoldingShort
-}
-
-/** Slice-4e-A defaults for departure climb. Per-aircraft-type values land later. */
-internal object DepartureDefaults {
-    const val TARGET_ALTITUDE_M: Double = 300.0 // ~1000 ft circuit altitude
 }
 
 private fun buildReadback(instruction: AtcInstruction): Readback? {

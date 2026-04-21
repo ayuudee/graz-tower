@@ -34,7 +34,7 @@ class RunwayDutyReleaseTest {
             aircraft = mapOf(TestIds.acAlpha to dep1, TestIds.acBravo to arr1),
             receivedMessages = listOf(
                 readyForDepartureMessage(TestIds.acAlpha),
-                positionReportMessage(TestIds.acBravo, ReportEvent.Downwind),
+                positionReportMessage(TestIds.acBravo, ReportEvent.Downwind()),
             ),
             time = SimTime.ofSeconds(10),
         )
@@ -110,7 +110,7 @@ class RunwayDutyReleaseTest {
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(TestIds.acAlpha to arr1),
-                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
                 time = SimTime.ofSeconds(10),
             ),
             beliefs,
@@ -163,7 +163,7 @@ class RunwayDutyReleaseTest {
         beliefs = testControllerDecide(
             towerView(
                 aircraft = mapOf(TestIds.acAlpha to ac1),
-                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind)),
+                receivedMessages = listOf(positionReportMessage(TestIds.acAlpha, ReportEvent.Downwind())),
                 time = SimTime.ofSeconds(10),
             ),
             beliefs,
