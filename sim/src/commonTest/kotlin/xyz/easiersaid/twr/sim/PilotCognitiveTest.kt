@@ -50,7 +50,7 @@ class PilotCognitiveTest {
     )
 
     private fun arriveMission(startPhase: PilotPhase = PilotPhase.Final) =
-        createMission(PilotGoal.ARRIVE, startPhase, t0)
+        createMission(HighLevelGoal.Arrival(), startPhase, t0)
 
     // ── Step advancement ─────────────────────────────────────────────
 
@@ -167,7 +167,7 @@ class PilotCognitiveTest {
 
     @Test
     fun `TOUCH_AND_GO decomposition starts at REQUEST_STARTUP for AtStand`() {
-        val mission = createMission(PilotGoal.TOUCH_AND_GO, PilotPhase.AtStand, t0)
+        val mission = createMission(HighLevelGoal.CircuitTraining(1), PilotPhase.AtStand, t0)
         assertEquals(MissionStep.REQUEST_STARTUP, mission.currentTask?.step)
     }
 

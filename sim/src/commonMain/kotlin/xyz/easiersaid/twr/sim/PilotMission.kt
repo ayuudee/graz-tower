@@ -1,11 +1,26 @@
 package xyz.easiersaid.twr.sim
 
+import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.protocol.SimTime
+
+/**
+ * High-level goal given to the pilot at spawn. The pilot's planner decomposes
+ * this into an HTN task tree. Richer than [PilotGoal] — carries parameters
+ * like circuit count that the controller doesn't need to see.
+ */
+sealed interface HighLevelGoal {
+    data class Departure(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+    data class Arrival(val from: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+    data class CircuitTraining(val circuits: Int, val fullStopOnLast: Boolean = true) : HighLevelGoal {
+        init { require(circuits > 0) { "CircuitTraining requires at least 1 circuit" } }
+    }
+    data class Transit(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+}
 
 /**
  * Hierarchical Task Network for the pilot agent.
  *
- * A mission decomposes a [PilotGoal] into a tree of [Task]s:
+ * A mission decomposes a [HighLevelGoal] into a tree of [Task]s:
  *   - [CompoundTask]: decomposes into ordered children (sequential execution)
  *   - [PrimitiveTask]: leaf node with a specific step, completion mode, and optional transmission
  *
@@ -14,7 +29,7 @@ import xyz.easiersaid.twr.protocol.SimTime
  * scopes a constraint to the DOWNWIND primitive within the circuit subtree.
  */
 data class PilotMission(
-    val goal: xyz.easiersaid.twr.controller.PilotGoal,
+    val goal: HighLevelGoal,
     val root: CompoundTask,
     /** Instructions received from ATC that modify current step behaviour. */
     val activeConstraints: Set<ActiveConstraint> = emptySet(),
@@ -218,37 +233,105 @@ fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
     PrimitiveTask(MissionStep.AWAITING_ATC_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
 ))
 
-/** Decompose a pilot goal into the full HTN tree. */
-fun decomposeMission(goal: xyz.easiersaid.twr.controller.PilotGoal): CompoundTask = when (goal) {
-    xyz.easiersaid.twr.controller.PilotGoal.DEPART -> CompoundTask(TaskName.Depart, listOf(
+/**
+ * Pilot planner: decompose a [HighLevelGoal] into the full HTN tree.
+ *
+ * This is the pilot's planning function — it decides HOW to achieve the goal.
+ * The controller never sees this tree; it only sees [derivePilotGoal] which
+ * produces the controller-visible [PilotGoal] from the current mission state.
+ */
+fun planMission(goal: HighLevelGoal): CompoundTask = when (goal) {
+    is HighLevelGoal.Departure -> CompoundTask(TaskName.Depart, listOf(
         groundDepartureTask(),
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
-    xyz.easiersaid.twr.controller.PilotGoal.ARRIVE -> CompoundTask(TaskName.Arrive, listOf(
+    is HighLevelGoal.Arrival -> CompoundTask(TaskName.Arrive, listOf(
         arrivalJoinTask(),
         circuitTask().let { it.copy(children = it.children.drop(1)) }, // skip FLY_DEPARTURE for arrivals
         groundArrivalTask(),
     ))
-    xyz.easiersaid.twr.controller.PilotGoal.TOUCH_AND_GO -> CompoundTask(TaskName.TouchAndGo, listOf(
-        groundDepartureTask(),
-        circuitTask(),
-        groundArrivalTask(),
-    ))
-    xyz.easiersaid.twr.controller.PilotGoal.TRANSIT -> CompoundTask(TaskName.Transit, listOf(
+    is HighLevelGoal.CircuitTraining -> {
+        val circuitTasks = (1..goal.circuits).map { i ->
+            val isLast = i == goal.circuits && goal.fullStopOnLast
+            if (isLast) circuitTask() // full stop: includes LAND
+            else touchAndGoCircuitTask() // T&G: includes LAND then lifts off
+        }
+        CompoundTask(TaskName.CircuitTraining, listOf(groundDepartureTask()) + circuitTasks + listOf(groundArrivalTask()))
+    }
+    is HighLevelGoal.Transit -> CompoundTask(TaskName.Transit, listOf(
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
 }
 
+/** Build a T&G circuit: fly the pattern, land, then take off again. */
+fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
+    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_SEQUENCING, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_BASE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_BASE, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_FINAL, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_LANDING_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+    PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL),
+    // After landing, the aircraft lifts off again for the next circuit.
+    // The controller sees PilotGoal.TOUCH_AND_GO and ARR-TNG-AIRBORNE fires.
+    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+))
+
+/**
+ * Derive the controller-visible [PilotGoal] from the current mission state.
+ *
+ * The controller sees this goal and responds: DEPART → departure procedure,
+ * TOUCH_AND_GO → T&G clearances, ARRIVE → landing clearance + vacate.
+ * The pilot's internal [HighLevelGoal] and mission tree remain opaque.
+ */
+fun derivePilotGoal(mission: PilotMission): PilotGoal {
+    val activeCompound = mission.root.activeCompound()?.name
+    return when {
+        activeCompound is TaskName.GroundDeparture -> PilotGoal.DEPART
+        activeCompound is TaskName.GroundArrival -> PilotGoal.ARRIVE
+        activeCompound is TaskName.ArrivalJoin -> PilotGoal.ARRIVE
+        // Circuit: T&G unless this is the last circuit of a CircuitTraining with fullStopOnLast
+        activeCompound is TaskName.Circuit && isLastActiveCircuit(mission) -> PilotGoal.ARRIVE
+        activeCompound is TaskName.Circuit -> PilotGoal.TOUCH_AND_GO
+        activeCompound is TaskName.CircuitAfterGoAround -> PilotGoal.TOUCH_AND_GO
+        activeCompound is TaskName.GoAround -> PilotGoal.TOUCH_AND_GO
+        else -> PilotGoal.DEPART
+    }
+}
+
+/** Is the currently active CIRCUIT the last one in a CircuitTraining mission? */
+private fun isLastActiveCircuit(mission: PilotMission): Boolean {
+    if (mission.goal !is HighLevelGoal.CircuitTraining) return false
+    val circuits = mission.root.children.filterIsInstance<CompoundTask>()
+        .filter { it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround }
+    val activeIndex = circuits.indexOfFirst { !it.isComplete }
+    return activeIndex == circuits.lastIndex
+}
+
+/** Find the active (leftmost incomplete) compound task at the top level. */
+fun CompoundTask.activeCompound(): CompoundTask? {
+    for (child in children) {
+        if (child.isComplete) continue
+        return when (child) {
+            is CompoundTask -> child
+            is PrimitiveTask -> null // primitive at top level, no compound
+        }
+    }
+    return null
+}
+
 /** Create a fresh mission for an aircraft. */
 fun createMission(
-    goal: xyz.easiersaid.twr.controller.PilotGoal,
+    goal: HighLevelGoal,
     startPhase: PilotPhase,
     time: SimTime,
 ): PilotMission {
-    var root = decomposeMission(goal)
-    // Skip completed steps based on starting phase.
+    var root = planMission(goal)
     root = skipCompletedSteps(root, startPhase)
     return PilotMission(goal = goal, root = root, stepEnteredAt = time)
 }

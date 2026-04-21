@@ -103,7 +103,7 @@ private fun isPhysicallyComplete(
     return when (step) {
         MissionStep.TAXI_TO_HOLDING -> aircraft.phase is PilotPhase.HoldingShort
         MissionStep.FLY_DEPARTURE -> {
-            val isDeparting = mission.goal == xyz.easiersaid.twr.controller.PilotGoal.DEPART
+            val isDeparting = mission.goal is HighLevelGoal.Departure
             LegName.DOWNWIND in legs || (isDeparting && aircraft.phase is PilotPhase.Climbing)
         }
         MissionStep.FLY_DOWNWIND -> LegName.DOWNWIND in legs

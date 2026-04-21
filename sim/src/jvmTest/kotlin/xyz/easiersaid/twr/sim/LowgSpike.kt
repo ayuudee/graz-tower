@@ -163,7 +163,7 @@ class LowgSpike {
                 targetAltitudeM = 500.0, arrivalPhase = PilotPhase.LandingRoll,
             ),
             pilotGoal = PilotGoal.ARRIVE, humanPiloted = false,
-            pilotMission = createMission(PilotGoal.ARRIVE, PilotPhase.Final, SimTime.ZERO),
+            pilotMission = createMission(HighLevelGoal.Arrival(), PilotPhase.Final, SimTime.ZERO),
         )
 
         val arr2 = AircraftState(
@@ -179,7 +179,7 @@ class LowgSpike {
                 targetAltitudeM = 600.0, arrivalPhase = PilotPhase.LandingRoll,
             ),
             pilotGoal = PilotGoal.ARRIVE, humanPiloted = false,
-            pilotMission = createMission(PilotGoal.ARRIVE, PilotPhase.Downwind, SimTime.ZERO),
+            pilotMission = createMission(HighLevelGoal.Arrival(), PilotPhase.Downwind, SimTime.ZERO),
         )
 
         val twr = ControllerSpec(

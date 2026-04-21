@@ -110,7 +110,7 @@ private fun handlePilotTick(
         targetAltitudeM = decision.intent.targetAltitudeM,
     )
 
-    // Update mission (with report tracking).
+    // Update mission (with report tracking) and derive controller-visible pilotGoal.
     var resultState = state
     val rawMission: PilotMission? = decision.updatedMission
     if (rawMission != null) {
@@ -118,7 +118,10 @@ private fun handlePilotTick(
         for (tx in decision.transmissions) {
             mission = updateAfterTransmission(mission, tx)
         }
-        updated = updated.copy(pilotMission = mission)
+        updated = updated.copy(
+            pilotMission = mission,
+            pilotGoal = derivePilotGoal(mission),
+        )
     }
 
     // Transmit through the radio pipeline — symmetric with controller transmissions.
