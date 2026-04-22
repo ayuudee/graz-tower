@@ -1,7 +1,9 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import xyz.easiersaid.twr.core.world.AltitudeConstraint
 import xyz.easiersaid.twr.core.world.LegName
+import xyz.easiersaid.twr.core.world.SpeedConstraint
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.SimTime
 
@@ -201,25 +203,30 @@ object DefaultPilot : PilotAgent {
                 targetAltitudeM = route.targetAltitudeM,
             )
         }
+
+        // Waypoint reached — apply per-waypoint constraints from the popped waypoint.
+        val constraint = route.waypointConstraints[head]
+        val constrainedAltitude = constraint?.altitude?.let { resolveAltConstraint(it) }
+            ?: route.targetAltitudeM
+        val constrainedSpeed = constraint?.speed?.let { resolveSpdConstraint(it) }
+
         val remaining = route.waypoints.tail
         return if (remaining.isEmpty()) {
-            // Last leg complete. If the arrival phase is a ground phase, gate
-            // on altitude so the descent on final actually has to happen.
             val terminalIsGround = isGroundArrivalPhase(route.arrivalPhase)
             val stillAirborne = ac.altitudeM > PilotConstants.GROUND_TOLERANCE_M
             if (terminalIsGround && stillAirborne) {
                 PilotIntent(
-                    targetSpeedMps = airborneCruiseSpeed(ac.phase),
+                    targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(ac.phase),
                     phase = ac.phase,
-                    route = route, // keep route so advanceKinematics still drives toward head
+                    route = route,
                     targetAltitudeM = 0.0, // committed to ground: command descent
                 )
             } else {
                 PilotIntent(
-                    targetSpeedMps = airborneCruiseSpeed(route.arrivalPhase),
+                    targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(route.arrivalPhase),
                     phase = route.arrivalPhase,
                     route = PilotRoute.None,
-                    targetAltitudeM = if (terminalIsGround) 0.0 else route.targetAltitudeM,
+                    targetAltitudeM = if (terminalIsGround) 0.0 else constrainedAltitude,
                 )
             }
         } else {
@@ -227,14 +234,15 @@ object DefaultPilot : PilotAgent {
             val nextPhase = phaseForAirborneLeg(nextHead, worldIndex, default = ac.phase)
             val nextRoute = PilotRoute.Airborne(
                 waypoints = NonEmptyList(nextHead, remaining.drop(1)),
-                targetAltitudeM = route.targetAltitudeM,
+                targetAltitudeM = constrainedAltitude,
                 arrivalPhase = route.arrivalPhase,
+                waypointConstraints = route.waypointConstraints,
             )
             PilotIntent(
-                targetSpeedMps = airborneCruiseSpeed(nextPhase),
+                targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(nextPhase),
                 phase = nextPhase,
                 route = nextRoute,
-                targetAltitudeM = route.targetAltitudeM,
+                targetAltitudeM = constrainedAltitude,
             )
         }
     }
@@ -351,4 +359,31 @@ private fun isGroundArrivalPhase(phase: PilotPhase): Boolean = when (phase) {
     PilotPhase.Taxiing, PilotPhase.LinedUp, PilotPhase.TakeoffRoll -> true
     PilotPhase.Climbing, PilotPhase.Crosswind,
     PilotPhase.Downwind, PilotPhase.Base, PilotPhase.Final -> false
+}
+
+/** Resolve an altitude constraint to a target altitude in meters. */
+private fun resolveAltConstraint(c: AltitudeConstraint): Double = when (c) {
+    is AltitudeConstraint.At -> lvlToM(c.level)
+    is AltitudeConstraint.AtOrAbove -> lvlToM(c.minimum)
+    is AltitudeConstraint.AtOrBelow -> lvlToM(c.maximum)
+    is AltitudeConstraint.Between -> lvlToM(c.minimum)
+}
+
+/** Resolve a speed constraint to a target speed in m/s. */
+private fun resolveSpdConstraint(c: SpeedConstraint): Double = when (c) {
+    is SpeedConstraint.At -> spdToMps(c.speed)
+    is SpeedConstraint.AtOrAbove -> spdToMps(c.minimum)
+    is SpeedConstraint.AtOrBelow -> spdToMps(c.maximum)
+    is SpeedConstraint.Between -> spdToMps(c.minimum)
+}
+
+private fun lvlToM(level: xyz.easiersaid.twr.protocol.Level): Double = when (level) {
+    is xyz.easiersaid.twr.protocol.Level.FlightLevel -> level.fl * 30.48
+    is xyz.easiersaid.twr.protocol.Level.AltitudeFeet -> level.feet * 0.3048
+    is xyz.easiersaid.twr.protocol.Level.HeightFeet -> level.feet * 0.3048
+}
+
+private fun spdToMps(speed: xyz.easiersaid.twr.protocol.Speed): Double = when (speed) {
+    is xyz.easiersaid.twr.protocol.Speed.InKnots -> speed.knots.value * 0.51444
+    is xyz.easiersaid.twr.protocol.Speed.InMach -> speed.mach.value * 340.3
 }
