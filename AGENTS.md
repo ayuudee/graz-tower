@@ -34,6 +34,14 @@ Controller and pilot behavior must be traceable to ATC regulations (ICAO, SERA, 
 
 When making claims about ATC law, regulations, or RT phraseology, always provide the specific source: document, edition/date, section/paragraph. For example: "CAP 413 para 4.50" or "ICAO Doc 9432 §5.9.5". Do not state regulatory facts without a citation. Once cited, verify the citation is accurate — check the actual text if available in `research/txt/` or the wiki. An uncited regulatory claim is an unverified claim.
 
+## 8. Dead programs tell no lies
+
+If the program reaches a state it genuinely cannot handle, it must crash — not silently recover, not return a plausible default, not log and continue. A crash with a clear message is infinitely more useful than silent corruption. `error()` is correct for **provably impossible** states.
+
+However: **if the type system allows a state, it is reachable**. Do not use `error()` for states that are merely unused or not-yet-exercised — that is a lie about impossibility. If you believe a state is impossible, make it **unrepresentable in the types** (sealed hierarchies, non-nullable fields, smart constructors). If the types allow it, handle it — either functionally (`Either`, `Option`) or by documenting the operational semantics of the "unexpected" case.
+
+The test: before writing `error("X should not happen")`, ask: "could a well-typed caller construct this input?" If yes, it CAN happen, and `error()` is wrong.
+
 ---
 
 # Environment
