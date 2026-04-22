@@ -299,10 +299,8 @@ fun processInstruction(
 
         // Go-around: replace the active (incomplete) CIRCUIT compound with GO_AROUND + fresh CIRCUIT.
         instruction is GoAround || instruction is BreakOff -> {
-            // C2: IFR pilots fly the published missed approach; VFR pilots rejoin the circuit.
             val gaTask = if (mission.navigationMode is NavigationMode.Instrument) ifrGoAroundTask()
                 else goAroundTask()
-            // C4: only match INCOMPLETE circuit compounds — completed ones must not be replaced.
             val newRoot = mission.root.replaceChild(
                 predicate = { it is CompoundTask && !it.isComplete &&
                     (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },
@@ -311,12 +309,7 @@ fun processInstruction(
                     circuitTask(),
                 )),
             )
-            // C1: reset hasClearance — the old clearance is consumed by the go-around.
-            mission.copy(
-                root = newRoot, stepEnteredAt = now,
-                activeConstraints = emptySet(), lastReportedLeg = null,
-                hasClearance = false,
-            )
+            mission.resetForGoAround(now).copy(root = newRoot)
         }
 
         // Joining instructions for arriving aircraft.

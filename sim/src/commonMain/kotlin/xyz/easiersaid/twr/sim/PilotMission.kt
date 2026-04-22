@@ -29,22 +29,27 @@ sealed interface HighLevelGoal {
  * scopes a constraint to the DOWNWIND primitive within the circuit subtree.
  */
 data class PilotMission(
+    // ── Structural (set at creation, rarely mutated) ────────────────
     val goal: HighLevelGoal,
     val root: CompoundTask,
     /** How the pilot derives their route — set at creation, updated on ATC amendments. */
     val navigationMode: NavigationMode? = null,
+    /** Active runway for circuit reports. Set from the aircraft's assigned circuit. */
+    val activeRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
+
+    // ── Cross-cutting (set by ATC at any time, reset depends on context) ──
     /** Instructions received from ATC that modify current step behaviour. */
     val activeConstraints: Set<ActiveConstraint> = emptySet(),
     /** Temporary route replacement — suspends FPL-based routing when active. */
     val routeOverride: RouteOverride? = null,
-    /** Last circuit leg where a position report was made (suppress duplicates). */
-    val lastReportedLeg: xyz.easiersaid.twr.core.world.LegName? = null,
     /** Whether initial contact has been made on the current frequency. */
     val contactedOnFrequency: Boolean = false,
+
+    // ── Phase-local (reset on go-around — see resetForGoAround) ────
     /** Timer for missing-clearance escalation (millis since step entered). */
     val stepEnteredAt: SimTime = SimTime.ZERO,
-    /** Active runway for circuit reports. Set from the aircraft's assigned circuit. */
-    val activeRunway: xyz.easiersaid.twr.protocol.RunwayId? = null,
+    /** Last circuit leg where a position report was made (suppress duplicates). */
+    val lastReportedLeg: xyz.easiersaid.twr.core.world.LegName? = null,
     /** Set true when pilot has reported runway vacated. Used by REPORT_RUNWAY_VACATED completion. */
     val reportedVacated: Boolean = false,
     /** Set true when ClearedToLand/ClearedTouchAndGo received. Used by go-around decision. */
@@ -54,6 +59,33 @@ data class PilotMission(
     val currentTask: PrimitiveTask? get() = root.currentPrimitive()
     val isComplete: Boolean get() = root.isComplete
 }
+
+/**
+ * Reset phase-local state for go-around. The tree (root) is handled
+ * separately by subtree replacement in [processInstruction].
+ *
+ * Every phase-local field is explicitly listed here. When a new field
+ * is added to [PilotMission], the exhaustive field test
+ * (PilotCognitiveTest.`resetForGoAround covers every PilotMission field`)
+ * will fail until the developer decides the go-around behavior for that field.
+ */
+fun PilotMission.resetForGoAround(now: SimTime): PilotMission = copy(
+    // Phase-local — reset to defaults.
+    stepEnteredAt = now,
+    lastReportedLeg = null,
+    reportedVacated = false,
+    hasClearance = false,
+    // Cross-cutting — reset on go-around (extend-downwind and vectors are
+    // invalidated by the approach abort).
+    activeConstraints = emptySet(),
+    routeOverride = null,
+    // Structural + cross-cutting — preserved.
+    // goal: unchanged (still the same mission)
+    // root: handled by caller (subtree replacement)
+    // navigationMode: unchanged (still VFR/IFR)
+    // activeRunway: unchanged (same runway)
+    // contactedOnFrequency: unchanged (still on same frequency)
+)
 
 // ── Task tree ────────────────────────────────────────────────────────
 

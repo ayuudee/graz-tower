@@ -119,6 +119,62 @@ class PilotCognitiveTest {
         assertEquals(mission.currentTask?.step, result.currentTask?.step)
     }
 
+    // ── resetForGoAround exhaustive field test ──────────────────────
+
+    @Test
+    fun `resetForGoAround covers every PilotMission field`() {
+        // Build a mission with every field set to a non-default value.
+        // This ensures the test touches every field — if a new field is
+        // added to PilotMission, this construction will fail to compile
+        // (no default) or the assertions below will need updating.
+        val mission = PilotMission(
+            goal = HighLevelGoal.CircuitTraining(2),
+            root = planMission(HighLevelGoal.CircuitTraining(2)),
+            navigationMode = NavigationMode.Visual(RunwayId("09"), null),
+            activeRunway = RunwayId("09"),
+            activeConstraints = setOf(ActiveConstraint.ExtendingDownwind),
+            routeOverride = RouteOverride.Vectoring(Heading.unsafe(270)),
+            contactedOnFrequency = true,
+            stepEnteredAt = SimTime.ofSeconds(100),
+            lastReportedLeg = xyz.easiersaid.twr.core.world.LegName.DOWNWIND,
+            reportedVacated = true,
+            hasClearance = true,
+        )
+
+        val reset = mission.resetForGoAround(t10)
+
+        // ── Structural: preserved ──
+        assertEquals(mission.goal, reset.goal, "goal must be preserved")
+        assertEquals(mission.root, reset.root, "root must be preserved (caller handles subtree replacement)")
+        assertEquals(mission.navigationMode, reset.navigationMode, "navigationMode must be preserved")
+        assertEquals(mission.activeRunway, reset.activeRunway, "activeRunway must be preserved")
+
+        // ── Cross-cutting: reset on go-around ──
+        assertEquals(emptySet<ActiveConstraint>(), reset.activeConstraints, "activeConstraints must be cleared")
+        assertNull(reset.routeOverride, "routeOverride must be cleared")
+
+        // ── Cross-cutting: preserved ──
+        assertEquals(true, reset.contactedOnFrequency, "contactedOnFrequency must be preserved")
+
+        // ── Phase-local: reset to defaults ──
+        assertEquals(t10, reset.stepEnteredAt, "stepEnteredAt must be set to now")
+        assertNull(reset.lastReportedLeg, "lastReportedLeg must be null")
+        assertEquals(false, reset.reportedVacated, "reportedVacated must be false")
+        assertEquals(false, reset.hasClearance, "hasClearance must be false")
+
+        // ── Field count guard (manual — no reflection in commonTest) ──
+        // This destructuring exercises every constructor parameter. If a new
+        // field is added, this line won't compile until updated.
+        val (goal, root, navMode, activeRwy,
+            constraints, override, contacted,
+            entered, reported, vacated, clearance) = reset
+        // Suppress unused — the point is compile-time coverage, not runtime use.
+        @Suppress("UNUSED_VARIABLE") val guard = listOf(
+            goal, root, navMode, activeRwy, constraints, override, contacted,
+            entered, reported, vacated, clearance,
+        )
+    }
+
     @Test
     fun `GoAround resets hasClearance to false`() {
         val mission = arriveMission(PilotPhase.Final).copy(hasClearance = true)
