@@ -46,6 +46,37 @@ The test: before writing `error("X should not happen")`, ask: "could a well-type
 
 ---
 
+# Principal Agent Responsibilities
+
+The principal agent (the main conversation agent, not subagents) has additional responsibilities beyond the commandments.
+
+## Self-assessment before review
+
+Before launching review agents (via the review orchestrator or directly), the principal agent must perform a self-assessment of the work against these criteria:
+
+1. **Totality**: Every sealed `when` is exhaustive. No `error()` for type-valid states. No `else` that swallows.
+2. **Reversal completeness**: Every state transition that can be reversed has complete state reset. The reversal was considered BEFORE the forward path was built.
+3. **Interaction coverage**: Code that interacts with other components has been traced through the interaction path, not just tested in isolation.
+4. **Test coverage for known features**: Every implemented feature has at least one test that exercises its primary behavior, including reversals.
+5. **New-field audit**: Every field added to a state class has been checked against every mutation site.
+6. **Operational correctness**: Routes, transmissions, and clearances match real-world ATC procedures.
+7. **Error handling honesty**: `error()` only for provably impossible states. `Either`/`Option` for everything else.
+
+The bar: subsequent review should not turn up anything that a staff engineer of reasonable diligence could have been expected to catch. Domain-specific subtleties (ATC operational details, regulatory edge cases) are acceptable review findings. Architectural bugs, missing tests, and totality violations are NOT.
+
+**This self-assessment is for the principal agent's own use. It is NOT passed to review agents.** Review agents receive clean context to avoid confirmation bias.
+
+## Process principles
+
+When implementing features:
+
+- **New field, new audit**: When adding a field to a state data class, grep for every `.copy(` on that type and check whether the new field needs attention at each mutation site.
+- **Reversal before forward path**: When implementing a state transition pair (set/reset), write the reversal handler FIRST.
+- **Re-read code you're building on**: When extending existing code, re-read it critically. Ask what assumptions it makes that the new feature might violate.
+- **Use review agents at your judgment**: Invoke the review orchestrator when the work warrants it — not at every step, but whenever complexity, risk, or uncertainty suggests external review would add value.
+
+---
+
 # Environment
 
 Nix development shell (`nix-shell` or direnv). JDK 21, Gradle 8, Lean 4, TLA+.
