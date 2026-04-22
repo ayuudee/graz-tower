@@ -177,10 +177,24 @@ fun amendFpl(
     is SequencingInstruction -> fpl.right()
     is AerodromeInstruction -> fpl.right()
     is EmergencyInstruction -> fpl.right()
-    // Uncategorised instructions (SetPressure, CancelClearance, Disregard, etc.)
+    // Cancel clearance: regress clearance state.
+    is CancelClearance -> when (val c = fpl.clearance) {
+        is ClearanceState.Uncleaned -> fpl.right() // nothing to cancel
+        is ClearanceState.ApproachClearance -> fpl.copy(
+            clearance = ClearanceState.EnRouteClearance(
+                clearanceLimit = c.clearanceLimit,
+                departureRunway = c.departureRunway,
+                sid = c.sid, star = c.star, clearedLevel = c.clearedLevel,
+            ),
+        ).right()
+        is ClearanceState.EnRouteClearance -> fpl.copy(
+            clearance = ClearanceState.Uncleaned,
+        ).right()
+    }
+
+    // Uncategorised instructions (SetPressure, Disregard, etc.)
     is SetPressure -> fpl.right()
     is RemainOutsideControlledAirspace -> fpl.right()
-    is CancelClearance -> fpl.right()
     is Disregard -> fpl.right()
     is AvoidArea -> fpl.right()
     is AvoidLevel -> fpl.right()

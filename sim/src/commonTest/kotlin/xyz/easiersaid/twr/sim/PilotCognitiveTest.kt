@@ -119,6 +119,41 @@ class PilotCognitiveTest {
         assertEquals(mission.currentTask?.step, result.currentTask?.step)
     }
 
+    @Test
+    fun `GoAround resets hasClearance to false`() {
+        val mission = arriveMission(PilotPhase.Final).copy(hasClearance = true)
+        val result = processInstruction(GoAround(AircraftId("TEST")), mission, t10)
+        assertEquals(false, result.hasClearance,
+            "Go-around must reset hasClearance — old clearance is consumed")
+    }
+
+    @Test
+    fun `GoAround only replaces incomplete circuit subtrees`() {
+        // Build a two-circuit mission where the first circuit is complete.
+        val root = CompoundTask(TaskName.CircuitTraining, listOf(
+            CompoundTask(TaskName.Circuit, listOf(
+                PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL, completed = true),
+                PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL, completed = true),
+            )),
+            CompoundTask(TaskName.Circuit, listOf(
+                PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL, completed = true),
+                PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL), // incomplete — active
+            )),
+        ))
+        val mission = PilotMission(goal = HighLevelGoal.CircuitTraining(2), root = root)
+        val result = processInstruction(GoAround(AircraftId("TEST")), mission, t10)
+
+        // The first (completed) circuit should be untouched.
+        val firstChild = result.root.children[0] as CompoundTask
+        assertTrue(firstChild.isComplete, "First circuit should remain complete after go-around")
+        assertEquals(TaskName.Circuit, firstChild.name, "First circuit should be untouched")
+
+        // The second (incomplete) circuit should be replaced with CircuitAfterGoAround.
+        val secondChild = result.root.children[1] as CompoundTask
+        assertEquals(TaskName.CircuitAfterGoAround, secondChild.name,
+            "Second circuit should be replaced with go-around")
+    }
+
     // ── Route override lifecycle (IFR-5) ──────────────────────────────
 
     @Test

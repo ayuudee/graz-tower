@@ -420,7 +420,8 @@ class PilotRoutePlannerTest {
 
         // Terminal properties.
         assertEquals(PilotPhase.LandingRoll, route.arrivalPhase)
-        assertEquals(0.0, route.targetAltitudeM)
+        // Target altitude is derived from first STAR waypoint constraint (6000ft AtOrBelow).
+        assertTrue(route.targetAltitudeM > 0.0, "Target altitude should come from STAR constraints, not zero")
 
         assertWaypointsInPositions(route)
     }
@@ -638,7 +639,7 @@ class PilotRoutePlannerTest {
 
     // ── Layer 2: Truth table ────────────────────────────────────────
 
-    private enum class Expected { RIGHT, INVALID, NYI }
+    private enum class Expected { RIGHT, INVALID, NYI, LEFT_OTHER }
 
     @Test
     fun `truth table — every mode x taskName is explicitly handled`() {
@@ -696,8 +697,10 @@ class PilotRoutePlannerTest {
             Cell(instrumentMode, TaskName.GroundDeparture,      Expected.INVALID),
             Cell(instrumentMode, TaskName.GroundArrival,        Expected.INVALID),
             Cell(instrumentMode, TaskName.CircuitTraining,      Expected.INVALID),
-            // Arrive needs ApproachClearance — instrumentMode has EnRouteClearance only,
-            // so this returns Left(InsufficientGeometry). Tested via instrumentApproachMode below.
+            // Arrive and GoAround need ApproachClearance — instrumentMode has EnRouteClearance,
+            // so these return Left(InsufficientGeometry), not NYI or InvalidCombination.
+            Cell(instrumentMode, TaskName.Arrive,               Expected.LEFT_OTHER),
+            Cell(instrumentMode, TaskName.GoAround,             Expected.LEFT_OTHER),
 
             // ── Instrument mode (approach clearance — arrival-capable) ──
             Cell(instrumentApproachMode, TaskName.Depart,               Expected.RIGHT),
@@ -727,6 +730,9 @@ class PilotRoutePlannerTest {
                     assertTrue(result.isLeft(), "$label should be NotYetImplemented")
                     assertTrue(result.leftOrNull() is RoutingError.NotYetImplemented,
                         "$label should be NotYetImplemented, got ${result.leftOrNull()}")
+                }
+                Expected.LEFT_OTHER -> {
+                    assertTrue(result.isLeft(), "$label should be Left (clearance-state error)")
                 }
             }
         }

@@ -149,7 +149,7 @@ private fun applyCognitiveOverrides(
     if (awaitingClearance) {
         if (belowDecisionAlt && notYetLanded) {
             return kinematic.copy(
-                targetAltitudeM = PilotConstants.CLIMB_SPEED_MPS * 10, // climb to pattern altitude
+                targetAltitudeM = CIRCUIT_ALTITUDE_M, // climb to pattern altitude
                 targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
                 phase = PilotPhase.Climbing,
             )

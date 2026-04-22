@@ -12,8 +12,11 @@ import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.FlyHeading
+import xyz.easiersaid.twr.protocol.Disregard
 import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.HoldAt
+import xyz.easiersaid.twr.protocol.InterceptLocaliser
+import xyz.easiersaid.twr.protocol.StopTurn
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.Acknowledge
@@ -103,7 +106,7 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     MissionStep.REPORT_READY -> false // completes after transmitting — handled via transmission trigger
     MissionStep.REPORT_RUNWAY_VACATED -> mission.reportedVacated
     MissionStep.CALL_INBOUND -> mission.contactedOnFrequency
-    MissionStep.GOING_AROUND -> true // reported immediately, advance to AWAITING_ATC_INSTRUCTION
+    MissionStep.GOING_AROUND -> false // completes after transmitting — same pattern as REPORT_READY
     // Steps that should never reach isReportComplete (wrong CompletionMode).
     MissionStep.REQUEST_STARTUP, MissionStep.AWAIT_STARTUP_APPROVAL, MissionStep.REQUEST_TAXI,
     MissionStep.TAXI_TO_HOLDING, MissionStep.RUN_UP_CHECKS, MissionStep.AWAIT_LINE_UP,
@@ -277,9 +280,12 @@ fun processInstruction(
         instruction is ClearedToLand || instruction is ClearedTouchAndGo -> {
             val withClearance = mission.copy(hasClearance = true)
             var root = withClearance.root
+            // Mark sequencing and flying steps complete, but NOT position reports.
+            // The pilot should still report turning base and final even with an early clearance,
+            // so the controller maintains situational awareness.
             val stepsToMark = listOf(
-                MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.REPORT_BASE,
-                MissionStep.FLY_FINAL, MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE,
+                MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE,
+                MissionStep.FLY_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE,
             )
             for (s in stepsToMark) { root = root.markComplete(s) }
             withClearance.copy(root = root, stepEnteredAt = now)
@@ -291,18 +297,25 @@ fun processInstruction(
         instruction is TaxiTo && (step == MissionStep.AWAIT_VACATE_INSTRUCTION || step == MissionStep.TAXI_TO_STAND) ->
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // Go-around: replace the CIRCUIT compound with GO_AROUND + fresh CIRCUIT.
+        // Go-around: replace the active (incomplete) CIRCUIT compound with GO_AROUND + fresh CIRCUIT.
         instruction is GoAround || instruction is BreakOff -> {
+            // C2: IFR pilots fly the published missed approach; VFR pilots rejoin the circuit.
+            val gaTask = if (mission.navigationMode is NavigationMode.Instrument) ifrGoAroundTask()
+                else goAroundTask()
+            // C4: only match INCOMPLETE circuit compounds — completed ones must not be replaced.
             val newRoot = mission.root.replaceChild(
-                predicate = { it is CompoundTask && (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },
+                predicate = { it is CompoundTask && !it.isComplete &&
+                    (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },
                 replacement = CompoundTask(TaskName.CircuitAfterGoAround, listOf(
-                    goAroundTask(),
-                    circuitTask(), // single source of truth — reuses the same decomposition
+                    gaTask,
+                    circuitTask(),
                 )),
             )
+            // C1: reset hasClearance — the old clearance is consumed by the go-around.
             mission.copy(
                 root = newRoot, stepEnteredAt = now,
                 activeConstraints = emptySet(), lastReportedLeg = null,
+                hasClearance = false,
             )
         }
 
@@ -318,10 +331,22 @@ fun processInstruction(
             mission.copy(routeOverride = RouteOverride.Vectoring(instruction.heading))
         instruction is TurnHeading ->
             mission.copy(routeOverride = RouteOverride.Vectoring(instruction.heading))
+        instruction is StopTurn && instruction.rollOutHeading != null -> {
+            val heading = instruction.rollOutHeading!!
+            mission.copy(routeOverride = RouteOverride.Vectoring(heading))
+        }
+        instruction is InterceptLocaliser ->
+            mission.copy(routeOverride = null) // localiser capture ends vectoring
         instruction is HoldAt ->
             mission.copy(routeOverride = RouteOverride.Holding(instruction.hold))
         instruction is ResumeOwnNavigation ->
             mission.copy(routeOverride = null)
+
+        // Disregard: undo the most recent constraint/override.
+        instruction is Disregard -> mission.copy(
+            activeConstraints = mission.activeConstraints - ActiveConstraint.ExtendingDownwind,
+            routeOverride = null,
+        )
 
         // Intentional catch-all: an instruction arriving when the mission is at an
         // irrelevant step is normal (e.g., TaxiTo at FLY_DEPARTURE). The contract is
@@ -364,9 +389,9 @@ fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): Pilot
     is NegativeContact,
     is SayAgain,
     is Confirm -> mission
-    // Emergency state changes — must trigger mission replanning when implemented.
-    is Emergency -> error("Emergency transmission not yet handled in mission")
-    is CancelEmergency -> error("CancelEmergency transmission not yet handled in mission")
+    // Emergency state changes — no mission effect until emergency handling is implemented.
+    is Emergency,
+    is CancelEmergency -> mission
 }
 
 fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission = when (event) {
@@ -387,9 +412,10 @@ fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission =
     is ReportEvent.LeavingLevel,
     is ReportEvent.DistanceDme,
     is ReportEvent.OverFix -> mission
-    // Go-around: mission replanning happens in processInstruction(GoAround), not the report path.
-    is ReportEvent.GoingAround -> mission
-    // Safety/urgency reports — must trigger mission replanning when implemented.
-    is ReportEvent.TcasRa -> error("${event::class.simpleName} report not yet handled in mission")
-    is ReportEvent.MinimumFuel -> error("${event::class.simpleName} report not yet handled in mission")
+    // Go-around: mark the GOING_AROUND step complete (same trigger pattern as REPORT_READY).
+    // Mission replanning (subtree replacement) happens in processInstruction(GoAround).
+    is ReportEvent.GoingAround -> mission.copy(root = mission.root.markComplete(MissionStep.GOING_AROUND))
+    // Safety/urgency reports — no mission effect until emergency handling is implemented.
+    is ReportEvent.TcasRa,
+    is ReportEvent.MinimumFuel -> mission
 }

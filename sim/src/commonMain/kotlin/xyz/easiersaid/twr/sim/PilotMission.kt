@@ -364,11 +364,11 @@ fun derivePilotGoal(mission: PilotMission): PilotGoal {
         is TaskName.TouchAndGo -> PilotGoal.TOUCH_AND_GO
         is TaskName.Depart -> PilotGoal.DEPART
         is TaskName.Transit -> PilotGoal.DEPART
-        // CircuitTraining is never the active compound — it's the root, and
-        // activeCompound() returns its first incomplete child, not itself.
-        is TaskName.CircuitTraining -> error("CircuitTraining should not be the active compound")
-        // No active compound: all compound children complete, only top-level primitives remain
-        // (e.g., FLY_DEPARTURE + SHUTDOWN at end of a Departure mission).
+        // CircuitTraining is structurally never the active compound — it's always
+        // the root, and activeCompound() returns its first incomplete child. Defensive
+        // fallback rather than crash if invariant is violated.
+        is TaskName.CircuitTraining -> PilotGoal.TOUCH_AND_GO
+        // No active compound: all compound children complete, only top-level primitives remain.
         null -> PilotGoal.DEPART
     }
 }
@@ -438,18 +438,27 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
         is PilotPhase.Base -> preBase
         is PilotPhase.Final -> preFinal
         is PilotPhase.LandingRoll -> preLand
+        // Mid-departure: skip ground + departure steps. The pilot is already airborne.
         is PilotPhase.TakeoffRoll, is PilotPhase.Climbing, is PilotPhase.Crosswind ->
-            error("Cannot create mission at mid-departure phase: $startPhase")
-        is PilotPhase.Vacating, is PilotPhase.ClearOfRunway ->
-            error("Cannot create mission at mid-vacate phase: $startPhase")
+            preLineUp + MissionStep.AWAIT_TAKEOFF_CLEARANCE
+        // Mid-vacate: skip through landing. The pilot is exiting the runway.
+        is PilotPhase.Vacating, is PilotPhase.ClearOfRunway -> preLand
     }
     return markStepsComplete(root, stepsToSkip)
 }
 
-private fun markStepsComplete(task: CompoundTask, steps: Set<MissionStep>): CompoundTask =
-    task.copy(children = task.children.map { child ->
+/** Mark steps as complete, but only in the first incomplete subtree — don't touch future circuits. */
+private fun markStepsComplete(task: CompoundTask, steps: Set<MissionStep>): CompoundTask {
+    var reachedIncomplete = false
+    return task.copy(children = task.children.map { child ->
         when (child) {
             is PrimitiveTask -> if (child.step in steps) child.copy(completed = true) else child
-            is CompoundTask -> markStepsComplete(child, steps)
+            is CompoundTask -> if (child.isComplete && !reachedIncomplete) {
+                child // skip completed compounds
+            } else {
+                reachedIncomplete = true
+                markStepsComplete(child, steps)
+            }
         }
     })
+}

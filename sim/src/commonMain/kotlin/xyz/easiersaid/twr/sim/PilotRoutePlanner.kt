@@ -537,10 +537,16 @@ internal fun buildStarApproachRoute(
         }
     }
 
+    // S6: target altitude should be the first waypoint's constraint, not zero.
+    // The kinematic layer refines altitude from per-waypoint constraints.
+    val firstAltitude = (star?.waypoints ?: approach.waypoints).firstOrNull()
+        ?.altitudeConstraint?.let { resolveConstraintAltitude(it) }
+        ?: CIRCUIT_ALTITUDE_M
+
     val waypoints = NonEmptyList(allPoints.first(), allPoints.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = 0.0, // approach target: ground level
+        targetAltitudeM = firstAltitude,
         arrivalPhase = PilotPhase.LandingRoll,
         waypointConstraints = constraints,
     ).right()
@@ -584,8 +590,8 @@ internal fun buildArrivalJoinRoute(
     val waypoints = NonEmptyList(targetPoint, emptyList())
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M, // initial descent target; will be refined by constraints
-        arrivalPhase = PilotPhase.Final, // arriving — approach phase
+        targetAltitudeM = CIRCUIT_ALTITUDE_M, // initial descent target; refined by constraints
+        arrivalPhase = PilotPhase.Climbing, // en-route to STAR/IAF, not yet on approach
     ).right()
 }
 
@@ -627,7 +633,11 @@ internal fun buildMissedApproachRoute(
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M, // climb to pattern/hold altitude
+        // Target altitude from the last missed approach waypoint's constraint, or
+        // the holding pattern altitude. Falls back to circuit altitude.
+        targetAltitudeM = approach.missedApproach.waypoints.lastOrNull()
+            ?.altitudeConstraint?.let { resolveConstraintAltitude(it) }
+            ?: CIRCUIT_ALTITUDE_M,
         arrivalPhase = PilotPhase.Climbing, // pilot is climbing on missed approach
         waypointConstraints = constraints,
     ).right()
@@ -639,6 +649,15 @@ internal fun levelToMeters(level: xyz.easiersaid.twr.protocol.Level): Double = w
     is xyz.easiersaid.twr.protocol.Level.AltitudeFeet -> level.feet * 0.3048
     is xyz.easiersaid.twr.protocol.Level.HeightFeet -> level.feet * 0.3048
 }
+
+/** Resolve an altitude constraint to a target altitude in meters. */
+private fun resolveConstraintAltitude(constraint: xyz.easiersaid.twr.core.world.AltitudeConstraint): Double =
+    when (constraint) {
+        is xyz.easiersaid.twr.core.world.AltitudeConstraint.At -> levelToMeters(constraint.level)
+        is xyz.easiersaid.twr.core.world.AltitudeConstraint.AtOrAbove -> levelToMeters(constraint.minimum)
+        is xyz.easiersaid.twr.core.world.AltitudeConstraint.AtOrBelow -> levelToMeters(constraint.maximum)
+        is xyz.easiersaid.twr.core.world.AltitudeConstraint.Between -> levelToMeters(constraint.minimum)
+    }
 
 // ── Navigation mode derivation ──────────────────────────────────────
 

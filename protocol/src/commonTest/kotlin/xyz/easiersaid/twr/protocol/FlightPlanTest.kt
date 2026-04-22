@@ -198,6 +198,35 @@ class FlightPlanTest {
         assertEquals(fpl, amended)
     }
 
+    // ── CancelClearance ───────────────────────────────────────────────
+
+    @Test
+    fun `CancelClearance regresses ApproachClearance to EnRouteClearance`() {
+        val fpl = approachClearedFpl()
+        val result = amendFpl(fpl, CancelClearance(target))
+        val amended = result.fold({ fail("Expected Right") }, { it })
+        val clearance = amended.clearance
+        assertTrue(clearance is ClearanceState.EnRouteClearance,
+            "Should regress to EnRouteClearance, was ${clearance::class.simpleName}")
+        assertEquals(sidId, (clearance as ClearanceState.EnRouteClearance).sid)
+    }
+
+    @Test
+    fun `CancelClearance regresses EnRouteClearance to Uncleaned`() {
+        val fpl = clearedFpl()
+        val result = amendFpl(fpl, CancelClearance(target))
+        val amended = result.fold({ fail("Expected Right") }, { it })
+        assertTrue(amended.clearance is ClearanceState.Uncleaned)
+    }
+
+    @Test
+    fun `CancelClearance on Uncleaned is no-op`() {
+        val fpl = baseFpl()
+        val result = amendFpl(fpl, CancelClearance(target))
+        val amended = result.fold({ fail("Expected Right") }, { it })
+        assertEquals(fpl, amended)
+    }
+
     // ── Amendment sequences ─────────────────────────────────────────
 
     @Test
