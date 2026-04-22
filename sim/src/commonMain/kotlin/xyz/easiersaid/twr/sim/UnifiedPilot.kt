@@ -117,9 +117,14 @@ private fun planRouteIfNeeded(
     // This covers go-around (pilot needs circuit route after climbing), arrival
     // circuit join, and any future case where the pilot is airborne without a route.
     val airborneSteps = setOf(
+        // Flying steps
         MissionStep.FLY_DOWNWIND, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
         MissionStep.FLY_DEPARTURE, MissionStep.FLY_SID, MissionStep.FLY_EN_ROUTE,
         MissionStep.FLY_STAR, MissionStep.FLY_APPROACH, MissionStep.FLY_MISSED_APPROACH,
+        // Airborne report/sequencing steps — pilot needs a route while transmitting
+        MissionStep.REPORT_DOWNWIND, MissionStep.REPORT_BASE, MissionStep.REPORT_FINAL,
+        MissionStep.AWAIT_SEQUENCING, MissionStep.AWAIT_LANDING_CLEARANCE,
+        MissionStep.LAND,
     )
     if (step !in airborneSteps) return null
     if (aircraft.route !is PilotRoute.None) return null // already has a route
