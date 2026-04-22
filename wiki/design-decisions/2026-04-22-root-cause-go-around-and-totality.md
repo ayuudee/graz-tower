@@ -66,12 +66,26 @@ The developer's mental model was "we'll never see these because no test creates 
 
 **Fix direction**: The commandment 8 test — "could a well-typed caller construct this input?" If yes, handle it. If you want it to be impossible, make it unrepresentable in the types.
 
-## Actionable changes
+## Red team critique (2026-04-22)
+
+The initial root causes were challenged. Key corrections:
+
+**RC1 (flat side-state) was partially wrong.** "Group by phase" doesn't cleanly partition the fields — `activeConstraints` and `routeOverride` span phases. An `ApproachContext?` record would be a lie for cross-phase fields and worsen `copy()` ergonomics at every call site. The honest fix is simpler: a `resetForGoAround()` function with an exhaustive test asserting it covers every `PilotMission` field. When a new field is added, the test forces a conscious decision about go-around behavior.
+
+**RC2 (undocumented ordering) was inflated.** The three-place pattern works fine for REPORT_READY. The bug was a single wrong boolean, not an architectural flaw. The real question — why was it set wrong — was never asked. The answer: AI pattern-matching on similar-looking steps without tracing the loop invariant.
+
+**RC3 (forward-path-first) was a tautology.** "We built the forward path first" is not a root cause. The structural answer: make reversal-sensitive state visible at the type level — e.g., a clearance token scoped to the tree node, so subtree replacement automatically discards it.
+
+**Commandments 3 and 8 contradicted each other.** C3 said `error()` for "shouldn't happen." C8 said `error()` only for provably impossible states. The developer followed C3 correctly. C3 has been updated to defer to C8: `error()` means "impossible at the type level," `Left(NotYetImplemented)` means "possible but deferred."
+
+**Missing root cause: AI code generation.** These bugs have a characteristic AI signature — locally correct, globally blind. The go-around handler was pattern-matched from the forward-path `copy()` without auditing which fields to reset. `isReportComplete(GOING_AROUND) = true` was pattern-matched from similar steps without tracing the loop ordering. The fix for AI-generated code: adversarial review must specifically target reversal invariants and global state interactions, not just local correctness.
+
+## Revised actionable changes
 
 | # | Change | Addresses |
 |---|--------|-----------|
-| 1 | Group mission context by phase (`ApproachContext?`, `DepartureContext?`) | RC1 |
-| 2 | Co-locate step completion + transmission declarations | RC2 |
-| 3 | Require go-around integration test for every mission type | RC3 |
-| 4 | Commandment 8 added to AGENTS.md | RC4 |
-| 5 | CI lint: `error()` in pure functions requires a comment proving type-level impossibility | RC4 |
+| 1 | `resetForGoAround()` function + exhaustive field test | Flat side-state |
+| 2 | Commandment 3 updated to defer to Commandment 8 | Commandment conflict |
+| 3 | Go-around integration test for every mission type | No reversal test |
+| 4 | Adversarial review checklist: "what state does this reversal invalidate?" | AI pattern-matching |
+| 5 | Consider: clearance token scoped to tree node (auto-discarded on subtree replacement) | Structural fix for reversal state |

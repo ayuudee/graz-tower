@@ -16,7 +16,9 @@ Every commit must leave the codebase in a state where all tests pass and no know
 
 ## 3. Throw on the unimplemented
 
-When code encounters a state it doesn't handle, it must throw, not return a default. `error()` is the right response to "this shouldn't happen." Returning `null`, `emptyList()`, or a no-op is only correct when the absence is a defined, documented part of the domain.
+When code encounters a state it genuinely cannot handle AND the state is **provably impossible at the type level** (see Commandment 8), it must throw. `error()` is correct for states a well-typed caller cannot construct. Returning `null`, `emptyList()`, or a no-op is only correct when the absence is a defined, documented part of the domain.
+
+If the type system allows the state but the code doesn't handle it yet, use typed errors (`Either<NotYetImplemented, T>`) or explicitly documented no-ops — not `error()`. The distinction: `error()` means "impossible," `Left(NotYetImplemented)` means "possible but deferred."
 
 ## 4. Tests prove the real job
 
