@@ -4,6 +4,8 @@ import arrow.core.getOrElse
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.PilotTransmission
+import xyz.easiersaid.twr.protocol.Report
+import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 
@@ -56,16 +58,27 @@ fun unifiedPilotDecide(
     // Cognitive layer: advance mission, generate transmissions.
     val cognitive = pilotCognitiveDecide(aircraft, mission, worldIndex, now)
 
+    // Self-initiated go-around: if the pilot is at decision altitude without
+    // clearance, trigger a full go-around (mission update + transmission + climb).
+    // This must run BEFORE route planning and kinematic overrides.
+    val goAround = checkSelfInitiatedGoAround(cognitive.updatedMission, aircraft, now)
+    val effectiveMission = goAround?.mission ?: cognitive.updatedMission
+    val goAroundTransmissions = goAround?.transmissions ?: emptyList()
+
     // Plan execution: if the current task needs an airborne route the pilot
-    // doesn't have yet, the route planner builds one. Replaces the old
-    // circuit-specific initiateDepartureIfPlanned with a general mechanism.
+    // doesn't have yet, the route planner builds one.
     val plannedIntent = planRouteIfNeeded(
-        cognitive.updatedMission, aircraft, world, worldIndex, activeRunway,
+        effectiveMission, aircraft, world, worldIndex, activeRunway,
     )
     val finalIntent = plannedIntent
-        ?: applyCognitiveOverrides(kinematicIntent, cognitive.updatedMission, aircraft)
+        ?: goAround?.intent
+        ?: applyCognitiveOverrides(kinematicIntent, effectiveMission, aircraft)
 
-    return UnifiedPilotDecision(finalIntent, cognitive.transmissions, cognitive.updatedMission)
+    return UnifiedPilotDecision(
+        finalIntent,
+        cognitive.transmissions + goAroundTransmissions,
+        effectiveMission,
+    )
 }
 
 /**
@@ -74,9 +87,9 @@ fun unifiedPilotDecide(
  * Returns null when no route action is needed (ground task, route already
  * correct, or navigation mode unknown).
  *
- * Currently fires for:
- * - **Circuit mode + FLY_DEPARTURE**: T&G lift-off (LandingRoll → TakeoffRoll)
- *   or route upgrade (short departure route → full circuit).
+ * Fires for:
+ * - **Circuit mode + FLY_DEPARTURE**: T&G lift-off or route upgrade.
+ * - **Any airborne task with no route**: go-around, arrival circuit join, etc.
  */
 private fun planRouteIfNeeded(
     mission: PilotMission?,
@@ -85,22 +98,55 @@ private fun planRouteIfNeeded(
     worldIndex: WorldIndex,
     activeRunway: RunwayId?,
 ): PilotIntent? {
-    val step = mission?.currentTask?.step ?: return null
-    if (step != MissionStep.FLY_DEPARTURE) return null
-
-    // Derive navigation mode from goal + runway. Requires both world and runway.
+    mission ?: return null
+    val step = mission.currentTask?.step ?: return null
     val w = world ?: return null
     val rwy = activeRunway ?: return null
     val mode = mission.navigationMode
         ?: deriveNavigationMode(mission.goal, rwy, w).getOrElse { return null }
 
-    // Only circuit mode needs pilot-initiated route building on FLY_DEPARTURE.
-    // Visual/Instrument departures use the sim-written route from applyClearedForTakeoff.
-    if (mode !is NavigationMode.Circuit) return null
+    // FLY_DEPARTURE in Circuit mode: T&G lift-off or short-route upgrade.
+    if (step == MissionStep.FLY_DEPARTURE && mode is NavigationMode.Circuit) {
+        val dep = planCircuitDeparture(mission, aircraft, mode, w, worldIndex)
+        if (dep != null) return dep
+        // Fall through: pilot may be climbing after go-around with FLY_DEPARTURE
+        // as the next step but not in LandingRoll/TakeoffRoll phase.
+    }
 
-    // Only fire when the pilot needs a new route: T&G lift-off or short-route upgrade.
+    // Any airborne step where the pilot has no route: build one from the planner.
+    // This covers go-around (pilot needs circuit route after climbing), arrival
+    // circuit join, and any future case where the pilot is airborne without a route.
+    val airborneSteps = setOf(
+        MissionStep.FLY_DOWNWIND, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
+        MissionStep.FLY_DEPARTURE, MissionStep.FLY_SID, MissionStep.FLY_EN_ROUTE,
+        MissionStep.FLY_STAR, MissionStep.FLY_APPROACH, MissionStep.FLY_MISSED_APPROACH,
+    )
+    if (step !in airborneSteps) return null
+    if (aircraft.route !is PilotRoute.None) return null // already has a route
+
+    val taskName = mission.root.activeCompound()?.name ?: return null
+    val route = buildAirborneRoute(mode, taskName, w, worldIndex)
+        .getOrElse { return null }
+
+    return PilotIntent(
+        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
+            else PilotConstants.APPROACH_SPEED_MPS,
+        phase = aircraft.phase, // maintain current phase
+        route = route,
+        targetAltitudeM = route.targetAltitudeM,
+    )
+}
+
+/** Circuit-mode FLY_DEPARTURE: T&G lift-off or short-route upgrade to full circuit. */
+private fun planCircuitDeparture(
+    mission: PilotMission,
+    aircraft: AircraftState,
+    mode: NavigationMode.Circuit,
+    world: AviationWorld,
+    worldIndex: WorldIndex,
+): PilotIntent? {
     when (aircraft.phase) {
-        is PilotPhase.LandingRoll -> Unit // T&G: need to initiate takeoff
+        is PilotPhase.LandingRoll -> Unit
         is PilotPhase.TakeoffRoll -> {
             val current = aircraft.route as? PilotRoute.Airborne ?: return null
             if (current.arrivalPhase is PilotPhase.LandingRoll) return null // already upgraded
@@ -108,17 +154,86 @@ private fun planRouteIfNeeded(
         else -> return null
     }
 
-    // Get the active compound task name for dispatch.
     val taskName = mission.root.activeCompound()?.name ?: return null
-
-    val route = buildAirborneRoute(mode, taskName, w, worldIndex)
-        .getOrElse { return null } // routing failure → kinematic fallback
+    val route = buildAirborneRoute(mode, taskName, world, worldIndex)
+        .getOrElse { return null }
 
     return PilotIntent(
         targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
         phase = PilotPhase.TakeoffRoll,
         route = route,
         targetAltitudeM = CIRCUIT_ALTITUDE_M,
+    )
+}
+
+/** Result of a self-initiated go-around check. */
+private data class GoAroundResult(
+    val intent: PilotIntent,
+    val mission: PilotMission,
+    val transmissions: List<PilotTransmission>,
+)
+
+/**
+ * Check if the pilot should self-initiate a go-around (decision altitude
+ * without clearance). If so, returns the full go-around effect: mission
+ * update (subtree replacement + resetForGoAround), GoingAround transmission,
+ * and climbing intent. Returns null if no go-around is needed.
+ *
+ * This is the pilot's DECISION to go around — distinct from an ATC-instructed
+ * go-around (which arrives via processInstruction). Both produce the same
+ * mission-level effect (subtree replacement + state reset).
+ */
+private fun checkSelfInitiatedGoAround(
+    mission: PilotMission,
+    aircraft: AircraftState,
+    now: SimTime,
+): GoAroundResult? {
+    val currentStep = mission.currentTask?.step ?: return null
+
+    // Only fire on approach steps without clearance, at or below decision altitude.
+    val onApproach = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE ||
+        currentStep == MissionStep.REPORT_FINAL || currentStep == MissionStep.FLY_FINAL ||
+        currentStep == MissionStep.FLY_BASE || currentStep == MissionStep.REPORT_BASE
+    if (!onApproach || mission.hasClearance) return null
+    if (aircraft.altitudeM !in 0.01..DECISION_ALTITUDE_M) return null
+    if (aircraft.phase is PilotPhase.LandingRoll || aircraft.phase is PilotPhase.Vacating) return null
+    // Don't re-fire if already going around (step advanced to GOING_AROUND or beyond).
+    if (currentStep == MissionStep.GOING_AROUND || currentStep == MissionStep.AWAITING_ATC_INSTRUCTION) return null
+
+    // Full go-around: mission update + transmission + climbing intent.
+    // Self-initiated go-around: pilot reports going around and re-enters circuit
+    // autonomously. No AWAITING_ATC_INSTRUCTION — the pilot decided, not ATC.
+    // ATC-instructed go-arounds (via processInstruction) use the full task with
+    // AWAITING_ATC_INSTRUCTION because ATC may have specific re-sequencing.
+    val gaTask = if (mission.navigationMode is NavigationMode.Instrument) {
+        ifrGoAroundTask()
+    } else {
+        // Self-initiated VFR: just GOING_AROUND (report), then immediately
+        // re-enter circuit. The goAroundTask() includes AWAITING_ATC_INSTRUCTION
+        // which blocks the pilot; for self-initiated, use a minimal task.
+        CompoundTask(TaskName.GoAround, listOf(
+            PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
+        ))
+    }
+    val newRoot = mission.root.replaceChild(
+        predicate = { it is CompoundTask && !it.isComplete &&
+            (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },
+        replacement = CompoundTask(TaskName.CircuitAfterGoAround, listOf(
+            gaTask,
+            circuitTask(),
+        )),
+    )
+    val updatedMission = mission.resetForGoAround(now).copy(root = newRoot)
+
+    return GoAroundResult(
+        intent = PilotIntent(
+            targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+            phase = PilotPhase.Climbing,
+            route = aircraft.route, // keep current route until planner builds new one
+            targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        ),
+        mission = updatedMission,
+        transmissions = listOf(Report(listOf(ReportEvent.GoingAround))),
     )
 }
 
@@ -135,28 +250,9 @@ private fun applyCognitiveOverrides(
 ): PilotIntent {
     val currentStep = mission.currentTask?.step ?: return kinematic
 
-    // Override 1: No landing clearance at decision altitude → go around.
-    // The physical layer would descend to landing; the cognitive layer knows
-    // we don't have clearance. The pilot decides: go around.
-    // Go around at any approach step below decision altitude without clearance.
-    // The hasClearance flag is set by processInstruction when ClearedToLand received.
-    val onApproach = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE ||
-        currentStep == MissionStep.REPORT_FINAL || currentStep == MissionStep.FLY_FINAL ||
-        currentStep == MissionStep.FLY_BASE || currentStep == MissionStep.REPORT_BASE
-    val awaitingClearance = onApproach && !mission.hasClearance
-    val belowDecisionAlt = aircraft.altitudeM in 0.01..DECISION_ALTITUDE_M
-    val notYetLanded = aircraft.phase !is PilotPhase.LandingRoll && aircraft.phase !is PilotPhase.Vacating
-    if (awaitingClearance) {
-        if (belowDecisionAlt && notYetLanded) {
-            return kinematic.copy(
-                targetAltitudeM = CIRCUIT_ALTITUDE_M, // climb to pattern altitude
-                targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
-                phase = PilotPhase.Climbing,
-            )
-        }
-    }
+    // Go-around override moved to checkSelfInitiatedGoAround (updates mission + transmits).
 
-    // Override 2: ExtendingDownwind constraint → maintain downwind heading, don't turn base.
+    // Override: ExtendingDownwind constraint → maintain downwind heading, don't turn base.
     if (ActiveConstraint.ExtendingDownwind in mission.activeConstraints) {
         if (kinematic.phase is PilotPhase.Base) {
             // Don't turn base — stay on downwind.

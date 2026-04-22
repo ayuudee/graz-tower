@@ -449,7 +449,8 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
     val preLineUp = preHold + setOf(
         MissionStep.RUN_UP_CHECKS, MissionStep.REPORT_READY, MissionStep.AWAIT_LINE_UP,
     )
-    val preCircuit = setOf(
+    val preAirborne = preLineUp + MissionStep.AWAIT_TAKEOFF_CLEARANCE
+    val preCircuit = preAirborne + setOf(
         MissionStep.CALL_INBOUND, MissionStep.AWAIT_JOINING_INSTRUCTIONS,
         MissionStep.FLY_DEPARTURE, MissionStep.FLY_DOWNWIND,
     )
