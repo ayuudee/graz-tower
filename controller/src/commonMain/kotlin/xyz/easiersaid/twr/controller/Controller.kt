@@ -505,7 +505,11 @@ private fun processReadback(
     state: ReadbackFoldState,
 ): ReadbackFoldState {
     val readback = msg.transmission as? Readback ?: return state
-    if (msg.aircraft !in responsibilities) return state
+    // Coordinations survive past responsibility transfer (see Observe.kt comment). A readback
+    // that arrives after the aircraft left responsibilities (e.g. after ContactFrequency hands
+    // off) can still be confirmed here — the coordination is the authoritative gate, not the
+    // responsibilities set. The readback's receiver (ReceiverRef.Controller) already ensures
+    // only the intended controller sees this message; the coordination check below is sufficient.
     val coords = state.beliefs.coordinations[msg.aircraft]?.filter {
         it.state == CoordinationState.ISSUED
     } ?: return state

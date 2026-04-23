@@ -176,13 +176,21 @@ If last STAR waypoint ≠ first approach waypoint, a direct segment must be inse
 
 ### Overnight reviewer gaps
 
-**OR-1 — Contact-frequency handoff nominal-path**
-First morning review found `responsibility_transfers_after_contact` not satisfied on the
-nominal path — classified as `nominal_failure`, not merely a coverage gap. This is a real
-product bug.
+**OR-1 — Contact-frequency handoff nominal-path** — DONE (2026-04-23)
+Root cause: (1) `updateBeliefs` in `Observe.kt` pruned coordinations for aircraft that left
+`tracked`, destroying the pending CF coordination as soon as `applyContactFrequency` transferred
+alpha to tower (before the readback arrived). (2) `processReadback` in `Controller.kt` had an
+early-return guard `if (msg.aircraft !in responsibilities)` that prevented ground from confirming
+the CF readback after transfer. Fixed by: (1) keeping `current.coordinations` unchanged in
+`updateBeliefs` (gc'd separately by `gcOldCoordinations`); (2) removing the responsibilities
+guard — coordination check is the correct gate, readback routing already constrains the audience.
+Result: `handoff_reissued_while_pending` now appears in the execution report on the attack path.
 
 **OR-2 — Surface-specific semantic lint incomplete**
 Phase 0 still needs per-surface lint before execution runs are trustworthy.
+Specific known gap: `no_progress_before_ack` on the shared-frequency surface is unsupported
+because `applyTaxiTo` sets the pilot route at instruction-processing time (before the readback).
+The sim does not currently enforce "pilot waits for readback confirmation before acting."
 
 **OR-3 — Phase 1 (autonomous adversarial loop) not started**
 Full exploratory adversary surface (vectors, holding, sequencing stress) not yet wired.

@@ -23,7 +23,11 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
     // Prune per-aircraft maps for aircraft no longer tracked.
     val prunedConcerns = current.recentConcerns.filterKeys { it in tracked }
     val prunedReports = current.outstandingReports.filterKeys { it in tracked }
-    val prunedCoords = current.coordinations.filterKeys { it in tracked }
+    // Coordinations are NOT pruned when an aircraft leaves tracked.
+    // Responsibility transfer (e.g. ContactFrequency) happens before the readback arrives,
+    // so the issuing controller must keep the coordination until processReadback confirms it
+    // or gcOldCoordinations expires it (30 s). Pruning here would destroy the pending
+    // state before the readback can be confirmed, making handoff detectors unreachable.
 
     return current.copy(
         trackedAircraft = tracked,
@@ -34,7 +38,7 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
         previousPositions = history,
         recentConcerns = prunedConcerns,
         outstandingReports = prunedReports,
-        coordinations = prunedCoords,
+        coordinations = current.coordinations,
     )
 }
 
