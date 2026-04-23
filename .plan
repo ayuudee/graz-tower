@@ -1,0 +1,262 @@
+# Project Plan — Known Issues and Deferred Work
+
+This file is the canonical backlog. It is maintained by both human and AI contributors.
+
+**Maintenance rules:**
+- On every commit, check whether any item here was resolved and mark it `DONE`.
+- When work is deferred mid-session (design decision, review finding, or scope split), add it here before closing.
+- When a new issue is discovered (review, test failure, audit), add it here.
+- Items marked `DONE` are kept for one week for traceability, then removed.
+- Grade: **Impact** H/M/L × **Effort** H/M/L.
+
+---
+
+## Active items
+
+### High impact, low-medium effort — do soon
+
+**B3 — Emergency readback atoms missing** — DONE (2026-04-22)
+`StopImmediatelyReadback`, `TakeoffImmediatelyOrVacateReadback(runway)`,
+`TakeoffImmediatelyOrHoldShortReadback(runway)` added to `PilotTransmission.kt`;
+`AtomKind` entries and `kind()` cases added; 3 `error(...)` stubs replaced in
+`requiredReadbackAtoms`.
+Impact: H | Effort: M
+
+**B1 — `ARR-TURN-BASE` fires from base leg** — DONE (2026-04-22)
+Guard narrowed to `OnCircuitLeg(DOWNWIND)` only in `TowerArrival.kt`.
+Impact: H | Effort: L
+
+**A1 — `error()` for missing waypoint in WorldIndex** — DONE (2026-04-23)
+`PilotAgent.decide()` returns `Either<RoutingError, PilotIntent>`; all 3 `error()` calls in
+`onTaxiing`, `onAirborneLeg`, `onVacating` replaced with `WaypointNotInIndex(point).left()`.
+`UnifiedPilotDecision.routingError` surfaces the defect to callers; aircraft frozen on error.
+Tests added in `PilotRoutePlannerTest`.
+Impact: H | Effort: M
+
+**B5 — No distance gate on landing clearance** — DONE (2026-04-22)
+`WithinDistanceOfThreshold(5000.0)` added to `LandingConditions`; `buildWorldIndex()` now
+populates `thresholdByRunway` via `deriveThresholdByRunway()`.
+Impact: H | Effort: L
+
+**A6 — Visual transit routed through runway departure end** — DONE (2026-04-23)
+`Depart` and `Transit` now dispatch separately in `buildVisualModeRoute`. Transit uses the
+departure route as an approximation; FLY_DEPARTURE step completion is not changed (correct —
+transit ends at zone exit, not at rotation). Comment documents the deferred zone-exit detection.
+Impact: H | Effort: M
+
+---
+
+### High impact, medium effort — next batch
+
+**A12 — Arrival join hardcoded to DOWNWIND** — DONE (2026-04-23)
+`PilotMission.joinLeg: Option<LegName>` stores the join leg from `JoinCircuit`.
+`processInstruction(JoinCircuit)` maps `JoinType → LegName` via `toCircuitLeg()` (exhaustive).
+`planRouteIfNeeded` dispatches to `buildVisualModeRoute` with `mission.joinLeg` for Visual mode.
+Tests: `JoinCircuit stores joinLeg`, `JoinType.toCircuitLeg() exhaustive mapping`, join-leg route
+start-point assertions in `PilotRoutePlannerTest`.
+Impact: H | Effort: M
+
+**A10 — ATC-instructed go-around not integration-tested** — DONE (2026-04-23)
+Also fixed: `goAroundTask()` had `AWAITING_ATC_INSTRUCTION` (INSTRUCTION_GATED) which permanently
+blocked the pilot after ATC-instructed go-around. VFR go-arounds are autonomous — removed that step.
+`checkSelfInitiatedGoAround` simplified to use `goAroundTask()` directly (was duplicating it).
+Test: `ATC-instructed go-around resets clearance and pilot eventually lands` — mission state
+assertions (hasClearance reset, tree shape, no AWAITING_ATC_INSTRUCTION) + integration.
+Impact: H | Effort: M
+
+**C1 — `ReadbackCorrection` loses `AtomDefect` list** — DONE (2026-04-22)
+`AtomDefect` moved to `protocol/PilotTransmission.kt`; `ReadbackVerdict.Incorrect.defects`
+upgraded to `NonEmptyList<AtomDefect>`; `ReadbackCorrection.kind: ReadbackCorrectionKind`
+now a derived extension; `defectsHaveWrongValue()` helper added to protocol.
+Impact: H | Effort: M
+
+**E3 — Clearance not driving `WaypointConstraints`** — DONE (2026-04-23)
+`PilotMission.altitudeRestrictionM: Double?` added; `processInstruction(StopClimbAt)` stores
+the level (via `levelToMeters`); reset to null in `resetForGoAround`. Visual-mode route planner
+now continuous: re-derives route every tick from kinematic route head + mission state. Stability
+check against `kinematicIntent.route` (not `aircraft.route`) prevents waypoint regression after
+DefaultPilot pops waypoints. Suffix suppression prevents join-point regression. Go-around
+bootstrap case (Final + FLY_DEPARTURE → `buildGoAroundRoute`) fixed. E3 test in `ArrivalRoutingTest`.
+Impact: H | Effort: M
+
+**D1 — Condition-space permutation tests departure-only** — DONE (2026-04-23)
+`ArrivalConditionSpaceTest` added: 19 tests, 208 combinations across all 5 non-Complete arrival
+stages (AwaitDownwind, AwaitApproach, LandingClearanceIssued, AwaitLandedObserved, AwaitVacating).
+Structural properties: SAFETY priority, no ambiguous overlap, no blind spots, no action failures,
+full coverage. Go-around interrupts (GA-PRE-CLEAR, GA-POST-CLEAR) verified. Ground reconciliation
+already covered by GroundReconciliationTest.kt (134 lines).
+Impact: H | Effort: M
+
+---
+
+### Medium impact, low effort — quick wins
+
+**B6 — No "report final" ATC instruction** — DONE (2026-04-22)
+`ARR-REPORT-FINAL` rule added to `TowerArrival.kt`: issues `ReportWhen(Final)` from BASE leg.
+Simple version only — stronger gating (clearance on observed final call) tracked as OR-1.
+Impact: M | Effort: L
+
+**A4 — `ContactFrequency` re-contact implicit** — DONE (pre-existing, confirmed 2026-04-22)
+`processInstruction(ContactFrequency)` correctly sets `contactedOnFrequency = false` before
+scheduling `InitialContact`. Implementation verified by code trace; already correct.
+Impact: M | Effort: L
+
+**A11 — `TaskName.TouchAndGo` dead** — DONE (2026-04-22)
+`touchAndGoCircuitTask()` now uses `TaskName.TouchAndGo`; `isCircuitLike()` predicate added
+so go-around replacement covers TouchAndGo tasks. Tests added.
+Impact: M | Effort: L
+
+**A13 — `Circuit.procedure` ID ignored in lookup** — DONE (2026-04-22)
+`CircuitLookup` sealed type (ById / ByRunway) replaces nullable param. `findRunwayAndCircuit`
+dispatches explicitly: ById for Circuit mode (procedure-authoritative, no silent fallback),
+ByRunway for Visual mode. Tests updated + ById-specific tests added.
+Impact: M | Effort: L
+
+**C2 — `AfterLandingVacateVia` can't express "when able"** — DONE (2026-04-22)
+`whenAble: Boolean = false` added to `AfterLandingVacateVia`; `classifyReadback` checks
+for `WhenAbleCondition` in the readback when `whenAble = true`.
+Impact: M | Effort: L
+
+**A5 — `derivePilotGoal` returns `DEPART` at end of arrival mission** — DONE (2026-04-22)
+Null fallback now dispatches on `mission.goal` (Arrival→ARRIVE, Departure→DEPART,
+CircuitTraining→TOUCH_AND_GO, Transit→TRANSIT). Also fixed Transit TaskName mapping (was DEPART).
+Tests cover all four null-fallback paths.
+Impact: M | Effort: L
+
+---
+
+### Medium impact, medium-high effort — architecture-dependent
+
+**D3 — Lean verification of reconciliation properties**
+~300-line Lean module proving monotonicity, terminality, position-phase correspondence for
+departure/arrival/ground `reconcile` functions. Finite enumerated types; `cases` + `simp`
+closes everything. No Kotlin changes needed.
+See `docs/design/observation-reconciliation-next-steps.md` §3 for full spec.
+Impact: M | Effort: M
+
+**A9 — Manual routes in `LowgSpike` and `ArrivalVerticalTest`**
+Tests bypass the planner, creating a conformance gap. Migrate to planner-driven routes once
+IFR wiring lands.
+Impact: M | Effort: M (blocked on IFR wiring)
+
+**B7 — APP→TWR handoff at downwind (phraseologically wrong)**
+Documented in code. Correct handoff is ~8NM final or ILS intercept for IFR. Blocked on
+approach sequencing work — fixing in isolation doesn't make sense.
+Impact: M | Effort: H (blocked on APP sequencing)
+
+**F1 — Holding pattern semantics provisional**
+`HoldingPattern` is structurally minimal — no racetrack geometry, no entry procedure, no
+timing. Needed for realistic IFR holds. Blocked on geometry work.
+Impact: M | Effort: H
+
+---
+
+### IFR wiring gaps (all blocked until LJMB geometry + IFR missions land)
+
+**IFR-1 — `ClearedTo` from `Uncleaned` fails**
+No runway at filing time; `Uncleaned → EnRouteClearance` transition needs one.
+Needs pre-clearance runway assignment or accepting runway from a prior instruction.
+
+**IFR-2 — IFR arrival HTN has no `arrivalJoinTask()`**
+Pilot starts at `FLY_STAR` with no initial contact or inbound call.
+
+**IFR-3 — `createMission` never passes `ifr=true`**
+IFR missions cannot be constructed through that path yet.
+
+**IFR-4 — `applyFplAmendment` silently discards `AmendmentError`**
+Uses `getOrNull()` — genuine errors (FixNotOnRoute, InvalidTransition) are lost.
+
+**IFR-5 — STAR-to-approach gap**
+If last STAR waypoint ≠ first approach waypoint, a direct segment must be inserted.
+
+**IFR-6 — Altitude constraint resolution needs transition altitude awareness**
+`resolveAltitudeConstraint` must convert between QNH and STD at the transition altitude.
+
+---
+
+### Overnight reviewer gaps
+
+**OR-1 — Contact-frequency handoff nominal-path**
+First morning review found `responsibility_transfers_after_contact` not satisfied on the
+nominal path — classified as `nominal_failure`, not merely a coverage gap. This is a real
+product bug.
+
+**OR-2 — Surface-specific semantic lint incomplete**
+Phase 0 still needs per-surface lint before execution runs are trustworthy.
+
+**OR-3 — Phase 1 (autonomous adversarial loop) not started**
+Full exploratory adversary surface (vectors, holding, sequencing stress) not yet wired.
+
+---
+
+### Controller backlog (future scope, no imminent ETA)
+
+**CB-1** — Approach sequencing: "number N", speed control, vectoring, essential traffic
+**CB-2** — Wake turbulence separation (ICAO 4444 §5.4.2 / §5.8)
+**CB-3** — LVPs / CAT II-III procedures
+**CB-4** — Intersection departures
+**CB-5** — Runway-inspection state (inhibits takeoff/landing clearances)
+**CB-6** — IFR ground flow: startup, clearance delivery, pushback (#27)
+**CB-7** — Runway crossing authorisation during taxi (#29)
+**CB-8** — Special VFR (#30)
+**CB-9** — Departure instructions after takeoff: turn direction, VFR route (#31)
+**CB-10** — `RunwayStatusChange` coordination message (TWR→APP) for closures
+
+---
+
+### Deferred findings from Phase B review
+
+**PB-1 — `CircuitAfterGoAround` goal wrong after go-around phase** — DONE (2026-04-22)
+`derivePilotGoal` for `CircuitAfterGoAround` now recurses into the active child:
+GoAround subtask active → TOUCH_AND_GO; resumed Circuit subtask → ARRIVE.
+Previously always returned TOUCH_AND_GO, causing no vacate instruction after landing.
+
+**PB-2 — `isCircuitLike()` and `isLastActiveCircuit` filter used `||` chains** — DONE (2026-04-22)
+Both converted to exhaustive `when` expressions so new TaskName variants require a conscious decision.
+
+**PB-3 — `CircuitNotFound` error when circuit leg has empty points** — DONE (2026-04-22)
+Changed to `InsufficientGeometry` (circuit exists, geometry data is incomplete).
+
+---
+
+### Deferred findings from Phase A review
+
+**PA-1 — `OnCircuitLeg` missing `failureMessage` override**
+Defaults to `"OnCircuitLeg"` which is unhelpful in training feedback traces.
+Should be `"Aircraft is not on the ${leg.name} leg"`.
+Impact: L | Effort: L
+
+**PA-2 — Raw `Double` for distance in `WithinDistanceOfThreshold`**
+Parameter `maxMetres: Double` should be a `Meters` value class to prevent unit confusion.
+The `_M` suffix on `MAX_LANDING_CLEARANCE_DISTANCE_M` is a workaround.
+Impact: M | Effort: L (pending Meters value class existence elsewhere)
+
+**PA-3 — `§7.10.1` citation in `WithinDistanceOfThreshold` comment is not a real sub-section**
+ICAO 4444 16th ed. §7.10 is not subdivided to §7.10.1. Comment-only, no implementation impact.
+Impact: L | Effort: L
+
+---
+
+### Protocol / data model (parked, low urgency)
+
+**P-1** — `InitialContact.atisCode: Char?` silently nullable — enforced presence needed at
+controlled aerodromes (CAP 413 §2.3).
+**P-2** — 8.33 kHz channel spacing validation not enforced in `Frequency`.
+**P-3** — Clearance amendment concept (delta) absent; all changes are full supersession.
+**P-4** — Void times not modelled (Doc 4444 §4.5.7.5 for IFR at uncontrolled aerodromes).
+
+---
+
+### By design / accepted
+
+The following were audited and confirmed as intentional:
+
+- `applyPilotHeardInstruction` `else →` — documented opt-in; sealed on intermediate types
+- `FLY_DOWNWIND` instant completion — not vestigial; completes on physical leg
+- `SimState.aircraft: LinkedHashMap` — deterministic iteration order requirement
+- `SimRandom` uses `String.hashCode()` — Kotlin stdlib guarantees MPP-stable hash
+- Hold-short conflates arrival/constraint — deferred, needs belief-delta work first
+- Cancel-takeoff has no readback guard — intentional; safety commands bypass readback horizon
+- Airspace boundary geometry — out of current FM scope
+- `DEP-CANCEL-TAKEOFF` missing readback guard — intentional for time-critical safety command
+- DFA conformance test — already done (`DfaConformanceTest.kt`)

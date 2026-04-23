@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.Some
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Position
@@ -139,6 +140,8 @@ class PilotCognitiveTest {
             lastReportedLeg = xyz.easiersaid.twr.core.world.LegName.DOWNWIND,
             reportedVacated = true,
             hasClearance = true,
+            joinLeg = Some(xyz.easiersaid.twr.core.world.LegName.BASE),
+            altitudeRestrictionM = 200.0,
         )
 
         val reset = mission.resetForGoAround(t10)
@@ -161,17 +164,20 @@ class PilotCognitiveTest {
         assertNull(reset.lastReportedLeg, "lastReportedLeg must be null")
         assertEquals(false, reset.reportedVacated, "reportedVacated must be false")
         assertEquals(false, reset.hasClearance, "hasClearance must be false")
+        assertEquals(arrow.core.None, reset.joinLeg, "joinLeg must be reset to None on go-around")
+        assertNull(reset.altitudeRestrictionM, "altitudeRestrictionM must be cleared on go-around")
 
         // ── Field count guard (manual — no reflection in commonTest) ──
         // This destructuring exercises every constructor parameter. If a new
         // field is added, this line won't compile until updated.
         val (goal, root, navMode, activeRwy,
             constraints, override, contacted,
-            entered, reported, vacated, clearance) = reset
+            entered, reported, vacated, clearance,
+            joinLegField, altRestriction) = reset
         // Suppress unused — the point is compile-time coverage, not runtime use.
         @Suppress("UNUSED_VARIABLE") val guard = listOf(
             goal, root, navMode, activeRwy, constraints, override, contacted,
-            entered, reported, vacated, clearance,
+            entered, reported, vacated, clearance, joinLegField, altRestriction,
         )
     }
 
@@ -467,5 +473,155 @@ class PilotCognitiveTest {
     private fun collectPrimitiveSteps(node: TaskNode): Set<MissionStep> = when (node) {
         is PrimitiveTask -> setOf(node.step)
         is CompoundTask -> node.children.flatMap { collectPrimitiveSteps(it) }.toSet()
+    }
+
+    // ── derivePilotGoal null-fallback (A5) ──────────────────────────────
+
+    @Test
+    fun `derivePilotGoal returns TRANSIT for Transit mission when activeCompound is null`() {
+        // Transit planMission: root=Transit compound whose children are primitives,
+        // so activeCompound() returns null. Must fall back to HighLevelGoal → TRANSIT.
+        val mission = createMission(HighLevelGoal.Transit(), PilotPhase.AtStand, t0)
+        assertEquals(PilotGoal.TRANSIT, derivePilotGoal(mission))
+    }
+
+    @Test
+    fun `derivePilotGoal returns TRANSIT for completed Transit mission`() {
+        // Regression: before fix, Transit→null fallback returned PilotGoal.DEPART.
+        val mission = createMission(HighLevelGoal.Transit(), PilotPhase.AtStand, t0)
+        var root = mission.root
+        for (step in MissionStep.entries) { root = root.markComplete(step) }
+        assertEquals(PilotGoal.TRANSIT, derivePilotGoal(mission.copy(root = root)),
+            "Completed Transit mission must return TRANSIT not DEPART")
+    }
+
+    @Test
+    fun `derivePilotGoal returns ARRIVE for completed Arrival mission`() {
+        val mission = createMission(HighLevelGoal.Arrival(), PilotPhase.Final, t0)
+        var root = mission.root
+        for (step in MissionStep.entries) { root = root.markComplete(step) }
+        assertEquals(PilotGoal.ARRIVE, derivePilotGoal(mission.copy(root = root)))
+    }
+
+    @Test
+    fun `derivePilotGoal returns DEPART for completed Departure mission`() {
+        val mission = createMission(HighLevelGoal.Departure(), PilotPhase.AtStand, t0)
+        var root = mission.root
+        for (step in MissionStep.entries) { root = root.markComplete(step) }
+        assertEquals(PilotGoal.DEPART, derivePilotGoal(mission.copy(root = root)))
+    }
+
+    @Test
+    fun `derivePilotGoal returns TOUCH_AND_GO during go-around phase of CircuitAfterGoAround`() {
+        // CircuitAfterGoAround: [goAroundTask (incomplete), circuitTask]
+        // While the GoAround subtask is active, the aircraft is climbing away → TOUCH_AND_GO.
+        val root = CompoundTask(TaskName.CircuitTraining, listOf(
+            CompoundTask(TaskName.CircuitAfterGoAround, listOf(
+                CompoundTask(TaskName.GoAround, listOf(
+                    PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.PHYSICAL), // active
+                )),
+                CompoundTask(TaskName.Circuit, listOf(
+                    PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
+                )),
+            )),
+        ))
+        val mission = PilotMission(goal = HighLevelGoal.CircuitTraining(1), root = root)
+        assertEquals(PilotGoal.TOUCH_AND_GO, derivePilotGoal(mission),
+            "During go-around climb-out, goal should be TOUCH_AND_GO")
+    }
+
+    @Test
+    fun `derivePilotGoal returns ARRIVE during resumed circuit after go-around`() {
+        // CircuitAfterGoAround: [goAroundTask (complete), circuitTask (active)]
+        // Once the go-around phase is done, the inner Circuit is a full-stop landing → ARRIVE.
+        val root = CompoundTask(TaskName.CircuitTraining, listOf(
+            CompoundTask(TaskName.CircuitAfterGoAround, listOf(
+                CompoundTask(TaskName.GoAround, listOf(
+                    PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.PHYSICAL, completed = true),
+                )),
+                CompoundTask(TaskName.Circuit, listOf(
+                    PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL), // active
+                )),
+            )),
+        ))
+        val mission = PilotMission(goal = HighLevelGoal.CircuitTraining(1), root = root)
+        assertEquals(PilotGoal.ARRIVE, derivePilotGoal(mission),
+            "During resumed full-stop circuit after go-around, goal must be ARRIVE not TOUCH_AND_GO")
+    }
+
+    // ── JoinCircuit stores joinLeg (A12) ────────────────────────────────
+
+    @Test
+    fun `JoinCircuit stores joinLeg and marks AWAIT_JOINING_INSTRUCTIONS complete`() {
+        // Construct the ArrivalJoin task with CALL_INBOUND already complete (pilot has called inbound)
+        // so the active step is AWAIT_JOINING_INSTRUCTIONS (INSTRUCTION_GATED).
+        val arrivalJoin = CompoundTask(TaskName.ArrivalJoin, listOf(
+            PrimitiveTask(MissionStep.CALL_INBOUND, CompletionMode.REPORTED, completed = true),
+            PrimitiveTask(MissionStep.AWAIT_JOINING_INSTRUCTIONS, CompletionMode.INSTRUCTION_GATED),
+        ))
+        val root = CompoundTask(TaskName.Arrive, listOf(
+            arrivalJoin,
+            circuitTask(),
+            groundArrivalTask(),
+        ))
+        val mission = PilotMission(goal = HighLevelGoal.Arrival(), root = root, stepEnteredAt = t0,
+            contactedOnFrequency = true)
+        assertEquals(MissionStep.AWAIT_JOINING_INSTRUCTIONS, mission.currentTask?.step,
+            "Precondition: mission should be at AWAIT_JOINING_INSTRUCTIONS")
+
+        val result = processInstruction(
+            JoinCircuit(AircraftId("TEST"), CircuitDirection.LEFT_HAND, JoinType.BASE, RunwayId("09")),
+            mission, t10,
+        )
+
+        assertEquals(arrow.core.Some(LegName.BASE), result.joinLeg,
+            "JoinCircuit(BASE) must store LegName.BASE in joinLeg")
+        // AWAIT_JOINING_INSTRUCTIONS is INSTRUCTION_GATED so it is now complete.
+        assertTrue(result.currentTask?.step != MissionStep.AWAIT_JOINING_INSTRUCTIONS,
+            "AWAIT_JOINING_INSTRUCTIONS must be marked complete after JoinCircuit")
+    }
+
+    @Test
+    fun `JoinType toCircuitLeg exhaustive mapping`() {
+        // Verify every JoinType maps to the expected LegName.
+        assertEquals(LegName.DOWNWIND, JoinType.DOWNWIND.toCircuitLeg())
+        assertEquals(LegName.DOWNWIND, JoinType.MID_DOWNWIND.toCircuitLeg())
+        assertEquals(LegName.BASE, JoinType.BASE.toCircuitLeg())
+        assertEquals(LegName.FINAL, JoinType.STRAIGHT_IN.toCircuitLeg())
+        assertEquals(LegName.FINAL, JoinType.LONG_FINAL.toCircuitLeg())
+        assertEquals(LegName.CROSSWIND, JoinType.CROSSWIND.toCircuitLeg())
+        assertEquals(LegName.DOWNWIND, JoinType.OVERHEAD.toCircuitLeg())
+    }
+
+    @Test
+    fun `processInstruction returns unchanged mission for unknown instruction at wrong step`() {
+        // TaxiTo at FLY_DOWNWIND — no match, mission returned unchanged.
+        val mission = arriveMission(PilotPhase.Downwind)
+        val result = processInstruction(TaxiTo(AircraftId("TEST"), PointId("STAND")), mission, t10)
+        assertEquals(mission.currentTask?.step, result.currentTask?.step,
+            "Unmatched instruction/step combination must return mission unchanged")
+    }
+
+    // ── touchAndGoCircuitTask name + go-around replacement (A11) ────────
+
+    @Test
+    fun `touchAndGoCircuitTask uses TaskName TouchAndGo not Circuit`() {
+        assertEquals(TaskName.TouchAndGo, touchAndGoCircuitTask().name,
+            "touchAndGoCircuitTask must use TaskName.TouchAndGo so derivePilotGoal and go-around replacement identify it correctly")
+    }
+
+    @Test
+    fun `GoAround replaces incomplete TouchAndGo circuit subtree`() {
+        val root = CompoundTask(TaskName.CircuitTraining, listOf(
+            CompoundTask(TaskName.TouchAndGo, listOf(
+                PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL, completed = true),
+                PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL), // incomplete
+            )),
+        ))
+        val mission = PilotMission(goal = HighLevelGoal.CircuitTraining(1), root = root)
+        val result = processInstruction(GoAround(AircraftId("TEST")), mission, t10)
+        val child = result.root.children[0] as CompoundTask
+        assertEquals(TaskName.CircuitAfterGoAround, child.name,
+            "GoAround should replace incomplete TouchAndGo task with CircuitAfterGoAround")
     }
 }

@@ -1,6 +1,9 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.None
 import arrow.core.NonEmptyList
+import arrow.core.Some
+import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.core.world.AltitudeConstraint as AltC
 import xyz.easiersaid.twr.core.world.SpeedConstraint as SpdC
@@ -300,6 +303,102 @@ class PilotRoutePlannerTest {
         assertEquals(Pts.upwind, route.waypoints.head, "Go-around should start at upwind")
         assertEquals(Pts.thrA, route.waypoints.last(), "Go-around should end at threshold")
         assertEquals(PilotPhase.LandingRoll, route.arrivalPhase)
+    }
+
+    // ── Visual mode join leg (A12) ───────────────────────────────────
+
+    @Test
+    fun `buildVisualModeRoute Circuit with joinLeg BASE starts at base`() {
+        val result = buildVisualModeRoute(visualMode, TaskName.Circuit, world, worldIndex,
+            joinLeg = arrow.core.Some(LegName.BASE))
+        val route = result.fold({ fail("Expected Right, got Left($it)") }, { it })
+
+        assertEquals(Pts.base, route.waypoints.head, "Circuit joined at BASE must start at base waypoint")
+        assertEquals(Pts.thrA, route.waypoints.last(), "Circuit must end at threshold")
+        assertEquals(PilotPhase.LandingRoll, route.arrivalPhase)
+    }
+
+    @Test
+    fun `buildVisualModeRoute Circuit with joinLeg FINAL starts at final`() {
+        val result = buildVisualModeRoute(visualMode, TaskName.Circuit, world, worldIndex,
+            joinLeg = arrow.core.Some(LegName.FINAL))
+        val route = result.fold({ fail("Expected Right, got Left($it)") }, { it })
+
+        // FINAL leg waypoints: base → finalPt → thrA
+        assertTrue(Pts.thrA in route.waypoints.toList(), "Final join must include threshold")
+        assertEquals(PilotPhase.LandingRoll, route.arrivalPhase)
+    }
+
+    @Test
+    fun `buildVisualModeRoute Circuit with None joinLeg defaults to DOWNWIND`() {
+        val withNone = buildVisualModeRoute(visualMode, TaskName.Circuit, world, worldIndex,
+            joinLeg = arrow.core.None)
+        val withDownwind = buildVisualModeRoute(visualMode, TaskName.Circuit, world, worldIndex,
+            joinLeg = arrow.core.Some(LegName.DOWNWIND))
+        assertEquals(
+            withNone.getOrNull()?.waypoints,
+            withDownwind.getOrNull()?.waypoints,
+            "None joinLeg must produce identical route to explicit DOWNWIND",
+        )
+    }
+
+    // ── WaypointNotInIndex (A1) ────────────────────────────────────
+
+    @Test
+    fun `DefaultPilot returns Left WaypointNotInIndex when taxiing waypoint absent`() {
+        val missingPt = PointId("MISSING")
+        val route = PilotRoute.Ground(
+            waypoints = NonEmptyList(missingPt, emptyList()),
+            arrivalPhase = PilotPhase.HoldingShort,
+        )
+        val ac = AircraftState(
+            id = AircraftId("TEST"), callsign = Callsign("TEST"),
+            position = xyz.easiersaid.twr.core.world.Position(0.0, 0.0),
+            positionPoint = missingPt,
+            altitudeM = 0.0, targetAltitudeM = 0.0,
+            speedMps = 5.0, targetSpeedMps = 5.0,
+            phase = PilotPhase.Taxiing,
+            route = route,
+            pilotGoal = PilotGoal.DEPART,
+        )
+        val emptyIndex = WorldIndex(
+            positions = emptyMap(),
+            circuitLegsByPoint = emptyMap(),
+        )
+        val result = DefaultPilot.decide(PilotView(SimTime.ofSeconds(0), ac, emptyIndex))
+        assertTrue(result.isLeft(), "Should return Left for missing waypoint")
+        val err = result.leftOrNull()
+        assertTrue(err is RoutingError.WaypointNotInIndex,
+            "Error should be WaypointNotInIndex, got $err")
+        assertEquals(missingPt, (err as RoutingError.WaypointNotInIndex).point)
+    }
+
+    @Test
+    fun `DefaultPilot returns Left WaypointNotInIndex when airborne waypoint absent`() {
+        val missingPt = PointId("MISSING-AIR")
+        val route = PilotRoute.Airborne(
+            waypoints = NonEmptyList(missingPt, emptyList()),
+            arrivalPhase = PilotPhase.LandingRoll,
+            targetAltitudeM = 300.0,
+        )
+        val ac = AircraftState(
+            id = AircraftId("TEST"), callsign = Callsign("TEST"),
+            position = xyz.easiersaid.twr.core.world.Position(0.0, 0.0),
+            positionPoint = missingPt,
+            altitudeM = 300.0, targetAltitudeM = 300.0,
+            speedMps = 50.0, targetSpeedMps = 50.0,
+            phase = PilotPhase.Downwind,
+            route = route,
+            pilotGoal = PilotGoal.ARRIVE,
+        )
+        val emptyIndex = WorldIndex(
+            positions = emptyMap(),
+            circuitLegsByPoint = emptyMap(),
+        )
+        val result = DefaultPilot.decide(PilotView(SimTime.ofSeconds(0), ac, emptyIndex))
+        assertTrue(result.isLeft(), "Should return Left for missing airborne waypoint")
+        assertTrue(result.leftOrNull() is RoutingError.WaypointNotInIndex,
+            "Error should be WaypointNotInIndex, got ${result.leftOrNull()}")
     }
 
     // ── SID departure (IFR-2) ─────────────────────────────────────
@@ -791,10 +890,21 @@ class PilotRoutePlannerTest {
     // ── Layer 4: Error path tests ───────────────────────────────────
 
     @Test
-    fun `Circuit route with unknown runway returns RunwayNotFound`() {
-        val badMode = NavigationMode.Circuit(RunwayId("99"), circuitId)
+    fun `Circuit mode with unknown circuit ID returns ProcedureNotFound`() {
+        // ById semantics: circuit ID is authoritative; unknown ID → ProcedureNotFound.
+        val badMode = NavigationMode.Circuit(runwayId, CircuitProcedureId("NONEXISTENT"))
         val result = buildAirborneRoute(badMode, TaskName.Circuit, world, worldIndex)
-        assertTrue(result.leftOrNull() is RoutingError.RunwayNotFound)
+        assertTrue(result.leftOrNull() is RoutingError.ProcedureNotFound)
+    }
+
+    @Test
+    fun `Circuit mode ById lookup uses circuit-declared runway not mode runway field`() {
+        // Mode.runway = "99" (nonexistent), but circuitId maps to runway "09" in the world.
+        // ById lookup: procedure ID is authoritative → finds runway "09" → route succeeds.
+        val modeWithMismatch = NavigationMode.Circuit(RunwayId("99"), circuitId)
+        val result = buildAirborneRoute(modeWithMismatch, TaskName.Circuit, world, worldIndex)
+        assertTrue(result.isRight(),
+            "ById lookup should succeed using the circuit's declared runway, not the mode's runway field")
     }
 
     @Test
@@ -805,29 +915,30 @@ class PilotRoutePlannerTest {
     }
 
     @Test
-    fun `Go-around with unknown runway returns RunwayNotFound`() {
-        val badMode = NavigationMode.Circuit(RunwayId("99"), circuitId)
+    fun `Circuit mode go-around with unknown circuit ID returns ProcedureNotFound`() {
+        val badMode = NavigationMode.Circuit(runwayId, CircuitProcedureId("NONEXISTENT"))
         val result = buildAirborneRoute(badMode, TaskName.GoAround, world, worldIndex)
-        assertTrue(result.leftOrNull() is RoutingError.RunwayNotFound)
+        assertTrue(result.leftOrNull() is RoutingError.ProcedureNotFound)
     }
 
     @Test
-    fun `Circuit route with no circuit procedure returns CircuitNotFound`() {
+    fun `Circuit mode in worldNoCircuit returns ProcedureNotFound`() {
+        // ById lookup: circuitId not found in worldNoCircuit → ProcedureNotFound.
         val result = buildAirborneRoute(circuitMode, TaskName.Circuit, worldNoCircuit, worldIndex)
-        assertTrue(result.leftOrNull() is RoutingError.CircuitNotFound)
+        assertTrue(result.leftOrNull() is RoutingError.ProcedureNotFound)
     }
 
     @Test
-    fun `Visual departure with no circuit procedure returns InsufficientGeometry`() {
-        // Visual departures need circuit leg geometry for upwind/crosswind.
+    fun `Visual departure with no circuit procedure returns CircuitNotFound`() {
+        // Visual departures use ByRunway lookup — no circuit for runway → CircuitNotFound.
         val result = buildAirborneRoute(visualMode, TaskName.Depart, worldNoCircuit, worldIndex)
         assertTrue(result.leftOrNull() is RoutingError.CircuitNotFound)
     }
 
     @Test
-    fun `Go-around with no circuit procedure returns CircuitNotFound`() {
+    fun `Circuit mode go-around in worldNoCircuit returns ProcedureNotFound`() {
         val result = buildAirborneRoute(circuitMode, TaskName.GoAround, worldNoCircuit, worldIndex)
-        assertTrue(result.leftOrNull() is RoutingError.CircuitNotFound)
+        assertTrue(result.leftOrNull() is RoutingError.ProcedureNotFound)
     }
 
     // ── deriveNavigationMode ────────────────────────────────────────

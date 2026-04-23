@@ -318,6 +318,14 @@ object RegulationDatabase {
         category = RegulationCategory.GUIDANCE,
     )
 
+    val CAP413_4_51 = RegulationRef(
+        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.51",
+        title = "Report final",
+        principle = "REPORT FINAL RUNWAY [designator] — ATC requests pilot report when turning final; " +
+            "used to time landing clearance and sequence departing traffic",
+        category = RegulationCategory.PHRASEOLOGY,
+    )
+
     val CAP413_4_55 = RegulationRef(
         document = "CAP_413", edition = "27th ed. (2023)", section = "§4.55",
         title = "Continue approach — delayed landing clearance",

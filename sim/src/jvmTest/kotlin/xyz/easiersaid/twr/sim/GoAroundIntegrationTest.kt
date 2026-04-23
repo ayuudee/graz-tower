@@ -5,6 +5,7 @@ import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.protocol.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
@@ -156,6 +157,7 @@ class GoAroundIntegrationTest {
             Pts.base to setOf(LegName.BASE),
             Pts.finalPt to setOf(LegName.FINAL),
         ),
+        thresholdByRunway = mapOf(runwayId to Pts.thrA),
     )
 
     /**
@@ -243,6 +245,121 @@ class GoAroundIntegrationTest {
         // The aircraft must have landed and returned to the stand.
         assertEquals(PilotPhase.Parked, acFinal.phase,
             "Aircraft must be parked after go-around + second circuit. " +
+            "Actual: phase=${acFinal.phase} point=${acFinal.positionPoint} " +
+            "alt=${"%.0f".format(acFinal.altitudeM)} step=${acFinal.pilotMission?.currentTask?.step}")
+        assertEquals(Pts.stand, acFinal.positionPoint,
+            "Aircraft must have returned to the stand")
+    }
+
+    // ── A10: ATC-instructed go-around ─────────────────────────────────
+
+    /**
+     * Aircraft on final WITH landing clearance. ATC issues go-around.
+     *
+     * Tests the [processInstruction](GoAround) path:
+     *   1. hasClearance is reset to false.
+     *   2. Mission tree is replaced with CircuitAfterGoAround + goAroundTask.
+     *   3. Pilot climbs and eventually lands on the second circuit.
+     *
+     * Distinct from the self-initiated test: here the mission already has
+     * hasClearance=true (controller has issued ClearedToLand) when the
+     * go-around instruction arrives. Both paths use [goAroundTask] which
+     * is now fully symmetric — no AWAITING_ATC_INSTRUCTION in VFR.
+     */
+    @Test
+    fun `ATC-instructed go-around resets clearance and pilot eventually lands`() {
+        // Build a mission at the LAND step with hasClearance=true:
+        // pilot is on final, has received ClearedToLand, and is about to touch down.
+        // ATC then issues go-around (runway incursion, runway not clear, etc.).
+        val baseMission = createMission(
+            goal = HighLevelGoal.Arrival(),
+            startPhase = PilotPhase.Final,
+            time = SimTime.ZERO,
+            humanPiloted = false,
+        )
+        // Simulate receiving ClearedToLand: marks sequencing/flying steps complete + hasClearance.
+        val clearedMission = processInstruction(
+            ClearedToLand(alphaId, runwayId),
+            baseMission.copy(activeRunway = runwayId),
+            SimTime.ZERO,
+        )
+        assertEquals(true, clearedMission.hasClearance,
+            "Precondition: mission must have clearance before go-around")
+
+        // ATC issues go-around while the pilot has clearance.
+        val afterGoAround = processInstruction(GoAround(alphaId), clearedMission, SimTime.ZERO)
+
+        // ── Mission state assertions ─────────────────────────────────
+        assertFalse(afterGoAround.hasClearance,
+            "hasClearance must be reset to false by ATC go-around instruction")
+
+        // Root must contain CircuitAfterGoAround (Arrive → [ArrivalJoin?, CircuitAfterGoAround, GroundArrival]).
+        val gaCompound = afterGoAround.root.children
+            .filterIsInstance<CompoundTask>()
+            .firstOrNull { it.name is TaskName.CircuitAfterGoAround }
+        assertTrue(gaCompound != null,
+            "Mission tree must contain CircuitAfterGoAround after ATC go-around")
+
+        // CircuitAfterGoAround must start with a GoAround task (GOING_AROUND step).
+        val goAroundCompound = gaCompound!!.children
+            .filterIsInstance<CompoundTask>()
+            .firstOrNull { it.name is TaskName.GoAround }
+        assertTrue(goAroundCompound != null, "CircuitAfterGoAround must contain GoAround task")
+
+        val goAroundStep = goAroundCompound!!.children
+            .filterIsInstance<PrimitiveTask>()
+            .firstOrNull { it.step == MissionStep.GOING_AROUND }
+        assertTrue(goAroundStep != null, "GoAround task must contain GOING_AROUND step")
+
+        // VFR go-around: no AWAITING_ATC_INSTRUCTION — pilot rejoins autonomously.
+        val hasAwaitingAtc = goAroundCompound.children
+            .filterIsInstance<PrimitiveTask>()
+            .any { it.step == MissionStep.AWAITING_ATC_INSTRUCTION }
+        assertFalse(hasAwaitingAtc,
+            "VFR ATC-instructed go-around must NOT contain AWAITING_ATC_INSTRUCTION — " +
+            "pilot rejoins circuit autonomously after reporting going around")
+
+        // ── Integration: pilot must eventually land ───────────────────
+        val alphaWithGoAround = AircraftState(
+            id = alphaId,
+            callsign = Callsign("ALPHA"),
+            position = positions[Pts.finalPt]!!,
+            positionPoint = Pts.finalPt,
+            pilotGoal = PilotGoal.ARRIVE,
+            humanPiloted = false,
+            route = PilotRoute.None,
+            phase = PilotPhase.Final,
+            altitudeM = 80.0,
+            targetAltitudeM = 0.0,
+            speedMps = PilotConstants.APPROACH_SPEED_MPS,
+            targetSpeedMps = PilotConstants.APPROACH_SPEED_MPS,
+            pilotMission = afterGoAround,
+        )
+
+        val initial = SimState.initial(
+            seed = 42L, world = world, worldIndex = worldIndex,
+            controllers = listOf(
+                ControllerSpec(groundControllerId, RoleName.GROUND, aerodromeId, groundFrequency, emptySet()),
+                ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, setOf(alphaId)),
+                ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
+            ),
+        )
+        val events = listOf(
+            SimEvent.PhysicsTick(SimTime.ZERO),
+            SimEvent.Spawn(SimTime.ZERO, alphaWithGoAround),
+            SimEvent.ControllerCycle(SimTime.ZERO, groundControllerId),
+            SimEvent.ControllerCycle(SimTime.ZERO, towerControllerId),
+            SimEvent.ControllerCycle(SimTime.ZERO, approachControllerId),
+        )
+
+        val result = runUntil(initial, events, SimTime.ofSeconds(1200))
+        val acFinal = result.aircraft[alphaId]!!
+
+        println("ATC go-around test final state: phase=${acFinal.phase} point=${acFinal.positionPoint} " +
+            "alt=${"%.0f".format(acFinal.altitudeM)} step=${acFinal.pilotMission?.currentTask?.step}")
+
+        assertEquals(PilotPhase.Parked, acFinal.phase,
+            "Aircraft must be parked after ATC go-around + second circuit. " +
             "Actual: phase=${acFinal.phase} point=${acFinal.positionPoint} " +
             "alt=${"%.0f".format(acFinal.altitudeM)} step=${acFinal.pilotMission?.currentTask?.step}")
         assertEquals(Pts.stand, acFinal.positionPoint,

@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.core.world
 
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.RunwayId
 
 fun Path.segmentIds(): List<SegmentId> =
     points.zipWithNext(::SegmentId)
@@ -20,9 +21,15 @@ fun AviationWorld.buildWorldIndex(): WorldIndex =
         entitiesByPoint = deriveEntitiesByPoint(),
         holdingPointsByRunway = deriveHoldingPointsByRunway(),
         circuitLegsByPoint = deriveCircuitLegsByPoint(),
+        thresholdByRunway = deriveThresholdByRunway(),
     )
 
-fun AviationWorld.deriveHoldingPointsByRunway(): Map<xyz.easiersaid.twr.protocol.RunwayId, Set<PointId>> {
+fun AviationWorld.deriveThresholdByRunway(): Map<RunwayId, PointId> =
+    aerodromes.values.flatMap { aerodrome ->
+        aerodrome.runways.map { (id, runway) -> id to runway.threshold }
+    }.toMap()
+
+fun AviationWorld.deriveHoldingPointsByRunway(): Map<RunwayId, Set<PointId>> {
     val entries = aerodromes.values.flatMap { aerodrome ->
         aerodrome.taxiways.values.flatMap { taxiway ->
             taxiway.holdingPoints.mapNotNull { hp ->

@@ -27,7 +27,15 @@ PARKING_GRAPH_SPLIT_TOLERANCE_METERS = 0.5
 
 
 def manifest_named_mapping(manifest: dict[str, Any], key: str) -> list[dict[str, Any]]:
-    return manifest.get("namedMappings", {}).get(key, [])
+    named_mappings = manifest.get("namedMappings", {})
+    if isinstance(named_mappings, dict):
+        value = named_mappings.get(key)
+        if isinstance(value, list):
+            return value
+    top_level_value = manifest.get(key)
+    if isinstance(top_level_value, list):
+        return top_level_value
+    return []
 
 
 def working_dxf_config(manifest: dict[str, Any]) -> dict[str, Any] | None:
@@ -445,6 +453,48 @@ def published_procedure_circuit_graph_ids(procedure_id: str) -> list[str]:
         "prc_4_west_traffic_circuit": ["main_shared_graph", "west_side_component"],
         "prc_5_east_hold": ["main_shared_graph", "east_side_component"],
     }.get(procedure_id, [])
+
+
+def supplemental_vfr_point_refs(manifest: dict[str, Any]) -> list[str]:
+    return [
+        point_ref
+        for point_ref in manifest.get("supplementalVfrPointRefs", [])
+        if isinstance(point_ref, str)
+    ]
+
+
+def resolve_supplemental_vfr_point(
+    point_ref: str,
+    ofmx_data: dict[str, Any],
+    cup_data: dict[str, Any],
+) -> dict[str, Any] | None:
+    key = point_ref.strip().upper()
+    designated_point = ofmx_data.get("allDesignatedPoints", {}).get(key)
+    if designated_point is not None:
+        return {
+            "identifier": key,
+            "label": designated_point.code_id,
+            "position": designated_point.position,
+            "source": "ofmx",
+            "reportingType": designated_point.code_type or "VFR-MRP",
+            "note": designated_point.name,
+        }
+
+    cup_waypoint = (
+        cup_data.get("waypointsByCode", {}).get(key)
+        or cup_data.get("waypointsByName", {}).get(key)
+    )
+    if cup_waypoint is not None:
+        return {
+            "identifier": key,
+            "label": cup_waypoint.code_id,
+            "position": cup_waypoint.position,
+            "source": "cup",
+            "reportingType": "VFR-MRP",
+            "note": cup_waypoint.name,
+        }
+
+    return None
 
 
 def resolve_point_ref(
@@ -2644,6 +2694,7 @@ def apply_authored_working_ground(
     if not isinstance(layers, dict):
         return []
 
+    reference_runway_layer = layers.get("referenceRunwayGraph")
     ground_layer = layers.get("authoredGroundGraph")
     stand_layer = layers.get("authoredStandPoints")
     holding_layer = layers.get("authoredHoldingPoints")
@@ -2651,15 +2702,20 @@ def apply_authored_working_ground(
     if not isinstance(ground_layer, str):
         return []
 
+    reference_runway_lines = working_dxf_lines(
+        working_document,
+        reference_runway_layer if isinstance(reference_runway_layer, str) else None,
+    )
     ground_lines = working_dxf_lines(working_document, ground_layer)
     stand_points = [point.point for point in working_dxf_points(working_document, stand_layer if isinstance(stand_layer, str) else None)]
     holding_points = [point.point for point in working_dxf_points(working_document, holding_layer if isinstance(holding_layer, str) else None)]
     manoeuvring_lines = working_dxf_lines(working_document, manoeuvring_layer if isinstance(manoeuvring_layer, str) else None)
 
-    if not ground_lines:
+    if not ground_lines and not reference_runway_lines:
         return [f"Working-DXF layer {ground_layer} is configured as authoredGroundGraph but contains no lines."]
 
-    split_polylines = split_authored_working_graph(ground_lines, stand_points + holding_points)
+    split_graph_lines = ground_lines + reference_runway_lines
+    split_polylines = split_authored_working_graph(split_graph_lines, stand_points + holding_points)
 
     core_entities["aerodrome"]["taxiways"] = {}
     core_entities["aerodrome"]["stands"] = {}
@@ -2673,8 +2729,19 @@ def apply_authored_working_ground(
     notes: list[str] = [
         f"Authored ground graph imported from working-DXF layer {ground_layer}.",
     ]
+    if reference_runway_lines and isinstance(reference_runway_layer, str):
+        notes.append(
+            f"Reference runway routing graph from {reference_runway_layer} was imported as authored runway-access support geometry."
+        )
+    graph_line_specs = [
+        ("authored_ground", ground_layer, line)
+        for line in ground_lines
+    ] + [
+        ("reference_runway", reference_runway_layer, line)
+        for line in reference_runway_lines
+    ]
 
-    for line_index, line in enumerate(ground_lines, start=1):
+    for line_index, (line_kind, source_layer, line) in enumerate(graph_line_specs, start=1):
         split_points = dedupe_consecutive_points(split_polylines.get(line_index - 1, [line.start, line.end]))
         if len(split_points) < 2:
             continue
@@ -2682,14 +2749,26 @@ def apply_authored_working_ground(
             if distance(segment_start, segment_end) <= 1e-6:
                 continue
             segment_line = report.DxfLine(layer=ground_layer, start=segment_start, end=segment_end)
-            taxiway_name, reference_hint = nearest_reference_taxiway(segment_line, scene.taxi_route_edges)
-            display_name = taxiway_name or "AUTH"
+            if line_kind == "reference_runway":
+                midpoint = report.XY(
+                    (segment_start.x + segment_end.x) / 2.0,
+                    (segment_start.y + segment_end.y) / 2.0,
+                )
+                pair_name = nearest_runway_pair_name(midpoint, runway_shapes_by_pair)
+                display_name = f"RWY {pair_name}" if isinstance(pair_name, str) else "RWY"
+                reference_hint = pair_name
+                note_parts = [f"Runway-access support segment from {source_layer}."]
+                if isinstance(pair_name, str):
+                    note_parts.append(f"Nearest runway pair reference: {pair_name}.")
+            else:
+                taxiway_name, reference_hint = nearest_reference_taxiway(segment_line, scene.taxi_route_edges)
+                display_name = taxiway_name or "AUTH"
+                note_parts = [f"Authored ground segment from {ground_layer}."]
+                if reference_hint is not None:
+                    note_parts.append(f"Nearest apt.dat route reference: {reference_hint}.")
             taxiway_name_counts[display_name] += 1
             taxiway_id = f"{airport_code}_TWY_{slugify(display_name).upper()}_{taxiway_name_counts[display_name]:02d}"
             path_id = f"{taxiway_id}_PATH"
-            note_parts = [f"Authored ground segment from {ground_layer}."]
-            if reference_hint is not None:
-                note_parts.append(f"Nearest apt.dat route reference: {reference_hint}.")
             add_path(
                 geometry_paths,
                 registry,
@@ -2724,7 +2803,8 @@ def apply_authored_working_ground(
                     "displayName": display_name,
                 }
             )
-            apron_path_ids.append(path_id)
+            if line_kind == "authored_ground":
+                apron_path_ids.append(path_id)
 
     used_stand_names: set[str] = set()
     stand_ids: list[str] = []
@@ -3145,9 +3225,16 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
     cifp_source = manifest["sources"].get("cifp")
     cifp_path = report.resolve_path(root, cifp_source) if isinstance(cifp_source, str) else None
     ofmx_path = report.resolve_path(root, manifest["sources"]["ofmx"])
+    cup_source = manifest["sources"].get("cupBundle")
+    cup_path = report.resolve_path(root, cup_source) if isinstance(cup_source, str) else None
     runways, _, _, _, apt_metadata, _ = report.parse_apt(apt_path)
     cifp_data = report.parse_cifp(cifp_path) if cifp_path is not None else empty_cifp_data()
     ofmx_data = report.parse_ofmx(ofmx_path, airport_code)
+    cup_data = report.parse_cup_bundle(cup_path) if cup_path is not None else {
+        "sourcePath": None,
+        "waypointsByCode": {},
+        "waypointsByName": {},
+    }
     charts_directory = report.resolve_path(root, manifest["sources"].get("chartsDirectory"))
     chart_fix_data = report.extract_chart_coding_table_fixes(charts_directory)
     airport = ofmx_data["airport"]
@@ -3760,6 +3847,32 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             "projectionStatus": "direct",
         }
 
+    unresolved_supplemental_vfr_points: list[str] = []
+    for point_ref in supplemental_vfr_point_refs(manifest):
+        if point_ref in core_entities["fixes"]:
+            continue
+        supplemental_point = resolve_supplemental_vfr_point(point_ref, ofmx_data, cup_data)
+        if supplemental_point is None:
+            unresolved_supplemental_vfr_points.append(point_ref)
+            continue
+        supplemental_xy = project(supplemental_point["position"])
+        point_id = registry.register(
+            supplemental_xy,
+            f"{airport_code}_FIX_{slugify(point_ref).upper()}",
+            label=supplemental_point["label"],
+            tags=["fix", "vfr_reporting_point", "supplemental_vfr_point"],
+            sources=[supplemental_point["source"]],
+        )
+        core_entities["fixes"][point_ref] = {
+            "id": point_ref,
+            "name": supplemental_point["label"],
+            "pointId": point_id,
+            "type": "WAYPOINT",
+            "reportingType": supplemental_point["reportingType"],
+            "projectionStatus": "direct",
+            "note": supplemental_point.get("note"),
+        }
+
     for anchor in scene.procedure_anchors:
         point_id = registry.register(
             anchor.point,
@@ -4115,6 +4228,29 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
 
     candidate_entities["ifrProcedures"] = build_ifr_inventory(cifp_data, ofmx_data, chart_fix_data, project)
 
+    unresolved_published_vfr_point_refs = sorted(
+        {
+            point_ref
+            for procedure in candidate_entities["publishedVfrProcedures"].values()
+            if isinstance(procedure, dict)
+            for point_ref in [
+                *[
+                    entry.get("ref")
+                    for entry in procedure.get("resolvedPublishedSequence", [])
+                    if isinstance(entry, dict) and entry.get("resolutionType") == "unresolved"
+                ],
+                *[
+                    label.get("pointRef")
+                    for label in procedure.get("mapWaypointLabels", [])
+                    if isinstance(label, dict) and label.get("resolutionType") == "unresolved"
+                ],
+                procedure.get("terminatesAt") if procedure.get("terminatesAtPointId") is None else None,
+                procedure.get("holdAt") if procedure.get("holdAtPointId") is None else None,
+            ]
+            if isinstance(point_ref, str)
+        }
+    )
+
     if airport_code == "LOWG":
         projection_gaps = [
             "Taxiway A is still a provisional mixed D->A cluster and should be split into clean segment ownership before a strict core import.",
@@ -4133,6 +4269,18 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             )
     else:
         projection_gaps = []
+        if unresolved_supplemental_vfr_points:
+            projection_gaps.append(
+                "Supplemental LJMB VFR points still unresolved from local OFMX/CUP sources: "
+                + ", ".join(sorted(unresolved_supplemental_vfr_points))
+                + "."
+            )
+        if unresolved_published_vfr_point_refs:
+            projection_gaps.append(
+                f"{airport_code} published VFR procedures still reference unresolved points: "
+                + ", ".join(unresolved_published_vfr_point_refs)
+                + "."
+            )
         if candidate_entities["ifrProcedures"].get("status") == "not_available_no_cifp_source":
             projection_gaps.append(
                 f"No CIFP-style IFR source is configured for {airport_code}, so IFR inventory and runtime IFR projection remain unavailable."

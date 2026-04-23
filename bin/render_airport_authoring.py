@@ -163,8 +163,12 @@ class SceneContext:
     tower_xy: report.XY | None
     parking_positions: list[ProjectedParkingPosition]
     parking_access_branches: list[ParkingAccessBranch]
+    authored_ground_mode: bool
     ground_lines: list[report.DxfLine]
     ground_points: list[report.DxfPoint]
+    authored_stand_points: list[report.DxfPoint]
+    authored_holding_points: list[report.DxfPoint]
+    authored_manoeuvring_lines: list[report.DxfLine]
     ground_components: list[list[report.DxfLine]]
     ground_component_status: dict[int, str]
     ground_component_label: dict[int, str]
@@ -223,6 +227,23 @@ def manifest_drawing(manifest: dict, drawing_id: str) -> dict | None:
         (drawing for drawing in manifest.get("drawings", []) if drawing.get("id") == drawing_id),
         None,
     )
+
+
+def working_dxf_config(manifest: dict) -> dict | None:
+    working_dxf = manifest.get("workingDxf")
+    return working_dxf if isinstance(working_dxf, dict) else None
+
+
+def filter_document_lines(document: report.DxfDocument, layer: str | None) -> list[report.DxfLine]:
+    if layer is None:
+        return []
+    return [line for line in document.lines if line.layer == layer]
+
+
+def filter_document_points(document: report.DxfDocument, layer: str | None) -> list[report.DxfPoint]:
+    if layer is None:
+        return []
+    return [point for point in document.points if point.layer == layer]
 
 
 def unique_runways(runways: dict[str, report.RunwayRecord], project) -> list[RunwayShape]:
@@ -747,9 +768,11 @@ def svg_document(title: str, canvas: Canvas, body: str) -> str:
 
 def render_ground_overlay(context: SceneContext, output_path: Path) -> None:
     world_points = []
-    world_points.extend(context.taxi_nodes)
     world_points.extend(collect_points_from_lines(context.ground_lines))
+    world_points.extend(collect_points_from_lines(context.authored_manoeuvring_lines))
     world_points.extend([point.point for point in context.ground_points])
+    if not context.authored_ground_mode:
+        world_points.extend(context.taxi_nodes)
     for runway in context.apt_runways:
         world_points.extend([runway.start, runway.end])
     bounds = scene_bounds(world_points, margin=120.0)
@@ -761,48 +784,109 @@ def render_ground_overlay(context: SceneContext, output_path: Path) -> None:
         parts.append(polyline_svg(canvas, runway.start, runway.end, "#525d6b", stroke_width, opacity=0.33))
         parts.append(label_svg(canvas, report.XY((runway.start.x + runway.end.x) / 2.0, (runway.start.y + runway.end.y) / 2.0), runway.pair, "#9fb0c0", dy=-12.0))
 
-    for start, end in context.taxi_edges:
-        parts.append(polyline_svg(canvas, start, end, "#39424d", 1.8, opacity=0.9))
+    if context.authored_ground_mode:
+        for component in context.ground_components:
+            for line in component:
+                parts.append(polyline_svg(canvas, line.start, line.end, "#42b6ff", 3.0, opacity=0.95))
+        for line in context.authored_manoeuvring_lines:
+            parts.append(polyline_svg(canvas, line.start, line.end, "#8ecae6", 2.2, opacity=0.90))
+        for point in context.authored_stand_points:
+            parts.append(circle_svg(canvas, point.point, 6.0, "#2dd4bf", stroke="#0b0f14", stroke_width_px=1.5))
+        for point in context.authored_holding_points:
+            parts.append(circle_svg(canvas, point.point, 6.5, "#ffb347", stroke="#0b0f14", stroke_width_px=1.5))
+    else:
+        for start, end in context.taxi_edges:
+            parts.append(polyline_svg(canvas, start, end, "#39424d", 1.8, opacity=0.9))
 
-    for index, component in enumerate(context.ground_components, start=1):
-        status = context.ground_component_status.get(index, "aligned")
-        color, opacity, width_px = ground_component_style(status)
-        for line in component:
-            parts.append(polyline_svg(canvas, line.start, line.end, color, width_px, opacity=opacity))
-        centroid = component_centroid(component)
-        label = context.ground_component_label.get(index, f"C{index}")
-        parts.append(label_svg(canvas, centroid, label, "#f0f6fc", dy=6.0, anchor="middle"))
+        for index, component in enumerate(context.ground_components, start=1):
+            status = context.ground_component_status.get(index, "aligned")
+            color, opacity, width_px = ground_component_style(status)
+            for line in component:
+                parts.append(polyline_svg(canvas, line.start, line.end, color, width_px, opacity=opacity))
+            centroid = component_centroid(component)
+            label = context.ground_component_label.get(index, f"C{index}")
+            parts.append(label_svg(canvas, centroid, label, "#f0f6fc", dy=6.0, anchor="middle"))
 
-    for index, point in enumerate(context.ground_points, start=1):
-        status = context.ground_marker_status.get(index, "aligned")
-        fill = ground_marker_fill(status)
-        parts.append(circle_svg(canvas, point.point, 6.0, fill, stroke="#0b0f14", stroke_width_px=1.5))
-        label = context.ground_marker_label.get(index, f"M{index}")
-        parts.append(label_svg(canvas, point.point, label, "#f0f6fc", dx=10.0, dy=-10.0))
+        for index, point in enumerate(context.ground_points, start=1):
+            status = context.ground_marker_status.get(index, "aligned")
+            fill = ground_marker_fill(status)
+            parts.append(circle_svg(canvas, point.point, 6.0, fill, stroke="#0b0f14", stroke_width_px=1.5))
+            label = context.ground_marker_label.get(index, f"M{index}")
+            parts.append(label_svg(canvas, point.point, label, "#f0f6fc", dx=10.0, dy=-10.0))
 
     if context.tower_xy is not None:
         parts.append(cross_svg(canvas, context.tower_xy, 16.0, "#ffffff", 2.2))
         parts.append(label_svg(canvas, context.tower_xy, "TWR", "#ffffff"))
 
-    parts.append(
-        render_legend(
-            [
-                ("#42b6ff", "hand-authored ground geometry"),
-                ("#f6bd60", "known X-Plane divergence"),
-                ("#ff6b6b", "unresolved suspect"),
-                ("#39424d", "apt.dat taxi graph"),
-                ("#525d6b", "apt.dat runways"),
-                ("#7ee787", "ground markers"),
-            ],
-            x=36.0,
-            y=74.0,
-        ),
+    legend_items = (
+        [
+            ("#42b6ff", "authored taxi / apron graph"),
+            ("#8ecae6", "authored manoeuvring areas"),
+            ("#2dd4bf", "authored stands"),
+            ("#ffb347", "authored holding points"),
+            ("#525d6b", "runways"),
+        ]
+        if context.authored_ground_mode
+        else [
+            ("#42b6ff", "hand-authored ground geometry"),
+            ("#f6bd60", "known X-Plane divergence"),
+            ("#ff6b6b", "unresolved suspect"),
+            ("#39424d", "apt.dat taxi graph"),
+            ("#525d6b", "apt.dat runways"),
+            ("#7ee787", "ground markers"),
+        ]
     )
+    parts.append(render_legend(legend_items, x=36.0, y=74.0))
 
-    output_path.write_text(svg_document("LOWG ground overlay", canvas, "\n".join(parts)))
+    title = f"{context.manifest['airportCode']} ground candidate" if context.authored_ground_mode else f"{context.manifest['airportCode']} ground overlay"
+    output_path.write_text(svg_document(title, canvas, "\n".join(parts)))
 
 
 def render_ground_divergence_zoom(context: SceneContext, output_path: Path) -> None:
+    if context.authored_ground_mode:
+        focus_points = collect_points_from_lines(context.ground_lines)
+        focus_points.extend(collect_points_from_lines(context.authored_manoeuvring_lines))
+        focus_points.extend([point.point for point in context.authored_stand_points])
+        focus_points.extend([point.point for point in context.authored_holding_points])
+        if not focus_points:
+            focus_points = [
+                point
+                for runway in context.apt_runways
+                for point in [runway.start, runway.end]
+            ]
+        bounds = scene_bounds(focus_points, margin=220.0)
+        canvas = make_canvas(bounds)
+
+        parts: list[str] = []
+        for runway in context.apt_runways:
+            stroke_width = max(runway.width_m * canvas.scale, 4.0)
+            parts.append(polyline_svg(canvas, runway.start, runway.end, "#525d6b", stroke_width, opacity=0.28))
+        for line in context.ground_lines:
+            parts.append(polyline_svg(canvas, line.start, line.end, "#42b6ff", 3.2, opacity=0.96))
+        for line in context.authored_manoeuvring_lines:
+            parts.append(polyline_svg(canvas, line.start, line.end, "#8ecae6", 2.2, opacity=0.92))
+        for point in context.authored_stand_points:
+            parts.append(circle_svg(canvas, point.point, 7.0, "#2dd4bf", stroke="#0b0f14", stroke_width_px=1.3))
+        for point in context.authored_holding_points:
+            parts.append(circle_svg(canvas, point.point, 7.5, "#ffb347", stroke="#0b0f14", stroke_width_px=1.3))
+
+        parts.append(
+            render_legend(
+                [
+                    ("#42b6ff", "authored taxi / apron graph"),
+                    ("#8ecae6", "authored manoeuvring areas"),
+                    ("#2dd4bf", "authored stands"),
+                    ("#ffb347", "authored holding points"),
+                    ("#525d6b", "runways"),
+                ],
+                x=36.0,
+                y=74.0,
+            ),
+        )
+
+        output_path.write_text(svg_document(f"{context.manifest['airportCode']} ground detail", canvas, "\n".join(parts)))
+        return
+
     focus_components = [
         component
         for index, component in enumerate(context.ground_components, start=1)
@@ -886,7 +970,7 @@ def render_ground_divergence_zoom(context: SceneContext, output_path: Path) -> N
         ),
     )
 
-    output_path.write_text(svg_document("LOWG 16/34L glider area zoom", canvas, "\n".join(parts)))
+    output_path.write_text(svg_document(f"{context.manifest['airportCode']} ground detail", canvas, "\n".join(parts)))
 
 
 def render_vfr_circuit_overlay(context: SceneContext, output_path: Path) -> None:
@@ -897,6 +981,7 @@ def render_vfr_circuit_overlay(context: SceneContext, output_path: Path) -> None
     world_points.extend([segment.start for segment in context.vfr_route_segments])
     world_points.extend([segment.end for segment in context.vfr_route_segments])
     world_points.extend(collect_points_from_lines(context.working_airspace_sector_lines))
+    world_points.extend(collect_points_from_lines(context.authored_manoeuvring_lines))
     for runway in context.apt_runways:
         world_points.extend([runway.start, runway.end])
     world_points.extend([point.point for point in context.ground_points])
@@ -967,18 +1052,21 @@ def render_vfr_circuit_overlay(context: SceneContext, output_path: Path) -> None
         ),
     )
 
-    output_path.write_text(svg_document("LOWG VFR circuit overlay", canvas, "\n".join(parts)))
+    output_path.write_text(svg_document(f"{context.manifest['airportCode']} VFR procedure overlay", canvas, "\n".join(parts)))
 
 
 def render_interactive_index(context: SceneContext, output_dir: Path, files: list[Path]) -> None:
+    candidate_only = context.authored_ground_mode
     full_world_points: list[report.XY] = []
-    full_world_points.extend(context.taxi_nodes)
-    full_world_points.extend([parking.point for parking in context.parking_positions])
-    for branch in context.parking_access_branches:
-        full_world_points.extend([edge.start for edge in branch.edges])
-        full_world_points.extend([edge.end for edge in branch.edges])
-        full_world_points.extend([connector.attach_point for connector in branch.connectors])
+    if not candidate_only:
+        full_world_points.extend(context.taxi_nodes)
+        full_world_points.extend([parking.point for parking in context.parking_positions])
+        for branch in context.parking_access_branches:
+            full_world_points.extend([edge.start for edge in branch.edges])
+            full_world_points.extend([edge.end for edge in branch.edges])
+            full_world_points.extend([connector.attach_point for connector in branch.connectors])
     full_world_points.extend(collect_points_from_lines(context.ground_lines))
+    full_world_points.extend(collect_points_from_lines(context.authored_manoeuvring_lines))
     full_world_points.extend([point.point for point in context.ground_points])
     full_world_points.extend(collect_points_from_lines(context.circuit_lines))
     full_world_points.extend([point.point for point in context.circuit_points])
@@ -995,13 +1083,15 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
         full_world_points.append(context.tower_xy)
 
     airport_world_points: list[report.XY] = []
-    airport_world_points.extend(context.taxi_nodes)
-    airport_world_points.extend([parking.point for parking in context.parking_positions])
-    for branch in context.parking_access_branches:
-        airport_world_points.extend([edge.start for edge in branch.edges])
-        airport_world_points.extend([edge.end for edge in branch.edges])
-        airport_world_points.extend([connector.attach_point for connector in branch.connectors])
+    if not candidate_only:
+        airport_world_points.extend(context.taxi_nodes)
+        airport_world_points.extend([parking.point for parking in context.parking_positions])
+        for branch in context.parking_access_branches:
+            airport_world_points.extend([edge.start for edge in branch.edges])
+            airport_world_points.extend([edge.end for edge in branch.edges])
+            airport_world_points.extend([connector.attach_point for connector in branch.connectors])
     airport_world_points.extend(collect_points_from_lines(context.ground_lines))
+    airport_world_points.extend(collect_points_from_lines(context.authored_manoeuvring_lines))
     airport_world_points.extend([point.point for point in context.ground_points])
     airport_world_points.extend(collect_points_from_lines(context.circuit_lines))
     airport_world_points.extend([point.point for point in context.circuit_points])
@@ -1140,64 +1230,65 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
         )
     layer_groups.append(f'<g id="layer-runways">{"".join(runway_parts)}</g>')
 
-    taxi_parts = [polyline_svg(canvas, start, end, "#39424d", 1.8, opacity=0.88) for start, end in context.taxi_edges]
-    layer_groups.append(f'<g id="layer-taxi-reference">{"".join(taxi_parts)}</g>')
+    if not candidate_only:
+        taxi_parts = [polyline_svg(canvas, start, end, "#39424d", 1.8, opacity=0.88) for start, end in context.taxi_edges]
+        layer_groups.append(f'<g id="layer-taxi-reference">{"".join(taxi_parts)}</g>')
 
-    taxi_sign_parts: list[str] = []
-    for sign in context.taxi_signs:
-        tooltip = sign.label if sign.label == sign.raw_text else f"{sign.label} [{sign.raw_text}]"
-        taxi_sign_parts.append(
-            "<g>"
-            f"<title>{html.escape(tooltip)}</title>"
-            f"{circle_svg(canvas, sign.point, 4.5, '#d9ff6a', stroke='#0b0f14', stroke_width_px=1.5, extra_attrs=zoom_circle_attrs(4.5, 1.5))}"
-            f"{label_svg(canvas, sign.point, sign.label, '#d9ff6a', dx=10.0, dy=-9.0, stroke='#0b0f14', stroke_width_px=4.0, extra_attrs=zoom_label_attrs(13.0, 10.0, -9.0, 4.0))}"
-            "</g>"
-        )
-    layer_groups.append(f'<g id="layer-taxi-signs">{"".join(taxi_sign_parts)}</g>')
+        taxi_sign_parts: list[str] = []
+        for sign in context.taxi_signs:
+            tooltip = sign.label if sign.label == sign.raw_text else f"{sign.label} [{sign.raw_text}]"
+            taxi_sign_parts.append(
+                "<g>"
+                f"<title>{html.escape(tooltip)}</title>"
+                f"{circle_svg(canvas, sign.point, 4.5, '#d9ff6a', stroke='#0b0f14', stroke_width_px=1.5, extra_attrs=zoom_circle_attrs(4.5, 1.5))}"
+                f"{label_svg(canvas, sign.point, sign.label, '#d9ff6a', dx=10.0, dy=-9.0, stroke='#0b0f14', stroke_width_px=4.0, extra_attrs=zoom_label_attrs(13.0, 10.0, -9.0, 4.0))}"
+                "</g>"
+            )
+        layer_groups.append(f'<g id="layer-taxi-signs">{"".join(taxi_sign_parts)}</g>')
 
-    parking_access_parts: list[str] = []
-    for branch in context.parking_access_branches:
-        stroke, fill = parking_branch_palette(branch.branch_name)
-        for edge in branch.edges:
-            parking_access_parts.append(
-                "<g>"
-                f"<title>{html.escape(f'X-Plane parking access {branch.display_name}')}</title>"
-                f"{polyline_svg(canvas, edge.start, edge.end, stroke, 3.2, opacity=0.92)}"
-                "</g>"
-            )
-        for connector in branch.connectors:
-            parking_access_parts.append(
-                "<g>"
-                f"<title>{html.escape(f'{connector.stand_name} via {branch.display_name}')}</title>"
-                f"{polyline_svg(canvas, connector.stand_point, connector.attach_point, stroke, 1.8, opacity=0.82, dash='7 5')}"
-                "</g>"
-            )
-        if branch.edges:
-            branch_points = [edge.start for edge in branch.edges] + [edge.end for edge in branch.edges]
-            parking_access_parts.append(
-                label_svg(
-                    canvas,
-                    centroid(branch_points),
-                    branch.display_name,
-                    stroke,
-                    dx=0.0,
-                    dy=0.0,
-                    font_size=13.0,
-                    anchor="middle",
-                    stroke="#0b0f14",
-                    stroke_width_px=4.0,
-                    extra_attrs=zoom_label_attrs(13.0, 0.0, 0.0, 4.0),
-                ),
-            )
-        for parking in branch.stands:
-            parking_access_parts.append(
-                "<g>"
-                f"<title>{html.escape(f'{parking.name} ({parking.location_type}) via {branch.display_name}')}</title>"
-                f"{circle_svg(canvas, parking.point, 4.5, fill, stroke=stroke, stroke_width_px=1.2, extra_attrs=zoom_circle_attrs(4.5, 1.2))}"
-                f"{label_svg(canvas, parking.point, parking.name, stroke, dx=8.0, dy=-8.0, font_size=12.0, stroke='#0b0f14', stroke_width_px=3.5, extra_attrs=zoom_label_attrs(12.0, 8.0, -8.0, 3.5))}"
-                "</g>"
-            )
-    layer_groups.append(f'<g id="layer-parking-access">{"".join(parking_access_parts)}</g>')
+        parking_access_parts: list[str] = []
+        for branch in context.parking_access_branches:
+            stroke, fill = parking_branch_palette(branch.branch_name)
+            for edge in branch.edges:
+                parking_access_parts.append(
+                    "<g>"
+                    f"<title>{html.escape(f'X-Plane parking access {branch.display_name}')}</title>"
+                    f"{polyline_svg(canvas, edge.start, edge.end, stroke, 3.2, opacity=0.92)}"
+                    "</g>"
+                )
+            for connector in branch.connectors:
+                parking_access_parts.append(
+                    "<g>"
+                    f"<title>{html.escape(f'{connector.stand_name} via {branch.display_name}')}</title>"
+                    f"{polyline_svg(canvas, connector.stand_point, connector.attach_point, stroke, 1.8, opacity=0.82, dash='7 5')}"
+                    "</g>"
+                )
+            if branch.edges:
+                branch_points = [edge.start for edge in branch.edges] + [edge.end for edge in branch.edges]
+                parking_access_parts.append(
+                    label_svg(
+                        canvas,
+                        centroid(branch_points),
+                        branch.display_name,
+                        stroke,
+                        dx=0.0,
+                        dy=0.0,
+                        font_size=13.0,
+                        anchor="middle",
+                        stroke="#0b0f14",
+                        stroke_width_px=4.0,
+                        extra_attrs=zoom_label_attrs(13.0, 0.0, 0.0, 4.0),
+                    ),
+                )
+            for parking in branch.stands:
+                parking_access_parts.append(
+                    "<g>"
+                    f"<title>{html.escape(f'{parking.name} ({parking.location_type}) via {branch.display_name}')}</title>"
+                    f"{circle_svg(canvas, parking.point, 4.5, fill, stroke=stroke, stroke_width_px=1.2, extra_attrs=zoom_circle_attrs(4.5, 1.2))}"
+                    f"{label_svg(canvas, parking.point, parking.name, stroke, dx=8.0, dy=-8.0, font_size=12.0, stroke='#0b0f14', stroke_width_px=3.5, extra_attrs=zoom_label_attrs(12.0, 8.0, -8.0, 3.5))}"
+                    "</g>"
+                )
+        layer_groups.append(f'<g id="layer-parking-access">{"".join(parking_access_parts)}</g>')
 
     ground_parts: list[str] = []
     component_mapping = {
@@ -1206,8 +1297,11 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
         if "componentIndex" in mapping
     }
     for index, component in enumerate(context.ground_components, start=1):
-        status = context.ground_component_status.get(index, "aligned")
-        color, opacity, width_px = ground_component_style(status)
+        if candidate_only:
+            color, opacity, width_px = ("#42b6ff", 0.96, 3.0)
+        else:
+            status = context.ground_component_status.get(index, "aligned")
+            color, opacity, width_px = ground_component_style(status)
         for line in component:
             ground_parts.append(polyline_svg(canvas, line.start, line.end, color, width_px, opacity=opacity))
         mapping = component_mapping.get(index, {})
@@ -1226,28 +1320,61 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
                     extra_attrs=zoom_label_attrs(16.0, 0.0, 6.0, 4.0),
                 ),
             )
+    for line in context.authored_manoeuvring_lines:
+        ground_parts.append(polyline_svg(canvas, line.start, line.end, "#8ecae6", 2.2, opacity=0.90))
     layer_groups.append(f'<g id="layer-ground-geometry">{"".join(ground_parts)}</g>')
 
-    ground_marker_parts: list[str] = []
-    marker_mapping = {
-        int(mapping["markerIndex"]): mapping
-        for mapping in context.manifest.get("namedMappings", {}).get("groundMarkers", [])
-        if "markerIndex" in mapping
-    }
-    for index, point in enumerate(context.ground_points, start=1):
-        status = context.ground_marker_status.get(index, "aligned")
-        fill = ground_marker_fill(status)
-        mapping = marker_mapping.get(index, {})
-        label = mapping.get("displayLabel") or mapping.get("finalName") or context.ground_marker_label.get(index) or f"M{index}"
-        note = mapping.get("note") or mapping.get("referenceHint") or ""
-        ground_marker_parts.append(
-            "<g>"
-            f"<title>{html.escape(f'{label}: {note}' if note else label)}</title>"
-            f"{circle_svg(canvas, point.point, 6.0, fill, stroke='#0b0f14', stroke_width_px=1.5, extra_attrs=zoom_circle_attrs(6.0, 1.5))}"
-            f"{label_svg(canvas, point.point, label, '#f0f6fc', dx=10.0, dy=-10.0, stroke='#0b0f14', stroke_width_px=4.0, extra_attrs=zoom_label_attrs(16.0, 10.0, -10.0, 4.0))}"
-            "</g>"
-        )
-    layer_groups.append(f'<g id="layer-ground-markers">{"".join(ground_marker_parts)}</g>')
+    if candidate_only:
+        stand_parts: list[str] = []
+        for point in context.authored_stand_points:
+            stand_parts.append(
+                circle_svg(
+                    canvas,
+                    point.point,
+                    6.0,
+                    "#2dd4bf",
+                    stroke="#0b0f14",
+                    stroke_width_px=1.5,
+                    extra_attrs=zoom_circle_attrs(6.0, 1.5),
+                ),
+            )
+        layer_groups.append(f'<g id="layer-authored-stands">{"".join(stand_parts)}</g>')
+
+        holding_parts: list[str] = []
+        for point in context.authored_holding_points:
+            holding_parts.append(
+                circle_svg(
+                    canvas,
+                    point.point,
+                    6.5,
+                    "#ffb347",
+                    stroke="#0b0f14",
+                    stroke_width_px=1.5,
+                    extra_attrs=zoom_circle_attrs(6.5, 1.5),
+                ),
+            )
+        layer_groups.append(f'<g id="layer-authored-holds">{"".join(holding_parts)}</g>')
+    else:
+        ground_marker_parts: list[str] = []
+        marker_mapping = {
+            int(mapping["markerIndex"]): mapping
+            for mapping in context.manifest.get("namedMappings", {}).get("groundMarkers", [])
+            if "markerIndex" in mapping
+        }
+        for index, point in enumerate(context.ground_points, start=1):
+            status = context.ground_marker_status.get(index, "aligned")
+            fill = ground_marker_fill(status)
+            mapping = marker_mapping.get(index, {})
+            label = mapping.get("displayLabel") or mapping.get("finalName") or context.ground_marker_label.get(index) or f"M{index}"
+            note = mapping.get("note") or mapping.get("referenceHint") or ""
+            ground_marker_parts.append(
+                "<g>"
+                f"<title>{html.escape(f'{label}: {note}' if note else label)}</title>"
+                f"{circle_svg(canvas, point.point, 6.0, fill, stroke='#0b0f14', stroke_width_px=1.5, extra_attrs=zoom_circle_attrs(6.0, 1.5))}"
+                f"{label_svg(canvas, point.point, label, '#f0f6fc', dx=10.0, dy=-10.0, stroke='#0b0f14', stroke_width_px=4.0, extra_attrs=zoom_label_attrs(16.0, 10.0, -10.0, 4.0))}"
+                "</g>"
+            )
+        layer_groups.append(f'<g id="layer-ground-markers">{"".join(ground_marker_parts)}</g>')
 
     circuit_parts: list[str] = []
     for index, component in enumerate(context.circuit_components, start=1):
@@ -1335,9 +1462,12 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
         )
     layer_groups.append(f'<g id="layer-tower">{"".join(tower_parts)}</g>')
 
+    airport_code = context.manifest["airportCode"]
+    airport_name = context.manifest.get("airportName", airport_code)
+    page_label = "Candidate Map" if candidate_only else "Authoring Map"
     plate_pack_path = output_dir / "plate" / "index.html"
     plate_link = (
-        f'<li><a href="{html.escape(str(Path("plate") / "index.html"))}">generated LOWG plate pack</a></li>'
+        f'<li><a href="{html.escape(str(Path("plate") / "index.html"))}">generated {html.escape(airport_code)} plate pack</a></li>'
         if plate_pack_path.exists()
         else ""
     )
@@ -1352,26 +1482,44 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
     airspace_note_items = "".join(
         f"<li>{html.escape(note)}</li>"
         for note in airspace_notes
-    ) or "<li>All LOWG airspace boundaries in the current view are straight-vertex approximations.</li>"
-    layer_items = "\n".join(
-        [
-            '<label><input type="checkbox" data-layer-target="layer-airspace-primary" checked /> LOWG controlled airspace</label>',
-            '<label><input type="checkbox" data-layer-target="layer-airspace-secondary" /> Nearby special-use airspace</label>',
-            '<label><input type="checkbox" data-layer-target="layer-runways" checked /> apt.dat runways</label>',
-            '<label><input type="checkbox" data-layer-target="layer-taxi-reference" checked /> apt.dat taxi reference</label>',
-            '<label><input type="checkbox" data-layer-target="layer-taxi-signs" /> apt.dat taxi signs</label>',
-            '<label><input type="checkbox" data-layer-target="layer-parking-access" checked /> X-Plane parking access via taxiway A</label>',
-            '<label><input type="checkbox" data-layer-target="layer-ground-geometry" checked /> Hand-authored ground geometry</label>',
-            '<label><input type="checkbox" data-layer-target="layer-ground-markers" checked /> Ground markers</label>',
-            '<label><input type="checkbox" data-layer-target="layer-vfr-circuit" checked /> VFR circuit geometry</label>',
-            '<label><input type="checkbox" data-layer-target="layer-circuit-attachments" checked /> Circuit join points</label>',
-            '<label><input type="checkbox" data-layer-target="layer-procedure-anchors" checked /> Circuit / procedure anchors</label>',
-            '<label><input type="checkbox" data-layer-target="layer-vfr-operational-sectors" checked /> Working VFR operational sectors</label>',
-            '<label><input type="checkbox" data-layer-target="layer-vfr-routes" checked /> Sidecar VFR route paths</label>',
-            '<label><input type="checkbox" data-layer-target="layer-vfr-reporting" checked /> OFMX VFR reporting points</label>',
-            '<label><input type="checkbox" data-layer-target="layer-tower" checked /> Tower</label>',
-        ],
-    )
+    ) or f"<li>All {html.escape(airport_code)} airspace boundaries in the current view are straight-vertex approximations.</li>"
+    layer_controls: list[str] = [
+        f'<label><input type="checkbox" data-layer-target="layer-airspace-primary" checked /> {html.escape(airport_code)} controlled airspace</label>',
+    ]
+    if secondary_airspaces:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-airspace-secondary" /> Nearby special-use airspace</label>')
+    layer_controls.append('<label><input type="checkbox" data-layer-target="layer-runways" checked /> Runways</label>')
+    if not candidate_only:
+        layer_controls.extend(
+            [
+                '<label><input type="checkbox" data-layer-target="layer-taxi-reference" checked /> apt.dat taxi reference</label>',
+                '<label><input type="checkbox" data-layer-target="layer-taxi-signs" /> apt.dat taxi signs</label>',
+                '<label><input type="checkbox" data-layer-target="layer-parking-access" checked /> X-Plane parking access</label>',
+            ],
+        )
+    layer_controls.append('<label><input type="checkbox" data-layer-target="layer-ground-geometry" checked /> Authored ground geometry</label>')
+    if candidate_only:
+        if context.authored_stand_points:
+            layer_controls.append('<label><input type="checkbox" data-layer-target="layer-authored-stands" checked /> Authored stands</label>')
+        if context.authored_holding_points:
+            layer_controls.append('<label><input type="checkbox" data-layer-target="layer-authored-holds" checked /> Authored holding points</label>')
+    else:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-ground-markers" checked /> Ground markers</label>')
+    if context.circuit_lines:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-vfr-circuit" checked /> VFR circuit geometry</label>')
+    if context.circuit_attachments:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-circuit-attachments" checked /> Circuit join points</label>')
+    if any(anchor.anchor_type == "vfr_route_join" for anchor in context.procedure_anchors):
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-procedure-anchors" checked /> Circuit / procedure anchors</label>')
+    if context.working_airspace_sector_lines:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-vfr-operational-sectors" checked /> Working VFR operational sectors</label>')
+    if context.vfr_route_segments:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-vfr-routes" checked /> VFR route paths</label>')
+    if context.reporting_points:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-vfr-reporting" checked /> VFR reporting points</label>')
+    if context.tower_xy is not None:
+        layer_controls.append('<label><input type="checkbox" data-layer-target="layer-tower" checked /> Tower</label>')
+    layer_items = "\n".join(layer_controls)
     view_state = {
         "airport": airport_view,
         "airspace": airspace_view,
@@ -1381,7 +1529,7 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>LOWG authoring map</title>
+        <title>{html.escape(airport_code)} {html.escape(page_label.lower())}</title>
     <style>
       :root {{
         color-scheme: dark;
@@ -1547,8 +1695,8 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
   <body>
     <div class="layout">
       <aside class="sidebar">
-        <h1>LOWG Authoring Map</h1>
-        <p>Single combined view from the current LOWG manifest, both DXFs, apt.dat, OFMX reporting points, sidecar-defined VFR route paths, OFMX airspace boundaries, X-Plane-derived parking access spurs, and any normalized working-airspace overlay.</p>
+        <h1>{html.escape(airport_code)} {html.escape(page_label)}</h1>
+        <p>{html.escape(f'Candidate view from authored airport geometry and accepted projected data for {airport_name}. Source/reference overlays are intentionally suppressed.' if candidate_only else f'Single combined authoring/debug view for {airport_name} from the current manifest, reference sources, authored geometry, and projected overlays.')}</p>
         <h2>View</h2>
         <div class="controls">
           <button type="button" data-fit-view="airport">Airport</button>
@@ -1561,18 +1709,21 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
         </div>
         <h2>Legend</h2>
         <div class="swatches">
-          <div class="swatch"><span class="chip" style="background:#143244;border-color:#58d4ff;"></span><span>LOWG controlled airspace</span></div>
-          <div class="swatch"><span class="chip" style="background:#41204a;border-color:#f2a7ff;"></span><span>Nearby special-use airspace</span></div>
-          <div class="swatch"><span class="chip" style="background:#7b8794;"></span><span>apt.dat runways</span></div>
-          <div class="swatch"><span class="chip" style="background:#39424d;"></span><span>apt.dat taxi reference</span></div>
-          <div class="swatch"><span class="chip" style="background:#d9ff6a;"></span><span>apt.dat taxi signs</span></div>
-          <div class="swatch"><span class="chip" style="background:#16384a;border-color:#7dd3fc;"></span><span>X-Plane parking access via A spurs</span></div>
-          <div class="swatch"><span class="chip" style="background:#42b6ff;"></span><span>Hand-authored ground geometry</span></div>
-          <div class="swatch"><span class="chip" style="background:#f6bd60;"></span><span>Known divergence from X-Plane</span></div>
-          <div class="swatch"><span class="chip" style="background:#ffb347;"></span><span>VFR circuit graph</span></div>
-          <div class="swatch"><span class="chip" style="background:#ff6b6b;"></span><span>Working VFR operational sectors</span></div>
-          <div class="swatch"><span class="chip" style="background:#6ee7b7;"></span><span>VFR route paths</span></div>
-          <div class="swatch"><span class="chip" style="background:#2dd4bf;"></span><span>VFR reporting points</span></div>
+          <div class="swatch"><span class="chip" style="background:#143244;border-color:#58d4ff;"></span><span>{html.escape(airport_code)} controlled airspace</span></div>
+          {'<div class="swatch"><span class="chip" style="background:#41204a;border-color:#f2a7ff;"></span><span>Nearby special-use airspace</span></div>' if secondary_airspaces else ''}
+          <div class="swatch"><span class="chip" style="background:#7b8794;"></span><span>Runways</span></div>
+          {'' if candidate_only else '<div class="swatch"><span class="chip" style="background:#39424d;"></span><span>apt.dat taxi reference</span></div>'}
+          {'' if candidate_only else '<div class="swatch"><span class="chip" style="background:#d9ff6a;"></span><span>apt.dat taxi signs</span></div>'}
+          {'' if candidate_only else '<div class="swatch"><span class="chip" style="background:#16384a;border-color:#7dd3fc;"></span><span>X-Plane parking access spurs</span></div>'}
+          <div class="swatch"><span class="chip" style="background:#42b6ff;"></span><span>Authored ground geometry</span></div>
+          {'<div class="swatch"><span class="chip" style="background:#8ecae6;"></span><span>Authored manoeuvring areas</span></div>' if context.authored_manoeuvring_lines else ''}
+          {'<div class="swatch"><span class="chip" style="background:#2dd4bf;"></span><span>Authored stands</span></div>' if candidate_only and context.authored_stand_points else ''}
+          {'<div class="swatch"><span class="chip" style="background:#ffb347;"></span><span>Authored holding points</span></div>' if candidate_only and context.authored_holding_points else ''}
+          {'' if candidate_only else '<div class="swatch"><span class="chip" style="background:#f6bd60;"></span><span>Known divergence from X-Plane</span></div>'}
+          {'<div class="swatch"><span class="chip" style="background:#ffb347;"></span><span>VFR circuit graph</span></div>' if context.circuit_lines else ''}
+          {'<div class="swatch"><span class="chip" style="background:#ff6b6b;"></span><span>Working VFR operational sectors</span></div>' if context.working_airspace_sector_lines else ''}
+          {'<div class="swatch"><span class="chip" style="background:#6ee7b7;"></span><span>VFR route paths</span></div>' if context.vfr_route_segments else ''}
+          {'<div class="swatch"><span class="chip" style="background:#2dd4bf;"></span><span>VFR reporting points</span></div>' if context.reporting_points else ''}
         </div>
         <h2>Known Gaps</h2>
         <ul class="notes">
@@ -1601,7 +1752,7 @@ def render_interactive_index(context: SceneContext, output_dir: Path, files: lis
         </svg>
         <div class="hud">
           <strong>Interaction</strong><br />
-          Drag to pan. Use the mouse wheel or trackpad to zoom. Toggle layers from the left panel to compare the authored geometry against X-Plane and the OFMX airspace set.
+          {html.escape('Drag to pan. Use the mouse wheel or trackpad to zoom. This page is the candidate/final view: authored airport geometry plus accepted projected overlays.' if candidate_only else 'Drag to pan. Use the mouse wheel or trackpad to zoom. Toggle layers from the left panel to compare authored geometry against source/reference overlays and projected airspace.') }
         </div>
       </main>
     </div>
@@ -1757,9 +1908,15 @@ def build_context(manifest_path: Path) -> SceneContext:
 
     ground_manifest = manifest_drawing(manifest, "ground")
     circuit_manifest = manifest_drawing(manifest, "vfr_circuit")
+    working_dxf = working_dxf_config(manifest)
     ground_document = (
         report.parse_dxf(report.resolve_path(root, ground_manifest["path"]))
         if ground_manifest is not None
+        else empty_dxf_document()
+    )
+    working_document = (
+        report.parse_dxf(report.resolve_path(root, working_dxf["path"]))
+        if working_dxf is not None and isinstance(working_dxf.get("path"), str)
         else empty_dxf_document()
     )
     circuit_document = (
@@ -1813,15 +1970,52 @@ def build_context(manifest_path: Path) -> SceneContext:
             ground_component_label = {}
             ground_marker_status = {}
             ground_marker_label = {}
+    elif working_dxf is not None:
+        working_layers = working_dxf.get("layers", {})
+        authored_ground_lines = filter_document_lines(
+            working_document,
+            working_layers.get("authoredGroundGraph"),
+        )
+        authored_stand_points = filter_document_points(
+            working_document,
+            working_layers.get("authoredStandPoints"),
+        )
+        authored_holding_points = filter_document_points(
+            working_document,
+            working_layers.get("authoredHoldingPoints"),
+        )
+        authored_manoeuvring_lines = filter_document_lines(
+            working_document,
+            working_layers.get("authoredManoeuvringAreas"),
+        )
+        ground_transform = identity_transform()
+        ground_lines = authored_ground_lines
+        ground_points = authored_stand_points + authored_holding_points
+        ground_components = report.connected_components(authored_ground_lines) if authored_ground_lines else []
+        ground_component_status = {}
+        ground_component_label = {}
+        ground_marker_status = {}
+        ground_marker_label = {}
+        authored_ground_mode = True
     else:
         ground_transform = identity_transform()
         ground_lines = []
         ground_points = []
+        authored_stand_points = []
+        authored_holding_points = []
+        authored_manoeuvring_lines = []
         ground_components = []
         ground_component_status = {}
         ground_component_label = {}
         ground_marker_status = {}
         ground_marker_label = {}
+        authored_ground_mode = False
+
+    if ground_manifest is not None and ground_document.lines:
+        authored_stand_points = []
+        authored_holding_points = []
+        authored_manoeuvring_lines = []
+        authored_ground_mode = False
 
     if circuit_manifest is not None and (circuit_document.points or circuit_document.lines):
         declared_circuit_anchor_pair = report.drawing_anchor_pair_from_manifest(
@@ -1982,8 +2176,12 @@ def build_context(manifest_path: Path) -> SceneContext:
         tower_xy=project(tower.position) if tower is not None else None,
         parking_positions=projected_parking_positions,
         parking_access_branches=parking_access_branches,
+        authored_ground_mode=authored_ground_mode,
         ground_lines=ground_lines,
         ground_points=ground_points,
+        authored_stand_points=authored_stand_points,
+        authored_holding_points=authored_holding_points,
+        authored_manoeuvring_lines=authored_manoeuvring_lines,
         ground_components=ground_components,
         ground_component_status=ground_component_status,
         ground_component_label=ground_component_label,

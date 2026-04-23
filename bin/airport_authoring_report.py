@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import re
@@ -299,6 +300,17 @@ class OpenAirAirspace:
     lower_limit: str | None
     upper_limit: str | None
     boundaries: list[list[Geo]]
+    source_path: str
+
+
+@dataclass(frozen=True)
+class CupWaypoint:
+    name: str
+    code_id: str
+    country: str | None
+    position: Geo
+    elevation: str | None
+    style: str | None
     source_path: str
 
 
@@ -1302,6 +1314,76 @@ def parse_openair_coordinate(value: str) -> Geo | None:
     if latitude is None or longitude is None:
         return None
     return Geo(latitude, longitude)
+
+
+def parse_cup_coordinate(value: str) -> float | None:
+    match = re.match(r"^(\d{2,3})(\d{2}\.\d+)([NSEW])$", value.strip(), re.IGNORECASE)
+    if match is None:
+        return None
+    degrees_text, minutes_text, hemisphere = match.groups()
+    try:
+        degrees = float(degrees_text)
+        minutes = float(minutes_text)
+    except ValueError:
+        return None
+    decimal = degrees + (minutes / 60.0)
+    return -decimal if hemisphere.upper() in {"S", "W"} else decimal
+
+
+def parse_cup_bundle(path: Path) -> dict[str, Any]:
+    with zipfile.ZipFile(path) as archive:
+        candidate_names = [
+            name
+            for name in archive.namelist()
+            if name.lower().endswith(".cup") and "/isolated/" in name.lower()
+        ]
+        if not candidate_names:
+            candidate_names = [
+                name
+                for name in archive.namelist()
+                if name.lower().endswith(".cup")
+            ]
+        if not candidate_names:
+            return {
+                "sourcePath": None,
+                "waypointsByCode": {},
+                "waypointsByName": {},
+            }
+        source_name = candidate_names[0]
+        text = archive.read(source_name).decode("utf-8", errors="replace")
+
+    waypoints_by_code: dict[str, CupWaypoint] = {}
+    waypoints_by_name: dict[str, CupWaypoint] = {}
+    reader = csv.reader(text.splitlines())
+    for row in reader:
+        if len(row) < 5:
+            continue
+        if row[0].strip().lower() == "name" and row[1].strip().lower() == "code":
+            continue
+        name = row[0].strip()
+        code_id = row[1].strip().upper()
+        country = row[2].strip() or None
+        latitude = parse_cup_coordinate(row[3])
+        longitude = parse_cup_coordinate(row[4])
+        if not name or not code_id or latitude is None or longitude is None:
+            continue
+        waypoint = CupWaypoint(
+            name=name,
+            code_id=code_id,
+            country=country,
+            position=Geo(latitude, longitude),
+            elevation=row[5].strip() or None if len(row) > 5 else None,
+            style=row[6].strip() or None if len(row) > 6 else None,
+            source_path=source_name,
+        )
+        waypoints_by_code[code_id] = waypoint
+        waypoints_by_name[name.strip().upper()] = waypoint
+
+    return {
+        "sourcePath": source_name,
+        "waypointsByCode": dict(sorted(waypoints_by_code.items())),
+        "waypointsByName": dict(sorted(waypoints_by_name.items())),
+    }
 
 
 def canonical_openair_name(name: str) -> str:

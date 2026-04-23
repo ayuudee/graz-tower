@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.protocol
 
+import arrow.core.NonEmptyList
+
 // Pilot → ATC transmission model
 // Orthogonal to the ATC instruction hierarchy.
 // Structurally expressive, not phrase-string driven.
@@ -116,6 +118,29 @@ data class BreakOffReadback(
     val level: Level? = null,
     val heading: Heading? = null,
 ) : AtomicReadback
+
+/**
+ * Acknowledgement of [StopImmediately].
+ *
+ * No numeric payload — the pilot echoes "STOP IMMEDIATELY, [callsign]". Distinct from
+ * [HoldingAcknowledgementReadback] so a hold-position readback cannot satisfy an
+ * emergency stop pending, and vice versa. Safety-critical per ICAO 4444 §12.3.1.
+ */
+data object StopImmediatelyReadback : AtomicReadback
+
+/**
+ * Acknowledgement of [TakeoffImmediatelyOrVacateRunway].
+ *
+ * Carries [runway] so the classifier detects a wrong runway echo.
+ */
+data class TakeoffImmediatelyOrVacateReadback(val runway: RunwayId) : AtomicReadback
+
+/**
+ * Acknowledgement of [TakeoffImmediatelyOrHoldShort].
+ *
+ * Carries [runway] so the classifier detects a wrong runway echo.
+ */
+data class TakeoffImmediatelyOrHoldShortReadback(val runway: RunwayId) : AtomicReadback
 
 // --- Readback conditions ---
 
@@ -298,3 +323,26 @@ data class PilotMessage(
     val callsign: Callsign,
     val transmissions: List<PilotTransmission>
 )
+
+// -----------------------------------------------------------------------------
+// Readback defects (protocol-level so ReadbackCorrection can carry them)
+// -----------------------------------------------------------------------------
+
+/** A single problem found while classifying a readback against an instruction. */
+sealed interface AtomDefect {
+    /** Required atom entirely absent from the readback (silent drop). */
+    data class MissingAtom(val expected: AtomicReadback) : AtomDefect
+
+    /** An atom of the right kind was present, but its value did not match. */
+    data class WrongAtom(val expected: AtomicReadback) : AtomDefect
+
+    /** Conditional clearance's condition was absent from the readback. */
+    data class MissingCondition(val expected: ReadbackCondition) : AtomDefect
+
+    /** Conditional clearance's condition was present in kind but with a wrong value. */
+    data class WrongCondition(val expected: ReadbackCondition) : AtomDefect
+}
+
+/** True if any defect in the list is a wrong value (as opposed to merely missing). */
+fun defectsHaveWrongValue(defects: NonEmptyList<AtomDefect>): Boolean =
+    defects.any { it is AtomDefect.WrongAtom || it is AtomDefect.WrongCondition }

@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.protocol
 
+import arrow.core.NonEmptyList
+
 // EASA / SERA-oriented ATC instruction model
 // The goal here is to model instruction *families* with typed parameters,
 // rather than attempting a closed list of every possible phraseology string.
@@ -590,7 +592,9 @@ data class TakeoffImmediatelyOrHoldShort(
 
 data class AfterLandingVacateVia(
     override val target: AircraftId,
-    val exit: PointId
+    val exit: PointId,
+    /** When true, the pilot is invited to vacate when workload permits (lower urgency). */
+    val whenAble: Boolean = false,
 ) : RunwayInstruction
 
 // -----------------------------------------------------------------------------
@@ -1093,13 +1097,13 @@ data class ReadBackCorrect(
 /**
  * Controller correction of an incorrect or incomplete readback, per ICAO Doc 4444 §12.3.2
  * and CAP 413 §1.5.6. Phraseology: "NEGATIVE, I SAY AGAIN, …" followed by the correct
- * instruction. The [correct] field carries the instruction to be re-transmitted; whether
- * the original was wrong outright or missing an atom is captured by [kind].
+ * instruction. The [correct] field carries the instruction to be re-transmitted; [defects]
+ * carries the full list of atom problems so the controller can tailor the correction.
  */
 data class ReadbackCorrection(
     override val target: AircraftId,
     val correct: AtcInstruction,
-    val kind: ReadbackCorrectionKind,
+    val defects: NonEmptyList<AtomDefect>,
 ) : ControllerResponse
 
 enum class ReadbackCorrectionKind {
@@ -1109,6 +1113,15 @@ enum class ReadbackCorrectionKind {
     /** A required atom was silently omitted from the readback. */
     MISSING_ATOM,
 }
+
+/**
+ * Convenience accessor: derives the coarse [ReadbackCorrectionKind] from the defect list.
+ * Any wrong-value defect → [ReadbackCorrectionKind.INCORRECT_ATOM]; all-omission →
+ * [ReadbackCorrectionKind.MISSING_ATOM]. Used for tracing and test assertions.
+ */
+val ReadbackCorrection.kind: ReadbackCorrectionKind
+    get() = if (defectsHaveWrongValue(defects)) ReadbackCorrectionKind.INCORRECT_ATOM
+            else ReadbackCorrectionKind.MISSING_ATOM
 
 data class Standby(
     override val target: AircraftId

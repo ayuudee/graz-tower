@@ -157,6 +157,7 @@ class FullCircuitTest {
             Pts.base to setOf(LegName.BASE),
             Pts.finalPt to setOf(LegName.FINAL),
         ),
+        thresholdByRunway = mapOf(runwayId to Pts.thrA),
     )
 
     private fun alpha() = AircraftState(

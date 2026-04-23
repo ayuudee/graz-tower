@@ -36,6 +36,19 @@ Controller and pilot behavior must be traceable to ATC regulations (ICAO, SERA, 
 
 When making claims about ATC law, regulations, or RT phraseology, always provide the specific source: document, edition/date, section/paragraph. For example: "CAP 413 para 4.50" or "ICAO Doc 9432 §5.9.5". Do not state regulatory facts without a citation. Once cited, verify the citation is accurate — check the actual text if available in `research/txt/` or the wiki. An uncited regulatory claim is an unverified claim.
 
+## 9. Plans and designs are review-aware by construction
+
+Any agent producing a plan or design must explicitly address the concerns that review agents will raise — as part of the plan itself, not as a separate step. A plan that ignores reviewable dimensions is incomplete.
+
+Every non-trivial plan or design must include a **Review considerations** section that explicitly covers:
+
+- **FP / type safety**: Are all `when` expressions exhaustive? Are new fields total? Are new state transitions reversible? Are error paths typed (`Either`/`Option`) rather than thrown?
+- **Test architecture**: What tests does this require, at what level? What invariants must hold? What scenarios exercise the reversal?
+- **Impact**: What does this couple? What does it make harder or easier? What are the failure modes? What reverses it and is that reversal complete?
+- **Operational correctness** (when ATC behaviour is involved): Does this match real-world procedure? Which regulation applies?
+
+The section need not be exhaustive if a dimension is genuinely not applicable — but the absence must be deliberate and stated, not an oversight. A plan that silently omits FP, test, or impact concerns will be sent back.
+
 ## 8. Dead programs tell no lies
 
 If the program reaches a state it genuinely cannot handle, it must crash — not silently recover, not return a plausible default, not log and continue. A crash with a clear message is infinitely more useful than silent corruption. `error()` is correct for **provably impossible** states.
@@ -70,6 +83,7 @@ The bar: subsequent review should not turn up anything that a staff engineer of 
 
 When implementing features:
 
+- **Impact assessment before implementation**: For every non-trivial plan or design decision, run the impact agent BEFORE writing code. The assessment identifies architectural implications, coupling risks, reversal requirements, and failure modes before they are baked in. This is not optional for non-trivial work. Trivial = a one-liner fix or renaming; everything else warrants impact assessment.
 - **New field, new audit**: When adding a field to a state data class, grep for every `.copy(` on that type and check whether the new field needs attention at each mutation site.
 - **Reversal before forward path**: When implementing a state transition pair (set/reset), write the reversal handler FIRST.
 - **Re-read code you're building on**: When extending existing code, re-read it critically. Ask what assumptions it makes that the new feature might violate.
@@ -133,6 +147,21 @@ wiki/       Shared knowledge base — domain knowledge, data sources, design dec
 - When changing `research/fm`, keep `research/fm/README.md`, `research/fm/PROJECT_STATUS.md`, and the active scope note aligned with the actual theorem status.
 - Prefer widening FM by small closed slices on the current-shape greenfield boundary; treat older atomic/legacy bridge work as opt-in, not the default path.
 - For recurring `research/tools/r1` overnight FM runs, treat `research/fm/r1-smoke/` as the local ignored operations workspace: check the current frontier against `research/fm/lean/`, refresh the local seed snapshot from the current Lean tree, regenerate queue artifacts instead of hand-editing stale queue files, launch the queue detached, watch the first 10-15 minutes for infrastructure or repeated early failures, then leave it alone. Preserve historical `runs/` unless there is a specific reason to reset them.
+
+# Project Plan
+
+`.plan` in the repo root is the canonical backlog of known issues and deferred work.
+
+**On every commit:**
+- Scan `.plan` for items resolved by the commit and mark them `DONE`.
+- If the commit defers something or surfaces a new known issue, add it to `.plan` before committing.
+
+**During implementation:**
+- When a review agent raises a finding that won't be fixed immediately, add it to `.plan` and note the reason for deferral.
+- When a design decision explicitly parks something, add it to `.plan` in the appropriate section (IFR wiring gaps, controller backlog, etc.).
+- When an issue is confirmed as by-design rather than a gap, move it to the "By design / accepted" section with a one-line rationale.
+
+**Format:** each item has a short ID (e.g. `B3`, `IFR-1`), a one-paragraph description of what's wrong and where, and `Impact: H/M/L | Effort: H/M/L`.
 
 # Wiki
 

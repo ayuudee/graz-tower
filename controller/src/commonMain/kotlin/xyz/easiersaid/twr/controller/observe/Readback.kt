@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.controller.observe
 
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import xyz.easiersaid.twr.protocol.*
 
 /**
@@ -55,9 +57,7 @@ sealed interface ReadbackVerdict {
     data object Correct : ReadbackVerdict
 
     /** Non-empty defect list; iteration order matches required-atom order for determinism. */
-    data class Incorrect(val defects: List<AtomDefect>) : ReadbackVerdict {
-        init { require(defects.isNotEmpty()) { "Incorrect verdict must carry at least one defect" } }
-    }
+    data class Incorrect(val defects: NonEmptyList<AtomDefect>) : ReadbackVerdict
 
     /**
      * No readback received within [MAX_READBACK_AGE]. Pending ages out via GC;
@@ -77,24 +77,9 @@ sealed interface ReadbackVerdict {
     data class Refused(val reason: String?) : ReadbackVerdict
 }
 
-/** A single problem found while classifying a readback against an instruction. */
-sealed interface AtomDefect {
-    /** Required atom entirely absent from the readback (silent drop). */
-    data class MissingAtom(val expected: AtomicReadback) : AtomDefect
-
-    /** An atom of the right kind was present, but its value did not match. */
-    data class WrongAtom(val expected: AtomicReadback) : AtomDefect
-
-    /** Conditional clearance's condition was absent from the readback. */
-    data class MissingCondition(val expected: ReadbackCondition) : AtomDefect
-
-    /** Conditional clearance's condition was present in kind but with a wrong value. */
-    data class WrongCondition(val expected: ReadbackCondition) : AtomDefect
-}
-
-/** True if any defect is a wrong value (as opposed to merely missing). */
+/** True if any defect is a wrong value (as opposed to merely missing). Delegates to protocol-level [defectsHaveWrongValue]. */
 val ReadbackVerdict.Incorrect.hasWrongValue: Boolean
-    get() = defects.any { it is AtomDefect.WrongAtom || it is AtomDefect.WrongCondition }
+    get() = defectsHaveWrongValue(defects)
 
 /**
  * Classify a readback against a pending instruction.
@@ -114,10 +99,11 @@ fun classifyReadback(instruction: AtcInstruction, readback: Readback): ReadbackV
     // Conditional clearance: the wrapped instruction's atoms PLUS the predicate must be read back.
     if (instruction is ConditionalClearance) {
         val innerVerdict = classifyReadback(instruction.instruction, readback)
-        val innerDefects = if (innerVerdict is ReadbackVerdict.Incorrect) innerVerdict.defects else emptyList()
+        val innerDefects = if (innerVerdict is ReadbackVerdict.Incorrect) innerVerdict.defects.toList() else emptyList()
         val conditionDefect = classifyCondition(instruction.condition, readback)
         val all = innerDefects + listOfNotNull(conditionDefect)
-        return if (all.isEmpty()) ReadbackVerdict.Correct else ReadbackVerdict.Incorrect(all)
+        val nel = all.toNonEmptyListOrNull()
+        return if (nel == null) ReadbackVerdict.Correct else ReadbackVerdict.Incorrect(nel)
     }
 
     val required = requiredReadbackAtoms(instruction)
@@ -134,13 +120,27 @@ fun classifyReadback(instruction: AtcInstruction, readback: Readback): ReadbackV
     // and requiredReadbackAtoms emits its set from a single when-branch literal — so
     // iterating `required` is deterministic. We still build the defect list eagerly
     // rather than early-returning so mixed wrong+missing cases return both defects.
-    val defects = required.mapNotNull { req ->
-        if (req in presentAtoms) return@mapNotNull null
+    val defects = mutableListOf<AtomDefect>()
+    for (req in required) {
+        if (req in presentAtoms) continue
         val reqKind = req.kind()
-        if (presentAtoms.any { it.kind() == reqKind }) AtomDefect.WrongAtom(req)
-        else AtomDefect.MissingAtom(req)
+        if (presentAtoms.any { it.kind() == reqKind }) defects += AtomDefect.WrongAtom(req)
+        else defects += AtomDefect.MissingAtom(req)
     }
-    return if (defects.isEmpty()) ReadbackVerdict.Correct else ReadbackVerdict.Incorrect(defects)
+
+    // AfterLandingVacateVia with whenAble=true: pilot must also include WhenAbleCondition.
+    if (instruction is AfterLandingVacateVia && instruction.whenAble) {
+        val presentConditions = readback.elements.mapNotNull { (it as? ConditionalElement)?.condition }
+        val hasWhenAble = presentConditions.any { it is WhenAbleCondition }
+        if (!hasWhenAble) {
+            val kindMatch = presentConditions.any { it.kind() == ConditionKind.WhenAble }
+            if (kindMatch) defects += AtomDefect.WrongCondition(WhenAbleCondition)
+            else defects += AtomDefect.MissingCondition(WhenAbleCondition)
+        }
+    }
+
+    val nel = defects.toNonEmptyListOrNull()
+    return if (nel == null) ReadbackVerdict.Correct else ReadbackVerdict.Incorrect(nel)
 }
 
 /**
@@ -158,6 +158,9 @@ private enum class AtomKind {
     // "pilot didn't acknowledge at all".
     HoldingAck, HoldingAckCancelTakeoff,
     SequenceAck, BreakOff, DisregardAck,
+    // Urgency runway override instructions — each is a distinct kind so cross-
+    // instruction satisfaction is caught (e.g. "stopping" ≠ "taking off").
+    StopImmediately, TakeoffOrVacate, TakeoffOrHoldShort,
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -193,6 +196,9 @@ private fun AtomicReadback.kind(): AtomKind = when (this) {
     is SequenceAcknowledgementReadback -> AtomKind.SequenceAck
     is BreakOffReadback -> AtomKind.BreakOff
     is DisregardAcknowledgementReadback -> AtomKind.DisregardAck
+    is StopImmediatelyReadback -> AtomKind.StopImmediately
+    is TakeoffImmediatelyOrVacateReadback -> AtomKind.TakeoffOrVacate
+    is TakeoffImmediatelyOrHoldShortReadback -> AtomKind.TakeoffOrHoldShort
 }
 
 /** Classifier-local kind tag for [ReadbackCondition]. */
@@ -275,9 +281,12 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     // does not satisfy a cancel-takeoff pending entry.
     is HoldPosition -> setOf(HoldingAcknowledgementReadback(cancelTakeoff = false))
     is HoldPositionCancelTakeoff -> setOf(HoldingAcknowledgementReadback(cancelTakeoff = true))
-    is StopImmediately -> error("Readback atoms not yet implemented for StopImmediately")
-    is TakeoffImmediatelyOrVacateRunway -> error("Readback atoms not yet implemented for TakeoffImmediatelyOrVacateRunway")
-    is TakeoffImmediatelyOrHoldShort -> error("Readback atoms not yet implemented for TakeoffImmediatelyOrHoldShort")
+    // Urgency runway override: mandatory acknowledgement per CAP 413 §4.46 /
+    // ICAO 4444 §12.3.1. Each instruction gets a distinct atom so cross-instruction
+    // satisfaction is detected ("stopping" cannot satisfy "taking off or vacating").
+    is StopImmediately -> setOf(StopImmediatelyReadback)
+    is TakeoffImmediatelyOrVacateRunway -> setOf(TakeoffImmediatelyOrVacateReadback(instruction.runway))
+    is TakeoffImmediatelyOrHoldShort -> setOf(TakeoffImmediatelyOrHoldShortReadback(instruction.runway))
 
     // ── Level / climb / descent ──────────────────────────────────────────
     is ClimbTo -> setOf(LevelReadback(instruction.level))

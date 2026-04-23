@@ -182,6 +182,11 @@ data object TurnBaseAction : RuleAction {
         ProposedAction(ac.id, TurnBase(ac.id)).right()
 }
 
+data object ReportFinalAction : RuleAction {
+    override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ProposedAction(ac.id, ReportWhen(ac.id, ReportEvent.Final)).right()
+}
+
 data object ExtendDownwindAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {
         val seqInfo = deriveSequenceInfo(ac.id, ctx)

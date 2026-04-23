@@ -1,6 +1,9 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.left
+import arrow.core.right
 import xyz.easiersaid.twr.core.world.AltitudeConstraint
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.SpeedConstraint
@@ -42,7 +45,7 @@ data class PilotIntent(
  * per-aircraft cadence can diverge from the physics clock.
  */
 fun interface PilotAgent {
-    fun decide(view: PilotView): PilotIntent
+    fun decide(view: PilotView): Either<RoutingError, PilotIntent>
 }
 
 /**
@@ -61,21 +64,21 @@ fun interface PilotAgent {
  */
 object DefaultPilot : PilotAgent {
 
-    override fun decide(view: PilotView): PilotIntent {
+    override fun decide(view: PilotView): Either<RoutingError, PilotIntent> {
         val ac = view.aircraft
         return when (ac.phase) {
-            PilotPhase.AtStand -> onAtStand(ac)
+            PilotPhase.AtStand -> onAtStand(ac).right()
             PilotPhase.Taxiing -> onTaxiing(ac, view.worldIndex)
-            PilotPhase.LinedUp -> onLinedUp(ac)
-            PilotPhase.TakeoffRoll -> onTakeoffRoll(ac, view.worldIndex)
+            PilotPhase.LinedUp -> onLinedUp(ac).right()
+            PilotPhase.TakeoffRoll -> onTakeoffRoll(ac, view.worldIndex).right()
             PilotPhase.Climbing, PilotPhase.Crosswind,
             PilotPhase.Downwind, PilotPhase.Base, PilotPhase.Final ->
                 onAirborneLeg(ac, view.worldIndex)
-            PilotPhase.HoldingShort -> onHoldingShort(ac)
-            PilotPhase.LandingRoll -> onLandingRoll(ac)
+            PilotPhase.HoldingShort -> onHoldingShort(ac).right()
+            PilotPhase.LandingRoll -> onLandingRoll(ac).right()
             PilotPhase.Vacating -> onVacating(ac, view.worldIndex)
-            PilotPhase.ClearOfRunway -> onClearOfRunway(ac)
-            PilotPhase.Parked -> idle(ac)
+            PilotPhase.ClearOfRunway -> onClearOfRunway(ac).right()
+            PilotPhase.Parked -> idle(ac).right()
         }
     }
 
@@ -104,32 +107,32 @@ object DefaultPilot : PilotAgent {
         PilotRoute.None, is PilotRoute.Airborne -> idle(ac)
     }
 
-    private fun onTaxiing(ac: AircraftState, worldIndex: WorldIndex): PilotIntent {
+    private fun onTaxiing(ac: AircraftState, worldIndex: WorldIndex): Either<RoutingError, PilotIntent> {
         val route = ac.route as? PilotRoute.Ground
-            ?: return PilotIntent(0.0, PilotPhase.AtStand, PilotRoute.None) // defensive reset
+            ?: return PilotIntent(0.0, PilotPhase.AtStand, PilotRoute.None).right() // defensive reset
         val head = route.waypoints.head
         val headPos = worldIndex.positions[head]
-            ?: error("Waypoint $head not present in WorldIndex.positions")
+            ?: return RoutingError.WaypointNotInIndex(head).left()
 
         val dx = headPos.xMeters - ac.position.xMeters
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
         if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
             // Still en route — keep taxiing toward the same first waypoint.
-            return PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Taxiing, route)
+            return PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Taxiing, route).right()
         }
 
         // Waypoint reached — pop it.
         val remaining = route.waypoints.tail
         return if (remaining.isEmpty()) {
             // Final waypoint reached — settle into the route's arrival phase.
-            PilotIntent(0.0, route.arrivalPhase, PilotRoute.None)
+            PilotIntent(0.0, route.arrivalPhase, PilotRoute.None).right()
         } else {
             val nextRoute = PilotRoute.Ground(
                 waypoints = NonEmptyList(remaining.first(), remaining.drop(1)),
                 arrivalPhase = route.arrivalPhase,
             )
-            PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Taxiing, nextRoute)
+            PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Taxiing, nextRoute).right()
         }
     }
 
@@ -179,7 +182,7 @@ object DefaultPilot : PilotAgent {
      * ground, the phase stays on Final and the route stays in place so the
      * physics tick keeps descending toward target altitude 0.
      */
-    private fun onAirborneLeg(ac: AircraftState, worldIndex: WorldIndex): PilotIntent {
+    private fun onAirborneLeg(ac: AircraftState, worldIndex: WorldIndex): Either<RoutingError, PilotIntent> {
         // Route finished — hold the airborne arrival phase at circuit altitude.
         // Without this, the next tick would flip to AtStand because the sealed
         // `when` in decide() has no "airborne idle" branch of its own.
@@ -188,10 +191,10 @@ object DefaultPilot : PilotAgent {
             phase = ac.phase,
             route = PilotRoute.None,
             targetAltitudeM = ac.targetAltitudeM,
-        )
+        ).right()
         val head = route.waypoints.head
         val headPos = worldIndex.positions[head]
-            ?: error("Waypoint $head not present in WorldIndex.positions")
+            ?: return RoutingError.WaypointNotInIndex(head).left()
         val dx = headPos.xMeters - ac.position.xMeters
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
@@ -201,7 +204,7 @@ object DefaultPilot : PilotAgent {
                 phase = ac.phase,
                 route = route,
                 targetAltitudeM = route.targetAltitudeM,
-            )
+            ).right()
         }
 
         // Waypoint reached — apply per-waypoint constraints from the popped waypoint.
@@ -220,14 +223,14 @@ object DefaultPilot : PilotAgent {
                     phase = ac.phase,
                     route = route,
                     targetAltitudeM = 0.0, // committed to ground: command descent
-                )
+                ).right()
             } else {
                 PilotIntent(
                     targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(route.arrivalPhase),
                     phase = route.arrivalPhase,
                     route = PilotRoute.None,
                     targetAltitudeM = if (terminalIsGround) 0.0 else constrainedAltitude,
-                )
+                ).right()
             }
         } else {
             val nextHead = remaining.first()
@@ -243,7 +246,7 @@ object DefaultPilot : PilotAgent {
                 phase = nextPhase,
                 route = nextRoute,
                 targetAltitudeM = constrainedAltitude,
-            )
+            ).right()
         }
     }
 
@@ -273,31 +276,31 @@ object DefaultPilot : PilotAgent {
      * mechanics to [onTaxiing], but on route completion the pilot settles
      * into [PilotPhase.ClearOfRunway] (via the route's arrivalPhase).
      */
-    private fun onVacating(ac: AircraftState, worldIndex: WorldIndex): PilotIntent {
+    private fun onVacating(ac: AircraftState, worldIndex: WorldIndex): Either<RoutingError, PilotIntent> {
         val route = ac.route as? PilotRoute.Ground ?: return PilotIntent(
             targetSpeedMps = 0.0,
             phase = PilotPhase.ClearOfRunway,
             route = PilotRoute.None,
             targetAltitudeM = 0.0,
-        )
+        ).right()
         val head = route.waypoints.head
         val headPos = worldIndex.positions[head]
-            ?: error("Waypoint $head not present in WorldIndex.positions")
+            ?: return RoutingError.WaypointNotInIndex(head).left()
         val dx = headPos.xMeters - ac.position.xMeters
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
         if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
-            return PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Vacating, route)
+            return PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Vacating, route).right()
         }
         val remaining = route.waypoints.tail
         return if (remaining.isEmpty()) {
-            PilotIntent(0.0, route.arrivalPhase, PilotRoute.None)
+            PilotIntent(0.0, route.arrivalPhase, PilotRoute.None).right()
         } else {
             val nextRoute = PilotRoute.Ground(
                 waypoints = NonEmptyList(remaining.first(), remaining.drop(1)),
                 arrivalPhase = route.arrivalPhase,
             )
-            PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Vacating, nextRoute)
+            PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Vacating, nextRoute).right()
         }
     }
 

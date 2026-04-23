@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_55
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_5
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_CIRCUIT_REPORTS
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
+import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_51
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_10_1
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_11
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_10
@@ -19,12 +20,25 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_LANDING
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.ContinueApproach
+import xyz.easiersaid.twr.protocol.ReportWhen
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
+
+/**
+ * Maximum distance from threshold at which landing clearance may be issued.
+ *
+ * VFR circuit finals typically begin 1.5–2.5 nm out. A 5000m (~2.7 nm) outer gate
+ * prevents clearance being issued immediately on turning final after a very long
+ * extended downwind, while leaving ample time for readback and a go-around if needed.
+ * No ICAO regulatory minimum exists for issuance distance; this is an operational
+ * safety margin on top of the RunwayPhysicallyClear requirement (ICAO 4444 §7.10.1).
+ */
+private const val MAX_LANDING_CLEARANCE_DISTANCE_M = 5000.0
 
 /** Shared guard: conditions for issuing or re-issuing a landing clearance (non-T&G). */
 private val LandingConditions = AllOf(listOf(
     AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
+    WithinDistanceOfThreshold(MAX_LANDING_CLEARANCE_DISTANCE_M),
     WeatherPermitsVfr,
     RunwayAccessGranted,
     RunwayPhysicallyClear,
@@ -127,17 +141,39 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // tells the aircraft to turn base when spacing is adequate and the runway is
             // physically clear. Decoupled from RunwayAccessGranted to avoid the deadlock
             // where extended-downwind aircraft can't reach base gate for duty queue entry.
+            // Guard fires only from DOWNWIND — once established on base, the sequencing
+            // decision has already been made and re-issuing TurnBase would be non-standard
+            // (CAP 413 §4.49 / ICAO Doc 9432 Ch.4: TurnBase is a downwind sequencing tool).
             AtcRule(
                 id = "ARR-TURN-BASE",
                 description = "Turn base when spacing adequate and runway clear",
                 regulations = listOf(ICAO4444_7_10),
                 guard = AllOf(listOf(
-                    AnyOf(listOf(OnCircuitLeg(LegName.DOWNWIND), OnCircuitLeg(LegName.BASE))),
+                    OnCircuitLeg(LegName.DOWNWIND),
                     Not(SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION)),
                     RunwayPhysicallyClear,
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TurnBase>()),
                 )),
                 action = TurnBaseAction,
+                urgency = Urgency.PROGRESSION,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Request final position report when aircraft is on base.
+            // Issued on base so the pilot has notice to call when they turn; the final call
+            // is then used to time the landing clearance and release departing traffic.
+            // Simple version: ARR-LAND still gates on physical position (OnCircuitLeg FINAL
+            // + WithinDistanceOfThreshold), not on the observed final report. The stronger
+            // gating (clearance only after controller observes the final call) requires a
+            // receipt mechanism on OutstandingReport that does not yet exist — see .plan OR-1.
+            AtcRule(
+                id = "ARR-REPORT-FINAL",
+                description = "Request final position report when aircraft is on base",
+                regulations = listOf(ICAO9432_CIRCUIT_REPORTS, CAP413_4_51),
+                guard = AllOf(listOf(
+                    OnCircuitLeg(LegName.BASE),
+                    NoPendingReadback(instructionOfType<ReportWhen>()),
+                )),
+                action = ReportFinalAction,
                 urgency = Urgency.PROGRESSION,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),

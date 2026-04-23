@@ -1,9 +1,14 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.None
+import arrow.core.Some
 import arrow.core.getOrElse
+import arrow.core.toOption
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.PilotTransmission
+import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -26,6 +31,13 @@ data class UnifiedPilotDecision(
     val intent: PilotIntent,
     val transmissions: List<PilotTransmission>,
     val updatedMission: PilotMission?,
+    /**
+     * Populated when [DefaultPilot.decide] returns a [RoutingError.WaypointNotInIndex] —
+     * a data integrity defect in the world (route references a waypoint absent from
+     * [WorldIndex.positions]). On error the aircraft is frozen in place; callers can
+     * log or assert on this field. Null on all normal ticks.
+     */
+    val routingError: RoutingError? = null,
 )
 
 /** Decision altitude threshold — below this without clearance → go around. */
@@ -48,7 +60,17 @@ fun unifiedPilotDecide(
     activeRunway: RunwayId? = null,
 ): UnifiedPilotDecision {
     val view = PilotView(now, aircraft, worldIndex)
-    val kinematicIntent = DefaultPilot.decide(view)
+    val kinematicResult = DefaultPilot.decide(view)
+    val kinematicIntent = kinematicResult.getOrElse { err ->
+        // Waypoint absent from WorldIndex — data integrity defect in the world.
+        // Freeze the aircraft and surface the error for callers to log/assert on.
+        return UnifiedPilotDecision(
+            intent = PilotIntent(0.0, aircraft.phase, aircraft.route, aircraft.targetAltitudeM),
+            transmissions = emptyList(),
+            updatedMission = aircraft.pilotMission,
+            routingError = err,
+        )
+    }
 
     val mission = aircraft.pilotMission
     if (mission == null || mission.isComplete) {
@@ -66,9 +88,11 @@ fun unifiedPilotDecide(
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
     // Plan execution: if the current task needs an airborne route the pilot
-    // doesn't have yet, the route planner builds one.
-    val plannedIntent = planRouteIfNeeded(
-        effectiveMission, aircraft, world, worldIndex, activeRunway,
+    // doesn't have yet, the route planner builds one. Pass the kinematic route
+    // so the Visual-mode planner can compare against the post-pop state and avoid
+    // regressing waypoints already consumed by DefaultPilot.
+    val plannedIntent = planRoute(
+        effectiveMission, aircraft, kinematicIntent.route, world, worldIndex, activeRunway,
     )
     val finalIntent = plannedIntent
         ?: goAround?.intent
@@ -82,18 +106,26 @@ fun unifiedPilotDecide(
 }
 
 /**
- * If the current task needs an airborne route the pilot doesn't yet have,
- * build one via [buildAirborneRoute] and return an intent that applies it.
- * Returns null when no route action is needed (ground task, route already
- * correct, or navigation mode unknown).
+ * Derive the pilot's airborne route from mission state and current position.
+ *
+ * **Aviate, navigate, communicate**: the pilot re-derives their route every tick.
+ * For Visual mode this is continuous — any change to mission state (restriction,
+ * join leg, step advancement) is reflected immediately without explicit route
+ * invalidation. A stability check suppresses intent updates when the derived route
+ * is identical to the one currently being flown.
+ *
+ * For non-Visual modes (Circuit, Instrument) the one-shot behaviour is preserved
+ * until IFR wiring lands — routes are built once and not rebuilt mid-flight.
  *
  * Fires for:
- * - **Circuit mode + FLY_DEPARTURE**: T&G lift-off or route upgrade.
- * - **Any airborne task with no route**: go-around, arrival circuit join, etc.
+ * - **Circuit mode + FLY_DEPARTURE**: T&G lift-off or route upgrade (always).
+ * - **Visual mode, any airborne step**: continuous re-derivation from position.
+ * - **Other modes, airborne step, no route**: one-shot bootstrap.
  */
-private fun planRouteIfNeeded(
+private fun planRoute(
     mission: PilotMission?,
     aircraft: AircraftState,
+    kinematicRoute: PilotRoute,
     world: AviationWorld?,
     worldIndex: WorldIndex,
     activeRunway: RunwayId?,
@@ -113,9 +145,6 @@ private fun planRouteIfNeeded(
         // as the next step but not in LandingRoll/TakeoffRoll phase.
     }
 
-    // Any airborne step where the pilot has no route: build one from the planner.
-    // This covers go-around (pilot needs circuit route after climbing), arrival
-    // circuit join, and any future case where the pilot is airborne without a route.
     val airborneSteps = setOf(
         // Flying steps
         MissionStep.FLY_DOWNWIND, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
@@ -127,19 +156,171 @@ private fun planRouteIfNeeded(
         MissionStep.LAND,
     )
     if (step !in airborneSteps) return null
-    if (aircraft.route !is PilotRoute.None) return null // already has a route
 
     val taskName = mission.root.activeCompound()?.name ?: return null
-    val route = buildAirborneRoute(mode, taskName, w, worldIndex)
+
+    return when (mode) {
+        // Visual mode: continuous re-derivation from mission state + kinematic position.
+        is NavigationMode.Visual -> planVisualRoute(mode, taskName, mission, aircraft, kinematicRoute, w, worldIndex)
+
+        // Non-Visual: one-shot bootstrap. Route is built once and not rebuilt mid-flight.
+        // IFR continuous planning is deferred until IFR missions land.
+        else -> {
+            if (aircraft.route !is PilotRoute.None) return null
+            val route = buildAirborneRoute(mode, taskName, w, worldIndex)
+                .getOrElse { return null }
+            PilotIntent(
+                targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
+                    else PilotConstants.APPROACH_SPEED_MPS,
+                phase = aircraft.phase,
+                route = route,
+                targetAltitudeM = route.targetAltitudeM,
+            )
+        }
+    }
+}
+
+/**
+ * Continuous route derivation for Visual mode.
+ *
+ * **Aviate, navigate, communicate**: the pilot re-derives their route every tick.
+ * Any change to mission state (ATC join instruction, altitude restriction) is reflected
+ * immediately without explicit route invalidation.
+ *
+ * **Stability**: we compare against [kinematicRoute] (the DefaultPilot's post-pop route),
+ * not [AircraftState.route] (the pre-pop route). This prevents two failure modes:
+ * - Regression: after DefaultPilot pops DOWNWIND-1, aircraft.route = [BASE-1, ...]. If we
+ *   compare against aircraft.route, the position-derived [DOWNWIND-1, ...] looks different
+ *   and we'd steer the aircraft back to DOWNWIND-1.
+ * - Over-planning: kinematic is already past the ATC-instructed join point — suffix check
+ *   suppresses the re-plan and lets the kinematic pilot continue forward.
+ *
+ * **Join leg priority**: ATC instruction ([PilotMission.joinLeg]) takes precedence. When
+ * the instruction is not set, leg is derived from [kinematicRoute]'s head waypoint (where
+ * the pilot is heading next), falling back to [AircraftState.positionPoint] for bootstrap
+ * (no route yet).
+ */
+private fun planVisualRoute(
+    mode: NavigationMode.Visual,
+    taskName: TaskName,
+    mission: PilotMission,
+    aircraft: AircraftState,
+    kinematicRoute: PilotRoute,
+    world: AviationWorld,
+    worldIndex: WorldIndex,
+): PilotIntent? {
+    val step = mission.currentTask?.step
+
+    // ── Bootstrap with no kinematic route ─────────────────────────────────────
+    // When the kinematic pilot has no route (either initial spawn or just completed
+    // the last waypoint), determine whether to bootstrap a new route.
+    val cur = kinematicRoute as? PilotRoute.Airborne ?: run {
+        // LAND step + Final phase: kinematic just committed to landing (last waypoint consumed,
+        // LandingRoll intent issued). Don't bootstrap — would interrupt the landing flare.
+        if (aircraft.phase is PilotPhase.Final && step == MissionStep.LAND) return null
+
+        // FLY_DEPARTURE step + Final phase: GOING_AROUND just reported, step advanced to
+        // FLY_DEPARTURE but aircraft is still on final. Build the go-around climb route
+        // (go-around path + full circuit) so the pilot immediately climbs out.
+        if (aircraft.phase is PilotPhase.Final && step == MissionStep.FLY_DEPARTURE) {
+            val gaRoute = buildGoAroundRoute(mode.runway, world, worldIndex).getOrElse { return null }
+            val gaAlt = mission.altitudeRestrictionM?.let { minOf(CIRCUIT_ALTITUDE_M, it) } ?: CIRCUIT_ALTITUDE_M
+            return PilotIntent(
+                targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+                phase = PilotPhase.Climbing,
+                route = gaRoute.copy(targetAltitudeM = gaAlt),
+                targetAltitudeM = gaAlt,
+            )
+        }
+
+        // Normal bootstrap: derive and return the circuit route for the current step.
+        // (Computes route below; falls through to the return at the end of the run block.)
+        null  // sentinel: proceed to route derivation below
+    }
+
+    // ── Derive the route from mission state + kinematic position ───────────────
+    // Use kinematic route head (where we're heading) rather than positionPoint (where we've
+    // been) to avoid re-inserting waypoints the DefaultPilot already consumed.
+    val lookupPoint = (kinematicRoute as? PilotRoute.Airborne)?.waypoints?.head
+        ?: aircraft.positionPoint
+    val derivedLeg = deriveCurrentCircuitLeg(lookupPoint, worldIndex).toOption()
+    // ATC join instruction takes priority over position-derived leg.
+    // Exhaustive when — Option is sealed (Some | None); no silent else branch.
+    val joinLeg = when (val jl = mission.joinLeg) {
+        is Some -> jl
+        is None -> derivedLeg
+    }
+
+    val route = buildVisualModeRoute(mode, taskName, world, worldIndex, joinLeg)
         .getOrElse { return null }
+
+    // Apply ATC altitude restriction (E3): StopClimbAt caps targetAltitudeM so the
+    // pilot levels off at the restricted altitude rather than climbing to circuit altitude.
+    val targetAlt = mission.altitudeRestrictionM
+        ?.let { minOf(route.targetAltitudeM, it) }
+        ?: route.targetAltitudeM
+
+    // ── Bootstrap completion (no prior kinematic route) ────────────────────────
+    if (cur == null) {
+        return PilotIntent(
+            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
+                else PilotConstants.APPROACH_SPEED_MPS,
+            phase = aircraft.phase,
+            route = route.copy(targetAltitudeM = targetAlt),
+            targetAltitudeM = targetAlt,
+        )
+    }
+
+    // ── Stability: compare against kinematic route (post-pop), not aircraft.route ──
+    // Exact match: nothing has changed.
+    if (cur.waypoints == route.waypoints && cur.targetAltitudeM == targetAlt && cur.arrivalPhase == route.arrivalPhase) return null
+
+    // Kinematic is already a suffix of the derived route: the aircraft has progressed
+    // past the derived join point. Don't regress waypoints — but altitude may still change.
+    val newWps = route.waypoints.toList()
+    val curWps = cur.waypoints.toList()
+    val kinematicAlreadyAhead = newWps.size > curWps.size && newWps.takeLast(curWps.size) == curWps
+    if (kinematicAlreadyAhead) {
+        // On the last waypoint (committed to landing or final waypoint): always suppress.
+        // Prevents rebuilding from the threshold point (which maps to both FINAL and UPWIND)
+        // and disrupting the kinematic pilot's final descent commitment.
+        if (cur.waypoints.tail.isEmpty()) return null
+        // Earlier waypoints: suppress if nothing changed; update altitude in-place if it did.
+        if (cur.targetAltitudeM == targetAlt && cur.arrivalPhase == route.arrivalPhase) return null
+        return PilotIntent(
+            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
+                else PilotConstants.APPROACH_SPEED_MPS,
+            phase = aircraft.phase,
+            route = cur.copy(targetAltitudeM = targetAlt),
+            targetAltitudeM = targetAlt,
+        )
+    }
 
     return PilotIntent(
         targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
             else PilotConstants.APPROACH_SPEED_MPS,
-        phase = aircraft.phase, // maintain current phase
-        route = route,
-        targetAltitudeM = route.targetAltitudeM,
+        phase = aircraft.phase,
+        route = route.copy(targetAltitudeM = targetAlt),
+        targetAltitudeM = targetAlt,
     )
+}
+
+/**
+ * Derive the circuit leg the aircraft is currently on from its WorldIndex position.
+ *
+ * Returns null when the aircraft is not at a mapped circuit waypoint (e.g., on the
+ * apron, inbound from outside the circuit). The caller falls back to [PilotMission.joinLeg].
+ *
+ * Priority: FINAL > BASE > DOWNWIND > CROSSWIND > UPWIND.
+ * FINAL takes priority because the threshold PointId maps to both FINAL and UPWIND;
+ * when on approach to land, FINAL is the correct interpretation. Aircraft departing
+ * from threshold are handled by [planCircuitDeparture] before this function is called.
+ */
+private fun deriveCurrentCircuitLeg(position: PointId, worldIndex: WorldIndex): LegName? {
+    val legs = worldIndex.circuitLegsByPoint[position]
+    if (legs.isNullOrEmpty()) return null
+    val priority = listOf(LegName.FINAL, LegName.BASE, LegName.DOWNWIND, LegName.CROSSWIND, LegName.UPWIND)
+    return priority.firstOrNull { it in legs }
 }
 
 /** Circuit-mode FLY_DEPARTURE: T&G lift-off or short-route upgrade to full circuit. */
@@ -207,19 +388,10 @@ private fun checkSelfInitiatedGoAround(
 
     // Full go-around: mission update + transmission + climbing intent.
     // Self-initiated go-around: pilot reports going around and re-enters circuit
-    // autonomously. No AWAITING_ATC_INSTRUCTION — the pilot decided, not ATC.
-    // ATC-instructed go-arounds (via processInstruction) use the full task with
-    // AWAITING_ATC_INSTRUCTION because ATC may have specific re-sequencing.
-    val gaTask = if (mission.navigationMode is NavigationMode.Instrument) {
-        ifrGoAroundTask()
-    } else {
-        // Self-initiated VFR: just GOING_AROUND (report), then immediately
-        // re-enter circuit. The goAroundTask() includes AWAITING_ATC_INSTRUCTION
-        // which blocks the pilot; for self-initiated, use a minimal task.
-        CompoundTask(TaskName.GoAround, listOf(
-            PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
-        ))
-    }
+    // VFR go-arounds are autonomous — pilot re-enters circuit after GOING_AROUND.
+    // IFR uses a separate task that includes FLY_MISSED_APPROACH + AWAITING_ATC_INSTRUCTION.
+    val gaTask = if (mission.navigationMode is NavigationMode.Instrument) ifrGoAroundTask()
+        else goAroundTask()
     val newRoot = mission.root.replaceChild(
         predicate = { it is CompoundTask && !it.isComplete &&
             (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },

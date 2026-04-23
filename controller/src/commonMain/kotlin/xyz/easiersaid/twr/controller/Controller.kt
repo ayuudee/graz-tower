@@ -572,14 +572,13 @@ private fun correctReadback(
     state: ReadbackFoldState,
 ): ReadbackFoldState {
     val (idx, verdict) = target
-    val kind = if ((verdict as ReadbackVerdict.Incorrect).hasWrongValue)
-        ReadbackCorrectionKind.INCORRECT_ATOM else ReadbackCorrectionKind.MISSING_ATOM
+    val correction = ReadbackCorrection(aircraft, coords[idx].instruction, (verdict as ReadbackVerdict.Incorrect).defects)
     val response = ControllerOutput.Respond(
         target = aircraft,
-        response = ReadbackCorrection(aircraft, coords[idx].instruction, kind),
+        response = correction,
         trace = DecisionTrace(
             ruleId = "READBACK-CORRECTION",
-            description = "Negative — re-transmit correct ${kind.name.lowercase().replace('_', ' ')}",
+            description = "Negative — re-transmit correct ${correction.kind.name.lowercase().replace('_', ' ')}",
             regulations = listOf(
                 RegulationDatabase.ICAO9432_READBACK,
                 RegulationDatabase.ICAO4444_12_3_2,

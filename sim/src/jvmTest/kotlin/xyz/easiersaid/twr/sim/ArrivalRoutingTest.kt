@@ -148,6 +148,7 @@ class ArrivalRoutingTest {
             Pts.base to setOf(LegName.BASE),
             Pts.finalPt to setOf(LegName.FINAL),
         ),
+        thresholdByRunway = mapOf(runwayId to Pts.thrA),
     )
 
     /**
@@ -210,5 +211,79 @@ class ArrivalRoutingTest {
             "alt=${"%.0f".format(acFinal.altitudeM)} step=${acFinal.pilotMission?.currentTask?.step}")
         assertEquals(Pts.stand, acFinal.positionPoint,
             "Arrival must return to stand")
+    }
+
+    /**
+     * E3 — StopClimbAt drives the pilot's targetAltitudeM kinematically.
+     *
+     * Aircraft spawns on downwind with a StopClimbAt restriction at 600 ft (≈ 183 m),
+     * which is below CIRCUIT_ALTITUDE_M (300 m). After the route is built, the pilot's
+     * route targetAltitudeM must be capped at the restriction, not at circuit altitude.
+     */
+    @Test
+    fun `StopClimbAt restricts pilot targetAltitudeM to restricted level`() {
+        // 600 ft ≈ 182.88 m — below CIRCUIT_ALTITUDE_M (300 m).
+        val restrictionFt = 600
+        val restrictionM = restrictionFt * 0.3048
+
+        val baseMission = createMission(
+            goal = HighLevelGoal.Arrival(),
+            startPhase = PilotPhase.Downwind,
+            time = SimTime.ZERO,
+            humanPiloted = false,
+        ).copy(activeRunway = runwayId)
+
+        // Process StopClimbAt: stores altitudeRestrictionM on the mission.
+        val restrictedMission = processInstruction(
+            StopClimbAt(alphaId, Level.AltitudeFeet.unsafe(restrictionFt)),
+            baseMission,
+            SimTime.ZERO,
+        )
+        assertEquals(restrictionM, restrictedMission.altitudeRestrictionM,
+            "processInstruction(StopClimbAt) should store restriction in altitudeRestrictionM")
+
+        val aircraft = AircraftState(
+            id = alphaId,
+            callsign = Callsign("ALPHA"),
+            position = positions[Pts.downwind]!!,
+            positionPoint = Pts.downwind,
+            pilotGoal = PilotGoal.ARRIVE,
+            humanPiloted = false,
+            route = PilotRoute.None,
+            phase = PilotPhase.Downwind,
+            altitudeM = 150.0,
+            targetAltitudeM = 150.0,
+            speedMps = PilotConstants.APPROACH_SPEED_MPS,
+            targetSpeedMps = PilotConstants.APPROACH_SPEED_MPS,
+            pilotMission = restrictedMission,
+        )
+
+        val initial = SimState.initial(
+            seed = 42L, world = world, worldIndex = worldIndex,
+            controllers = listOf(
+                ControllerSpec(groundControllerId, RoleName.GROUND, aerodromeId, groundFrequency, emptySet()),
+                ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, setOf(alphaId)),
+                ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
+            ),
+        )
+        val events = listOf(
+            SimEvent.PhysicsTick(SimTime.ZERO),
+            SimEvent.Spawn(SimTime.ZERO, aircraft),
+            SimEvent.ControllerCycle(SimTime.ZERO, groundControllerId),
+            SimEvent.ControllerCycle(SimTime.ZERO, towerControllerId),
+            SimEvent.ControllerCycle(SimTime.ZERO, approachControllerId),
+        )
+
+        // After 3 seconds the planner has fired. Verify route is capped at restriction.
+        val after3s = runUntil(initial, events, SimTime.ofSeconds(3))
+        val ac = after3s.aircraft[alphaId]!!
+        val route = ac.route as? PilotRoute.Airborne
+        assertNotEquals(null, route, "Aircraft should have an airborne route after 3s")
+        assertTrue(
+            kotlin.math.abs(route!!.targetAltitudeM - restrictionM) < 1.0,
+            "Route targetAltitudeM should be capped at restriction (${restrictionM}m), " +
+            "not circuit altitude (${CIRCUIT_ALTITUDE_M}m). Actual: ${route.targetAltitudeM}")
+        assertTrue(ac.targetAltitudeM <= restrictionM + 1.0,
+            "Aircraft targetAltitudeM should not exceed restriction. Actual: ${ac.targetAltitudeM}")
     }
 }

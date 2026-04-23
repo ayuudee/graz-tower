@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.None
+import arrow.core.Option
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.protocol.SimTime
 
@@ -54,6 +56,26 @@ data class PilotMission(
     val reportedVacated: Boolean = false,
     /** Set true when ClearedToLand/ClearedTouchAndGo received. Used by go-around decision. */
     val hasClearance: Boolean = false,
+    /**
+     * Circuit leg where an arriving aircraft was instructed to join, from [JoinCircuit].
+     *
+     * [None] means no join instruction has been received yet — route planner defaults to
+     * [LegName.DOWNWIND]. Set when [processInstruction] handles [JoinCircuit]; reset to
+     * [None] on go-around (the aircraft re-enters from the go-around path, not the original join).
+     */
+    val joinLeg: Option<xyz.easiersaid.twr.core.world.LegName> = None,
+
+    /**
+     * ATC-issued altitude restriction in metres, from [StopClimbAt].
+     *
+     * When set, the route planner caps [PilotRoute.Airborne.targetAltitudeM] at this value.
+     * The pilot will level off at the restriction rather than climbing to full circuit altitude.
+     * Null means unrestricted — pilot climbs to the procedure-defined altitude.
+     *
+     * Reset on go-around: the aircraft is climbing away from the runway and the approach
+     * phase restrictions no longer apply.
+     */
+    val altitudeRestrictionM: Double? = null,
 ) {
     /** The current primitive task being executed (leftmost incomplete leaf). */
     val currentTask: PrimitiveTask? get() = root.currentPrimitive()
@@ -79,6 +101,10 @@ fun PilotMission.resetForGoAround(now: SimTime): PilotMission = copy(
     // invalidated by the approach abort).
     activeConstraints = emptySet(),
     routeOverride = null,
+    // joinLeg: reset — go-around re-enters circuit from go-around path, not original join.
+    joinLeg = None,
+    // altitudeRestrictionM: reset — go-around discards approach-phase level restrictions.
+    altitudeRestrictionM = null,
     // Structural + cross-cutting — preserved.
     // goal: unchanged (still the same mission)
     // root: handled by caller (subtree replacement)
@@ -296,10 +322,19 @@ fun groundArrivalTask(): CompoundTask = CompoundTask(TaskName.GroundArrival, lis
     PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
 ))
 
-/** Build the GO_AROUND compound task (VFR — rejoin circuit). */
+/**
+ * Build the GO_AROUND compound task (VFR — rejoin circuit).
+ *
+ * VFR go-arounds are autonomous: the pilot reports "going around" then
+ * re-enters the circuit independently. No AWAITING_ATC_INSTRUCTION step —
+ * that would block the pilot until ATC re-sequences, which is correct for
+ * IFR (see [ifrGoAroundTask]) but wrong for VFR where ATC may only say
+ * "go around, report downwind" and the pilot self-navigates from there.
+ *
+ * Used for both self-initiated and ATC-instructed VFR go-arounds.
+ */
 fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
     PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
-    PrimitiveTask(MissionStep.AWAITING_ATC_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
 ))
 
 /** Build the GO_AROUND compound task (IFR — fly published missed approach). */
@@ -358,7 +393,7 @@ fun planMission(goal: HighLevelGoal, humanPiloted: Boolean = true, ifr: Boolean 
 }
 
 /** Build a T&G circuit: fly the pattern, land, then take off again. */
-fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
+fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.TouchAndGo, listOf(
     PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
     PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
     PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
@@ -382,34 +417,80 @@ fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listO
  * The pilot's internal [HighLevelGoal] and mission tree remain opaque.
  */
 fun derivePilotGoal(mission: PilotMission): PilotGoal {
-    val activeCompound = mission.root.activeCompound()?.name
-    // Exhaustive over TaskName? — compiler forces a decision when new TaskNames are added.
-    return when (activeCompound) {
+    val activeCompound = mission.root.activeCompound()
+    // Exhaustive over TaskName — compiler forces a decision when new TaskNames are added.
+    return when (val name = activeCompound?.name) {
         is TaskName.GroundDeparture -> PilotGoal.DEPART
         is TaskName.GroundArrival -> PilotGoal.ARRIVE
         is TaskName.ArrivalJoin -> PilotGoal.ARRIVE
         is TaskName.Circuit ->
             if (isLastActiveCircuit(mission)) PilotGoal.ARRIVE else PilotGoal.TOUCH_AND_GO
-        is TaskName.CircuitAfterGoAround -> PilotGoal.TOUCH_AND_GO
+        is TaskName.CircuitAfterGoAround -> {
+            // CircuitAfterGoAround contains [goAroundTask, circuitTask(full-stop)].
+            // During the go-around phase (GoAround subtask active), the aircraft is
+            // climbing away — TOUCH_AND_GO drives circuit sequencing from the controller.
+            // Once the go-around completes, the inner Circuit subtask is always a full-stop
+            // landing — switch to ARRIVE so the controller issues a landing clearance and,
+            // after touchdown, a vacate instruction.
+            val innerActive = activeCompound!!.activeCompound()
+            if (innerActive?.name is TaskName.GoAround) PilotGoal.TOUCH_AND_GO else PilotGoal.ARRIVE
+        }
         is TaskName.GoAround -> PilotGoal.TOUCH_AND_GO
         is TaskName.Arrive -> PilotGoal.ARRIVE
         is TaskName.TouchAndGo -> PilotGoal.TOUCH_AND_GO
         is TaskName.Depart -> PilotGoal.DEPART
-        is TaskName.Transit -> PilotGoal.DEPART
+        is TaskName.Transit -> PilotGoal.TRANSIT
         // CircuitTraining is structurally never the active compound — it's always
         // the root, and activeCompound() returns its first incomplete child. Defensive
         // fallback rather than crash if invariant is violated.
         is TaskName.CircuitTraining -> PilotGoal.TOUCH_AND_GO
-        // No active compound: all compound children complete, only top-level primitives remain.
-        null -> PilotGoal.DEPART
+        // No active compound: either (a) all compound children complete (mission done), or
+        // (b) the first incomplete top-level child is a PrimitiveTask. Fall back to the
+        // mission's HighLevelGoal — the most semantically correct goal for this aircraft.
+        null -> when (mission.goal) {
+            is HighLevelGoal.Arrival -> PilotGoal.ARRIVE
+            is HighLevelGoal.Departure -> PilotGoal.DEPART
+            is HighLevelGoal.CircuitTraining -> PilotGoal.TOUCH_AND_GO
+            is HighLevelGoal.Transit -> PilotGoal.TRANSIT
+        }
     }
+}
+
+/**
+ * True for circuit task names that can be active during a circuit pattern.
+ *
+ * Used in go-around replacement to find the active circuit task regardless
+ * of whether it's a full-stop or touch-and-go circuit. Intentionally includes
+ * [TaskName.TouchAndGo] — a go-around during a T&G approach replaces that task.
+ *
+ * Note: [isLastActiveCircuit] uses a *narrower* filter (`Circuit | CircuitAfterGoAround`
+ * only) because only full-stop circuits contribute to the "last circuit" check;
+ * T&G circuits always produce [PilotGoal.TOUCH_AND_GO] directly without going
+ * through that path.
+ */
+fun TaskName.isCircuitLike(): Boolean = when (this) {
+    is TaskName.Circuit, is TaskName.CircuitAfterGoAround, is TaskName.TouchAndGo -> true
+    is TaskName.Depart, is TaskName.Arrive, is TaskName.Transit,
+    is TaskName.GroundDeparture, is TaskName.GroundArrival,
+    is TaskName.CircuitTraining, is TaskName.ArrivalJoin,
+    is TaskName.GoAround -> false
 }
 
 /** Is the currently active CIRCUIT the last one in a CircuitTraining mission? */
 private fun isLastActiveCircuit(mission: PilotMission): Boolean {
     if (mission.goal !is HighLevelGoal.CircuitTraining) return false
+    // Only full-stop circuits (Circuit | CircuitAfterGoAround) contribute here.
+    // TouchAndGo tasks are excluded: they always derive TOUCH_AND_GO directly.
     val circuits = mission.root.children.filterIsInstance<CompoundTask>()
-        .filter { it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround }
+        .filter {
+            when (it.name) {
+                is TaskName.Circuit, is TaskName.CircuitAfterGoAround -> true
+                is TaskName.TouchAndGo, is TaskName.Depart, is TaskName.Arrive,
+                is TaskName.Transit, is TaskName.GroundDeparture, is TaskName.GroundArrival,
+                is TaskName.CircuitTraining, is TaskName.ArrivalJoin,
+                is TaskName.GoAround -> false
+            }
+        }
     val activeIndex = circuits.indexOfFirst { !it.isComplete }
     return activeIndex == circuits.lastIndex
 }

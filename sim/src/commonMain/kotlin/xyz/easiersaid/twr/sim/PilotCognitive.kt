@@ -40,7 +40,11 @@ import xyz.easiersaid.twr.protocol.RequestTaxi
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.StartupApproved
 import xyz.easiersaid.twr.protocol.TaxiTo
+import arrow.core.Some
+import xyz.easiersaid.twr.protocol.JoinCircuit
+import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.TurnBase
+import xyz.easiersaid.twr.protocol.StopClimbAt
 
 data class CognitiveDecision(
     val transmissions: List<PilotTransmission>,
@@ -297,13 +301,13 @@ fun processInstruction(
         instruction is TaxiTo && (step == MissionStep.AWAIT_VACATE_INSTRUCTION || step == MissionStep.TAXI_TO_STAND) ->
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
-        // Go-around: replace the active (incomplete) CIRCUIT compound with GO_AROUND + fresh CIRCUIT.
+        // Go-around: replace the active (incomplete) circuit compound with GO_AROUND + fresh CIRCUIT.
+        // Matches Circuit, CircuitAfterGoAround, and TouchAndGo — all circuit pattern variants.
         instruction is GoAround || instruction is BreakOff -> {
             val gaTask = if (mission.navigationMode is NavigationMode.Instrument) ifrGoAroundTask()
                 else goAroundTask()
             val newRoot = mission.root.replaceChild(
-                predicate = { it is CompoundTask && !it.isComplete &&
-                    (it.name is TaskName.Circuit || it.name is TaskName.CircuitAfterGoAround) },
+                predicate = { it is CompoundTask && !it.isComplete && it.name.isCircuitLike() },
                 replacement = CompoundTask(TaskName.CircuitAfterGoAround, listOf(
                     gaTask,
                     circuitTask(),
@@ -312,7 +316,18 @@ fun processInstruction(
             mission.resetForGoAround(now).copy(root = newRoot)
         }
 
-        // Joining instructions for arriving aircraft.
+        // JoinCircuit: ATC instructs the joining leg for the arriving aircraft.
+        // Marks the AWAIT_JOINING_INSTRUCTIONS step complete and stores the join leg
+        // so planRouteIfNeeded can build the circuit route from the correct point (A12).
+        instruction is JoinCircuit && step == MissionStep.AWAIT_JOINING_INSTRUCTIONS ->
+            mission.copy(
+                root = mission.root.markComplete(step),
+                joinLeg = Some(instruction.joinType.toCircuitLeg()),
+                stepEnteredAt = now,
+            )
+
+        // TaxiTo while awaiting joining: also completes AWAIT_JOINING_INSTRUCTIONS
+        // (ground controller may use TaxiTo rather than JoinCircuit in some scenarios).
         instruction is TaxiTo && step == MissionStep.AWAIT_JOINING_INSTRUCTIONS ->
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now)
 
@@ -334,6 +349,11 @@ fun processInstruction(
             mission.copy(routeOverride = RouteOverride.Holding(instruction.hold))
         instruction is ResumeOwnNavigation ->
             mission.copy(routeOverride = null)
+
+        // ATC altitude restrictions: cap the pilot's climb at the instructed level.
+        // The continuous route planner reads altitudeRestrictionM and caps targetAltitudeM.
+        instruction is StopClimbAt ->
+            mission.copy(altitudeRestrictionM = levelToMeters(instruction.level))
 
         // Disregard: undo the most recent constraint/override.
         instruction is Disregard -> mission.copy(
@@ -385,6 +405,25 @@ fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): Pilot
     // Emergency state changes — no mission effect until emergency handling is implemented.
     is Emergency,
     is CancelEmergency -> mission
+}
+
+/**
+ * Map an ATC-issued [JoinType] to the circuit [LegName] where the route should start.
+ *
+ * This determines where [buildCircuitFromLeg] begins the pilot's circuit route.
+ * The mapping is exhaustive with no fallback so adding a new [JoinType] variant
+ * forces a conscious decision.
+ *
+ * Sources: CAP 413 Ch. 2 (overhead join), ICAO Doc 4444 (straight-in / final approach).
+ */
+fun JoinType.toCircuitLeg(): xyz.easiersaid.twr.core.world.LegName = when (this) {
+    JoinType.DOWNWIND, JoinType.MID_DOWNWIND -> xyz.easiersaid.twr.core.world.LegName.DOWNWIND
+    JoinType.BASE -> xyz.easiersaid.twr.core.world.LegName.BASE
+    JoinType.STRAIGHT_IN, JoinType.LONG_FINAL -> xyz.easiersaid.twr.core.world.LegName.FINAL
+    JoinType.CROSSWIND -> xyz.easiersaid.twr.core.world.LegName.CROSSWIND
+    // Overhead join: aircraft crosses overhead, descends on dead side, joins at downwind.
+    // The circuit route starts at DOWNWIND — that is where ATC next sequences the aircraft.
+    JoinType.OVERHEAD -> xyz.easiersaid.twr.core.world.LegName.DOWNWIND
 }
 
 fun updateAfterReport(mission: PilotMission, event: ReportEvent): PilotMission = when (event) {

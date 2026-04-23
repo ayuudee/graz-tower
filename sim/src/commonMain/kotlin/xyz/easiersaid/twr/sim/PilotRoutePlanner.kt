@@ -1,6 +1,9 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.Either
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import arrow.core.NonEmptyList
@@ -29,19 +32,9 @@ import xyz.easiersaid.twr.protocol.SidId
 // it (compiler-enforced via sealed when).
 //
 // Known limitations (deferred, not broken):
-//   - Arrival join leg is hardcoded to DOWNWIND in Visual×Circuit. Should come
-//     from the JoinCircuit instruction; buildCircuitFromLeg already accepts the
-//     parameter. Blocked on storing join type in PilotMission from processInstruction.
-//   - NavigationMode.Circuit.procedure (CircuitProcedureId) is stored but lookups
-//     use runway-first search. When multiple circuits per runway exist, use the
-//     procedure ID for disambiguation in findRunwayAndCircuit.
-//   - TaskName.TouchAndGo is defined in the sealed hierarchy and handled in every
-//     dispatch branch, but no CompoundTask is constructed with it — touchAndGoCircuitTask()
-//     uses TaskName.Circuit. The variant exists for future distinction between T&G and
-//     full-stop circuits at the task name level.
-//   - planRouteIfNeeded only fires for Circuit mode + FLY_DEPARTURE. Visual arrivals
-//     don't get routes from the planner yet — they use manually-constructed routes.
-//     Expanding planRouteIfNeeded to cover arrival routing is the next wire-in step.
+//   - Visual transit uses the departure route as an approximation. FLY_DEPARTURE stays open
+//     until zone-exit detection is implemented — step completion is not on PilotPhase.Climbing
+//     (see A6 in .plan).
 //   - Step.kt's buildDepartureRoute/buildCircuitDepartureRoute delegate via getOrNull(),
 //     discarding RoutingError information. The instruction-effect layer predates Either-based
 //     routing; propagating errors through it is a separate refactor.
@@ -74,6 +67,22 @@ sealed interface NavigationMode {
     data class Emergency(val targetRunway: RunwayId?) : NavigationMode
 }
 
+// ── Circuit lookup ──────────────────────────────────────────────────
+
+/**
+ * Discriminated lookup strategy for [findRunwayAndCircuit].
+ *
+ * [ById] is used from circuit mode ([NavigationMode.Circuit]) — the procedure ID is
+ * authoritative and failure is a data error (no silent fallback).
+ * [ByRunway] is used from visual mode — picks the first circuit for the runway.
+ */
+sealed interface CircuitLookup {
+    /** Look up circuit by procedure ID. Returns an error if the ID is not found. */
+    data class ById(val id: CircuitProcedureId) : CircuitLookup
+    /** Look up circuit by runway ID. Returns the first matching circuit. */
+    data class ByRunway(val runwayId: RunwayId) : CircuitLookup
+}
+
 // ── Routing errors ──────────────────────────────────────────────────
 
 sealed interface RoutingError {
@@ -87,6 +96,13 @@ sealed interface RoutingError {
     data class CircuitNotFound(val runway: RunwayId) : RoutingError
     data class ProcedureNotFound(val id: String) : RoutingError
     data class InsufficientGeometry(val detail: String) : RoutingError
+    /**
+     * A waypoint referenced by a route is absent from [WorldIndex.positions].
+     *
+     * This is a world-data integrity defect, not a routing-logic error. The world
+     * author must ensure every waypoint used in a route is present in the index.
+     */
+    data class WaypointNotInIndex(val point: xyz.easiersaid.twr.protocol.PointId) : RoutingError
 }
 
 // ── Route builder ───────────────────────────────────────────────────
@@ -125,10 +141,10 @@ private fun buildCircuitModeRoute(
     // Circuit pattern: full loop dep end → upwind → ... → threshold.
     is TaskName.Circuit,
     is TaskName.CircuitAfterGoAround,
-    is TaskName.TouchAndGo -> buildCircuitPatternRoute(mode.runway, world, worldIndex)
+    is TaskName.TouchAndGo -> buildCircuitPatternRoute(mode.runway, world, worldIndex, CircuitLookup.ById(mode.procedure))
 
     // Go-around: published go-around path → rejoin circuit.
-    is TaskName.GoAround -> buildGoAroundRoute(mode.runway, world, worldIndex)
+    is TaskName.GoAround -> buildGoAroundRoute(mode.runway, world, worldIndex, CircuitLookup.ById(mode.procedure))
 
     // Ground tasks — no airborne route.
     is TaskName.GroundDeparture,
@@ -148,22 +164,34 @@ private fun buildCircuitModeRoute(
 
 // ── Visual mode ─────────────────────────────────────────────────────
 
-private fun buildVisualModeRoute(
+/**
+ * Build an airborne route for Visual navigation mode. Package-private so
+ * [planRouteIfNeeded] in [UnifiedPilot] can pass the mission-level [joinLeg]
+ * directly for Visual × circuit tasks without threading it through
+ * [buildAirborneRoute] (which would pollute the other 3 navigation modes).
+ */
+internal fun buildVisualModeRoute(
     mode: NavigationMode.Visual,
     taskName: TaskName,
     world: AviationWorld,
     worldIndex: WorldIndex,
+    joinLeg: Option<LegName> = None,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // Departure climb-out: dep end → upwind → crosswind → extend straight out.
-    is TaskName.Depart,
+    is TaskName.Depart -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
+
+    // Visual transit: use the standard departure climb-out route as an approximation.
+    // The aircraft follows upwind/crosswind until FLY_DEPARTURE completes (step completion
+    // is driven by zone-exit detection, not by reaching Crosswind — deferred, see A6 in .plan).
     is TaskName.Transit -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
 
-    // Circuit pattern at destination (arrival joined the pattern).
-    // Arrivals join mid-circuit; default to DOWNWIND. The join leg should
-    // eventually come from the JoinCircuit instruction stored on the mission.
+    // Circuit pattern at destination. Join leg comes from the JoinCircuit instruction
+    // stored on the mission (A12); defaults to DOWNWIND if not yet instructed.
     is TaskName.Circuit,
     is TaskName.CircuitAfterGoAround,
-    is TaskName.TouchAndGo -> buildCircuitFromLeg(mode.runway, LegName.DOWNWIND, world, worldIndex)
+    is TaskName.TouchAndGo -> buildCircuitFromLeg(
+        mode.runway, joinLeg.getOrElse { LegName.DOWNWIND }, world, worldIndex,
+    )
 
     // Arrival join: pilot is inbound, awaiting joining instructions.
     // Route planning deferred until the join type is known from ATC.
@@ -250,8 +278,9 @@ internal fun buildCircuitPatternRoute(
     runwayId: RunwayId,
     world: AviationWorld,
     worldIndex: WorldIndex,
+    lookup: CircuitLookup = CircuitLookup.ByRunway(runwayId),
 ): Either<RoutingError, PilotRoute.Airborne> {
-    val (runway, circuit) = findRunwayAndCircuit(runwayId, world)
+    val (runway, circuit) = findRunwayAndCircuit(world, lookup)
         .fold({ return it.left() }, { it })
     val runwayPath = runway.path.points
     if (runwayPath.size < 2) return RoutingError.InsufficientGeometry("Runway $runwayId has < 2 path points").left()
@@ -262,7 +291,7 @@ internal fun buildCircuitPatternRoute(
         add(departureEnd)
         for (legName in CIRCUIT_LEG_ORDER) {
             val points = legPoints(circuit, legName, excludeThreshold = threshold)
-            if (points.isEmpty()) return RoutingError.CircuitNotFound(runwayId).left()
+            if (points.isEmpty()) return RoutingError.InsufficientGeometry("Circuit ${circuit.id} has no points for leg $legName").left()
             addAll(points)
         }
         add(threshold)
@@ -291,7 +320,7 @@ internal fun buildVisualDepartureRoute(
     world: AviationWorld,
     worldIndex: WorldIndex,
 ): Either<RoutingError, PilotRoute.Airborne> {
-    val (runway, circuit) = findRunwayAndCircuit(runwayId, world)
+    val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
         .fold({ return it.left() }, { it })
     val runwayPath = runway.path.points
     if (runwayPath.size < 2) return RoutingError.InsufficientGeometry("Runway $runwayId has < 2 path points").left()
@@ -333,7 +362,7 @@ internal fun buildCircuitFromLeg(
     world: AviationWorld,
     worldIndex: WorldIndex,
 ): Either<RoutingError, PilotRoute.Airborne> {
-    val (runway, circuit) = findRunwayAndCircuit(runwayId, world)
+    val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
         .fold({ return it.left() }, { it })
     val threshold = runway.threshold
 
@@ -343,7 +372,7 @@ internal fun buildCircuitFromLeg(
     val segments = buildList {
         for (i in startIndex until CIRCUIT_LEG_ORDER.size) {
             val points = legPoints(circuit, CIRCUIT_LEG_ORDER[i], excludeThreshold = threshold)
-            if (points.isEmpty()) return RoutingError.CircuitNotFound(runwayId).left()
+            if (points.isEmpty()) return RoutingError.InsufficientGeometry("Circuit ${circuit.id} has no points for leg ${CIRCUIT_LEG_ORDER[i]}").left()
             // Drop the first point of each leg (it's the junction from the previous
             // leg) unless this is the first leg in our slice — then we need it as
             // the route's entry point. BUT: for the first leg in the slice, the first
@@ -379,8 +408,9 @@ internal fun buildGoAroundRoute(
     runwayId: RunwayId,
     world: AviationWorld,
     worldIndex: WorldIndex,
+    lookup: CircuitLookup = CircuitLookup.ByRunway(runwayId),
 ): Either<RoutingError, PilotRoute.Airborne> {
-    val (runway, circuit) = findRunwayAndCircuit(runwayId, world)
+    val (runway, circuit) = findRunwayAndCircuit(world, lookup)
         .fold({ return it.left() }, { it })
     val threshold = runway.threshold
 
@@ -696,22 +726,35 @@ private val CIRCUIT_LEG_ORDER = listOf(LegName.UPWIND, LegName.CROSSWIND, LegNam
 /**
  * Look up the runway and its circuit procedure from the world.
  *
- * Returns the first circuit procedure for [runwayId]. When multiple circuits
- * exist per runway (e.g., left-hand and right-hand), this should be refined
- * to use the [NavigationMode.Circuit.procedure] ID for disambiguation.
+ * Dispatch on [CircuitLookup]:
+ * - [CircuitLookup.ById]: looks up circuit by ID, then derives runway from the circuit.
+ *   Failure is a data-integrity error — no silent fallback to runway-first.
+ * - [CircuitLookup.ByRunway]: runway-first search, returns the first matching circuit.
+ *   Used from visual mode where no procedure ID is known.
  */
 private fun findRunwayAndCircuit(
-    runwayId: RunwayId,
     world: AviationWorld,
-): Either<RoutingError, Pair<Runway, CircuitProcedure>> {
-    val aerodrome = world.aerodromes.values
-        .firstOrNull { it.runways.containsKey(runwayId) }
-        ?: return RoutingError.RunwayNotFound(runwayId).left()
-    val runway = aerodrome.runways.getValue(runwayId)
-    val circuit = aerodrome.circuits.values
-        .firstOrNull { it.runway == runwayId }
-        ?: return RoutingError.CircuitNotFound(runwayId).left()
-    return (runway to circuit).right()
+    lookup: CircuitLookup,
+): Either<RoutingError, Pair<Runway, CircuitProcedure>> = when (lookup) {
+    is CircuitLookup.ById -> {
+        val aerodrome = world.aerodromes.values
+            .firstOrNull { it.circuits.containsKey(lookup.id) }
+            ?: return RoutingError.ProcedureNotFound(lookup.id.value).left()
+        val circuit = aerodrome.circuits.getValue(lookup.id)
+        val runway = aerodrome.runways[circuit.runway]
+            ?: return RoutingError.RunwayNotFound(circuit.runway).left()
+        (runway to circuit).right()
+    }
+    is CircuitLookup.ByRunway -> {
+        val aerodrome = world.aerodromes.values
+            .firstOrNull { it.runways.containsKey(lookup.runwayId) }
+            ?: return RoutingError.RunwayNotFound(lookup.runwayId).left()
+        val runway = aerodrome.runways.getValue(lookup.runwayId)
+        val circuit = aerodrome.circuits.values
+            .firstOrNull { it.runway == lookup.runwayId }
+            ?: return RoutingError.CircuitNotFound(lookup.runwayId).left()
+        (runway to circuit).right()
+    }
 }
 
 /**

@@ -257,15 +257,26 @@ def _boundary_path_documents(
                 width_meters=authoring.AIRSPACE_STROKE_WIDTH_METERS if hasattr(authoring, "AIRSPACE_STROKE_WIDTH_METERS") else 160.0,
                 source="candidate_airspace_boundary",
                 projection_status="direct_runtime_boundary",
-                note=str(volume.get("note") or "Projected LOWG airspace boundary from OFMX geometry."),
+                note=str(volume.get("note") or "Projected runtime airspace boundary from candidate geometry."),
             )
             boundary_path_ids.append(path_id)
         path_ids_by_volume[volume_id] = boundary_path_ids
     return path_documents, path_ids_by_volume
 
 
+def _fallback_fir_id(manifest: dict[str, Any], airport_code: str) -> str:
+    configured = manifest.get("firId")
+    if isinstance(configured, str) and configured.strip():
+        return configured.strip().upper()
+    return {
+        "LOWG": "LOVV",
+        "LJMB": "LJLA",
+    }.get(airport_code, f"{airport_code}_FIR")
+
+
 def _projected_current_core_airspace(
     *,
+    airport_code: str,
     included_points: dict[str, dict[str, Any]],
     candidate_airspace_volumes: dict[str, dict[str, Any]],
     boundary_path_ids_by_volume: dict[str, list[str]],
@@ -321,10 +332,10 @@ def _projected_current_core_airspace(
     uncovered_points = sorted(set(included_points) - covered_points)
     assumptions: list[str] = []
     if uncovered_points:
-        fallback_volume_id = "LOVV_OPEN_FIR_G"
+        fallback_volume_id = f"{fir_id}_OPEN_FIR_G"
         projected_volumes[fallback_volume_id] = {
             "id": fallback_volume_id,
-            "name": "LOVV open-FIR fallback coverage",
+            "name": f"{fir_id} open-FIR fallback coverage",
             "type": "FIR",
             "airspaceClass": "G",
             "altitudeBand": {
@@ -339,16 +350,16 @@ def _projected_current_core_airspace(
             "firId": fir_id,
             "boundaryPathIds": [],
             "projectionStatus": "synthetic_open_fir_fallback",
-            "note": "Fallback open-FIR membership for projected LOWG points not yet covered by the worked low-level controlled volumes.",
+            "note": "Fallback open-FIR membership for projected points not yet covered by the worked low-level controlled volumes.",
         }
         assumptions.append(
-            f"{len(uncovered_points)} projected LOWG point(s) still fall outside the worked low-level CTR/TMA slice and are temporarily assigned to an explicit open-FIR Class G fallback volume."
+            f"{len(uncovered_points)} projected {airport_code} point(s) still fall outside the worked low-level CTR/TMA slice and are temporarily assigned to an explicit open-FIR Class G fallback volume."
         )
 
     firs = {
         fir_id: {
             "id": fir_id,
-            "name": "LOVV FIR (LOWG worked airspace subset)",
+            "name": f"{fir_id} FIR ({airport_code} worked airspace subset)",
             "volumeIds": sorted(projected_volumes.keys()),
             "projectionStatus": "current_core_worked_subset",
         }
@@ -993,6 +1004,7 @@ def _runtime_ifr_subset(
 
 
 def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
+    manifest = json.loads(manifest_path.read_text())
     bundle = projection.build_projection_bundle(manifest_path)
     core_entities = bundle["coreEntities"]
     candidate_entities = bundle["candidateEntities"]
@@ -1156,8 +1168,9 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
     }
 
     transition_altitude_feet = int(aerodrome.get("transitionAltitudeFeet") or 10000)
-    fir_id = "LOVV"
+    fir_id = _fallback_fir_id(manifest, airport_code)
     projected_airspace_volumes, projected_firs, airspace_assumptions = _projected_current_core_airspace(
+        airport_code=airport_code,
         included_points=included_points,
         candidate_airspace_volumes=candidate_airspace_volumes,
         boundary_path_ids_by_volume=boundary_path_ids_by_volume,
@@ -1202,6 +1215,10 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
         apron_access_assumption = (
             "Apron access now uses the authored NEW_Parking graph and NEW_Parking_Points stand set, "
             "but no taxiway-A attachment could be derived from the authored apron geometry."
+        )
+    elif "direct_authored_ground_graph" in apron_projection_statuses:
+        apron_access_assumption = (
+            "Apron and stand access now use the authored working-DXF ground graph and authored stand points."
         )
     else:
         apron_access_assumption = (
