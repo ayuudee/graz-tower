@@ -11,6 +11,7 @@ import xyz.easiersaid.twr.controller.observe.isSeverityAtLeast
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
+import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.*
 import kotlin.reflect.KClass
@@ -261,6 +262,7 @@ data class NoActiveInstruction(val matcher: InstructionMatcher) : RuleGuard {
 
 /** Aircraft is on a specific circuit leg (UPWIND, CROSSWIND, DOWNWIND, BASE, FINAL). */
 data class OnCircuitLeg(val leg: LegName) : RuleGuard {
+    override val failureMessage = "Aircraft is not on the ${leg.name} leg"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         ctx.worldIndex.circuitLegsByPoint[ac.position]?.contains(leg) == true
 }
@@ -273,8 +275,8 @@ data class OnCircuitLeg(val leg: LegName) : RuleGuard {
  * enough time for a safe go-around if needed. Conservatively returns false when the
  * runway or threshold position cannot be resolved (unknown position = do not clear).
  */
-data class WithinDistanceOfThreshold(val maxMetres: Double) : RuleGuard {
-    override val failureMessage = "Aircraft is beyond ${maxMetres}m of the runway threshold"
+data class WithinDistanceOfThreshold(val maxMetres: Meters) : RuleGuard {
+    override val failureMessage = "Aircraft is beyond ${maxMetres.value}m of the runway threshold"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
         val runway = commitment.runway ?: ctx.beliefs.activeRunway ?: return false
         val thresholdPoint = ctx.worldIndex.thresholdByRunway[runway] ?: return false
@@ -282,7 +284,8 @@ data class WithinDistanceOfThreshold(val maxMetres: Double) : RuleGuard {
         val thrPos = ctx.worldIndex.positions[thresholdPoint] ?: return false
         val dx = acPos.xMeters - thrPos.xMeters
         val dy = acPos.yMeters - thrPos.yMeters
-        return (dx * dx + dy * dy) <= maxMetres * maxMetres
+        val limit = maxMetres.value
+        return (dx * dx + dy * dy) <= limit * limit
     }
 }
 

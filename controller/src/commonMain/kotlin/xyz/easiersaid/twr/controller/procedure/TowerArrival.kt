@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.controller.procedure
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.bdi.*
 import xyz.easiersaid.twr.core.world.LegName
+import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_55
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_5
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_CIRCUIT_REPORTS
@@ -31,14 +32,14 @@ import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
  * prevents clearance being issued immediately on turning final after a very long
  * extended downwind, while leaving ample time for readback and a go-around if needed.
  * No ICAO regulatory minimum exists for issuance distance; this is an operational
- * safety margin on top of the RunwayPhysicallyClear requirement (ICAO 4444 §7.10.1).
+ * safety margin on top of the RunwayPhysicallyClear requirement (ICAO 4444 §7.10).
  */
-private const val MAX_LANDING_CLEARANCE_DISTANCE_M = 5000.0
+private val MAX_LANDING_CLEARANCE_DISTANCE = Meters(5000.0)
 
 /** Shared guard: conditions for issuing or re-issuing a landing clearance (non-T&G). */
 private val LandingConditions = AllOf(listOf(
     AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
-    WithinDistanceOfThreshold(MAX_LANDING_CLEARANCE_DISTANCE_M),
+    WithinDistanceOfThreshold(MAX_LANDING_CLEARANCE_DISTANCE),
     WeatherPermitsVfr,
     RunwayAccessGranted,
     RunwayPhysicallyClear,
