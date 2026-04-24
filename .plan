@@ -127,11 +127,12 @@ Impact: M | Effort: L
 
 ### Medium impact, medium-high effort — architecture-dependent
 
-**D3 — Lean verification of reconciliation properties**
-~300-line Lean module proving monotonicity, terminality, position-phase correspondence for
-departure/arrival/ground `reconcile` functions. Finite enumerated types; `cases` + `simp`
-closes everything. No Kotlin changes needed.
-See `docs/design/observation-reconciliation-next-steps.md` §3 for full spec.
+**D3 — Lean verification of reconciliation properties** — DONE (2026-04-24)
+`research/fm/lean/CertifiedAtc/ObservationReconciliation.lean` added (~200 lines).
+Proves 9 theorems across 4 reconciliation functions (departure, arrival, ground × 2):
+terminality (4), monotonicity (3), `dep_airborne_advances`, `arr_runway_advances`.
+All proofs closed by `cases s <;> cases p <;> decide` or `<;> simp_all [...]`.
+No Kotlin changes; sits alongside existing `CertifiedAtc` Lean work in `research/fm/lean/`.
 Impact: M | Effort: M
 
 **A9 — Manual routes in `LowgSpike` and `ArrivalVerticalTest`**
@@ -148,6 +149,14 @@ Impact: M | Effort: H (blocked on APP sequencing)
 `HoldingPattern` is structurally minimal — no racetrack geometry, no entry procedure, no
 timing. Needed for realistic IFR holds. Blocked on geometry work.
 Impact: M | Effort: H
+
+**RR-1 — ICAO 4444 broad baseline still too wide for blind downstream use**
+The full-document normalizer now passes machine gate and the downstream baseline policy blocks
+`manual_review_required` bundles plus `label_stub`/`table_fragment` structural debt, but the
+mechanically eligible baseline still contains hundreds of bundles. Only the seeded trio
+(`4.3.2.1.2`, `4.3.2.1.3`, `4.5.7.5.1`) should currently drive downstream consumers. We still
+need staged rollout rules and more golden coverage before widening beyond that set.
+Impact: M | Effort: M
 
 ---
 
@@ -186,11 +195,20 @@ the CF readback after transfer. Fixed by: (1) keeping `current.coordinations` un
 guard — coordination check is the correct gate, readback routing already constrains the audience.
 Result: `handoff_reissued_while_pending` now appears in the execution report on the attack path.
 
-**OR-2 — Surface-specific semantic lint incomplete**
-Phase 0 still needs per-surface lint before execution runs are trustworthy.
-Specific known gap: `no_progress_before_ack` on the shared-frequency surface is unsupported
-because `applyTaxiTo` sets the pilot route at instruction-processing time (before the readback).
-The sim does not currently enforce "pilot waits for readback confirmation before acting."
+**OR-2 — Surface-specific semantic lint incomplete** — DONE (2026-04-24)
+Phase 0 claim-probe infrastructure built from scratch in `sim/src/.../reviewer/`:
+`ClaimProbeTypes.kt` (commonMain): `ClaimProbeDisposition`, `NominalReport`, `AttackReport`,
+`ClaimProbeExecutionReport`, `computeDisposition`.
+`SharedFrequencyClaimProbeExecutor`: pure comms-layer probe (no ControllerCycle events);
+nominal checks `controllerInbox` not empty; attack injects two overlapping pilot transmissions →
+`missing_required_ack_before_state_change` fires when inbox is empty.
+`ContactFrequencyClaimProbeExecutor`: pre-seeds `beliefs[groundId].coordinations[alphaId]` with
+ISSUED CF coordination; nominal injects matching `FrequencyReadback` in inbox + ControllerCycle
+→ coordination removed; attack: no readback → coordination stays ISSUED →
+`handoff_reissued_while_pending` fires.
+`ClaimProbeMorningReview`: aggregates both surfaces, renders Markdown report.
+5 tests across 3 test classes; both surfaces report `CANDIDATE_ISSUE`;
+morning review test asserts both detector names appear in Markdown output.
 
 **OR-3 — Phase 1 (autonomous adversarial loop) not started**
 Full exploratory adversary surface (vectors, holding, sequencing stress) not yet wired.
@@ -229,18 +247,19 @@ Changed to `InsufficientGeometry` (circuit exists, geometry data is incomplete).
 
 ### Deferred findings from Phase A review
 
-**PA-1 — `OnCircuitLeg` missing `failureMessage` override**
-Defaults to `"OnCircuitLeg"` which is unhelpful in training feedback traces.
-Should be `"Aircraft is not on the ${leg.name} leg"`.
+**PA-1 — `OnCircuitLeg` missing `failureMessage` override** — DONE (2026-04-23)
+`override val failureMessage get() = "Aircraft is not on the ${leg.name} leg"` added to
+`OnCircuitLeg` in `Guard.kt`.
 Impact: L | Effort: L
 
-**PA-2 — Raw `Double` for distance in `WithinDistanceOfThreshold`**
-Parameter `maxMetres: Double` should be a `Meters` value class to prevent unit confusion.
-The `_M` suffix on `MAX_LANDING_CLEARANCE_DISTANCE_M` is a workaround.
-Impact: M | Effort: L (pending Meters value class existence elsewhere)
+**PA-2 — Raw `Double` for distance in `WithinDistanceOfThreshold`** — DONE (2026-04-23)
+`maxMetres: Double` → `maxMetres: Meters` in `WithinDistanceOfThreshold`; `Meters` import
+added to `Guard.kt`; `MAX_LANDING_CLEARANCE_DISTANCE_M` constant replaced with
+`MAX_LANDING_CLEARANCE_DISTANCE: Meters` in `TowerArrival.kt`.
+Impact: M | Effort: L
 
-**PA-3 — `§7.10.1` citation in `WithinDistanceOfThreshold` comment is not a real sub-section**
-ICAO 4444 16th ed. §7.10 is not subdivided to §7.10.1. Comment-only, no implementation impact.
+**PA-3 — `§7.10.1` citation in `WithinDistanceOfThreshold` comment is not a real sub-section** — DONE (2026-04-23)
+Citation corrected to `ICAO 4444 §7.10` in `TowerArrival.kt`.
 Impact: L | Effort: L
 
 ---
