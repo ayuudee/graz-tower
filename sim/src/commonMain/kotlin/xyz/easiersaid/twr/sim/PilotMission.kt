@@ -17,6 +17,41 @@ sealed interface HighLevelGoal {
         init { require(circuits > 0) { "CircuitTraining requires at least 1 circuit" } }
     }
     data class Transit(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+
+    /**
+     * VFR cross-aerodrome flight from [from] to [to] via published
+     * boundary-entry waypoints. The pilot transits an FIS region between
+     * the departure CTR and the destination TMA; the destination TMA is
+     * entered at [tmaEntry] (where the pilot self-initiates contact with
+     * APPROACH); the destination CTR is entered at [ctrEntry] (where APP
+     * hands off to TWR via the existing same-aerodrome handoff path);
+     * the aircraft joins the destination circuit at [joinLeg].
+     *
+     * Decomposes via existing primitive subtrees — see [planMission].
+     */
+    data class VfrCrossAerodromeTransit(
+        val from: xyz.easiersaid.twr.protocol.AerodromeId,
+        val to: xyz.easiersaid.twr.protocol.AerodromeId,
+        val tmaEntry: xyz.easiersaid.twr.protocol.FixId,
+        val ctrEntry: xyz.easiersaid.twr.protocol.FixId,
+        /**
+         * Published reporting points along the corridor between [ctrEntry] and
+         * the circuit join. For LJMB MN-corridor inbound from north this is
+         * [MN2] (between MN1 and the right-base join). Empty for direct CTR-
+         * entry-to-circuit airports. Per atc-general round-3 finding: skipping
+         * intermediate REPs amounts to skipping a published reporting point
+         * the pilot is required to make.
+         */
+        val ctrCorridorWaypoints: List<xyz.easiersaid.twr.protocol.FixId> = emptyList(),
+        val joinLeg: xyz.easiersaid.twr.core.world.LegName,
+        /**
+         * En-route VFR cruising altitude in metres AGL. For LOWG → LJMB this
+         * needs to clear the Pohorje massif (~5000 ft, ~1525 m). [CIRCUIT_ALTITUDE_M]
+         * is unsafe here; per atc-general round-3 finding the en-route phase
+         * uses a higher altitude than the circuit.
+         */
+        val enRouteAltitudeM: Double = 1525.0,
+    ) : HighLevelGoal
 }
 
 /**
@@ -124,6 +159,7 @@ sealed interface TaskName {
     data object Arrive : TaskName
     data object TouchAndGo : TaskName
     data object Transit : TaskName
+    data object CrossAerodromeTransit : TaskName
     data object GroundDeparture : TaskName
     data object GroundArrival : TaskName
     data object Circuit : TaskName
@@ -390,6 +426,31 @@ fun planMission(goal: HighLevelGoal, humanPiloted: Boolean = true, ifr: Boolean 
         PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     ))
+    is HighLevelGoal.VfrCrossAerodromeTransit -> CompoundTask(TaskName.CrossAerodromeTransit, listOf(
+        // Phase 1 — ground operations at [from]. derivePilotGoal: DEPART.
+        groundDepartureTask(humanPiloted),
+        // Phase 2 — climb out of [from]'s CTR. Wrapped in a [TaskName.Depart]
+        // compound so derivePilotGoal yields DEPART while this phase is
+        // active (the fall-back via mission.goal cannot distinguish phases).
+        CompoundTask(TaskName.Depart, listOf(
+            PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+        )),
+        // Phase 3 — FIS region between aerodromes; ends at the destination TMA
+        // boundary. Wrapped in [TaskName.Transit] so derivePilotGoal yields
+        // TRANSIT here.
+        CompoundTask(TaskName.Transit, listOf(
+            PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
+        )),
+        // Phase 4 — arrival join: pilot self-contacts APPROACH (G1.5) and
+        // receives join clearance.
+        arrivalJoinTask(),
+        // Phase 5 — circuit pattern at [to], joining at [joinLeg]. circuitTask
+        // without its leading FLY_DEPARTURE primitive (mirrors the Arrival
+        // branch).
+        circuitTask().let { it.copy(children = it.children.drop(1)) },
+        // Phase 6 — ground arrival at [to].
+        groundArrivalTask(),
+    ))
 }
 
 /** Build a T&G circuit: fly the pattern, land, then take off again. */
@@ -424,7 +485,11 @@ fun derivePilotGoal(mission: PilotMission): PilotGoal {
         is TaskName.GroundArrival -> PilotGoal.ARRIVE
         is TaskName.ArrivalJoin -> PilotGoal.ARRIVE
         is TaskName.Circuit ->
-            if (isLastActiveCircuit(mission)) PilotGoal.ARRIVE else PilotGoal.TOUCH_AND_GO
+            // VfrCrossAerodromeTransit: the destination circuit is the
+            // only one and always full-stop — the controller must see
+            // ARRIVE for the landing-clearance + vacate flow to fire.
+            if (mission.goal is HighLevelGoal.VfrCrossAerodromeTransit) PilotGoal.ARRIVE
+            else if (isLastActiveCircuit(mission)) PilotGoal.ARRIVE else PilotGoal.TOUCH_AND_GO
         is TaskName.CircuitAfterGoAround -> {
             // CircuitAfterGoAround contains [goAroundTask, circuitTask(full-stop)].
             // During the go-around phase (GoAround subtask active), the aircraft is
@@ -440,6 +505,16 @@ fun derivePilotGoal(mission: PilotMission): PilotGoal {
         is TaskName.TouchAndGo -> PilotGoal.TOUCH_AND_GO
         is TaskName.Depart -> PilotGoal.DEPART
         is TaskName.Transit -> PilotGoal.TRANSIT
+        is TaskName.CrossAerodromeTransit -> {
+            // CrossAerodromeTransit is the root of a multi-phase mission: depart
+            // → en-route → arrive. activeCompound returns the active child
+            // compound (GroundDeparture, ArrivalJoin, etc.); this branch only
+            // fires if those are not active — i.e. between phases (between the
+            // FLY_DEPARTURE primitive task and the arrivalJoinTask).
+            // Default: TRANSIT — controller-side this signals "in transit, no
+            // current responsibility holder at this aerodrome."
+            PilotGoal.TRANSIT
+        }
         // CircuitTraining is structurally never the active compound — it's always
         // the root, and activeCompound() returns its first incomplete child. Defensive
         // fallback rather than crash if invariant is violated.
@@ -452,6 +527,11 @@ fun derivePilotGoal(mission: PilotMission): PilotGoal {
             is HighLevelGoal.Departure -> PilotGoal.DEPART
             is HighLevelGoal.CircuitTraining -> PilotGoal.TOUCH_AND_GO
             is HighLevelGoal.Transit -> PilotGoal.TRANSIT
+            // VfrCrossAerodromeTransit covers a full mission lifecycle.
+            // The null-active-compound fallback fires after every phase has
+            // completed (mission done) — at that point the most semantically
+            // honest goal is ARRIVE (the aircraft has just landed at [to]).
+            is HighLevelGoal.VfrCrossAerodromeTransit -> PilotGoal.ARRIVE
         }
     }
 }
@@ -471,6 +551,7 @@ fun derivePilotGoal(mission: PilotMission): PilotGoal {
 fun TaskName.isCircuitLike(): Boolean = when (this) {
     is TaskName.Circuit, is TaskName.CircuitAfterGoAround, is TaskName.TouchAndGo -> true
     is TaskName.Depart, is TaskName.Arrive, is TaskName.Transit,
+    is TaskName.CrossAerodromeTransit,
     is TaskName.GroundDeparture, is TaskName.GroundArrival,
     is TaskName.CircuitTraining, is TaskName.ArrivalJoin,
     is TaskName.GoAround -> false
@@ -486,7 +567,8 @@ private fun isLastActiveCircuit(mission: PilotMission): Boolean {
             when (it.name) {
                 is TaskName.Circuit, is TaskName.CircuitAfterGoAround -> true
                 is TaskName.TouchAndGo, is TaskName.Depart, is TaskName.Arrive,
-                is TaskName.Transit, is TaskName.GroundDeparture, is TaskName.GroundArrival,
+                is TaskName.Transit, is TaskName.CrossAerodromeTransit,
+                is TaskName.GroundDeparture, is TaskName.GroundArrival,
                 is TaskName.CircuitTraining, is TaskName.ArrivalJoin,
                 is TaskName.GoAround -> false
             }

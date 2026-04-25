@@ -1032,6 +1032,7 @@ class PilotRoutePlannerTest {
             is TaskName.Arrive -> t
             is TaskName.TouchAndGo -> t
             is TaskName.Transit -> t
+            is TaskName.CrossAerodromeTransit -> t
             is TaskName.GroundDeparture -> t
             is TaskName.GroundArrival -> t
             is TaskName.Circuit -> t
@@ -1042,6 +1043,7 @@ class PilotRoutePlannerTest {
         }
         return listOf(
             TaskName.Depart, TaskName.Arrive, TaskName.TouchAndGo, TaskName.Transit,
+            TaskName.CrossAerodromeTransit,
             TaskName.GroundDeparture, TaskName.GroundArrival, TaskName.Circuit,
             TaskName.CircuitAfterGoAround, TaskName.CircuitTraining, TaskName.ArrivalJoin,
             TaskName.GoAround,

@@ -1,6 +1,8 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
+import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.protocol.*
 import kotlin.test.Test
@@ -185,7 +187,10 @@ class ArrivalRoutingTest {
                 ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, setOf(alphaId)),
                 ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
             ),
-        )
+            weatherByAerodrome = world.aerodromes.keys.associateWith {
+                WeatherObservation(wind = null, qnh = null, visibility = null)
+            },
+        ).getOrElse { error("ArrivalRouting downwind setup invalid: $it") }
         val events = listOf(
             SimEvent.PhysicsTick(SimTime.ZERO),
             SimEvent.Spawn(SimTime.ZERO, alphaOnDownwind()),
@@ -265,7 +270,10 @@ class ArrivalRoutingTest {
                 ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, setOf(alphaId)),
                 ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
             ),
-        )
+            weatherByAerodrome = world.aerodromes.keys.associateWith {
+                WeatherObservation(wind = null, qnh = null, visibility = null)
+            },
+        ).getOrElse { error("ArrivalRouting restricted setup invalid: $it") }
         val events = listOf(
             SimEvent.PhysicsTick(SimTime.ZERO),
             SimEvent.Spawn(SimTime.ZERO, aircraft),

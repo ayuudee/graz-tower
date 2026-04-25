@@ -4,8 +4,21 @@
   "geometricControl": {
     "referenceRunway": "16C",
     "mode": "full_strip_axis",
-    "displacedThresholdModelled": false
+    "displacedThresholdModelled": false,
+    "designatorNote": "16C/34C is a project-internal disambiguation against the parallel grass strips 16L/34R and 16R/34L. The published ICAO designator for the paved runway is 16/34; the C suffix is *not* what real-world ATC says on RT."
   },
+  "frequencies": {
+    "atis": "126.130",
+    "tower": "118.200",
+    "towerRadarVfr": "119.300",
+    "source": "X-Plane 12 Global Airports apt.dat (row 1050/1054/1055 LOWG block); tower also confirmed by working_airspace.dxf ctrLegend 'GRAZ TOWER 118.200'.",
+    "note": "LOWG has no discrete APPROACH unit. 119.300 is the GRAZ TOWER RADAR/INFORMATION position offering VFR radar service from the tower (see ad_5_miscellaneous: 'GRAZ TWR provides radar service for VFR flights'). IFR approach service in the Graz TMA is provided by Wien ACC. Do not spawn RoleName.APPROACH from this frequency."
+  },
+  "plates": [
+    "AD-1", "AD-6", "AD-3", "AD-4", "AD-5",
+    "PRC-1", "PRC-2", "PRC-3", "PRC-4", "PRC-5",
+    "ENR-1", "AD-2", "ARR-1"
+  ],
   "sources": {
     "aptDat": "migration/src/commonTest/resources/airports/LOWG.dat",
     "cifp": "data/cifp/LOWG.dat",

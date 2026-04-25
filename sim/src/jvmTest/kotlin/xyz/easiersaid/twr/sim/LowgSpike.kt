@@ -1,8 +1,10 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import arrow.core.getOrElse
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.PilotGoal
+import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.migration.world.CandidateCircuitProcedure
 import xyz.easiersaid.twr.migration.world.WorldCandidateDocument
@@ -192,7 +194,12 @@ class LowgSpike {
         println("Running 120s...\n")
 
         val result = runUntil(
-            initial = SimState.initial(seed = 42L, world = world, worldIndex = worldIndex, controllers = listOf(twr)),
+            initial = SimState.initial(
+                seed = 42L, world = world, worldIndex = worldIndex, controllers = listOf(twr),
+                weatherByAerodrome = world.aerodromes.keys.associateWith {
+                    WeatherObservation(wind = null, qnh = null, visibility = null)
+                },
+            ).getOrElse { error("LowgSpike setup invalid: $it") },
             initialEvents = listOf(
                 SimEvent.PhysicsTick(SimTime.ZERO),
                 SimEvent.Spawn(SimTime.ZERO, arr1),

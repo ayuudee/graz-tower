@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim.reviewer
 
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.Position
@@ -78,7 +79,9 @@ object SharedFrequencyClaimProbeExecutor {
                 responsibilities = setOf(alphaId),
             ),
         ),
-    ).copy(nextTransmissionId = 100L)
+        weatherByAerodrome = emptyMap(),
+    ).getOrElse { error("Probe baseState failed validation: $it") }
+        .copy(nextTransmissionId = 100L)
 
     /**
      * Inject a pilot→controller readback transmission with a known start time.

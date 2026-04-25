@@ -1,6 +1,8 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
+import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.protocol.*
 import kotlin.test.Test
@@ -197,7 +199,10 @@ class FullCircuitTest {
                 ControllerSpec(towerControllerId, RoleName.TOWER, aerodromeId, towerFrequency, emptySet()),
                 ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
             ),
-        )
+            weatherByAerodrome = world.aerodromes.keys.associateWith {
+                WeatherObservation(wind = null, qnh = null, visibility = null)
+            },
+        ).getOrElse { error("FullCircuit setup invalid: $it") }
         val events = listOf(
             SimEvent.PhysicsTick(SimTime.ZERO),
             SimEvent.Spawn(SimTime.ZERO, alpha()),

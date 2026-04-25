@@ -1,0 +1,280 @@
+{
+  "airportCode": "LJMB",
+  "airportName": "Maribor Airport",
+  "firId": "LJLA",
+  "geometricControl": {
+    "referenceRunway": "14",
+    "mode": "full_strip_axis",
+    "displacedThresholdModelled": false
+  },
+  "frequencies": {
+    "tower": "119.205",
+    "approach": "134.305",
+    "source": "X-Plane 12 Global Airports apt.dat (row 1054/1055 LJMB block); cross-checked against Jepp 19-1."
+  },
+  "sources": {
+    "aptDat": "migration/src/commonTest/resources/airports/LJMB.dat",
+    "cifp": "data/cifp/LJMB.dat",
+    "ofmx": "data/ofm/slovenia/ofmx_extracted/ofmx_lj/isolated/ofmx_lj.ofmx",
+    "chartsDirectory": "data/charts/LJMB",
+    "jeppTripKit": "data/charts/LJMB/LJMB.pdf",
+    "arincBundle": "data/charts/LJMB/arinc_lj.zip",
+    "openAirBundle": "data/charts/LJMB/openair_lj.zip",
+    "cupBundle": "data/charts/LJMB/cup_slovenia.zip",
+    "slippyTilesBundle": "data/charts/LJMB/slippyTiles_clipped.zip",
+    "mbtiles": "data/charts/LJMB/ljla_256.mbtiles",
+    "xplaneFixes": "data/airac_cache/LJMB_fixes.dat",
+    "xplaneNavaids": "data/airac_cache/LJMB_navaids.dat"
+  },
+  "workingDxf": {
+    "path": "cad/airports/ljmb_working_combined.dxf",
+    "layers": {
+      "referenceRunwayGraph": "REF_ROUTE_RUNWAYS",
+      "authoredGroundGraph": "NEW_Taxi",
+      "authoredStandPoints": "NEW_Parking",
+      "authoredHoldingPoints": "NEW_Holding",
+      "authoredManoeuvringAreas": "New_Mano",
+      "authoredCircuitGraph": "NEW_Circuit"
+    }
+  },
+  "plates": ["AD-1", "AD-2", "AD-6", "PRC-4", "PRC-5", "ENR-1"],
+  "circuitProjection": {
+    "topology": "independent_closed_loops",
+    "altitudeFeet": 1876,
+    "primaryAxisRunways": ["14", "32"],
+    "snapToleranceMeters": 15.0,
+    "loops": [
+      {
+        "loopId": "main_14_32",
+        "runwayNorth": "14",
+        "runwaySouth": "32",
+        "thresholdNorth": "14",
+        "thresholdSouth": "32",
+        "northDirection": "RIGHT_HAND",
+        "southDirection": "LEFT_HAND"
+      },
+      {
+        "loopId": "glider_14L_32R",
+        "runwayNorth": "14L",
+        "runwaySouth": "32R",
+        "thresholdNorth": "14L",
+        "thresholdSouth": "32R",
+        "northDirection": "LEFT_HAND",
+        "southDirection": "RIGHT_HAND"
+      }
+    ]
+  },
+  "supplementalVfrPointRefs": [
+    "OSMOT",
+    "LAPNA",
+    "MN1",
+    "MN2",
+    "ME2",
+    "MS1",
+    "IRLIX",
+    "ME1",
+    "MIRSO",
+    "GOLVA",
+    "MUREG",
+    "PETOV",
+    "OBUTI",
+    "NIDLO",
+    "TISKO",
+    "DIMLO",
+    "MS2",
+    "MS3",
+    "ME3",
+    "ME4",
+    "MW1"
+  ],
+  "publishedVfrProcedures": [
+    {
+      "procedureId": "ljmb_tma_entry_general",
+      "plateId": "19-2",
+      "kind": "transit",
+      "contactRequirement": {
+        "role": "APPROACH",
+        "beforeEntry": true
+      },
+      "contactNote": "Before entering TMA Maribor 1&2 contact Maribor Approach. If no reply, contact Ljubljana Approach or Ljubljana Information.",
+      "routeNote": "Enter TMA Maribor 1&2 via entry points GOLVA, MUREG, PETOV, OBUTI, NIDLO, TISKO, DIMLO, MS2, MS3, ME3, ME4, MW1.",
+      "availabilityNote": "Check operating hours for Maribor Approach.",
+      "note": "VFR flights entering via these entry points shall as soon as practicable establish radio contact with Maribor Approach.",
+      "mapWaypointLabels": [
+        {"label": "GOLVA", "pointRef": "GOLVA"},
+        {"label": "MUREG", "pointRef": "MUREG"},
+        {"label": "PETOV", "pointRef": "PETOV"},
+        {"label": "OBUTI", "pointRef": "OBUTI"},
+        {"label": "NIDLO", "pointRef": "NIDLO"},
+        {"label": "TISKO", "pointRef": "TISKO"},
+        {"label": "DIMLO", "pointRef": "DIMLO"},
+        {"label": "MS2", "pointRef": "MS2"},
+        {"label": "MS3", "pointRef": "MS3"},
+        {"label": "ME3", "pointRef": "ME3"},
+        {"label": "ME4", "pointRef": "ME4"},
+        {"label": "MW1", "pointRef": "MW1"}
+      ]
+    },
+    {
+      "procedureId": "ljmb_ctr_entry_general",
+      "plateId": "19-2",
+      "kind": "transit",
+      "contactNote": "Two-way radio communication required. Contact Maribor Tower 5 MIN prior to reaching the first REP.",
+      "routeNote": "Enter CTR Maribor via REPs and routes as depicted.",
+      "reportingNote": "Primary Maribor CTR REPs shown on the current Jepp terminal VFR chart include OSMOT, LAPNA, MN1, MN2, ME2, MS1, IRLIX, ME1, and MIRSO.",
+      "mapWaypointLabels": [
+        {"label": "OSMOT", "pointRef": "OSMOT"},
+        {"label": "LAPNA", "pointRef": "LAPNA"},
+        {"label": "MN1", "pointRef": "MN1"},
+        {"label": "MN2", "pointRef": "MN2"},
+        {"label": "ME2", "pointRef": "ME2"},
+        {"label": "MS1", "pointRef": "MS1"},
+        {"label": "IRLIX", "pointRef": "IRLIX"},
+        {"label": "ME1", "pointRef": "ME1"},
+        {"label": "MIRSO", "pointRef": "MIRSO"}
+      ]
+    }
+  ],
+  "namedMappings": {
+    "operationalSectors": [
+      {
+        "sectorId": "ljmb_approach_sector",
+        "label": "MARIBOR APPROACH",
+        "status": "scaffolded_from_jepp_19_1_and_19_2",
+        "kind": "vfr_operational_sector",
+        "anchorPointRef": "OSMOT",
+        "anchorRole": "ctr_boundary_reporting_point",
+        "entryExitPointRefs": ["GOLVA", "MUREG", "PETOV", "OBUTI", "NIDLO", "TISKO", "DIMLO", "MS2", "MS3", "ME3", "ME4", "MW1"],
+        "associatedProcedureIds": ["ljmb_tma_entry_general"],
+        "contactRequirement": {
+          "role": "APPROACH",
+          "beforeEntry": true
+        },
+        "altitudeLimits": {
+          "upperFeetMsl": 12500
+        },
+        "relationToCtr": "adjacent_to_ctr_operational_sector",
+        "behaviourNote": "Aggregate VFR operational sector covering the TMA Maribor 1 & 2 entry portion of Maribor Approach's airspace. Boundary geometry comes from the worked OpenAir-backed TMA volumes in the structured package rather than from a working sector DXF."
+      },
+      {
+        "sectorId": "ljmb_tower_sector",
+        "label": "MARIBOR TOWER",
+        "status": "scaffolded_from_jepp_19_1_and_19_2",
+        "kind": "vfr_operational_sector",
+        "anchorPointRef": "OSMOT",
+        "anchorRole": "ctr_boundary_reporting_point",
+        "entryExitPointRefs": ["OSMOT", "LAPNA", "MN1", "MN2", "ME2", "MS1", "IRLIX", "ME1", "MIRSO"],
+        "associatedProcedureIds": ["ljmb_ctr_entry_general"],
+        "contactRequirement": {
+          "role": "TOWER",
+          "beforeEntry": true
+        },
+        "altitudeLimits": {
+          "upperFeetMsl": 3500
+        },
+        "relationToCtr": "within_ctr_operational_sector",
+        "behaviourNote": "Maribor Tower VFR operational sector covering the CTR Maribor reporting points. Boundary geometry comes from the OpenAir-backed CTR MARIBOR volume in the structured package rather than from a working sector DXF."
+      }
+    ],
+    "vfrRoutes": [
+      {
+        "routeId": "ljmb_mn_corridor_inbound",
+        "status": "reporting_point_path_defined",
+        "routeType": "arrival_path",
+        "pathDefinition": {
+          "representation": "ordered_existing_point_path",
+          "nodeSequence": [
+            { "nodeRef": "MN1", "nodeType": "vfr_reporting_point", "geometrySource": "xplane_fix" },
+            { "nodeRef": "MN2", "nodeType": "vfr_reporting_point", "geometrySource": "xplane_fix" }
+          ],
+          "segmentSequence": [
+            { "from": "MN1", "to": "MN2", "status": "resolved_by_existing_reporting_points" }
+          ]
+        },
+        "note": "Jepp 19-1 depicts a named corridor line from MN1 via MN2 toward the main 14/32 circuit NW entry. The circuit-join endpoint is not yet authored as a named anchor."
+      },
+      {
+        "routeId": "ljmb_mw_corridor_inbound",
+        "status": "reporting_point_path_defined",
+        "routeType": "arrival_path",
+        "pathDefinition": {
+          "representation": "ordered_existing_point_path",
+          "nodeSequence": [
+            { "nodeRef": "MW1", "nodeType": "vfr_reporting_point", "geometrySource": "xplane_fix" },
+            { "nodeRef": "LAPNA", "nodeType": "vfr_reporting_point", "geometrySource": "xplane_fix" }
+          ],
+          "segmentSequence": [
+            { "from": "MW1", "to": "LAPNA", "status": "resolved_by_existing_reporting_points" }
+          ]
+        },
+        "note": "Jepp 19-1 depicts a corridor from the MW1 TMA entry toward the LAPNA CTR reporting point. The inbound leg onto the airfield itself is not yet authored as a route segment."
+      }
+    ]
+  },
+  "authoringStatus": [
+    {
+      "id": "baseline_reference",
+      "status": "ready",
+      "artifact": "cad/airports/ljmb_xplane_baseline.dxf",
+      "notes": [
+        "The X-Plane apt.dat sample for LJMB is already checked into migration test resources.",
+        "The first bootstrap slice should use the baseline DXF plus the existing local chart/tile material as reference."
+      ]
+    },
+    {
+      "id": "airspace_reference",
+      "status": "ready",
+      "artifact": "cad/airports/ljmb_airspace_working.dxf",
+      "notes": [
+        "A standalone editable OFMX-backed airspace reference DXF is now available.",
+        "This can be used for early VFR / CTR / TMA authoring before any hand-authored ground DXFs exist."
+      ]
+    },
+    {
+      "id": "combined_reference",
+      "status": "ready",
+      "artifact": "cad/airports/ljmb_working_combined.dxf",
+      "notes": [
+        "A combined working DXF is now available and carries both the baseline reference layers and the first authored LJMB ground geometry.",
+        "It currently carries apt.dat baseline geometry, VFR points, parking/taxi reference, preserved NEW_* authoring layers, and an OSM-derived raster underlay."
+      ]
+    },
+    {
+      "id": "ground_graph",
+      "status": "ready",
+      "artifact": "cad/airports/ljmb_working_combined.dxf",
+      "notes": [
+        "The working DXF now contains authored NEW_Taxi, NEW_Parking, NEW_Holding, and New_Mano layers.",
+        "REF_ROUTE_RUNWAYS plus NEW_* now describe the current LJMB ground graph.",
+        "The structured-airport-package builder now consumes these authored layers directly instead of relying only on the apt.dat baseline.",
+        "Taxiway names and stand names remain reference-inferred for version 1 and should still be confirmed explicitly later."
+      ]
+    },
+    {
+      "id": "vfr_routes_and_airspace",
+      "status": "airspace_candidate_ready",
+      "artifact": "cad/airports/rendered/ljmb/structured-airport-package.json",
+      "notes": [
+        "The Jepp trip kit contains VFR route and TMA/CTR briefing material.",
+        "The current OFMX selection still yields 0 LJMB airspace records, but OpenAir now supplies the first candidate CTR/TMA/RMZ boundary set.",
+        "The structured package currently carries OpenAir-backed candidate airspace volumes for CTR MARIBOR, TMA MARIBOR 1/2, TMA MURA, TMA DOLSKO 1, and nearby RMZ context.",
+        "VFR routes and published VFR procedures are still not authored."
+      ]
+    },
+    {
+      "id": "ifr_geometry",
+      "status": "inventory_only",
+      "artifact": "data/charts/LJMB/LJMB.pdf",
+      "notes": [
+        "The local source package includes Jepp STAR/SID/ILS material and an ARINC bundle.",
+        "No LJMB IFR runtime projection has started yet."
+      ]
+    }
+  ],
+  "bootstrapNotes": [
+    "This is a bootstrap manifest only. It is intentionally lighter than LOWG and does not yet define drawing transforms or named mappings.",
+    "The working DXF now acts as the authored ground-graph source for the first LJMB migration slice.",
+    "OpenAir now acts as the first structured airspace fallback because the current LJMB OFMX selection does not expose local airspace records.",
+    "The next authoring slice should add explicit named mappings once VFR routes, sectors, and richer airspace geometry are drawn."
+  ]
+}

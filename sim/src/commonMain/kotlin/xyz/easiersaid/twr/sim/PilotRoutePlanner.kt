@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.sim
 import arrow.core.Either
 import arrow.core.None
 import arrow.core.Option
+import arrow.core.Some
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
@@ -103,6 +104,33 @@ sealed interface RoutingError {
      * author must ensure every waypoint used in a route is present in the index.
      */
     data class WaypointNotInIndex(val point: xyz.easiersaid.twr.protocol.PointId) : RoutingError
+
+    /**
+     * A cross-aerodrome route refers to a transit waypoint (TMA entry,
+     * CTR entry) that doesn't resolve to a [Fix] in the world.
+     */
+    data class MissingTransitWaypoint(
+        val ident: xyz.easiersaid.twr.protocol.FixId,
+    ) : RoutingError
+
+    /**
+     * The destination aerodrome has no usable runway — no weather-driven
+     * runway selection is possible (e.g. wind data missing, or the aerodrome
+     * has no runways at all).
+     */
+    data class NoArrivalRunway(
+        val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
+    ) : RoutingError
+
+    /**
+     * No published entry/join sequence is available for the (aerodrome,
+     * runway) combination — circuit projection or join-leg authoring
+     * incomplete.
+     */
+    data class NoEntrySequenceForRunway(
+        val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
+        val runway: xyz.easiersaid.twr.protocol.RunwayId,
+    ) : RoutingError
 }
 
 // ── Route builder ───────────────────────────────────────────────────
@@ -160,9 +188,31 @@ private fun buildCircuitModeRoute(
 
     // Arrival join is not used in circuit training (pilot is already at the aerodrome).
     is TaskName.ArrivalJoin -> RoutingError.InvalidCombination(mode, taskName).left()
+
+    // Cross-aerodrome transit doesn't compose with Circuit mode — circuit mode
+    // is for circuit-training missions at a single aerodrome.
+    is TaskName.CrossAerodromeTransit -> RoutingError.InvalidCombination(mode, taskName).left()
 }
 
 // ── Visual mode ─────────────────────────────────────────────────────
+
+/**
+ * Cross-aerodrome route context: the published TMA/CTR entry waypoints
+ * for a [HighLevelGoal.VfrCrossAerodromeTransit] mission. Carried into
+ * [buildVisualModeRoute] so the per-phase route builders can produce
+ * cross-aerodrome routes (Transit phase: head to TMA entry; ArrivalJoin
+ * phase: route from TMA entry through CTR REPs to the circuit join).
+ *
+ * [joinLeg] is supplied by the goal (not derived); the route builder
+ * uses it directly rather than falling back to a silent default.
+ */
+internal data class CrossAerodromeContext(
+    val tmaEntry: xyz.easiersaid.twr.protocol.FixId,
+    val ctrEntry: xyz.easiersaid.twr.protocol.FixId,
+    val ctrCorridorWaypoints: List<xyz.easiersaid.twr.protocol.FixId>,
+    val joinLeg: LegName,
+    val enRouteAltitudeM: Double,
+)
 
 /**
  * Build an airborne route for Visual navigation mode. Package-private so
@@ -176,14 +226,26 @@ internal fun buildVisualModeRoute(
     world: AviationWorld,
     worldIndex: WorldIndex,
     joinLeg: Option<LegName> = None,
+    crossAerodrome: Option<CrossAerodromeContext> = None,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // Departure climb-out: dep end → upwind → crosswind → extend straight out.
     is TaskName.Depart -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
 
-    // Visual transit: use the standard departure climb-out route as an approximation.
-    // The aircraft follows upwind/crosswind until FLY_DEPARTURE completes (step completion
-    // is driven by zone-exit detection, not by reaching Crosswind — deferred, see A6 in .plan).
-    is TaskName.Transit -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
+    // Visual transit: for a single-aerodrome mission this is the same as
+    // departure climb-out (zone exit ends the FLY_DEPARTURE primitive). For
+    // cross-aerodrome transit, the route extends from the departure end to
+    // the TMA-entry waypoint at the destination — the pilot navigates
+    // through the FIS region toward [crossAerodrome.tmaEntry].
+    is TaskName.Transit -> when (crossAerodrome) {
+        is None -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
+        is Some -> buildCrossAerodromeTransitRoute(
+            runwayId = mode.runway,
+            tmaEntry = crossAerodrome.value.tmaEntry,
+            enRouteAltitudeM = crossAerodrome.value.enRouteAltitudeM,
+            world = world,
+            worldIndex = worldIndex,
+        )
+    }
 
     // Circuit pattern at destination. Join leg comes from the JoinCircuit instruction
     // stored on the mission (A12); defaults to DOWNWIND if not yet instructed.
@@ -193,9 +255,25 @@ internal fun buildVisualModeRoute(
         mode.runway, joinLeg.getOrElse { LegName.DOWNWIND }, world, worldIndex,
     )
 
-    // Arrival join: pilot is inbound, awaiting joining instructions.
-    // Route planning deferred until the join type is known from ATC.
-    is TaskName.ArrivalJoin -> RoutingError.NotYetImplemented(mode, taskName).left()
+    // Arrival join: route from current position through the published CTR
+    // entry sequence to the circuit join leg. Cross-aerodrome only — single-
+    // aerodrome arrivals don't have a published CTR-entry sequence to follow.
+    is TaskName.ArrivalJoin -> when (crossAerodrome) {
+        is None -> RoutingError.NotYetImplemented(mode, taskName).left()
+        is Some -> buildCrossAerodromeArrivalJoinRoute(
+            runwayId = mode.runway,
+            tmaEntry = crossAerodrome.value.tmaEntry,
+            ctrEntry = crossAerodrome.value.ctrEntry,
+            corridorWaypoints = crossAerodrome.value.ctrCorridorWaypoints,
+            // Goal-supplied joinLeg is authoritative; ATC override (mission.joinLeg)
+            // takes priority if present. No silent default — a cross-aerodrome
+            // mission *must* declare a join leg in its goal (`HighLevelGoal.
+            // VfrCrossAerodromeTransit.joinLeg`).
+            joinLeg = joinLeg.getOrElse { crossAerodrome.value.joinLeg },
+            world = world,
+            worldIndex = worldIndex,
+        )
+    }
 
     // Arrive compound: dispatches to sub-tasks, not directly routable.
     is TaskName.Arrive -> RoutingError.InvalidCombination(mode, taskName).left()
@@ -209,6 +287,12 @@ internal fun buildVisualModeRoute(
 
     // Structural — never the active compound.
     is TaskName.CircuitTraining -> RoutingError.InvalidCombination(mode, taskName).left()
+
+    // CrossAerodromeTransit is the root compound and never the active
+    // compound during route construction — phase children (Depart,
+    // Transit, ArrivalJoin, Circuit, GroundDeparture, GroundArrival)
+    // dispatch through the branches above. Reaching here is structural.
+    is TaskName.CrossAerodromeTransit -> RoutingError.InvalidCombination(mode, taskName).left()
 }
 
 // ── Instrument mode ─────────────────────────────────────────────────
@@ -241,6 +325,10 @@ private fun buildInstrumentModeRoute(
     is TaskName.GroundArrival -> RoutingError.InvalidCombination(mode, taskName).left()
 
     is TaskName.CircuitTraining -> RoutingError.InvalidCombination(mode, taskName).left()
+
+    // CrossAerodromeTransit is the root compound and never the active
+    // compound during route construction. Reaching here is structural.
+    is TaskName.CrossAerodromeTransit -> RoutingError.InvalidCombination(mode, taskName).left()
 }
 
 // ── Emergency mode (deferred) ───────────────────────────────────────
@@ -262,6 +350,8 @@ private fun buildEmergencyModeRoute(
     is TaskName.GroundArrival -> RoutingError.InvalidCombination(mode, taskName).left()
 
     is TaskName.CircuitTraining -> RoutingError.InvalidCombination(mode, taskName).left()
+
+    is TaskName.CrossAerodromeTransit -> RoutingError.InvalidCombination(mode, taskName).left()
 }
 
 // ── Route construction helpers ──────────────────────────────────────
@@ -385,6 +475,127 @@ internal fun buildCircuitFromLeg(
     }.distinct()
 
     if (segments.size < 2) return RoutingError.InsufficientGeometry("Circuit from $startLeg has < 2 waypoints").left()
+
+    val waypoints = NonEmptyList(segments.first(), segments.drop(1))
+    return PilotRoute.Airborne(
+        waypoints = waypoints,
+        targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        arrivalPhase = PilotPhase.LandingRoll,
+    ).right()
+}
+
+/**
+ * Cross-aerodrome transit route: from the source runway's departure end,
+ * out through the climb-out leg, to the destination's TMA-entry waypoint.
+ *
+ * The route terminates at [tmaEntry] — when the pilot reaches it, the
+ * Transit phase completes and the ArrivalJoin phase begins.
+ *
+ * Note (G1-DEF-11): the source-airport climb-out points and the
+ * destination's [tmaEntry] live in different airport-local Cartesian
+ * frames in the merged world; the geometric distance between them is
+ * meaningless until the merge reprojects to a shared frame. The
+ * waypoint *identity* sequence is correct here; flight tracking will
+ * succeed only after G1-DEF-11 lands.
+ */
+internal fun buildCrossAerodromeTransitRoute(
+    runwayId: RunwayId,
+    tmaEntry: xyz.easiersaid.twr.protocol.FixId,
+    enRouteAltitudeM: Double,
+    world: AviationWorld,
+    worldIndex: WorldIndex,
+): Either<RoutingError, PilotRoute.Airborne> {
+    val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
+        .fold({ return it.left() }, { it })
+    val runwayPath = runway.path.points
+    if (runwayPath.size < 2) return RoutingError.InsufficientGeometry("Runway $runwayId has < 2 path points").left()
+    val departureEnd = runwayPath.last()
+    val threshold = runway.threshold
+    val tmaEntryFix = world.fixes[tmaEntry] ?: return RoutingError.MissingTransitWaypoint(tmaEntry).left()
+
+    val upwind = legPoints(circuit, LegName.UPWIND, excludeThreshold = threshold)
+    val crosswind = legPoints(circuit, LegName.CROSSWIND, excludeThreshold = threshold)
+
+    val segments = buildList {
+        add(departureEnd)
+        addAll(upwind)
+        addAll(crosswind)
+        add(tmaEntryFix.point)
+    }.distinct()
+
+    // arrivalPhase = Crosswind: at the TMA entry the pilot is in stable cruise,
+    // not climbing. Matches the buildVisualDepartureRoute idiom (Crosswind as
+    // "stable, no specific stage"). En-route altitude is supplied by the goal
+    // — for LOWG → LJMB this clears the Pohorje massif (~5000 ft). Note
+    // (atc-general round-3): the upwind/crosswind dogleg here is a circuit-leg
+    // approximation pending VFR-exit-lane authoring (G1-DEF-12).
+    val waypoints = NonEmptyList(segments.first(), segments.drop(1))
+    return PilotRoute.Airborne(
+        waypoints = waypoints,
+        targetAltitudeM = enRouteAltitudeM,
+        arrivalPhase = PilotPhase.Crosswind,
+    ).right()
+}
+
+/**
+ * Cross-aerodrome arrival-join route: from the destination's TMA-entry
+ * waypoint, through the CTR-entry waypoint, into the destination circuit
+ * at [joinLeg].
+ *
+ * The pilot is already at or near [tmaEntry] when this route is built
+ * (the Transit phase has completed). The route runs:
+ * `tmaEntry → ctrEntry → [circuit-leg points from joinLeg onward] →
+ *  threshold`.
+ */
+internal fun buildCrossAerodromeArrivalJoinRoute(
+    runwayId: RunwayId,
+    tmaEntry: xyz.easiersaid.twr.protocol.FixId,
+    ctrEntry: xyz.easiersaid.twr.protocol.FixId,
+    corridorWaypoints: List<xyz.easiersaid.twr.protocol.FixId>,
+    joinLeg: LegName,
+    world: AviationWorld,
+    worldIndex: WorldIndex,
+): Either<RoutingError, PilotRoute.Airborne> {
+    val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
+        .fold({ return it.left() }, { it })
+    val threshold = runway.threshold
+    val tmaEntryFix = world.fixes[tmaEntry] ?: return RoutingError.MissingTransitWaypoint(tmaEntry).left()
+    val ctrEntryFix = world.fixes[ctrEntry] ?: return RoutingError.MissingTransitWaypoint(ctrEntry).left()
+    // Resolve every corridor waypoint up front; report the first missing one.
+    val corridorFixes = corridorWaypoints.map { ident ->
+        world.fixes[ident] ?: return RoutingError.MissingTransitWaypoint(ident).left()
+    }
+    val arrivalAerodrome = world.aerodromes.entries
+        .firstOrNull { (_, ad) -> runwayId in ad.runways.keys }?.key
+        ?: return RoutingError.RunwayNotFound(runwayId).left()
+
+    val startIndex = CIRCUIT_LEG_ORDER.indexOf(joinLeg)
+    if (startIndex < 0) {
+        return RoutingError.NoEntrySequenceForRunway(
+            aerodrome = arrivalAerodrome,
+            runway = runwayId,
+        ).left()
+    }
+
+    val segments = buildList {
+        add(tmaEntryFix.point)
+        add(ctrEntryFix.point)
+        // Corridor REPs between the CTR entry and the circuit join (e.g. MN2
+        // between MN1 and the right-base join for LJMB RWY 14). Per atc-
+        // general round-3 finding: skipping these amounts to skipping a
+        // published reporting point.
+        for (fix in corridorFixes) add(fix.point)
+        for (i in startIndex until CIRCUIT_LEG_ORDER.size) {
+            val points = legPoints(circuit, CIRCUIT_LEG_ORDER[i], excludeThreshold = threshold)
+            if (points.isEmpty()) {
+                return RoutingError.InsufficientGeometry(
+                    "Circuit ${circuit.id} has no points for leg ${CIRCUIT_LEG_ORDER[i]}",
+                ).left()
+            }
+            if (i == startIndex) addAll(points.drop(1)) else addAll(points)
+        }
+        add(threshold)
+    }.distinct()
 
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
@@ -713,6 +924,11 @@ fun deriveNavigationMode(
     is HighLevelGoal.Departure -> NavigationMode.Visual(runway, goal.destination).right()
     is HighLevelGoal.Arrival -> NavigationMode.Visual(runway, destination = null).right()
     is HighLevelGoal.Transit -> NavigationMode.Visual(runway, goal.destination).right()
+    is HighLevelGoal.VfrCrossAerodromeTransit ->
+        // Visual mode at the *destination* — the runway parameter here is the
+        // active runway at goal.to, not goal.from. Cross-aerodrome route
+        // construction lands in G1.4.
+        NavigationMode.Visual(runway, goal.to).right()
 }
 
 // ── Shared helpers ──────────────────────────────────────────────────

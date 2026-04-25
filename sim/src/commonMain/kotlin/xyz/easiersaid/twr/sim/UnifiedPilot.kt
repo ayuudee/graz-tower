@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.None
+import arrow.core.Option
 import arrow.core.Some
 import arrow.core.getOrElse
 import arrow.core.toOption
@@ -251,7 +252,25 @@ private fun planVisualRoute(
         is None -> derivedLeg
     }
 
-    val route = buildVisualModeRoute(mode, taskName, world, worldIndex, joinLeg)
+    // Cross-aerodrome context: derived from the mission goal so the per-phase
+    // route builders can produce TMA/CTR transit and join routes. None for
+    // single-aerodrome missions (existing behaviour preserved).
+    val crossAerodrome: Option<CrossAerodromeContext> = when (val g = mission.goal) {
+        is HighLevelGoal.VfrCrossAerodromeTransit ->
+            Some(CrossAerodromeContext(
+                tmaEntry = g.tmaEntry,
+                ctrEntry = g.ctrEntry,
+                ctrCorridorWaypoints = g.ctrCorridorWaypoints,
+                joinLeg = g.joinLeg,
+                enRouteAltitudeM = g.enRouteAltitudeM,
+            ))
+        is HighLevelGoal.Departure,
+        is HighLevelGoal.Arrival,
+        is HighLevelGoal.CircuitTraining,
+        is HighLevelGoal.Transit -> None
+    }
+
+    val route = buildVisualModeRoute(mode, taskName, world, worldIndex, joinLeg, crossAerodrome)
         .getOrElse { return null }
 
     // Apply ATC altitude restriction (E3): StopClimbAt caps targetAltitudeM so the

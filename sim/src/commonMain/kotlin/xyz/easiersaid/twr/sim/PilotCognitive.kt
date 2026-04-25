@@ -52,6 +52,58 @@ data class CognitiveDecision(
 )
 
 /**
+ * Predicate: should the pilot self-initiate contact with a new agency?
+ *
+ * Pure decision; no state side-effects. The caller (Step layer) is
+ * responsible for converting a fired trigger into a [transferResponsibility]
+ * call plus an [InitialContact] transmission. This split keeps cognitive
+ * reasoning testable in isolation from sim state mutations.
+ *
+ * Fires when **all** of these hold:
+ *
+ * 1. Aircraft is airborne.
+ * 2. Mission is [HighLevelGoal.VfrCrossAerodromeTransit] — single-aerodrome
+ *    transitions are controller-initiated and use [applyContactFrequency].
+ * 3. Aircraft is **currently uncontrolled** — no controller in
+ *    [SimState.controllers] has the aircraft in [ControllerSpec.responsibilities].
+ *    This guards against firing while LOWG_TWR or any other controller still
+ *    owns the aircraft. (Geometric "outside TMA" alone is not enough — the
+ *    LOWG zone is also outside any LJMB volume.)
+ * 4. Some trigger in [triggers] fires per [PilotAirspace.frequencyChangeTriggerAt].
+ */
+fun pilotInitiatedContactTrigger(
+    aircraft: AircraftState,
+    mission: PilotMission,
+    state: SimState,
+    triggers: List<PilotAirspace.FrequencyChangeTrigger>,
+): arrow.core.Option<PilotAirspace.FrequencyChangeTrigger> {
+    if (isAirborneOrAirborneTransitionPhase(aircraft.phase).not()) return arrow.core.None
+    if (mission.goal !is HighLevelGoal.VfrCrossAerodromeTransit) return arrow.core.None
+    val currentOwner = state.controllers.values.firstOrNull { aircraft.id in it.responsibilities }
+    if (currentOwner != null) return arrow.core.None  // "currently uncontrolled" guard
+    return PilotAirspace.frequencyChangeTriggerAt(
+        world = state.world,
+        worldIndex = state.worldIndex,
+        point = aircraft.position,
+        currentFrequency = null,  // uncontrolled → no current frequency to skip
+        triggers = triggers,
+    )
+}
+
+/**
+ * True when the aircraft is airborne (or in a takeoff/landing transition).
+ * Mirrors the negation of `isGroundPhase` in `ControllerWiring.kt`.
+ */
+private fun isAirborneOrAirborneTransitionPhase(phase: PilotPhase): Boolean = when (phase) {
+    PilotPhase.AtStand, PilotPhase.Taxiing,
+    PilotPhase.HoldingShort, PilotPhase.LinedUp,
+    PilotPhase.TakeoffRoll, PilotPhase.Parked,
+    PilotPhase.LandingRoll, PilotPhase.Vacating, PilotPhase.ClearOfRunway -> false
+    PilotPhase.Climbing, PilotPhase.Crosswind,
+    PilotPhase.Downwind, PilotPhase.Base, PilotPhase.Final -> true
+}
+
+/**
  * Main cognitive decision: advance the HTN, generate transmissions.
  */
 @Suppress("LoopWithTooManyJumpStatements")

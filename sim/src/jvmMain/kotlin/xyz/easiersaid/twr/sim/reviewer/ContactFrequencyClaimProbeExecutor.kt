@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim.reviewer
 
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.ReceivedMessage
 import xyz.easiersaid.twr.controller.observe.BeliefState
@@ -104,7 +105,8 @@ object ContactFrequencyClaimProbeExecutor {
                     responsibilities = emptySet(),
                 ),
             ),
-        ).copy(
+            weatherByAerodrome = emptyMap(),
+        ).getOrElse { error("Probe baseState failed validation: $it") }.copy(
             beliefs = mapOf(groundId to priorBeliefs),
             controllerInbox = if (inboxMessages.isEmpty()) emptyMap()
             else mapOf(groundId to inboxMessages),

@@ -71,6 +71,16 @@ data class ClearanceSummary(
     val issuedAt: SimTime,
 )
 
+/**
+ * Observed weather at a single aerodrome.
+ *
+ * The [wind] field is intentionally nullable — it represents "no wind report
+ * available." When wind is null, [selectRunwayIntoWind] returns null and
+ * downstream controller logic that needs an active runway must defer.
+ * Tightening this to a typed `Either<NoWindReport, Wind>` is tracked as
+ * G1-DEF-7 in `docs/design/g1-cross-aerodrome-vfr-outbound-2026-04-24.md`,
+ * scheduled as a pre-G1.6 must-fix.
+ */
 data class WeatherObservation(val wind: Wind?, val qnh: PressureSetting?, val visibility: Int?)
 
 data class PendingHandoff(val aircraft: AircraftId, val from: ControllerId)

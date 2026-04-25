@@ -54,7 +54,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         runways = deriveRunwayObservations(state, spec.aerodromeId),
         activeClearances = emptyMap(),
         receivedMessages = state.controllerInbox[controllerId].orEmpty(),
-        weather = null,
+        weather = state.weatherByAerodrome[spec.aerodromeId],
         pendingInboundHandoffs = emptyList(),
         worldIndex = state.worldIndex,
     )

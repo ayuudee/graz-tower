@@ -1,7 +1,9 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
+import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AerodromeRole
 import xyz.easiersaid.twr.core.world.AuthorityGrant
@@ -234,7 +236,10 @@ class ArrivalVerticalTest {
             world = world,
             worldIndex = worldIndex,
             controllers = listOf(groundController, towerController, approachController),
-        ),
+            weatherByAerodrome = world.aerodromes.keys.associateWith {
+                WeatherObservation(wind = null, qnh = null, visibility = null)
+            },
+        ).getOrElse { error("ArrivalVertical setup invalid: $it") },
         initialEvents = listOf(
             SimEvent.PhysicsTick(SimTime.ZERO),
             SimEvent.Spawn(SimTime.ZERO, alpha()),

@@ -1,6 +1,8 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
+import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.Degrees
@@ -127,7 +129,10 @@ class SimEngineTest {
             world = world,
             worldIndex = worldIndex,
             controllers = listOf(groundController),
-        ),
+            weatherByAerodrome = world.aerodromes.keys.associateWith {
+                WeatherObservation(wind = null, qnh = null, visibility = null)
+            },
+        ).getOrElse { error("SimEngineTest setup invalid: $it") },
         initialEvents = listOf(
             SimEvent.PhysicsTick(SimTime.ZERO),
             SimEvent.Spawn(SimTime.ZERO, alpha()),

@@ -539,29 +539,98 @@ private fun applyAfterLandingVacateVia(
 }
 
 /**
- * Responsibility transfer. Remove [ac] from the current owning controller's
- * [ControllerSpec.responsibilities], find the target-role controller at the
- * same aerodrome, and add [ac] to theirs. If no target exists (e.g. a test
- * with only a tower controller and no approach), responsibility is released —
- * the aircraft becomes unmanaged, which the caller sees as a gap in coverage.
+ * Typed errors raised by [transferResponsibility].
+ */
+sealed interface TransferError {
+    /** No controller at [aerodrome] holds the [role]; the strict transfer
+     *  cannot resolve a target. Callers that legitimately want to release
+     *  responsibility into the void use [releaseResponsibility] instead. */
+    data class TargetUnresolved(
+        val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
+        val role: RoleName,
+    ) : TransferError
+}
+
+/**
+ * Strict responsibility transfer. Removes [ac] from any controller currently
+ * holding it (regardless of aerodrome — supports cross-aerodrome pilot-
+ * initiated transfers) and adds [ac] to the controller at [toAerodrome] with
+ * [toRole]. Returns [TransferError.TargetUnresolved] if no such controller
+ * exists.
+ *
+ * For the explicit "drop into the void" case (e.g. LOWG → FIS where no FIS
+ * controller is modelled), call [releaseResponsibility]. Distinguishing the
+ * two is intentional: a typo'd `RoleName` should not silently strip
+ * responsibility (round-3 impact-review finding). When the caller really
+ * means "no target," they say so.
+ */
+internal fun transferResponsibility(
+    state: SimState,
+    ac: AircraftId,
+    toAerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
+    toRole: RoleName,
+): arrow.core.Either<TransferError, SimState> {
+    val target = state.controllers.values
+        .firstOrNull { it.aerodromeId == toAerodrome && it.role == toRole }
+        ?: return arrow.core.Either.Left(TransferError.TargetUnresolved(toAerodrome, toRole))
+    val controllersMap = LinkedHashMap(state.controllers)
+    state.controllers.values.firstOrNull { ac in it.responsibilities }?.let { current ->
+        controllersMap[current.id] = current.copy(responsibilities = current.responsibilities - ac)
+    }
+    controllersMap[target.id] = target.copy(responsibilities = target.responsibilities + ac)
+    return arrow.core.Either.Right(state.copy(controllers = controllersMap))
+}
+
+/**
+ * Explicit drop: removes [ac] from any controller currently holding it,
+ * leaving the aircraft unmanaged. Used for the "release into the void" case
+ * — e.g. LOWG TWR sending `ContactFrequency` to a FIS frequency on which no
+ * controller is modelled.
+ *
+ * This is total: there is no failure case. The aircraft was either owned (now
+ * released) or already unowned (no-op).
+ */
+internal fun releaseResponsibility(
+    state: SimState,
+    ac: AircraftId,
+): SimState {
+    val current = state.controllers.values.firstOrNull { ac in it.responsibilities }
+        ?: return state
+    val controllersMap = LinkedHashMap(state.controllers)
+    controllersMap[current.id] = current.copy(responsibilities = current.responsibilities - ac)
+    return state.copy(controllers = controllersMap)
+}
+
+/**
+ * Controller-initiated responsibility transfer triggered by a `ContactFrequency`
+ * instruction. Same-aerodrome by construction: the target controller is at the
+ * current owner's aerodrome with the requested role. If no target controller
+ * exists for `(currentAerodrome, instruction.role)`, falls through to
+ * [releaseResponsibility] — the aircraft is left unmanaged. This is the
+ * controller's *intent*: a `ContactFrequency` to a role with no simulated
+ * controller is the LOWG → FIS pattern.
+ *
+ * Returns the state unchanged if no controller currently holds [ac] (round-3
+ * impact-review fix: this is now a defined no-op rather than a silent return).
  */
 private fun applyContactFrequency(
     state: SimState,
     ac: AircraftState,
     instruction: ContactFrequency,
 ): SimState {
-    val currentId = state.controllers.values
-        .firstOrNull { ac.id in it.responsibilities }
-        ?.id ?: return state
-    val current = state.controllers.getValue(currentId)
-    val targetId = findRoleController(state, current.aerodromeId, instruction.role)
-    val withoutCurrent = current.copy(responsibilities = current.responsibilities - ac.id)
-    val controllersMap = LinkedHashMap(state.controllers).apply { put(currentId, withoutCurrent) }
-    if (targetId != null) {
-        val target = controllersMap.getValue(targetId)
-        controllersMap[targetId] = target.copy(responsibilities = target.responsibilities + ac.id)
-    }
-    return state.copy(controllers = controllersMap)
+    val current = state.controllers.values.firstOrNull { ac.id in it.responsibilities }
+        ?: return state  // No current owner — defined no-op (no aircraft to transfer).
+    return transferResponsibility(
+        state = state,
+        ac = ac.id,
+        toAerodrome = current.aerodromeId,
+        toRole = instruction.role,
+    ).fold(
+        // Target unresolved at the current aerodrome → explicit release.
+        // This is the LOWG → FIS case where no FIS controller is modelled.
+        ifLeft = { releaseResponsibility(state, ac.id) },
+        ifRight = { it },
+    )
 }
 
 private fun findRoleController(

@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.controller.PilotGoal
@@ -124,7 +125,9 @@ class CommsStepOnTest {
             worldIndex = worldIndex,
             aircraft = listOf(alpha, bravo),
             controllers = listOf(controller),
-        ).copy(nextTransmissionId = 100L)
+            weatherByAerodrome = emptyMap(),
+        ).getOrElse { error("CommsStepOn setup invalid: $it") }
+            .copy(nextTransmissionId = 100L)
 
         val t0 = SimTime.ZERO
         val txA = txAt(id = 1L, target = alphaId, via = standAId, destination = destA, startAt = t0)
