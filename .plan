@@ -181,27 +181,35 @@ Three-spike investigation in `run_icao4444_ollama_first_prototype.py`:
 - Spike 3: added Notes-as-non-normative challenger guard, verdict-direction sanity check, and a new
   bundle-gate stage between defense and judge. Bundle gate produces a mechanical `scopeComplete`
   per candidate; the judge now cites it directly in rationales instead of relitigating bundle/split.
-Outcome: transfer family 2 → 3 accepted (v4 VMC/IMC judge inconsistency resolved); readback family
-3 → 4 accepted; cross-clause contamination, Notes bias, and direction inversion all eliminated.
-Surviving challenger noise (mixed-modality structural concerns labelled `authority_too_high`) is
-filtered by the bundle gate and tracked under `RR-5`.
+Outcome: transfer family 2 → 3 accepted on the original Spike 3 run (readback 3 → 4); cross-clause
+contamination, Notes bias, and direction inversion all eliminated and stable across reruns. The
+v4 VMC/IMC judge inconsistency is **substantially reduced but not fully eliminated** — see `RR-7`:
+a robustness rerun showed the bundle gate making asymmetric calls on parallel mutually-exclusive
+sibling clauses (VMC scope=false / IMC scope=true on identical candidate shapes), demoting one of
+the two transfer accepts to `needs_bundle`. Readback adjudication remains rock-stable across reruns.
+Surviving challenger noise (mixed-modality structural concerns labelled `authority_too_high`) was
+initially filtered by the bundle gate via the judge; closed as `RR-5`.
 Impact: M | Effort: M
 
-**RR-5 — Challenger uses `authority_too_high` for mixed-modality structural concerns**
-On candidates whose `sourceItemIds` span a parent clause plus nested conditions (`mixed` modality),
-the Ollama challenger consistently labels them `authority_too_high` and produces concerns that are
-structural ("highest modality is shall, but mixed modalities... overreach"), not authority-related.
-The Spike 3 system prompt explicitly directs structural concerns toward `wrong_split` / `overbroad`
-/ `underspecified`, but the model does not follow that routing.
-On `ICAO 4444` the bundle gate filters this cleanly because most good candidates have `shall`
-anchors the judge can lean on. On `EGAST VFR` (Spike 4) the same bug demoted 2 of 5 promotable
-candidates (`req_wilco_usage`, `req_request_clarification`) from `accepted` to `advisory_only` —
-the judge could not lean on `shall` because the family ceiling is `best_practice` and the source
-modalities are genuinely mixed (`should`, `must` in best-practice context, no clause numbering).
-Impact upgraded from L to M because the bug damages registry-surface outcomes on advisory source
-families, not just the challenger surface. Likely fix: forbid `authority_too_high` on candidates
-whose bundle-gate `scopeComplete` is true on the same items, or add a verdict-classifier post-step
-that re-routes mis-typed challenger concerns.
+**RR-5 — Challenger uses `authority_too_high` for mixed-modality structural concerns** — DONE (2026-04-25)
+Spike 5 (prompt-only fix: reorder bundle gate before challenger; tell challenger to respect bundle
+gate's `scopeComplete=true`) did NOT land — the model continued to misroute structural concerns
+through authority verdicts on mixed-modality candidates regardless of prompt instruction. EGAST
+regressed (3 → 1 accepted) from unrelated judge stochasticity (now tracked under `RR-8`).
+Spike 6 fixed it deterministically: a Python post-step `apply_bundle_gate_override` examines the
+challenger's verdict alongside the bundle-gate result and the candidate's classification, and
+overrides `authority_too_high` / `authority_too_low` to `supported` only when:
+  1. bundle gate `scopeComplete=true` on the candidate's items, AND
+  2. candidate's `authorityClass` is consistent with its declared `modality`
+     (per the modality-floor mapping `_AUTHORITY_CLASS_BY_FLOOR`).
+The override declines when the candidate's authority is genuinely too high for its modality
+(e.g. `should` clause classified as `authoritative_requirement`) — preserving real challenger
+work. Audit records persist to `challenge_override/{candidateId}.json` for every fired override.
+Outcome (Spike 6 across three families): transfer 3 accepted (matches Spike 3 best); readback 4
+accepted (stable); EGAST 4 accepted — the best EGAST result yet, up from 1 in Spike 5 and 3 in
+Spike 4. 9 of 10 raw authority verdicts overridden; the 1 decline (`req_comm_transfer_timing` —
+should clause classified as authoritative_requirement) was correct: judge appropriately demoted
+to `advisory_only`.
 Impact: M | Effort: M
 
 **RR-6 — Ollama-first prototype generalises to EGAST advisory family** — DONE (2026-04-25)
@@ -215,6 +223,41 @@ reconciled items from 70 lines of layout-noisy source; the bundle gate sensibly 
 Required mechanical adjustments: `num_predict` for extraction attempts and reconciler bumped
 from 3500 to 8000, default `num_ctx` from 12288 to 16384, to absorb the wider extraction
 output some attempts produce on advisory prose with bullet lists.
+Impact: M | Effort: M
+
+**RR-7 — Bundle gate makes asymmetric calls on parallel mutually-exclusive sibling clauses**
+On a robustness rerun of Spike 3 against the `ICAO 4444` transfer family, the bundle gate
+returned `scopeComplete=false` for the VMC departure transfer candidate (`4.3.2.1.3.a`) —
+arguing that the candidate is missing the IMC sibling (`4.3.2.1.3.b`) — but returned
+`scopeComplete=true` for the IMC candidate (`4.3.2.1.3.b`), despite the situation being
+symmetric. Same parent, same shape, opposite verdict. The judge correctly followed the bundle
+gate (VMC → `needs_bundle`, IMC → `accepted`), so the inconsistency surfaces directly in the
+final registry decisions. The original Spike 3 transfer run had both siblings get
+`scopeComplete=true` and both `accepted`; the rerun did not. Readback adjudication, which has
+no parallel mutually-exclusive siblings in the slice, remained stable across runs.
+Likely fix: tighten the bundle-gate prompt to require it to consider parent-level branching —
+"when the candidate cites one branch of a parent's mutually-exclusive list, evaluate whether
+the parent's operative meaning is satisfiable from that branch alone or requires both"; or
+add a sibling-symmetry post-check that catches asymmetric verdicts on candidates rooted in
+the same parent and rejects the run for human review.
+Impact: M | Effort: M
+
+**RR-8 — Judge invents over-conservative rules on best_practice content**
+On Spikes 5 and 6, the judge has occasionally demoted candidates with `promotionHint=promote`,
+`authorityClass=best_practice`, and a clean challenger `supported` verdict to `advisory_only`,
+citing a rule that is **not in its prompt**: "if content is best-practice (non-normative),
+'advisory_only' is preferred over 'accepted' to avoid promoting beyond the source's normative
+weight." The actual prompt rule is narrower — it only forbids `accepted` when `promotionHint`
+is itself `advisory_only` or `support_only`. The judge invents a stricter rule on
+best-practice content and applies it inconsistently across runs.
+Effect on registry surface: drops EGAST acceptance rate by 1-2 candidates per run when the
+rule fires. Spike 6 EGAST: 4 accepted instead of the achievable 5 (one demoted candidate had
+hint=promote and a `supported` post-override challenger verdict).
+Likely fix: tighten the judge prompt to spell out the rule explicitly — "do NOT downgrade a
+candidate to `advisory_only` solely because its `authorityClass` is `best_practice`; only the
+`promotionHint` field controls advisory routing"; or add a deterministic guard that rejects
+judge decisions which contradict the candidate's `promotionHint=promote` without a clear
+challenger or bundle-gate basis.
 Impact: M | Effort: M
 
 ---

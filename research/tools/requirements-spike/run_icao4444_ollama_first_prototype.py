@@ -186,6 +186,74 @@ def normalize_judge_payload(payload: dict[str, Any], *, window: dict[str, Any], 
         payload["rationale"] = payload["challenge"]
 
 
+# Modality floors per authority class. Override fires only when the candidate's
+# authorityClass is at or above its modality's required floor — i.e. there is no
+# genuine authority discrepancy for the challenger to flag, so an authority verdict
+# is mis-routing a structural concern.
+_AUTHORITY_CLASS_BY_FLOOR: dict[str, set[str]] = {
+    "authoritative_requirement": {"shall", "mixed"},
+    "operational_guidance": {"shall", "should", "may", "note", "example", "none", "mixed"},
+    "best_practice": {"shall", "should", "may", "note", "example", "none", "mixed"},
+    "background_support": {"shall", "should", "may", "note", "example", "none", "mixed"},
+}
+
+
+def is_authority_consistent(modality: str | None, authority_class: str | None) -> bool:
+    if not authority_class:
+        return True
+    allowed = _AUTHORITY_CLASS_BY_FLOOR.get(authority_class)
+    if allowed is None:
+        return True
+    return (modality or "none") in allowed
+
+
+def apply_bundle_gate_override(
+    *,
+    challenge_parsed: dict[str, Any],
+    bundle_gate_parsed: dict[str, Any],
+    candidate: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """If the challenger raised an authority verdict but the bundle gate confirmed
+    structural completeness AND the candidate's authority class is consistent with
+    its declared modality, downgrade the verdict to `supported` and emit an audit
+    record. Otherwise return the challenge unchanged.
+
+    The override is the deterministic Spike 6 fix for RR-5: the challenger
+    consistently mis-routes structural concerns through the authority verdict on
+    mixed-modality candidates that the bundle gate has already cleared.
+    """
+    verdict = challenge_parsed.get("verdict")
+    if verdict not in {"authority_too_high", "authority_too_low"}:
+        return challenge_parsed, None
+    if bundle_gate_parsed.get("scopeComplete") is not True:
+        return challenge_parsed, None
+    candidate_modality = candidate.get("modality")
+    candidate_authority = candidate.get("authorityClass")
+    if not is_authority_consistent(candidate_modality, candidate_authority):
+        return challenge_parsed, None
+    overridden = dict(challenge_parsed)
+    overridden["verdict"] = "supported"
+    overridden["concerns"] = []
+    overridden["sourceQuotes"] = []
+    audit = {
+        "caseId": challenge_parsed.get("caseId"),
+        "candidateId": challenge_parsed.get("candidateId"),
+        "originalVerdict": verdict,
+        "originalConcerns": challenge_parsed.get("concerns", []),
+        "originalSourceQuotes": challenge_parsed.get("sourceQuotes", []),
+        "candidateModality": candidate_modality,
+        "candidateAuthorityClass": candidate_authority,
+        "bundleGateScopeComplete": bundle_gate_parsed.get("scopeComplete"),
+        "reason": (
+            "Bundle gate confirmed scopeComplete=true; candidate authorityClass "
+            "is consistent with its declared modality. The challenger's authority "
+            "verdict was therefore mis-routing a structural concern. Verdict "
+            "downgraded to `supported`."
+        ),
+    }
+    return overridden, audit
+
+
 def build_source_window_payload(source: Path, case: dict[str, Any]) -> dict[str, Any]:
     return {
         "caseId": case["caseId"],
@@ -442,7 +510,12 @@ Return JSON with exactly this shape:
     return system, user
 
 
-def challenge_prompts(window: dict[str, Any], structure: dict[str, Any], candidate: dict[str, Any]) -> tuple[str, str]:
+def challenge_prompts(
+    window: dict[str, Any],
+    structure: dict[str, Any],
+    candidate: dict[str, Any],
+    bundle_gate: dict[str, Any],
+) -> tuple[str, str]:
     system = (
         "You are the challenger in a source-grounded requirement review. "
         "Try to falsify the candidate from the supplied source. "
@@ -463,6 +536,11 @@ def challenge_prompts(window: dict[str, Any], structure: dict[str, Any], candida
         "Structural concerns (the candidate bundles items that should be split, or omits items it depends on) are NOT authority verdicts; "
         "use `wrong_split`, `overbroad`, or `underspecified` for those. Reserve `authority_too_high` / `authority_too_low` for cases where the candidate's `authorityClass` "
         "or `modality` field disagrees with the modality of its own cited items. "
+        "A bundle-gate stage has already evaluated structural completeness for this candidate; its result is supplied to you as `bundleGate`. "
+        "If `bundleGate.scopeComplete` is `true`, the structural fit of the candidate's `sourceItemIds` to its parent is already settled — "
+        "do NOT use `authority_too_high`, `authority_too_low`, or `wrong_split` to express bundle, scope, or mixed-modality concerns in that case. "
+        "If you have a structural concern that the bundle gate missed, use `overbroad` or `underspecified` and explain in `concerns`. "
+        "If `bundleGate.scopeComplete` is `false`, your structural concerns should align with `bundleGate.missingDependencies`; do not invent new ones. "
         "Be strict and concise. "
         "Return strict JSON only."
     )
@@ -474,7 +552,7 @@ Procedure:
 2. For each id, find that item in the structure and read its `text`.
 3. Identify the modality marker in that text (`shall`, `should`, `may`, `note`, `example`, or `none`).
 4. Combine those into an `effectiveModality` for the candidate as a whole. If the cited items use mixed modalities, return `mixed` and explain in `concerns`.
-5. Only after that, decide the verdict. Authority verdicts must be consistent with the effective modality you just declared.
+5. Only after that, decide the verdict. Authority verdicts must be consistent with the effective modality you just declared. Respect the bundle gate's scope verdict: do not raise authority verdicts to express scope concerns the bundle gate has already settled.
 6. Every quote in `sourceQuotes` must be exact text from one of the cited items.
 
 Source window:
@@ -485,6 +563,9 @@ Proposed structure:
 
 Candidate:
 {json.dumps(candidate, indent=2)}
+
+Bundle gate:
+{json.dumps(bundle_gate, indent=2)}
 
 Return JSON with exactly this shape:
 {{
@@ -790,7 +871,25 @@ def main() -> None:
             stage=f"candidate:{candidate.get('candidateId', '<unknown>')}",
         )
 
-        challenge_system, challenge_user = challenge_prompts(window, structure_result["parsed"], candidate)
+        bundle_gate_system, bundle_gate_user = bundle_gate_prompts(window, structure_result["parsed"], candidate)
+        bundle_gate_result = call_ollama_chat(
+            base_url=args.base_url,
+            model=args.bundle_gate_model,
+            system_prompt=bundle_gate_system,
+            user_prompt=bundle_gate_user,
+            temperature=0.0,
+            num_predict=600,
+            num_ctx=args.num_ctx,
+            timeout_seconds=180,
+        )
+        write_json(output_dir / "bundle_gate" / f"{candidate['candidateId']}.json", bundle_gate_result)
+        require_fields(
+            bundle_gate_result["parsed"],
+            ["caseId", "candidateId", "scopeComplete", "missingDependencies", "rationale"],
+            stage=f"bundle_gate:{candidate['candidateId']}",
+        )
+
+        challenge_system, challenge_user = challenge_prompts(window, structure_result["parsed"], candidate, bundle_gate_result["parsed"])
         challenge_result = call_ollama_chat(
             base_url=args.base_url,
             model=args.challenge_model,
@@ -816,6 +915,17 @@ def main() -> None:
             stage=f"challenge:{candidate['candidateId']}",
         )
 
+        challenge_for_judge, override_audit = apply_bundle_gate_override(
+            challenge_parsed=challenge_result["parsed"],
+            bundle_gate_parsed=bundle_gate_result["parsed"],
+            candidate=candidate,
+        )
+        if override_audit is not None:
+            write_json(
+                output_dir / "challenge_override" / f"{candidate['candidateId']}.json",
+                override_audit,
+            )
+
         defense_system, defense_user = defense_prompts(window, structure_result["parsed"], candidate)
         defense_result = call_ollama_chat(
             base_url=args.base_url,
@@ -830,29 +940,11 @@ def main() -> None:
         write_json(output_dir / "defense" / f"{candidate['candidateId']}.json", defense_result)
         require_fields(defense_result["parsed"], ["caseId", "candidateId", "verdict", "supports", "sourceQuotes"], stage=f"defense:{candidate['candidateId']}")
 
-        bundle_gate_system, bundle_gate_user = bundle_gate_prompts(window, structure_result["parsed"], candidate)
-        bundle_gate_result = call_ollama_chat(
-            base_url=args.base_url,
-            model=args.bundle_gate_model,
-            system_prompt=bundle_gate_system,
-            user_prompt=bundle_gate_user,
-            temperature=0.0,
-            num_predict=600,
-            num_ctx=args.num_ctx,
-            timeout_seconds=180,
-        )
-        write_json(output_dir / "bundle_gate" / f"{candidate['candidateId']}.json", bundle_gate_result)
-        require_fields(
-            bundle_gate_result["parsed"],
-            ["caseId", "candidateId", "scopeComplete", "missingDependencies", "rationale"],
-            stage=f"bundle_gate:{candidate['candidateId']}",
-        )
-
         judge_system, judge_user = judge_prompts(
             window,
             structure_result["parsed"],
             candidate,
-            challenge_result["parsed"],
+            challenge_for_judge,
             defense_result["parsed"],
             bundle_gate_result["parsed"],
         )
@@ -874,6 +966,8 @@ def main() -> None:
             {
                 "candidate": candidate,
                 "challenge": challenge_result["parsed"],
+                "challengeOverride": override_audit,
+                "challengeForJudge": challenge_for_judge,
                 "defense": defense_result["parsed"],
                 "bundleGate": bundle_gate_result["parsed"],
                 "judge": judge_result["parsed"],
@@ -905,6 +999,7 @@ def main() -> None:
             "reconciliationResponse": str(output_dir / "reconciliation_response.json"),
             "requirementResponse": str(output_dir / "requirement_response.json"),
             "challengeDir": str(output_dir / "challenge"),
+            "challengeOverrideDir": str(output_dir / "challenge_override"),
             "defenseDir": str(output_dir / "defense"),
             "bundleGateDir": str(output_dir / "bundle_gate"),
             "judgeDir": str(output_dir / "judge"),
