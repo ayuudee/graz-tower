@@ -93,7 +93,7 @@ class G1OutboundLowgToLjmbTest {
      */
     private fun buildFixture(): Fixture {
         val world = G1Fixtures.loadMergedLowgLjmb()
-        val worldIndex = G1Fixtures.pointsIndex(world)
+        val worldIndex = G1Fixtures.fullIndex(world)
 
         val southWind = Wind.unsafe(directionDegrees = 180, speedKnots = 8)
         val weather = world.aerodromes.keys.associateWith {
@@ -225,22 +225,65 @@ class G1OutboundLowgToLjmbTest {
     }
 
     @Test
-    fun `P1 — fixture does not crash on a 5-second sim drive (smoke)`() {
-        // Minimal smoke: drive 5 seconds. With only `geometry.points` in
-        // the WorldIndex, ground operations cannot proceed (no adjacency
-        // → ground controller cannot route a TaxiTo). This test asserts
-        // only "no crash" — the aircraft will sit at TAXI_TO_HOLDING
-        // until G1-DEF-23 (production WorldIndex builder) lands.
+    fun `P1 — aircraft starts taxiing within 5 sim seconds (post G1-DEF-23 wiring)`() {
+        // P1 baseline: with the production WorldIndex builder wired
+        // (`G1Fixtures.fullIndex(world)`), the GND controller has the
+        // adjacency graph it needs to issue a TaxiTo. Aircraft must
+        // transition out of [PilotPhase.AtStand] within 5 sim seconds.
         val (state, events) = buildFixture()
         val result = runUntil(state, events, SimTime.ofSeconds(5))
         val alpha = result.aircraft.getValue(ALPHA)
-        // No crash; aircraft is in a consistent state.
-        assertEquals(ALPHA, alpha.id)
-        assertEquals(PilotPhase.AtStand, alpha.phase,
-            "Without a production WorldIndex builder (G1-DEF-23), the GND " +
-                "controller can't find a taxi path; aircraft sits at AtStand. " +
-                "This is the structural blocker the integration test surfaced — " +
-                "the test now sets the expectation for the *current* behaviour " +
-                "and tightens once G1-DEF-23 lands.")
+        assertTrue(
+            alpha.phase != PilotPhase.AtStand,
+            "G1-DEF-23 wired: aircraft should have started moving within 5 sim seconds. " +
+                "Currently at phase=${alpha.phase}, position=${alpha.position}, " +
+                "step=${alpha.pilotMission?.currentTask?.step}",
+        )
     }
+
+    @Test
+    fun `P2 — aircraft reaches HoldingShort within 2 sim minutes`() {
+        // P2: ground taxi completes. The full taxi from LOWG_STAND_1 to
+        // a holding short involves the GND controller issuing TaxiTo and
+        // the kinematic pilot tracking the route. Generous budget (2 min)
+        // because the LOWG ground graph is large.
+        val (state, events) = buildFixture()
+        val result = runUntil(state, events, SimTime.ofSeconds(120))
+        val alpha = result.aircraft.getValue(ALPHA)
+        assertEquals(
+            PilotPhase.HoldingShort, alpha.phase,
+            "After 2 sim minutes, aircraft should have reached the holding short " +
+                "for RWY 16C. Currently phase=${alpha.phase}, " +
+                "step=${alpha.pilotMission?.currentTask?.step}, " +
+                "position=${alpha.position}",
+        )
+    }
+
+    // ── P3+ (TODO) ──────────────────────────────────────────────────────
+    //
+    // Next phase: GND→TWR handoff at the holding short, then TWR issues
+    // LineUpAndWait + ClearedForTakeoff, aircraft becomes airborne.
+    //
+    // Diagnostic test (commented out, retained as the resumption point):
+    // after 3 sim minutes the aircraft reaches HoldingShort + reports ready,
+    // but `LOWG_GND` still holds responsibility — the GND-HANDOFF rule isn't
+    // firing. Likely causes (to investigate when resuming):
+    //  - Commitment.runway not set on the GND commitment (no TaxiTo carries
+    //    the runway through), so `AtHoldingPoint.evaluate` falls back to
+    //    `ctx.beliefs.activeRunway` — verify that's set to 16C.
+    //  - Aircraft's `positionPoint` may not match any of the holding points
+    //    in `worldIndex.holdingPointsByRunway[16C]`. The GND TaxiTo target
+    //    may pick a *different* runway's holding short.
+    //  - The cross-aerodrome HTN's `groundDepartureTask(humanPiloted=false)`
+    //    might differ in step ordering from the single-airport variant.
+    //
+    // Use a print-on-failure scenario to inspect commitment + position:
+    //
+    //   val result = runUntil(state, events, SimTime.ofSeconds(180))
+    //   val gndBeliefs = result.beliefs[LOWG_GND_ID]!!
+    //   val commitment = gndBeliefs.commitments[ALPHA]
+    //   println("commitment.runway = ${commitment?.runway}")
+    //   println("activeRunway = ${gndBeliefs.activeRunway}")
+    //   println("aircraft.positionPoint = ${result.aircraft[ALPHA]!!.positionPoint}")
+    //   println("holdingPointsByRunway[16C] = ${state.worldIndex.holdingPointsByRunway[RunwayId(\"16C\")]}")
 }

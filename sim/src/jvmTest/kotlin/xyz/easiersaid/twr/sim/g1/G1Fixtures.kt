@@ -9,6 +9,7 @@ import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.core.world.buildWorldIndex
 import xyz.easiersaid.twr.migration.world.WorldCandidateDocument
 import xyz.easiersaid.twr.migration.world.WorldCandidateLoader
 import xyz.easiersaid.twr.protocol.AerodromeId
@@ -91,12 +92,20 @@ internal object G1Fixtures {
         WorldCandidateLoader.mergeAviationWorlds(listOf(loadLowg(), loadLjmb()))
 
     /**
-     * Build an index over [world]'s geometry points. Tests that need
-     * additional [WorldIndex] fields (adjacency, entitiesByPoint, etc.)
-     * should construct a richer index inline.
+     * Build the production [WorldIndex] (G1-DEF-23 wiring): adjacency,
+     * entitiesByPoint, holdingPointsByRunway, circuitLegsByPoint,
+     * thresholdByRunway, segment surface/length/width — all derived
+     * via the production builder at `core/.../WorldIndexBuilders.kt`.
+     *
+     * Replaces the old [pointsIndex] helper that only carried positions.
      */
-    fun pointsIndex(world: AviationWorld): WorldIndex =
-        WorldIndex(positions = world.geometry.points)
+    fun fullIndex(world: AviationWorld): WorldIndex = world.buildWorldIndex()
+
+    @Deprecated(
+        "G1-DEF-23: use fullIndex(world) — passes through the production builder.",
+        replaceWith = ReplaceWith("fullIndex(world)"),
+    )
+    fun pointsIndex(world: AviationWorld): WorldIndex = fullIndex(world)
 
     // ── Weather helpers ────────────────────────────────────────────────
 

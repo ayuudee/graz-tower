@@ -963,25 +963,61 @@ To be promoted to `.plan` after G1 lands:
   runway selection. The default-east-wind plants a hidden coupling
   for every future test author. (test round-3 finding.)
 - **G1-DEF-22 — DONE in v2.4 (commit `5748bf3`)**.
-- **G1-DEF-23 (PRE-G1.6 P1+ HARD BLOCKER)** — Production WorldIndex
-  builder. The merged `AviationWorld` carries geometry.points but no
-  derived index — adjacency (taxi graph), entitiesByPoint, holdingPointsByRunway,
-  circuitLegsByPoint, thresholdByRunway. Existing tests
-  (`FullCircuitTest`, `LowgSpike`) hand-craft these inline; the
-  production sim never built one. G1.6 P0 (scaffold + active-runway
-  selection) works without it; G1.6 P1+ (driving the sim through
-  ground operations and beyond) blocks on it.
-  Discovered while writing the integration test: aircraft sits at
-  AtStand because the GND controller can't find a taxi path without
-  adjacency. Implementation needs to traverse:
-  - `world.geometry.segments` → `adjacency`
-  - `aerodrome.runways/taxiways/stands/aprons` → `entitiesByPoint`
-  - `aerodrome.circuits.values.legs` → `circuitLegsByPoint`
-  - `aerodrome.runways.values.threshold` → `thresholdByRunway`
-  - holding points: data may need to come from manifest (not
-    currently in core model — possible sub-deferral).
-  G1.6 P1 currently asserts the *current* AtStand-frozen behaviour;
-  tighten once this builder lands.
+- **G1-DEF-23 — DONE (round-5 wiring)**. The production builder
+  `AviationWorld.buildWorldIndex()` was already at
+  `core/src/commonMain/.../world/WorldIndexBuilders.kt:14`, fully
+  populating adjacency / entitiesByPoint / holdingPointsByRunway /
+  circuitLegsByPoint / thresholdByRunway / segment surface/length/width.
+  G1.6's `G1Fixtures.fullIndex(world) = world.buildWorldIndex()`
+  unblocks ground operations. P1 (taxi starts) and P2 (HoldingShort
+  reached) now pass. P3+ is the next debugging surface — see the
+  TODO marker in `G1OutboundLowgToLjmbTest`.
+- **G1-DEF-24** — `mergeAviationWorlds` reproject is *post*-loader,
+  but `WorldCandidateLoader.toWorld` computes segment lengths
+  *pre*-reproject (`migration/.../WorldCandidateLoader.kt:113-136`).
+  Single-aerodrome ops are unaffected because the pre/post-reproject
+  positions are identical there. Cross-aerodrome ground-taxi
+  distance is silently wrong — but ground-taxi never crosses
+  aerodromes in G1, so this is a latent issue to track. (general-
+  purpose round-5 finding.)
+- **G1-DEF-25** — `simStateForTriggers: SimState?` smell. The
+  `unifiedPilotDecide` parameter takes the entire SimState but only
+  reads `state.controllers` (in `pilotInitiatedContactTrigger`).
+  Replace with a small projected type
+  `PilotControllerSnapshot(aircraftIsOwned: Boolean, currentFrequency:
+  Frequency?)` computed by Step. Defer to post-G1. (FP round-5
+  finding.)
+- **G1-DEF-26** — Bridge two-phase split. `Step.handlePilotTick`
+  mutates `var resultState` inside an `Option.fold` closure for the
+  self-initiated-contact path. Refactor to two pure phases:
+  `applySelfInitiatedContact(state, ac, decision): (SimState,
+  PilotMission?)` then `emitPilotTransmissions(state', ac, decision,
+  missionPatch)`. Defer post-G1.6. (FP round-5 finding.)
+- **G1-DEF-27** — Null-mission case in selfInitiatedContact path.
+  When `decision.updatedMission == null` AND `selfInitiatedContact =
+  Some`, the responsibility transfer happens but the
+  `contactedOnFrequency = false` reset doesn't (because the mission
+  patch is `null`). Either error() or move the reset inside
+  `unifiedPilotDecide` (cognitive layer = single owner of mission
+  state). (impact round-5 finding.)
+- **G1-DEF-28** — `routingError: RoutingError?` vs
+  `selfInitiatedContact: Option<...>` absence-idiom mismatch on
+  `UnifiedPilotDecision`. Pick one — `Option<RoutingError>` for
+  consistency with Arrow style. Cosmetic; defer. (FP round-5
+  finding.)
+- **G1-DEF-29** — `nextFreeAt = state.now` and
+  `pilotFrequencyFreeFrom(txState, ...)` in `Step.handlePilotTick`
+  are seeded from the *original* `state`, not the post-transfer
+  `resultState`. Benign for G1 (the new frequency starts quiet);
+  bites with two cross-aerodrome aircraft contacting LJMB_APP near-
+  simultaneously. Defer post-G1. (general-purpose round-5 finding.)
+- **G1-DEF-30** — At-most-one-controller-per-aircraft invariant
+  assertion. `state.controllers.values.firstOrNull { ac in it.responsibilities }`
+  is the routing primitive (`Step.kt:194,610,665`). `Set` has no
+  ordering. If two controllers ever simultaneously hold the same
+  aircraft (transient state during a buggy transfer), routing is
+  arbitrary. Add a `check` invariant in `responsibleController` or
+  similar. (impact round-5 finding.)
 
 ---
 
