@@ -1011,6 +1011,43 @@ data class SetPressure(
 ) : AtcInstruction
 
 // -----------------------------------------------------------------------------
+// Aerodrome / atmospheric advisories
+//
+// ICAO 4444 §4.5.7.5.1(c) lists "runway in use" and "transition levels" as
+// items that must be read back when issued by the controller (or when an
+// ATIS broadcast carrying them is referenced). They are not clearances —
+// they are operational advisories — but they require the same readback
+// integrity as level/heading/speed instructions because mis-hearing the
+// runway in use or the transition level is operationally consequential.
+// -----------------------------------------------------------------------------
+
+/**
+ * "Runway in use" advisory. Issued by ATC (typically TWR) to tell the pilot
+ * which runway is currently active for departures or arrivals.
+ *
+ * Per ICAO 4444 §4.5.7.5.1(c), the pilot must read back the runway designator.
+ */
+data class RunwayInUseAdvisory(
+    override val target: AircraftId,
+    val runway: RunwayId
+) : AtcInstruction
+
+/**
+ * "Transition level" issuance. Issued by ATC (typically APP) to tell the
+ * pilot the lowest flight level available above the transition altitude
+ * for the current QNH. The pilot reads back the level so the controller
+ * can confirm there is no confusion between QNH altitudes and standard-
+ * pressure flight levels.
+ *
+ * Per ICAO 4444 §4.5.7.5.1(c). The level must be a [Level.FlightLevel] —
+ * transition levels are always referenced to standard pressure.
+ */
+data class TransitionLevelIssuance(
+    override val target: AircraftId,
+    val transitionLevel: Level.FlightLevel
+) : AtcInstruction
+
+// -----------------------------------------------------------------------------
 // Emergency instructions
 // -----------------------------------------------------------------------------
 

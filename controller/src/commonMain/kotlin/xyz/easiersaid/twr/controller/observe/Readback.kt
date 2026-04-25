@@ -151,7 +151,8 @@ private enum class AtomKind {
     Heading, Level, Speed, Route, Runway, Squawk, Frequency, Pressure,
     HoldShort, ClearedForTakeoff, ClearedToLand, ClearedApproach,
     ClearedTouchAndGo, ClearedLowApproach, LineUp, CrossRunway, Backtrack,
-    TaxiRoute, Hold, GoAround, Vacate, Orbit, ExtendDownwind,
+    TaxiViaRunway, TaxiRoute, Hold, ResumeOwnNavigation, RouteAsFiled,
+    JoinAirway, RejoinSidAt, LeaveHoldProceedDirect, GoAround, Vacate, Orbit, ExtendDownwind,
     VisualApproach, SpecialVfr, FreeText,
     // HoldingAck (and its cancel-takeoff sibling) are distinct kinds so the
     // classifier distinguishes "pilot read back the wrong hold variant" from
@@ -161,6 +162,10 @@ private enum class AtomKind {
     // Urgency runway override instructions — each is a distinct kind so cross-
     // instruction satisfaction is caught (e.g. "stopping" ≠ "taking off").
     StopImmediately, TakeoffOrVacate, TakeoffOrHoldShort,
+    // ICAO 4444 §4.5.7.5.1(c) standalone advisories — distinct kinds so the
+    // classifier distinguishes a wrong runway-in-use from a wrong runway
+    // clearance, and a wrong transition level from a wrong assigned level.
+    RunwayInUse, TransitionLevel,
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -182,8 +187,14 @@ private fun AtomicReadback.kind(): AtomKind = when (this) {
     is LineUpReadback -> AtomKind.LineUp
     is CrossRunwayReadback -> AtomKind.CrossRunway
     is BacktrackReadback -> AtomKind.Backtrack
+    is TaxiViaRunwayReadback -> AtomKind.TaxiViaRunway
     is TaxiRouteReadback -> AtomKind.TaxiRoute
     is HoldReadback -> AtomKind.Hold
+    ResumeOwnNavigationReadback -> AtomKind.ResumeOwnNavigation
+    RouteAsFiledReadback -> AtomKind.RouteAsFiled
+    is JoinAirwayReadback -> AtomKind.JoinAirway
+    is RejoinSidAtReadback -> AtomKind.RejoinSidAt
+    is LeaveHoldProceedDirectReadback -> AtomKind.LeaveHoldProceedDirect
     is GoAroundReadback -> AtomKind.GoAround
     is VacateReadback -> AtomKind.Vacate
     is OrbitReadback -> AtomKind.Orbit
@@ -199,6 +210,8 @@ private fun AtomicReadback.kind(): AtomKind = when (this) {
     is StopImmediatelyReadback -> AtomKind.StopImmediately
     is TakeoffImmediatelyOrVacateReadback -> AtomKind.TakeoffOrVacate
     is TakeoffImmediatelyOrHoldShortReadback -> AtomKind.TakeoffOrHoldShort
+    is RunwayInUseReadback -> AtomKind.RunwayInUse
+    is TransitionLevelReadback -> AtomKind.TransitionLevel
 }
 
 /** Classifier-local kind tag for [ReadbackCondition]. */
@@ -326,20 +339,25 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     // ── Pressure ─────────────────────────────────────────────────────────
     is SetPressure -> setOf(PressureSettingReadback(instruction.pressure))
 
+    // ── Aerodrome / atmospheric advisories (ICAO 4444 §4.5.7.5.1(c)) ─────
+    // Standalone advisories that nevertheless require readback for the same
+    // mis-hearing-detection reasons as level/heading/speed instructions.
+    is RunwayInUseAdvisory -> setOf(RunwayInUseReadback(instruction.runway))
+    is TransitionLevelIssuance -> setOf(TransitionLevelReadback(instruction.transitionLevel))
+
     // ── Route / approach / hold ──────────────────────────────────────────
     is ClearedTo -> instruction.route?.let { setOf(RouteReadback(it)) }
         ?: setOf(RouteReadback(RouteSpec.Direct(instruction.clearanceLimit)))
     is ProceedDirect -> setOf(RouteReadback(RouteSpec.Direct(instruction.fix)))
     is WhenAbleProceedDirect -> setOf(RouteReadback(RouteSpec.Direct(instruction.fix)))
+    is ResumeOwnNavigation -> setOf(ResumeOwnNavigationReadback)
+    is RouteAsFiled -> setOf(RouteAsFiledReadback)
+    is JoinAirway -> setOf(JoinAirwayReadback(instruction.airway, instruction.joinFix))
+    is RejoinSidAt -> setOf(RejoinSidAtReadback(instruction.fix))
     is ClearedApproach -> setOf(ClearedApproachReadback(instruction.approachType, instruction.runway))
     is ClearedVisualApproach -> setOf(VisualApproachReadback(instruction.runway))
     is HoldAt -> setOf(HoldReadback(instruction.hold))
-    // Route ops without a structured atom in our readback vocabulary.
-    is ResumeOwnNavigation -> emptySet()
-    is RouteAsFiled -> emptySet()
-    is JoinAirway -> emptySet()
-    is RejoinSidAt -> emptySet()
-    is LeaveHoldProceedDirect -> emptySet()
+    is LeaveHoldProceedDirect -> setOf(LeaveHoldProceedDirectReadback(instruction.fix))
 
     // ── Approach / circuit instructions without a readback atom ──────────
     // Pilot echoes the word (e.g. "extending downwind") — no structural match.
@@ -356,8 +374,8 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     // ── Taxi / ground movement ───────────────────────────────────────────
     is TaxiTo -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
     is AirTaxiTo -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
+    is TaxiViaRunway -> setOf(TaxiViaRunwayReadback(instruction.runway, instruction.destination))
     // Non-routed taxi ops — no structural atom to compare.
-    is TaxiViaRunway -> emptySet()
     is StartupApproved -> emptySet()
     is PushbackApproved -> emptySet()
     is PushbackFace -> emptySet()

@@ -194,6 +194,8 @@ fun amendFpl(
 
     // Uncategorised instructions (SetPressure, Disregard, etc.)
     is SetPressure -> fpl.right()
+    is RunwayInUseAdvisory -> fpl.right()
+    is TransitionLevelIssuance -> fpl.right()
     is RemainOutsideControlledAirspace -> fpl.right()
     is Disregard -> fpl.right()
     is AvoidArea -> fpl.right()

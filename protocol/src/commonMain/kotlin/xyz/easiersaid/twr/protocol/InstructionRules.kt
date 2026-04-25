@@ -145,6 +145,13 @@ fun instructionMetadata(instruction: AtcInstruction): InstructionMetadata = when
 
     // ---- No domain ----
     is SetPressure -> InstructionMetadata(InstructionTiming.IMMEDIATE, null, CompletionCategory.ON_ACTIVATION, mayBeConditional = false)
+    // ICAO 4444 §4.5.7.5.1(c) standalone advisories — informational, no
+    // clearance-domain effect. Pilot acknowledges via readback; no further
+    // sim-state advancement is gated on the readback (the operative effect
+    // is on the pilot's mental model, not on a clearance the controller is
+    // tracking).
+    is RunwayInUseAdvisory -> InstructionMetadata(InstructionTiming.IMMEDIATE, null, CompletionCategory.ON_ACTIVATION, mayBeConditional = false)
+    is TransitionLevelIssuance -> InstructionMetadata(InstructionTiming.IMMEDIATE, null, CompletionCategory.ON_ACTIVATION, mayBeConditional = false)
     is ReportWhen -> InstructionMetadata(null, null, null, mayBeConditional = false)
     is ReportTrafficInSight -> InstructionMetadata(null, null, null, mayBeConditional = false)
     is ReportIntentions -> InstructionMetadata(null, null, null, mayBeConditional = false)

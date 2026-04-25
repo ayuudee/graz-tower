@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.controller
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.MAX_READBACK_AGE
 import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
+import xyz.easiersaid.twr.controller.observe.requiredReadbackAtoms
 import xyz.easiersaid.twr.protocol.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -263,6 +264,160 @@ class ReadbackValidationTest {
             result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha].isNullOrEmpty(),
             "Pending older than MAX_READBACK_AGE must be GC'd",
         )
+    }
+
+    @Test
+    fun `ICAO 4444 4_5_7_5_1 always-read-back families map to structured atoms`() {
+        val aircraft = TestIds.acAlpha
+        val routeFix = FixId("GIVMI")
+        val airway = AirwayId("W112")
+        val runway = TestIds.runway09
+        val taxiDestination = PointId("RWY_EXIT_A")
+
+        assertEquals(
+            setOf(RouteReadback(RouteSpec.Direct(routeFix))),
+            requiredReadbackAtoms(ProceedDirect(aircraft, routeFix)),
+            "ICAO Doc 4444 §4.5.7.5.1(a): route clearances must require route readback",
+        )
+        assertEquals(
+            setOf(ResumeOwnNavigationReadback),
+            requiredReadbackAtoms(ResumeOwnNavigation(aircraft)),
+            "ICAO Doc 4444 §4.5.7.5.1(a): resume own navigation is a route instruction and must require readback",
+        )
+        assertEquals(
+            setOf(RouteAsFiledReadback),
+            requiredReadbackAtoms(RouteAsFiled(aircraft)),
+            "ICAO Doc 4444 §4.5.7.5.1(a): route-as-filed clearance must require readback",
+        )
+        assertEquals(
+            setOf(JoinAirwayReadback(airway, routeFix)),
+            requiredReadbackAtoms(JoinAirway(aircraft, airway, routeFix)),
+            "ICAO Doc 4444 §4.5.7.5.1(a): airway join clearances must require readback",
+        )
+        assertEquals(
+            setOf(RejoinSidAtReadback(routeFix)),
+            requiredReadbackAtoms(RejoinSidAt(aircraft, routeFix)),
+            "ICAO Doc 4444 §4.5.7.5.1(a): SID rejoin instructions must require readback",
+        )
+        assertEquals(
+            setOf(LeaveHoldProceedDirectReadback(routeFix)),
+            requiredReadbackAtoms(LeaveHoldProceedDirect(aircraft, routeFix)),
+            "ICAO Doc 4444 §4.5.7.5.1(a): leave-hold direct instructions must require readback",
+        )
+
+        assertEquals(
+            setOf(TaxiViaRunwayReadback(runway, taxiDestination)),
+            requiredReadbackAtoms(TaxiViaRunway(aircraft, runway, taxiDestination)),
+            "ICAO Doc 4444 §4.5.7.5.1(b): taxi-via-runway instructions must require readback",
+        )
+        assertEquals(
+            setOf(HoldShortReadback(runway)),
+            requiredReadbackAtoms(HoldShortOf(aircraft, runway)),
+            "ICAO Doc 4444 §4.5.7.5.1(b): hold-short clearances must require readback",
+        )
+        assertEquals(
+            setOf(BacktrackReadback(runway)),
+            requiredReadbackAtoms(BacktrackRunway(aircraft, runway)),
+            "ICAO Doc 4444 §4.5.7.5.1(b): backtrack instructions must require readback",
+        )
+
+        assertEquals(
+            setOf(PressureSettingReadback(PressureSetting.QnhHpa.unsafe(1016))),
+            requiredReadbackAtoms(SetPressure(aircraft, PressureSetting.QnhHpa.unsafe(1016))),
+            "ICAO Doc 4444 §4.5.7.5.1(c): altimeter settings must require readback",
+        )
+        assertEquals(
+            setOf(SquawkReadback(Squawk.unsafe(4612))),
+            requiredReadbackAtoms(SetSquawk(aircraft, Squawk.unsafe(4612))),
+            "ICAO Doc 4444 §4.5.7.5.1(c): SSR codes must require readback",
+        )
+        assertEquals(
+            setOf(LevelReadback(Level.AltitudeFeet.unsafe(3000))),
+            requiredReadbackAtoms(ClimbTo(aircraft, Level.AltitudeFeet.unsafe(3000))),
+            "ICAO Doc 4444 §4.5.7.5.1(c): level instructions must require readback",
+        )
+        assertEquals(
+            setOf(HeadingReadback(Heading.unsafe(270))),
+            requiredReadbackAtoms(FlyHeading(aircraft, Heading.unsafe(270))),
+            "ICAO Doc 4444 §4.5.7.5.1(c): heading instructions must require readback",
+        )
+        assertEquals(
+            setOf(SpeedReadback(Speed.InKnots(Knots.unsafe(160)))),
+            requiredReadbackAtoms(MaintainSpeed(aircraft, Speed.InKnots(Knots.unsafe(160)))),
+            "ICAO Doc 4444 §4.5.7.5.1(c): speed instructions must require readback",
+        )
+        assertEquals(
+            setOf(RunwayInUseReadback(runway)),
+            requiredReadbackAtoms(RunwayInUseAdvisory(aircraft, runway)),
+            "ICAO Doc 4444 §4.5.7.5.1(c): runway-in-use advisory must require readback",
+        )
+        assertEquals(
+            setOf(TransitionLevelReadback(Level.FlightLevel.unsafe(60))),
+            requiredReadbackAtoms(TransitionLevelIssuance(aircraft, Level.FlightLevel.unsafe(60))),
+            "ICAO Doc 4444 §4.5.7.5.1(c): transition-level issuance must require readback",
+        )
+    }
+
+    @Test
+    fun `resume-own-navigation does not accept empty readback`() {
+        val pending = pending(
+            TestIds.acAlpha,
+            ResumeOwnNavigation(TestIds.acAlpha),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            coordinations = mapOf(TestIds.acAlpha to listOf(pending))
+        )
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(TestIds.acAlpha)),
+        )
+
+        val result = controllerDecide(view, beliefs, world)
+
+        val correction = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .mapNotNull { it.response as? ReadbackCorrection }
+            .firstOrNull()
+        assertNotNull(correction, "Empty readback must not satisfy a route-clearance readback requirement")
+        assertEquals(ReadbackCorrectionKind.MISSING_ATOM, correction.kind)
+        assertEquals(1, result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha]?.size)
+    }
+
+    @Test
+    fun `taxi-via-runway wrong-runway readback is corrected not confirmed`() {
+        val pending = pending(
+            TestIds.acAlpha,
+            TaxiViaRunway(TestIds.acAlpha, TestIds.runway09, PointId("RWY_EXIT_A")),
+            SimTime.ofSeconds(0),
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            coordinations = mapOf(TestIds.acAlpha to listOf(pending))
+        )
+        val view = viewWithReadback(
+            TestIds.acAlpha,
+            SimTime.ofSeconds(5),
+            listOf(readbackMessage(
+                TestIds.acAlpha,
+                TaxiViaRunwayReadback(RunwayId("27"), PointId("RWY_EXIT_A")),
+            )),
+        )
+
+        val result = controllerDecide(view, beliefs, world)
+
+        val confirm = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .firstOrNull { it.response is ReadBackCorrect }
+        assertNull(confirm, "Wrong-runway taxi-via-runway readback must not be confirmed")
+
+        val correction = result.outputs
+            .filterIsInstance<ControllerOutput.Respond>()
+            .mapNotNull { it.response as? ReadbackCorrection }
+            .firstOrNull()
+        assertNotNull(correction)
+        assertEquals(ReadbackCorrectionKind.INCORRECT_ATOM, correction.kind)
+        assertEquals(1, result.updatedBeliefs.pendingReadbacks[TestIds.acAlpha]?.size)
     }
 
     @Test

@@ -158,6 +158,23 @@ mechanically eligible baseline still contains hundreds of bundles. Only the seed
 need staged rollout rules and more golden coverage before widening beyond that set.
 Impact: M | Effort: M
 
+**RR-2 — ICAO 4444 §4.5.7.5.1 operational-item coverage still lacks standalone transition-level / runway-in-use instructions** — DONE (2026-04-25)
+`RunwayInUseAdvisory(target, runway: RunwayId)` and
+`TransitionLevelIssuance(target, transitionLevel: Level.FlightLevel)` added to
+`protocol/Instruction.kt` as standalone `AtcInstruction` subtypes — the modelling
+gap from the LJMB-session entry is closed. Paired readback atoms
+`RunwayInUseReadback(runway)` and `TransitionLevelReadback(level)` added to
+`protocol/PilotTransmission.kt`; new `AtomKind.RunwayInUse` and `AtomKind.TransitionLevel`
+distinguish the advisories from runway clearances and assigned levels in the readback
+classifier. `requiredReadbackAtoms` in `controller/observe/Readback.kt` now emits the
+new atoms; `instructionMetadata` in `protocol/InstructionRules.kt` classifies both as
+`IMMEDIATE` / `ON_ACTIVATION` with no clearance-domain effect (informational, not a
+clearance change); `applyInstruction` in `protocol/FlightPlan.kt` returns the FPL
+unchanged for both. `ReadbackValidationTest` covers the two new instruction shapes.
+Closes the §4.5.7.5.1(c) modelling gap on the controller-side instruction model;
+the deterministic seeded-promotion lane already binds the corresponding atoms.
+Impact: M | Effort: M
+
 **RR-3 — Ollama-first transfer-family structure pass compresses nested enumerations** — DONE (2026-04-24)
 The new Ollama-first requirement pipeline works on raw `ICAO 4444` slices, but the transfer-family
 run over `4.3.2.1.1`-`4.3.2.1.3` still showed structural compression in the first pass: the model

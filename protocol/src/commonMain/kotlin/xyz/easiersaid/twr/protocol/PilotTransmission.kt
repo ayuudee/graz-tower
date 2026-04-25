@@ -59,11 +59,23 @@ data class ClearedLowApproachReadback(val runway: RunwayId) : AtomicReadback
 data class LineUpReadback(val runway: RunwayId) : AtomicReadback
 data class CrossRunwayReadback(val runway: RunwayId) : AtomicReadback
 data class BacktrackReadback(val runway: RunwayId) : AtomicReadback
+data class TaxiViaRunwayReadback(
+    val runway: RunwayId,
+    val destination: PointId? = null
+) : AtomicReadback
 data class TaxiRouteReadback(
     val destination: PointId,
     val via: List<PointId> = emptyList()
 ) : AtomicReadback
 data class HoldReadback(val hold: HoldSpec) : AtomicReadback
+data object ResumeOwnNavigationReadback : AtomicReadback
+data object RouteAsFiledReadback : AtomicReadback
+data class JoinAirwayReadback(
+    val airway: AirwayId,
+    val joinFix: FixId
+) : AtomicReadback
+data class RejoinSidAtReadback(val fix: FixId) : AtomicReadback
+data class LeaveHoldProceedDirectReadback(val fix: FixId) : AtomicReadback
 data class GoAroundReadback(
     val runway: RunwayId? = null,
     val level: Level? = null,
@@ -141,6 +153,27 @@ data class TakeoffImmediatelyOrVacateReadback(val runway: RunwayId) : AtomicRead
  * Carries [runway] so the classifier detects a wrong runway echo.
  */
 data class TakeoffImmediatelyOrHoldShortReadback(val runway: RunwayId) : AtomicReadback
+
+/**
+ * Acknowledgement of [RunwayInUseAdvisory].
+ *
+ * Per ICAO 4444 §4.5.7.5.1(c) — pilot reads back the active runway so the
+ * controller can detect a wrong-runway echo before the pilot acts on it.
+ *
+ * Carries [runway] so the classifier flags a digit/identifier mismatch.
+ */
+data class RunwayInUseReadback(val runway: RunwayId) : AtomicReadback
+
+/**
+ * Acknowledgement of [TransitionLevelIssuance].
+ *
+ * Per ICAO 4444 §4.5.7.5.1(c) — pilot reads back the transition level so
+ * the controller can detect a wrong-level echo. Transition levels are
+ * always expressed as flight levels (referenced to standard pressure).
+ *
+ * Carries [level] so the classifier detects a wrong-level echo.
+ */
+data class TransitionLevelReadback(val level: Level.FlightLevel) : AtomicReadback
 
 // --- Readback conditions ---
 
