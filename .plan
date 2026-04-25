@@ -169,13 +169,35 @@ preserve the nested transfer hierarchy in the transfer-family run. Remaining iss
 under `RR-4`.
 Impact: M | Effort: M
 
-**RR-4 — Ollama challenger sometimes ignores source modality when disputing authority**
-In the structure-reconciled `ICAO 4444` transfer-family run, the challenger disputed a `should`
-clause and a source Note as if they should be authoritative requirements. The judge corrected both
-to `advisory_only`, but this is still noisy and could waste review attention. Add a modality/authority
-check to the Ollama-first validation workflow, or tighten the challenger prompt so `wrong_authority`
-claims must explicitly address the source modality (`shall`, `should`, `may`, `Note`).
+**RR-4 — Ollama challenger sometimes ignores source modality when disputing authority** — DONE (2026-04-25)
+Three-spike investigation in `run_icao4444_ollama_first_prototype.py`:
+- Spike 1: directional rename `wrong_authority` → `authority_too_high` / `authority_too_low`. Surfaced
+  cross-clause source contamination — the challenger pulled `should` text from §4.3.2.1.2 to argue
+  about candidates sourced from §4.3.2.1.3.
+- Spike 2: required `candidateSourceItemModalities` and `effectiveModality` fields, forcing the
+  challenger to ground modality in the candidate's own `sourceItemIds`. Eliminated contamination;
+  exposed three residual bugs (Notes-as-authoritative bias, direction inversion on advisories,
+  structural concerns mis-labelled as authority verdicts).
+- Spike 3: added Notes-as-non-normative challenger guard, verdict-direction sanity check, and a new
+  bundle-gate stage between defense and judge. Bundle gate produces a mechanical `scopeComplete`
+  per candidate; the judge now cites it directly in rationales instead of relitigating bundle/split.
+Outcome: transfer family 2 → 3 accepted (v4 VMC/IMC judge inconsistency resolved); readback family
+3 → 4 accepted; cross-clause contamination, Notes bias, and direction inversion all eliminated.
+Surviving challenger noise (mixed-modality structural concerns labelled `authority_too_high`) is
+filtered by the bundle gate and tracked under `RR-5`.
 Impact: M | Effort: M
+
+**RR-5 — Challenger uses `authority_too_high` for mixed-modality structural concerns**
+On candidates whose `sourceItemIds` span a parent clause plus nested conditions (`mixed` modality),
+the Ollama challenger consistently labels them `authority_too_high` and produces concerns that are
+structural ("highest modality is shall, but mixed modalities... overreach"), not authority-related.
+The Spike 3 system prompt explicitly directs structural concerns toward `wrong_split` / `overbroad`
+/ `underspecified`, but the model does not follow that routing. Final judged outcomes are clean
+because the bundle gate provides the structural signal mechanically and the judge weights it over
+the challenger's verdict. The challenger surface, however, remains noisy. Likely fix: forbid
+`authority_too_high` on candidates whose bundle-gate `scopeComplete` is true on the same items, or
+add a verdict-classifier post-step that re-routes mis-typed challenger concerns.
+Impact: L | Effort: M
 
 ---
 

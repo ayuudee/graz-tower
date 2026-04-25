@@ -434,11 +434,36 @@ def challenge_prompts(window: dict[str, Any], structure: dict[str, Any], candida
     system = (
         "You are the challenger in a source-grounded requirement review. "
         "Try to falsify the candidate from the supplied source. "
+        "Authority verdicts are directional: `authority_too_high` means the candidate claims "
+        "more authority than the source supports (e.g. labels a `should` clause or a Note as `authoritative_requirement`); "
+        "`authority_too_low` means the candidate underclaims (e.g. labels a `shall` clause as `operational_guidance`). "
+        "Direction sanity check: if your concern is that the candidate should sit at a LOWER authority class, the verdict is `authority_too_high`. "
+        "If your concern is that the candidate should sit at a HIGHER authority class, the verdict is `authority_too_low`. "
+        "The verdict's direction and the concern text must agree. "
+        "Modality reasoning must be grounded in the candidate's own `sourceItemIds` only. "
+        "Read each cited item's `text` from the structure and identify its modality marker (`shall`, `should`, `may`, `note`, `example`, or `none` if there is no marker in that item). "
+        "Do not import modality from other items in the window. "
+        "The window's `authorityCeiling` is an upper bound for the family, not the modality of any specific clause. "
+        "Every `sourceQuote` you return must be exact text drawn from one of the candidate's cited items. "
+        "ICAO convention on Notes: a `Note.—` paragraph is non-normative explanatory text. "
+        "It is correctly classified as `operational_guidance` or `background_support` with `advisory_only` or `support_only` promotion. "
+        "Do not raise `authority_too_low` against a candidate that classifies a Note as advisory, unless the Note's own text contains a normative `shall` verb. "
+        "Structural concerns (the candidate bundles items that should be split, or omits items it depends on) are NOT authority verdicts; "
+        "use `wrong_split`, `overbroad`, or `underspecified` for those. Reserve `authority_too_high` / `authority_too_low` for cases where the candidate's `authorityClass` "
+        "or `modality` field disagrees with the modality of its own cited items. "
         "Be strict and concise. "
         "Return strict JSON only."
     )
     user = f"""
 Challenge this candidate using only the supplied source window and structure.
+
+Procedure:
+1. Read the candidate's `sourceItemIds`.
+2. For each id, find that item in the structure and read its `text`.
+3. Identify the modality marker in that text (`shall`, `should`, `may`, `note`, `example`, or `none`).
+4. Combine those into an `effectiveModality` for the candidate as a whole. If the cited items use mixed modalities, return `mixed` and explain in `concerns`.
+5. Only after that, decide the verdict. Authority verdicts must be consistent with the effective modality you just declared.
+6. Every quote in `sourceQuotes` must be exact text from one of the cited items.
 
 Source window:
 {json.dumps(window, indent=2)}
@@ -453,9 +478,13 @@ Return JSON with exactly this shape:
 {{
   "caseId": "{window["caseId"]}",
   "candidateId": "{candidate["candidateId"]}",
-  "verdict": "supported | overbroad | underspecified | wrong_authority | wrong_split | unsupported_by_source",
+  "candidateSourceItemModalities": [
+    {{ "itemId": "id from candidate.sourceItemIds", "modality": "shall | should | may | note | example | none" }}
+  ],
+  "effectiveModality": "shall | should | may | note | example | mixed",
+  "verdict": "supported | overbroad | underspecified | authority_too_high | authority_too_low | wrong_split | unsupported_by_source",
   "concerns": ["short concern"],
-  "sourceQuotes": ["short exact supporting or contradicting phrase"]
+  "sourceQuotes": ["short exact phrase, drawn only from the candidate's cited items"]
 }}
 """.strip()
     return system, user
@@ -492,16 +521,55 @@ Return JSON with exactly this shape:
     return system, user
 
 
+def bundle_gate_prompts(window: dict[str, Any], structure: dict[str, Any], candidate: dict[str, Any]) -> tuple[str, str]:
+    system = (
+        "You are the bundle-gate reviewer in a source-grounded requirement review. "
+        "Your only job is to decide whether the candidate's scope is structurally complete: "
+        "does the parent or governing clause's operative meaning require subordinate items "
+        "that the candidate does not include? "
+        "Read each item the candidate cites in `sourceItemIds`. "
+        "Then look in the structure for items whose `parentItemId` points at any of those cited items. "
+        "If those subordinate items carry the operative timing, conditions, or qualifications of the parent, "
+        "and the candidate does not include them, the scope is incomplete. "
+        "If the candidate already includes the operatively necessary subordinates, the scope is complete. "
+        "If the candidate is a single self-contained clause with no dependent subordinates, the scope is complete. "
+        "Return strict JSON only."
+    )
+    user = f"""
+Decide structural completeness for this candidate.
+
+Source window:
+{json.dumps(window, indent=2)}
+
+Proposed structure:
+{json.dumps(structure, indent=2)}
+
+Candidate:
+{json.dumps(candidate, indent=2)}
+
+Return JSON with exactly this shape:
+{{
+  "caseId": "{window["caseId"]}",
+  "candidateId": "{candidate["candidateId"]}",
+  "scopeComplete": true,
+  "missingDependencies": ["item ids that are operatively required but not in the candidate's sourceItemIds"],
+  "rationale": "short rationale citing item ids"
+}}
+""".strip()
+    return system, user
+
+
 def judge_prompts(
     window: dict[str, Any],
     structure: dict[str, Any],
     candidate: dict[str, Any],
     challenge: dict[str, Any],
     defense: dict[str, Any],
+    bundle_gate: dict[str, Any],
 ) -> tuple[str, str]:
     system = (
         "You are the judge in a source-grounded requirement review. "
-        "Decide the outcome using only the supplied source window, structure, candidate, challenge, and defense. "
+        "Decide the outcome using only the supplied source window, structure, candidate, challenge, defense, and bundle gate. "
         "Return strict JSON only."
     )
     user = f"""
@@ -513,7 +581,10 @@ Rules:
 - Do not promote beyond the source.
 - If `promotionHint` is `advisory_only` or `support_only`, do not return `accepted`.
 - If a note/example/background item is source-grounded but non-normative, prefer `advisory_only` over `accepted`.
-- If a parent clause depends on subordinate list items, prefer `needs_bundle` over `accepted`.
+- Use the bundle gate's `scopeComplete` to decide bundle/split mechanically:
+  - if `scopeComplete` is true and the candidate's content is coherent, do NOT return `needs_bundle`.
+  - if `scopeComplete` is false, prefer `needs_bundle` (the candidate is missing operatively required subordinates listed in `missingDependencies`).
+  - structural fragmentation across multiple separable obligations is `needs_split` regardless of `scopeComplete`.
 
 Source window:
 {json.dumps(window, indent=2)}
@@ -523,6 +594,9 @@ Proposed structure:
 
 Candidate:
 {json.dumps(candidate, indent=2)}
+
+Bundle gate:
+{json.dumps(bundle_gate, indent=2)}
 
 Challenge:
 {json.dumps(challenge, indent=2)}
@@ -593,6 +667,7 @@ def main() -> None:
     parser.add_argument("--reconcile-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--challenge-model", default="qwen2.5-coder:32b")
     parser.add_argument("--defense-model", default="qwen3.6:35b-a3b")
+    parser.add_argument("--bundle-gate-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--judge-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--num-ctx", type=int, default=12288)
@@ -712,7 +787,19 @@ def main() -> None:
             timeout_seconds=180,
         )
         write_json(output_dir / "challenge" / f"{candidate['candidateId']}.json", challenge_result)
-        require_fields(challenge_result["parsed"], ["caseId", "candidateId", "verdict", "concerns", "sourceQuotes"], stage=f"challenge:{candidate['candidateId']}")
+        require_fields(
+            challenge_result["parsed"],
+            [
+                "caseId",
+                "candidateId",
+                "candidateSourceItemModalities",
+                "effectiveModality",
+                "verdict",
+                "concerns",
+                "sourceQuotes",
+            ],
+            stage=f"challenge:{candidate['candidateId']}",
+        )
 
         defense_system, defense_user = defense_prompts(window, structure_result["parsed"], candidate)
         defense_result = call_ollama_chat(
@@ -728,12 +815,31 @@ def main() -> None:
         write_json(output_dir / "defense" / f"{candidate['candidateId']}.json", defense_result)
         require_fields(defense_result["parsed"], ["caseId", "candidateId", "verdict", "supports", "sourceQuotes"], stage=f"defense:{candidate['candidateId']}")
 
+        bundle_gate_system, bundle_gate_user = bundle_gate_prompts(window, structure_result["parsed"], candidate)
+        bundle_gate_result = call_ollama_chat(
+            base_url=args.base_url,
+            model=args.bundle_gate_model,
+            system_prompt=bundle_gate_system,
+            user_prompt=bundle_gate_user,
+            temperature=0.0,
+            num_predict=600,
+            num_ctx=args.num_ctx,
+            timeout_seconds=180,
+        )
+        write_json(output_dir / "bundle_gate" / f"{candidate['candidateId']}.json", bundle_gate_result)
+        require_fields(
+            bundle_gate_result["parsed"],
+            ["caseId", "candidateId", "scopeComplete", "missingDependencies", "rationale"],
+            stage=f"bundle_gate:{candidate['candidateId']}",
+        )
+
         judge_system, judge_user = judge_prompts(
             window,
             structure_result["parsed"],
             candidate,
             challenge_result["parsed"],
             defense_result["parsed"],
+            bundle_gate_result["parsed"],
         )
         judge_result = call_ollama_chat(
             base_url=args.base_url,
@@ -754,6 +860,7 @@ def main() -> None:
                 "candidate": candidate,
                 "challenge": challenge_result["parsed"],
                 "defense": defense_result["parsed"],
+                "bundleGate": bundle_gate_result["parsed"],
                 "judge": judge_result["parsed"],
             }
         )
@@ -768,6 +875,7 @@ def main() -> None:
         "reconcileModel": args.reconcile_model,
         "challengeModel": args.challenge_model,
         "defenseModel": args.defense_model,
+        "bundleGateModel": args.bundle_gate_model,
         "judgeModel": args.judge_model,
         "numCtx": args.num_ctx,
         "maxCandidates": args.max_candidates,
@@ -783,6 +891,7 @@ def main() -> None:
             "requirementResponse": str(output_dir / "requirement_response.json"),
             "challengeDir": str(output_dir / "challenge"),
             "defenseDir": str(output_dir / "defense"),
+            "bundleGateDir": str(output_dir / "bundle_gate"),
             "judgeDir": str(output_dir / "judge"),
             "summary": str(output_dir / "summary.md"),
         },
