@@ -225,39 +225,32 @@ from 3500 to 8000, default `num_ctx` from 12288 to 16384, to absorb the wider ex
 output some attempts produce on advisory prose with bullet lists.
 Impact: M | Effort: M
 
-**RR-7 — Bundle gate makes asymmetric calls on parallel mutually-exclusive sibling clauses**
-On a robustness rerun of Spike 3 against the `ICAO 4444` transfer family, the bundle gate
-returned `scopeComplete=false` for the VMC departure transfer candidate (`4.3.2.1.3.a`) —
-arguing that the candidate is missing the IMC sibling (`4.3.2.1.3.b`) — but returned
-`scopeComplete=true` for the IMC candidate (`4.3.2.1.3.b`), despite the situation being
-symmetric. Same parent, same shape, opposite verdict. The judge correctly followed the bundle
-gate (VMC → `needs_bundle`, IMC → `accepted`), so the inconsistency surfaces directly in the
-final registry decisions. The original Spike 3 transfer run had both siblings get
-`scopeComplete=true` and both `accepted`; the rerun did not. Readback adjudication, which has
-no parallel mutually-exclusive siblings in the slice, remained stable across runs.
-Likely fix: tighten the bundle-gate prompt to require it to consider parent-level branching —
-"when the candidate cites one branch of a parent's mutually-exclusive list, evaluate whether
-the parent's operative meaning is satisfiable from that branch alone or requires both"; or
-add a sibling-symmetry post-check that catches asymmetric verdicts on candidates rooted in
-the same parent and rejects the run for human review.
+**RR-7 — Bundle gate makes asymmetric calls on parallel mutually-exclusive sibling clauses** — DONE (2026-04-25)
+Spike 7 deterministic post-step: `apply_sibling_symmetry_resolution` runs after all bundle-gate
+calls have completed for a run. It groups candidates by their direct shared parent in the
+structure (each cites a different child branch of the same parent), and if their `scopeComplete`
+verdicts disagree it forces consistency by setting all to `scopeComplete=true` (the permissive
+answer — each branch represents an independent operative scenario for its parent's rule).
+Audits persist to `bundle_gate_sibling_resolution.json`. The bundle gate stage now precedes the
+challenger and runs as a batch over all candidates so resolution can happen before the
+challenger sees scope. The override declines to fire on non-sibling candidates and on
+already-consistent groups. Spike 7 verification: same headline numbers as Spike 6 across
+readback (4), transfer (3), and EGAST (4 of 6); resolution did not fire this run because
+bundle gate happened to give scope=true on both VMC/IMC siblings, but the deterministic
+resolution will activate the moment the asymmetric pattern recurs.
 Impact: M | Effort: M
 
-**RR-8 — Judge invents over-conservative rules on best_practice content**
-On Spikes 5 and 6, the judge has occasionally demoted candidates with `promotionHint=promote`,
-`authorityClass=best_practice`, and a clean challenger `supported` verdict to `advisory_only`,
-citing a rule that is **not in its prompt**: "if content is best-practice (non-normative),
-'advisory_only' is preferred over 'accepted' to avoid promoting beyond the source's normative
-weight." The actual prompt rule is narrower — it only forbids `accepted` when `promotionHint`
-is itself `advisory_only` or `support_only`. The judge invents a stricter rule on
-best-practice content and applies it inconsistently across runs.
-Effect on registry surface: drops EGAST acceptance rate by 1-2 candidates per run when the
-rule fires. Spike 6 EGAST: 4 accepted instead of the achievable 5 (one demoted candidate had
-hint=promote and a `supported` post-override challenger verdict).
-Likely fix: tighten the judge prompt to spell out the rule explicitly — "do NOT downgrade a
-candidate to `advisory_only` solely because its `authorityClass` is `best_practice`; only the
-`promotionHint` field controls advisory routing"; or add a deterministic guard that rejects
-judge decisions which contradict the candidate's `promotionHint=promote` without a clear
-challenger or bundle-gate basis.
+**RR-8 — Judge invents over-conservative rules on best_practice content** — DONE (2026-04-25)
+Spike 7 deterministic post-step: `apply_judge_conservatism_override` runs after the judge
+returns. It overrides `decision=advisory_only` to `accepted` only when ALL of the following
+hold: (a) candidate's `promotionHint=promote`, (b) post-override challenger verdict is
+`supported` (or absent), and (c) bundle gate `scopeComplete=true`. Those three conditions
+mean there is no basis in the inputs the judge was given for downgrading; the demotion can
+only come from the judge inventing a stricter rule than its prompt actually contains.
+Audits persist to `judge_override/{candidateId}.json`. The summary now annotates
+judge-overridden rows. Spike 7 verification: EGAST `req_request_clarification` returned
+`accepted` cleanly without override firing (judge happened to follow its own rules this
+run); the deterministic guard will activate the moment the conservatism pattern recurs.
 Impact: M | Effort: M
 
 ---

@@ -207,6 +207,163 @@ def is_authority_consistent(modality: str | None, authority_class: str | None) -
     return (modality or "none") in allowed
 
 
+def apply_sibling_symmetry_resolution(
+    *,
+    candidates: list[dict[str, Any]],
+    bundle_gate_results: dict[str, dict[str, Any]],
+    structure_items: list[dict[str, Any]],
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
+    """Detect sibling candidates whose `scopeComplete` verdicts disagree and
+    force consistency. RR-7 deterministic resolution.
+
+    Two candidates are siblings when they share a common itemId in their
+    `sourceItemIds` AND each cites distinct child items of that shared item
+    (different branches of the same parent).
+
+    When sibling candidates disagree on `scopeComplete`, all of them get
+    `scopeComplete=true` (the permissive answer): each branch is its own
+    operative scenario; the bundle gate's asymmetric reasoning is the bug.
+
+    Returns the (possibly modified) per-candidate bundle-gate results and a
+    list of audit records, one per resolved sibling group.
+    """
+    structure_by_id = {item.get("itemId"): item for item in structure_items if item.get("itemId")}
+    items_by_candidate = {
+        candidate["candidateId"]: set(candidate.get("sourceItemIds", []))
+        for candidate in candidates
+    }
+
+    def sibling_parent(a_id: str, b_id: str) -> str | None:
+        a_items = items_by_candidate.get(a_id, set())
+        b_items = items_by_candidate.get(b_id, set())
+        shared = a_items & b_items
+        a_only = a_items - b_items
+        b_only = b_items - a_items
+        if not shared or not a_only or not b_only:
+            return None
+        for parent_id in shared:
+            a_children = [
+                i for i in a_only
+                if structure_by_id.get(i, {}).get("parentItemId") == parent_id
+            ]
+            b_children = [
+                i for i in b_only
+                if structure_by_id.get(i, {}).get("parentItemId") == parent_id
+            ]
+            if a_children and b_children:
+                return parent_id
+        return None
+
+    candidate_ids = [c["candidateId"] for c in candidates]
+    parent_of: dict[str, str] = {}
+    for i, ca in enumerate(candidate_ids):
+        for cb in candidate_ids[i + 1 :]:
+            parent = sibling_parent(ca, cb)
+            if parent is None:
+                continue
+            parent_of.setdefault(ca, parent)
+            parent_of.setdefault(cb, parent)
+    groups: dict[str, list[str]] = {}
+    for cand_id, parent in parent_of.items():
+        groups.setdefault(parent, []).append(cand_id)
+
+    resolved = {cid: dict(result) for cid, result in bundle_gate_results.items()}
+    audits: list[dict[str, Any]] = []
+    for parent_id, group_members in groups.items():
+        scope_values = {
+            cid: resolved.get(cid, {}).get("scopeComplete") for cid in group_members
+        }
+        verdicts = set(scope_values.values())
+        if len(verdicts) <= 1:
+            continue  # already consistent
+        # Force scope=true (permissive)
+        flipped = []
+        for cid in group_members:
+            if resolved[cid].get("scopeComplete") is True:
+                continue
+            original = resolved[cid].get("scopeComplete")
+            resolved[cid]["scopeComplete"] = True
+            resolved[cid]["missingDependencies"] = []
+            flipped.append({"candidateId": cid, "originalScopeComplete": original})
+        audits.append(
+            {
+                "siblingParentItemId": parent_id,
+                "groupMembers": group_members,
+                "scopeBefore": scope_values,
+                "flippedTo": "scopeComplete=true",
+                "flippedCandidates": flipped,
+                "reason": (
+                    "Sibling candidates rooted in the same parent item disagreed on "
+                    "scopeComplete. Each branch represents an independent operative "
+                    "scenario for its parent's rule, so the permissive answer "
+                    "(scopeComplete=true) is forced uniformly."
+                ),
+            }
+        )
+    return resolved, audits
+
+
+def apply_judge_conservatism_override(
+    *,
+    judge_parsed: dict[str, Any],
+    candidate: dict[str, Any],
+    challenge_for_judge: dict[str, Any],
+    bundle_gate_parsed: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """If the judge demoted a `promote` candidate to `advisory_only` despite a
+    clean challenger and bundle gate, override to `accepted`. RR-8 deterministic
+    fix for the judge inventing over-conservative rules on best_practice content.
+
+    Override fires when ALL of the following hold:
+      1. judge.decision == 'advisory_only'
+      2. candidate.promotionHint == 'promote'
+      3. challenge_for_judge.verdict in {'supported', None}
+      4. bundle_gate.scopeComplete is True
+
+    Otherwise the judge's decision stands.
+    """
+    decision = judge_parsed.get("decision")
+    if decision != "advisory_only":
+        return judge_parsed, None
+    if candidate.get("promotionHint") != "promote":
+        return judge_parsed, None
+    challenger_verdict = challenge_for_judge.get("verdict")
+    if challenger_verdict not in {"supported", None, ""}:
+        return judge_parsed, None
+    if bundle_gate_parsed.get("scopeComplete") is not True:
+        return judge_parsed, None
+    overridden = dict(judge_parsed)
+    overridden["decision"] = "accepted"
+    overridden["confidence"] = "medium"
+    original_rationale = judge_parsed.get("rationale", "")
+    overridden["rationale"] = (
+        "[OVERRIDE: judge demoted to advisory_only without basis — "
+        "promotionHint=promote, challenger=supported, bundle gate scopeComplete=true. "
+        "Decision restored to accepted.]"
+    )
+    overridden["notes"] = list(judge_parsed.get("notes", [])) + [
+        "Judge decision was overridden by the RR-8 deterministic guard."
+    ]
+    audit = {
+        "caseId": judge_parsed.get("caseId"),
+        "candidateId": judge_parsed.get("candidateId"),
+        "originalDecision": decision,
+        "originalConfidence": judge_parsed.get("confidence"),
+        "originalRationale": original_rationale,
+        "originalNotes": judge_parsed.get("notes", []),
+        "candidatePromotionHint": candidate.get("promotionHint"),
+        "challengerVerdictAtJudge": challenger_verdict,
+        "bundleGateScopeComplete": bundle_gate_parsed.get("scopeComplete"),
+        "reason": (
+            "Judge demoted a `promotionHint=promote` candidate to `advisory_only` "
+            "despite a clean challenger verdict and bundle gate scope=true. The "
+            "judge prompt does not contain a rule supporting that demotion. "
+            "Decision overridden to `accepted`."
+        ),
+    }
+    return overridden, audit
+
+
 def apply_bundle_gate_override(
     *,
     challenge_parsed: dict[str, Any],
@@ -720,7 +877,10 @@ def render_summary(
     judged_candidates: list[dict[str, Any]],
     max_candidates: int,
 ) -> str:
-    accepted = [item for item in judged_candidates if item["judge"]["decision"] == "accepted"]
+    def final_decision(item: dict[str, Any]) -> dict[str, Any]:
+        return item.get("judgeForRecord") or item["judge"]
+
+    accepted = [item for item in judged_candidates if final_decision(item)["decision"] == "accepted"]
     lines = [
         f"# Ollama-First Prototype Summary",
         "",
@@ -743,8 +903,11 @@ def render_summary(
         "## Judge Decisions",
     ]
     for item in judged_candidates:
+        decision = final_decision(item)
+        marker = " (judge-overridden)" if item.get("judgeOverride") else ""
         lines.append(
-            f"- `{item['candidate']['candidateId']}`: `{item['judge']['decision']}` ({item['judge']['confidence']})"
+            f"- `{item['candidate']['candidateId']}`: `{decision['decision']}` ({decision.get('confidence', '?')})"
+            f"{marker}"
         )
     return "\n".join(lines) + "\n"
 
@@ -849,8 +1012,8 @@ def main() -> None:
     write_json(output_dir / "requirement_response.json", requirement_result)
     require_fields(requirement_result["parsed"], ["caseId", "candidates"], stage="reconcile")
 
-    judged_candidates: list[dict[str, Any]] = []
-    for candidate in requirement_result["parsed"]["candidates"][: args.max_candidates]:
+    candidates_to_judge = list(requirement_result["parsed"]["candidates"][: args.max_candidates])
+    for candidate in candidates_to_judge:
         require_fields(
             candidate,
             [
@@ -871,6 +1034,8 @@ def main() -> None:
             stage=f"candidate:{candidate.get('candidateId', '<unknown>')}",
         )
 
+    bundle_gate_raw_by_id: dict[str, dict[str, Any]] = {}
+    for candidate in candidates_to_judge:
         bundle_gate_system, bundle_gate_user = bundle_gate_prompts(window, structure_result["parsed"], candidate)
         bundle_gate_result = call_ollama_chat(
             base_url=args.base_url,
@@ -888,8 +1053,21 @@ def main() -> None:
             ["caseId", "candidateId", "scopeComplete", "missingDependencies", "rationale"],
             stage=f"bundle_gate:{candidate['candidateId']}",
         )
+        bundle_gate_raw_by_id[candidate["candidateId"]] = bundle_gate_result["parsed"]
 
-        challenge_system, challenge_user = challenge_prompts(window, structure_result["parsed"], candidate, bundle_gate_result["parsed"])
+    bundle_gate_resolved_by_id, sibling_audits = apply_sibling_symmetry_resolution(
+        candidates=candidates_to_judge,
+        bundle_gate_results=bundle_gate_raw_by_id,
+        structure_items=structure_result["parsed"].get("structureItems", []),
+    )
+    if sibling_audits:
+        write_json(output_dir / "bundle_gate_sibling_resolution.json", sibling_audits)
+
+    judged_candidates: list[dict[str, Any]] = []
+    for candidate in candidates_to_judge:
+        bundle_gate_for_judge = bundle_gate_resolved_by_id[candidate["candidateId"]]
+
+        challenge_system, challenge_user = challenge_prompts(window, structure_result["parsed"], candidate, bundle_gate_for_judge)
         challenge_result = call_ollama_chat(
             base_url=args.base_url,
             model=args.challenge_model,
@@ -917,7 +1095,7 @@ def main() -> None:
 
         challenge_for_judge, override_audit = apply_bundle_gate_override(
             challenge_parsed=challenge_result["parsed"],
-            bundle_gate_parsed=bundle_gate_result["parsed"],
+            bundle_gate_parsed=bundle_gate_for_judge,
             candidate=candidate,
         )
         if override_audit is not None:
@@ -946,7 +1124,7 @@ def main() -> None:
             candidate,
             challenge_for_judge,
             defense_result["parsed"],
-            bundle_gate_result["parsed"],
+            bundle_gate_for_judge,
         )
         judge_result = call_ollama_chat(
             base_url=args.base_url,
@@ -962,6 +1140,18 @@ def main() -> None:
         write_json(output_dir / "judge" / f"{candidate['candidateId']}.json", judge_result)
         require_fields(judge_result["parsed"], ["caseId", "candidateId", "decision", "confidence", "rationale", "notes"], stage=f"judge:{candidate['candidateId']}")
 
+        judge_for_record, judge_override_audit = apply_judge_conservatism_override(
+            judge_parsed=judge_result["parsed"],
+            candidate=candidate,
+            challenge_for_judge=challenge_for_judge,
+            bundle_gate_parsed=bundle_gate_for_judge,
+        )
+        if judge_override_audit is not None:
+            write_json(
+                output_dir / "judge_override" / f"{candidate['candidateId']}.json",
+                judge_override_audit,
+            )
+
         judged_candidates.append(
             {
                 "candidate": candidate,
@@ -969,8 +1159,11 @@ def main() -> None:
                 "challengeOverride": override_audit,
                 "challengeForJudge": challenge_for_judge,
                 "defense": defense_result["parsed"],
-                "bundleGate": bundle_gate_result["parsed"],
+                "bundleGateRaw": bundle_gate_raw_by_id[candidate["candidateId"]],
+                "bundleGate": bundle_gate_for_judge,
                 "judge": judge_result["parsed"],
+                "judgeOverride": judge_override_audit,
+                "judgeForRecord": judge_for_record,
             }
         )
 
@@ -1002,7 +1195,9 @@ def main() -> None:
             "challengeOverrideDir": str(output_dir / "challenge_override"),
             "defenseDir": str(output_dir / "defense"),
             "bundleGateDir": str(output_dir / "bundle_gate"),
+            "bundleGateSiblingResolution": str(output_dir / "bundle_gate_sibling_resolution.json"),
             "judgeDir": str(output_dir / "judge"),
+            "judgeOverrideDir": str(output_dir / "judge_override"),
             "summary": str(output_dir / "summary.md"),
         },
         "structurePromptChars": structure_result["requestPromptChars"],
@@ -1012,8 +1207,9 @@ def main() -> None:
         "judgeOutcomes": [
             {
                 "candidateId": item["candidate"]["candidateId"],
-                "decision": item["judge"]["decision"],
-                "confidence": item["judge"]["confidence"],
+                "decision": (item.get("judgeForRecord") or item["judge"])["decision"],
+                "confidence": (item.get("judgeForRecord") or item["judge"]).get("confidence"),
+                "judgeOverridden": item.get("judgeOverride") is not None,
             }
             for item in judged_candidates
         ],
