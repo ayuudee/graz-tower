@@ -44,6 +44,16 @@ data class SimState(
     val inFlightTransmissions: Map<TransmissionId, InFlightTransmission> = emptyMap(),
     val nextTransmissionId: Long = 0L,
     val controllerInbox: Map<ControllerId, List<ReceivedMessage>> = emptyMap(),
+    /**
+     * Pilot-side airspace triggers — published frequency-change rules
+     * (e.g. "approach LJMB_APP within 5 NM of PETOV when outside TMA
+     * Maribor"). The Step layer threads these into [unifiedPilotDecide]
+     * so the cognitive predicate can fire pilot-initiated contact.
+     * Empty list disables pilot-initiated contact entirely. For G1, the
+     * fixture seeds this list directly; future work derives it from
+     * the manifest's `contactRequirement` table.
+     */
+    val airspaceTriggers: List<PilotAirspace.FrequencyChangeTrigger> = emptyList(),
 ) {
     companion object {
         /**
@@ -76,6 +86,7 @@ data class SimState(
             aircraft: List<AircraftState> = emptyList(),
             controllers: List<ControllerSpec> = emptyList(),
             weatherByAerodrome: Map<AerodromeId, WeatherObservation>,
+            airspaceTriggers: List<PilotAirspace.FrequencyChangeTrigger> = emptyList(),
         ): Either<InitError, SimState> {
             for ((aerodromeId, aerodrome) in world.aerodromes) {
                 if (aerodrome.runways.isNotEmpty() && aerodromeId !in weatherByAerodrome) {
@@ -97,6 +108,7 @@ data class SimState(
                 inFlightTransmissions = emptyMap(),
                 nextTransmissionId = 0L,
                 controllerInbox = emptyMap(),
+                airspaceTriggers = airspaceTriggers,
             ).right()
         }
     }

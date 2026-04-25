@@ -3,6 +3,7 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.ReceivedMessage
 import xyz.easiersaid.twr.controller.controllerDecide
@@ -118,7 +119,15 @@ private fun handlePilotTick(
     val runway = state.beliefs.values
         .flatMap { it.commitments.entries }
         .firstOrNull { it.key == ac.id }?.value?.runway
-    val decision = unifiedPilotDecide(ac, state.worldIndex, state.now, state.world, runway)
+    val decision = unifiedPilotDecide(
+        aircraft = ac,
+        worldIndex = state.worldIndex,
+        now = state.now,
+        world = state.world,
+        activeRunway = runway,
+        airspaceTriggers = state.airspaceTriggers,
+        simStateForTriggers = state,
+    )
 
     // Apply intent to aircraft state.
     var updated = ac.copy(
@@ -128,9 +137,42 @@ private fun handlePilotTick(
         targetAltitudeM = decision.intent.targetAltitudeM,
     )
 
-    // Update mission (with report tracking) and derive controller-visible pilotGoal.
+    // Pilot self-initiated frequency change (G1.5/G1.6 bridge). When the
+    // cognitive predicate fires, transfer responsibility to the trigger's
+    // target controller AND reset the mission's `contactedOnFrequency` flag
+    // so the next decide cycle's `stepTransmission` emits a fresh
+    // [InitialContact] on the new frequency. The transmission is routed by
+    // the regular pilot-transmission path below — by then, the new
+    // controller holds the responsibility.
     var resultState = state
-    val rawMission: PilotMission? = decision.updatedMission
+    val mutatedMissionFromContact: PilotMission? = decision.selfInitiatedContact.fold(
+        ifEmpty = { null },
+        ifSome = { trigger ->
+            resultState = transferResponsibility(
+                state = resultState,
+                ac = ac.id,
+                toAerodrome = trigger.targetAerodrome,
+                toRole = trigger.targetRole,
+            ).getOrElse {
+                // The cognitive predicate gated on the trigger's target
+                // existing in the simulation's controllers; if we hit
+                // TargetUnresolved, the test fixture / trigger table is
+                // misaligned with the controllers list. Loud fail.
+                error(
+                    "pilotInitiatedContact target unresolved: " +
+                        "${trigger.targetAerodrome}/${trigger.targetRole} not in controllers. " +
+                        "Trigger table and controllers must agree.",
+                )
+            }
+            // Reset contactedOnFrequency so the next stepTransmission emits
+            // InitialContact on the new frequency (the existing cognitive
+            // emission path handles the actual InitialContact construction).
+            decision.updatedMission?.copy(contactedOnFrequency = false)
+        },
+    )
+
+    // Update mission (with report tracking) and derive controller-visible pilotGoal.
+    val rawMission: PilotMission? = mutatedMissionFromContact ?: decision.updatedMission
     if (rawMission != null) {
         var mission: PilotMission = rawMission
         for (tx in decision.transmissions) {
@@ -143,9 +185,13 @@ private fun handlePilotTick(
     }
 
     // Transmit through the radio pipeline — symmetric with controller transmissions.
+    // After a pilot-initiated contact above, [resultState] reflects the new
+    // controller holding the aircraft, so the routing-by-responsibility lookup
+    // below picks the new (target) controller and the transmission lands on
+    // the new frequency.
     val commEvents = mutableListOf<SimEvent>()
     if (decision.transmissions.isNotEmpty()) {
-        val ctrl = state.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
+        val ctrl = resultState.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
         if (ctrl != null) {
             var txState = resultState
             var nextFreeAt = state.now
@@ -481,19 +527,6 @@ internal fun buildDepartureRoute(
 ): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world, worldIndex).getOrNull()
 
 /**
- * Build a full circuit departure route: departure end → upwind → crosswind →
- * downwind → base → final → threshold.
- *
- * Delegates to [buildCircuitPatternRoute] in the route planner. Returns null
- * on any routing error (backward-compatible with the instruction-effect layer).
- */
-internal fun buildCircuitDepartureRoute(
-    world: xyz.easiersaid.twr.core.world.AviationWorld,
-    worldIndex: WorldIndex,
-    runwayId: RunwayId,
-): PilotRoute.Airborne? = buildCircuitPatternRoute(runwayId, world, worldIndex).getOrNull()
-
-/**
  * "Cleared for takeoff" at the threshold: switch to a departure route and
  * transition to [PilotPhase.TakeoffRoll].
  */
@@ -652,14 +685,6 @@ private fun applyContactFrequency(
         ifRight = { it },
     )
 }
-
-private fun findRoleController(
-    state: SimState,
-    aerodromeId: xyz.easiersaid.twr.protocol.AerodromeId,
-    role: RoleName,
-): ControllerId? = state.controllers.values
-    .firstOrNull { it.aerodromeId == aerodromeId && it.role == role }
-    ?.id
 
 private fun runwayThreshold(
     world: xyz.easiersaid.twr.core.world.AviationWorld,

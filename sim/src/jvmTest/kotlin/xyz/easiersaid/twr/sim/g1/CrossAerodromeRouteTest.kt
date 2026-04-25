@@ -72,14 +72,25 @@ class CrossAerodromeRouteTest {
     }
 
     @Test
-    fun `transit route runs LOWG departure-end — upwind — crosswind — TMA entry`() {
-        // FP round-3 finding: the transit-route builder was untested at the
-        // identity level. This test pins waypoint identities for a pure
-        // single-airport transit construction (LJMB stand-in for "source"
-        // since loading LOWG-only doesn't have PETOV defined).
+    fun `transit route head is the source-runway departure end, last is TMA entry`() {
+        // A1 fix: the transit route's HEAD must be the source-runway
+        // departure end (the aircraft is on the source runway after
+        // takeoff). The route then runs upwind → crosswind → TMA entry.
+        // The test was previously load-bearing on `pts.last() == PETOV`
+        // only and missed that the head was the wrong runway altogether.
         val ctx = loadLjmb()
+        // Use LJMB RWY 32 as the synthetic "source runway" (this single-
+        // airport test world doesn't have a separate source). What matters
+        // is that the route's head matches the runway's path-last point
+        // and the route's last is the supplied tmaEntry.
+        val sourceRunway = RunwayId("32")
+        val expectedDepartureEnd = ctx.world.aerodromes.values
+            .first { sourceRunway in it.runways.keys }
+            .runways.getValue(sourceRunway)
+            .path.points.last()
+
         val result = buildCrossAerodromeTransitRoute(
-            runwayId = RunwayId("32"),  // departing northbound; doesn't matter for identity test
+            runwayId = sourceRunway,
             tmaEntry = PETOV,
             enRouteAltitudeM = 1525.0,
             world = ctx.world,
@@ -89,77 +100,59 @@ class CrossAerodromeRouteTest {
         val route = result.getOrNull()!!
         val pts: List<PointId> = listOf(route.waypoints.head) + route.waypoints.tail
 
-        // First waypoint: the runway departure end (last point of the runway path).
-        // Last waypoint: the TMA-entry fix's point.
+        assertEquals(expectedDepartureEnd, pts.first(),
+            "Head waypoint must be the source runway's departure end. The aircraft is on " +
+                "this runway after takeoff; if the route's head is at the wrong airport, the " +
+                "kinematic pilot will track to the wrong place. (A1 round-4 fix.)")
         assertEquals(PointId("LJMB_FIX_PETOV"), pts.last(),
             "Last waypoint of the transit route should be the TMA-entry fix.")
-        // Must contain the runway departure end as the route's start.
-        // (We can't easily assert which exact PointId without depending on
-        // the manifest's runway path naming; the assertion above is enough
-        // to pin the contract.)
         assertEquals(1525.0, route.targetAltitudeM,
             "Transit route altitude must use the goal's enRouteAltitudeM, not CIRCUIT_ALTITUDE_M.")
     }
 
     @Test
-    fun `missing TMA waypoint produces typed MissingTransitWaypoint error`() {
+    fun `missing waypoint at any slot produces typed MissingTransitWaypoint`() {
+        // DEF-22 collapse: three previously-separate tests asserted the
+        // same shape (`result.isLeft() && err is MissingTransitWaypoint &&
+        // err.ident == X`) for the three fix slots in the arrival-join
+        // builder. Per `feedback_testing_philosophy.md`, the right shape
+        // is one parametrised test until a real caller dispatches per
+        // slot — the function's contract is "first missing fix, by slot
+        // order: tmaEntry then ctrEntry then corridor."
         val ctx = loadLjmb()
-        val absentFix = FixId("DOES_NOT_EXIST")
-        val result = buildCrossAerodromeArrivalJoinRoute(
-            runwayId = RWY_14,
-            tmaEntry = absentFix,
-            ctrEntry = MN1,
-            corridorWaypoints = listOf(MN2),
-            joinLeg = LegName.BASE,
-            world = ctx.world,
-            worldIndex = ctx.worldIndex,
+        val cases = listOf(
+            "tmaEntry" to BuildArgs(tmaEntry = FixId("DOES_NOT_EXIST"), ctrEntry = MN1, corridor = listOf(MN2)),
+            "ctrEntry" to BuildArgs(tmaEntry = PETOV, ctrEntry = FixId("NO_SUCH_REP"), corridor = listOf(MN2)),
+            "corridor" to BuildArgs(tmaEntry = PETOV, ctrEntry = MN1, corridor = listOf(FixId("NOT_A_CORRIDOR_REP"))),
         )
-        assertTrue(result.isLeft(), "Missing tmaEntry must surface a typed error.")
-        val err = result.leftOrNull()!!
-        assertTrue(err is RoutingError.MissingTransitWaypoint,
-            "Expected MissingTransitWaypoint, got ${err::class.simpleName}")
-        assertEquals(absentFix, (err as RoutingError.MissingTransitWaypoint).ident)
+        for ((label, args) in cases) {
+            val absent = listOfNotNull(
+                args.tmaEntry.takeIf { it.value == "DOES_NOT_EXIST" },
+                args.ctrEntry.takeIf { it.value == "NO_SUCH_REP" },
+                args.corridor.firstOrNull { it.value == "NOT_A_CORRIDOR_REP" },
+            ).single()
+            val result = buildCrossAerodromeArrivalJoinRoute(
+                runwayId = RWY_14,
+                tmaEntry = args.tmaEntry,
+                ctrEntry = args.ctrEntry,
+                corridorWaypoints = args.corridor,
+                joinLeg = LegName.BASE,
+                world = ctx.world,
+                worldIndex = ctx.worldIndex,
+            )
+            val err = result.leftOrNull()
+            assertTrue(err is RoutingError.MissingTransitWaypoint,
+                "Slot=$label: expected MissingTransitWaypoint, got ${err?.let { it::class.simpleName }}")
+            assertEquals(absent, (err as RoutingError.MissingTransitWaypoint).ident,
+                "Slot=$label: error must carry the missing fix ident.")
+        }
     }
 
-    @Test
-    fun `missing CTR waypoint produces typed MissingTransitWaypoint error`() {
-        val ctx = loadLjmb()
-        val absentFix = FixId("NO_SUCH_REP")
-        val result = buildCrossAerodromeArrivalJoinRoute(
-            runwayId = RWY_14,
-            tmaEntry = PETOV,
-            ctrEntry = absentFix,
-            corridorWaypoints = listOf(MN2),
-            joinLeg = LegName.BASE,
-            world = ctx.world,
-            worldIndex = ctx.worldIndex,
-        )
-        assertTrue(result.isLeft(), "Missing ctrEntry must surface a typed error.")
-        val err = result.leftOrNull()!!
-        assertTrue(err is RoutingError.MissingTransitWaypoint,
-            "Expected MissingTransitWaypoint, got ${err::class.simpleName}")
-        assertEquals(absentFix, (err as RoutingError.MissingTransitWaypoint).ident)
-    }
-
-    @Test
-    fun `missing corridor waypoint produces typed MissingTransitWaypoint error`() {
-        val ctx = loadLjmb()
-        val absentCorridor = FixId("NOT_A_CORRIDOR_REP")
-        val result = buildCrossAerodromeArrivalJoinRoute(
-            runwayId = RWY_14,
-            tmaEntry = PETOV,
-            ctrEntry = MN1,
-            corridorWaypoints = listOf(absentCorridor),
-            joinLeg = LegName.BASE,
-            world = ctx.world,
-            worldIndex = ctx.worldIndex,
-        )
-        assertTrue(result.isLeft(), "Missing corridor waypoint must surface a typed error.")
-        val err = result.leftOrNull()!!
-        assertTrue(err is RoutingError.MissingTransitWaypoint,
-            "Expected MissingTransitWaypoint, got ${err::class.simpleName}")
-        assertEquals(absentCorridor, (err as RoutingError.MissingTransitWaypoint).ident)
-    }
+    private data class BuildArgs(
+        val tmaEntry: FixId,
+        val ctrEntry: FixId,
+        val corridor: List<FixId>,
+    )
 
     private data class Ctx(val world: AviationWorld, val worldIndex: WorldIndex)
 

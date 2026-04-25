@@ -228,15 +228,18 @@ internal fun buildVisualModeRoute(
     joinLeg: Option<LegName> = None,
     crossAerodrome: Option<CrossAerodromeContext> = None,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
-    // Departure climb-out: dep end → upwind → crosswind → extend straight out.
-    is TaskName.Depart -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
-
-    // Visual transit: for a single-aerodrome mission this is the same as
-    // departure climb-out (zone exit ends the FLY_DEPARTURE primitive). For
-    // cross-aerodrome transit, the route extends from the departure end to
-    // the TMA-entry waypoint at the destination — the pilot navigates
-    // through the FIS region toward [crossAerodrome.tmaEntry].
-    is TaskName.Transit -> when (crossAerodrome) {
+    // Departure climb-out. For a single-aerodrome Departure mission this is
+    // the short circuit climb-out ending at crosswind. For a cross-aerodrome
+    // mission the *long* transit route is built here — at this phase
+    // [mode.runway] is the source-airport runway (the source tower's
+    // commitment is still alive), so the route runs `source-rwy dep-end →
+    // upwind → crosswind → TMA-entry waypoint`. By the time TaskName.Transit
+    // (FLY_EN_ROUTE) becomes active, the source tower has released the
+    // aircraft and no controller has a runway-bearing commitment, so
+    // [planRoute] returns null and route planning is suspended — the
+    // existing kinematic route from this phase carries the aircraft
+    // through the FIS segment until the destination tower picks up.
+    is TaskName.Depart -> when (crossAerodrome) {
         is None -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
         is Some -> buildCrossAerodromeTransitRoute(
             runwayId = mode.runway,
@@ -245,6 +248,15 @@ internal fun buildVisualModeRoute(
             world = world,
             worldIndex = worldIndex,
         )
+    }
+
+    // Visual transit (single-aerodrome): zone-exit pattern; cross-aerodrome
+    // transit's route is built at the Depart phase (above) when the source
+    // controller's commitment is alive. Reaching here in cross-aerodrome
+    // mode is structurally invalid.
+    is TaskName.Transit -> when (crossAerodrome) {
+        is None -> buildVisualDepartureRoute(mode.runway, world, worldIndex)
+        is Some -> RoutingError.InvalidCombination(mode, taskName).left()
     }
 
     // Circuit pattern at destination. Join leg comes from the JoinCircuit instruction

@@ -39,6 +39,16 @@ data class UnifiedPilotDecision(
      * log or assert on this field. Null on all normal ticks.
      */
     val routingError: RoutingError? = null,
+    /**
+     * Pilot self-initiated frequency change requested this tick. Populated when
+     * [pilotInitiatedContactTrigger] fires (airborne, cross-aerodrome mission,
+     * uncontrolled, near a published trigger waypoint, target frequency
+     * differs from current). The Step layer applies the side effects:
+     * [transferResponsibility] to the trigger's target controller and an
+     * [InitialContact] transmission on the new frequency. None on every tick
+     * the predicate doesn't fire.
+     */
+    val selfInitiatedContact: Option<PilotAirspace.FrequencyChangeTrigger> = None,
 )
 
 /** Decision altitude threshold — below this without clearance → go around. */
@@ -59,6 +69,20 @@ fun unifiedPilotDecide(
     now: SimTime,
     world: AviationWorld? = null,
     activeRunway: RunwayId? = null,
+    /**
+     * Pilot-side airspace triggers (e.g. "approach LJMB_APP_FREQ within 5
+     * NM of PETOV when outside TMA Maribor"). The Step layer threads these
+     * from [SimState.airspaceTriggers]; tests pass them directly. Empty
+     * list disables pilot-initiated contact entirely.
+     */
+    airspaceTriggers: List<PilotAirspace.FrequencyChangeTrigger> = emptyList(),
+    /**
+     * Snapshot of the simulator's controller responsibilities — needed by
+     * [pilotInitiatedContactTrigger]'s "currently uncontrolled" guard.
+     * Step passes [SimState.controllers] directly. When null (legacy path
+     * where caller hasn't yet plumbed state), the predicate is skipped.
+     */
+    simStateForTriggers: SimState? = null,
 ): UnifiedPilotDecision {
     val view = PilotView(now, aircraft, worldIndex)
     val kinematicResult = DefaultPilot.decide(view)
@@ -99,10 +123,26 @@ fun unifiedPilotDecide(
         ?: goAround?.intent
         ?: applyCognitiveOverrides(kinematicIntent, effectiveMission, aircraft)
 
+    // Pilot self-initiated frequency change (G1.5/G1.6 bridge). Compute the
+    // trigger if the caller has plumbed both the trigger table and the SimState
+    // snapshot needed for the "currently uncontrolled" guard. The Step layer
+    // applies the side effects.
+    val selfInitiatedContact = if (airspaceTriggers.isNotEmpty() && simStateForTriggers != null) {
+        pilotInitiatedContactTrigger(
+            aircraft = aircraft,
+            mission = effectiveMission ?: mission,
+            state = simStateForTriggers,
+            triggers = airspaceTriggers,
+        )
+    } else {
+        None
+    }
+
     return UnifiedPilotDecision(
-        finalIntent,
-        cognitive.transmissions + goAroundTransmissions,
-        effectiveMission,
+        intent = finalIntent,
+        transmissions = cognitive.transmissions + goAroundTransmissions,
+        updatedMission = effectiveMission,
+        selfInitiatedContact = selfInitiatedContact,
     )
 }
 
