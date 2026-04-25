@@ -962,14 +962,26 @@ To be promoted to `.plan` after G1 lands:
   named `withEastWind()` helper for tests that *do* care about
   runway selection. The default-east-wind plants a hidden coupling
   for every future test author. (test round-3 finding.)
-- **G1-DEF-22** — Typed-error tests should assert per-variant
-  dispatch behaviour, not discriminator existence. Pattern:
-  `assertTrue(result.isLeft() && err is X)` proves the type system
-  does its job, not that callers can use the typed error. Either
-  rewrite to assert behavioural consequences, or — if no caller
-  dispatches yet — collapse the typed variants to a single error
-  until a real caller needs to discriminate. (test round-3 finding,
-  per `feedback_testing_philosophy.md` "no scaffold tests" rule.)
+- **G1-DEF-22 — DONE in v2.4 (commit `5748bf3`)**.
+- **G1-DEF-23 (PRE-G1.6 P1+ HARD BLOCKER)** — Production WorldIndex
+  builder. The merged `AviationWorld` carries geometry.points but no
+  derived index — adjacency (taxi graph), entitiesByPoint, holdingPointsByRunway,
+  circuitLegsByPoint, thresholdByRunway. Existing tests
+  (`FullCircuitTest`, `LowgSpike`) hand-craft these inline; the
+  production sim never built one. G1.6 P0 (scaffold + active-runway
+  selection) works without it; G1.6 P1+ (driving the sim through
+  ground operations and beyond) blocks on it.
+  Discovered while writing the integration test: aircraft sits at
+  AtStand because the GND controller can't find a taxi path without
+  adjacency. Implementation needs to traverse:
+  - `world.geometry.segments` → `adjacency`
+  - `aerodrome.runways/taxiways/stands/aprons` → `entitiesByPoint`
+  - `aerodrome.circuits.values.legs` → `circuitLegsByPoint`
+  - `aerodrome.runways.values.threshold` → `thresholdByRunway`
+  - holding points: data may need to come from manifest (not
+    currently in core model — possible sub-deferral).
+  G1.6 P1 currently asserts the *current* AtStand-frozen behaviour;
+  tighten once this builder lands.
 
 ---
 
