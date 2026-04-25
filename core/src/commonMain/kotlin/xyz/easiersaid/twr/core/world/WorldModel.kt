@@ -266,6 +266,22 @@ data class AerodromeAip(
     val publishedVfrProcedures: Map<PublishedVfrProcedureId, PublishedVfrProcedure> = emptyMap()
 )
 
+/**
+ * Geographic reference point in WGS-84 lat/lon, in degrees.
+ *
+ * Used by `WorldCandidateLoader.mergeAviationWorlds` to reproject each
+ * airport's local Cartesian frame into a single shared frame at parse
+ * time. Without this, multi-aerodrome merges produce overlapping
+ * coordinate spaces (each airport's xMeters/yMeters is relative to
+ * its own reference). G1-DEF-11.
+ */
+data class LatLon(val latitude: Double, val longitude: Double) {
+    init {
+        require(latitude in -90.0..90.0) { "Latitude must be in [-90, 90]: $latitude" }
+        require(longitude in -180.0..180.0) { "Longitude must be in [-180, 180]: $longitude" }
+    }
+}
+
 data class Aerodrome(
     val icao: AerodromeId,
     val elevation: Feet,
@@ -283,7 +299,19 @@ data class Aerodrome(
     val sids: Map<SidId, Sid> = emptyMap(),
     val stars: Map<StarId, Star> = emptyMap(),
     val approaches: Map<ApproachId, InstrumentApproach> = emptyMap(),
-    val holdingPatterns: Map<HoldingPatternId, HoldingPattern> = emptyMap()
+    val holdingPatterns: Map<HoldingPatternId, HoldingPattern> = emptyMap(),
+    /**
+     * Geographic origin of this aerodrome's local Cartesian frame
+     * (xMeters/yMeters in [PhysicalGeometry.points]). Null if the
+     * runtime hasn't been told where this airport is in the world —
+     * which is the legacy single-airport mode where the question
+     * doesn't arise.
+     *
+     * Required for [WorldCandidateLoader.mergeAviationWorlds] to
+     * reproject airport-local geometries into a shared frame
+     * (G1-DEF-11).
+     */
+    val referencePoint: LatLon? = null,
 )
 
 data class AviationWorld(

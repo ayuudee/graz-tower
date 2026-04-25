@@ -185,6 +185,34 @@ class PilotAirspaceTest {
     }
 
     @Test
+    fun `merged LOWG plus LJMB world has coherent geometry — G1-DEF-11`() {
+        // After G1-DEF-11: mergeAviationWorlds reprojects each airport's
+        // local Cartesian frame into a single shared frame. Before the
+        // fix, PETOV at LJMB-frame (22209, -18939) was reported as
+        // inside a LOWG TMA volume because the frames overlapped.
+        //
+        // Pinning behaviour: in the merged world, a point near LJMB's
+        // PETOV must resolve to an LJMB airspace volume (not a LOWG one),
+        // and a point near LOWG's main runway threshold must resolve to
+        // a LOWG volume (not an LJMB one). Geometry is coherent.
+        val merged = loadMergedWorldCoherent()
+        val petov = merged.worldIndex.positions.getValue(PETOV)
+        // PETOV is on the TMA Maribor 1 boundary; step inward toward the
+        // TMA centroid to land inside the LJMB volume.
+        val tmaCentroid = pointInsideTmaMaribor1(merged.world, merged.worldIndex)
+        val inLjmbTma = Position(
+            xMeters = (petov.xMeters + tmaCentroid.xMeters) / 2.0,
+            yMeters = (petov.yMeters + tmaCentroid.yMeters) / 2.0,
+        )
+        val ljmbVolume = PilotAirspace.currentVolume(merged.world, merged.worldIndex, inLjmbTma)
+        assertTrue(ljmbVolume.isRight(),
+            "Point near PETOV in merged world should resolve to an LJMB volume; got $ljmbVolume")
+        val ljmbVolumeId = ljmbVolume.getOrNull()!!.id.value
+        assertTrue(ljmbVolumeId.startsWith("LJMB_"),
+            "Point near PETOV must resolve to an LJMB volume, not '$ljmbVolumeId'.")
+    }
+
+    @Test
     fun `trigger does not fire when pilot is already on the target frequency`() {
         val ctx = loadCtx()
         val triggers = listOf(LJMB_TMA_TRIGGER)
@@ -214,22 +242,33 @@ class PilotAirspaceTest {
     private data class Ctx(val world: AviationWorld, val worldIndex: WorldIndex)
 
     private fun loadCtx(): Ctx {
-        // G1.2 loads LJMB *alone* — not the merged world. Each airport's
-        // geometry is in its own local Cartesian frame (xMeters/yMeters
-        // relative to that airport's reference point), so merging two
-        // airports produces overlapping coordinate spaces. PETOV at
-        // (22209, -18939) in LJMB's frame coincides with a LOWG TMA
-        // volume's interior in LOWG's frame. Cross-aerodrome geometric
-        // reasoning (G1.6) needs a shared frame — tracked as a pre-G1.6
-        // hard blocker (G1-DEF-11). For PilotAirspace's geometric
-        // contract — which operates inside a single coherent frame —
-        // a single-airport world is the correct test.
+        // Most tests in this suite operate on a single airport (LJMB) —
+        // PilotAirspace's contract is "single coherent frame," and LJMB-
+        // alone is the simplest such frame. The merged-world coherence
+        // check uses [loadMergedWorldCoherent].
         val projectRoot = resolveProjectRoot()
         val ljmbPath = projectRoot.resolve("cad/airports/rendered/ljmb/world-candidate.json")
         val world = WorldCandidateLoader.toWorld(
             json.decodeFromString<WorldCandidateDocument>(java.nio.file.Files.readString(ljmbPath))
         )
         return Ctx(world, WorldIndex(positions = world.geometry.points))
+    }
+
+    private fun loadMergedWorldCoherent(): Ctx {
+        // After G1-DEF-11, mergeAviationWorlds reprojects each airport's
+        // geometry into a single shared frame. This loader exercises that
+        // path so the test asserts coherence in the merged frame.
+        val projectRoot = resolveProjectRoot()
+        val lowgPath = projectRoot.resolve("cad/airports/rendered/lowg/world-candidate.json")
+        val ljmbPath = projectRoot.resolve("cad/airports/rendered/ljmb/world-candidate.json")
+        val lowg = WorldCandidateLoader.toWorld(
+            json.decodeFromString<WorldCandidateDocument>(java.nio.file.Files.readString(lowgPath))
+        )
+        val ljmb = WorldCandidateLoader.toWorld(
+            json.decodeFromString<WorldCandidateDocument>(java.nio.file.Files.readString(ljmbPath))
+        )
+        val merged = WorldCandidateLoader.mergeAviationWorlds(listOf(lowg, ljmb))
+        return Ctx(merged, WorldIndex(positions = merged.geometry.points))
     }
 
     private fun pointInsideTmaMaribor1(world: AviationWorld, idx: WorldIndex): Position {

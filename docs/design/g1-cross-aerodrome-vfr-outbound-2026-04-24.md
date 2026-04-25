@@ -868,29 +868,20 @@ To be promoted to `.plan` after G1 lands:
   LOWG) would silently fail. Track an enum-driven role-frequency
   binding once cross-aerodrome flows mature beyond G1. (atc-general
   round-3 finding.)
-- **G1-DEF-11 (PRE-G1.6 HARD BLOCKER)** — Multi-aerodrome geometric
-  frame collision. Each airport's `world-candidate.json` carries
-  positions in its own local Cartesian frame (xMeters/yMeters relative
-  to the airport reference point). `WorldCandidateLoader.mergeAviationWorlds`
-  takes the union of `geometry.points` without reprojection, so points
-  from LOWG and LJMB end up in the same coordinate space numerically
-  while semantically referring to different absolute locations.
-  Discovered during G1.2 implementation: a synthetic position 2 NM
-  north of LJMB's PETOV (at LJMB-frame `(22209, -18939)`) was reported
-  as inside LOWG's `LO80C_D` TMA volume because the two frames overlap.
-  **Round-3 impact-review fix:** the right structural solution is to
-  make a shared frame (lat/lon-derived ECEF or ENU around a chosen
-  reference) the **canonical world frame** at the loader boundary,
-  with airport-local x/y derived on demand for authoring/CAD tooling
-  but *not* the in-memory `Position` representation. This kills the
-  merge entirely as a coordinate concern — `mergeAviationWorlds`
-  becomes pure key-disjoint union. Earlier "reproject B-relative-to-A"
-  framing baked in asymmetry (which airport wins the origin? what
-  about a third?). Implementation: introduce a typed `WorldFrame`
-  distinct from `LocalFrame`, project at parse time, deprecate local
-  frame in production paths. Blast radius: every `Position`
-  consumer including kinematic math; localisable via the type
-  distinction. Tracked as task #43. **Blocks G1.6.**
+- **G1-DEF-11 — DONE.** Multi-aerodrome geometric frame collision
+  resolved. `mergeAviationWorlds` now reprojects each airport's local
+  Cartesian frame into a single shared frame at parse time. Global
+  origin = arithmetic mean of all reference points (deterministic, not
+  order-dependent). Each airport's positions translated by the (Δx, Δy)
+  ENU offset from global origin to that airport's reference. Point-in-
+  polygon and distance queries in the merged world now use coherent
+  coordinates. `Aerodrome.referencePoint: LatLon?` carries the
+  airport's geographic origin; for now the loader looks up known ICAO
+  codes (LOWG, LJMB) from a hardcoded table — the migration pipeline
+  propagating lat/lon through `world-candidate.json` is a follow-up
+  (`G1-DEF-17`). Single-airport `toWorld` unchanged. Pinned by the
+  "merged world has coherent geometry" test in
+  `sim/src/jvmTest/.../g1/PilotAirspaceTest.kt`.
 - **G1-DEF-10 (post-G1)** — Test ergonomics: `requireSimState(...)`
   helper at `sim/src/jvmTest/.../SimStateTestSupport.kt` already
   exists; existing tests still use ad-hoc `.getOrElse { error("...") }`
@@ -939,6 +930,13 @@ To be promoted to `.plan` after G1 lands:
   List<RouteTransition>` as the single source of truth for "what
   phase am I in," consumed by `derivePilotGoal`. The current
   compound-wrapping (G1.3) is a beachhead, not the long-term shape.
+- **G1-DEF-17** — Migration pipeline propagation of airport
+  `referencePoint` (lat/lon) through `world-candidate.json`. G1-DEF-11
+  is currently closed via a hardcoded ICAO→LatLon table in
+  `WorldCandidateLoader`; the long-term shape is for the structured-
+  airport-package pipeline to publish each airport's reference point
+  alongside its geometry, and the loader to read it from there.
+  Blocks adding new airports without a Kotlin code change.
 
 ---
 
