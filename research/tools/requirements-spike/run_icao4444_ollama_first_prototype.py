@@ -24,6 +24,7 @@ CASES = {
         "startLine": 3401,
         "endLine": 3429,
         "notes": "Readback family with parent clause, subordinate list, notes, and following standalone clauses.",
+        "sourceOverride": None,
     },
     "transfer_family": {
         "caseId": "icao4444_transfer_family",
@@ -33,6 +34,17 @@ CASES = {
         "startLine": 3086,
         "endLine": 3131,
         "notes": "Transfer family with arriving and departing control-transfer clauses, nested conditions, and supporting note.",
+        "sourceOverride": None,
+    },
+    "egast_readback_family": {
+        "caseId": "egast_readback_family",
+        "documentId": "egast-vfr-extracted",
+        "familyId": "egast_vfr_readback_family",
+        "authorityCeiling": "best_practice",
+        "startLine": 539,
+        "endLine": 608,
+        "notes": "EGAST VFR readback advisory family. Mixed best-practice prose, bullet list of items requiring readback, acknowledgement-by-callsign rule, Wilco usage, and read-back-when-required guidance, with inline page-layout noise. No clause numbering.",
+        "sourceOverride": "research/txt/egast-vfr-extracted.txt",
     },
 }
 
@@ -670,7 +682,7 @@ def main() -> None:
     parser.add_argument("--bundle-gate-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--judge-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--num-ctx", type=int, default=12288)
+    parser.add_argument("--num-ctx", type=int, default=16384)
     parser.add_argument("--max-candidates", type=int, default=8)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
@@ -680,7 +692,10 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     case = CASES[args.case]
-    window = build_source_window_payload(args.source, case)
+    case_source = args.source
+    if case_source == DEFAULT_SOURCE and case.get("sourceOverride"):
+        case_source = ROOT / case["sourceOverride"]
+    window = build_source_window_payload(case_source, case)
     write_json(output_dir / "source_window.json", window)
 
     structure_system, structure_user = structure_prompts(window)
@@ -729,7 +744,7 @@ def main() -> None:
             system_prompt=requirement_system,
             user_prompt=requirement_user + f"\n\nIndependent attempt id: attempt_{attempt_no}.",
             temperature=0.2,
-            num_predict=3500,
+            num_predict=8000,
             num_ctx=args.num_ctx,
             timeout_seconds=300,
         )
@@ -745,7 +760,7 @@ def main() -> None:
         system_prompt=reconcile_system,
         user_prompt=reconcile_user,
         temperature=0.0,
-        num_predict=3500,
+        num_predict=8000,
         num_ctx=args.num_ctx,
         timeout_seconds=300,
     )

@@ -192,12 +192,30 @@ On candidates whose `sourceItemIds` span a parent clause plus nested conditions 
 the Ollama challenger consistently labels them `authority_too_high` and produces concerns that are
 structural ("highest modality is shall, but mixed modalities... overreach"), not authority-related.
 The Spike 3 system prompt explicitly directs structural concerns toward `wrong_split` / `overbroad`
-/ `underspecified`, but the model does not follow that routing. Final judged outcomes are clean
-because the bundle gate provides the structural signal mechanically and the judge weights it over
-the challenger's verdict. The challenger surface, however, remains noisy. Likely fix: forbid
-`authority_too_high` on candidates whose bundle-gate `scopeComplete` is true on the same items, or
-add a verdict-classifier post-step that re-routes mis-typed challenger concerns.
-Impact: L | Effort: M
+/ `underspecified`, but the model does not follow that routing.
+On `ICAO 4444` the bundle gate filters this cleanly because most good candidates have `shall`
+anchors the judge can lean on. On `EGAST VFR` (Spike 4) the same bug demoted 2 of 5 promotable
+candidates (`req_wilco_usage`, `req_request_clarification`) from `accepted` to `advisory_only` —
+the judge could not lean on `shall` because the family ceiling is `best_practice` and the source
+modalities are genuinely mixed (`should`, `must` in best-practice context, no clause numbering).
+Impact upgraded from L to M because the bug damages registry-surface outcomes on advisory source
+families, not just the challenger surface. Likely fix: forbid `authority_too_high` on candidates
+whose bundle-gate `scopeComplete` is true on the same items, or add a verdict-classifier post-step
+that re-routes mis-typed challenger concerns.
+Impact: M | Effort: M
+
+**RR-6 — Ollama-first prototype generalises to EGAST advisory family** — DONE (2026-04-25)
+The four-stage architecture (challenger → defender → bundle gate → judge) was tested on
+`research/txt/egast-vfr-extracted.txt:539-608`, an EGAST VFR readback advisory family with
+unnumbered prose, inline page-layout noise, orphan bullet markers, and a `best_practice`
+authority ceiling instead of `authoritative_requirement`. The structure stage produced 14
+reconciled items from 70 lines of layout-noisy source; the bundle gate sensibly returned
+`scopeComplete=true` everywhere; the family ceiling held — no candidate promoted above
+`best_practice`. Final outcome: 6 candidates, 3 accepted, 3 advisory_only.
+Required mechanical adjustments: `num_predict` for extraction attempts and reconciler bumped
+from 3500 to 8000, default `num_ctx` from 12288 to 16384, to absorb the wider extraction
+output some attempts produce on advisory prose with bullet lists.
+Impact: M | Effort: M
 
 ---
 
