@@ -136,7 +136,14 @@ fun towerView(
     time: SimTime = SimTime.ofSeconds(0),
     responsibilities: Set<AircraftId> = aircraft.keys,
     receivedMessages: List<ReceivedMessage> = emptyList(),
-    weather: WeatherObservation? = null,
+    // Default east wind (5 kt) so runway 09 (test-fixture's only runway) is
+    // selected by `selectRunwayIntoWind` and downstream sequencing works.
+    // Tests that need "no weather report" pass null explicitly.
+    weather: WeatherObservation? = WeatherObservation(
+        wind = WindReport.Available(xyz.easiersaid.twr.protocol.Wind.unsafe(directionDegrees = 90, speedKnots = 5)),
+        qnh = null,
+        visibility = null,
+    ),
     runways: Map<RunwayId, RunwayObservation> = mapOf(
         TestIds.runway09 to RunwayObservation(TestIds.runway09, RunwayStatus.CLEAR, emptySet())
     ),

@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Position
@@ -233,7 +234,7 @@ class TransferResponsibilityTest {
             worldIndex = worldIndex,
             controllers = listOf(app, twr),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)
             },
         ).getOrElse { error("Fixture invalid: $it") }
     }
@@ -256,7 +257,7 @@ class TransferResponsibilityTest {
             worldIndex = worldIndex,
             controllers = listOf(twr),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)
             },
         ).getOrElse { error("Fixture invalid: $it") }
     }
@@ -276,7 +277,7 @@ class TransferResponsibilityTest {
             worldIndex = worldIndex,
             controllers = listOf(lowgTwr, ljmbApp, ljmbTwr),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)
             },
         ).getOrElse { error("Fixture invalid: $it") }
     }

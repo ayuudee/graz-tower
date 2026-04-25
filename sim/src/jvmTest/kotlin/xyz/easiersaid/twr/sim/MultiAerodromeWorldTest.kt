@@ -12,6 +12,7 @@ import arrow.core.getOrElse
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.ControllerView
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.controllerDecide
 import xyz.easiersaid.twr.core.world.Position
@@ -95,7 +96,7 @@ class MultiAerodromeWorldTest {
             aircraft = emptyList(),
             controllers = listOf(lowgTower, ljmbTower),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)
             },
         ).getOrElse { error("MultiAerodrome scaffold setup invalid: $it") }
 
@@ -185,7 +186,7 @@ class MultiAerodromeWorldTest {
             aircraft = emptyList(),
             controllers = listOf(lowgTower, ljmbTower),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)
             },
         ).getOrElse { error("MultiAerodrome leakage test setup invalid: $it") }
 

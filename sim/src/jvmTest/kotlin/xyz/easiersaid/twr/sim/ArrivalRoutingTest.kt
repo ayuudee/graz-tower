@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.sim
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.protocol.*
 import kotlin.test.Test
@@ -188,7 +189,7 @@ class ArrivalRoutingTest {
                 ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
             ),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.Available(xyz.easiersaid.twr.protocol.Wind.unsafe(directionDegrees = 90, speedKnots = 5)), qnh = null, visibility = null)
             },
         ).getOrElse { error("ArrivalRouting downwind setup invalid: $it") }
         val events = listOf(
@@ -271,7 +272,7 @@ class ArrivalRoutingTest {
                 ControllerSpec(approachControllerId, RoleName.APPROACH, aerodromeId, approachFrequency, emptySet()),
             ),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.Available(xyz.easiersaid.twr.protocol.Wind.unsafe(directionDegrees = 90, speedKnots = 5)), qnh = null, visibility = null)
             },
         ).getOrElse { error("ArrivalRouting restricted setup invalid: $it") }
         val events = listOf(

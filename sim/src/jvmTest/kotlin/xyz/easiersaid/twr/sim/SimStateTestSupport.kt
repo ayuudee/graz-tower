@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.sim
 
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
@@ -37,4 +38,4 @@ internal fun requireSimState(
  * empty map).
  */
 internal fun AviationWorld.unobservedWeather(): Map<AerodromeId, WeatherObservation> =
-    aerodromes.keys.associateWith { WeatherObservation(wind = null, qnh = null, visibility = null) }
+    aerodromes.keys.associateWith { WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null) }

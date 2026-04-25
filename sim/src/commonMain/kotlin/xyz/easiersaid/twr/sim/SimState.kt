@@ -66,7 +66,7 @@ data class SimState(
          * runways has no [WeatherObservation] entry.
          *
          * Tests that genuinely don't simulate weather pass an explicit
-         * `WeatherObservation(wind = null, qnh = null, visibility = null)`
+         * `WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)`
          * for each runway-bearing aerodrome.
          */
         fun initial(

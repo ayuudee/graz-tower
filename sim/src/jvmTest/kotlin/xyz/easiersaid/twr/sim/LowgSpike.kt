@@ -5,6 +5,7 @@ import arrow.core.getOrElse
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.core.world.*
 import xyz.easiersaid.twr.migration.world.CandidateCircuitProcedure
 import xyz.easiersaid.twr.migration.world.WorldCandidateDocument
@@ -197,7 +198,7 @@ class LowgSpike {
             initial = SimState.initial(
                 seed = 42L, world = world, worldIndex = worldIndex, controllers = listOf(twr),
                 weatherByAerodrome = world.aerodromes.keys.associateWith {
-                    WeatherObservation(wind = null, qnh = null, visibility = null)
+                    WeatherObservation(wind = WindReport.Available(xyz.easiersaid.twr.protocol.Wind.unsafe(directionDegrees = 340, speedKnots = 5)), qnh = null, visibility = null)
                 },
             ).getOrElse { error("LowgSpike setup invalid: $it") },
             initialEvents = listOf(

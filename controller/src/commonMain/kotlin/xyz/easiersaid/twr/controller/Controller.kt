@@ -192,7 +192,13 @@ private fun BeliefState.withLocEstablished(events: List<ControllerEvent>): Belie
 private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState =
     if ((view.role == RoleName.TOWER || view.role == RoleName.GROUND) &&
         (activeRunway == null || activeRunway !in view.runways))
-        copy(activeRunway = selectRunwayIntoWind(view.runways.keys, view.weather?.wind))
+        copy(activeRunway = selectRunwayIntoWind(
+            view.runways.keys,
+            // Controller has no weather observation at all → treat as
+            // "no report yet"; selectRunwayIntoWind returns null and
+            // active runway stays unset.
+            view.weather?.wind ?: WindReport.NotReported,
+        ))
     else this
 
 /**
@@ -450,7 +456,13 @@ private fun enrichInstruction(
     output: ControllerOutput.Instruct,
     weather: WeatherObservation?,
 ): ControllerOutput.Instruct {
-    val wind = weather?.wind ?: return output
+    // No weather observation OR no current wind report → don't enrich.
+    // The instruction goes out without surface wind; downstream phraseology
+    // will note the absence per CAP 413.
+    val wind = when (val w = weather?.wind) {
+        null, is WindReport.NotReported -> return output
+        is WindReport.Available -> w.wind
+    }
     val enriched = when (val instr = output.instruction) {
         is ClearedForTakeoff -> instr.copy(surfaceWind = wind)
         is ClearedToLand -> instr.copy(surfaceWind = wind)

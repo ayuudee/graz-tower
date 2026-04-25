@@ -72,16 +72,31 @@ data class ClearanceSummary(
 )
 
 /**
- * Observed weather at a single aerodrome.
- *
- * The [wind] field is intentionally nullable — it represents "no wind report
- * available." When wind is null, [selectRunwayIntoWind] returns null and
- * downstream controller logic that needs an active runway must defer.
- * Tightening this to a typed `Either<NoWindReport, Wind>` is tracked as
- * G1-DEF-7 in `docs/design/g1-cross-aerodrome-vfr-outbound-2026-04-24.md`,
- * scheduled as a pre-G1.6 must-fix.
+ * Sealed wind-report state. Replaces the earlier `Wind?` field on
+ * [WeatherObservation] so consumers must explicitly handle the
+ * "no wind report yet" case rather than treating null as a silent
+ * fallback. Resolves G1-DEF-7 (pre-G1.6 must-fix).
  */
-data class WeatherObservation(val wind: Wind?, val qnh: PressureSetting?, val visibility: Int?)
+sealed interface WindReport {
+    /** A current wind report is available. */
+    data class Available(val wind: Wind) : WindReport
+
+    /**
+     * No wind report has been received yet — typically before the first
+     * METAR cycle, or in the controller's belief state when the weather
+     * observation hasn't been refreshed. Downstream selection logic
+     * (e.g. [selectRunwayIntoWind]) returns null/no-decision rather
+     * than picking a default.
+     */
+    data object NotReported : WindReport
+}
+
+/**
+ * Observed weather at a single aerodrome. The [wind] field is a sealed
+ * [WindReport] (not nullable) so every consumer must handle the
+ * "no report" case explicitly.
+ */
+data class WeatherObservation(val wind: WindReport, val qnh: PressureSetting?, val visibility: Int?)
 
 data class PendingHandoff(val aircraft: AircraftId, val from: ControllerId)
 

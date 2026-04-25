@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.sim
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AerodromeRole
 import xyz.easiersaid.twr.core.world.AuthorityGrant
@@ -222,7 +223,7 @@ class DepartureVerticalTest {
             worldIndex = worldIndex,
             controllers = listOf(groundController, towerController, approachController),
             weatherByAerodrome = world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = null, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.Available(xyz.easiersaid.twr.protocol.Wind.unsafe(directionDegrees = 90, speedKnots = 5)), qnh = null, visibility = null)
             },
         ).getOrElse { error("DepartureVertical setup invalid: $it") },
         initialEvents = listOf(

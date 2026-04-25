@@ -319,15 +319,27 @@ private fun arrivalCommittedToRunway(
     return onApproach || LegName.BASE in legs || LegName.FINAL in legs
 }
 
-/** Select runway closest to into-wind. Simple wind-direction matching. */
-fun selectRunwayIntoWind(runways: Set<RunwayId>, wind: Wind?): RunwayId? {
+/**
+ * Select runway closest to into-wind. Returns null when no decision is
+ * possible — empty runway set, or no wind report has been received yet.
+ *
+ * The caller (typically `withActiveRunway` in the controller decide loop)
+ * carries the null forward as "no active runway selected"; downstream
+ * logic that needs an active runway must defer instruction issuance
+ * rather than substituting an arbitrary fallback.
+ */
+fun selectRunwayIntoWind(runways: Set<RunwayId>, wind: xyz.easiersaid.twr.controller.WindReport): RunwayId? {
     if (runways.isEmpty()) return null
-    if (wind == null) return runways.first()
-    // Parse runway heading from ID (e.g., "09" → 90°, "27" → 270°)
-    return runways.minByOrNull { rwy ->
-        val rwyHeading = rwy.value.takeWhile { it.isDigit() }.toIntOrNull()?.times(10) ?: 0
-        val windDir = wind.directionDegrees
-        val diff = kotlin.math.abs(rwyHeading - windDir)
-        minOf(diff, 360 - diff)
+    return when (wind) {
+        is xyz.easiersaid.twr.controller.WindReport.NotReported -> null
+        is xyz.easiersaid.twr.controller.WindReport.Available -> {
+            // Parse runway heading from ID (e.g., "09" → 90°, "27" → 270°)
+            runways.minByOrNull { rwy ->
+                val rwyHeading = rwy.value.takeWhile { it.isDigit() }.toIntOrNull()?.times(10) ?: 0
+                val windDir = wind.wind.directionDegrees
+                val diff = kotlin.math.abs(rwyHeading - windDir)
+                minOf(diff, 360 - diff)
+            }
+        }
     }
 }

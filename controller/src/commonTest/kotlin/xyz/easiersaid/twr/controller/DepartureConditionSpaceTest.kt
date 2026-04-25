@@ -155,7 +155,7 @@ class DepartureConditionSpaceTest {
         weatherVfr: Boolean = true,
         events: List<ControllerEvent> = emptyList(),
     ): OperatorContext {
-        val weather = if (weatherVfr) null else WeatherObservation(null, null, 1000)
+        val weather = if (weatherVfr) null else WeatherObservation(WindReport.NotReported, null, 1000)
         val view = towerView(
             aircraft = mapOf(ac to acObs),
             weather = weather,

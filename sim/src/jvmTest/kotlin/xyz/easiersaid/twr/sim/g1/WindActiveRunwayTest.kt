@@ -8,6 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.controller.controllerDecide
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.WorldIndex
@@ -51,7 +52,7 @@ class WindActiveRunwayTest {
         val state = mergedState(
             ctx,
             weather = ctx.world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = southWind, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.Available(southWind), qnh = null, visibility = null)
             },
         )
 
@@ -77,7 +78,7 @@ class WindActiveRunwayTest {
         val state = mergedState(
             ctx,
             weather = ctx.world.aerodromes.keys.associateWith {
-                WeatherObservation(wind = northWind, qnh = null, visibility = null)
+                WeatherObservation(wind = WindReport.Available(northWind), qnh = null, visibility = null)
             },
         )
 
@@ -101,7 +102,7 @@ class WindActiveRunwayTest {
         val ctx = loadMergedWorld()
         // Provide weather only for LOWG; LJMB is omitted.
         val partialWeather = mapOf(
-            AerodromeId("LOWG") to WeatherObservation(wind = null, qnh = null, visibility = null),
+            AerodromeId("LOWG") to WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null),
         )
         val result = SimState.initial(
             seed = 0L,

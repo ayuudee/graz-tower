@@ -29,7 +29,13 @@ class GroundTaxiTest {
         runways = mapOf(TestIds.runway09 to RunwayObservation(TestIds.runway09, RunwayStatus.CLEAR, emptySet())),
         activeClearances = emptyMap(),
         receivedMessages = receivedMessages,
-        weather = null,
+        // East wind so withActiveRunway picks runway 09 — the GROUND role's
+        // active runway selection feeds the taxi/handoff logic.
+        weather = WeatherObservation(
+            wind = WindReport.Available(xyz.easiersaid.twr.protocol.Wind.unsafe(directionDegrees = 90, speedKnots = 5)),
+            qnh = null,
+            visibility = null,
+        ),
         pendingInboundHandoffs = emptyList(),
         worldIndex = worldIndex,
     )

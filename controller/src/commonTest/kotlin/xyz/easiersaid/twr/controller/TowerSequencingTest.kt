@@ -54,7 +54,7 @@ class TowerSequencingTest {
             aircraft = mapOf(TestIds.acAlpha to ac),
             receivedMessages = listOf(readyForDepartureMessage(TestIds.acAlpha)),
             time = SimTime.ofSeconds(10),
-            weather = WeatherObservation(wind = null, qnh = null, visibility = 2000), // below VMC
+            weather = WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = 2000), // below VMC
         )
         val result = testControllerDecide(view, beliefs)
 
