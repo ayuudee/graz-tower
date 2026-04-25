@@ -456,12 +456,13 @@ private fun enrichInstruction(
     output: ControllerOutput.Instruct,
     weather: WeatherObservation?,
 ): ControllerOutput.Instruct {
-    // No weather observation OR no current wind report → don't enrich.
-    // The instruction goes out without surface wind; downstream phraseology
-    // will note the absence per CAP 413.
-    val wind = when (val w = weather?.wind) {
-        null, is WindReport.NotReported -> return output
-        is WindReport.Available -> w.wind
+    // No weather observation at all → don't enrich. WeatherObservation.wind
+    // itself is non-nullable (sealed `WindReport`), so the only null path
+    // here is the outer optional.
+    val report = weather?.wind ?: return output
+    val wind = when (report) {
+        is WindReport.NotReported -> return output
+        is WindReport.Available -> report.wind
     }
     val enriched = when (val instr = output.instruction) {
         is ClearedForTakeoff -> instr.copy(surfaceWind = wind)

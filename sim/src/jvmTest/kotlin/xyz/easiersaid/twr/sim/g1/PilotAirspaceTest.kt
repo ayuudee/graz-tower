@@ -185,7 +185,7 @@ class PilotAirspaceTest {
     }
 
     @Test
-    fun `merged LOWG plus LJMB world has coherent geometry — G1-DEF-11`() {
+    fun `merged LOWG plus LJMB world has coherent geometry on both sides — G1-DEF-11`() {
         // After G1-DEF-11: mergeAviationWorlds reprojects each airport's
         // local Cartesian frame into a single shared frame. Before the
         // fix, PETOV at LJMB-frame (22209, -18939) was reported as
@@ -193,16 +193,17 @@ class PilotAirspaceTest {
         //
         // Pinning behaviour: in the merged world, a point near LJMB's
         // PETOV must resolve to an LJMB airspace volume (not a LOWG one),
-        // and a point near LOWG's main runway threshold must resolve to
-        // a LOWG volume (not an LJMB one). Geometry is coherent.
+        // AND a point inside LOWG's TMA must resolve to a LOWG volume
+        // (not an LJMB one). Both sides — round-3 test review: silent
+        // partial reprojection would pass an LJMB-side-only assertion.
         val merged = loadMergedWorldCoherent()
+
+        // ── LJMB side ──
         val petov = merged.worldIndex.positions.getValue(PETOV)
-        // PETOV is on the TMA Maribor 1 boundary; step inward toward the
-        // TMA centroid to land inside the LJMB volume.
-        val tmaCentroid = pointInsideTmaMaribor1(merged.world, merged.worldIndex)
+        val ljmbTmaCentroid = pointInsideTmaMaribor1(merged.world, merged.worldIndex)
         val inLjmbTma = Position(
-            xMeters = (petov.xMeters + tmaCentroid.xMeters) / 2.0,
-            yMeters = (petov.yMeters + tmaCentroid.yMeters) / 2.0,
+            xMeters = (petov.xMeters + ljmbTmaCentroid.xMeters) / 2.0,
+            yMeters = (petov.yMeters + ljmbTmaCentroid.yMeters) / 2.0,
         )
         val ljmbVolume = PilotAirspace.currentVolume(merged.world, merged.worldIndex, inLjmbTma)
         assertTrue(ljmbVolume.isRight(),
@@ -210,6 +211,24 @@ class PilotAirspaceTest {
         val ljmbVolumeId = ljmbVolume.getOrNull()!!.id.value
         assertTrue(ljmbVolumeId.startsWith("LJMB_"),
             "Point near PETOV must resolve to an LJMB volume, not '$ljmbVolumeId'.")
+
+        // ── LOWG side ──
+        // Pick a point inside a known LOWG TMA volume's boundary. Use the
+        // centroid of LO80C_D's first ring (the volume that previously
+        // wrongly captured LJMB's PETOV in the unprojected merge).
+        val lowgVolume = merged.world.airspace.getValue(AirspaceVolumeId("LO80C_D"))
+        val lowgRing = lowgVolume.boundary!!.rings.first().points
+            .mapNotNull { merged.worldIndex.positions[it] }
+        val lowgCentroid = Position(
+            xMeters = lowgRing.map { it.xMeters }.average(),
+            yMeters = lowgRing.map { it.yMeters }.average(),
+        )
+        val resolvedLowg = PilotAirspace.currentVolume(merged.world, merged.worldIndex, lowgCentroid)
+        assertTrue(resolvedLowg.isRight(),
+            "LOWG TMA centroid should resolve to a LOWG volume; got $resolvedLowg")
+        val lowgVolumeId = resolvedLowg.getOrNull()!!.id.value
+        assertTrue(!lowgVolumeId.startsWith("LJMB_"),
+            "LOWG TMA centroid must not resolve to an LJMB volume; got '$lowgVolumeId'.")
     }
 
     @Test

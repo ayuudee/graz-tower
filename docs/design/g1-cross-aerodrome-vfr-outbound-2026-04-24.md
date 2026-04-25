@@ -936,7 +936,40 @@ To be promoted to `.plan` after G1 lands:
   `WorldCandidateLoader`; the long-term shape is for the structured-
   airport-package pipeline to publish each airport's reference point
   alongside its geometry, and the loader to read it from there.
-  Blocks adding new airports without a Kotlin code change.
+  Blocks adding new airports without a Kotlin code change. Strict
+  fail-on-missing-reference-point in `mergeAviationWorlds` (round-3
+  must-fix) makes the foot-gun loud rather than silent.
+- **G1-DEF-18** — `WorldFrame` phantom type to distinguish
+  airport-local (single-airport `toWorld` output) from shared-origin
+  (multi-aerodrome merge output). Both are `AviationWorld` today;
+  callers cannot tell the difference. A phantom type would gate
+  cross-aerodrome geometry queries to the shared-frame variant.
+  (impact round-3 finding.)
+- **G1-DEF-19** — `EnuFrame(originLat, originLon)` value to gate
+  flat-earth ENU translation against scope creep — currently the
+  loader carries an inline 150 km guard. Lifting the projection
+  parameters into a typed value would gate misuse (e.g. a future
+  caller passing a global-scale lat/lon and getting plausible-but-
+  wrong metres). (impact round-3 finding.)
+- **G1-DEF-20** — Test fixture: `weatherForcing(runway = ...)`
+  helper to make the wind-as-fixture intent explicit in the legacy
+  tests (currently 6 tests declare `wind = WindReport.Available
+  (Wind.unsafe(directionDegrees = 90, speedKnots = 5))` because they
+  need RWY 09 active, not because they care about wind). (test
+  round-3 finding.)
+- **G1-DEF-21** — Split `towerView()` / `groundView()` test fixture
+  defaults: explicit `WeatherObservation.unspecified` opt-in vs. a
+  named `withEastWind()` helper for tests that *do* care about
+  runway selection. The default-east-wind plants a hidden coupling
+  for every future test author. (test round-3 finding.)
+- **G1-DEF-22** — Typed-error tests should assert per-variant
+  dispatch behaviour, not discriminator existence. Pattern:
+  `assertTrue(result.isLeft() && err is X)` proves the type system
+  does its job, not that callers can use the typed error. Either
+  rewrite to assert behavioural consequences, or — if no caller
+  dispatches yet — collapse the typed variants to a single error
+  until a real caller needs to discriminate. (test round-3 finding,
+  per `feedback_testing_philosophy.md` "no scaffold tests" rule.)
 
 ---
 

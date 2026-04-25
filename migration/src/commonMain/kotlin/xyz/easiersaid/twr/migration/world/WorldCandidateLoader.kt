@@ -394,19 +394,42 @@ object WorldCandidateLoader {
 
     /**
      * Reproject each airport's geometry into a single shared frame, with
-     * the global origin at the arithmetic mean of all known
-     * [Aerodrome.referencePoint]s. Worlds whose aerodromes have no
-     * reference point are returned unchanged.
+     * the global origin at the arithmetic mean of all
+     * [Aerodrome.referencePoint]s.
+     *
+     * Strict per round-3 review: when reprojecting, *every* aerodrome
+     * across all input worlds must have a reference point, else the
+     * merge fails loudly. Silent partial reprojection (some airports in
+     * shared frame, others in airport-local frame) is the foot-gun
+     * G1-DEF-11 was meant to close.
+     *
+     * Loud fail also when any airport's ENU offset from the global
+     * origin exceeds [MAX_ENU_OFFSET_M] — flat-earth approximation
+     * breaks beyond ~150 km, and the right structural fix at that
+     * scale is a spherical projection (deferred).
      */
     private fun reprojectToSharedFrame(worlds: List<AviationWorld>): List<AviationWorld> {
-        // Collect all reference points across all worlds.
         val allRefs = worlds.flatMap { world ->
-            world.aerodromes.values.mapNotNull { it.referencePoint }
+            world.aerodromes.values.map { it.referencePoint }
         }
-        if (allRefs.size < 2) return worlds  // nothing to reproject
+        // Round-3 fix (FP must-fix #1): require every aerodrome to have a
+        // reference point when merging. The previous "< 2 → no reprojection"
+        // shortcut produced silently-broken multi-aerodrome geometry the
+        // moment any airport was missing from the loader's hardcoded table.
+        require(allRefs.all { it != null }) {
+            val missing = worlds.flatMap { world ->
+                world.aerodromes.entries
+                    .filter { (_, ad) -> ad.referencePoint == null }
+                    .map { (id, _) -> id }
+            }
+            "mergeAviationWorlds: cannot reproject — aerodromes missing referencePoint: $missing. " +
+                "Add them to WorldCandidateLoader.REFERENCE_POINTS or wait for G1-DEF-17."
+        }
+        val refs = allRefs.filterNotNull()
+        if (refs.size < 2) return worlds  // single airport or all empty — nothing to reproject
 
-        val originLat = allRefs.map { it.latitude }.average()
-        val originLon = allRefs.map { it.longitude }.average()
+        val originLat = refs.map { it.latitude }.average()
+        val originLon = refs.map { it.longitude }.average()
 
         return worlds.map { world ->
             // Each AviationWorld carries one airport's geometry in this
@@ -414,14 +437,26 @@ object WorldCandidateLoader {
             // that airport's reference point.
             val ref = world.aerodromes.values
                 .firstOrNull { it.referencePoint != null }?.referencePoint
-                ?: return@map world  // no reference → no reprojection
+                ?: return@map world  // unreachable after the require above for size>=2
             val (dx, dy) = enuOffsetMeters(originLat, originLon, ref.latitude, ref.longitude)
+            // Round-3 fix (atc-general): flat-earth ENU is accurate to <0.1%
+            // within ~100 km; beyond ~150 km the small-angle approximation
+            // breaks (Earth curvature ~95 km sagitta at 1100 km). Fail loud
+            // rather than produce silently-wrong geometry.
+            require(kotlin.math.hypot(dx, dy) <= MAX_ENU_OFFSET_M) {
+                "mergeAviationWorlds: ENU offset for aerodrome at $ref " +
+                    "exceeds $MAX_ENU_OFFSET_M m (flat-earth approximation breaks). " +
+                    "Use a spherical projection for global-scale scenarios."
+            }
             val translated = world.geometry.points.mapValues { (_, p) ->
                 Position(xMeters = p.xMeters + dx, yMeters = p.yMeters + dy, altitudeFeet = p.altitudeFeet)
             }
             world.copy(geometry = world.geometry.copy(points = translated))
         }
     }
+
+    /** Maximum ENU offset for which the flat-earth projection remains valid. */
+    private const val MAX_ENU_OFFSET_M: Double = 150_000.0
 
     /**
      * Flat-earth ENU offset (in metres) from the global origin
@@ -452,8 +487,8 @@ object WorldCandidateLoader {
      * Adding a new airport: source from AIP / X-Plane apt.dat / Jepp.
      */
     private val REFERENCE_POINTS: Map<AerodromeId, LatLon> = mapOf(
-        AerodromeId("LOWG") to LatLon(latitude = 46.993056, longitude = 15.439167),
-        AerodromeId("LJMB") to LatLon(latitude = 46.480000, longitude = 15.686111),
+        AerodromeId("LOWG") to LatLon.unsafe(latitude = 46.993056, longitude = 15.439167),
+        AerodromeId("LJMB") to LatLon.unsafe(latitude = 46.480000, longitude = 15.686111),
     )
 
     private fun String.toSurfaceType(): SurfaceType =

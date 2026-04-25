@@ -602,16 +602,27 @@ internal fun releaseResponsibility(
 }
 
 /**
+ * Roles for which an unresolved `ContactFrequency` target is interpreted
+ * as "release the aircraft into the void" rather than an error. Currently
+ * only [RoleName.AFIS] — the closest model for a flight-information-service
+ * station that the simulation does not have a controller for (e.g. Wien
+ * Information on the LOWG → LJMB outbound transit). All other roles are
+ * "should resolve to a target controller"; failure to do so is a defect.
+ */
+private val RELEASABLE_ROLES: Set<RoleName> = setOf(RoleName.AFIS)
+
+/**
  * Controller-initiated responsibility transfer triggered by a `ContactFrequency`
  * instruction. Same-aerodrome by construction: the target controller is at the
  * current owner's aerodrome with the requested role. If no target controller
- * exists for `(currentAerodrome, instruction.role)`, falls through to
- * [releaseResponsibility] — the aircraft is left unmanaged. This is the
- * controller's *intent*: a `ContactFrequency` to a role with no simulated
- * controller is the LOWG → FIS pattern.
+ * exists for `(currentAerodrome, instruction.role)`:
+ *  - If [instruction.role] is in [RELEASABLE_ROLES], release the aircraft
+ *    explicitly (round-3 impact-review fix: was previously a silent fall-
+ *    through that masked typo'd or stale-enum role values).
+ *  - Otherwise, [error] — the controller asked for a target that isn't
+ *    modelled and isn't a documented release intent.
  *
- * Returns the state unchanged if no controller currently holds [ac] (round-3
- * impact-review fix: this is now a defined no-op rather than a silent return).
+ * Returns the state unchanged if no controller currently holds [ac].
  */
 private fun applyContactFrequency(
     state: SimState,
@@ -626,9 +637,18 @@ private fun applyContactFrequency(
         toAerodrome = current.aerodromeId,
         toRole = instruction.role,
     ).fold(
-        // Target unresolved at the current aerodrome → explicit release.
-        // This is the LOWG → FIS case where no FIS controller is modelled.
-        ifLeft = { releaseResponsibility(state, ac.id) },
+        ifLeft = { err ->
+            if (instruction.role in RELEASABLE_ROLES) {
+                releaseResponsibility(state, ac.id)
+            } else {
+                error(
+                    "applyContactFrequency: target ${instruction.role} not resolved at " +
+                        "${current.aerodromeId} and not in RELEASABLE_ROLES. " +
+                        "Caller should target an existing role or use AFIS for a deliberate release. " +
+                        "Underlying: $err",
+                )
+            }
+        },
         ifRight = { it },
     )
 }

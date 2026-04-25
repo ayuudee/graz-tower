@@ -275,10 +275,35 @@ data class AerodromeAip(
  * coordinate spaces (each airport's xMeters/yMeters is relative to
  * its own reference). G1-DEF-11.
  */
-data class LatLon(val latitude: Double, val longitude: Double) {
+@ConsistentCopyVisibility
+data class LatLon private constructor(val latitude: Double, val longitude: Double) {
     init {
+        // Defensive backstop — every construction goes via [invoke] or
+        // [unsafe], both of which range-check.
         require(latitude in -90.0..90.0) { "Latitude must be in [-90, 90]: $latitude" }
         require(longitude in -180.0..180.0) { "Longitude must be in [-180, 180]: $longitude" }
+    }
+
+    companion object {
+        /**
+         * Smart constructor — returns a typed error rather than throwing
+         * when lat/lon is out of range. Use this at deserialization
+         * boundaries (G1-DEF-17 will plumb lat/lon through the JSON
+         * `world-candidate` schema; throwing from a deserializer is the
+         * wrong shape).
+         */
+        operator fun invoke(latitude: Double, longitude: Double): arrow.core.Either<String, LatLon> =
+            when {
+                latitude !in -90.0..90.0 -> arrow.core.Either.Left("Latitude must be in [-90, 90]: $latitude")
+                longitude !in -180.0..180.0 -> arrow.core.Either.Left("Longitude must be in [-180, 180]: $longitude")
+                else -> arrow.core.Either.Right(LatLon(latitude, longitude))
+            }
+
+        /**
+         * Throwing variant — for trusted call sites (compile-time literals).
+         */
+        fun unsafe(latitude: Double, longitude: Double): LatLon =
+            invoke(latitude, longitude).fold({ error(it) }, { it })
     }
 }
 
