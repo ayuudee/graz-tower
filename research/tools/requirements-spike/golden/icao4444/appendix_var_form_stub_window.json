@@ -1,0 +1,86 @@
+{
+  "fixtureId": "appendix_var_form_stub_window",
+  "fixtureKind": "structure_window",
+  "selector": {
+    "type": "line_window",
+    "start": 19466,
+    "end": 19474
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "blocks": [
+      {
+        "blockId": "icao4444::sub_list_item::05662",
+        "blockKind": "sub_list_item",
+        "label": "1)",
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05634",
+        "lineStart": 19466,
+        "lineEnd": 19468,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)",
+          "1)"
+        ],
+        "normalizedText": "AIRCRAFT IDENTIFICATION"
+      },
+      {
+        "blockId": "icao4444::label_stub::05663",
+        "blockKind": "label_stub",
+        "label": "2)",
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05634",
+        "lineStart": 19470,
+        "lineEnd": 19470,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "2)"
+      },
+      {
+        "blockId": "icao4444::table_fragment::05664",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05634",
+        "lineStart": 19472,
+        "lineEnd": 19472,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "POSITION"
+      },
+      {
+        "blockId": "icao4444::label_stub::05665",
+        "blockKind": "label_stub",
+        "label": "3)",
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05634",
+        "lineStart": 19474,
+        "lineEnd": 19474,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "3)"
+      }
+    ],
+    "units": [
+      {
+        "sourceUnitId": "icao4444::sub_list_item::05662::unit",
+        "unitKind": "sub_list_item",
+        "parentSourceUnitId": "icao4444::section_heading::05634::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:19466-19468",
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)",
+          "1)"
+        ],
+        "normalizedText": "AIRCRAFT IDENTIFICATION"
+      }
+    ]
+  }
+}

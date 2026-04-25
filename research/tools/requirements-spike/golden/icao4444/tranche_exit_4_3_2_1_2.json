@@ -1,0 +1,70 @@
+{
+  "fixtureId": "tranche_exit_4_3_2_1_2",
+  "fixtureKind": "bundle_anchor",
+  "selector": {
+    "type": "label",
+    "value": "4.3.2.1.2"
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "primaryBlock": {
+      "blockId": "icao4444::numeric_clause::01330",
+      "blockKind": "numeric_clause",
+      "label": "4.3.2.1.2",
+      "title": null,
+      "parentBlockId": "icao4444::section_heading::01321",
+      "lineStart": 3104,
+      "lineEnd": 3106,
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "4.3.2.1.2"
+      ],
+      "normalizedText": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time\nthat clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely\nmanner."
+    },
+    "primaryUnit": {
+      "sourceUnitId": "icao4444::numeric_clause::01330::unit",
+      "unitKind": "normative_clause",
+      "parentSourceUnitId": "icao4444::section_heading::01321::unit",
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "4.3.2.1.2"
+      ],
+      "normalizedText": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time\nthat clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely\nmanner."
+    },
+    "bundle": {
+      "bundleId": "icao4444:icao4444::numeric_clause::01330",
+      "bundleKind": "clause_with_support_note",
+      "recommendation": "standalone_with_support",
+      "memberIds": [
+        "icao4444::numeric_clause::01330::unit",
+        "icao4444::note_block::01331::unit"
+      ]
+    },
+    "memberUnits": [
+      {
+        "sourceUnitId": "icao4444::numeric_clause::01330::unit",
+        "unitKind": "normative_clause",
+        "parentSourceUnitId": "icao4444::section_heading::01321::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "4.3.2.1.2"
+        ],
+        "normalizedText": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time\nthat clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely\nmanner."
+      },
+      {
+        "sourceUnitId": "icao4444::note_block::01331::unit",
+        "unitKind": "background_explanation",
+        "parentSourceUnitId": "icao4444::numeric_clause::01330::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3107-3109",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "Note.\u2014"
+        ],
+        "normalizedText": "Even though there is an approach control unit, control of certain flights may be transferred directly from an\nACC to an aerodrome control tower and vice versa, by prior arrangement between the units concerned for the relevant\npart of approach control service to be provided by the ACC or the aerodrome control tower, as applicable."
+      }
+    ]
+  }
+}

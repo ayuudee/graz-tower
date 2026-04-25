@@ -1,0 +1,58 @@
+{
+  "fixtureId": "appendix_supplementary_data_table_window",
+  "fixtureKind": "structure_window",
+  "selector": {
+    "type": "line_window",
+    "start": 21197,
+    "end": 21209
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "blocks": [
+      {
+        "blockId": "icao4444::table_fragment::06052",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::06047",
+        "lineStart": 21197,
+        "lineEnd": 21197,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "DATE"
+      },
+      {
+        "blockId": "icao4444::table_fragment::06053",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::06047",
+        "lineStart": 21198,
+        "lineEnd": 21198,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "\u2013\u2013\u2013\u2013\u2013\u2013\u2013"
+      },
+      {
+        "blockId": "icao4444::free_paragraph::06054",
+        "blockKind": "free_paragraph",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::06047",
+        "lineStart": 21199,
+        "lineEnd": 21209,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "yymmdd\nSERIAL NO.\n__ - __\nPAGE OF\n\u2013\u2013 / \u2013\u2013\nG SUPPLEMENTARY DATA (Item 19) AT:\nJ"
+      }
+    ],
+    "units": []
+  }
+}

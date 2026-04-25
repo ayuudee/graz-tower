@@ -1,0 +1,74 @@
+{
+  "fixtureId": "tranche_exit_4_5_7_5_2_1",
+  "fixtureKind": "bundle_anchor",
+  "selector": {
+    "type": "label",
+    "value": "4.5.7.5.2.1"
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "primaryBlock": {
+      "blockId": "icao4444::numeric_clause::01439",
+      "blockKind": "numeric_clause",
+      "label": "4.5.7.5.2.1",
+      "title": null,
+      "parentBlockId": "icao4444::section_heading::01431",
+      "lineStart": 3426,
+      "lineEnd": 3427,
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "READBACK OF CLEARANCES",
+        "4.5.7.5.2.1"
+      ],
+      "normalizedText": "Unless specified by the appropriate ATS authority, voice readback of controller-pilot data link\ncommunications (CPDLC) messages shall not be required."
+    },
+    "primaryUnit": {
+      "sourceUnitId": "icao4444::numeric_clause::01439::unit",
+      "unitKind": "normative_clause",
+      "parentSourceUnitId": "icao4444::section_heading::01431::unit",
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3426-3427",
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "READBACK OF CLEARANCES",
+        "4.5.7.5.2.1"
+      ],
+      "normalizedText": "Unless specified by the appropriate ATS authority, voice readback of controller-pilot data link\ncommunications (CPDLC) messages shall not be required."
+    },
+    "bundle": {
+      "bundleId": "icao4444:icao4444::numeric_clause::01439",
+      "bundleKind": "clause_with_support_note",
+      "recommendation": "standalone_with_support",
+      "memberIds": [
+        "icao4444::numeric_clause::01439::unit",
+        "icao4444::note_block::01440::unit"
+      ]
+    },
+    "memberUnits": [
+      {
+        "sourceUnitId": "icao4444::numeric_clause::01439::unit",
+        "unitKind": "normative_clause",
+        "parentSourceUnitId": "icao4444::section_heading::01431::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3426-3427",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "READBACK OF CLEARANCES",
+          "4.5.7.5.2.1"
+        ],
+        "normalizedText": "Unless specified by the appropriate ATS authority, voice readback of controller-pilot data link\ncommunications (CPDLC) messages shall not be required."
+      },
+      {
+        "sourceUnitId": "icao4444::note_block::01440::unit",
+        "unitKind": "background_explanation",
+        "parentSourceUnitId": "icao4444::numeric_clause::01439::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3428-3429",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "READBACK OF CLEARANCES",
+          "Note.\u2014"
+        ],
+        "normalizedText": "The procedures and provisions relating to the exchange and acknowledgement of CPDLC messages are\ncontained in Annex 10, Volume II and the PANS-ATM, Chapter 14."
+      }
+    ]
+  }
+}
