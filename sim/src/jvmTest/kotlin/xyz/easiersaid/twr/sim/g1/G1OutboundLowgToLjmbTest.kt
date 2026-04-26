@@ -259,31 +259,42 @@ class G1OutboundLowgToLjmbTest {
         )
     }
 
-    // ── P3+ (TODO) ──────────────────────────────────────────────────────
+    // ── P3+ resumption point ────────────────────────────────────────────
     //
-    // Next phase: GND→TWR handoff at the holding short, then TWR issues
-    // LineUpAndWait + ClearedForTakeoff, aircraft becomes airborne.
+    // Next: GND→TWR handoff at the holding-short, then TWR issues
+    // LineUpAndWait → ClearedForTakeoff → aircraft airborne.
     //
-    // Diagnostic test (commented out, retained as the resumption point):
-    // after 3 sim minutes the aircraft reaches HoldingShort + reports ready,
-    // but `LOWG_GND` still holds responsibility — the GND-HANDOFF rule isn't
-    // firing. Likely causes (to investigate when resuming):
-    //  - Commitment.runway not set on the GND commitment (no TaxiTo carries
-    //    the runway through), so `AtHoldingPoint.evaluate` falls back to
-    //    `ctx.beliefs.activeRunway` — verify that's set to 16C.
-    //  - Aircraft's `positionPoint` may not match any of the holding points
-    //    in `worldIndex.holdingPointsByRunway[16C]`. The GND TaxiTo target
-    //    may pick a *different* runway's holding short.
-    //  - The cross-aerodrome HTN's `groundDepartureTask(humanPiloted=false)`
-    //    might differ in step ordering from the single-airport variant.
+    // Round-5 P3 diagnostic showed: at 3 sim minutes the aircraft sits at
+    // HoldingShort, step=AWAIT_LINE_UP, LOWG_GND still holds. **Every
+    // precondition for the `GND-HANDOFF` rule's `AllOf(AtHoldingPoint,
+    // NoPendingReadback<ContactFrequency>)` guard evaluates true:**
+    //   - aircraft.positionPoint = LOWG_TWY_A_11
+    //   - worldIndex.holdingPointsByRunway[16C] = {LOWG_TWY_A_11}
+    //   - commitment.runway = 16C
+    //   - commitment.stage = AwaitAtHolding
+    //   - contacted = true
+    //   - pendingReadbacks empty
+    // Yet **no `ContactFrequency` is ever emitted** — `inFlightTransmissions`
+    // is empty after 3 minutes, both controllers' inboxes empty.
     //
-    // Use a print-on-failure scenario to inspect commitment + position:
+    // So this is *not* a missing-data issue (the data on the merged-LOWG
+    // world matches what synthetic LOWG tests have for the holding short).
+    // It's a procedural rule-machinery issue. Resumption: instrument
+    // `controllerDecide` with `decisionTrace` inspection on the LOWG_GND
+    // cycle to see which rules were matched, which actions considered,
+    // which skipped, and why `HandoffAction(RoleName.TOWER)` isn't selected.
     //
-    //   val result = runUntil(state, events, SimTime.ofSeconds(180))
-    //   val gndBeliefs = result.beliefs[LOWG_GND_ID]!!
-    //   val commitment = gndBeliefs.commitments[ALPHA]
-    //   println("commitment.runway = ${commitment?.runway}")
-    //   println("activeRunway = ${gndBeliefs.activeRunway}")
-    //   println("aircraft.positionPoint = ${result.aircraft[ALPHA]!!.positionPoint}")
-    //   println("holdingPointsByRunway[16C] = ${state.worldIndex.holdingPointsByRunway[RunwayId(\"16C\")]}")
+    // Possible causes (none ruled out yet):
+    //  - `HandoffAction(TOWER)` may be filtered out by an action-side
+    //    constraint (e.g. requires a same-aerodrome TOWER controller in
+    //    the *view*, not just in the SimState — which is a possible gap
+    //    in the cross-aerodrome scaffold).
+    //  - The cognitive layer's REPORT_READY step completed (mission
+    //    advanced to AWAIT_LINE_UP) without the transmission actually
+    //    landing in GND's inbox — possible bug or misordering.
+    //  - Cycle ordering: the rule may evaluate before the kinematic
+    //    snaps `positionPoint` to the holding short.
+    //
+    // Estimated 1-2h focused debugging session. Not a ground-up rebuild;
+    // the data and structural plumbing are in place.
 }
