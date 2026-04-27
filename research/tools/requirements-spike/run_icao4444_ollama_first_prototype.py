@@ -1034,6 +1034,40 @@ def main() -> None:
             stage=f"candidate:{candidate.get('candidateId', '<unknown>')}",
         )
 
+    # ────────────────────────────────────────────────────────────────────
+    # POST-STEP ORDERING INVARIANT (do not reorder without re-reviewing
+    # safety conditions in apply_*_override functions).
+    #
+    # The three deterministic post-steps form a chain. Each safety
+    # condition reads outputs that earlier post-steps may have rewritten:
+    #
+    #   1. bundle gate (per candidate)
+    #   2. apply_sibling_symmetry_resolution
+    #        — reads:    bundle_gate_raw_by_id
+    #        — rewrites: scopeComplete on candidates whose sibling group
+    #                    is asymmetric
+    #   3. challenger (per candidate, sees post-resolution bundle gate)
+    #   4. apply_bundle_gate_override
+    #        — reads:    challenger.verdict, candidate, post-resolution
+    #                    bundle gate's scopeComplete
+    #        — rewrites: challenger.verdict authority_too_* → supported
+    #   5. defender (per candidate)
+    #   6. judge (per candidate, sees post-override challenger and
+    #             post-resolution bundle gate)
+    #   7. apply_judge_conservatism_override
+    #        — reads:    judge.decision, candidate.promotionHint,
+    #                    challenge_for_judge.verdict (Spike-6 output),
+    #                    bundle_gate_for_judge.scopeComplete
+    #        — rewrites: judge.decision advisory_only → accepted when
+    #                    upstream signals are clean
+    #
+    # If a future stage is inserted between bundle gate and judge, or
+    # between judge and the conservatism override, its outputs must be
+    # threaded through the override safety conditions explicitly.
+    # Reorderings that break this chain are silent: every post-step
+    # currently trusts the upstream stage shape.
+    # ────────────────────────────────────────────────────────────────────
+
     bundle_gate_raw_by_id: dict[str, dict[str, Any]] = {}
     for candidate in candidates_to_judge:
         bundle_gate_system, bundle_gate_user = bundle_gate_prompts(window, structure_result["parsed"], candidate)
