@@ -1,0 +1,15 @@
+{
+  "documentId": "icao9432-extracted",
+  "documentTitle": "ICAO Doc 9432 — Manual of Radiotelephony",
+  "sourcePath": "research/txt/icao9432-extracted.txt",
+  "defaultAuthorityCeiling": "operational_guidance",
+  "sections": [
+    {
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "startLine": 3903,
+      "endLine": 3950,
+      "notes": "§2.8.3 Issue of clearance and read-back requirements, English-language portion only (the section repeats in Polish translation immediately after, lines 3952+, which we exclude here)."
+    }
+  ]
+}

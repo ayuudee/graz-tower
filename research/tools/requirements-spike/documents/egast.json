@@ -1,0 +1,15 @@
+{
+  "documentId": "egast-vfr-extracted",
+  "documentTitle": "EGAST GA9 — VFR Phraseology Pocket Guide",
+  "sourcePath": "research/txt/egast-vfr-extracted.txt",
+  "defaultAuthorityCeiling": "best_practice",
+  "sections": [
+    {
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "startLine": 539,
+      "endLine": 608,
+      "notes": "Readback advisory family. Mixed best-practice prose, bullet list of items requiring readback, acknowledgement-by-callsign rule, Wilco usage, and read-back-when-required guidance, with inline page-layout noise. No clause numbering."
+    }
+  ]
+}

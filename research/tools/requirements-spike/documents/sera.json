@@ -1,0 +1,15 @@
+{
+  "documentId": "sera-923-2012-extracted",
+  "documentTitle": "SERA — Standardised European Rules of the Air, Regulation (EU) 923/2012",
+  "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+  "defaultAuthorityCeiling": "authoritative_requirement",
+  "sections": [
+    {
+      "sectionId": "readback_8015_e",
+      "familyId": "sera_readback_family",
+      "startLine": 2023,
+      "endLine": 2037,
+      "notes": "SERA.8015(e) Read-back of clearances and safety-related information. Compact regulatory text: four numbered sub-paragraphs (1)-(4) with the always-read-back list (i)-(iv) nested under (1)."
+    }
+  ]
+}

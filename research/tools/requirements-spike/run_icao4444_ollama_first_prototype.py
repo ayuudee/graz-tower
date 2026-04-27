@@ -1072,7 +1072,7 @@ def run_pipeline(
         system_prompt=reconcile_system,
         user_prompt=reconcile_user,
         temperature=0.0,
-        num_predict=12000,
+        num_predict=16000,
         num_ctx=args.num_ctx,
         timeout_seconds=600,
     )

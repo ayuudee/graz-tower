@@ -1,0 +1,15 @@
+{
+  "documentId": "h01-extracted",
+  "documentTitle": "AIC A 21/23 (Austria) Sprechfunkverfahren / Radio Communication Procedures",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "defaultAuthorityCeiling": "operational_guidance",
+  "sections": [
+    {
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "startLine": 4197,
+      "endLine": 4337,
+      "notes": "§3.8.1 ACKNOWLEDGEMENT OF RECEIPT, items a)-h). Bilingual German/English: each lettered item appears twice (German first, English second) with the same letter marker. Nested numbered list 1-4 (the items always to be read back) is laid out separately from its parent clause c) due to two-column extraction."
+    }
+  ]
+}

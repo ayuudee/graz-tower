@@ -17,6 +17,20 @@
       "startLine": 3401,
       "endLine": 3429,
       "notes": "§4.5.7.5 Readback family: parent clause, subordinate list (a/b/c), notes, and following standalone clauses (4.5.7.5.1.1, 4.5.7.5.2, 4.5.7.5.2.1)."
+    },
+    {
+      "sectionId": "departing_aircraft_7_9",
+      "familyId": "icao4444_departing_aircraft_family",
+      "startLine": 9031,
+      "endLine": 9110,
+      "notes": "§7.9 Control of Departing Aircraft: §7.9.1 Departure sequence (with priority factors a-f), §7.9.2 Separation of departing aircraft (the 'crossed end of runway / started a turn' rule), §7.9.3.1-7.9.3.5 Take-off clearance (timing, ATC clearance prerequisite, TAKE-OFF phraseology rule, 'immediate take-off' clearance). Includes inline Note text and figure-layout artifacts."
+    },
+    {
+      "sectionId": "arriving_aircraft_7_10",
+      "familyId": "icao4444_arriving_aircraft_family",
+      "startLine": 9122,
+      "endLine": 9166,
+      "notes": "§7.10 Control of Arriving Aircraft: §7.10.1 Separation of landing aircraft (mirrors §7.9.2), §7.10.2 Clearance to land timing/runway-designator rule, §7.10.3 Landing and roll-out manoeuvres (a-d list of optional instructions, HEAVY aircraft constraint, vacate-report rule)."
     }
   ]
 }

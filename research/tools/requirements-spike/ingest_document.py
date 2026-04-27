@@ -228,6 +228,96 @@ def render_document_summary(aggregate: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def ingest_document(
+    *,
+    document_id: str,
+    output_dir: Path,
+    base_url: str = DEFAULT_BASE_URL,
+    num_ctx: int = 24576,
+    max_candidates: int = 8,
+    structure_attempts: int = 3,
+    extraction_attempts: int = 3,
+    force: bool = False,
+) -> dict[str, Any]:
+    """Run the per-section pipeline across every section in the document
+    manifest. Per-section failures are caught, logged, recorded in
+    `failures.json`, and do not abort the run — important for unattended
+    multi-document ingestion.
+
+    Returns the per-document aggregate result.
+    """
+    manifest = load_manifest(document_id)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    inner_defaults = build_arg_parser().parse_args([])
+    inner_defaults.base_url = base_url
+    inner_defaults.num_ctx = num_ctx
+    inner_defaults.max_candidates = max_candidates
+    inner_defaults.structure_attempts = structure_attempts
+    inner_defaults.extraction_attempts = extraction_attempts
+    inner_defaults.source = ROOT / manifest["sourcePath"]
+
+    sections_processed: list[str] = []
+    sections_skipped: list[str] = []
+    sections_failed: list[dict[str, Any]] = []
+    for section in manifest["sections"]:
+        section_dir = output_dir / section["sectionId"]
+        if not force and already_ingested(section_dir):
+            print(f"[skip] {document_id}/{section['sectionId']}: already ingested")
+            sections_skipped.append(section["sectionId"])
+            continue
+        case = section_to_case(manifest, section)
+        print(
+            f"[run]  {document_id}/{section['sectionId']}: "
+            f"lines {case['startLine']}-{case['endLine']}",
+            flush=True,
+        )
+        try:
+            run_pipeline(case, inner_defaults, section_dir)
+            sections_processed.append(section["sectionId"])
+        except SystemExit as exc:
+            err = str(exc) or "SystemExit"
+            print(f"[fail] {document_id}/{section['sectionId']}: {err[:300]}",
+                  flush=True)
+            sections_failed.append({
+                "sectionId": section["sectionId"], "error": err,
+                "errorClass": "SystemExit",
+            })
+        except Exception as exc:  # noqa: BLE001 — overnight robustness
+            err = f"{type(exc).__name__}: {exc}"
+            print(f"[fail] {document_id}/{section['sectionId']}: {err[:300]}",
+                  flush=True)
+            sections_failed.append({
+                "sectionId": section["sectionId"], "error": err,
+                "errorClass": type(exc).__name__,
+            })
+
+    if sections_failed:
+        (output_dir / "failures.json").write_text(
+            json.dumps(sections_failed, indent=2), encoding="utf-8",
+        )
+    elif (output_dir / "failures.json").exists():
+        (output_dir / "failures.json").unlink()
+
+    aggregate = aggregate_document(output_dir, manifest)
+    aggregate["sectionsFailed"] = sections_failed
+    aggregate_path = output_dir / "accepted_candidates.json"
+    aggregate_path.write_text(json.dumps(aggregate, indent=2), encoding="utf-8")
+    summary_md = output_dir / "summary.md"
+    summary_md.write_text(render_document_summary(aggregate), encoding="utf-8")
+
+    return {
+        "documentId": manifest["documentId"],
+        "documentDir": str(output_dir),
+        "sectionsProcessed": sections_processed,
+        "sectionsSkipped": sections_skipped,
+        "sectionsFailed": [s["sectionId"] for s in sections_failed],
+        "totals": aggregate["totals"],
+        "aggregatePath": str(aggregate_path),
+        "summaryPath": str(summary_md),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Per-document Ollama-first ingestion driver.",
@@ -245,49 +335,17 @@ def main() -> int:
     parser.add_argument("--extraction-attempts", type=int, default=3)
     args = parser.parse_args()
 
-    manifest = load_manifest(args.document)
-    document_dir = args.output_dir
-    document_dir.mkdir(parents=True, exist_ok=True)
-
-    # Build a config namespace for run_pipeline. The per-section pipeline
-    # expects an argparse.Namespace-like object with the per-stage knobs;
-    # construct one with sensible defaults from the prototype's parser.
-    inner_defaults = build_arg_parser().parse_args([])
-    inner_defaults.base_url = args.base_url
-    inner_defaults.num_ctx = args.num_ctx
-    inner_defaults.max_candidates = args.max_candidates
-    inner_defaults.structure_attempts = args.structure_attempts
-    inner_defaults.extraction_attempts = args.extraction_attempts
-    inner_defaults.source = ROOT / manifest["sourcePath"]
-
-    sections_processed: list[str] = []
-    sections_skipped: list[str] = []
-    for section in manifest["sections"]:
-        section_dir = document_dir / section["sectionId"]
-        if not args.force and already_ingested(section_dir):
-            print(f"[skip] {section['sectionId']}: already ingested at {section_dir}")
-            sections_skipped.append(section["sectionId"])
-            continue
-        case = section_to_case(manifest, section)
-        print(f"[run]  {section['sectionId']}: lines {case['startLine']}-{case['endLine']}")
-        run_pipeline(case, inner_defaults, section_dir)
-        sections_processed.append(section["sectionId"])
-
-    aggregate = aggregate_document(document_dir, manifest)
-    aggregate_path = document_dir / "accepted_candidates.json"
-    aggregate_path.write_text(json.dumps(aggregate, indent=2), encoding="utf-8")
-    summary_md = document_dir / "summary.md"
-    summary_md.write_text(render_document_summary(aggregate), encoding="utf-8")
-
-    print(json.dumps({
-        "documentId": manifest["documentId"],
-        "documentDir": str(document_dir),
-        "sectionsProcessed": sections_processed,
-        "sectionsSkipped": sections_skipped,
-        "totals": aggregate["totals"],
-        "aggregatePath": str(aggregate_path),
-        "summaryPath": str(summary_md),
-    }, indent=2))
+    result = ingest_document(
+        document_id=args.document,
+        output_dir=args.output_dir,
+        base_url=args.base_url,
+        num_ctx=args.num_ctx,
+        max_candidates=args.max_candidates,
+        structure_attempts=args.structure_attempts,
+        extraction_attempts=args.extraction_attempts,
+        force=args.force,
+    )
+    print(json.dumps(result, indent=2))
     return 0
 
 

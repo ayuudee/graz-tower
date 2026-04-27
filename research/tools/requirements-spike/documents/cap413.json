@@ -1,0 +1,15 @@
+{
+  "documentId": "cap413-extracted",
+  "documentTitle": "CAP 413 — UK Manual of Radiotelephony",
+  "sourcePath": "research/txt/cap413-extracted.txt",
+  "defaultAuthorityCeiling": "operational_guidance",
+  "sections": [
+    {
+      "sectionId": "readback_2_68_2_71",
+      "familyId": "cap413_readback_family",
+      "startLine": 6429,
+      "endLine": 6555,
+      "notes": "§2.68-2.71 Read-back Requirements (narrowed scope; the §2.65-2.67 introductory clauses and §2.72 UNABLE handling are out of scope for the readback-family proving slice). Numbered subsections with embedded RTF dialogue examples (BIGJET 347, G-ABCD, G-CD)."
+    }
+  ]
+}
