@@ -2,16 +2,25 @@
 
 Small prototypes for the requirement-first ATC source-ingestion pipeline.
 
-## Current direction (2026-04-25)
+## Current direction (2026-04-27)
 
 Two lanes coexist:
 
-- **Primary lane — Ollama-first prototype** (`run_icao4444_ollama_first_prototype.py`).
+- **Primary lane — Ollama-first prototype**, two-tier:
+
+  *Per-section pipeline* (`run_icao4444_ollama_first_prototype.py`).
   Local Ollama models do structure proposal, requirement extraction, adversarial
   validation, and promotion judgement. Three deterministic post-steps sit between
   LLM stages (sibling-symmetry resolution, bundle-gate authority override,
-  judge-conservatism override). Per-family widening goes through this lane —
-  add a new `CASES` entry and run, do not extend the deterministic lane below.
+  judge-conservatism override). One section in, one set of judged candidates out.
+
+  *Per-document driver* (`ingest_document.py`). Reads a per-document manifest
+  (`documents/{document_id}.json`) listing sections, runs the per-section
+  pipeline for each, aggregates into per-document `accepted_candidates.json`
+  and `summary.md`. Adding a section = manifest entry + driver re-run.
+
+  The CASES dict in the per-section script remains the place for ad-hoc
+  single-section spikes; manifests are the way to ingest a document at scale.
   Currently covers nine source-family slices across three authority ceilings:
   - `readback_family` and `transfer_family` — ICAO 4444 (authoritative_requirement)
   - `sera_readback_family` — SERA Reg (EU) 923/2012 SERA.8015(e) (authoritative_requirement)
@@ -25,6 +34,7 @@ Two lanes coexist:
   - [ollama-first pipeline design](../../../docs/design/icao4444-ollama-first-pipeline-design.md)
   - [three deterministic post-steps pattern](../../../wiki/design-decisions/2026-04-25-three-deterministic-post-steps-pattern.md)
   - [five-source-family coverage](../../../wiki/design-decisions/2026-04-27-five-source-family-coverage.md)
+  - [per-document ingestion driver](../../../wiki/design-decisions/2026-04-27-per-document-ingestion-driver.md)
   - Contract tests for the post-steps: `test_override_contracts.py`.
 - **Fallback lane — deterministic ICAO 4444 normalizer + seeded promotion**.
   The pre-pivot lane lives on as comparison/scaffolding and as the source of

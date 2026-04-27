@@ -972,7 +972,7 @@ def render_summary(
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
+def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--case", choices=sorted(CASES.keys()), default="readback_family")
@@ -990,12 +990,20 @@ def main() -> None:
     parser.add_argument("--max-candidates", type=int, default=8)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
-    args = parser.parse_args()
+    return parser
 
-    output_dir = args.output_dir or (DEFAULT_OUTPUT_ROOT / utc_stamp())
+
+def run_pipeline(
+    case: dict[str, Any],
+    args: argparse.Namespace,
+    output_dir: Path,
+) -> dict[str, Any]:
+    """Execute the full Ollama-first pipeline for a single case.
+
+    Returns the run manifest dict (also persisted to output_dir/run_manifest.json).
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    case = CASES[args.case]
     case_source = args.source
     if case_source == DEFAULT_SOURCE and case.get("sourceOverride"):
         case_source = ROOT / case["sourceOverride"]
@@ -1322,6 +1330,15 @@ def main() -> None:
             max_candidates=args.max_candidates,
         ),
     )
+    return manifest
+
+
+def main() -> None:
+    args = build_arg_parser().parse_args()
+    output_dir = args.output_dir or (DEFAULT_OUTPUT_ROOT / utc_stamp())
+    output_dir.mkdir(parents=True, exist_ok=True)
+    case = CASES[args.case]
+    manifest = run_pipeline(case, args, output_dir)
     print(json.dumps({"runDir": str(output_dir), "candidateCount": manifest["candidateCount"]}, indent=2))
 
 
