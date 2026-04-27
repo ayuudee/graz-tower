@@ -86,6 +86,26 @@ CASES = {
         "notes": "SERA (Standardised European Rules of the Air) Regulation (EU) 923/2012, SERA.8015(e) Read-back of clearances and safety-related information. Compact regulatory text: 15 lines, four numbered sub-paragraphs (1)–(4), with the always-read-back list (i)–(iv) nested under (1). Authority ceiling is authoritative_requirement — SERA is binding EU regulation.",
         "sourceOverride": "research/txt/sera-923-2012-extracted.txt",
     },
+    "safetysense22_readback_family": {
+        "caseId": "safetysense22_readback_family",
+        "documentId": "safetysense22-extracted",
+        "familyId": "safetysense22_readback_family",
+        "authorityCeiling": "best_practice",
+        "startLine": 485,
+        "endLine": 552,
+        "notes": "UK CAA SafetySense Leaflet 02 (Radiotelephony) Readbacks section. Best-practice prose with a numbered list (1–15) of items requiring readback. Each item is laid out across two lines (the number on its own line, the item text following) due to two-column extraction. Authority ceiling is best_practice — SafetySense is published guidance, not regulation.",
+        "sourceOverride": "research/txt/safetysense22-extracted.txt",
+    },
+    "slovenia_vfr_readback_family": {
+        "caseId": "slovenia_vfr_readback_family",
+        "documentId": "slovenia-vfr-extracted",
+        "familyId": "slovenia_vfr_readback_family",
+        "authorityCeiling": "best_practice",
+        "startLine": 524,
+        "endLine": 565,
+        "notes": "Slovenia VFR guide (national VFR phraseology guide) Read-back / Items / Wilco / Acknowledgement-by-call-sign / Transmitting-technique sub-sections. Best-practice prose with bullet list of items requiring readback, mostly mirroring CAP 413 / EGAST shape. Authority ceiling is best_practice.",
+        "sourceOverride": "research/txt/slovenia-vfr-extracted.txt",
+    },
 }
 
 
@@ -966,7 +986,7 @@ def main() -> None:
     parser.add_argument("--bundle-gate-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--judge-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--num-ctx", type=int, default=16384)
+    parser.add_argument("--num-ctx", type=int, default=24576)
     parser.add_argument("--max-candidates", type=int, default=8)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
@@ -1028,7 +1048,7 @@ def main() -> None:
             system_prompt=requirement_system,
             user_prompt=requirement_user + f"\n\nIndependent attempt id: attempt_{attempt_no}.",
             temperature=0.2,
-            num_predict=8000,
+            num_predict=12000,
             num_ctx=args.num_ctx,
             timeout_seconds=600,
         )
@@ -1044,7 +1064,7 @@ def main() -> None:
         system_prompt=reconcile_system,
         user_prompt=reconcile_user,
         temperature=0.0,
-        num_predict=8000,
+        num_predict=12000,
         num_ctx=args.num_ctx,
         timeout_seconds=600,
     )

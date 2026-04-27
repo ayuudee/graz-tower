@@ -12,11 +12,15 @@ Two lanes coexist:
   LLM stages (sibling-symmetry resolution, bundle-gate authority override,
   judge-conservatism override). Per-family widening goes through this lane —
   add a new `CASES` entry and run, do not extend the deterministic lane below.
-  Currently covers five source families across three authority ceilings:
+  Currently covers nine source-family slices across three authority ceilings:
   - `readback_family` and `transfer_family` — ICAO 4444 (authoritative_requirement)
+  - `sera_readback_family` — SERA Reg (EU) 923/2012 SERA.8015(e) (authoritative_requirement)
   - `egast_readback_family` — EGAST VFR (best_practice)
+  - `safetysense22_readback_family` — UK CAA SafetySense Leaflet 02 (best_practice)
+  - `slovenia_vfr_readback_family` — Slovenia VFR phraseology guide (best_practice)
   - `h01_readback_family` — AIC A 21/23 H01 §3.8.1 (operational_guidance, bilingual)
   - `cap413_readback_family` — CAP 413 §2.68–2.71 (operational_guidance)
+  - `icao9432_readback_family` — ICAO Doc 9432 §2.8.3 English (operational_guidance)
   Architecture and pattern rationale:
   - [ollama-first pipeline design](../../../docs/design/icao4444-ollama-first-pipeline-design.md)
   - [three deterministic post-steps pattern](../../../wiki/design-decisions/2026-04-25-three-deterministic-post-steps-pattern.md)
