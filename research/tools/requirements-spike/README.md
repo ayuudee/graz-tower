@@ -12,9 +12,15 @@ Two lanes coexist:
   LLM stages (sibling-symmetry resolution, bundle-gate authority override,
   judge-conservatism override). Per-family widening goes through this lane —
   add a new `CASES` entry and run, do not extend the deterministic lane below.
+  Currently covers five source families across three authority ceilings:
+  - `readback_family` and `transfer_family` — ICAO 4444 (authoritative_requirement)
+  - `egast_readback_family` — EGAST VFR (best_practice)
+  - `h01_readback_family` — AIC A 21/23 H01 §3.8.1 (operational_guidance, bilingual)
+  - `cap413_readback_family` — CAP 413 §2.68–2.71 (operational_guidance)
   Architecture and pattern rationale:
   - [ollama-first pipeline design](../../../docs/design/icao4444-ollama-first-pipeline-design.md)
   - [three deterministic post-steps pattern](../../../wiki/design-decisions/2026-04-25-three-deterministic-post-steps-pattern.md)
+  - [five-source-family coverage](../../../wiki/design-decisions/2026-04-27-five-source-family-coverage.md)
   - Contract tests for the post-steps: `test_override_contracts.py`.
 - **Fallback lane — deterministic ICAO 4444 normalizer + seeded promotion**.
   The pre-pivot lane lives on as comparison/scaffolding and as the source of

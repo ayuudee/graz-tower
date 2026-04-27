@@ -46,6 +46,26 @@ CASES = {
         "notes": "EGAST VFR readback advisory family. Mixed best-practice prose, bullet list of items requiring readback, acknowledgement-by-callsign rule, Wilco usage, and read-back-when-required guidance, with inline page-layout noise. No clause numbering.",
         "sourceOverride": "research/txt/egast-vfr-extracted.txt",
     },
+    "h01_readback_family": {
+        "caseId": "h01_readback_family",
+        "documentId": "h01-extracted",
+        "familyId": "h01_readback_family",
+        "authorityCeiling": "operational_guidance",
+        "startLine": 4197,
+        "endLine": 4337,
+        "notes": "AIC A 21/23 (H01) §3.8.1 ACKNOWLEDGEMENT OF RECEIPT, items a)–h). Bilingual German/English: each lettered item appears twice (German first, English second) with the same letter marker. Nested numbered list 1–4 (the items always to be read back) is laid out separately from its parent clause c) due to two-column extraction. Authority ceiling is operational_guidance per benchmark_manifest.",
+        "sourceOverride": "research/txt/h01-extracted.txt",
+    },
+    "cap413_readback_family": {
+        "caseId": "cap413_readback_family",
+        "documentId": "cap413-extracted",
+        "familyId": "cap413_readback_family",
+        "authorityCeiling": "operational_guidance",
+        "startLine": 6429,
+        "endLine": 6555,
+        "notes": "CAP 413 §2.68–2.71 Read-back Requirements (narrowed scope; the §2.65–2.67 introductory clauses and §2.72 UNABLE handling are out of scope for the readback-family proving slice). Numbered subsections with embedded RTF dialogue examples (BIGJET 347, G-ABCD, G-CD) interleaved between rule paragraphs, plus a bullet list of items to be read back, plus page-layout artifacts. Authority ceiling is operational_guidance — the manual is published guidance, not regulation. The dialogue examples are the structurally novel feature: they should be tagged as `dialogue_example` / `phraseology_template` and not promoted to authoritative requirements.",
+        "sourceOverride": "research/txt/cap413-extracted.txt",
+    },
 }
 
 
@@ -951,9 +971,9 @@ def main() -> None:
             system_prompt=structure_system,
             user_prompt=structure_user + f"\n\nIndependent structure attempt id: structure_attempt_{attempt_no}.",
             temperature=0.2,
-            num_predict=5000,
+            num_predict=8000,
             num_ctx=args.num_ctx,
-            timeout_seconds=300,
+            timeout_seconds=600,
         )
         attempt_result["attemptId"] = f"structure_attempt_{attempt_no}"
         structure_attempts.append(attempt_result)
@@ -971,9 +991,9 @@ def main() -> None:
         system_prompt=structure_reconcile_system,
         user_prompt=structure_reconcile_user,
         temperature=0.0,
-        num_predict=6000,
+        num_predict=10000,
         num_ctx=args.num_ctx,
-        timeout_seconds=300,
+        timeout_seconds=600,
     )
     write_json(output_dir / "structure_reconciliation_response.json", structure_result)
     write_json(output_dir / "structure_response.json", structure_result)
@@ -990,7 +1010,7 @@ def main() -> None:
             temperature=0.2,
             num_predict=8000,
             num_ctx=args.num_ctx,
-            timeout_seconds=300,
+            timeout_seconds=600,
         )
         attempt_result["attemptId"] = f"attempt_{attempt_no}"
         extraction_attempts.append(attempt_result)
@@ -1006,7 +1026,7 @@ def main() -> None:
         temperature=0.0,
         num_predict=8000,
         num_ctx=args.num_ctx,
-        timeout_seconds=300,
+        timeout_seconds=600,
     )
     write_json(output_dir / "reconciliation_response.json", requirement_result)
     write_json(output_dir / "requirement_response.json", requirement_result)
@@ -1079,7 +1099,7 @@ def main() -> None:
             temperature=0.0,
             num_predict=600,
             num_ctx=args.num_ctx,
-            timeout_seconds=180,
+            timeout_seconds=300,
         )
         write_json(output_dir / "bundle_gate" / f"{candidate['candidateId']}.json", bundle_gate_result)
         require_fields(
@@ -1110,7 +1130,7 @@ def main() -> None:
             temperature=0.1,
             num_predict=900,
             num_ctx=args.num_ctx,
-            timeout_seconds=180,
+            timeout_seconds=300,
         )
         write_json(output_dir / "challenge" / f"{candidate['candidateId']}.json", challenge_result)
         require_fields(
@@ -1147,7 +1167,7 @@ def main() -> None:
             temperature=0.1,
             num_predict=900,
             num_ctx=args.num_ctx,
-            timeout_seconds=180,
+            timeout_seconds=300,
         )
         write_json(output_dir / "defense" / f"{candidate['candidateId']}.json", defense_result)
         require_fields(defense_result["parsed"], ["caseId", "candidateId", "verdict", "supports", "sourceQuotes"], stage=f"defense:{candidate['candidateId']}")
@@ -1168,7 +1188,7 @@ def main() -> None:
             temperature=0.0,
             num_predict=2000,
             num_ctx=args.num_ctx,
-            timeout_seconds=300,
+            timeout_seconds=600,
         )
         normalize_judge_payload(judge_result["parsed"], window=window, candidate=candidate)
         write_json(output_dir / "judge" / f"{candidate['candidateId']}.json", judge_result)
