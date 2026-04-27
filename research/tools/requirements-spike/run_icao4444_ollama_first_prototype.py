@@ -66,6 +66,26 @@ CASES = {
         "notes": "CAP 413 §2.68–2.71 Read-back Requirements (narrowed scope; the §2.65–2.67 introductory clauses and §2.72 UNABLE handling are out of scope for the readback-family proving slice). Numbered subsections with embedded RTF dialogue examples (BIGJET 347, G-ABCD, G-CD) interleaved between rule paragraphs, plus a bullet list of items to be read back, plus page-layout artifacts. Authority ceiling is operational_guidance — the manual is published guidance, not regulation. The dialogue examples are the structurally novel feature: they should be tagged as `dialogue_example` / `phraseology_template` and not promoted to authoritative requirements.",
         "sourceOverride": "research/txt/cap413-extracted.txt",
     },
+    "icao9432_readback_family": {
+        "caseId": "icao9432_readback_family",
+        "documentId": "icao9432-extracted",
+        "familyId": "icao9432_readback_family",
+        "authorityCeiling": "operational_guidance",
+        "startLine": 3903,
+        "endLine": 3950,
+        "notes": "ICAO Doc 9432 (Manual of Radiotelephony) §2.8.3 Issue of clearance and read-back requirements, English-language portion (the section repeats in Polish translation immediately after, lines 3952+, which we exclude here). §2.8.3.1 through §2.8.3.6 plus embedded RTF dialogue examples (FASTAIR 345, G-CD). Authority ceiling is operational_guidance — Doc 9432 is a manual, not Annex/PANS regulation.",
+        "sourceOverride": "research/txt/icao9432-extracted.txt",
+    },
+    "sera_readback_family": {
+        "caseId": "sera_readback_family",
+        "documentId": "sera-923-2012-extracted",
+        "familyId": "sera_readback_family",
+        "authorityCeiling": "authoritative_requirement",
+        "startLine": 2023,
+        "endLine": 2037,
+        "notes": "SERA (Standardised European Rules of the Air) Regulation (EU) 923/2012, SERA.8015(e) Read-back of clearances and safety-related information. Compact regulatory text: 15 lines, four numbered sub-paragraphs (1)–(4), with the always-read-back list (i)–(iv) nested under (1). Authority ceiling is authoritative_requirement — SERA is binding EU regulation.",
+        "sourceOverride": "research/txt/sera-923-2012-extracted.txt",
+    },
 }
 
 
