@@ -281,6 +281,25 @@ judge-overridden rows. Spike 7 verification: EGAST `req_request_clarification` r
 run); the deterministic guard will activate the moment the conservatism pattern recurs.
 Impact: M | Effort: M
 
+**RR-9 — Wrong-value and cross-kind tests for §4.5.7.5.1(c) standalone advisories**
+The RR-2 protocol additions (`RunwayInUseAdvisory`, `TransitionLevelIssuance`) and their
+paired atoms (`RunwayInUseReadback`, `TransitionLevelReadback`) carry their values so the
+classifier flags wrong-value mismatches, and use distinct `AtomKind` tags so cross-instruction
+satisfaction is detected. The AtomKind separation is the load-bearing safety property —
+without it, a runway-clearance readback could silently satisfy a runway-in-use advisory.
+Currently the only test coverage is the `requiredReadbackAtoms` mapping; the wrong-value
+and cross-kind paths are unverified.
+Four tests previously drafted (and lost in the controller test restructure underway in
+2026-04-27) need to be reapplied once the new test home is clear:
+- `wrong-runway readback for RunwayInUseAdvisory emits INCORRECT_ATOM`
+- `wrong-level readback for TransitionLevelIssuance emits INCORRECT_ATOM`
+- `RunwayInUseReadback does not satisfy a pending ClearedForTakeoff` (cross-kind, expects MISSING_ATOM)
+- `TransitionLevelReadback does not satisfy a pending ClimbTo` (cross-kind, expects MISSING_ATOM)
+Each ~30 lines, mirroring the `wrong-runway readback emits ReadbackCorrection(INCORRECT_ATOM)`
+and `level-change readback must match assigned level` patterns in the prior
+`ReadbackValidationTest.kt`.
+Impact: M | Effort: L
+
 ---
 
 ### IFR wiring gaps (all blocked until LJMB geometry + IFR missions land)
