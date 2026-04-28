@@ -10,6 +10,20 @@
       "startLine": 3903,
       "endLine": 3950,
       "notes": "§2.8.3 Issue of clearance and read-back requirements, English-language portion only (the section repeats in Polish translation immediately after, lines 3952+, which we exclude here)."
+    },
+    {
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "startLine": 3642,
+      "endLine": 3697,
+      "notes": "§2.8.1 Establishment and continuation of communications, English-language portion only (the Polish translation begins at line 3699). Initial-contact rules, callsign abbreviations, transfer-of-frequency procedures."
+    },
+    {
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "startLine": 4917,
+      "endLine": 5139,
+      "notes": "§4.4 Taxi Instructions, English portion. Comprehensive operational phraseology section: taxi-clearance content, runway-crossing, hold-short instructions, aircraft-stand procedures, with extensive RTF dialogue examples interleaved with rule prose."
     }
   ]
 }

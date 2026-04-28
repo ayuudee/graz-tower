@@ -42,6 +42,7 @@ from ingest_document import (  # noqa: E402
     DEFAULT_BASE_URL,
     DOCUMENTS_DIR,
     ingest_document,
+    load_manifest,
 )
 
 
@@ -128,11 +129,27 @@ def main() -> int:
         "overridesFired": {"challenger": 0, "judge": 0, "sibling_resolution": 0},
     }
 
-    for document_id in documents:
+    for stem in documents:
+        # The manifest filename stem is a convenient short label, but the
+        # canonical document id lives in the manifest content. Use the
+        # canonical id for the output directory so per-document outputs are
+        # named consistently with how they appear in the cross-document
+        # summary.
+        try:
+            document_id = load_manifest(stem)["documentId"]
+        except SystemExit as exc:
+            print(f"[fail] {stem}: {exc}", flush=True)
+            per_document.append({
+                "documentId": stem,
+                "documentDir": str(output_root / stem),
+                "error": str(exc) or "SystemExit",
+                "errorClass": "SystemExit",
+            })
+            continue
         document_dir = output_root / document_id
         try:
             result = ingest_document(
-                document_id=document_id,
+                document_id=stem,
                 output_dir=document_dir,
                 base_url=args.base_url,
                 num_ctx=args.num_ctx,

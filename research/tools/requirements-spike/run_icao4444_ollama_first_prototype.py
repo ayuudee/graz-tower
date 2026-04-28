@@ -626,13 +626,16 @@ Rules:
 - Keep authority at or below {window["authorityCeiling"]}.
 - If the parent clause needs subordinate context, do not promote it alone.
 - If a clause contains multiple independent obligations, split them.
-- Prefer fewer, stronger candidates over many weak ones.
-- Do not emit a standalone candidate for a parent clause whose operative meaning depends on a subordinate list introduced by that parent.
+- Enumerated-list decomposition: when a parent clause introduces an enumerated list ("the following items shall be ...", "Messages containing the following must be read back:", numbered or lettered list of distinct items), emit ONE candidate per list item, where each item names a distinct subject (instruction class / clearance type / message kind). The umbrella "the rule covers items X, Y, Z" candidate that concatenates every list item into a single claim text is the wrong shape — a downstream consumer cannot test or probe a 15-item conjunction as a single rule. Per-item candidates carry the same `authorityClass` and `modality` as the parent and cite both the parent and the specific item's `sourceItemId`.
+- The parent's connective sentence ("the following items shall be read back") may also be emitted as a separate "this is the rule that introduces the list" candidate, but only when it adds operative meaning beyond the list itself (e.g. it specifies the actor, the timing, or the consequence of non-compliance).
+- Prefer atomic, downstream-useful candidates over a small number of bundled candidates. The earlier guidance "prefer fewer, stronger candidates" applies when items are NOT enumerated and clearly distinct; do not use it as license to bundle separable list items.
+- Do not emit a standalone candidate for a parent clause whose operative meaning depends on a subordinate list introduced by that parent UNLESS you also emit the per-item candidates that make the list concrete.
 - Notes, examples, and background text must not become authoritative requirements.
 - Notes may become operational guidance only when they clearly state a reusable operational or phraseology convention from the source itself.
 - If a note/example/background item is emitted, default it to `review_only` unless the source itself clearly justifies stronger downstream use.
 - If an item is merely explanatory or referential, mark it as support-only rather than a promotable candidate.
 - Quote source exactly; do not paraphrase beyond what is needed for a concise claim.
+- Every candidate must include a non-empty `rationale` field explaining why the claim is supported by the cited source items. An empty or missing rationale is a schema violation that will fail downstream validation.
 
 Source window:
 {json.dumps(window, indent=2)}

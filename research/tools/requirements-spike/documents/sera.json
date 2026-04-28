@@ -10,6 +10,27 @@
       "startLine": 2023,
       "endLine": 2037,
       "notes": "SERA.8015(e) Read-back of clearances and safety-related information. Compact regulatory text: four numbered sub-paragraphs (1)-(4) with the always-read-back list (i)-(iv) nested under (1)."
+    },
+    {
+      "sectionId": "atc_service_8005",
+      "familyId": "sera_atc_service_family",
+      "startLine": 1934,
+      "endLine": 1973,
+      "notes": "SERA.8005 Operation of air traffic control service. Three top-level paragraphs (a/b/c): (a) what an ATC unit shall do (4 numbered duties); (b) which classes of flight separation must be provided between (5 numbered cases plus exception); (c) separation methods (vertical / horizontal with sub-cases). Clean clause hierarchy."
+    },
+    {
+      "sectionId": "separation_minima_8010",
+      "familyId": "sera_separation_minima_family",
+      "startLine": 1974,
+      "endLine": 1984,
+      "notes": "SERA.8010 Separation minima. Compact: (a) ANSP selects minima; (b) coordination between neighbouring airspaces; (c) notification of minima to ATS units and pilots."
+    },
+    {
+      "sectionId": "clearances_8015_a_d",
+      "familyId": "sera_clearances_family",
+      "startLine": 1985,
+      "endLine": 2022,
+      "notes": "SERA.8015 Air traffic control clearances paragraphs (a)-(d): (a) basis of clearances, (b) operation subject to clearance with sub-numbered cases, (c) potential reclearance, (d) contents of clearances (5 numbered fields). The (e) readback paragraph already covered separately as readback_8015_e."
     }
   ]
 }

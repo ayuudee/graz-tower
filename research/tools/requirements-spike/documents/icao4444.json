@@ -31,6 +31,34 @@
       "startLine": 9122,
       "endLine": 9166,
       "notes": "§7.10 Control of Arriving Aircraft: §7.10.1 Separation of landing aircraft (mirrors §7.9.2), §7.10.2 Clearance to land timing/runway-designator rule, §7.10.3 Landing and roll-out manoeuvres (a-d list of optional instructions, HEAVY aircraft constraint, vacate-report rule)."
+    },
+    {
+      "sectionId": "speed_control_4_6_1",
+      "familyId": "icao4444_speed_control_family",
+      "startLine": 3431,
+      "endLine": 3473,
+      "notes": "§4.6.1 General Horizontal Speed Control Instructions: §4.6.1.1-7. Speed-control issuance, persistence-on-pilot-side, holding-pattern exclusion, frequency-of-changes, comply-or-inform, Mach/IAS units convention, cancellation rule. Includes inline Notes about fuel/configuration considerations."
+    },
+    {
+      "sectionId": "wake_turbulence_5_8",
+      "familyId": "icao4444_wake_turbulence_family",
+      "startLine": 6487,
+      "endLine": 6584,
+      "notes": "§5.8.1-5.8.4 Wake turbulence longitudinal separation minima: §5.8.1 Applicability, §5.8.2 Arriving aircraft, §5.8.3 Departing aircraft (parallel/displaced/opposite-direction scenarios), §5.8.4 Displaced landing threshold. Heavy regulatory text with category tables."
+    },
+    {
+      "sectionId": "reduced_runway_7_11",
+      "familyId": "icao4444_reduced_runway_family",
+      "startLine": 9175,
+      "endLine": 9245,
+      "notes": "§7.11.1-7.11.6 Reduced runway separation minima between aircraft using the same runway: safety-assessment prerequisite, hours-of-daylight constraint, aircraft classification, departing-vs-landing exclusion, conditional preconditions list."
+    },
+    {
+      "sectionId": "aerodrome_traffic_7_6",
+      "familyId": "icao4444_aerodrome_traffic_family",
+      "startLine": 8716,
+      "endLine": 8810,
+      "notes": "§7.6.1-7.6.3.1.1 Control of Aerodrome Traffic: §7.6.1 General clarity-of-instructions duty, §7.6.2 Designated positions of aircraft (positions 1-6 with associated controller actions), §7.6.3.1 Traffic on the manoeuvring area, §7.6.3.1.1 Taxi clearance content rules. Includes inline figure-layout artifacts."
     }
   ]
 }

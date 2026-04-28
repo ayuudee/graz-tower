@@ -10,6 +10,20 @@
       "startLine": 4197,
       "endLine": 4337,
       "notes": "§3.8.1 ACKNOWLEDGEMENT OF RECEIPT, items a)-h). Bilingual German/English: each lettered item appears twice (German first, English second) with the same letter marker. Nested numbered list 1-4 (the items always to be read back) is laid out separately from its parent clause c) due to two-column extraction."
+    },
+    {
+      "sectionId": "end_of_conversation_3_8_2",
+      "familyId": "h01_end_of_conversation_family",
+      "startLine": 4339,
+      "endLine": 4348,
+      "notes": "§3.8.2 END OF CONVERSATION. Bilingual single-paragraph rule: a radiotelephone conversation shall be terminated by the receiving ATS unit or aircraft using its own callsign."
+    },
+    {
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "startLine": 4359,
+      "endLine": 4500,
+      "notes": "§3.8.3 CORRECTIONS AND REPETITIONS, items a)-onwards. Bilingual German/English with shared lettered markers. CORRECTION/'CORRECTION I SAY AGAIN' phraseology rules, request-for-repetition phraseology."
     }
   ]
 }
