@@ -990,7 +990,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--judge-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--num-ctx", type=int, default=24576)
-    parser.add_argument("--max-candidates", type=int, default=8)
+    parser.add_argument("--max-candidates", type=int, default=20)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
     return parser

@@ -234,7 +234,7 @@ def ingest_document(
     output_dir: Path,
     base_url: str = DEFAULT_BASE_URL,
     num_ctx: int = 24576,
-    max_candidates: int = 8,
+    max_candidates: int = 20,
     structure_attempts: int = 3,
     extraction_attempts: int = 3,
     force: bool = False,
@@ -330,7 +330,7 @@ def main() -> int:
                         help="Re-run sections even if their output already exists.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--num-ctx", type=int, default=24576)
-    parser.add_argument("--max-candidates", type=int, default=8)
+    parser.add_argument("--max-candidates", type=int, default=20)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
     args = parser.parse_args()

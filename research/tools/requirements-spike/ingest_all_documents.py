@@ -102,7 +102,7 @@ def main() -> int:
                         help="Re-run sections even if already ingested.")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--num-ctx", type=int, default=24576)
-    parser.add_argument("--max-candidates", type=int, default=8)
+    parser.add_argument("--max-candidates", type=int, default=20)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
     args = parser.parse_args()
