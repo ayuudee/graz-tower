@@ -3,12 +3,14 @@ package xyz.easiersaid.twr.sim
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.controller.from
+import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.controller.RunwayObservation
 import xyz.easiersaid.twr.controller.RunwayStatus
 import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.ControllerId
-import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 
@@ -41,8 +43,18 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     val spec = requireNotNull(state.controllers[controllerId]) {
         "Controller $controllerId not registered in SimState"
     }
-    val observations = spec.responsibilities
-        .mapNotNull { id -> state.aircraft[id]?.let { it.id to toObservation(it, state) } }
+    // Project each responsible aircraft through SensorReading — the typed
+    // boundary that enforces the firewall. AircraftState is never read by
+    // the controller side; toSensorReading is the only allowed projection.
+    val readings = spec.responsibilities
+        .mapNotNull { id -> state.aircraft[id]?.toSensorReading(state) }
+    val observations = readings.associate { it.id to toObservation(it, state.worldIndex) }
+    // Pre-briefing back-channel: project flight strips to AircraftIntent
+    // values for aircraft on the controller's frequency. The strip is the
+    // sim-side analogue of "the controller already knew this aircraft was
+    // departing/arriving from the schedule" — operationally legitimate.
+    val flightStripIntents = spec.responsibilities
+        .mapNotNull { id -> state.aircraft[id]?.toFlightStrip()?.let { it.aircraft to it.intent } }
         .toMap()
     return ControllerView(
         time = state.now,
@@ -57,53 +69,27 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         weather = state.weatherByAerodrome[spec.aerodromeId],
         pendingInboundHandoffs = emptyList(),
         worldIndex = state.worldIndex,
+        flightStripIntents = flightStripIntents,
     )
 }
 
 /**
- * Project one aircraft into the controller's observation.
- *
- * Populates altitude (metres → feet AGL) and groundSpeed (m/s → knots).
- * Heading and type description still null until the respective slices.
+ * Project a [SensorReading] into the controller-facing [AircraftObservation].
+ * Pass 5 (D-AUDIT.1 closure): goes through the controller-side factory
+ * `AircraftObservation.from(...)`, which derives entities from the world
+ * index. Sim never copies pre-derived entities; the firewall is enforced
+ * at the type level (the primary constructor is `internal` to `:controller`).
  */
-private fun toObservation(ac: AircraftState, state: SimState): AircraftObservation {
-    val entities = state.worldIndex.entitiesByPoint[ac.positionPoint] ?: emptySet()
-    val groundSpeedKt = if (ac.speedMps > 0) {
-        val kt = (ac.speedMps * 3600.0 / 1852.0).toInt()
-        if (kt > 0) xyz.easiersaid.twr.protocol.Knots.unsafe(kt) else null
-    } else null
-    return AircraftObservation(
-        id = ac.id,
-        callsign = ac.callsign,
-        position = ac.positionPoint,
-        entities = entities,
-        altitude = toAltitudeFeet(ac.altitudeM),
-        speed = null,
-        groundSpeed = groundSpeedKt,
-        onGround = isGroundPhase(ac.phase),
-        flightRules = null,
-        pilotGoal = ac.pilotGoal,
-        humanPiloted = ac.humanPiloted,
-        typeDescription = null,
+private fun toObservation(reading: SensorReading, worldIndex: WorldIndex): AircraftObservation =
+    AircraftObservation.from(
+        id = reading.id,
+        callsign = reading.callsign,
+        position = reading.position,
+        altitude = reading.altitude,
+        groundSpeed = reading.groundSpeed,
+        onGround = reading.onGround,
+        worldIndex = worldIndex,
     )
-}
-
-private const val METRES_PER_FOOT: Double = 0.3048
-
-private fun toAltitudeFeet(altitudeM: Double): Level.AltitudeFeet? {
-    if (altitudeM <= 0.0) return null
-    val feet = (altitudeM / METRES_PER_FOOT).toInt()
-    return Level.AltitudeFeet.unsafe(feet.coerceAtLeast(0))
-}
-
-private fun isGroundPhase(phase: PilotPhase): Boolean = when (phase) {
-    PilotPhase.AtStand, PilotPhase.Taxiing,
-    PilotPhase.HoldingShort, PilotPhase.LinedUp,
-    PilotPhase.TakeoffRoll, PilotPhase.Parked,
-    PilotPhase.LandingRoll, PilotPhase.Vacating, PilotPhase.ClearOfRunway -> true
-    PilotPhase.Climbing, PilotPhase.Crosswind,
-    PilotPhase.Downwind, PilotPhase.Base, PilotPhase.Final -> false
-}
 
 private fun deriveRunwayObservations(
     state: SimState,
@@ -226,7 +212,6 @@ private fun buildTransmission(
 private fun targetOf(output: ControllerOutput) = when (output) {
     is ControllerOutput.Instruct -> output.target
     is ControllerOutput.Respond -> output.target
-    is ControllerOutput.InitiateHandoff -> output.aircraft
 }
 
 internal fun SimState.mintTransmissionId(): Pair<SimState, TransmissionId> {

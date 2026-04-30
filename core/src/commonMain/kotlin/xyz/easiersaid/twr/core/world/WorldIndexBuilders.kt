@@ -1,3 +1,7 @@
+@file:Suppress("TooManyFunctions") // file collects every WorldIndex builder helper for one
+// concern (point→entity reverse-lookup graph); splitting them across files fragments the
+// builder pipeline.
+
 package xyz.easiersaid.twr.core.world
 
 import xyz.easiersaid.twr.protocol.PointId

@@ -15,7 +15,10 @@ enum class ObligationSource {
     LOCAL_PROCEDURE,
 }
 
-/** What kind of regulatory content: procedural (when to do it), phraseology (how to say it), law (what's required), guidance (supplementary). */
+/**
+ * What kind of regulatory content: procedural (when to do it), phraseology (how to say it),
+ * law (what's required), guidance (supplementary).
+ */
 enum class RegulationCategory { PROCEDURE, PHRASEOLOGY, LAW, GUIDANCE }
 
 /** A reference to a specific regulatory source. Citation triple: (document, edition, section). */

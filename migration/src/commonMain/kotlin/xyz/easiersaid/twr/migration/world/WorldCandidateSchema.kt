@@ -134,6 +134,7 @@ data class CandidateCircuitProcedure(
     val reportingPoints: Map<String, String> = emptyMap(),
     val joinProcedures: List<CandidateCircuitJoin> = emptyList(),
     val goAroundPathId: String,
+    val sourceLoop: String? = null,
 )
 
 @Serializable

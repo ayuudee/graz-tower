@@ -1,3 +1,6 @@
+@file:Suppress("TooManyFunctions") // file groups all completion-evaluation helpers
+// (per-resolved-step + view threading); splitting fragments the completion pipeline.
+
 package xyz.easiersaid.twr.core.clearance
 
 import xyz.easiersaid.twr.core.world.EntityRef
@@ -130,6 +133,8 @@ fun evaluateCompletion(
     )
 }
 
+@Suppress("CyclomaticComplexMethod") // sealed dispatch over ResolvedStep; complexity is
+// intrinsic to the resolved-step leaf count.
 private fun evaluateStepCompletion(
     step: ResolvedStep,
     view: CompletionView

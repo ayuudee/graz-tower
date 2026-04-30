@@ -10,6 +10,7 @@ kotlin {
             dependencies {
                 implementation(project(":protocol"))
                 implementation(project(":core"))
+                implementation(project(":pilot"))
                 implementation(project(":controller"))
                 implementation(libs.arrow.core)
             }

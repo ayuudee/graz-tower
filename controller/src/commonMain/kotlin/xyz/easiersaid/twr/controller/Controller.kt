@@ -15,8 +15,45 @@ import xyz.easiersaid.twr.controller.assess.selectRunwayIntoWind
 import xyz.easiersaid.twr.controller.bdi.applySupersessionCleanup
 import xyz.easiersaid.twr.controller.assess.updateArrivalSequence
 import xyz.easiersaid.twr.controller.assess.updateRunwayDuty
-import xyz.easiersaid.twr.controller.bdi.*
-import xyz.easiersaid.twr.controller.observe.*
+import xyz.easiersaid.twr.controller.bdi.Commitment
+import xyz.easiersaid.twr.controller.bdi.executeProcedure
+import xyz.easiersaid.twr.controller.bdi.reconcileCommitments
+import xyz.easiersaid.twr.controller.bdi.traceRuleFailures
+import xyz.easiersaid.twr.controller.bdi.CommitmentKind
+import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.controller.bdi.GroundArrivalStage
+import xyz.easiersaid.twr.controller.bdi.GroundDepartureStage
+import xyz.easiersaid.twr.controller.bdi.OperatorContext
+import xyz.easiersaid.twr.controller.bdi.OperatorResult
+import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
+import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
+import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
+import xyz.easiersaid.twr.controller.observe.BeliefState
+import xyz.easiersaid.twr.controller.observe.classifyReadback
+import xyz.easiersaid.twr.controller.observe.gcOldCoordinations
+import xyz.easiersaid.twr.controller.observe.withRecentRadio
+import xyz.easiersaid.twr.controller.observe.withCircuitIntentEvents
+import xyz.easiersaid.twr.controller.observe.deriveEventsFromMessages
+import xyz.easiersaid.twr.controller.observe.recordCoordinations
+import xyz.easiersaid.twr.controller.observe.updateBeliefs
+import xyz.easiersaid.twr.controller.observe.ControllerEvent
+import xyz.easiersaid.twr.controller.observe.ReadbackVerdict
+import xyz.easiersaid.twr.controller.observe.SeparationConcern
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.NumberInSequence
+import xyz.easiersaid.twr.protocol.ReadBackCorrect
+import xyz.easiersaid.twr.protocol.Readback
+import xyz.easiersaid.twr.protocol.ReadbackCorrection
+import xyz.easiersaid.twr.protocol.kind
+import xyz.easiersaid.twr.protocol.RegulationDatabase
+import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.TrafficInformation
+import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.procedure.approachArrivalProcedure
 import xyz.easiersaid.twr.controller.procedure.classifyArrivalPosition
 import xyz.easiersaid.twr.controller.procedure.classifyDeparturePosition
@@ -29,7 +66,6 @@ import xyz.easiersaid.twr.controller.procedure.reconcileGroundDepartureStage
 import xyz.easiersaid.twr.controller.procedure.towerArrivalProcedure
 import xyz.easiersaid.twr.controller.procedure.towerDepartureProcedure
 import xyz.easiersaid.twr.core.world.AviationWorld
-import xyz.easiersaid.twr.protocol.*
 
 private val PROCEDURES: Map<CommitmentKind, ProcedureSpec> by lazy {
     listOf(
@@ -52,11 +88,16 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
         .withContactMarked(contactedAircraft)
         .withLocEstablished(events)
         .withActiveRunway(view)
+        .withRecentRadio(events, view.time)
+        .withCircuitIntentEvents(events)
         .let { b ->
             val commitments = reconcileCommitments(
                 existing = b.commitments, role = view.role, aircraft = b.trackedAircraft,
                 responsibilities = view.responsibilities, activeRunway = b.activeRunway,
-                time = view.time, worldIndex = view.worldIndex, contactedThisCycle = contactedAircraft,
+                time = view.time, worldIndex = view.worldIndex,
+                flightStripIntents = view.flightStripIntents,
+                recentRadio = b.recentRadio, circuitIntent = b.circuitIntent,
+                contactedThisCycle = contactedAircraft,
             )
             b.copy(commitments = commitments)
         }
@@ -153,6 +194,8 @@ private fun updateRecentConcerns(
     now: SimTime,
 ): Map<AircraftId, xyz.easiersaid.twr.controller.observe.RecentConcern> {
     val updated = existing.toMutableMap()
+    @Suppress("LoopWithTooManyJumpStatements") // hysteresis logic with cooldown — explicit
+    // continue/break paths are clearer than chained collection ops.
     for (assessment in assessments) {
         val follower = assessment.other
         val newConcern = assessment.concern
@@ -189,9 +232,10 @@ private fun BeliefState.withLocEstablished(events: List<ControllerEvent>): Belie
     else copy(establishedLocaliser = establishedLocaliser + newlyEstablished)
 }
 
-private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState =
-    if ((view.role == RoleName.TOWER || view.role == RoleName.GROUND) &&
-        (activeRunway == null || activeRunway !in view.runways))
+private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState {
+    val isRunwayCommandingRole = view.role == RoleName.TOWER || view.role == RoleName.GROUND
+    val needsRunwaySelection = activeRunway == null || activeRunway !in view.runways
+    return if (isRunwayCommandingRole && needsRunwaySelection)
         copy(activeRunway = selectRunwayIntoWind(
             view.runways.keys,
             // Controller has no weather observation at all → treat as
@@ -200,6 +244,7 @@ private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState =
             view.weather?.wind ?: WindReport.NotReported,
         ))
     else this
+}
 
 /**
  * Observation-driven stage reconciliation. For each active commitment,
@@ -506,7 +551,7 @@ private fun validatedReadbackResponses(
     beliefs: BeliefState,
 ): Pair<List<ControllerOutput.Respond>, BeliefState> {
     val final = view.receivedMessages.fold(ReadbackFoldState(emptyList(), beliefs)) { state, msg ->
-        processReadback(msg, view.responsibilities, state)
+        processReadback(msg, state)
     }
     return final.responses to final.beliefs
 }
@@ -514,7 +559,6 @@ private fun validatedReadbackResponses(
 @Suppress("ReturnCount") // guard-clause pattern with coordination matching
 private fun processReadback(
     msg: ReceivedMessage,
-    responsibilities: Set<AircraftId>,
     state: ReadbackFoldState,
 ): ReadbackFoldState {
     val readback = msg.transmission as? Readback ?: return state

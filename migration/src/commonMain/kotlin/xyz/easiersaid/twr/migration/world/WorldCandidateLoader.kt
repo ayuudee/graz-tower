@@ -1,3 +1,6 @@
+@file:Suppress("TooManyFunctions") // loader groups all world-candidate→AviationWorld translation
+// into one object; splitting fragments the surface and obscures the manifest→world mapping.
+
 package xyz.easiersaid.twr.migration.world
 
 import kotlin.math.hypot
@@ -96,6 +99,10 @@ import xyz.easiersaid.twr.protocol.VfrRouteId
  */
 object WorldCandidateLoader {
 
+    @Suppress("LongMethod") // top-level loader composes ~10 concern-specific subdomains
+    // (aerodromes, runways, taxiways, holding-points, circuits, SIDs/STARs, airspaces, etc.)
+    // into one immutable AviationWorld. The composition is intrinsically wide; splitting moves
+    // wiring into helpers without simplifying the dependency graph.
     fun toWorld(document: WorldCandidateDocument): AviationWorld {
         val world = document.world
 
@@ -699,7 +706,8 @@ object WorldCandidateLoader {
         when (kind) {
             "FIX" -> PublishedPointReference.Fix(reference = reference, point = PointId(requireNotNull(pointId)))
             "NAMED_POINT" -> PublishedPointReference.NamedPoint(reference = reference, point = PointId(requireNotNull(pointId)))
-            "OPERATIONAL_SECTOR_ANCHOR" -> PublishedPointReference.SectorAnchor(reference = reference, point = PointId(requireNotNull(pointId)))
+            "OPERATIONAL_SECTOR_ANCHOR" ->
+                PublishedPointReference.SectorAnchor(reference = reference, point = PointId(requireNotNull(pointId)))
             "LITERAL" -> PublishedPointReference.Literal(reference = reference)
             else -> error("Unsupported published point reference type: $kind")
         }
@@ -797,7 +805,8 @@ object WorldCandidateLoader {
             general = general,
         )
 
-    private fun CandidatePublishedProcedureCommunicationFailure.toPublishedProcedureCommunicationFailure(): PublishedProcedureCommunicationFailure =
+    private fun CandidatePublishedProcedureCommunicationFailure.toPublishedProcedureCommunicationFailure():
+        PublishedProcedureCommunicationFailure =
         PublishedProcedureCommunicationFailure(
             beforeContactEstablished = beforeContactEstablished,
             afterContactEstablishedExitSequence = afterContactEstablishedExitSequence.map { reference ->

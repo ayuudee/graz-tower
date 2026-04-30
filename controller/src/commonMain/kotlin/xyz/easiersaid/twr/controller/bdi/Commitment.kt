@@ -1,6 +1,9 @@
 package xyz.easiersaid.twr.controller.bdi
 
-import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimTime
 
 enum class TrafficType { DEPARTURE, ARRIVAL, TRANSIT, TAXI }
 

@@ -63,6 +63,8 @@ fun executeProcedure(
     ctx: OperatorContext,
 ): ExecutionOutcome {
     // 1. Interrupts
+    @Suppress("LoopWithTooManyJumpStatements") // first-match-wins early-return is the
+    // semantic; folding into firstOrNull obscures the OperatorContext threading.
     for (interrupt in spec.interrupts) {
         if (commitment.stage in interrupt.fromStages &&
             interrupt.guard.evaluate(ac, commitment, ctx)
@@ -85,6 +87,8 @@ fun executeProcedure(
     // 2. Stage rules
     val rules = spec.stageRules[commitment.stage] ?: return ExecutionOutcome(result = null)
     val failures = mutableListOf<RuleResolutionFailure>()
+    @Suppress("LoopWithTooManyJumpStatements") // first-match-wins with action-resolution failure
+    // accumulation; the imperative shape mirrors the rule-priority semantics.
     for (rule in rules) {
         if (!rule.guard.evaluate(ac, commitment, ctx)) continue
 

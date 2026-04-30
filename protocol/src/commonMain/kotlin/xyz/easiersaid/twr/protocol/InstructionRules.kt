@@ -8,6 +8,18 @@ data class InstructionMetadata(
     val supersedesOverride: Set<ClearanceDomain>? = null
 )
 
+/**
+ * Per-leaf metadata mapping over [AtcInstruction]'s sealed hierarchy. The
+ * function is intrinsically long and high-cyclomatic because it has one arm
+ * per leaf (~98 leaves). Splitting into smaller functions just relocates the
+ * dispatch without reducing total complexity. Tabular form (one arm per line,
+ * mostly fitting in the file's wider columns) is more readable than wrapped
+ * versions and is the only format where adding a new leaf is mechanical.
+ *
+ * [MaxLineLength], [LongMethod], [CyclomaticComplexMethod] suppressions all
+ * stand on this same rationale.
+ */
+@Suppress("LongMethod", "CyclomaticComplexMethod", "MaxLineLength")
 fun instructionMetadata(instruction: AtcInstruction): InstructionMetadata = when (instruction) {
     is ConditionalClearance -> instructionMetadata(instruction.instruction)
 

@@ -1,7 +1,37 @@
 package xyz.easiersaid.twr.controller.procedure
 
-import xyz.easiersaid.twr.controller.PilotGoal
-import xyz.easiersaid.twr.controller.bdi.*
+import xyz.easiersaid.twr.controller.bdi.Airborne
+import xyz.easiersaid.twr.controller.bdi.AircraftIntentIs
+import xyz.easiersaid.twr.controller.bdi.instructionOfType
+import xyz.easiersaid.twr.controller.bdi.AllOf
+import xyz.easiersaid.twr.controller.bdi.AnomalousTransition
+import xyz.easiersaid.twr.controller.bdi.AnyOf
+import xyz.easiersaid.twr.controller.bdi.AtcRule
+import xyz.easiersaid.twr.controller.bdi.CancelTakeoffAction
+import xyz.easiersaid.twr.controller.bdi.ClearTakeoffAction
+import xyz.easiersaid.twr.controller.bdi.CommitmentKind
+import xyz.easiersaid.twr.controller.bdi.ConditionalLineUpAction
+import xyz.easiersaid.twr.controller.bdi.ContactEstablished
+import xyz.easiersaid.twr.controller.bdi.ExpectedPilotAct
+import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.HoldPositionAction
+import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
+import xyz.easiersaid.twr.controller.bdi.LineUpAction
+import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
+import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
+import xyz.easiersaid.twr.controller.bdi.NoRunwayClearanceIssued
+import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
+import xyz.easiersaid.twr.controller.bdi.OnGround
+import xyz.easiersaid.twr.controller.bdi.OnRunway
+import xyz.easiersaid.twr.controller.bdi.OtherTrafficOnShortFinal
+import xyz.easiersaid.twr.controller.bdi.PilotReady
+import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
+import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
+import xyz.easiersaid.twr.controller.bdi.RunwayPhysicallyClear
+import xyz.easiersaid.twr.controller.bdi.StageExpectation
+import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
+import xyz.easiersaid.twr.controller.bdi.WeatherPermitsVfr
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_10_1
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_6
@@ -18,7 +48,10 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_5005
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
-private val DepartureTrigger = AnyOf(listOf(PilotReady, AiProactive))
+// AI pilots emit Report(Ready) the same way human pilots do, so PilotReady
+// alone is sufficient. Removing AiProactive closes a firewall leak — the
+// controller no longer reads `humanPiloted`.
+private val DepartureTrigger = PilotReady
 
 /** Shared guard: conditions for issuing or re-issuing a takeoff clearance. */
 private val TakeoffConditions = AllOf(listOf(
@@ -28,6 +61,8 @@ private val TakeoffConditions = AllOf(listOf(
     RunwayPhysicallyClear,
 ))
 
+@Suppress("LongMethod") // procedure spec is a flat list of rules — splitting is a behavioural
+// decision (separate CLEARANCE_DELIVERY/DEPARTURE flows), not a stylistic one.
 fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
     kind = CommitmentKind.TOWER_DEPARTURE,
     stageExpectations = mapOf(
@@ -200,11 +235,16 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             AtcRule(
                 id = "DEP-CIRCUIT-COMPLETE",
                 description = "Departure complete — circuit traffic reaching downwind, tower retains",
+                // Fires for any aircraft the controller has identified as
+                // circuit traffic — i.e. the pilot has reported a Downwind
+                // call carrying a CircuitIntent. The intent value (T&G or
+                // FULL_STOP) is irrelevant here; the relevance is "the
+                // aircraft is in the circuit pattern, retain at tower."
                 regulations = listOf(ICAO4444_7_9),
                 guard = AllOf(listOf(
                     Airborne,
                     OnCircuitLeg(LegName.DOWNWIND),
-                    PilotGoalIs(PilotGoal.TOUCH_AND_GO),
+                    IsCircuitTraffic,
                 )),
                 nextStage = TowerDepartureStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
@@ -218,11 +258,15 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 // Wait until the aircraft is on the upwind/crosswind climb-out rather
                 // than handing off the moment the wheels leave the ground — tower needs
                 // to watch the initial climb for aborts / engine failures (CAP 413 §4.46).
-                // Circuit traffic (T&G) stays with tower — DEP-CIRCUIT-COMPLETE handles it.
+                // Circuit traffic stays with tower (DEP-CIRCUIT-COMPLETE handles it
+                // once they reach downwind and have declared circuit intent). A
+                // straight-through departure has no circuit intent declared — it
+                // climbs out and gets handed to APPROACH.
                 guard = AllOf(listOf(
                     Airborne,
                     AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
-                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
+                    Not(IsCircuitTraffic),
+                    AircraftIntentIs(xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ContactFrequency>()),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.APPROACH),

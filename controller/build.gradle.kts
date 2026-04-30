@@ -18,5 +18,13 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        jvmTest {
+            dependencies {
+                implementation(kotlin("test"))
+                // kotlin-reflect is required by EventExhaustivenessTest to walk
+                // ControllerEvent.sealedSubclasses transitively. JVM-only.
+                implementation(kotlin("reflect"))
+            }
+        }
     }
 }

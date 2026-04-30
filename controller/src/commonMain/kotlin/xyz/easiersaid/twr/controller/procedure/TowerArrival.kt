@@ -1,7 +1,41 @@
 package xyz.easiersaid.twr.controller.procedure
 
-import xyz.easiersaid.twr.controller.PilotGoal
-import xyz.easiersaid.twr.controller.bdi.*
+import xyz.easiersaid.twr.controller.bdi.Airborne
+import xyz.easiersaid.twr.controller.bdi.instructionOfType
+import xyz.easiersaid.twr.controller.bdi.AllOf
+import xyz.easiersaid.twr.controller.bdi.AnyOf
+import xyz.easiersaid.twr.controller.bdi.AtcRule
+import xyz.easiersaid.twr.controller.bdi.CircuitIntentIs
+import xyz.easiersaid.twr.controller.bdi.ClearLandAction
+import xyz.easiersaid.twr.controller.bdi.ClearTouchAndGoAction
+import xyz.easiersaid.twr.controller.bdi.CommitmentKind
+import xyz.easiersaid.twr.controller.bdi.ContinueApproachAction
+import xyz.easiersaid.twr.controller.bdi.ExtendDownwindAction
+import xyz.easiersaid.twr.controller.bdi.GoAroundAction
+import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
+import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.InCircuit
+import xyz.easiersaid.twr.controller.bdi.InstructionMatcher
+import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
+import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
+import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.OnApproach
+import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
+import xyz.easiersaid.twr.controller.bdi.OnGround
+import xyz.easiersaid.twr.controller.bdi.OnRunway
+import xyz.easiersaid.twr.controller.bdi.PositionReported
+import xyz.easiersaid.twr.controller.bdi.ProcedureInterrupt
+import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
+import xyz.easiersaid.twr.controller.bdi.ReportFinalAction
+import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
+import xyz.easiersaid.twr.controller.bdi.RunwayPhysicallyClear
+import xyz.easiersaid.twr.controller.bdi.SeparationConcernAbove
+import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
+import xyz.easiersaid.twr.controller.bdi.TurnBaseAction
+import xyz.easiersaid.twr.controller.bdi.VacateAction
+import xyz.easiersaid.twr.controller.bdi.WeatherPermitsVfr
+import xyz.easiersaid.twr.controller.bdi.WithinDistanceOfThreshold
+import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_55
@@ -45,6 +79,8 @@ private val LandingConditions = AllOf(listOf(
     RunwayPhysicallyClear,
 ))
 
+@Suppress("LongMethod") // procedure spec is a flat list of rules — splitting into smaller
+// procedures is a behavioural decision (separate APPROACH/AFIS/etc. flows), not a stylistic one.
 fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
     kind = CommitmentKind.TOWER_ARRIVAL,
     interrupts = listOf(
@@ -84,15 +120,6 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 description = "Aircraft already on approach — advance to approach sequencing",
                 regulations = listOf(ICAO4444_7_10),
                 guard = OnApproach,
-                nextStage = TowerArrivalStage.AwaitApproach,
-                advancementPolicy = AdvancementPolicy.Immediate,
-            ),
-            // Fallback for AI aircraft in circuit without position report
-            AtcRule(
-                id = "ARR-AI-ADVANCE",
-                description = "AI aircraft in circuit — advance to approach sequencing without position report",
-                regulations = listOf(ICAO4444_7_10),
-                guard = AllOf(listOf(InCircuit, AiProactive)),
                 nextStage = TowerArrivalStage.AwaitApproach,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
@@ -178,24 +205,24 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 urgency = Urgency.PROGRESSION,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Clear to land — VFR, not touch-and-go
+            // Clear to land — VFR, full-stop intent declared
             AtcRule(
                 id = "ARR-LAND",
-                description = "Clear to land when on final and runway available",
+                description = "Clear to land when on final and runway available, pilot declared full-stop",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(LandingConditions, Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)))),
+                guard = AllOf(listOf(LandingConditions, CircuitIntentIs(CircuitIntent.FULL_STOP))),
                 action = ClearLandAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Clear touch-and-go
+            // Clear touch-and-go — default for circuit traffic that has not declared full-stop
             AtcRule(
                 id = "ARR-LAND-TNG",
-                description = "Clear touch-and-go when on final and runway available",
+                description = "Clear touch-and-go when on final and runway available (default for circuit traffic)",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(LandingConditions, PilotGoalIs(PilotGoal.TOUCH_AND_GO))),
+                guard = AllOf(listOf(LandingConditions, Not(CircuitIntentIs(CircuitIntent.FULL_STOP)))),
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
@@ -244,7 +271,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
                 guard = AllOf(listOf(
                     LandingConditions,
-                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
+                    CircuitIntentIs(CircuitIntent.FULL_STOP),
                     NoPendingReadback(InstructionMatcher.AnyOf(listOf(
                         instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
                         instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
@@ -262,7 +289,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
                 guard = AllOf(listOf(
                     LandingConditions,
-                    PilotGoalIs(PilotGoal.TOUCH_AND_GO),
+                    Not(CircuitIntentIs(CircuitIntent.FULL_STOP)),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
                 )),
                 action = ClearTouchAndGoAction,
@@ -283,8 +310,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 // internal state transition. §7.10 (arriving aircraft / circuit
                 // sequencing) is the applicable authority; §7.10.2 is specifically the
                 // *go-around* instruction and doesn't belong here.
+                //
+                // Gates on declared circuit traffic (IsCircuitTraffic) plus
+                // not-FULL_STOP — i.e. the pilot has reported a Downwind with
+                // T&G intent (or no intent → defaults to T&G). Without
+                // IsCircuitTraffic, a non-circuit airborne arrival could
+                // trigger spurious completion.
                 regulations = listOf(ICAO4444_7_10),
-                guard = AllOf(listOf(PilotGoalIs(PilotGoal.TOUCH_AND_GO), Airborne)),
+                guard = AllOf(listOf(IsCircuitTraffic, Not(CircuitIntentIs(CircuitIntent.FULL_STOP)), Airborne)),
                 nextStage = TowerArrivalStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
@@ -302,9 +335,13 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "ARR-VACATE",
                 description = "Vacate the runway via assigned exit or backtrack",
                 regulations = listOf(ICAO4444_7_11),
+                // Vacate fires for full-stop arrivals (declared FULL_STOP) and
+                // for non-circuit arrivals (no circuit intent declared at all —
+                // a one-shot Arrival mission). T&G traffic that has declared
+                // touch-and-go is excluded.
                 guard = AllOf(listOf(
                     OnRunway, OnGround,
-                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
+                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
                     NoPendingReadback(InstructionMatcher.AnyOf(listOf(
                         instructionOfType<AfterLandingVacateVia>(),
                         instructionOfType<xyz.easiersaid.twr.protocol.BacktrackRunway>(),
@@ -330,10 +367,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 description = "Hand off to ground control after leaving runway",
                 // Transfer of *communications* (§10.1), not transfer of control
                 // (§6.3). Phraseology is the frequency-change instruction per Doc 9432.
+                //
+                // Same intent gating as ARR-VACATE: full-stop arrivals plus
+                // non-circuit arrivals get handed to ground after vacate.
+                // T&G traffic continues to fly with tower.
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    Not(PilotGoalIs(PilotGoal.TOUCH_AND_GO)),
+                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.GROUND),

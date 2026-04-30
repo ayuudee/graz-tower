@@ -6,7 +6,15 @@ import xyz.easiersaid.twr.controller.RunwayObservation
 import xyz.easiersaid.twr.controller.assess.ArrivalSequence
 import xyz.easiersaid.twr.controller.assess.RunwayDutyState
 import xyz.easiersaid.twr.controller.bdi.Commitment
-import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.CircuitIntent
+import xyz.easiersaid.twr.protocol.ClearanceId
+import xyz.easiersaid.twr.protocol.Knots
+import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimTime
 
 /**
  * Persistent controller belief state, carried forward between decision cycles.
@@ -68,6 +76,39 @@ data class BeliefState(
      * Prevents oscillation at threshold boundaries (D2 root cause fix).
      */
     val recentConcerns: Map<AircraftId, RecentConcern> = emptyMap(),
+    /**
+     * Recent radio events per aircraft, time-windowed (entries older than
+     * [RECENT_RADIO_WINDOW] are evicted). Pass 5 (D-AUDIT.14 closure)
+     * replaces the cached `aircraftIntent` slice — `determineServiceKind`
+     * now reads this slice + the strip directly and derives intent on
+     * demand via [deriveCurrentIntent], rather than consulting a frozen
+     * classification.
+     *
+     * Single write site: `withRecentRadio` in `Observe.kt`. The
+     * architectural test `FirewallBeliefWriteTest` enforces this.
+     *
+     * Time-windowed (not count-windowed) per Pass 5 review: real ATC
+     * controllers remember "the last few minutes" of radio traffic, not
+     * "the last N transmissions." A count window silently regresses under
+     * multi-aircraft load.
+     */
+    val recentRadio: Map<AircraftId, RecentRadio> = emptyMap(),
+    /**
+     * Per-aircraft circuit-end intent (touch-and-go vs full-stop). Populated
+     * exclusively from radio: when the pilot transmits a Downwind report
+     * carrying a non-null `CircuitIntent`, the belief-update fold emits
+     * `CircuitIntentReported` and writes the intent here. Cleared on
+     * `GoAroundDetected` per ICAO 4444 §7.10.2 — pilot must re-declare on the
+     * rejoined circuit.
+     *
+     * Read by the `CircuitIntentIs(FULL_STOP)` and `IsCircuitTraffic` guards.
+     * The architectural test enforces the same single-write-site rule.
+     *
+     * **Default semantics on absence:** `CircuitIntentIs(FULL_STOP)` returns
+     * `false` for absent entries — operational default per ICAO/SERA is
+     * touch-and-go for circuit traffic that hasn't declared.
+     */
+    val circuitIntent: Map<AircraftId, CircuitIntent> = emptyMap(),
 ) {
     /** Backward-compatible projection: pending (unconfirmed) coordinations as PendingReadback. */
     val pendingReadbacks: Map<AircraftId, List<PendingReadback>> get() =
@@ -80,6 +121,13 @@ data class BeliefState(
         const val MAX_OBSERVATION_HISTORY = 5
         /** Cooldown before concern severity can drop, in milliseconds. */
         const val CONCERN_COOLDOWN_MS = 15_000L
+        /**
+         * Time window for the [recentRadio] slice. 5 sim-minutes — bounded
+         * by ATC's working-memory horizon. Real controllers remember recent
+         * traffic for minutes, not transmission counts.
+         */
+        val RECENT_RADIO_WINDOW: xyz.easiersaid.twr.protocol.SimDuration =
+            xyz.easiersaid.twr.protocol.SimDuration.ofMillis(5 * 60 * 1000L)
     }
 }
 
@@ -88,6 +136,8 @@ data class RecentConcern(
     val concern: SeparationConcern,
     val since: SimTime,
 )
+
+// AircraftIntent moved to its own file — see AircraftIntent.kt
 
 /**
  * A report the controller has requested and is awaiting from a pilot.

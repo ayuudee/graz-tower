@@ -378,4 +378,33 @@ data class WorldIndex(
     val circuitLegsByPoint: Map<PointId, Set<LegName>> = emptyMap(),
     /** Runway threshold point, keyed by runway. Used for arrival distance computation. */
     val thresholdByRunway: Map<RunwayId, PointId> = emptyMap(),
-)
+) {
+    /**
+     * Precomputed reverse of [holdingPointsByRunway]. O(1) lookup, computed
+     * once per index. Co-located with the forward map so the pair stays
+     * consistent.
+     */
+    private val runwaysByHoldingPoint: Map<PointId, Set<RunwayId>> =
+        holdingPointsByRunway.entries
+            .flatMap { (rwy, points) -> points.map { it to rwy } }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, runways) -> runways.toSet() }
+
+    /**
+     * Reverse lookup: given a holding-point [PointId], which runways does it
+     * serve? Returns the empty set for non-holding-point points.
+     *
+     * Multi-runway holding points are real (intersecting taxiways at parallel-
+     * runway airports). The reverse map is `Set<RunwayId>` rather than a
+     * single runway so the call site can disambiguate explicitly. The pilot
+     * (post pilot-firewall) reads this when extracting the runway from a
+     * `TaxiTo` instruction's destination; the precedence rule is documented
+     * in `PilotMission.processInstruction`.
+     *
+     * The cleaner long-term shape is for `TaxiTo` to carry an explicit
+     * `runway: RunwayId` field, removing the inference entirely. Recorded
+     * as deferment **D-PF.6**.
+     */
+    fun runwaysForHoldingPoint(point: PointId): Set<RunwayId> =
+        runwaysByHoldingPoint[point].orEmpty()
+}

@@ -1,6 +1,23 @@
 package xyz.easiersaid.twr.controller.procedure
 
-import xyz.easiersaid.twr.controller.bdi.*
+import xyz.easiersaid.twr.controller.bdi.instructionOfType
+import xyz.easiersaid.twr.controller.bdi.AllOf
+import xyz.easiersaid.twr.controller.bdi.AtHoldingPoint
+import xyz.easiersaid.twr.controller.bdi.AtStand
+import xyz.easiersaid.twr.controller.bdi.AtcRule
+import xyz.easiersaid.twr.controller.bdi.CommitmentKind
+import xyz.easiersaid.twr.controller.bdi.ExpectedPilotAct
+import xyz.easiersaid.twr.controller.bdi.GroundArrivalStage
+import xyz.easiersaid.twr.controller.bdi.GroundDepartureStage
+import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
+import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
+import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
+import xyz.easiersaid.twr.controller.bdi.StageExpectation
+import xyz.easiersaid.twr.controller.bdi.TaxiRequested
+import xyz.easiersaid.twr.controller.bdi.TaxiToHoldingAction
+import xyz.easiersaid.twr.controller.bdi.TaxiToStandAction
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_10_1
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_6
@@ -34,7 +51,12 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "GND-TAXI",
                 description = "Taxi to holding point for departure",
                 regulations = listOf(ICAO4444_7_6, ICAO9432_TAXI),
-                guard = AnyOf(listOf(TaxiRequested, AiProactive)),
+                // AI pilots emit Request(RequestTaxi) like human pilots
+                // (see PilotMission.groundDepartureTask). Removing the
+                // AiProactive bypass closes a firewall leak — the
+                // controller no longer knows whether the cockpit is crewed
+                // by a human or an AI.
+                guard = TaxiRequested,
                 action = TaxiToHoldingAction,
                 nextStage = GroundDepartureStage.AwaitAtHolding,
                 advancementPolicy = AdvancementPolicy.Immediate,
@@ -88,6 +110,26 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AtStand,
                 nextStage = GroundArrivalStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Re-issue if the original TaxiTo was stepped on. The
+            // pending-readback horizon (~30 s GC) is the retransmit timer:
+            // a successful first issue keeps a coordination in the ledger
+            // until the readback confirms it; a step-on means the
+            // coordination was never recorded, so NoPendingReadback fires
+            // and the rule re-issues. Without this, a GND→TWR shared
+            // frequency can wedge the post-landing taxi.
+            AtcRule(
+                id = "GND-TAXI-STAND-REISSUE",
+                description = "Re-issue taxi-to-stand after readback timeout",
+                regulations = listOf(ICAO4444_7_6, ICAO9432_TAXI),
+                guard = AllOf(listOf(
+                    Not(AtStand),
+                    NoPendingReadback(instructionOfType<TaxiTo>()),
+                )),
+                action = TaxiToStandAction,
+                advancementPolicy = AdvancementPolicy.Immediate,
+                // Stage stays at AwaitParked so this rule can re-fire if
+                // the re-issue is also stepped on.
             ),
         ),
     ),

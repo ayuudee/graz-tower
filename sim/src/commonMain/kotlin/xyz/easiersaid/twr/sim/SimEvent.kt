@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.sim
 
+import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.PilotIntent
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.SimTime

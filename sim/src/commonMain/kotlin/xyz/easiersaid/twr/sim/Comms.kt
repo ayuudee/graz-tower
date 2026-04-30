@@ -145,7 +145,6 @@ fun utteranceDuration(utterance: Utterance): SimDuration = when (utterance) {
 private fun controllerUtteranceDuration(output: ControllerOutput): SimDuration = when (output) {
     is ControllerOutput.Instruct -> instructionDuration(output.instruction)
     is ControllerOutput.Respond -> SimDuration.ofMillis(1500)
-    is ControllerOutput.InitiateHandoff -> SimDuration.ofMillis(2000)
 }
 
 /**

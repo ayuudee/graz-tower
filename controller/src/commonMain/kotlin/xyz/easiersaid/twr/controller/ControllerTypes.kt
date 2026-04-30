@@ -4,7 +4,31 @@ import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.observe.BeliefState
-import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.ClearanceDomain
+import xyz.easiersaid.twr.protocol.ClearanceId
+import xyz.easiersaid.twr.protocol.ClearanceStatus
+import xyz.easiersaid.twr.protocol.ConditionalPredicate
+import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.ControllerResponse
+import xyz.easiersaid.twr.protocol.Heading
+import xyz.easiersaid.twr.protocol.Knots
+import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.ObligationId
+import xyz.easiersaid.twr.protocol.PilotTransmission
+import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PressureSetting
+import xyz.easiersaid.twr.protocol.RegulationRef
+import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.Speed
+import xyz.easiersaid.twr.protocol.Urgency
+import xyz.easiersaid.twr.protocol.WakeCategory
+import xyz.easiersaid.twr.protocol.Wind
 
 /** Immutable snapshot provided to the controller each decision cycle. */
 data class ControllerView(
@@ -25,10 +49,43 @@ data class ControllerView(
      * When true: no conditional clearances, one-on-runway, time-based wake, no visual sep.
      */
     val lvpMode: Boolean = false,
+    /**
+     * Flight-strip pre-briefing for aircraft scheduled to arrive on this
+     * controller's frequency. Modelled as a typed [AircraftIntent]
+     * (Departing/Arriving/Transit) — the controller's pre-flight summary,
+     * not the pilot's mind. Belief-update fold seeds
+     * [xyz.easiersaid.twr.controller.observe.BeliefState.aircraftIntent]
+     * from this map; once an aircraft makes radio contact the radio
+     * intentions override the strip.
+     *
+     * Empty when the controller has no pre-briefing (e.g. an unscheduled
+     * aircraft entering the frequency cold).
+     */
+    val flightStripIntents: Map<AircraftId, xyz.easiersaid.twr.controller.observe.AircraftIntent> = emptyMap(),
 )
 
-/** What the controller knows about one aircraft. */
-data class AircraftObservation(
+/**
+ * What the controller knows about one aircraft from sensor + radio observation.
+ *
+ * **Firewall invariant:** every field here originates from radar / surface
+ * radar / visual / radio. There are no fields representing the pilot's
+ * internal state (mission tree, intended next action, "is this an AI or a
+ * human in the cockpit?"). Anything the controller knows about service
+ * intent (Departing/Arriving/Transit) or per-circuit decisions
+ * (TouchAndGo/FullStop) lives on
+ * [xyz.easiersaid.twr.controller.observe.BeliefState], populated by typed
+ * [xyz.easiersaid.twr.controller.observe.ControllerEvent]s derived from
+ * [ReceivedMessage]s, and seeded from
+ * [xyz.easiersaid.twr.controller.ControllerView.flightStripIntents] for
+ * the broad pre-briefing channel.
+ *
+ * Adding a new field here requires it to map to a real-world sensor or
+ * visual cue. The architectural test
+ * `controller/src/commonTest/.../FirewallObservationTest.kt` enforces
+ * this — adding a non-sensor field fails to compile against the test's
+ * canonical-constructor allowlist.
+ */
+data class AircraftObservation internal constructor(
     val id: AircraftId,
     val callsign: Callsign,
     val position: PointId,
@@ -40,13 +97,11 @@ data class AircraftObservation(
     /** Ground speed in knots, if observable. Required for sequence spacing calculation. */
     val groundSpeed: Knots? = null,
     val onGround: Boolean,
-    val flightRules: FlightRules?,
-    val pilotGoal: PilotGoal?,
-    val humanPiloted: Boolean,
-    val typeDescription: String? = null,
     /** ICAO wake turbulence category. Null = unknown; separation engine defaults to H (worst-case). */
     val wakeCategory: WakeCategory? = null,
-)
+) {
+    companion object
+}
 
 enum class FlightRules { VFR, IFR }
 
@@ -138,13 +193,6 @@ sealed interface ControllerOutput {
     data class Respond(
         val target: AircraftId,
         val response: ControllerResponse,
-        val trace: DecisionTrace,
-    ) : ControllerOutput
-
-    /** Initiate a handoff. */
-    data class InitiateHandoff(
-        val aircraft: AircraftId,
-        val to: ControllerId,
         val trace: DecisionTrace,
     ) : ControllerOutput
 }

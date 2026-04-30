@@ -2,7 +2,6 @@ package xyz.easiersaid.twr.controller.bdi
 
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.ControllerView
-import xyz.easiersaid.twr.controller.PilotGoal
 import xyz.easiersaid.twr.controller.RunwayStatus
 import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.observe.BeliefState
@@ -13,7 +12,10 @@ import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.core.world.WorldIndex
-import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.CircuitIntent
+import xyz.easiersaid.twr.protocol.ClearanceDomain
+import xyz.easiersaid.twr.protocol.SimTime
 import kotlin.reflect.KClass
 
 /**
@@ -29,6 +31,16 @@ data class OperatorContext(
     val time: SimTime get() = view.time
     val worldIndex: WorldIndex get() = view.worldIndex
     val weather: WeatherObservation? get() = view.weather
+
+    /**
+     * Derive an aircraft's broad service intent from primary sources
+     * (strip + recentRadio). Pass 5 (D-AUDIT.14 closure) — replaces direct
+     * reads of the deleted `BeliefState.aircraftIntent` slice. Routes
+     * through the single `deriveIntent` accessor so absent-key semantics
+     * are consistent across all consumers.
+     */
+    fun intentOf(aircraft: xyz.easiersaid.twr.protocol.AircraftId): xyz.easiersaid.twr.controller.observe.AircraftIntent =
+        xyz.easiersaid.twr.controller.observe.deriveIntent(view.flightStripIntents, beliefs.recentRadio, aircraft)
 }
 
 /**
@@ -176,19 +188,55 @@ data object TaxiRequested : RuleGuard {
         ctx.events.any { it is ControllerEvent.TaxiRequested && it.aircraft == ac.id }
 }
 
-/** AI proactive: no pilot agent, controller acts without prompt. */
-data object AiProactive : RuleGuard {
-    override val failureMessage = "Aircraft is human-piloted — waiting for pilot action"
+// ── Service intent (firewall-clean) ──────────────────────────────────
+//
+// These guards read controller-side belief slices populated only from
+// radio + flight-strip channels. They replace the leaky [PilotGoalIs]
+// guard which read pilot-internal state via [AircraftObservation.pilotGoal].
+
+/**
+ * Broad service intent: derives the aircraft's intent on demand from primary
+ * sources (strip + recentRadio) via [OperatorContext.intentOf]. Pass 5
+ * (D-AUDIT.14 closure) replaces the cached `aircraftIntent` slice with this
+ * derivation; behaviour is unchanged.
+ */
+data class AircraftIntentIs(
+    val intent: xyz.easiersaid.twr.controller.observe.AircraftIntent,
+) : RuleGuard {
+    override val failureMessage = "Aircraft service intent is not $intent"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        !ac.humanPiloted
+        ctx.intentOf(ac.id) == intent
 }
 
-// ── Pilot goal ───────────────────────────────────────────────────────
-
-/** Aircraft's pilot goal matches the given value. */
-data class PilotGoalIs(val goal: PilotGoal) : RuleGuard {
+/**
+ * Per-circuit landing intent: matches the controller's belief about whether
+ * the next landing is touch-and-go or full-stop. Populated only from the
+ * pilot's downwind radio call carrying a non-null [CircuitIntent].
+ *
+ * Default semantics on absence: returns false. Operationally undeclared
+ * circuit traffic defaults to TOUCH_AND_GO under ICAO/SERA, so absent
+ * entries naturally yield [CircuitIntentIs(FULL_STOP)] = false → the
+ * touch-and-go rule (gated by `Not(CircuitIntentIs(FULL_STOP))`) fires.
+ */
+data class CircuitIntentIs(val intent: CircuitIntent) : RuleGuard {
+    override val failureMessage = "Circuit intent is not $intent"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ac.pilotGoal == goal
+        ctx.beliefs.circuitIntent[ac.id] == intent
+}
+
+/**
+ * The pilot has at any point reported a circuit intent (TOUCH_AND_GO or
+ * FULL_STOP). Used to discriminate "circuit traffic" — aircraft committed to
+ * the aerodrome traffic circuit — from a one-shot departure that happens to
+ * climb out via the same waypoints.
+ *
+ * The controller's circuit-completion rule (DEP-CIRCUIT-COMPLETE) fires only
+ * for circuit traffic so a non-circuit departure is handed off normally.
+ */
+data object IsCircuitTraffic : RuleGuard {
+    override val failureMessage = "Aircraft has not declared circuit intent"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.id in ctx.beliefs.circuitIntent
 }
 
 // ── Runway state ─────────────────────────────────────────────────────

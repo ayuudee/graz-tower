@@ -84,6 +84,9 @@ sealed interface AmendmentError {
  * temporarily suspend FPL-based routing) and [ActiveConstraint] (speed
  * restrictions, which modify how the pilot follows the route).
  */
+@Suppress("LongMethod", "CyclomaticComplexMethod") // per-leaf amendment dispatch over the
+// AtcInstruction sealed hierarchy — each amendable instruction has its own arm; complexity
+// is intrinsic to the leaf count, not to the function's logical structure.
 fun amendFpl(
     fpl: FlightPlan,
     instruction: AtcInstruction,

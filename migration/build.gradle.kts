@@ -10,6 +10,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":core"))
+                implementation(project(":protocol"))
                 implementation(libs.arrow.core)
                 implementation(libs.xmlutil.core)
                 implementation(libs.xmlutil.serialization)

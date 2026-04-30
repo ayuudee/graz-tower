@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.sim
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.controller.ReceivedMessage
 import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.observe.BeliefState
@@ -44,20 +45,15 @@ data class SimState(
     val inFlightTransmissions: Map<TransmissionId, InFlightTransmission> = emptyMap(),
     val nextTransmissionId: Long = 0L,
     val controllerInbox: Map<ControllerId, List<ReceivedMessage>> = emptyMap(),
-    /**
-     * Pilot-side airspace triggers — published frequency-change rules
-     * (e.g. "approach LJMB_APP within 5 NM of PETOV when outside TMA
-     * Maribor"). The Step layer threads these into [unifiedPilotDecide]
-     * so the cognitive predicate can fire pilot-initiated contact.
-     * Empty list disables pilot-initiated contact entirely. For G1, the
-     * fixture seeds this list directly; future work derives it from
-     * the manifest's `contactRequirement` table.
-     */
-    val airspaceTriggers: List<PilotAirspace.FrequencyChangeTrigger> = emptyList(),
 ) {
     companion object {
         /**
-         * Validation errors raised by the [initial] smart constructor.
+         * Validation errors raised by the [initial] smart constructor. Each
+         * variant names a specific invariant the rest of the simulation relies
+         * on. The constructor refuses to build a state that violates any of
+         * them — silent defaults at construction time are exactly the kind of
+         * "looks fine, hangs at runtime" failure mode the no-corners rule
+         * forbids.
          */
         sealed interface InitError {
             /**
@@ -69,11 +65,61 @@ data class SimState(
             data class MissingWeatherForRunwayAerodrome(
                 val aerodromeId: AerodromeId,
             ) : InitError
+
+            /**
+             * Two aircraft share the same [AircraftId]. The
+             * `LinkedHashMap.put` fold would silently overwrite, leaving the
+             * caller with a state containing the *second* aircraft of the pair.
+             */
+            data class DuplicateAircraftId(val id: AircraftId) : InitError
+
+            /**
+             * An aircraft's [AircraftState.positionPoint] is not in
+             * [WorldIndex.positions]. The kinematics layer would tolerate this
+             * by freezing the aircraft (`worldIndex.positions[headPoint] ?:
+             * return ac.copy(...)`), masking a bad spawn fixture.
+             */
+            data class AircraftPositionPointNotInIndex(
+                val aircraftId: AircraftId,
+                val point: xyz.easiersaid.twr.protocol.PointId,
+            ) : InitError
+
+            /**
+             * Two controllers share the same [ControllerId]. As with aircraft,
+             * `associateBy` would silently overwrite.
+             */
+            data class DuplicateControllerId(val id: ControllerId) : InitError
+
+            /**
+             * A controller's [ControllerSpec.aerodromeId] is not present in
+             * [AviationWorld.aerodromes]. `applyContactFrequency` looks up
+             * controllers by `(aerodromeId, role)`; an off-world controller
+             * silently never receives handoffs.
+             */
+            data class ControllerAerodromeNotInWorld(
+                val controllerId: ControllerId,
+                val aerodromeId: AerodromeId,
+            ) : InitError
+
+            /**
+             * A controller has an aircraft in its [ControllerSpec.responsibilities]
+             * that is not in the [aircraft] list. Belief reconciliation would
+             * carry a dangling commitment forever.
+             */
+            data class ResponsibilityForUnknownAircraft(
+                val controllerId: ControllerId,
+                val aircraftId: AircraftId,
+            ) : InitError
         }
 
         /**
-         * Validating constructor. Refuses worlds where any aerodrome with
-         * runways has no [WeatherObservation] entry.
+         * Validating constructor. Each [InitError] variant in turn:
+         *  - every runway-bearing aerodrome has a [WeatherObservation],
+         *  - every [AircraftId] in [aircraft] is unique,
+         *  - every aircraft's `positionPoint` is in `worldIndex.positions`,
+         *  - every [ControllerId] in [controllers] is unique,
+         *  - every controller's aerodrome exists in [world],
+         *  - every aircraft a controller claims responsibility for exists in [aircraft].
          *
          * Tests that genuinely don't simulate weather pass an explicit
          * `WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)`
@@ -86,13 +132,22 @@ data class SimState(
             aircraft: List<AircraftState> = emptyList(),
             controllers: List<ControllerSpec> = emptyList(),
             weatherByAerodrome: Map<AerodromeId, WeatherObservation>,
-            airspaceTriggers: List<PilotAirspace.FrequencyChangeTrigger> = emptyList(),
         ): Either<InitError, SimState> {
             for ((aerodromeId, aerodrome) in world.aerodromes) {
                 if (aerodrome.runways.isNotEmpty() && aerodromeId !in weatherByAerodrome) {
                     return InitError.MissingWeatherForRunwayAerodrome(aerodromeId).left()
                 }
             }
+            val aircraftIds = mutableSetOf<AircraftId>()
+            for (ac in aircraft) {
+                if (!aircraftIds.add(ac.id)) {
+                    return InitError.DuplicateAircraftId(ac.id).left()
+                }
+                if (ac.positionPoint !in worldIndex.positions) {
+                    return InitError.AircraftPositionPointNotInIndex(ac.id, ac.positionPoint).left()
+                }
+            }
+            validateControllers(controllers, world, aircraftIds)?.let { return it.left() }
             return SimState(
                 now = SimTime.ZERO,
                 seq = 0L,
@@ -108,8 +163,34 @@ data class SimState(
                 inFlightTransmissions = emptyMap(),
                 nextTransmissionId = 0L,
                 controllerInbox = emptyMap(),
-                airspaceTriggers = airspaceTriggers,
             ).right()
+        }
+
+        /**
+         * Per-controller validation extracted out of [initial] so the latter
+         * stays under the detekt return-count limit. Returns the first error
+         * encountered (if any), or null if every controller is well-formed.
+         */
+        private fun validateControllers(
+            controllers: List<ControllerSpec>,
+            world: AviationWorld,
+            aircraftIds: Set<AircraftId>,
+        ): InitError? {
+            val controllerIds = mutableSetOf<ControllerId>()
+            for (controller in controllers) {
+                if (!controllerIds.add(controller.id)) {
+                    return InitError.DuplicateControllerId(controller.id)
+                }
+                if (controller.aerodromeId !in world.aerodromes) {
+                    return InitError.ControllerAerodromeNotInWorld(controller.id, controller.aerodromeId)
+                }
+                for (responsibility in controller.responsibilities) {
+                    if (responsibility !in aircraftIds) {
+                        return InitError.ResponsibilityForUnknownAircraft(controller.id, responsibility)
+                    }
+                }
+            }
+            return null
         }
     }
 }

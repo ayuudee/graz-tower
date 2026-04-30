@@ -9,7 +9,9 @@ import xyz.easiersaid.twr.controller.observe.ControllerEvent
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.WorldIndex
-import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.WakeCategory
 
 data class RunwayDutyState(
@@ -55,7 +57,9 @@ data class RunwayQueueEntry(
  *
  * Port of TWR1's three-phase runway duty logic with entity-aware checks.
  */
-@Suppress("LongParameterList") // Public entry point for 3-phase transformer; bundling premature
+@Suppress("LongParameterList", "CyclomaticComplexMethod", "NestedBlockDepth") // public entry point for the
+// 3-phase release/enqueue/grant transformer; complexity is intrinsic to the phase composition over
+// commitment stages × runway-occupancy events. Bundling parameters into a context object is cosmetic.
 fun updateRunwayDuty(
     prev: RunwayDutyState?,
     activeRunway: RunwayId?,
@@ -188,10 +192,14 @@ private fun departureQueueEntry(
     commitment: Commitment,
     ctx: RunwayDutyCtx,
 ): RunwayQueueEntry? = when {
+    // AwaitReady: aircraft is queued for the runway only after they have
+    // reported ready. Real controllers cannot tell whether the cockpit is
+    // crewed by a human or an AI; the previous `humanPiloted == false`
+    // shortcut was a firewall leak. AI pilots emit Report(Ready) like
+    // human pilots do — the same event drives queue entry for both.
     commitment.kind == CommitmentKind.TOWER_DEPARTURE &&
         commitment.stage == TowerDepartureStage.AwaitReady &&
-        (ctx.events.any { it is ControllerEvent.ReadyForDepartureReceived && it.aircraft == acId } ||
-            ctx.beliefs.trackedAircraft[acId]?.humanPiloted == false) ->
+        ctx.events.any { it is ControllerEvent.ReadyForDepartureReceived && it.aircraft == acId } ->
         RunwayQueueEntry(acId, RunwayOperation.DEPARTURE, ctx.time)
 
     commitment.kind == CommitmentKind.TOWER_DEPARTURE &&

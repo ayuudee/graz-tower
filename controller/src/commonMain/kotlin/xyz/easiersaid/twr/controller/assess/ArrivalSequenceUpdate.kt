@@ -8,7 +8,6 @@ import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
-import xyz.easiersaid.twr.controller.FlightRules
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -248,9 +247,14 @@ private fun euclideanDistance(a: Position, b: Position): Double {
 // ── Approach mode derivation ─────────────────────────────────────────
 
 /**
- * Derive approach mode from cleared approach type if available, else from flight rules.
- * ClearedApproach/ClearedVisualApproach in issuedClearances is authoritative;
- * flight-rules heuristic is the fallback when no approach clearance has been issued.
+ * Derive approach mode from cleared approach type if available, else default
+ * to VISUAL.
+ *
+ * Previously also checked `ac.flightRules == FlightRules.IFR` as a fallback,
+ * but that field was always null (never populated) and was a firewall-leak
+ * shape (would have to come from the pilot's filed flight plan via a typed
+ * radio event, not from observation). When IFR support lands, restore the
+ * fallback by reading a belief slice populated from a typed event.
  */
 private fun deriveApproachMode(ac: AircraftObservation, beliefs: BeliefState): ApproachMode {
     // Check issuedClearances for an active approach clearance for this aircraft.
@@ -270,8 +274,6 @@ private fun deriveApproachMode(ac: AircraftObservation, beliefs: BeliefState): A
                 else -> ApproachMode.ILS // VOR, NDB, SRA, PAR default to ILS separation for now
             }
         }
-        // Fallback: heuristic from flight rules when no clearance issued.
-        ac.flightRules == FlightRules.IFR -> ApproachMode.ILS
         else -> ApproachMode.VISUAL
     }
 }

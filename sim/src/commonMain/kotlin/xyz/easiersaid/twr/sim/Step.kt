@@ -3,7 +3,25 @@
 package xyz.easiersaid.twr.sim
 
 import arrow.core.NonEmptyList
+import arrow.core.Some
 import arrow.core.getOrElse
+import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CIRCUIT_ALTITUDE_M
+import xyz.easiersaid.twr.pilot.PilotConstants
+import xyz.easiersaid.twr.pilot.buildReadback
+import xyz.easiersaid.twr.pilot.processControllerResponse
+import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.pilot.PilotInput
+import xyz.easiersaid.twr.pilot.PilotIntent
+import xyz.easiersaid.twr.pilot.PilotMission
+import xyz.easiersaid.twr.pilot.PilotOutput
+import xyz.easiersaid.twr.pilot.PilotPhase
+import xyz.easiersaid.twr.pilot.PilotRoute
+import xyz.easiersaid.twr.pilot.RoutingError
+import xyz.easiersaid.twr.pilot.buildVisualDepartureRoute
+import xyz.easiersaid.twr.pilot.pilotDecide
+import xyz.easiersaid.twr.pilot.processInstruction
+import xyz.easiersaid.twr.pilot.updateAfterTransmission
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.ReceivedMessage
 import xyz.easiersaid.twr.controller.controllerDecide
@@ -13,13 +31,106 @@ import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeInstruction
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
+import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
+import xyz.easiersaid.twr.protocol.AfterPassingLevelDescendTo
+import xyz.easiersaid.twr.protocol.AirTaxiTo
+import xyz.easiersaid.twr.protocol.AvoidLevel
+import xyz.easiersaid.twr.protocol.BreakOff
+import xyz.easiersaid.twr.protocol.ClearedApproach
+import xyz.easiersaid.twr.protocol.ClearedLowApproach
+import xyz.easiersaid.twr.protocol.ClearedTo
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
+import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ClearedVisualApproach
+import xyz.easiersaid.twr.protocol.ClimbTo
+import xyz.easiersaid.twr.protocol.CommenceApproachAt
+import xyz.easiersaid.twr.protocol.ConditionalClearance
+import xyz.easiersaid.twr.protocol.ConfirmSquawk
+import xyz.easiersaid.twr.protocol.ContinueApproach
+import xyz.easiersaid.twr.protocol.ContinuePresentHeading
+import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.DescendTo
+import xyz.easiersaid.twr.protocol.DescendWhenReady
+import xyz.easiersaid.twr.protocol.DivertTo
+import xyz.easiersaid.twr.protocol.ExpediteClimb
+import xyz.easiersaid.twr.protocol.ExpediteDescend
+import xyz.easiersaid.twr.protocol.ExpediteTaxi
+import xyz.easiersaid.twr.protocol.ExtendDownwind
+import xyz.easiersaid.twr.protocol.FlyHeading
+import xyz.easiersaid.twr.protocol.FollowTraffic
+import xyz.easiersaid.twr.protocol.GiveWayToTraffic
+import xyz.easiersaid.twr.protocol.GoAround
+import xyz.easiersaid.twr.protocol.HoldAt
+import xyz.easiersaid.twr.protocol.HoldPosition
+import xyz.easiersaid.twr.protocol.HoldPositionCancelTakeoff
+import xyz.easiersaid.twr.protocol.HoldShortOf
+import xyz.easiersaid.twr.protocol.IncreaseSpeedTo
+import xyz.easiersaid.twr.protocol.InterceptLocaliser
+import xyz.easiersaid.twr.protocol.JoinAirway
+import xyz.easiersaid.twr.protocol.JoinCircuit
+import xyz.easiersaid.twr.protocol.LeaveHoldProceedDirect
+import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
+import xyz.easiersaid.twr.protocol.MaintainAtOrAbove
+import xyz.easiersaid.twr.protocol.MaintainAtOrBelow
+import xyz.easiersaid.twr.protocol.MaintainLevel
+import xyz.easiersaid.twr.protocol.MaintainSpeed
+import xyz.easiersaid.twr.protocol.MaintainVisualSeparation
+import xyz.easiersaid.twr.protocol.MakeAnotherCircuit
+import xyz.easiersaid.twr.protocol.MakeLongApproach
+import xyz.easiersaid.twr.protocol.MakeShortApproach
+import xyz.easiersaid.twr.protocol.MinimumCleanSpeed
+import xyz.easiersaid.twr.protocol.MonitorFrequency
+import xyz.easiersaid.twr.protocol.NumberInSequence
+import xyz.easiersaid.twr.protocol.Orbit
+import xyz.easiersaid.twr.protocol.ProceedDirect
+import xyz.easiersaid.twr.protocol.PushbackApproved
+import xyz.easiersaid.twr.protocol.PushbackFace
+import xyz.easiersaid.twr.protocol.ReduceSpeedTo
+import xyz.easiersaid.twr.protocol.ReduceTaxiSpeed
+import xyz.easiersaid.twr.protocol.RejoinSidAt
+import xyz.easiersaid.twr.protocol.ReportIntentions
+import xyz.easiersaid.twr.protocol.ReportTrafficInSight
+import xyz.easiersaid.twr.protocol.ReportWhen
+import xyz.easiersaid.twr.protocol.ResumeNormalSpeed
+import xyz.easiersaid.twr.protocol.ResumeOwnNavigation
+import xyz.easiersaid.twr.protocol.RouteAsFiled
+import xyz.easiersaid.twr.protocol.RunwayInUseAdvisory
+import xyz.easiersaid.twr.protocol.SetPressure
+import xyz.easiersaid.twr.protocol.SetSquawk
+import xyz.easiersaid.twr.protocol.SpecialVfrClearance
+import xyz.easiersaid.twr.protocol.SquawkIdent
+import xyz.easiersaid.twr.protocol.SquawkNormal
+import xyz.easiersaid.twr.protocol.SquawkStandby
+import xyz.easiersaid.twr.protocol.StartupApproved
+import xyz.easiersaid.twr.protocol.StopClimbAt
+import xyz.easiersaid.twr.protocol.StopDescentAt
+import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.StopSquawk
+import xyz.easiersaid.twr.protocol.StopTurn
+import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrHoldShort
+import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrVacateRunway
+import xyz.easiersaid.twr.protocol.TaxiIntoHoldingBay
+import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiViaRunway
+import xyz.easiersaid.twr.protocol.TaxiWithCaution
+import xyz.easiersaid.twr.protocol.TransitionLevelIssuance
+import xyz.easiersaid.twr.protocol.TurnBase
+import xyz.easiersaid.twr.protocol.TurnByDegrees
+import xyz.easiersaid.twr.protocol.TurnHeading
+import xyz.easiersaid.twr.protocol.VacateRunway
+import xyz.easiersaid.twr.protocol.WhenAbleProceedDirect
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ApproachInstruction
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.AvoidArea
+import xyz.easiersaid.twr.protocol.BacktrackRunway
+import xyz.easiersaid.twr.protocol.CancelClearance
 import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.Disregard
 import xyz.easiersaid.twr.protocol.EmergencyInstruction
 import xyz.easiersaid.twr.protocol.FrequencyInstruction
 import xyz.easiersaid.twr.protocol.GroundInstruction
@@ -29,8 +140,8 @@ import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.ReadbackElement
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.ReportInstruction
-import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteInstruction
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.RunwayInstruction
@@ -39,7 +150,6 @@ import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.SpeedInstruction
 import xyz.easiersaid.twr.protocol.SurveillanceInstruction
-import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.VectorInstruction
 
 /** Default 1 Hz physics-integration cadence. */
@@ -115,18 +225,26 @@ private fun handlePilotTick(
         ?: return state to emptyList()
 
     // One pilot, one brain, one decision.
-    // Derive active runway from beliefs (any controller that has a commitment for this aircraft).
-    val runway = state.beliefs.values
-        .flatMap { it.commitments.entries }
-        .firstOrNull { it.key == ac.id }?.value?.runway
-    val decision = unifiedPilotDecide(
-        aircraft = ac,
-        worldIndex = state.worldIndex,
-        now = state.now,
-        world = state.world,
-        activeRunway = runway,
-        airspaceTriggers = state.airspaceTriggers,
-        simStateForTriggers = state,
+    //
+    // The pilot reads only PilotInput — own kinematic state, world geometry,
+    // and the clock. It does NOT see `state.beliefs` or `state.controllers`.
+    // The previous lookup that read `state.beliefs[…].commitments[…].runway`
+    // was a firewall leak (controller→pilot back-channel) and is gone. The
+    // pilot's runway is on `mission.activeRunway`, populated by
+    // `processInstruction` from each radio-derived runway source.
+    //
+    // pilotDecide returns Either<RoutingError, PilotOutput>. Routing errors
+    // are data-integrity defects in the world or route planner — they should
+    // not happen in a healthy run. We surface them as `error()` so the test
+    // hard-fails with the actual cause rather than continuing with a silently
+    // frozen aircraft and an indistinguishable "stationary" final state. The
+    // previous swallow-and-freeze shape lost the error; the no-corners rule
+    // says diagnostic loss is rot. When the typed diagnostic channel lands
+    // (memory: feedback_diagnostics), this becomes a Writer/emitter call.
+    val input = buildPilotInput(state, event.aircraftId) ?: return state to emptyList()
+    val decision = pilotDecide(input).fold(
+        ifLeft = { err -> error("Pilot routing error for ${event.aircraftId}: $err") },
+        ifRight = { it },
     )
 
     // Apply intent to aircraft state.
@@ -137,58 +255,36 @@ private fun handlePilotTick(
         targetAltitudeM = decision.intent.targetAltitudeM,
     )
 
-    // Pilot self-initiated frequency change (G1.5/G1.6 bridge). When the
-    // cognitive predicate fires, transfer responsibility to the trigger's
-    // target controller AND reset the mission's `contactedOnFrequency` flag
-    // so the next decide cycle's `stepTransmission` emits a fresh
-    // [InitialContact] on the new frequency. The transmission is routed by
-    // the regular pilot-transmission path below — by then, the new
-    // controller holds the responsibility.
-    var resultState = state
-    val mutatedMissionFromContact: PilotMission? = decision.selfInitiatedContact.fold(
-        ifEmpty = { null },
-        ifSome = { trigger ->
-            resultState = transferResponsibility(
-                state = resultState,
-                ac = ac.id,
-                toAerodrome = trigger.targetAerodrome,
-                toRole = trigger.targetRole,
-            ).getOrElse {
-                // The cognitive predicate gated on the trigger's target
-                // existing in the simulation's controllers; if we hit
-                // TargetUnresolved, the test fixture / trigger table is
-                // misaligned with the controllers list. Loud fail.
-                error(
-                    "pilotInitiatedContact target unresolved: " +
-                        "${trigger.targetAerodrome}/${trigger.targetRole} not in controllers. " +
-                        "Trigger table and controllers must agree.",
-                )
-            }
-            // Reset contactedOnFrequency so the next stepTransmission emits
-            // InitialContact on the new frequency (the existing cognitive
-            // emission path handles the actual InitialContact construction).
-            decision.updatedMission?.copy(contactedOnFrequency = false)
-        },
-    )
-
-    // Update mission (with report tracking) and derive controller-visible pilotGoal.
-    val rawMission: PilotMission? = mutatedMissionFromContact ?: decision.updatedMission
-    if (rawMission != null) {
-        var mission: PilotMission = rawMission
+    // Update mission with report tracking. The controller's view of the
+    // aircraft's intent is derived on the controller side from radio
+    // transmissions and the flight strip — never copied through here.
+    val updatedMission = decision.updatedMission
+    if (updatedMission != null) {
+        var mission: PilotMission = updatedMission
+        val priorStep = mission.currentTask?.step
+        // Mark the priorStep as "transmitted" if any transmission fired
+        // this tick (the per-step first-tick transmission was for that
+        // step). [stepTransmission] reads `lastTransmittedStep` so the
+        // same transmission doesn't fire again on a later tick of the
+        // same step.
+        if (decision.transmissions.isNotEmpty() && priorStep != null) {
+            mission = mission.copy(lastTransmittedStep = Some(priorStep))
+        }
         for (tx in decision.transmissions) {
             mission = updateAfterTransmission(mission, tx)
         }
-        updated = updated.copy(
-            pilotMission = mission,
-            pilotGoal = derivePilotGoal(mission),
-        )
+        // If a transmission completed the current step (e.g. Report(Ready)
+        // marks REPORT_READY complete via updateAfterReport), refresh
+        // stepEnteredAt so the new step starts a fresh phase-local timer.
+        val newStep = mission.currentTask?.step
+        if (newStep != null && newStep != priorStep) {
+            mission = mission.copy(stepEnteredAt = state.now)
+        }
+        updated = updated.copy(pilotMission = mission)
     }
 
     // Transmit through the radio pipeline — symmetric with controller transmissions.
-    // After a pilot-initiated contact above, [resultState] reflects the new
-    // controller holding the aircraft, so the routing-by-responsibility lookup
-    // below picks the new (target) controller and the transmission lands on
-    // the new frequency.
+    var resultState = state
     val commEvents = mutableListOf<SimEvent>()
     if (decision.transmissions.isNotEmpty()) {
         val ctrl = resultState.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
@@ -265,6 +361,21 @@ private fun handleSpawn(
     event: SimEvent.Spawn,
 ): Pair<SimState, List<SimEvent>> {
     val ac = event.aircraft
+    // Mirror SimState.initial's invariants — a Spawn event must satisfy the
+    // same ones the smart constructor enforces. Without this, an event-time
+    // Spawn could overwrite an existing aircraft id or land an aircraft
+    // pointed at a waypoint outside the index (the kinematics layer would
+    // then silently freeze it). Both are wiring defects, not states the
+    // simulation should accept silently.
+    if (ac.id in state.aircraft) {
+        error("handleSpawn: duplicate aircraft id ${ac.id} — already in state.aircraft")
+    }
+    if (ac.positionPoint !in state.worldIndex.positions) {
+        error(
+            "handleSpawn: aircraft ${ac.id} positionPoint ${ac.positionPoint} " +
+                "is not in worldIndex.positions; the kinematics layer would freeze it.",
+        )
+    }
     val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, ac) }
     val firstPilotTick = SimEvent.PilotDecisionTick(event.time, ac.id)
     return state.copy(aircraft = aircraft).emit(listOf(firstPilotTick))
@@ -327,9 +438,64 @@ private fun handleTransmissionEnd(
         }
         is ReceiverRef.Controller -> {
             val msg = receivedMessageFrom(tx) ?: return withoutTx to emptyList()
-            val existing = withoutTx.controllerInbox[receiver.id].orEmpty()
-            val nextInbox = withoutTx.controllerInbox + (receiver.id to (existing + msg))
-            withoutTx.copy(controllerInbox = nextInbox) to emptyList()
+            // Party-line broadcast: deliver to ALL controllers on this
+            // frequency, not just the addressed receiver. Real radio works
+            // this way — anyone on the freq hears the call, not just the
+            // station being addressed. The "addressed" notion only governs
+            // who is expected to respond, not who hears.
+            //
+            // Why this matters: the controller's belief fold ingests typed
+            // events from radio observation. Without broadcast, a non-
+            // responsible controller on the same freq would never see the
+            // pilot's reports, and any cross-controller belief flow (e.g. a
+            // GROUND controller knowing the aircraft is circuit traffic
+            // because it overheard the pilot's Downwind to TOWER) would
+            // require a sim-side fudge.
+            //
+            // For G0/G1 (LOWG GROUND + TOWER share 118.200), this is the
+            // mechanism by which both controllers' belief states stay
+            // synchronised on radio observations. For G2 (different freqs),
+            // each freq has its own party-line — the receiving aerodrome's
+            // controllers won't see the sending aerodrome's transmissions,
+            // which is correct (they're on different radios).
+            //
+            // Side-effects: every controller on the freq accumulates events
+            // for aircraft they don't own. `reconcileCommitments` only acts
+            // on aircraft in `responsibilities`, so the extra belief state
+            // is harmless. The architectural firewall test
+            // `FirewallBeliefWriteTest` is unaffected — writes are still
+            // gated by `Observe.kt`'s typed fold.
+            val recipients = withoutTx.controllers.values
+                .filter { it.frequency == tx.frequency }
+                .map { it.id }
+            val nextInbox = recipients.fold(withoutTx.controllerInbox) { acc, ctrlId ->
+                acc + (ctrlId to (acc[ctrlId].orEmpty() + msg))
+            }
+            // If the delivered transmission is the pilot's [InitialContact],
+            // mark the pilot's mission as contacted on the new frequency.
+            // This is the moment the pilot is "actually talking to the new
+            // controller" — earlier instants (TransmissionStart, scheduled
+            // time, processing-complete) are too eager and let downstream
+            // step transmissions fire while the InitialContact is still in
+            // flight (causing step-on cascades on the same frequency).
+            val pilotInitialContactSpeaker = (msg as? ReceivedMessage.Clear)?.let {
+                if (it.transmission is InitialContact) it.aircraft else null
+            }
+            val withMissionAcked = if (pilotInitialContactSpeaker != null) {
+                val ac = withoutTx.aircraft[pilotInitialContactSpeaker]
+                val mission = ac?.pilotMission
+                if (ac != null && mission != null && !mission.contactedOnFrequency) {
+                    val updatedAc = ac.copy(
+                        pilotMission = mission.copy(contactedOnFrequency = true),
+                    )
+                    withoutTx.copy(
+                        aircraft = LinkedHashMap(withoutTx.aircraft).apply {
+                            put(pilotInitialContactSpeaker, updatedAc)
+                        },
+                    )
+                } else withoutTx
+            } else withoutTx
+            withMissionAcked.copy(controllerInbox = nextInbox) to emptyList()
         }
     }
 }
@@ -344,10 +510,12 @@ private fun receivedMessageFrom(tx: InFlightTransmission): ReceivedMessage? {
 }
 
 /**
- * Pilot has finished processing a delivered controller transmission. Apply
- * the effect to aircraft state (for 4d only [TaxiTo] has a world-side
- * effect), then schedule the readback transmission after a short prep delay
- * if the instruction demands one.
+ * Pilot has finished processing a delivered controller transmission. Dispatch
+ * by [ControllerOutput] variant: [ControllerOutput.Instruct] applies world
+ * effects + processes the mission state + schedules readback;
+ * [ControllerOutput.Respond] runs the pilot-side response handler from
+ * Pass 3 (`processControllerResponse`) and schedules any returned
+ * transmission (e.g. a corrected readback after [ReadbackCorrection]).
  */
 private fun handlePilotProcessingComplete(
     state: SimState,
@@ -356,9 +524,18 @@ private fun handlePilotProcessingComplete(
     val ac = state.aircraft[event.aircraftId] ?: return state to emptyList()
     val fromController = event.utterance as? Utterance.FromController
         ?: return state to emptyList()
-    val instruct = fromController.output as? ControllerOutput.Instruct
-        ?: return state to emptyList()
+    return when (val output = fromController.output) {
+        is ControllerOutput.Instruct -> handleInstructFromController(state, ac, output, event.time)
+        is ControllerOutput.Respond -> handleRespondFromController(state, ac, output, event.time)
+    }
+}
 
+private fun handleInstructFromController(
+    state: SimState,
+    ac: AircraftState,
+    instruct: ControllerOutput.Instruct,
+    eventTime: SimTime,
+): Pair<SimState, List<SimEvent>> {
     // Resolve the receiving controller BEFORE applying the instruction. For
     // [ContactFrequency] the apply step transfers responsibility to a new role,
     // but the readback ("ground one-two-one-eight, ALPHA") is spoken on the
@@ -371,12 +548,13 @@ private fun handlePilotProcessingComplete(
     var afterApply = applyPilotHeardInstruction(state, ac, instruct.instruction)
     // Cognitive pilot: update mission based on received instruction.
     val missionAc = afterApply.aircraft[ac.id]
-    if (missionAc?.pilotMission != null) {
-        val updatedMission = processInstruction(instruct.instruction, missionAc.pilotMission, state.now)
+    val priorMission = missionAc?.pilotMission
+    if (missionAc != null && priorMission != null) {
+        val updatedMission = processInstruction(instruct.instruction, priorMission, state.now, state.worldIndex)
         val updatedAc = missionAc.copy(pilotMission = updatedMission)
         afterApply = afterApply.copy(aircraft = LinkedHashMap(afterApply.aircraft).apply { put(ac.id, updatedAc) })
     }
-    val readback = buildReadback(instruct.instruction)
+    val readback = buildReadback(instruct.instruction).getOrNull()
         ?: return afterApply to emptyList()
 
     val utterance = Utterance.FromPilot(readback)
@@ -386,7 +564,7 @@ private fun handlePilotProcessingComplete(
     // this, a ReadBackCorrect queued behind the original instruction will
     // overlap the readback, causing both to be stepped-on and the readback
     // to never reach the controller.
-    val earliestReadback = event.time + CommsConstants.PILOT_READBACK_PREP
+    val earliestReadback = eventTime + CommsConstants.PILOT_READBACK_PREP
     val readbackStartAt = maxOf(
         earliestReadback,
         pilotFrequencyFreeFrom(withReadbackId, controller.frequency, earliestReadback),
@@ -430,6 +608,58 @@ private fun handlePilotProcessingComplete(
 }
 
 /**
+ * Pass 3 — pilot reaction to a [ControllerOutput.Respond]. Calls the
+ * pilot-cognitive [processControllerResponse] and schedules the returned
+ * transmission (if any) as a fresh [InFlightTransmission] on the current
+ * frequency. Listen-before-talk and `PILOT_READBACK_PREP` mirror the
+ * Instruct path's discipline.
+ *
+ * Today only [ReadbackCorrection] produces a non-`None` transmission
+ * (a corrected readback for `correction.correct`); the other 11
+ * `ControllerResponse` leaves are cognitive-only and emit nothing.
+ */
+private fun handleRespondFromController(
+    state: SimState,
+    ac: AircraftState,
+    respond: ControllerOutput.Respond,
+    eventTime: SimTime,
+): Pair<SimState, List<SimEvent>> {
+    val controller = responsibleController(state, ac.id)
+        ?: return state to emptyList()
+    val priorMission = ac.pilotMission ?: return state to emptyList()
+    val reaction = processControllerResponse(respond.response, priorMission)
+
+    // Functional update of mission: pilot's planning state may have changed
+    // (today no Respond leaf changes it, but the contract is in place).
+    val updatedAc = ac.copy(pilotMission = reaction.mission)
+    val afterMission = state.copy(
+        aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, updatedAc) },
+    )
+
+    // No transmission to schedule — pilot reaction was silent.
+    val tx = reaction.transmission.getOrNull() ?: return afterMission to emptyList()
+
+    // Schedule the pilot-side transmission (e.g. corrected readback).
+    val (withTxId, txId) = afterMission.mintTransmissionId()
+    val utterance = Utterance.FromPilot(tx)
+    val earliestStart = eventTime + CommsConstants.PILOT_READBACK_PREP
+    val startAt = maxOf(
+        earliestStart,
+        pilotFrequencyFreeFrom(withTxId, controller.frequency, earliestStart),
+    )
+    val inflight = InFlightTransmission(
+        id = txId,
+        speaker = SpeakerRef.Pilot(ac.id),
+        receiver = ReceiverRef.Controller(controller.id),
+        frequency = controller.frequency,
+        utterance = utterance,
+        startedAt = startAt,
+        endsAt = startAt + utteranceDuration(utterance),
+    )
+    return withTxId.emit(listOf(SimEvent.TransmissionStart(time = inflight.startedAt, transmission = inflight)))
+}
+
+/**
  * Apply the world-side effect of an instruction the pilot has just heard.
  *
  * Instructions with a sim-side effect:
@@ -444,46 +674,121 @@ private fun handlePilotProcessingComplete(
  *   - [ContactFrequency] (4e-A) — transfers responsibility for [ac] from the
  *     current controller to the controller at the target role / frequency.
  *
- * **On the `else` branch.** [AtcInstruction] is a sealed hierarchy with ~60
- * data classes; a full exhaustive match is infeasible while most instruction
- * categories have no Phase-4 sim effect. The default is therefore an explicit
- * opt-in: the pilot still builds and transmits a readback via [buildReadback],
- * but the sim world does not change. Every new instruction *with* a sim-side
- * effect must be added to the [when] above — if you add a new concrete
- * instruction and forget to wire it, the pilot will correctly acknowledge it
- * but nothing will happen physically. That is the intended semantics until
- * each instruction family gets its own slice.
+ * **Per-leaf exhaustive over [AtcInstruction].** Every concrete leaf is matched
+ * explicitly — never via a sealed-category arm (`is GroundInstruction -> state`).
+ * Category absorption is the diamond-hierarchy hazard: many leaves implement
+ * multiple sealed sub-interfaces, so the first matching arm wins by source
+ * order, and a new leaf added to one of the absorbed categories silently slides
+ * through with no-op behaviour. ExhaustivenessTest (pilot/jvmTest) prevents
+ * regression to category-arm absorption. Adding a new [AtcInstruction] subtype
+ * here is a compile error.
  */
+@Suppress("CyclomaticComplexMethod", "LongMethod") // ~98-arm exhaustive when over the AtcInstruction sealed hierarchy
 private fun applyPilotHeardInstruction(
     state: SimState,
     ac: AircraftState,
     instruction: AtcInstruction,
 ): SimState = when (instruction) {
-    // Leaf types with sim-side effects — matched first.
+    // Leaf types with sim-side effects.
     is TaxiTo -> applyTaxiTo(state, ac, instruction)
     is LineUpAndWait -> applyLineUpAndWait(state, ac, instruction)
     is ClearedForTakeoff -> applyClearedForTakeoff(state, ac, instruction)
     is AfterLandingVacateVia -> applyAfterLandingVacateVia(state, ac, instruction)
+    is BacktrackRunway -> applyBacktrackRunway(state, ac, instruction)
     is ContactFrequency -> applyContactFrequency(state, ac, instruction)
-    // Category interfaces — remaining members have no Phase-4 sim effect.
-    // Leaf types with effects (above) are matched first; these catch the rest.
-    is Clearance -> state
-    is GroundInstruction -> state
-    is RunwayInstruction -> state
-    is RouteInstruction -> state
-    is VectorInstruction -> state
-    is LevelInstruction -> state
-    is SpeedInstruction -> state
-    is ApproachInstruction -> state
-    is ReportInstruction -> state
-    is FrequencyInstruction -> state
-    is SurveillanceInstruction -> state
-    is SequencingInstruction -> state
-    is AerodromeInstruction -> state
-    is EmergencyInstruction -> state
-    // Uncategorised instructions (SetPressure, CancelClearance, Disregard, etc.)
-    // that implement AtcInstruction directly without an intermediate interface.
-    else -> state
+    // No-op leaves — pilot acknowledges, sim world does not change.
+    is AfterPassingLevelClimbTo -> state
+    is AfterPassingLevelDescendTo -> state
+    is AirTaxiTo -> state
+    is AvoidArea -> state
+    is AvoidLevel -> state
+    is BreakOff -> state
+    is CancelClearance -> state
+    is ClearedApproach -> state
+    is ClearedLowApproach -> state
+    is ClearedTo -> state
+    is ClearedToEnterControlZone -> state
+    is ClearedToLand -> state
+    is ClearedTouchAndGo -> state
+    is ClearedVisualApproach -> state
+    is ClimbTo -> state
+    is CommenceApproachAt -> state
+    is ConditionalClearance -> state
+    is ConfirmSquawk -> state
+    is ContinueApproach -> state
+    is ContinuePresentHeading -> state
+    is CrossRunway -> state
+    is DescendTo -> state
+    is DescendWhenReady -> state
+    is Disregard -> state
+    is DivertTo -> state
+    is ExpediteClimb -> state
+    is ExpediteDescend -> state
+    is ExpediteTaxi -> state
+    is ExtendDownwind -> state
+    is FlyHeading -> state
+    is FollowTraffic -> state
+    is GiveWayToTraffic -> state
+    is GoAround -> state
+    is HoldAt -> state
+    is HoldPosition -> state
+    is HoldPositionCancelTakeoff -> state
+    is HoldShortOf -> state
+    is IncreaseSpeedTo -> state
+    is InterceptLocaliser -> state
+    is JoinAirway -> state
+    is JoinCircuit -> state
+    is LeaveHoldProceedDirect -> state
+    is MaintainAltitudeUntilEstablished -> state
+    is MaintainAtOrAbove -> state
+    is MaintainAtOrBelow -> state
+    is MaintainLevel -> state
+    is MaintainSpeed -> state
+    is MaintainVisualSeparation -> state
+    is MakeAnotherCircuit -> state
+    is MakeLongApproach -> state
+    is MakeShortApproach -> state
+    is MinimumCleanSpeed -> state
+    is MonitorFrequency -> state
+    is NumberInSequence -> state
+    is Orbit -> state
+    is ProceedDirect -> state
+    is PushbackApproved -> state
+    is PushbackFace -> state
+    is ReduceSpeedTo -> state
+    is ReduceTaxiSpeed -> state
+    is RejoinSidAt -> state
+    is RemainOutsideControlledAirspace -> state
+    is ReportIntentions -> state
+    is ReportTrafficInSight -> state
+    is ReportWhen -> state
+    is ResumeNormalSpeed -> state
+    is ResumeOwnNavigation -> state
+    is RouteAsFiled -> state
+    is RunwayInUseAdvisory -> state
+    is SetPressure -> state
+    is SetSquawk -> state
+    is SpecialVfrClearance -> state
+    is SquawkIdent -> state
+    is SquawkNormal -> state
+    is SquawkStandby -> state
+    is StartupApproved -> state
+    is StopClimbAt -> state
+    is StopDescentAt -> state
+    is StopImmediately -> state
+    is StopSquawk -> state
+    is StopTurn -> state
+    is TakeoffImmediatelyOrHoldShort -> state
+    is TakeoffImmediatelyOrVacateRunway -> state
+    is TaxiIntoHoldingBay -> state
+    is TaxiViaRunway -> state
+    is TaxiWithCaution -> state
+    is TransitionLevelIssuance -> state
+    is TurnBase -> state
+    is TurnByDegrees -> state
+    is TurnHeading -> state
+    is VacateRunway -> state
+    is WhenAbleProceedDirect -> state
 }
 
 private fun applyTaxiTo(state: SimState, ac: AircraftState, instruction: TaxiTo): SimState {
@@ -522,9 +827,8 @@ private fun applyLineUpAndWait(
  */
 internal fun buildDepartureRoute(
     world: xyz.easiersaid.twr.core.world.AviationWorld,
-    worldIndex: WorldIndex,
     runwayId: RunwayId,
-): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world, worldIndex).getOrNull()
+): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world).getOrNull()
 
 /**
  * "Cleared for takeoff" at the threshold: switch to a departure route and
@@ -535,7 +839,7 @@ private fun applyClearedForTakeoff(
     ac: AircraftState,
     instruction: ClearedForTakeoff,
 ): SimState {
-    val route = buildDepartureRoute(state.world, state.worldIndex, instruction.runway)
+    val route = buildDepartureRoute(state.world, instruction.runway)
         ?: return state
     val updated = ac.copy(
         phase = PilotPhase.TakeoffRoll,
@@ -543,6 +847,32 @@ private fun applyClearedForTakeoff(
         targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
         targetAltitudeM = CIRCUIT_ALTITUDE_M,
     )
+    val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, updated) }
+    return state.copy(aircraft = aircraft)
+}
+
+/**
+ * "Backtrack runway": pilot taxis along the runway to a holding point that
+ * exits onto a taxiway. For G0 / single-runway airfields the controller may
+ * issue [BacktrackRunway] in lieu of [AfterLandingVacateVia] when there is
+ * no specific exit taxiway near the landing position. The sim treats both
+ * the same way: write a ground route off the runway. The destination is
+ * either [BacktrackRunway.vacateAt] when explicit, or the nearest holding
+ * point for the runway, or the runway threshold itself as a degenerate
+ * fallback.
+ */
+private fun applyBacktrackRunway(
+    state: SimState,
+    ac: AircraftState,
+    instruction: BacktrackRunway,
+): SimState {
+    val destination = instruction.vacateAt
+        ?: state.worldIndex.holdingPointsByRunway[instruction.runway]?.firstOrNull()
+        ?: return state
+    if (state.worldIndex.positions[destination] == null) return state
+    val waypoints = NonEmptyList(destination, emptyList())
+    val route = PilotRoute.Ground(waypoints = waypoints, arrivalPhase = PilotPhase.ClearOfRunway)
+    val updated = ac.copy(route = route)
     val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, updated) }
     return state.copy(aircraft = aircraft)
 }
@@ -572,90 +902,26 @@ private fun applyAfterLandingVacateVia(
 }
 
 /**
- * Typed errors raised by [transferResponsibility].
- */
-sealed interface TransferError {
-    /** No controller at [aerodrome] holds the [role]; the strict transfer
-     *  cannot resolve a target. Callers that legitimately want to release
-     *  responsibility into the void use [releaseResponsibility] instead. */
-    data class TargetUnresolved(
-        val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
-        val role: RoleName,
-    ) : TransferError
-}
-
-/**
- * Strict responsibility transfer. Removes [ac] from any controller currently
- * holding it (regardless of aerodrome — supports cross-aerodrome pilot-
- * initiated transfers) and adds [ac] to the controller at [toAerodrome] with
- * [toRole]. Returns [TransferError.TargetUnresolved] if no such controller
- * exists.
+ * Apply a `ContactFrequency` instruction: transfer responsibility for [ac] from
+ * the current owning controller to the controller at the same aerodrome with
+ * the target role.
  *
- * For the explicit "drop into the void" case (e.g. LOWG → FIS where no FIS
- * controller is modelled), call [releaseResponsibility]. Distinguishing the
- * two is intentional: a typo'd `RoleName` should not silently strip
- * responsibility (round-3 impact-review finding). When the caller really
- * means "no target," they say so.
- */
-internal fun transferResponsibility(
-    state: SimState,
-    ac: AircraftId,
-    toAerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
-    toRole: RoleName,
-): arrow.core.Either<TransferError, SimState> {
-    val target = state.controllers.values
-        .firstOrNull { it.aerodromeId == toAerodrome && it.role == toRole }
-        ?: return arrow.core.Either.Left(TransferError.TargetUnresolved(toAerodrome, toRole))
-    val controllersMap = LinkedHashMap(state.controllers)
-    state.controllers.values.firstOrNull { ac in it.responsibilities }?.let { current ->
-        controllersMap[current.id] = current.copy(responsibilities = current.responsibilities - ac)
-    }
-    controllersMap[target.id] = target.copy(responsibilities = target.responsibilities + ac)
-    return arrow.core.Either.Right(state.copy(controllers = controllersMap))
-}
-
-/**
- * Explicit drop: removes [ac] from any controller currently holding it,
- * leaving the aircraft unmanaged. Used for the "release into the void" case
- * — e.g. LOWG TWR sending `ContactFrequency` to a FIS frequency on which no
- * controller is modelled.
+ * Both unhappy branches are loud failures. They correspond to invariant
+ * violations the simulation cannot recover from gracefully:
  *
- * This is total: there is no failure case. The aircraft was either owned (now
- * released) or already unowned (no-op).
- */
-internal fun releaseResponsibility(
-    state: SimState,
-    ac: AircraftId,
-): SimState {
-    val current = state.controllers.values.firstOrNull { ac in it.responsibilities }
-        ?: return state
-    val controllersMap = LinkedHashMap(state.controllers)
-    controllersMap[current.id] = current.copy(responsibilities = current.responsibilities - ac)
-    return state.copy(controllers = controllersMap)
-}
-
-/**
- * Roles for which an unresolved `ContactFrequency` target is interpreted
- * as "release the aircraft into the void" rather than an error. Currently
- * only [RoleName.AFIS] — the closest model for a flight-information-service
- * station that the simulation does not have a controller for (e.g. Wien
- * Information on the LOWG → LJMB outbound transit). All other roles are
- * "should resolve to a target controller"; failure to do so is a defect.
- */
-private val RELEASABLE_ROLES: Set<RoleName> = setOf(RoleName.AFIS)
-
-/**
- * Controller-initiated responsibility transfer triggered by a `ContactFrequency`
- * instruction. Same-aerodrome by construction: the target controller is at the
- * current owner's aerodrome with the requested role. If no target controller
- * exists for `(currentAerodrome, instruction.role)`:
- *  - If [instruction.role] is in [RELEASABLE_ROLES], release the aircraft
- *    explicitly (round-3 impact-review fix: was previously a silent fall-
- *    through that masked typo'd or stale-enum role values).
- *  - Otherwise, [error] — the controller asked for a target that isn't
- *    modelled and isn't a documented release intent.
+ *  - **No current owner.** A `ContactFrequency` is being processed for an
+ *    aircraft that no controller holds. Either responsibility was stripped
+ *    earlier without a corresponding handoff, or the inbox was fed an
+ *    instruction for an unowned aircraft. Either way it is a wiring defect.
+ *  - **No target controller.** The issuing controller asked to hand over to a
+ *    role that is not staffed at this aerodrome. That is a world-config
+ *    defect — a procedure rule should never emit `ContactFrequency(role=X)`
+ *    when `X` has no controller modelled for the source aerodrome.
  *
- * Returns the state unchanged if no controller currently holds [ac].
+ * The previous lenient form returned `state` on either branch, silently
+ * leaving the aircraft on the old controller while the pilot dutifully
+ * switched frequencies — a wedge that surfaced only as "the simulation hangs."
+ * The no-corners rule applies: surface the defect at the call site.
  */
 private fun applyContactFrequency(
     state: SimState,
@@ -663,27 +929,23 @@ private fun applyContactFrequency(
     instruction: ContactFrequency,
 ): SimState {
     val current = state.controllers.values.firstOrNull { ac.id in it.responsibilities }
-        ?: return state  // No current owner — defined no-op (no aircraft to transfer).
-    return transferResponsibility(
-        state = state,
-        ac = ac.id,
-        toAerodrome = current.aerodromeId,
-        toRole = instruction.role,
-    ).fold(
-        ifLeft = { err ->
-            if (instruction.role in RELEASABLE_ROLES) {
-                releaseResponsibility(state, ac.id)
-            } else {
-                error(
-                    "applyContactFrequency: target ${instruction.role} not resolved at " +
-                        "${current.aerodromeId} and not in RELEASABLE_ROLES. " +
-                        "Caller should target an existing role or use AFIS for a deliberate release. " +
-                        "Underlying: $err",
-                )
-            }
-        },
-        ifRight = { it },
-    )
+        ?: error(
+            "applyContactFrequency: no controller currently holds ${ac.id}; " +
+                "instruction ${instruction.role} can't be processed. " +
+                "This is a wiring defect — responsibility was stripped without a handoff.",
+        )
+    val target = state.controllers.values
+        .firstOrNull { it.aerodromeId == current.aerodromeId && it.role == instruction.role }
+        ?: error(
+            "applyContactFrequency: target ${instruction.role} not staffed at ${current.aerodromeId}; " +
+                "current owner is ${current.id}. " +
+                "This is a world-config defect — the issuing rule should not emit ContactFrequency " +
+                "for a role that has no controller modelled at this aerodrome.",
+        )
+    val controllersMap = LinkedHashMap(state.controllers)
+    controllersMap[current.id] = current.copy(responsibilities = current.responsibilities - ac.id)
+    controllersMap[target.id] = target.copy(responsibilities = target.responsibilities + ac.id)
+    return state.copy(controllers = controllersMap)
 }
 
 private fun runwayThreshold(
@@ -698,13 +960,6 @@ private fun deriveArrivalPhase(worldIndex: WorldIndex, destination: PointId): Pi
     val entities = worldIndex.entitiesByPoint[destination] ?: emptySet()
     if (entities.any { it is EntityRef.StandRef }) return PilotPhase.Parked
     return PilotPhase.HoldingShort
-}
-
-private fun buildReadback(instruction: AtcInstruction): Readback? {
-    val atoms = xyz.easiersaid.twr.controller.observe.requiredReadbackAtoms(instruction)
-    if (atoms.isEmpty()) return null
-    val elements = atoms.map<_, ReadbackElement> { SimpleElement(it) }
-    return Readback(elements = elements)
 }
 
 /**

@@ -1,3 +1,6 @@
+@file:Suppress("TooManyFunctions") // file groups all per-instruction resolution logic; splitting
+// fragments the instruction → resolved-instruction surface that callers depend on.
+
 package xyz.easiersaid.twr.core.resolution
 
 import xyz.easiersaid.twr.core.world.Aerodrome
@@ -287,7 +290,6 @@ data class ResolvedVectorInstruction(
 
 fun AviationWorld.resolveContinueApproach(
     context: AerodromeResolutionContext,
-    instruction: ContinueApproach
 ): ResolutionResult<ResolvedContinueApproachInstruction> {
     val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
         ResolutionFailureCode.UNKNOWN_AERODROME,
@@ -318,7 +320,6 @@ fun AviationWorld.resolveContinueApproach(
 
 fun AviationWorld.resolveExtendDownwind(
     context: AerodromeResolutionContext,
-    instruction: ExtendDownwind
 ): ResolutionResult<ResolvedExtendedDownwindInstruction> {
     val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
         ResolutionFailureCode.UNKNOWN_AERODROME,
@@ -347,6 +348,8 @@ fun AviationWorld.resolveExtendDownwind(
     )
 }
 
+@Suppress("ReturnCount") // guard-clause early returns enumerate the resolution preconditions;
+// each named failure is more diagnostic than a folded single-expression alternative.
 fun AviationWorld.resolveOrbit(
     context: AerodromeResolutionContext,
     instruction: Orbit
@@ -549,6 +552,8 @@ fun AviationWorld.resolveCrossRunway(
     )
 }
 
+@Suppress("ReturnCount") // guard-clause early returns enumerate the approach-resolution
+// preconditions (aerodrome / approach / runway / waypoints / threshold).
 fun AviationWorld.resolveClearedApproach(
     context: AerodromeResolutionContext,
     instruction: ClearedApproach
@@ -622,7 +627,6 @@ fun AviationWorld.resolveClearedTo(
     val routePoints = when (resolvedRoute) {
         is arrow.core.Either.Left -> return resolvedRoute
         is arrow.core.Either.Right -> routePointsForClearance(
-            aerodrome = aerodrome,
             route = resolvedRoute.value,
             clearanceLimit = clearanceLimit
         )
@@ -808,7 +812,9 @@ private fun resolvePublishedHandoff(
         1 -> resolved(matchingContext.single())
         else -> unresolved(
             ResolutionFailureCode.AMBIGUOUS_PUBLISHED_HANDOFF,
-            "Aerodrome ${aerodrome.icao.value} declares multiple ${handoffAction.name.lowercase()} handoffs from ${currentRole.name} to ${targetRole.name} without enough context to disambiguate"
+            "Aerodrome ${aerodrome.icao.value} declares multiple " +
+                "${handoffAction.name.lowercase()} handoffs from " +
+                "${currentRole.name} to ${targetRole.name} without enough context to disambiguate"
         )
     }
 }
@@ -914,7 +920,6 @@ private fun resolveAirspaceRouteInteraction(
 }
 
 private fun AviationWorld.routePointsForClearance(
-    aerodrome: Aerodrome,
     route: ResolvedRouteSpec,
     clearanceLimit: Fix
 ): List<PointId> =

@@ -1,3 +1,6 @@
+@file:Suppress("TooManyFunctions") // file groups all clearance-resolution helpers
+// (per-instruction-step + state threading) — splitting fragments the resolution pipeline.
+
 package xyz.easiersaid.twr.core.clearance
 
 import xyz.easiersaid.twr.core.resolution.AerodromeResolutionContext
@@ -179,6 +182,8 @@ private fun StructuredClearance.normalizeCompoundConditional(
     return arrow.core.Either.Right(this)
 }
 
+@Suppress("CyclomaticComplexMethod") // sealed dispatch over AtcInstruction; complexity is
+// intrinsic to the leaf count, each arm is a one-line call to a focused helper.
 private fun AviationWorld.resolveStep(
     context: ClearanceResolutionContext,
     clearance: StructuredClearance,
@@ -654,7 +659,6 @@ private fun AviationWorld.resolveContinueApproachStep(
                 aerodromeId = context.aerodromeId,
                 currentApproach = state.currentApproach ?: context.currentApproach
             ),
-            instruction
         )
     ) {
         is arrow.core.Either.Left -> result
@@ -873,7 +877,6 @@ private fun AviationWorld.resolveExtendDownwindStep(
                 aerodromeId = context.aerodromeId,
                 currentCircuit = state.currentCircuit ?: context.currentCircuit
             ),
-            instruction
         )
     ) {
         is arrow.core.Either.Left -> result

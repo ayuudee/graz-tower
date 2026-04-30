@@ -1,3 +1,7 @@
+@file:Suppress("MaxLineLength") // override fun resolve(ac, commitment, ctx): Either<...> signature
+// repeats across every RuleAction; tabular form keeps them grep-able and visually aligned.
+// Wrapping each signature would add 4 lines × ~12 actions of noise without changing comprehension.
+
 package xyz.easiersaid.twr.controller.bdi
 
 import arrow.core.Either
@@ -5,7 +9,32 @@ import arrow.core.right
 import arrow.core.left
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.assess.RunwayOperation
-import xyz.easiersaid.twr.protocol.*
+import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.BacktrackRunway
+import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ConditionalPredicate
+import xyz.easiersaid.twr.protocol.ContactFrequency
+import xyz.easiersaid.twr.protocol.ContinueApproach
+import xyz.easiersaid.twr.protocol.ContinueApproachReason
+import xyz.easiersaid.twr.protocol.ExtendDownwind
+import xyz.easiersaid.twr.protocol.GoAround
+import xyz.easiersaid.twr.protocol.HoldPosition
+import xyz.easiersaid.twr.protocol.HoldPositionCancelTakeoff
+import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.ReportWhen
+import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TrafficAction
+import xyz.easiersaid.twr.protocol.TrafficRef
+import xyz.easiersaid.twr.protocol.TurnBase
 
 /** Failure when an action cannot resolve against the world. */
 data class ActionResolutionFailure(val reason: String)
@@ -103,10 +132,16 @@ data object ConditionalLineUpAction : RuleAction {
             ?: return ActionResolutionFailure("No runway observation for $rwy").left()
         val occupant = rwyObs.occupants.firstOrNull { it != ac.id }
             ?: return ActionResolutionFailure("No occupant to condition on").left()
-        val occupantObs = ctx.beliefs.trackedAircraft[occupant]
         val trafficRef = resolveTrafficRef(occupant, ctx.beliefs)
-        val action = if (occupantObs?.pilotGoal == xyz.easiersaid.twr.controller.PilotGoal.ARRIVE ||
-            occupantObs?.pilotGoal == xyz.easiersaid.twr.controller.PilotGoal.TOUCH_AND_GO)
+        // Classify the runway occupant by the controller's belief about its
+        // service intent, not by reading the pilot's internal goal.
+        // Arriving aircraft (or circuit traffic that has declared T&G — they
+        // will land then lift off again) appear as LANDING traffic to the
+        // conditional clearance. Defaults to DEPARTING when intent is unknown.
+        val occupantIntent = ctx.intentOf(occupant)
+        val occupantIsCircuit = occupant in ctx.beliefs.circuitIntent
+        val action = if (occupantIntent == xyz.easiersaid.twr.controller.observe.AircraftIntent.Arriving ||
+            occupantIsCircuit)
             TrafficAction.LANDING else TrafficAction.DEPARTING
         return ProposedAction(
             aircraft = ac.id,
@@ -267,12 +302,18 @@ fun resolveTrafficRef(acId: AircraftId, beliefs: xyz.easiersaid.twr.controller.o
     return TrafficRef.ByCallsign(ac?.callsign ?: Callsign(acId.value))
 }
 
-/** Describe traffic for phraseology: "Cessna on final" or just callsign if no type known. */
+/**
+ * Describe traffic for phraseology: e.g. "on final" or just callsign.
+ *
+ * Previously included aircraft type ("Cessna on final"), pulled from
+ * [AircraftObservation.typeDescription] which was always null and was a
+ * firewall-leak shape. Type description must come from a typed channel
+ * (radio "we are a Cessna 172" or registration database) when authored.
+ */
 fun describeTraffic(acId: AircraftId, beliefs: xyz.easiersaid.twr.controller.observe.BeliefState, worldIndex: xyz.easiersaid.twr.core.world.WorldIndex): String {
     val ac = beliefs.trackedAircraft[acId] ?: return acId.value
-    val type = ac.typeDescription ?: ""
     val leg = worldIndex.circuitLegsByPoint[ac.position]?.firstOrNull()?.name?.lowercase() ?: ""
-    return listOf(type, leg).filter { it.isNotEmpty() }.joinToString(" on ").ifEmpty { ac.callsign.value }
+    return if (leg.isNotEmpty()) "on $leg" else ac.callsign.value
 }
 
 /** Pick the point from candidates nearest to the reference point. Deterministic by position. */
@@ -375,8 +416,10 @@ private fun describeMovement(
     val onRunway = other.entities.any { it is xyz.easiersaid.twr.core.world.EntityRef.RunwayRef }
     val legs = ctx.worldIndex.circuitLegsByPoint[other.position] ?: emptySet()
     val legPhrase = legs.firstOrNull()?.name?.lowercase()
+    val intent = ctx.intentOf(other.id)
+    val isDeparting = intent == xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing
     return when {
-        onRunway && other.onGround && other.pilotGoal == xyz.easiersaid.twr.controller.PilotGoal.DEPART -> "rolling"
+        onRunway && other.onGround && isDeparting -> "rolling"
         onRunway && other.onGround -> "on the runway"
         !other.onGround && legPhrase != null -> legPhrase
         !other.onGround -> "airborne"
