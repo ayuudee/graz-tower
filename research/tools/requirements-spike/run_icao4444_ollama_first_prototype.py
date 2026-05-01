@@ -1142,7 +1142,7 @@ def render_summary(
     extraction_attempt_count: int,
     requirement_result: dict[str, Any],
     judged_candidates: list[dict[str, Any]],
-    max_candidates: int,
+    requested_candidate_count: int,
 ) -> str:
     def final_decision(item: dict[str, Any]) -> dict[str, Any]:
         return item.get("judgeForRecord") or item["judge"]
@@ -1158,7 +1158,7 @@ def render_summary(
         f"- extractionAttempts: `{extraction_attempt_count}`",
         f"- extractionModel: `{requirement_result['model']}`",
         f"- candidateCount: `{len(requirement_result['parsed']['candidates'])}`",
-        f"- judgedCandidateCount: `{len(judged_candidates)}` of `{min(len(requirement_result['parsed']['candidates']), max_candidates)}` requested",
+        f"- judgedCandidateCount: `{len(judged_candidates)}` of `{requested_candidate_count}` requested",
         f"- acceptedCount: `{len(accepted)}`",
         "",
         "## Structure",
@@ -1179,6 +1179,14 @@ def render_summary(
     return "\n".join(lines) + "\n"
 
 
+def resolve_candidate_judge_limit(*, max_candidates: int, candidate_count: int) -> int:
+    if max_candidates < 0:
+        raise SystemExit("--max-candidates must be >= 0; use 0 to judge all candidates")
+    if max_candidates == 0:
+        return candidate_count
+    return min(candidate_count, max_candidates)
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
@@ -1194,7 +1202,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--judge-model", default="qwen3.6:35b-a3b")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--num-ctx", type=int, default=24576)
-    parser.add_argument("--max-candidates", type=int, default=20)
+    parser.add_argument("--max-candidates", type=int, default=0, help="maximum candidates to judge; 0 judges all")
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
     parser.add_argument("--json-repair-attempts", type=int, default=1)
@@ -1297,7 +1305,12 @@ def run_pipeline(
     write_json(output_dir / "requirement_response.json", requirement_result)
     require_fields(requirement_result["parsed"], ["caseId", "candidates"], stage="reconcile")
 
-    candidates_to_judge = list(requirement_result["parsed"]["candidates"][: args.max_candidates])
+    all_candidates = list(requirement_result["parsed"]["candidates"])
+    candidate_judge_limit = resolve_candidate_judge_limit(
+        max_candidates=args.max_candidates,
+        candidate_count=len(all_candidates),
+    )
+    candidates_to_judge = all_candidates[:candidate_judge_limit]
     for candidate in candidates_to_judge:
         require_fields(
             candidate,
@@ -1508,6 +1521,7 @@ def run_pipeline(
         "judgeModel": args.judge_model,
         "numCtx": args.num_ctx,
         "maxCandidates": args.max_candidates,
+        "candidateJudgeLimit": candidate_judge_limit,
         "structureAttempts": args.structure_attempts,
         "extractionAttempts": args.extraction_attempts,
         "jsonRepairAttempts": json_repair_attempts,
@@ -1556,7 +1570,7 @@ def run_pipeline(
             extraction_attempt_count=args.extraction_attempts,
             requirement_result=requirement_result,
             judged_candidates=judged_candidates,
-            max_candidates=args.max_candidates,
+            requested_candidate_count=candidate_judge_limit,
         ),
     )
     return manifest

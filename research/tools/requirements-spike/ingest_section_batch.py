@@ -174,7 +174,7 @@ def main() -> int:
     parser.add_argument("--stop-on-failure", action="store_true")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--num-ctx", type=int, default=24576)
-    parser.add_argument("--max-candidates", type=int, default=20)
+    parser.add_argument("--max-candidates", type=int, default=0, help="maximum candidates to judge per section; 0 judges all")
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
     parser.add_argument("--json-repair-attempts", type=int, default=1)
