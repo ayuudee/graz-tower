@@ -278,5 +278,20 @@ class LowgGoldenTest {
                 "the GND-TAXI-STAND rule not winning over GND-TAXI in priority order; or the\n" +
                 "party-line frequency broadcast has regressed to single-receiver routing.\n$journey"
         }
+        // Pass 6 post-impl (Test-F.2): pin destination membership too.
+        // Type-only assertion would pass for `TaxiToStand(destination=HOLD_A4)`
+        // — a typo in GND-TAXI-STAND producing a holding-point destination
+        // under the right type would ship clean. Real ATC sending an arriving
+        // aircraft toward a holding point is the regression class to catch.
+        val standPoints = loaded.world.aerodromes
+            .getValue(xyz.easiersaid.twr.protocol.AerodromeId("LOWG"))
+            .stands.values.map { it.point }.toSet()
+        check((firstInstr as TaxiToStand).destination in standPoints) {
+            "Expected the FIRST Ground TaxiToStand's destination to be a stand point at LOWG. " +
+                "Got destination=${firstInstr.destination}; valid stand points are $standPoints.\n" +
+                "If this fires, GND-TAXI-STAND is producing a TaxiToStand with the wrong " +
+                "destination (likely a typo in TaxiToStandAction's nearestPoint over the " +
+                "stand set, or a stale point reference).\n$journey"
+        }
     }
 }

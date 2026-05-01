@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.controller.bdi.ExpectedPilotAct
 import xyz.easiersaid.twr.controller.bdi.GroundArrivalStage
 import xyz.easiersaid.twr.controller.bdi.GroundDepartureStage
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
@@ -80,6 +81,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     AtHoldingPoint,
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
+                    IsTransferTargetStaffed(RoleName.TOWER),
                 )),
                 action = HandoffAction(RoleName.TOWER),
                 advancementPolicy = AdvancementPolicy.Immediate,

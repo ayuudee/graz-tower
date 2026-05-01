@@ -263,14 +263,13 @@ private fun inferContinueApproachReason(
 /**
  * Hand the aircraft off to another role at the same aerodrome.
  *
- * Pass 6 (D-AUDIT.12): gates on [ControllerView.staffedRoles] before
- * emitting `ContactFrequency`. The aerodrome may *publish* a role (e.g.
- * APPROACH 119.300 at LOWG) without that role being *staffed* in the
- * current run; targeting an unstaffed role would crash the sim's
- * `applyContactFrequency`. If the target role is published-but-unstaffed,
- * the action defers (returns `ActionResolutionFailure`) and the rule keeps
- * its commitment — a real controller in the same situation would either
- * keep talking to the aircraft or transfer to whoever is actually online.
+ * Pass 6 (D-AUDIT.12): introduces the published-vs-staffed distinction.
+ * Pass 6 post-impl (Impact-M.2): the staffing check moved to the rule-level
+ * `IsTransferTargetStaffed` guard so the rule itself doesn't fire when
+ * the target is unstaffed. This action is then total over its inputs —
+ * the rule guards have done the gating. The action's only failure modes
+ * left are world-config defects (aerodrome missing or role unpublished),
+ * which would never reach a runtime sim that has been validated.
  */
 data class HandoffAction(val toRole: RoleName) : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {
@@ -278,12 +277,6 @@ data class HandoffAction(val toRole: RoleName) : RuleAction {
             ?: return ActionResolutionFailure("Aerodrome ${ctx.view.aerodromeId} not found").left()
         val role = aerodrome.roles[toRole]
             ?: return ActionResolutionFailure("No ${toRole.name} role at ${ctx.view.aerodromeId}").left()
-        if (toRole !in ctx.view.staffedRoles) {
-            return ActionResolutionFailure(
-                "${toRole.name} is published at ${ctx.view.aerodromeId} but unstaffed in this run; " +
-                    "deferring handoff to avoid a wedge.",
-            ).left()
-        }
         return ProposedAction(ac.id, ContactFrequency(ac.id, toRole, frequency = role.frequency)).right()
     }
 }

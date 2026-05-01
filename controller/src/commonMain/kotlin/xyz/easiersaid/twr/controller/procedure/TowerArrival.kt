@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.controller.bdi.ExtendDownwindAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.InCircuit
 import xyz.easiersaid.twr.controller.bdi.InstructionMatcher
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
@@ -376,6 +377,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                     OnGround, Not(OnRunway),
                     AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
+                    IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.GROUND),
                 advancementPolicy = AdvancementPolicy.Immediate,

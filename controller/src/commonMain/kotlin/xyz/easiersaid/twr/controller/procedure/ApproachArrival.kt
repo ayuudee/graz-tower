@@ -5,6 +5,7 @@ import xyz.easiersaid.twr.controller.bdi.ApproachArrivalStage
 import xyz.easiersaid.twr.controller.bdi.AtcRule
 import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
@@ -47,6 +48,7 @@ fun approachArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     OnCircuitLeg(LegName.DOWNWIND),
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
+                    IsTransferTargetStaffed(RoleName.TOWER),
                 )),
                 action = HandoffAction(RoleName.TOWER),
                 nextStage = ApproachArrivalStage.Complete,

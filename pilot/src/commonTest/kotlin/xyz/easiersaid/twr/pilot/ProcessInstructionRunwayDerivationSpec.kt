@@ -112,6 +112,35 @@ class ProcessInstructionRunwayDerivationSpec {
         assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
     }
 
+    /**
+     * Pass 6 post-impl (Impact-M.3): the `TaxiViaRunway` arm changed from `None`
+     * (pre-Pass-6) to `Some(RunwayAssignment(runway, TaxiClearance))`. That
+     * makes the (Land, TaxiClearance) precedence cell newly reachable — pre-
+     * Pass-6 the cell was unreachable because `TaxiViaRunway` produced no
+     * assignment. This row pins the resulting transition: prior `Land` is
+     * superseded by the new `TaxiClearance` (controller's authoritative
+     * restatement), and the precedence accepts the new assignment.
+     *
+     * Without this row, a future change to `applyPrecedence` that flagged
+     * the `Land → TaxiClearance` cell as anomalous would silently start
+     * filling `mission.recentAnomalies` on every post-landing TaxiViaRunway
+     * issued — a behavioural regression invisible at run time.
+     */
+    @Test
+    fun `Land then TaxiViaRunway accepts the TaxiClearance assignment (precedence cell)`() {
+        val priorMission = freshMission.copy(
+            activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Land)),
+        )
+        val instr = TaxiViaRunway(target = aircraftId, runway = rwy16C, destination = holdingPoint16C)
+        val updated = processInstruction(instr, priorMission, SimTime.ZERO, worldIndex)
+        assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
+        assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
+        // No anomaly recorded — the cell is "controller's authoritative
+        // restatement," not flagged.
+        assertEquals(emptyList(), updated.recentAnomalies,
+            "Land → TaxiClearance is accepted; no anomaly should fire")
+    }
+
     @Test
     fun `LineUpAndWait sets activeRunway from the instruction's runway field`() {
         val instr = LineUpAndWait(target = aircraftId, runway = rwy16C)

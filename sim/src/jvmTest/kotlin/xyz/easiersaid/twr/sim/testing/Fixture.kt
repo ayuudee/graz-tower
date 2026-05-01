@@ -89,12 +89,19 @@ sealed interface FixtureViolation {
  * Named diff between expected and published frequencies. Pass 6 (FP review M.4):
  * future-proofs for 8.33 kHz channelisation tolerance — the consumer can read
  * [deltaKhz] without reaching into the pair.
+ *
+ * Pass 6 post-impl review (FP-P.2): [deltaKhz] returns [Option] rather than a
+ * `Int.MAX_VALUE` sentinel. Returning a magic sentinel from a "total" function
+ * is a partial function in disguise; the typed `Option` makes the parse-failure
+ * branch explicit. The `Frequency` smart constructor enforces the numeric
+ * invariant, so in practice this is `Some` for every well-constructed value —
+ * but defensive code at the boundary deserves the explicit shape.
  */
 data class FrequencyDelta(val expected: Frequency, val published: Frequency) {
-    val deltaKhz: Int get() {
-        val expMhz = expected.mhz.toDoubleOrNull() ?: return Int.MAX_VALUE
-        val pubMhz = published.mhz.toDoubleOrNull() ?: return Int.MAX_VALUE
-        return ((expMhz - pubMhz) * 1000.0).toInt()
+    val deltaKhz: arrow.core.Option<Int> get() {
+        val expMhz = expected.mhz.toDoubleOrNull() ?: return arrow.core.None
+        val pubMhz = published.mhz.toDoubleOrNull() ?: return arrow.core.None
+        return arrow.core.Some(((expMhz - pubMhz) * 1000.0).toInt())
     }
 }
 

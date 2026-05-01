@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.controller.bdi.ConditionalLineUpAction
 import xyz.easiersaid.twr.controller.bdi.ContactEstablished
 import xyz.easiersaid.twr.controller.bdi.ExpectedPilotAct
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.HoldPositionAction
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
 import xyz.easiersaid.twr.controller.bdi.LineUpAction
@@ -268,6 +269,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     Not(IsCircuitTraffic),
                     AircraftIntentIs(xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ContactFrequency>()),
+                    IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
                 advancementPolicy = AdvancementPolicy.Immediate,

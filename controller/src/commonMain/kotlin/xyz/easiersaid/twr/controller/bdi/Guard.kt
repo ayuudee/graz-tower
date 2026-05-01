@@ -239,6 +239,40 @@ data object IsCircuitTraffic : RuleGuard {
         ac.id in ctx.beliefs.circuitIntent
 }
 
+/**
+ * The role this rule is about to hand off to has a staffed controller at the
+ * current aerodrome.
+ *
+ * Pass 6 (post-impl Impact-M.2): the aerodrome may *publish* a role (e.g.
+ * LOWG APPROACH / GRAZ RADAR) that isn't *staffed* in the current run. Pre-
+ * Pass-6, `HandoffAction.resolve` simply failed to resolve when the target
+ * was missing from `aerodrome.roles`. Pass 6 added publication, which made
+ * "published-but-unstaffed" reachable; the inline check there returned
+ * `ActionResolutionFailure` and the rule kept retrying — silent wedge mode
+ * if no sibling rule advanced the commitment.
+ *
+ * Solution: gate the rule itself on staffing. If the target role is
+ * unstaffed, this guard is `false` and the rule doesn't fire — the
+ * commitment stays in place; the controller keeps the aircraft. The proper
+ * "no successor: terminate radar service / approve frequency change" rule
+ * (per ICAO Doc 4444 §10.1, *"radar service terminated, squawk 7000,
+ * frequency change approved"*) is **deferred as D-PF.7** — Pass 7 owns
+ * the boundary-release rule that fires when a handoff target is
+ * unreachable AND the aircraft has left the controller's airspace.
+ *
+ * Until D-PF.7 lands, this guard's failure message names what real ATC
+ * would do, so the deferment is visible in the trace, not silent.
+ */
+data class IsTransferTargetStaffed(val toRole: xyz.easiersaid.twr.protocol.RoleName) : RuleGuard {
+    override val failureMessage =
+        "${toRole.name} is published at this aerodrome but unstaffed in this run; " +
+            "real ATC would terminate radar service per ICAO Doc 4444 §10.1 — " +
+            "deferred as D-PF.7."
+
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        toRole in ctx.view.staffedRoles
+}
+
 // ── Runway state ─────────────────────────────────────────────────────
 
 /** This aircraft has been granted runway access. */

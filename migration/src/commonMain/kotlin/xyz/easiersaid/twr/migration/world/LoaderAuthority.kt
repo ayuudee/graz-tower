@@ -8,7 +8,7 @@ package xyz.easiersaid.twr.migration.world
  * `placeholderAuthorities` set lifted from the test fixture into a single
  * named place. **D-AUDIT.11** will add real-authority leaves (e.g.
  * `RunwayAuthority(runway: RunwayId)`, `SeparationAuthority(scope: ...)`) and
- * [fromString] will dispatch them.
+ * the JSON↔leaf dispatch at [LoaderAuthoritySerializer] will extend per-leaf.
  *
  * Adding a new leaf forces every consumer of `AerodromeRole.authorities` to
  * extend its sealed-when — structural pressure that makes D-AUDIT.11's
@@ -18,15 +18,7 @@ sealed interface LoaderAuthority {
     data object Placeholder : LoaderAuthority
 
     companion object {
-        /** Canonical sentinel string used in `world-candidate.json`'s `authorities` list. */
+        /** Canonical JSON token for [Placeholder]. The serializer is the dispatcher. */
         const val PLACEHOLDER_TOKEN: String = "PLACEHOLDER"
-
-        fun fromString(s: String): LoaderAuthority = when (s) {
-            PLACEHOLDER_TOKEN -> Placeholder
-            else -> throw IllegalArgumentException(
-                "Unknown authority token '$s'. " +
-                "Pass 6 only recognises '$PLACEHOLDER_TOKEN'; D-AUDIT.11 owns real authority strings.",
-            )
-        }
     }
 }

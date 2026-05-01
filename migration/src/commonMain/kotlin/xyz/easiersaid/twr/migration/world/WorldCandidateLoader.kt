@@ -311,9 +311,7 @@ object WorldCandidateLoader {
             roles = world.aerodrome.roles.mapValues { (_, role) ->
                 AerodromeRole(
                     name = role.name,
-                    authorities = LoaderDefaults.toAuthorityGrants(
-                        role.authorities.map(LoaderAuthority::fromString),
-                    ),
+                    authorities = LoaderDefaults.toAuthorityGrants(role.authorities),
                     frequency = role.frequencyMhz,
                 )
             },

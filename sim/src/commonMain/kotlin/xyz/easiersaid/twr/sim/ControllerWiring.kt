@@ -56,14 +56,14 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     val flightStripIntents = spec.responsibilities
         .mapNotNull { id -> state.aircraft[id]?.toFlightStrip()?.let { it.aircraft to it.intent } }
         .toMap()
-    // Pass 6 (D-AUDIT.12): the set of roles with a staffed controller at
-    // this aerodrome right now. Distinct from `aerodrome.roles` (the airport's
-    // *published* roles): a role can be published but unstaffed, in which
-    // case `HandoffAction` must not target it.
-    val staffedRoles = state.controllers.values
-        .filter { it.aerodromeId == spec.aerodromeId }
-        .map { it.role }
-        .toSet()
+    // Pass 6 (D-AUDIT.12 + post-impl Impact-M.1): the set of roles with a
+    // staffed controller at this aerodrome right now. Distinct from
+    // `aerodrome.roles` (the airport's *published* roles): a role can be
+    // published but unstaffed, in which case `HandoffAction` must not target
+    // it. The projection goes through the typed [StaffingPanel] boundary —
+    // an architectural test asserts `StaffingPanel.kt` reads only role-shaped
+    // data, never controller identity / workload / session state.
+    val staffingPanel = state.toStaffingPanel(spec.aerodromeId)
     return ControllerView(
         time = state.now,
         controllerId = controllerId,
@@ -78,7 +78,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         pendingInboundHandoffs = emptyList(),
         worldIndex = state.worldIndex,
         flightStripIntents = flightStripIntents,
-        staffedRoles = staffedRoles,
+        staffedRoles = staffingPanel.roles,
     )
 }
 

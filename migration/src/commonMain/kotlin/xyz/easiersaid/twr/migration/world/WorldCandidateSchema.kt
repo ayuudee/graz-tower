@@ -127,13 +127,14 @@ data class CandidateAerodromeRole(
     @Serializable(with = RoleNameSerializer::class) val name: RoleName,
     @Serializable(with = FrequencySerializer::class) val frequencyMhz: Frequency,
     /**
-     * Authority tokens. Pass 6 only recognises `"PLACEHOLDER"`
-     * (see [LoaderAuthority.PLACEHOLDER_TOKEN]); D-AUDIT.11 will add real
-     * authority strings. The field is added now (defaulted to
-     * `["PLACEHOLDER"]`) so D-AUDIT.11 is field POPULATION, not schema
-     * migration.
+     * Authority leaves. Pass 6 only recognises [LoaderAuthority.Placeholder]
+     * (the JSON token is `"PLACEHOLDER"`); D-AUDIT.11 will add real
+     * authority leaves. Pass 6 post-impl (FP-P.1): typed at parse time via
+     * [LoaderAuthoritySerializer] — invalid tokens fail with
+     * `SerializationException` at JSON decode, never reaching the loader.
      */
-    val authorities: List<String> = listOf(LoaderAuthority.PLACEHOLDER_TOKEN),
+    val authorities: List<@Serializable(with = LoaderAuthoritySerializer::class) LoaderAuthority> =
+        listOf(LoaderAuthority.Placeholder),
 )
 
 @Serializable
