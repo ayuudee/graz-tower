@@ -177,6 +177,7 @@ def main() -> int:
     parser.add_argument("--max-candidates", type=int, default=20)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
+    parser.add_argument("--json-repair-attempts", type=int, default=1)
     parser.add_argument("--heartbeat-seconds", type=int, default=30)
     args = parser.parse_args()
 
@@ -235,6 +236,7 @@ def main() -> int:
     inner_args.max_candidates = args.max_candidates
     inner_args.structure_attempts = args.structure_attempts
     inner_args.extraction_attempts = args.extraction_attempts
+    inner_args.json_repair_attempts = args.json_repair_attempts
 
     documents_summary: list[dict[str, Any]] = []
     failures: list[dict[str, str]] = []

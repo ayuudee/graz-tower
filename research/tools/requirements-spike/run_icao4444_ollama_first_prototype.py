@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_SOURCE = ROOT / "research/txt/icao4444-extracted.txt"
 DEFAULT_BASE_URL = "http://biggy:11434"
 DEFAULT_OUTPUT_ROOT = Path("/tmp/icao4444-ollama-first-prototype-runs")
+INVALID_JSON_EXCERPT_CHARS = 1200
 
 CASES = {
     "readback_family": {
@@ -128,6 +129,34 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def json_excerpt(text: str) -> str:
+    return text[:INVALID_JSON_EXCERPT_CHARS].replace("\n", "\\n")
+
+
+class OllamaJsonError(RuntimeError):
+    def __init__(
+        self,
+        *,
+        stage: str,
+        model: str,
+        content: str,
+        repair_attempts: list[dict[str, Any]],
+    ) -> None:
+        self.stage = stage
+        self.model = model
+        self.excerpt = json_excerpt(content)
+        self.repair_attempts = repair_attempts
+        repair_suffix = (
+            f"; jsonRepairAttempts={len(repair_attempts)}"
+            if repair_attempts
+            else ""
+        )
+        super().__init__(
+            f"{stage}: model {model} returned invalid JSON content"
+            f"{repair_suffix}: {self.excerpt}"
+        )
+
+
 def read_window(source: Path, *, start_line: int, end_line: int) -> str:
     lines = source.read_text(encoding="utf-8").split("\n")
     window_lines: list[str] = []
@@ -138,7 +167,7 @@ def read_window(source: Path, *, start_line: int, end_line: int) -> str:
     return "\n".join(window_lines).strip()
 
 
-def call_ollama_chat(
+def post_ollama_chat(
     *,
     base_url: str,
     model: str,
@@ -178,19 +207,117 @@ def call_ollama_chat(
         raw = json.loads(response.read().decode("utf-8"))
     elapsed_ms = int((time.time() - start) * 1000)
     message = raw.get("message", {})
-    content = message.get("content", "")
-    parsed = parse_json_payload(content)
-    if parsed is None:
-        excerpt = content[:1200].replace("\n", "\\n")
-        raise SystemExit(f"Model {model} returned invalid JSON content: {excerpt}")
+    content = message.get("content") or ""
     return {
         "model": model,
         "requestPromptChars": len(user_prompt),
         "requestSystemChars": len(system_prompt),
         "elapsedMs": elapsed_ms,
         "rawResponse": raw,
-        "parsed": parsed,
+        "content": content,
     }
+
+
+def repair_json_response(
+    *,
+    base_url: str,
+    model: str,
+    stage: str,
+    malformed_content: str,
+    num_predict: int,
+    num_ctx: int,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    system_prompt = (
+        "You repair malformed JSON emitted by another model. "
+        "Return strict JSON only. "
+        "Preserve the intended keys and values. "
+        "Do not add new facts, rationale, candidates, or commentary."
+    )
+    user_prompt = f"""
+The previous response for stage `{stage}` was supposed to be valid JSON, but parsing failed.
+
+Repair it into valid JSON with the same intended schema and semantic content.
+Return only the repaired JSON object or array.
+
+Malformed response:
+{malformed_content}
+""".strip()
+    repair_result = post_ollama_chat(
+        base_url=base_url,
+        model=model,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        temperature=0.0,
+        num_predict=num_predict,
+        num_ctx=num_ctx,
+        timeout_seconds=timeout_seconds,
+    )
+    repair_content = repair_result.pop("content")
+    repair_result["parsed"] = parse_json_payload(repair_content)
+    repair_result["contentExcerpt"] = json_excerpt(repair_content)
+    return repair_result
+
+
+def call_ollama_chat(
+    *,
+    base_url: str,
+    model: str,
+    system_prompt: str,
+    user_prompt: str,
+    temperature: float,
+    num_predict: int,
+    num_ctx: int,
+    timeout_seconds: int,
+    disable_thinking: bool = True,
+    stage: str = "ollama",
+    json_repair_attempts: int = 1,
+) -> dict[str, Any]:
+    result = post_ollama_chat(
+        base_url=base_url,
+        model=model,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        temperature=temperature,
+        num_predict=num_predict,
+        num_ctx=num_ctx,
+        timeout_seconds=timeout_seconds,
+        disable_thinking=disable_thinking,
+    )
+    content = result.pop("content")
+    parsed = parse_json_payload(content)
+    if parsed is not None:
+        result["parsed"] = parsed
+        result["jsonRepairApplied"] = False
+        result["jsonRepairAttempts"] = []
+        return result
+
+    repair_attempts: list[dict[str, Any]] = []
+    for repair_no in range(1, max(json_repair_attempts, 0) + 1):
+        repair_result = repair_json_response(
+            base_url=base_url,
+            model=model,
+            stage=stage,
+            malformed_content=content,
+            num_predict=num_predict,
+            num_ctx=num_ctx,
+            timeout_seconds=timeout_seconds,
+        )
+        repair_result["attemptNo"] = repair_no
+        repair_attempts.append(repair_result)
+        if repair_result["parsed"] is not None:
+            result["parsed"] = repair_result["parsed"]
+            result["jsonRepairApplied"] = True
+            result["invalidJsonExcerpt"] = json_excerpt(content)
+            result["jsonRepairAttempts"] = repair_attempts
+            return result
+
+    raise OllamaJsonError(
+        stage=stage,
+        model=model,
+        content=content,
+        repair_attempts=repair_attempts,
+    )
 
 
 def parse_json_payload(text: str) -> Any | None:
@@ -699,6 +826,7 @@ Rules:
 - If attempts disagree on a parent/list candidate, prefer preserving that disagreement as `needs_bundle` or `needs_split` later rather than flattening early.
 - Notes/background may survive only as `advisory_only` or `support_only`.
 - Do not emit duplicate candidates that express the same obligation at different granularities unless the source clearly supports both.
+- Keep `notes` to at most two short strings. Do not put reasoning paragraphs in notes; candidate `rationale` fields carry reasoning.
 
 Source window:
 {json.dumps(window, indent=2)}
@@ -712,7 +840,7 @@ Extraction attempts:
 Return JSON with exactly this shape:
 {{
   "caseId": "{window["caseId"]}",
-  "notes": ["short note"],
+  "notes": ["short note, max 120 chars"],
   "candidates": [
     {{
       "candidateId": "stable short id",
@@ -1069,6 +1197,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-candidates", type=int, default=20)
     parser.add_argument("--structure-attempts", type=int, default=3)
     parser.add_argument("--extraction-attempts", type=int, default=3)
+    parser.add_argument("--json-repair-attempts", type=int, default=1)
     return parser
 
 
@@ -1082,6 +1211,7 @@ def run_pipeline(
     Returns the run manifest dict (also persisted to output_dir/run_manifest.json).
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+    json_repair_attempts = max(getattr(args, "json_repair_attempts", 1), 0)
 
     case_source = args.source
     if case_source == DEFAULT_SOURCE and case.get("sourceOverride"):
@@ -1101,6 +1231,8 @@ def run_pipeline(
             num_predict=8000,
             num_ctx=args.num_ctx,
             timeout_seconds=600,
+            stage=f"structure:attempt_{attempt_no}",
+            json_repair_attempts=json_repair_attempts,
         )
         attempt_result["attemptId"] = f"structure_attempt_{attempt_no}"
         structure_attempts.append(attempt_result)
@@ -1121,6 +1253,8 @@ def run_pipeline(
         num_predict=10000,
         num_ctx=args.num_ctx,
         timeout_seconds=600,
+        stage="structure:reconcile",
+        json_repair_attempts=json_repair_attempts,
     )
     write_json(output_dir / "structure_reconciliation_response.json", structure_result)
     write_json(output_dir / "structure_response.json", structure_result)
@@ -1138,6 +1272,8 @@ def run_pipeline(
             num_predict=12000,
             num_ctx=args.num_ctx,
             timeout_seconds=600,
+            stage=f"requirements:attempt_{attempt_no}",
+            json_repair_attempts=json_repair_attempts,
         )
         attempt_result["attemptId"] = f"attempt_{attempt_no}"
         extraction_attempts.append(attempt_result)
@@ -1154,6 +1290,8 @@ def run_pipeline(
         num_predict=16000,
         num_ctx=args.num_ctx,
         timeout_seconds=600,
+        stage="requirements:reconcile",
+        json_repair_attempts=json_repair_attempts,
     )
     write_json(output_dir / "reconciliation_response.json", requirement_result)
     write_json(output_dir / "requirement_response.json", requirement_result)
@@ -1227,6 +1365,8 @@ def run_pipeline(
             num_predict=600,
             num_ctx=args.num_ctx,
             timeout_seconds=300,
+            stage=f"bundle_gate:{candidate['candidateId']}",
+            json_repair_attempts=json_repair_attempts,
         )
         write_json(output_dir / "bundle_gate" / f"{candidate['candidateId']}.json", bundle_gate_result)
         require_fields(
@@ -1258,6 +1398,8 @@ def run_pipeline(
             num_predict=900,
             num_ctx=args.num_ctx,
             timeout_seconds=300,
+            stage=f"challenge:{candidate['candidateId']}",
+            json_repair_attempts=json_repair_attempts,
         )
         write_json(output_dir / "challenge" / f"{candidate['candidateId']}.json", challenge_result)
         require_fields(
@@ -1295,6 +1437,8 @@ def run_pipeline(
             num_predict=900,
             num_ctx=args.num_ctx,
             timeout_seconds=300,
+            stage=f"defense:{candidate['candidateId']}",
+            json_repair_attempts=json_repair_attempts,
         )
         write_json(output_dir / "defense" / f"{candidate['candidateId']}.json", defense_result)
         require_fields(defense_result["parsed"], ["caseId", "candidateId", "verdict", "supports", "sourceQuotes"], stage=f"defense:{candidate['candidateId']}")
@@ -1316,6 +1460,8 @@ def run_pipeline(
             num_predict=2000,
             num_ctx=args.num_ctx,
             timeout_seconds=600,
+            stage=f"judge:{candidate['candidateId']}",
+            json_repair_attempts=json_repair_attempts,
         )
         normalize_judge_payload(judge_result["parsed"], window=window, candidate=candidate)
         write_json(output_dir / "judge" / f"{candidate['candidateId']}.json", judge_result)
@@ -1364,6 +1510,7 @@ def run_pipeline(
         "maxCandidates": args.max_candidates,
         "structureAttempts": args.structure_attempts,
         "extractionAttempts": args.extraction_attempts,
+        "jsonRepairAttempts": json_repair_attempts,
         "artifactPaths": {
             "sourceWindow": str(output_dir / "source_window.json"),
             "structureAttemptsDir": str(output_dir / "structure_attempts"),
