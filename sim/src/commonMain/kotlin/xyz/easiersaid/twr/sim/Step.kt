@@ -82,6 +82,8 @@ import xyz.easiersaid.twr.protocol.MakeShortApproach
 import xyz.easiersaid.twr.protocol.MinimumCleanSpeed
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.RadarServiceTerminated
+import xyz.easiersaid.twr.protocol.HandoffTarget
+import xyz.easiersaid.twr.protocol.ResponsibilityState
 import xyz.easiersaid.twr.protocol.NumberInSequence
 import xyz.easiersaid.twr.protocol.Orbit
 import xyz.easiersaid.twr.protocol.ProceedDirect
@@ -202,25 +204,88 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
 }
 
 /**
- * Pass 7 (D-AUDIT.5): asserts the cross-controller `Owned` invariant —
- * each aircraft is `Owned` by at most one controller across the whole
- * sim state. Violations throw with a clear diagnostic naming the
- * conflicting controllers.
+ * Pass 7 (D-AUDIT.5) cross-controller invariants — checked after every
+ * `step()`.
+ *
+ * Three structural rules the per-controller `Map<AircraftId,
+ * ResponsibilityState>` cannot enforce on its own:
+ *
+ *  1. **At most one `Owned`** per aircraft (cross-controller).
+ *  2. **`HandingOff(Peer(target))` ↔ `Watching(from=current)` pairing**:
+ *     if controller `current` has `HandingOff(Peer(target))` for
+ *     aircraft X, then controller `target` must have
+ *     `Watching(from=current.id)` for X — and vice versa. A regression
+ *     that updates one side but not the other ships through invariant
+ *     #1 silently.
+ *  3. (Implicit) `Watching(from)` references a real controller. If
+ *     `from` is not in `state.controllers`, the pairing check fires.
+ *
+ * Violations throw `IllegalStateException` with a clear diagnostic
+ * naming the conflict.
  */
 internal fun assertResponsibilityInvariant(state: SimState) {
+    // (1) at most one Owned per aircraft
     val ownerOf = mutableMapOf<AircraftId, ControllerId>()
     for (spec in state.controllers.values) {
         for ((acId, st) in spec.responsibilities) {
-            if (st !is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned) continue
+            if (st !is ResponsibilityState.Owned) continue
             val existing = ownerOf[acId]
             check(existing == null) {
-                "RESPONSIBILITY INVARIANT VIOLATION: aircraft $acId is Owned by both " +
+                "RESPONSIBILITY INVARIANT VIOLATION (Owned): aircraft $acId is Owned by both " +
                     "$existing and ${spec.id} simultaneously. Pass 7 (D-AUDIT.5) requires " +
-                    "at most one Owned per aircraft across all controllers — this is the " +
-                    "cross-controller invariant the per-controller Map<AircraftId, ResponsibilityState> " +
-                    "cannot enforce structurally."
+                    "at most one Owned per aircraft across all controllers."
             }
             ownerOf[acId] = spec.id
+        }
+    }
+    // (2) HandingOff(Peer(target)) ↔ Watching(from=current) pairing
+    for (sender in state.controllers.values) {
+        for ((acId, st) in sender.responsibilities) {
+            if (st !is ResponsibilityState.HandingOff) continue
+            val target = st.target
+            if (target !is HandoffTarget.Peer) continue
+            val targetSpec = state.controllers[target.controllerId]
+            check(targetSpec != null) {
+                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
+                    "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but no controller " +
+                    "${target.controllerId} exists in state.controllers. Wiring defect."
+            }
+            val targetState = targetSpec.responsibilities[acId]
+            check(targetState is ResponsibilityState.Watching) {
+                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
+                    "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but " +
+                    "${target.controllerId}'s state for that aircraft is $targetState (expected " +
+                    "Watching(from=${sender.id})). One side updated, the other skipped."
+            }
+            check(targetState.from == sender.id) {
+                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
+                    "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but " +
+                    "${target.controllerId}.responsibilities[$acId] is Watching(from=${targetState.from}) " +
+                    "(expected from=${sender.id})."
+            }
+        }
+    }
+    // (3) Watching(from) references a real controller. (Mirror direction:
+    // every Watching has a matching HandingOff(Peer) on the named sender.)
+    for (receiver in state.controllers.values) {
+        for ((acId, st) in receiver.responsibilities) {
+            if (st !is ResponsibilityState.Watching) continue
+            val senderSpec = state.controllers[st.from]
+            check(senderSpec != null) {
+                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${receiver.id} has " +
+                    "Watching(from=${st.from}) for aircraft $acId, but no controller ${st.from} " +
+                    "exists in state.controllers. Wiring defect."
+            }
+            val senderState = senderSpec.responsibilities[acId]
+            val ok = senderState is ResponsibilityState.HandingOff &&
+                senderState.target is HandoffTarget.Peer &&
+                (senderState.target as HandoffTarget.Peer).controllerId == receiver.id
+            check(ok) {
+                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${receiver.id} has " +
+                    "Watching(from=${st.from}) for aircraft $acId, but ${st.from}'s state for " +
+                    "that aircraft is $senderState (expected HandingOff(Peer(${receiver.id}))). " +
+                    "One side updated, the other skipped."
+            }
         }
     }
 }
@@ -543,13 +608,13 @@ private fun handleTransmissionEnd(
                 // routed to (whose Watching state should flip to Owned).
                 val watchingControllerId = withMission.controllers.values
                     .firstOrNull { spec ->
-                        spec.responsibilities[acId] is xyz.easiersaid.twr.protocol.ResponsibilityState.Watching
+                        spec.responsibilities[acId] is ResponsibilityState.Watching
                     }?.id
                 if (watchingControllerId != null) {
                     val watchingRole = withMission.controllers[watchingControllerId]?.role
                     val acAfter = withMission.aircraft[acId]
                     if (watchingRole != null && acAfter != null) {
-                        applyInitialContact(withMission, acAfter, watchingRole)
+                        applyTwoWayCommsEstablished(withMission, acAfter, watchingRole)
                     } else withMission
                 } else {
                     // No controller is currently Watching this aircraft —
@@ -988,7 +1053,24 @@ private fun applyAfterLandingVacateVia(
  * switched frequencies — a wedge that surfaced only as "the simulation hangs."
  * The no-corners rule applies: surface the defect at the call site.
  */
-private fun applyContactFrequency(
+/**
+ * Pass 7 post-impl (FP-S.3): single source of truth for "find the controller
+ * that currently owns this aircraft." Both [applyContactFrequency] and
+ * [applyRadarServiceTerminated] need this; the duplication is now extracted.
+ *
+ * Impact-M.2: the filter is `is Owned` explicitly. `Map.contains` would
+ * also match a `Watching` peer mid-handoff, who cannot legally hand off
+ * an aircraft they don't yet own.
+ */
+private fun requireOwner(state: SimState, ac: AircraftState, instructionLabel: String): ControllerSpec =
+    state.controllers.values.firstOrNull { spec ->
+        spec.responsibilities[ac.id] is ResponsibilityState.Owned
+    } ?: error(
+        "$instructionLabel: no controller currently OWNS ${ac.id}; instruction can't be processed. " +
+            "Wiring defect — responsibility was stripped without a handoff.",
+    )
+
+internal fun applyContactFrequency(
     state: SimState,
     ac: AircraftState,
     instruction: ContactFrequency,
@@ -996,20 +1078,10 @@ private fun applyContactFrequency(
     // Pass 7 (D-AUDIT.5): the typed responsibility state machine. On
     // ContactFrequency, the current controller transitions Owned →
     // HandingOff(Peer(target)) and the target controller adds Watching(from).
-    // The pilot's InitialContact on the new frequency is what completes the
-    // transfer (applyInitialContact) — until then, current still legally
-    // owns the aircraft per ICAO Doc 4444 §10.1.
-    //
-    // Impact-M.2: filter to `is Owned` explicitly. `Map.contains` would
-    // also match a `Watching` peer (during a different in-flight handoff),
-    // who cannot legally hand off an aircraft they don't own.
-    val current = state.controllers.values.firstOrNull { spec ->
-        spec.responsibilities[ac.id] is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned
-    } ?: error(
-        "applyContactFrequency: no controller currently OWNS ${ac.id}; " +
-            "instruction ${instruction.role} can't be processed. " +
-            "Wiring defect — responsibility was stripped without a handoff.",
-    )
+    // The pilot's first transmission to the new controller is what completes
+    // the transfer (applyTwoWayCommsEstablished) — until then, current still
+    // legally owns the aircraft per ICAO Doc 4444 §10.1.
+    val current = requireOwner(state, ac, "applyContactFrequency(${instruction.role})")
     val target = state.controllers.values
         .firstOrNull { it.aerodromeId == current.aerodromeId && it.role == instruction.role }
         ?: error(
@@ -1021,13 +1093,13 @@ private fun applyContactFrequency(
     val now = state.now
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[current.id] = current.copy(
-        responsibilities = current.responsibilities + (ac.id to xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff(
-            target = xyz.easiersaid.twr.protocol.HandoffTarget.Peer(target.id),
+        responsibilities = current.responsibilities + (ac.id to ResponsibilityState.HandingOff(
+            target = HandoffTarget.Peer(target.id),
             since = now,
         )),
     )
     controllersMap[target.id] = target.copy(
-        responsibilities = target.responsibilities + (ac.id to xyz.easiersaid.twr.protocol.ResponsibilityState.Watching(
+        responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Watching(
             from = current.id,
             since = now,
         )),
@@ -1042,22 +1114,28 @@ private fun applyContactFrequency(
  * readback flow) drops the entry from `responsibilities`. No peer
  * `Watching` is created — the aircraft is leaving the controlled-airspace
  * system.
+ *
+ * **Note on the instruction's `squawk`/`suggestedFrequency` fields**
+ * (Impact-O.3 fold-in): both are *consumed at the readback level* —
+ * `InstructionReadback.kt` produces a `SquawkReadback(squawk)` atom for
+ * the readback when squawk is `Some`. There is no `AircraftState.squawk`
+ * field today (it lives on a future Annex 10 / D-AUDIT.4 surface), so
+ * the sim-side propagation of squawk-on-receipt is out of scope for
+ * Pass 7. The action carrying the field is correct: it documents the
+ * instruction's content; the readback layer enforces the pilot
+ * acknowledges it. If a future engineer wires `AircraftState.squawk`,
+ * this function gets one extra arm.
  */
-private fun applyRadarServiceTerminated(
+internal fun applyRadarServiceTerminated(
     state: SimState,
     ac: AircraftState,
-    @Suppress("UNUSED_PARAMETER") instruction: xyz.easiersaid.twr.protocol.RadarServiceTerminated,
+    @Suppress("UNUSED_PARAMETER") instruction: RadarServiceTerminated,
 ): SimState {
-    val current = state.controllers.values.firstOrNull { spec ->
-        spec.responsibilities[ac.id] is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned
-    } ?: error(
-        "applyRadarServiceTerminated: no controller currently OWNS ${ac.id}; " +
-            "instruction can't be processed. Wiring defect.",
-    )
+    val current = requireOwner(state, ac, "applyRadarServiceTerminated")
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[current.id] = current.copy(
-        responsibilities = current.responsibilities + (ac.id to xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff(
-            target = xyz.easiersaid.twr.protocol.HandoffTarget.Released,
+        responsibilities = current.responsibilities + (ac.id to ResponsibilityState.HandingOff(
+            target = HandoffTarget.Released,
             since = state.now,
         )),
     )
@@ -1065,22 +1143,32 @@ private fun applyRadarServiceTerminated(
 }
 
 /**
- * Pass 7 (D-AUDIT.5 closure step 2): the pilot's `InitialContact` on the
- * new frequency completes the responsibility transition. The receiving
- * controller (currently `Watching`) becomes `Owned`; the sending
- * controller (currently `HandingOff(Peer(target))`) drops the aircraft.
+ * Pass 7 (D-AUDIT.5 closure step 2): two-way communications established.
+ * Per ICAO Doc 4444 §10.1.1: *"Two-way communication shall be considered
+ * to have been established when the receiving station has been positively
+ * identified and acknowledges receipt..."* — the model treats *any* pilot
+ * transmission to a `Watching` controller as the established-comms event.
+ * The receiving controller (currently `Watching`) becomes `Owned`; the
+ * sending controller (currently `HandingOff(Peer(target))`) drops the
+ * aircraft.
  *
- * Note: this is the *sim-side* dispatch, not via `ControllerEvent.InitialContactReceived`
- * (which is the controller-side observable). Both fire from the same
- * pilot transmission but for different concerns — the sim flips the
- * responsibility map; the controller updates its beliefs. Firewall pattern
- * preserved.
+ * **Name vs trigger**: this function is named for the *event* (two-way
+ * comms established), not for the *phrase* that triggers it. Real ATC
+ * phraseology combines initial contact and report into one transmission
+ * ("Tower, OE-ABC, holding short 16C, ready"); the call site dispatches
+ * on any pilot transmission, not specifically on `Utterance.FromPilot(InitialContact)`.
+ *
+ * Note: this is the *sim-side* dispatch, not via
+ * `ControllerEvent.InitialContactReceived` (which is the controller-side
+ * observable). Both fire from the same pilot transmission but for
+ * different concerns — the sim flips the responsibility map; the
+ * controller updates its beliefs. Firewall pattern preserved.
  *
  * Boundary release (`HandingOff(Released)`) does NOT come through this
  * path — the pilot's readback to `RadarServiceTerminated` is what
- * completes that flow. See [applyRadarServiceTerminatedReadback].
+ * completes that flow. See [applyBoundaryReleaseReadback].
  */
-internal fun applyInitialContact(
+internal fun applyTwoWayCommsEstablished(
     state: SimState,
     ac: AircraftState,
     stationCalled: xyz.easiersaid.twr.protocol.RoleName,
@@ -1089,18 +1177,18 @@ internal fun applyInitialContact(
     // whose role matches the called station and who is Watching this aircraft.
     val target = state.controllers.values.firstOrNull { spec ->
         spec.role == stationCalled &&
-            spec.responsibilities[ac.id] is xyz.easiersaid.twr.protocol.ResponsibilityState.Watching
+            spec.responsibilities[ac.id] is ResponsibilityState.Watching
     } ?: return state // pilot called a station that isn't watching them — silent ignore
     // Find the sender (the HandingOff controller).
     val sender = state.controllers.values.firstOrNull { spec ->
         val r = spec.responsibilities[ac.id]
-        r is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff &&
-            r.target is xyz.easiersaid.twr.protocol.HandoffTarget.Peer &&
-            (r.target as xyz.easiersaid.twr.protocol.HandoffTarget.Peer).controllerId == target.id
+        r is ResponsibilityState.HandingOff &&
+            r.target is HandoffTarget.Peer &&
+            (r.target as HandoffTarget.Peer).controllerId == target.id
     } ?: return state
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[target.id] = target.copy(
-        responsibilities = target.responsibilities + (ac.id to xyz.easiersaid.twr.protocol.ResponsibilityState.Owned(state.now)),
+        responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Owned(state.now)),
     )
     controllersMap[sender.id] = sender.copy(
         responsibilities = sender.responsibilities - ac.id,
@@ -1119,8 +1207,8 @@ internal fun applyBoundaryReleaseReadback(
 ): SimState {
     val sender = state.controllers.values.firstOrNull { spec ->
         val r = spec.responsibilities[ac.id]
-        r is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff &&
-            r.target is xyz.easiersaid.twr.protocol.HandoffTarget.Released
+        r is ResponsibilityState.HandingOff &&
+            r.target is HandoffTarget.Released
     } ?: return state
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[sender.id] = sender.copy(responsibilities = sender.responsibilities - ac.id)

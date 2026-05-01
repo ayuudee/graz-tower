@@ -59,27 +59,107 @@ class ResponsibilityInvariantSpec {
     }
 
     @Test
-    fun `single Owned plus other controller Watching satisfies the invariant`() {
-        // The valid mid-handoff state: one Owned, one Watching. No throw.
+    fun `three controllers, two Owned and one Watching still fails the invariant`() {
+        // Pass 7 post-impl Test-2: three-controller variant. The Owned
+        // duplication is still detected; the third controller's clean
+        // Watching state should not mask or confuse the diagnostic.
         val ac = AircraftId("OE-ABC")
         val now = SimTime.ofMillis(0)
+        val ownedAt = ResponsibilityState.Owned(now)
         val ctrlA = ControllerSpec(
             id = ControllerId("CTRL_A"),
             role = RoleName.TOWER,
             aerodromeId = AerodromeId("LOWG"),
             frequency = Frequency.unsafe("118.200"),
-            responsibilities = mapOf(ac to ResponsibilityState.Owned(now)),
+            responsibilities = mapOf(ac to ownedAt),
         )
         val ctrlB = ControllerSpec(
             id = ControllerId("CTRL_B"),
             role = RoleName.GROUND,
             aerodromeId = AerodromeId("LOWG"),
             frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ownedAt),
+        )
+        val ctrlC = ControllerSpec(
+            id = ControllerId("CTRL_C"),
+            role = RoleName.APPROACH,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("119.300"),
             responsibilities = mapOf(ac to ResponsibilityState.Watching(from = ctrlA.id, since = now)),
+        )
+        val state = minimalSimStateWith(listOf(ctrlA, ctrlB, ctrlC))
+        val ex = assertFailsWith<IllegalStateException> {
+            assertResponsibilityInvariant(state)
+        }
+        // First throw should be on the Owned duplication (CTRL_A vs CTRL_B);
+        // CTRL_C's Watching is a separate concern and shouldn't be the cause.
+        check(ex.message?.contains("Owned by both") == true) {
+            "Expected Owned-duplication diagnostic, not pairing diagnostic; got: ${ex.message}"
+        }
+    }
+
+    @Test
+    fun `valid mid-handoff (HandingOff plus paired Watching) satisfies the invariant`() {
+        // The valid mid-handoff state: A is HandingOff(Peer(B)) + B is
+        // Watching(from=A). The pairing invariant (Pass 7 post-impl
+        // Impact-M.1) requires both sides match; this row pins the happy
+        // path.
+        val ac = AircraftId("OE-ABC")
+        val now = SimTime.ofMillis(0)
+        val aId = ControllerId("CTRL_A")
+        val bId = ControllerId("CTRL_B")
+        val ctrlA = ControllerSpec(
+            id = aId,
+            role = RoleName.TOWER,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ResponsibilityState.HandingOff(
+                target = xyz.easiersaid.twr.protocol.HandoffTarget.Peer(bId), since = now,
+            )),
+        )
+        val ctrlB = ControllerSpec(
+            id = bId,
+            role = RoleName.GROUND,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ResponsibilityState.Watching(from = aId, since = now)),
         )
         val state = minimalSimStateWith(listOf(ctrlA, ctrlB))
         // Should NOT throw.
         assertResponsibilityInvariant(state)
+    }
+
+    @Test
+    fun `unpaired Watching (no matching HandingOff at sender) fails the invariant`() {
+        // Pass 7 post-impl Impact-M.1: a Watching controller without a
+        // matching HandingOff(Peer) on the named sender is desync. This
+        // is the regression mode the pairing invariant catches — one side
+        // updated, the other skipped.
+        val ac = AircraftId("OE-ABC")
+        val now = SimTime.ofMillis(0)
+        val aId = ControllerId("CTRL_A")
+        val bId = ControllerId("CTRL_B")
+        val ctrlA = ControllerSpec(
+            id = aId,
+            role = RoleName.TOWER,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ResponsibilityState.Owned(now)),  // not HandingOff
+        )
+        val ctrlB = ControllerSpec(
+            id = bId,
+            role = RoleName.GROUND,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ResponsibilityState.Watching(from = aId, since = now)),
+        )
+        val state = minimalSimStateWith(listOf(ctrlA, ctrlB))
+        val ex = assertFailsWith<IllegalStateException> {
+            assertResponsibilityInvariant(state)
+        }
+        check(ex.message?.contains("pairing") == true) {
+            "Expected pairing violation; got: ${ex.message}"
+        }
     }
 
     private fun minimalSimStateWith(controllers: List<ControllerSpec>): SimState {

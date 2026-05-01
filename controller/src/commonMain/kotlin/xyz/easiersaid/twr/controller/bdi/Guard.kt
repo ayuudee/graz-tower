@@ -395,13 +395,23 @@ data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
     override val failureMessage = "Aircraft within ${thresholdMetres.value}m radial of aerodrome (still in CTR scope)"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
         val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId] ?: return false
-        // Use the first runway's threshold as a stand-in for the aerodrome
-        // reference point. Real ARPs come with the airport manifest under
-        // a separate `referencePoint` field; today the field exists on
-        // Aerodrome but isn't populated for every aerodrome (some are null
-        // until D-AUDIT.7's CTR-polygon work). The threshold is a reasonable
-        // proxy at small fields.
-        val arpPointId = aerodrome.runways.values.firstOrNull()?.threshold ?: return false
+        // Use the lexicographically-first runway's threshold as a stand-in
+        // for the aerodrome reference point. Real ARPs come with the airport
+        // manifest under a separate `referencePoint` field; today the field
+        // exists on Aerodrome but isn't populated for every aerodrome (some
+        // are null until D-AUDIT.7's CTR-polygon work). The threshold is a
+        // reasonable proxy at small fields.
+        //
+        // Pass 7 post-impl Impact-M.2: sort by `RunwayId.value` before
+        // taking the first to make the proxy stable against manifest edits
+        // (a new runway added at the head of the manifest would otherwise
+        // shift the proxy point). Threshold offsets between runways at
+        // multi-runway airports (e.g. LOWG 16C/16L/16R/28) can be hundreds
+        // of metres — small relative to the 12 NM (22.2 km) gate but not
+        // negligible; a stable proxy is required for deterministic-replay.
+        val arpPointId = aerodrome.runways.entries
+            .sortedBy { it.key.value }
+            .firstOrNull()?.value?.threshold ?: return false
         val acPos = ctx.worldIndex.positions[ac.position] ?: return false
         val arpPos = ctx.worldIndex.positions[arpPointId] ?: return false
         val dx = acPos.xMeters - arpPos.xMeters

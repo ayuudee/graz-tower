@@ -60,3 +60,40 @@ fun runUntilWithTransmissions(
         .map { it.toTransmissionRecord() }
     return finalState to records
 }
+
+/**
+ * Pass 7 (D-AUDIT.5 G0 mid-handoff assertion): drive the sim and capture
+ * a state snapshot **after each event is processed**. Returns the
+ * transmission records (as `runUntilWithTransmissions`) plus the full
+ * `(event → state-after)` trace, so a test can introspect what state
+ * looked like at any moment during the run.
+ *
+ * Use sparingly: every snapshot is a SimState reference (cheap) but the
+ * list grows linearly with event count. G0's run produces ~1500 events
+ * over 30 sim minutes; the trace fits in memory comfortably.
+ */
+fun runUntilWithStateTrace(
+    initialState: SimState,
+    initialEvents: List<SimEvent>,
+    untilTime: SimTime,
+): Triple<SimState, List<TransmissionRecord>, List<Pair<SimEvent, SimState>>> {
+    var state = initialState
+    val (stamped, stampedEvents) = state.emit(initialEvents)
+    state = stamped
+    val queue = HeapEventQueue()
+    stampedEvents.forEach(queue::enqueue)
+    val trace = mutableListOf<SimEvent>()
+    val statesAfterEvent = mutableListOf<Pair<SimEvent, SimState>>()
+    var nextEvent = queue.dequeueMin()
+    while (nextEvent != null && nextEvent.time <= untilTime) {
+        trace += nextEvent
+        val (next, emitted) = step(state, nextEvent)
+        statesAfterEvent.add(nextEvent to next)
+        state = next
+        emitted.forEach(queue::enqueue)
+        nextEvent = queue.dequeueMin()
+    }
+    val records = trace.filterIsInstance<SimEvent.TransmissionStart>()
+        .map { it.toTransmissionRecord() }
+    return Triple(state, records.toList(), statesAfterEvent.toList())
+}

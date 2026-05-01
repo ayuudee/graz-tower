@@ -25,13 +25,14 @@ import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 import xyz.easiersaid.twr.protocol.TaxiToStand
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.sim.ReceiverRef
 import xyz.easiersaid.twr.sim.testing.Fixtures
 import xyz.easiersaid.twr.sim.testing.LoadedFixture
 import xyz.easiersaid.twr.sim.testing.firstControllerInstructionOf
 import xyz.easiersaid.twr.sim.testing.firstPilotReportOf
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
-import xyz.easiersaid.twr.sim.testing.runUntilWithTransmissions
+import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
 
 /**
  * G0 — single-aerodrome LOWG VFR circuit-training golden test.
@@ -96,7 +97,7 @@ class LowgGoldenTest {
             SimEvent.ControllerCycle(time = now, controllerId = ground.id),
             SimEvent.ControllerCycle(time = now, controllerId = tower.id),
         )
-        val (finalState, records) = runUntilWithTransmissions(initialState, initialEvents, until)
+        val (finalState, records, stateTrace) = runUntilWithStateTrace(initialState, initialEvents, until)
 
         // ── Diagnostic preamble ─────────────────────────────────────────────
         val journey = finalState.formatJourney(aircraftId, records)
@@ -292,6 +293,61 @@ class LowgGoldenTest {
                 "If this fires, GND-TAXI-STAND is producing a TaxiToStand with the wrong " +
                 "destination (likely a typo in TaxiToStandAction's nearestPoint over the " +
                 "stand set, or a stale point reference).\n$journey"
+        }
+
+        // (h) Pass 7 (D-AUDIT.5) — typed mid-handoff transition window.
+        // The GND→TWR handoff (after taxi-to-holding) is a real handoff in
+        // G0. Pre-Pass-7 it was an instantaneous edge-flip; Pass 7
+        // introduces the `HandingOff(Peer)` / `Watching(from)` overlap.
+        // This assertion pins that the typed-state benefit is observable
+        // end-to-end:
+        //
+        //   T1 = ContactFrequency(target=TOWER) emission time
+        //   T2 = First pilot transmission to TOWER time (Report Ready)
+        //   T1 < T2 (handoff has duration; not instantaneous)
+        //   ∃ snapshot ∈ [T1, T2): GND HandingOff(Peer(TWR)) AND TWR Watching(from=GND)
+        //
+        // A regression that re-collapsed transfer to a single edge would
+        // produce no overlap window with both states present.
+        val cfTimes = records.filter { rec ->
+            val output = (rec.utterance as? Utterance.FromController)?.output as? ControllerOutput.Instruct ?: return@filter false
+            val instr = (output.dispatch as? Dispatch.Direct)?.instruction as? xyz.easiersaid.twr.protocol.ContactFrequency ?: return@filter false
+            instr.target == aircraftId && instr.role == RoleName.TOWER
+        }.map { it.time.millis }
+        val cfToTwrMs = cfTimes.firstOrNull()
+            ?: fail("Expected at least one ContactFrequency(role=TOWER) for $aircraftId.\n$journey")
+        // First pilot transmission to the TOWER controller after the CF.
+        val firstTxToTwrMs = records.firstOrNull { rec ->
+            rec.utterance is Utterance.FromPilot &&
+                rec.receiver == ReceiverRef.Controller(tower.id) &&
+                rec.time.millis > cfToTwrMs
+        }?.time?.millis
+            ?: fail("Expected at least one pilot transmission to TOWER after ContactFrequency.\n$journey")
+        check(cfToTwrMs < firstTxToTwrMs) {
+            "Pass 7 assertion (h): expected handoff to have duration. " +
+                "ContactFrequency(TOWER) at ${cfToTwrMs}ms; first pilot tx to TOWER at " +
+                "${firstTxToTwrMs}ms.\n$journey"
+        }
+        // Find a state snapshot in the window where both states co-occur.
+        val midHandoffStates = stateTrace.filter { (event, _) ->
+            event.time.millis in cfToTwrMs until firstTxToTwrMs
+        }
+        val anyMidHandoffOverlap = midHandoffStates.any { (_, simState) ->
+            val gndState = simState.controllers[ground.id]?.responsibilities?.get(aircraftId)
+            val twrState = simState.controllers[tower.id]?.responsibilities?.get(aircraftId)
+            gndState is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff &&
+                (gndState.target as? xyz.easiersaid.twr.protocol.HandoffTarget.Peer)?.controllerId == tower.id &&
+                twrState is xyz.easiersaid.twr.protocol.ResponsibilityState.Watching &&
+                twrState.from == ground.id
+        }
+        check(anyMidHandoffOverlap) {
+            "Pass 7 assertion (h): expected at least one cycle in [$cfToTwrMs, $firstTxToTwrMs) " +
+                "where GND holds HandingOff(Peer(TWR)) AND TWR holds Watching(from=GND). " +
+                "Inspected ${midHandoffStates.size} state snapshots.\n" +
+                "If this fires, the typed responsibility state machine is broken: either " +
+                "applyContactFrequency didn't transition both controllers atomically, " +
+                "or the two-way-comms-driven completion fired too eagerly (before the " +
+                "actual pilot transmission to the new controller), collapsing the overlap.\n$journey"
         }
     }
 }

@@ -431,6 +431,18 @@ private fun stepTransmission(
         // most recently told to contact (e.g. GROUND after the post-vacate
         // handoff). Falls back to TOWER for the original arrival case
         // where the pilot's first call after spawning is to Tower.
+        //
+        // **Note (Pass 7 post-impl Impact-O.1)**: the sim-side responsibility
+        // flip does NOT require this step — `applyTwoWayCommsEstablished`
+        // fires on any pilot transmission to a Watching controller per
+        // ICAO Doc 4444 §10.1.1 (two-way comms established by receiving
+        // station's acknowledgement, no specific phrase required). This
+        // step exists for phraseology realism — when the pilot's mission
+        // tree dictates a dedicated initial-contact transmission. The
+        // sim's transition machinery is independent of whether the pilot's
+        // HTN tree has a CALL_INBOUND step at every handoff edge; even
+        // tasks that omit it (e.g. groundArrivalTask) flip correctly when
+        // the pilot's first frequency-side transmission arrives.
         stationCalled = mission.pendingInitialContactRole.getOrElse { xyz.easiersaid.twr.protocol.RoleName.TOWER },
     ) else null
     MissionStep.REPORT_DOWNWIND ->
@@ -583,6 +595,16 @@ fun processInstruction(
             // role rather than the hardcoded TOWER. Real-world parallel:
             // the controller said "OE-ABC, contact ground 121.9" — the
             // pilot calls "Ground, OE-ABC" next, not "Tower."
+            //
+            // Pass 7 post-impl Impact-O.2: latest-wins semantic on
+            // `pendingInitialContactRole`. Two ContactFrequency in quick
+            // succession overwrite the field silently. Operationally
+            // defensible (real ATC may amend an in-flight handoff
+            // explicitly: "OE-ABC, disregard ground, contact tower") and
+            // matches ICAO clarification semantics. The lost first-role
+            // is not currently audited; if a future pass surfaces handoff-
+            // overwrite anomalies (peer to D-PF.2's runway-assignment
+            // anomalies), this is the trigger site.
             mission.copy(
                 contactedOnFrequency = false,
                 lastTransmittedStep = None,
