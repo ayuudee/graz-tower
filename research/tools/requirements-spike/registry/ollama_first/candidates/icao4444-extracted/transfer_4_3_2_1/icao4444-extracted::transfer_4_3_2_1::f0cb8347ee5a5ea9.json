@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "familyId": "icao4444_transfer_family",
+  "claimText": "Control of certain flights may be transferred directly from an ACC to an aerodrome control tower and vice versa, by prior arrangement between the units concerned for the relevant part of approach control service to be provided by the ACC or the aerodrome control tower, as applicable.",
+  "rationale": "Note providing background information on an exception to the standard flow. Uses 'may' and describes a possibility based on 'prior arrangement', not a mandatory operational rule for all flights.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "operational_exception",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Even though there is an approach control unit, control of certain flights may be transferred directly from an ACC to an aerodrome control tower and vice versa, by prior arrangement between the units concerned for the relevant part of approach control service to be provided by the ACC or the aerodrome control tower, as applicable."
+  ],
+  "sourceItemIds": [
+    "Note_4.3.2.1.2"
+  ],
+  "claimSha256": "c303eabbe8268f1e7238dcede4773e6d9b192e81896fc617a24d9512d3db190b",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3086,
+    "endLine": 3131
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_transfer_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "direct_transfer_note",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted text is verbatim, self-contained, and not redundant with the accepted sibling; it is correctly treated as non-normative background from a Note rather than an authoritative requirement. The only evident metadata issue is that it is not a definition but an operational exception/background note about a possible direct transfer arrangement.",
+      "corrections": {
+        "requirementKind": "operational_exception"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-04-29T09:20:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/transfer_4_3_2_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:20:20Z"
+  }
+}

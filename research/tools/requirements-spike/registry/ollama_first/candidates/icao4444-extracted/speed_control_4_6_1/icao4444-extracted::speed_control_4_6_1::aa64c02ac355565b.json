@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::aa64c02ac355565b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "familyId": "icao4444_speed_control_family",
+  "claimText": "Instructions involving frequent changes of speed, including alternate speed increases and decreases, should be avoided.",
+  "rationale": "All attempts identify this 'should' guidance on avoiding frequent changes.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "exploratory_probe",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Instructions involving frequent changes of speed, including alternate speed increases and decreases, should be avoided."
+  ],
+  "sourceItemIds": [
+    "sec_4.6.1.4"
+  ],
+  "claimSha256": "231450824ffcfa03d690089a491a6e843c92bdacf995f27b322ff3854549e66a",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3431,
+    "endLine": 3473
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_speed_control_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "avoid_frequent_speed_changes",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted sentence appears verbatim in the source, and the candidate accurately preserves the source\u2019s 'should' modality as operational guidance. It is an atomic clause not already covered by the accepted siblings, and all gate audits passed; the judge\u2019s advisory-only demotion does not identify a source or schema defect.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:17:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/speed_control_4_6_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:17:12Z"
+  }
+}

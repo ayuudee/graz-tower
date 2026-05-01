@@ -1,0 +1,11 @@
+{
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "familyId": "icao4444_speed_control_family",
+  "sourcePath": "research/txt/icao4444-extracted.txt",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "startLine": 3431,
+  "endLine": 3473,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

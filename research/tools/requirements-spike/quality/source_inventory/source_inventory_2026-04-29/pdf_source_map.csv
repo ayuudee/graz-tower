@@ -1,0 +1,10 @@
+pdf_path,title,mapped_texts,pdfinfo_pages,pdf_file_exists,identity_check
+research/pdf/249.pdf,CAP 413 - UK Manual of Radiotelephony,cap413-extracted; cap413-aerodrome-chapter,372,true,pdftotext first page: 'Radiotelephony Manual CAP 413'; pdfinfo pages=372.
+research/pdf/CELEX_32012R0923_EN_TXT.pdf,Commission Implementing Regulation (EU) No 923/2012 - SERA,sera-923-2012-extracted,66,true,pdftotext first page: Commission Implementing Regulation (EU) No 923/2012; pdfinfo pages=66.
+research/pdf/EGAST_Radiotelephony-guide-for-VFR-pilots.pdf,EGAST GA phraseology guide,egast-vfr-extracted,25,true,pdftotext first page: 'A Guide to phraseology FOR GENERAL AVIATION PILOTS IN EUROPE'; pdfinfo pages=25.
+research/pdf/H_01_LO_Circ_2023_A_21_en_2023-11-16_1111697.pdf,Austro Control AIC A 21/23,h01-extracted; h01-aerodrome-chapter,148,true,"pdftotext first page: AIC A 21/23, effective date 28 DEC 2023; pdfinfo pages=148."
+research/pdf/Zalacznik1.pdf,ICAO Doc 9432 / Polish attachment,icao9432-extracted; icao9432-aerodrome-chapter,194,true,pdftotext first page: Doc 9432 Manual of Radiotelephony; pdfinfo pages=194.
+research/pdf/filea0162087916d2b1.pdf,Slovenia VFR Phraseology Guide,slovenia-vfr-extracted,40,true,pdftotext first page: Contents with 12 VFR phraseology chapters; pdfinfo pages=40.
+research/pdf/fundies.pdf,Nolan - Fundamentals of Air Traffic Control,nolan-fundamentals-extracted,674,true,"pdftotext first page: Fundamentals of Air Traffic Control, Fifth Edition; pdfinfo pages=674."
+research/pdf/icao-4444.pdf,ICAO Doc 4444 PANS-ATM,icao4444-extracted,476,true,"pdftotext first page: Doc 4444 PANS-ATM, Sixteenth Edition 2016; pdfinfo pages=476."
+research/pdf/safetysense22-radiotelephony.pdf,UK CAA SafetySense 02 Radiotelephony,safetysense22-extracted,30,true,pdftotext first page: Radiotelephony for General Aviation Pilots SSL 22; pdfinfo pages=30.

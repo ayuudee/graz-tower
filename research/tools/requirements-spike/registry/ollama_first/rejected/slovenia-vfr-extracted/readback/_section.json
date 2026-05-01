@@ -1,0 +1,11 @@
+{
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "familyId": "slovenia_vfr_readback_family",
+  "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+  "sourceSha256": "506ad45fae6c6f58665c12d57cb14c84b42e57fe77761bac1dd9bc2a8c1310dd",
+  "startLine": 524,
+  "endLine": 565,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

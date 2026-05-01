@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::readback_8015_e::77e2b70b41027ce4",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "readback_8015_e",
+  "familyId": "sera_readback_family",
+  "claimText": "Other clearances or instructions, including conditional clearances and taxi instructions, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with.",
+  "rationale": "Obligation for non-mandatory items from SERA.923(e)(2). All attempts agree on the text and authority. Testability set to sim_executable as the outcome (read-back/acknowledgment) is observable.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "(2) Other clearances or instructions, including conditional clearances and taxi instructions, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with."
+  ],
+  "sourceItemIds": [
+    "sera_923_e_2"
+  ],
+  "claimSha256": "cea46695713308221c10acf1c6cef48d1de6ee53f25619320afdc356ba0e024a",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2023,
+    "endLine": 2037
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "sera_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_923_e_2",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/sera-923-2012-extracted/readback_8015_e/judged_candidates.json"
+  }
+}

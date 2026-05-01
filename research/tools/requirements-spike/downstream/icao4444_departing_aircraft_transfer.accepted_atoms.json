@@ -1,0 +1,71 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.3.2.1.3",
+  "bundleId": "icao4444-extracted:4.3.2.1.3",
+  "promotionBasis": {
+    "judgementCsv": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/bundle_atom_judgements_2026-04-23.csv",
+    "selectedModel": "qwen2.5-coder:32b",
+    "sourceTrial": "/tmp/requirements-bundle-atom-run/qwen2.5-coder__32b__4.3.2.1.3.json",
+    "promotionMode": "accepted_with_editorial_fixup"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "property_or_family_test",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.3.2.1.3:vmc_transfer_branch",
+      "claimText": "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service when visual meteorological conditions prevail in the vicinity of the aerodrome, prior to the aircraft leaving the vicinity of the aerodrome, prior to the aircraft entering instrument meteorological conditions, or when the aircraft is at a prescribed point or level, as specified in letters of agreement or ATS unit instructions.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444_transfer::list_item::4.3.2.1.3::a)"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444_transfer::clause::4.3.2.1.3"
+      ],
+      "actors": [
+        "unit providing aerodrome control service",
+        "unit providing approach control service"
+      ],
+      "requiredBehaviour": [
+        "transfer control of a departing aircraft under the VMC branch at one of the specified transfer points or times"
+      ],
+      "applicability": [
+        "visual meteorological conditions prevail in the vicinity of the aerodrome"
+      ],
+      "sourceSupport": [
+        "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service:",
+        "when visual meteorological conditions prevail in the vicinity of the aerodrome:",
+        "1) prior to the time the aircraft leaves the vicinity of the aerodrome,",
+        "2) prior to the aircraft entering instrument meteorological conditions, or",
+        "3) when the aircraft is at a prescribed point or level,",
+        "as specified in letters of agreement or ATS unit instructions;"
+      ]
+    },
+    {
+      "atomId": "icao4444:4.3.2.1.3:imc_transfer_branch",
+      "claimText": "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service when instrument meteorological conditions prevail at the aerodrome, immediately after the aircraft is airborne, or when the aircraft is at a prescribed point or level, as specified in letters of agreement or local instructions.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444_transfer::list_item::4.3.2.1.3::b)"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444_transfer::clause::4.3.2.1.3"
+      ],
+      "actors": [
+        "unit providing aerodrome control service",
+        "unit providing approach control service"
+      ],
+      "requiredBehaviour": [
+        "transfer control of a departing aircraft under the IMC branch at one of the specified transfer points or times"
+      ],
+      "applicability": [
+        "instrument meteorological conditions prevail at the aerodrome"
+      ],
+      "sourceSupport": [
+        "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service:",
+        "when instrument meteorological conditions prevail at the aerodrome:",
+        "1) immediately after the aircraft is airborne, or",
+        "2) when the aircraft is at a prescribed point or level,",
+        "as specified in letters of agreement or local instructions."
+      ]
+    }
+  ]
+}

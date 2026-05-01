@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "slovenia-vfr-extracted::readback::bc0f4ca923dede0d",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "familyId": "slovenia_vfr_readback_family",
+  "claimText": "Messages containing ATC route clearance must be read back.",
+  "rationale": "All attempts agree on the obligation to complete the readback and include the call sign. 'Must' indicates a strict requirement.",
+  "modality": "must",
+  "authorityClass": "best_practice",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Messages containing the following must be read back:",
+    "ATC route clearance"
+  ],
+  "sourceItemIds": [
+    "read_back_requirements"
+  ],
+  "claimSha256": "bf8906111a0aa5df7ce0cdc7ea489802344171ed2157a9934e1e7dbb9325dcb7",
+  "provenance": {
+    "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+    "sourceSha256": "506ad45fae6c6f58665c12d57cb14c84b42e57fe77761bac1dd9bc2a8c1310dd",
+    "startLine": 524,
+    "endLine": 565
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "slovenia_vfr_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "rr13_manual_repair_2026-04-29:readback:bf8906111a0a",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "must",
+      "authorityClass": "best_practice"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_missing_record_accept",
+      "confidence": "high",
+      "reasoning": "Added source-supported Slovenia VFR item-level readback requirement missing from the accepted registry.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:18:31Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Added source-supported Slovenia VFR item-level readback requirement missing from the accepted registry.",
+      "appliedAt": "2026-04-29T20:18:31Z",
+      "previousCanonicalId": "slovenia-vfr-extracted::readback::e13320f1fbb573c1"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:18:31Z"
+  }
+}

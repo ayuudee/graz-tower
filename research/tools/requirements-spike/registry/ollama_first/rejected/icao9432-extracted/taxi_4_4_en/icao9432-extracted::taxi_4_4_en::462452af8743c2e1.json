@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::taxi_4_4_en::462452af8743c2e1",
+  "documentId": "icao9432-extracted",
+  "sectionId": "taxi_4_4_en",
+  "familyId": "icao9432_taxi_family",
+  "claimText": "The phraseology listed in section 4.3.2 should be used by the pilot and ground staff during pushback coordination.",
+  "rationale": "All three attempts identified this phraseology recommendation. It is specific to the Polish section of the source window.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Poniższa frazeologia powinna być stosowana przez pilota i obsługę naziemną podczas koordynacji wypychania"
+  ],
+  "sourceItemIds": [
+    "sec_4.3.2_pl"
+  ],
+  "claimSha256": "9a1b328d3c2c658fb839a4a1d421dac19adc748fc16ff7c6d86e7a83545b06d3",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4917,
+    "endLine": 5139
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao9432_taxi_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_pushback_phraseology_standard",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "should",
+      "authorityClass": "operational_guidance"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_section_contamination_reject",
+      "confidence": "high",
+      "reasoning": "Removed adjacent Polish/pushback material from the accepted English ICAO 9432 taxi section output.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:18:31Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Removed adjacent Polish/pushback material from the accepted English ICAO 9432 taxi section output.",
+      "appliedAt": "2026-04-29T20:18:31Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "rejected",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "repaired_rejection",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-04-29T20:18:31Z"
+  }
+}

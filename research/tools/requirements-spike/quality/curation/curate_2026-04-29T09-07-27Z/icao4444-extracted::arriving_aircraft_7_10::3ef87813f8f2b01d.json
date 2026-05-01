@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::3ef87813f8f2b01d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.39,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text is verbatim and supports the claim as a permissive 'may' request. The only defect is the G3 authority-floor mismatch: a 'may' modality cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::3ef87813f8f2b01d.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::3ef87813f8f2b01d.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    }
+  },
+  "curatedAt": "2026-04-29T09:12:10Z"
+}

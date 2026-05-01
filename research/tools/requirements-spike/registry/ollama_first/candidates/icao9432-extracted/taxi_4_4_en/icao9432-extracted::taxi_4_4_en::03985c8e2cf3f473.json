@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473",
+  "documentId": "icao9432-extracted",
+  "sectionId": "taxi_4_4_en",
+  "familyId": "icao9432_taxi_family",
+  "claimText": "The clearance limit for departing aircraft may be any other position on the aerodrome depending on prevailing traffic circumstances.",
+  "rationale": "Attempts 1 and 2 identified this as a permissive rule ('may'). It defines the scope of controller discretion relative to the default holding point.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "but it may be any other position on the aerodrome depending on the prevailing traffic circumstances"
+  ],
+  "sourceItemIds": [
+    "4.4.1_en"
+  ],
+  "claimSha256": "76e5bfab67103f826febc0d08a91556da90c36bfe198c6dbc84a6ee204907ec8",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4917,
+    "endLine": 5139
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao9432_taxi_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_clearance_limit_traffic_dependent",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim and supports the permissive claim that the clearance limit for departing aircraft may be another aerodrome position depending on traffic. The candidate is correctly framed as operational guidance with may modality and is not redundant with the accepted sibling covering the general requirement to include a clearance limit.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:23:36Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:23:36Z"
+  }
+}

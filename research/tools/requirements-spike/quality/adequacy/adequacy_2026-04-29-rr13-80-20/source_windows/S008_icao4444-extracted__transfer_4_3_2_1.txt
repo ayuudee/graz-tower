@@ -1,0 +1,46 @@
+3086: 
+3087: 4.3.2.1 Except for flights which are provided aerodrome control service only, the control of arriving and departing
+3088: controlled flights shall be divided between units providing aerodrome control service and units providing approach control
+3089: service as follows:
+3090: 4.3.2.1.1 Arriving aircraft. Control of an arriving aircraft shall be transferred from the unit providing approach
+3091: control service to the unit providing aerodrome control service when the aircraft:
+3092: a)
+3093: 
+3094: is in the vicinity of the aerodrome, and
+3095: 1) it is considered that approach and landing will be completed in visual reference to the ground, or
+3096: 2) has reached uninterrupted visual meteorological conditions, or
+3097: 
+3098: b) is at a prescribed point or level, or
+3099: c)
+3100: 
+3101: has landed,
+3102: 
+3103: as specified in letters of agreement or ATS unit instructions.
+3104: 4.3.2.1.2 Transfer of communications to the aerodrome controller should be effected at such a point, level or time
+3105: that clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely
+3106: manner.
+3107: Note.— Even though there is an approach control unit, control of certain flights may be transferred directly from an
+3108: ACC to an aerodrome control tower and vice versa, by prior arrangement between the units concerned for the relevant
+3109: part of approach control service to be provided by the ACC or the aerodrome control tower, as applicable.
+3110: 4.3.2.1.3 Departing aircraft. Control of a departing aircraft shall be transferred from the unit providing aerodrome
+3111: control service to the unit providing approach control service:
+3112: a)
+3113: 
+3114: when visual meteorological conditions prevail in the vicinity of the aerodrome:
+3115: 1) prior to the time the aircraft leaves the vicinity of the aerodrome,
+3116: 2) prior to the aircraft entering instrument meteorological conditions, or
+3117: 3) when the aircraft is at a prescribed point or level,
+3118: 
+3119: as specified in letters of agreement or ATS unit instructions;
+3120: 10/11/16
+3121: 
+3122: Chapter 4. General Provisions for Air Traffic Services
+3123: 
+3124: 4-3
+3125: 
+3126: b) when instrument meteorological conditions prevail at the aerodrome:
+3127: 1) immediately after the aircraft is airborne, or
+3128: 2) when the aircraft is at a prescribed point or level,
+3129: as specified in letters of agreement or local instructions.
+3130: Note.— See Note following 4.3.2.1.2.
+3131: 

@@ -1,0 +1,11 @@
+{
+  "schemaName": "manual_coverage_repair_audit",
+  "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+  "createdAt": "2026-04-29T22:00:00Z",
+  "canonicalId": "icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9",
+  "action": "manual_add_accept",
+  "reasoning": "Adds a missed source-supported route-clearance scope rule that is distinct from the already accepted TAKE OFF word-use rule.",
+  "exactSourceQuotes": [
+    "An air traffic control (ATC) route clearance is not an instruction to take off or enter an active\nrunway."
+  ]
+}

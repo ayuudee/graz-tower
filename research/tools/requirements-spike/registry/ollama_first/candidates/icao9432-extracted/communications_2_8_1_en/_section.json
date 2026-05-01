@@ -1,0 +1,11 @@
+{
+  "documentId": "icao9432-extracted",
+  "sectionId": "communications_2_8_1_en",
+  "familyId": "icao9432_communications_family",
+  "sourcePath": "research/txt/icao9432-extracted.txt",
+  "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+  "startLine": 3642,
+  "endLine": 3697,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

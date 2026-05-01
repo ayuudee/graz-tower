@@ -1,0 +1,37 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.5.7.5.2:full-document",
+  "bundleId": "icao4444-extracted:4.5.7.5.2",
+  "promotionBasis": {
+    "promotionMode": "deterministic_seeded_full_document",
+    "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+    "policyId": "icao4444-downstream-policy",
+    "sourceRunManifest": "/tmp/icao4444-pipeline-widening-pre-fixture/run_manifest.json",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "property_or_family_test",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.5.7.5.2:controller_discrepancy_correction",
+      "claimText": "The controller shall listen to the readback to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew and shall take immediate action to correct any discrepancies revealed by the readback.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444::numeric_clause::01438::unit"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "controller"
+      ],
+      "requiredBehaviour": [
+        "listen to the readback to verify correct acknowledgement",
+        "take immediate corrective action when the readback reveals a discrepancy"
+      ],
+      "applicability": [
+        "when a flight crew readback is received for a clearance or instruction"
+      ],
+      "sourceSupport": [
+        "The controller shall listen to the readback to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew and shall take immediate action to correct any discrepancies revealed by the readback."
+      ]
+    }
+  ]
+}

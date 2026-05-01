@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::6524e899c0a46912",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "familyId": "icao4444_transfer_family",
+  "claimText": "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service under the VMC or IMC timing conditions listed in ICAO Doc 4444 section 4.3.2.1.3, as specified in letters of agreement or local instructions.",
+  "rationale": "Manual split from ICAO Doc 4444 section 4.3.2.1 parent. The departing-aircraft branch is the operative transfer rule and its VMC/IMC condition set is preserved as a bundled family-test candidate rather than flattened into a single condition.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "4.3.2.1.3 Departing aircraft. Control of a departing aircraft shall be transferred from the unit providing aerodrome\ncontrol service to the unit providing approach control service:\na)\n\nwhen visual meteorological conditions prevail in the vicinity of the aerodrome:\n1) prior to the time the aircraft leaves the vicinity of the aerodrome,\n2) prior to the aircraft entering instrument meteorological conditions, or\n3) when the aircraft is at a prescribed point or level,\n\nas specified in letters of agreement or ATS unit instructions;",
+    "b) when instrument meteorological conditions prevail at the aerodrome:\n1) immediately after the aircraft is airborne, or\n2) when the aircraft is at a prescribed point or level,\nas specified in letters of agreement or local instructions."
+  ],
+  "sourceItemIds": [
+    "4.3.2.1.3"
+  ],
+  "claimSha256": "3b95c9408735f67ec502dc9df883d28c0606c71fd2243ec7d9de4e70974613a1",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3086,
+    "endLine": 3131
+  },
+  "ingestionRun": {
+    "runId": "manual_rr11_2026-04-29T14-37-05Z",
+    "caseId": "icao4444_transfer_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "manual_split_departing_control_transfer_4_3_2_1_3",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_split_accept",
+      "reasoning": "Manual split from ICAO Doc 4444 section 4.3.2.1 parent. The departing-aircraft branch is the operative transfer rule and its VMC/IMC condition set is preserved as a bundled family-test candidate rather than flattened into a single condition.",
+      "sourceParentCanonicalId": "icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T14:37:05Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T14:37:05Z",
+    "promotedFrom": "manual RR-11 split of icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502",
+    "curatedAt": "2026-04-29T14:37:05Z"
+  }
+}

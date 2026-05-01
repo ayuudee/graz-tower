@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::1217a29793be2295",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "familyId": "icao4444_speed_control_family",
+  "claimText": "Cancellation of any speed control instruction does not relieve the flight crew of compliance with speed limitations associated with airspace classifications as specified in Annex 11.",
+  "rationale": "All attempts identify this as a clarifying note regarding airspace limits.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_note",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Cancellation of any speed control instruction does not relieve the flight crew of compliance with speed limitations associated with airspace classifications as specified in Annex 11 \u2014 Air Traffic Services, Appendix 4."
+  ],
+  "sourceItemIds": [
+    "note_4.6.1.2_1"
+  ],
+  "claimSha256": "82332c9c9d519c7a60128202036c6b7ac6cee3d42600e461b3dce486115ad5dc",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3431,
+    "endLine": 3473
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_speed_control_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "note_cancellation_limitation",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim-supported and the candidate correctly treats the source as a non-normative Note with operational-guidance authority. The only issue is that `requirementKind: rule` overstates a clarifying note rather than an independent requirement.",
+      "corrections": {
+        "requirementKind": "advisory_note"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-04-29T09:15:30Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/speed_control_4_6_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:15:30Z"
+  }
+}

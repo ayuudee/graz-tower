@@ -1,0 +1,1401 @@
+{
+  "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "runStartedAt": "2026-04-28T19:43:49Z",
+  "documents": [
+    {
+      "documentId": "cap413-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 8,
+      "sectionResults": [
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "readback_2_68_2_71",
+          "status": "promoted",
+          "totalJudged": 8,
+          "landed": [
+            "cap413-extracted::readback_2_68_2_71::6f7c53b154316740",
+            "cap413-extracted::readback_2_68_2_71::416df194379d4cd4",
+            "cap413-extracted::readback_2_68_2_71::90d7228d9f0371b1",
+            "cap413-extracted::readback_2_68_2_71::e5e8193a7616edbf",
+            "cap413-extracted::readback_2_68_2_71::77defe5f0684579f",
+            "cap413-extracted::readback_2_68_2_71::07c68d8e755e5c46"
+          ],
+          "pending": [
+            "cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b",
+            "cap413-extracted::readback_2_68_2_71::66f9e846fad0b3f3"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b",
+              "originalCandidateId": "req_readback_missing",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_human_review"
+            },
+            {
+              "canonicalId": "cap413-extracted::readback_2_68_2_71::66f9e846fad0b3f3",
+              "originalCandidateId": "req_request_repetition",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "egast-vfr-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 14,
+      "sectionResults": [
+        {
+          "documentId": "egast-vfr-extracted",
+          "sectionId": "readback_advisory",
+          "status": "promoted",
+          "totalJudged": 14,
+          "landed": [
+            "egast-vfr-extracted::readback_advisory::4c550f13299b2142",
+            "egast-vfr-extracted::readback_advisory::987300b2eaab8d13",
+            "egast-vfr-extracted::readback_advisory::5faf696eefce9006",
+            "egast-vfr-extracted::readback_advisory::fa15744547eaf342",
+            "egast-vfr-extracted::readback_advisory::b3c3324d8aecf8df",
+            "egast-vfr-extracted::readback_advisory::774c1fdb78d8d6f4",
+            "egast-vfr-extracted::readback_advisory::612775fd37fd5576",
+            "egast-vfr-extracted::readback_advisory::88d9700208363bf5",
+            "egast-vfr-extracted::readback_advisory::ea54527cb9d9e0fa",
+            "egast-vfr-extracted::readback_advisory::1219ed8ddedc98c5",
+            "egast-vfr-extracted::readback_advisory::1576d7c0cb75108a"
+          ],
+          "pending": [
+            "egast-vfr-extracted::readback_advisory::60929bb516ae7098",
+            "egast-vfr-extracted::readback_advisory::2a5d4629a99284e3",
+            "egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "egast-vfr-extracted::readback_advisory::60929bb516ae7098",
+              "originalCandidateId": "req_readback_order",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "egast-vfr-extracted::readback_advisory::2a5d4629a99284e3",
+              "originalCandidateId": "req_request_clarification",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_human_review"
+            },
+            {
+              "canonicalId": "egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f",
+              "originalCandidateId": "sup_readback_benefit",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "h01-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 25,
+      "sectionResults": [
+        {
+          "documentId": "h01-extracted",
+          "sectionId": "acknowledgement_3_8_1",
+          "status": "promoted",
+          "totalJudged": 12,
+          "landed": [
+            "h01-extracted::acknowledgement_3_8_1::9f7c6e8ae357bb62",
+            "h01-extracted::acknowledgement_3_8_1::84ba9adfad38e69f",
+            "h01-extracted::acknowledgement_3_8_1::ae6bef87f80a813a",
+            "h01-extracted::acknowledgement_3_8_1::299a154acafe87cc",
+            "h01-extracted::acknowledgement_3_8_1::3225848831f73cdc",
+            "h01-extracted::acknowledgement_3_8_1::f6d1172db8916a27",
+            "h01-extracted::acknowledgement_3_8_1::11f3df660516dfe3"
+          ],
+          "pending": [
+            "h01-extracted::acknowledgement_3_8_1::647df1446645072b",
+            "h01-extracted::acknowledgement_3_8_1::1ba408f68e9b501d",
+            "h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3",
+            "h01-extracted::acknowledgement_3_8_1::d19604b475643777",
+            "h01-extracted::acknowledgement_3_8_1::6281074482768bcc"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "h01-extracted::acknowledgement_3_8_1::647df1446645072b",
+              "originalCandidateId": "crew_readback_safety_parts",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "h01-extracted::acknowledgement_3_8_1::1ba408f68e9b501d",
+              "originalCandidateId": "readback_runway_clearances",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3",
+              "originalCandidateId": "readback_operational_data",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "h01-extracted::acknowledgement_3_8_1::d19604b475643777",
+              "originalCandidateId": "perm_station_readback",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "h01-extracted::acknowledgement_3_8_1::6281074482768bcc",
+              "originalCandidateId": "acknowledge_non_readback_info",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "h01-extracted",
+          "sectionId": "corrections_3_8_3",
+          "status": "promoted",
+          "totalJudged": 12,
+          "landed": [
+            "h01-extracted::corrections_3_8_3::384103454b613f22",
+            "h01-extracted::corrections_3_8_3::8a2be49544be3901",
+            "h01-extracted::corrections_3_8_3::86b96953b4cff92a",
+            "h01-extracted::corrections_3_8_3::fc8020ddb859c620",
+            "h01-extracted::corrections_3_8_3::f72f24e73a9378c1",
+            "h01-extracted::corrections_3_8_3::8cebeec30159f975",
+            "h01-extracted::corrections_3_8_3::74a82f65f8238803",
+            "h01-extracted::corrections_3_8_3::08fa37157e593a92",
+            "h01-extracted::corrections_3_8_3::e9b126d362773131",
+            "h01-extracted::corrections_3_8_3::ee8d8ce24e99c2be"
+          ],
+          "pending": [
+            "h01-extracted::corrections_3_8_3::16272622eb9270ac",
+            "h01-extracted::corrections_3_8_3::3da4e8a007c77a4a"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "h01-extracted::corrections_3_8_3::16272622eb9270ac",
+              "originalCandidateId": "req_specific_item_repeat",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "h01-extracted::corrections_3_8_3::3da4e8a007c77a4a",
+              "originalCandidateId": "req_difficult_reception",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "h01-extracted",
+          "sectionId": "end_of_conversation_3_8_2",
+          "status": "promoted",
+          "totalJudged": 1,
+          "landed": [
+            "h01-extracted::end_of_conversation_3_8_2::1d66565b4872e6a0"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 112,
+      "sectionResults": [
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "aerodrome_traffic_7_6",
+          "status": "promoted",
+          "totalJudged": 15,
+          "landed": [
+            "icao4444-extracted::aerodrome_traffic_7_6::79651917f637e44b",
+            "icao4444-extracted::aerodrome_traffic_7_6::ea64ad7c56d8e4ef",
+            "icao4444-extracted::aerodrome_traffic_7_6::8c578c41b3ec04f7",
+            "icao4444-extracted::aerodrome_traffic_7_6::d93181c022b58bde",
+            "icao4444-extracted::aerodrome_traffic_7_6::30fbd81bf8effce6",
+            "icao4444-extracted::aerodrome_traffic_7_6::1a07c3b999bc20c7",
+            "icao4444-extracted::aerodrome_traffic_7_6::fef887f99f7e7cf2",
+            "icao4444-extracted::aerodrome_traffic_7_6::9b4a9d7a51b1e9db",
+            "icao4444-extracted::aerodrome_traffic_7_6::807d3583ea1279be"
+          ],
+          "pending": [
+            "icao4444-extracted::aerodrome_traffic_7_6::507aa6792fc2544f",
+            "icao4444-extracted::aerodrome_traffic_7_6::1ebd71be057d48f1",
+            "icao4444-extracted::aerodrome_traffic_7_6::f11471c05d5603f6",
+            "icao4444-extracted::aerodrome_traffic_7_6::e2996520d363cc72",
+            "icao4444-extracted::aerodrome_traffic_7_6::a1788a24ccd1e00d",
+            "icao4444-extracted::aerodrome_traffic_7_6::ececad1d988ba39d"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::507aa6792fc2544f",
+              "originalCandidateId": "pos2_hold_and_runup",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_human_review"
+            },
+            {
+              "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::1ebd71be057d48f1",
+              "originalCandidateId": "pos3_takeoff_clearance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "unsupported_by_source"
+            },
+            {
+              "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::f11471c05d5603f6",
+              "originalCandidateId": "pos4_landing_clearance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::e2996520d363cc72",
+              "originalCandidateId": "pos5_apron_clearance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "unsupported_by_source"
+            },
+            {
+              "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::a1788a24ccd1e00d",
+              "originalCandidateId": "7.6.3.1.1.3_standard_routes",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::ececad1d988ba39d",
+              "originalCandidateId": "note1_instrument_approach",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "arriving_aircraft_7_10",
+          "status": "promoted",
+          "totalJudged": 14,
+          "landed": [
+            "icao4444-extracted::arriving_aircraft_7_10::e053424300a4b6f1",
+            "icao4444-extracted::arriving_aircraft_7_10::09c82f4c076f4df1",
+            "icao4444-extracted::arriving_aircraft_7_10::970816bfff3ce27e",
+            "icao4444-extracted::arriving_aircraft_7_10::7068da68659afff4",
+            "icao4444-extracted::arriving_aircraft_7_10::7be3b28be8d8a669",
+            "icao4444-extracted::arriving_aircraft_7_10::1a4a79af836e5494",
+            "icao4444-extracted::arriving_aircraft_7_10::f09415377ab460ae"
+          ],
+          "pending": [
+            "icao4444-extracted::arriving_aircraft_7_10::dcc6bc5c93d748ec",
+            "icao4444-extracted::arriving_aircraft_7_10::b74da3c290fac10d",
+            "icao4444-extracted::arriving_aircraft_7_10::b69123447be6f6b8",
+            "icao4444-extracted::arriving_aircraft_7_10::aa0f73d586f3e111",
+            "icao4444-extracted::arriving_aircraft_7_10::3ef87813f8f2b01d",
+            "icao4444-extracted::arriving_aircraft_7_10::0b374c5d204b8a16",
+            "icao4444-extracted::arriving_aircraft_7_10::4aa25a6dde894229"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::dcc6bc5c93d748ec",
+              "originalCandidateId": "7.10.1_note1",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::b74da3c290fac10d",
+              "originalCandidateId": "7.10.1_note2",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::b69123447be6f6b8",
+              "originalCandidateId": "7.10.1_note3",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::aa0f73d586f3e111",
+              "originalCandidateId": "7.10.3.1a_hold_short",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::3ef87813f8f2b01d",
+              "originalCandidateId": "7.10.3.1b_land_beyond",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::0b374c5d204b8a16",
+              "originalCandidateId": "7.10.3.1c_vacate_specified",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "needs_human_review"
+            },
+            {
+              "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::4aa25a6dde894229",
+              "originalCandidateId": "7.10.3.1d_expedit_vacate",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "departing_aircraft_7_9",
+          "status": "promoted",
+          "totalJudged": 19,
+          "landed": [
+            "icao4444-extracted::departing_aircraft_7_9::ab5f5f8d13c39222",
+            "icao4444-extracted::departing_aircraft_7_9::55c3a91070f9adbb",
+            "icao4444-extracted::departing_aircraft_7_9::d6865a7f538c64f6",
+            "icao4444-extracted::departing_aircraft_7_9::d98b483f55199339",
+            "icao4444-extracted::departing_aircraft_7_9::834d45b3ff296d29",
+            "icao4444-extracted::departing_aircraft_7_9::82f95a7eb498066a",
+            "icao4444-extracted::departing_aircraft_7_9::6ff18b99ffa45e9e",
+            "icao4444-extracted::departing_aircraft_7_9::6e31619fc0f871eb",
+            "icao4444-extracted::departing_aircraft_7_9::d17621e3f9b27b76"
+          ],
+          "pending": [
+            "icao4444-extracted::departing_aircraft_7_9::bb99385ae4614b5c",
+            "icao4444-extracted::departing_aircraft_7_9::3dfc260faca27280",
+            "icao4444-extracted::departing_aircraft_7_9::27fd0e98338894f5",
+            "icao4444-extracted::departing_aircraft_7_9::46d1184ac596443f",
+            "icao4444-extracted::departing_aircraft_7_9::e4d4a6ac36168dc6",
+            "icao4444-extracted::departing_aircraft_7_9::93557a25ed477e39",
+            "icao4444-extracted::departing_aircraft_7_9::2732dc9b2e895827",
+            "icao4444-extracted::departing_aircraft_7_9::abacaff9ac399930",
+            "icao4444-extracted::departing_aircraft_7_9::770b652d9783ff76",
+            "icao4444-extracted::departing_aircraft_7_9::9d3985c4744b363b"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::bb99385ae4614b5c",
+              "originalCandidateId": "dep_seq_deviation_purpose",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::3dfc260faca27280",
+              "originalCandidateId": "dep_seq_factor_performance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::27fd0e98338894f5",
+              "originalCandidateId": "dep_seq_factor_routes",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::46d1184ac596443f",
+              "originalCandidateId": "dep_seq_factor_intervals",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::e4d4a6ac36168dc6",
+              "originalCandidateId": "dep_seq_factor_wake",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::93557a25ed477e39",
+              "originalCandidateId": "dep_seq_factor_priority",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::2732dc9b2e895827",
+              "originalCandidateId": "dep_seq_factor_atfm",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::abacaff9ac399930",
+              "originalCandidateId": "dep_sep_landing_clear",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_split"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::770b652d9783ff76",
+              "originalCandidateId": "dep_clearance_separation_assurance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::departing_aircraft_7_9::9d3985c4744b363b",
+              "originalCandidateId": "dep_clearance_immediate_issuance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "readback_4_5_7_5",
+          "status": "promoted",
+          "totalJudged": 9,
+          "landed": [
+            "icao4444-extracted::readback_4_5_7_5::ecac62a54c5f698f",
+            "icao4444-extracted::readback_4_5_7_5::eb9186d5355d8914",
+            "icao4444-extracted::readback_4_5_7_5::231291f0f23ef8c1",
+            "icao4444-extracted::readback_4_5_7_5::5ac4764fb7dc7545",
+            "icao4444-extracted::readback_4_5_7_5::9fc25ce6dc53f75d",
+            "icao4444-extracted::readback_4_5_7_5::92e99b3e3a4d51a7"
+          ],
+          "pending": [
+            "icao4444-extracted::readback_4_5_7_5::1cc502e99b33ace6",
+            "icao4444-extracted::readback_4_5_7_5::5683bc5995947c9f",
+            "icao4444-extracted::readback_4_5_7_5::80a171af98372544"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::readback_4_5_7_5::1cc502e99b33ace6",
+              "originalCandidateId": "req_flight_crew_voice_readback",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::readback_4_5_7_5::5683bc5995947c9f",
+              "originalCandidateId": "guidance_level_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::readback_4_5_7_5::80a171af98372544",
+              "originalCandidateId": "support_cpdlc_reference",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "reduced_runway_7_11",
+          "status": "promoted",
+          "totalJudged": 18,
+          "landed": [
+            "icao4444-extracted::reduced_runway_7_11::b085440b53cb0a9b",
+            "icao4444-extracted::reduced_runway_7_11::ec97fc6aacd6ff7f",
+            "icao4444-extracted::reduced_runway_7_11::6897e091db5d0a7b",
+            "icao4444-extracted::reduced_runway_7_11::3df0f862644bc42e",
+            "icao4444-extracted::reduced_runway_7_11::e80337a5d18417a7",
+            "icao4444-extracted::reduced_runway_7_11::c43ffaf1e23f64ed",
+            "icao4444-extracted::reduced_runway_7_11::ab9c766811a8897c",
+            "icao4444-extracted::reduced_runway_7_11::d629c54ace94f5f7",
+            "icao4444-extracted::reduced_runway_7_11::44ca3cee6e25d071",
+            "icao4444-extracted::reduced_runway_7_11::55b938c3b83c1785",
+            "icao4444-extracted::reduced_runway_7_11::2bddded35160825c",
+            "icao4444-extracted::reduced_runway_7_11::3c1c89936209ff2f",
+            "icao4444-extracted::reduced_runway_7_11::116fad1ed40d1fe8",
+            "icao4444-extracted::reduced_runway_7_11::6b0262350c8ef4b3",
+            "icao4444-extracted::reduced_runway_7_11::ee9d8b3a766e4cdd",
+            "icao4444-extracted::reduced_runway_7_11::4d94eb6a6e022f33",
+            "icao4444-extracted::reduced_runway_7_11::f6d6fb89eb3b7d98"
+          ],
+          "pending": [
+            "icao4444-extracted::reduced_runway_7_11::66fc07893e930bcb"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::reduced_runway_7_11::66fc07893e930bcb",
+              "originalCandidateId": "req_safety_assessment_prereq",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "speed_control_4_6_1",
+          "status": "promoted",
+          "totalJudged": 15,
+          "landed": [
+            "icao4444-extracted::speed_control_4_6_1::176a288266601004",
+            "icao4444-extracted::speed_control_4_6_1::fa5211e176cbcd72",
+            "icao4444-extracted::speed_control_4_6_1::097ff62e3ae3b53d",
+            "icao4444-extracted::speed_control_4_6_1::104c727d8774e3db",
+            "icao4444-extracted::speed_control_4_6_1::65180f5f7c642cba"
+          ],
+          "pending": [
+            "icao4444-extracted::speed_control_4_6_1::f968d421f3a2eeeb",
+            "icao4444-extracted::speed_control_4_6_1::b3884e25bbc4911b",
+            "icao4444-extracted::speed_control_4_6_1::aa64c02ac355565b",
+            "icao4444-extracted::speed_control_4_6_1::5b64dff0f7a93bf6",
+            "icao4444-extracted::speed_control_4_6_1::c65796e5a870f2b6",
+            "icao4444-extracted::speed_control_4_6_1::9e7501b932c88a64",
+            "icao4444-extracted::speed_control_4_6_1::e9f810be22ca5add",
+            "icao4444-extracted::speed_control_4_6_1::1217a29793be2295",
+            "icao4444-extracted::speed_control_4_6_1::2cf081bdd1bb2283",
+            "icao4444-extracted::speed_control_4_6_1::8357e703f52d70a6"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::f968d421f3a2eeeb",
+              "originalCandidateId": "adequate_notice_speed_control",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::b3884e25bbc4911b",
+              "originalCandidateId": "speed_adjustment_limitation",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::aa64c02ac355565b",
+              "originalCandidateId": "avoid_frequent_speed_changes",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::5b64dff0f7a93bf6",
+              "originalCandidateId": "speed_units_high_level",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::c65796e5a870f2b6",
+              "originalCandidateId": "speed_units_low_level",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::9e7501b932c88a64",
+              "originalCandidateId": "note_fuel_impact",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::e9f810be22ca5add",
+              "originalCandidateId": "note_mach_separation_ref",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::1217a29793be2295",
+              "originalCandidateId": "note_cancellation_limitation",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::2cf081bdd1bb2283",
+              "originalCandidateId": "note_mach_conversion",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::speed_control_4_6_1::8357e703f52d70a6",
+              "originalCandidateId": "note_heavy_aircraft_limitation",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "transfer_4_3_2_1",
+          "status": "promoted",
+          "totalJudged": 8,
+          "landed": [],
+          "pending": [
+            "icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502",
+            "icao4444-extracted::transfer_4_3_2_1::e87aa82016b9b93b",
+            "icao4444-extracted::transfer_4_3_2_1::2670284e94e0eeb0",
+            "icao4444-extracted::transfer_4_3_2_1::ab2e105064064445",
+            "icao4444-extracted::transfer_4_3_2_1::04fa5058092e4265",
+            "icao4444-extracted::transfer_4_3_2_1::2198f6235c44d5d7",
+            "icao4444-extracted::transfer_4_3_2_1::98068c7af46e0390",
+            "icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502",
+              "originalCandidateId": "ctrl_division_general",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::e87aa82016b9b93b",
+              "originalCandidateId": "transfer_arrival_vmc",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::2670284e94e0eeb0",
+              "originalCandidateId": "transfer_arrival_point_level",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::ab2e105064064445",
+              "originalCandidateId": "transfer_arrival_landed",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::04fa5058092e4265",
+              "originalCandidateId": "transfer_comm_timely",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::2198f6235c44d5d7",
+              "originalCandidateId": "transfer_departure_vmc",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::98068c7af46e0390",
+              "originalCandidateId": "transfer_departure_imc",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9",
+              "originalCandidateId": "direct_transfer_note",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "wake_turbulence_5_8",
+          "status": "promoted",
+          "totalJudged": 14,
+          "landed": [
+            "icao4444-extracted::wake_turbulence_5_8::d2c228df10630ee8",
+            "icao4444-extracted::wake_turbulence_5_8::8d48784411b94845",
+            "icao4444-extracted::wake_turbulence_5_8::aa549e12f422eed0",
+            "icao4444-extracted::wake_turbulence_5_8::8ad4ccfb077dbf04",
+            "icao4444-extracted::wake_turbulence_5_8::68ace43862437dfb",
+            "icao4444-extracted::wake_turbulence_5_8::eb48ff5054e3f496"
+          ],
+          "pending": [
+            "icao4444-extracted::wake_turbulence_5_8::1e2b1b978aee05fa",
+            "icao4444-extracted::wake_turbulence_5_8::a8cd7d9145e0e339",
+            "icao4444-extracted::wake_turbulence_5_8::b2209483e71c53c3",
+            "icao4444-extracted::wake_turbulence_5_8::e0fd9fa3eda729ad",
+            "icao4444-extracted::wake_turbulence_5_8::341594e5786999a5",
+            "icao4444-extracted::wake_turbulence_5_8::a9c15fac90c928a2",
+            "icao4444-extracted::wake_turbulence_5_8::1cd7ca788ad94b3f",
+            "icao4444-extracted::wake_turbulence_5_8::ad5ab8aad62283e3"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::1e2b1b978aee05fa",
+              "originalCandidateId": "wake_dep_2min_same_runway",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::a8cd7d9145e0e339",
+              "originalCandidateId": "wake_dep_2min_parallel_close",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::b2209483e71c53c3",
+              "originalCandidateId": "wake_dep_2min_crossing",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::e0fd9fa3eda729ad",
+              "originalCandidateId": "wake_dep_2min_parallel_far_crossing",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::341594e5786999a5",
+              "originalCandidateId": "wake_dep_3min_intermediate",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::a9c15fac90c928a2",
+              "originalCandidateId": "wake_dep_3min_parallel_intermediate",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::1cd7ca788ad94b3f",
+              "originalCandidateId": "wake_displaced_2min_departing",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::wake_turbulence_5_8::ad5ab8aad62283e3",
+              "originalCandidateId": "wake_displaced_2min_arriving",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 20,
+      "sectionResults": [
+        {
+          "documentId": "icao9432-extracted",
+          "sectionId": "communications_2_8_1_en",
+          "status": "promoted",
+          "totalJudged": 5,
+          "landed": [],
+          "pending": [
+            "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+            "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
+            "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+            "icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf",
+            "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+              "originalCandidateId": "req_2.8.1.1_full_callsign",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
+              "originalCandidateId": "req_2.8.1.2_ground_broadcast",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+              "originalCandidateId": "req_2.8.1.3_aircraft_broadcast",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf",
+              "originalCandidateId": "req_2.8.1.3_no_reply",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+              "originalCandidateId": "req_2.8.1.4_repetition",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao9432-extracted",
+          "sectionId": "readback_2_8_3_en",
+          "status": "promoted",
+          "totalJudged": 6,
+          "landed": [
+            "icao9432-extracted::readback_2_8_3_en::58594a8ee6243296",
+            "icao9432-extracted::readback_2_8_3_en::15940532b37f8528",
+            "icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60",
+            "icao9432-extracted::readback_2_8_3_en::4b6ece953649da07",
+            "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649"
+          ],
+          "pending": [
+            "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2",
+              "originalCandidateId": "clearance_passing_guidance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao9432-extracted",
+          "sectionId": "taxi_4_4_en",
+          "status": "promoted",
+          "totalJudged": 9,
+          "landed": [
+            "icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e",
+            "icao9432-extracted::taxi_4_4_en::1367907005a34ad1",
+            "icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58",
+            "icao9432-extracted::taxi_4_4_en::453f27d271407f98"
+          ],
+          "pending": [
+            "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
+            "icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473",
+            "icao9432-extracted::taxi_4_4_en::eadf2541fcd51825",
+            "icao9432-extracted::taxi_4_4_en::462452af8743c2e1",
+            "icao9432-extracted::taxi_4_4_en::9b3186528c0a6e32"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
+              "originalCandidateId": "req_clearance_limit_default_departing",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473",
+              "originalCandidateId": "req_clearance_limit_traffic_dependent",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::taxi_4_4_en::eadf2541fcd51825",
+              "originalCandidateId": "def_runway_vacated",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::taxi_4_4_en::462452af8743c2e1",
+              "originalCandidateId": "req_pushback_phraseology_standard",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::taxi_4_4_en::9b3186528c0a6e32",
+              "originalCandidateId": "req_pushback_interruption_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "safetysense22-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 16,
+      "sectionResults": [
+        {
+          "documentId": "safetysense22-extracted",
+          "sectionId": "readbacks",
+          "status": "promoted",
+          "totalJudged": 16,
+          "landed": [
+            "safetysense22-extracted::readbacks::127ec87d0fe63b0a",
+            "safetysense22-extracted::readbacks::e62c1dc0c3ecb6b4",
+            "safetysense22-extracted::readbacks::e79039676de3426b",
+            "safetysense22-extracted::readbacks::6529d352623271b5",
+            "safetysense22-extracted::readbacks::9c85ad75286271fb",
+            "safetysense22-extracted::readbacks::48323d8e204141cc",
+            "safetysense22-extracted::readbacks::04e2d8692698e8b8",
+            "safetysense22-extracted::readbacks::f27a13c0b4e74d60",
+            "safetysense22-extracted::readbacks::c85770d0b047a61c",
+            "safetysense22-extracted::readbacks::64df1f4e44225744",
+            "safetysense22-extracted::readbacks::81eb315e591b0dde",
+            "safetysense22-extracted::readbacks::bda9d5cb7bd1e39b",
+            "safetysense22-extracted::readbacks::2a0618ee5d6eee7b",
+            "safetysense22-extracted::readbacks::2a186bd654bbabca",
+            "safetysense22-extracted::readbacks::fed6e4e71a3be099"
+          ],
+          "pending": [
+            "safetysense22-extracted::readbacks::9b6c62502e773767"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "safetysense22-extracted::readbacks::9b6c62502e773767",
+              "originalCandidateId": "readback_scope_rule",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 38,
+      "sectionResults": [
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "atc_service_8005",
+          "status": "promoted",
+          "totalJudged": 14,
+          "landed": [
+            "sera-923-2012-extracted::atc_service_8005::dfa51d1620508396",
+            "sera-923-2012-extracted::atc_service_8005::9010b3f9c184e2d9",
+            "sera-923-2012-extracted::atc_service_8005::58ad92bb312dae3a",
+            "sera-923-2012-extracted::atc_service_8005::3abeb590b79bfb9a",
+            "sera-923-2012-extracted::atc_service_8005::a529e2b742faf51d",
+            "sera-923-2012-extracted::atc_service_8005::17aaf72a5ad8da81",
+            "sera-923-2012-extracted::atc_service_8005::7a52c3cef9128a5d",
+            "sera-923-2012-extracted::atc_service_8005::ac3e25632273442a",
+            "sera-923-2012-extracted::atc_service_8005::5a949fbebdbde418",
+            "sera-923-2012-extracted::atc_service_8005::24acd63e0249dc4c"
+          ],
+          "pending": [
+            "sera-923-2012-extracted::atc_service_8005::b1cc921c69e37139",
+            "sera-923-2012-extracted::atc_service_8005::5c2c8b53ac81d307",
+            "sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff",
+            "sera-923-2012-extracted::atc_service_8005::dd09fb0eb790d595"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "sera-923-2012-extracted::atc_service_8005::b1cc921c69e37139",
+              "originalCandidateId": "sera_8005_a_4_coord_conflict",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::atc_service_8005::5c2c8b53ac81d307",
+              "originalCandidateId": "sera_8005_a_4_coord_transfer",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff",
+              "originalCandidateId": "sera_8005_b_except_own_sep",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::atc_service_8005::dd09fb0eb790d595",
+              "originalCandidateId": "sera_8005_c_2_i_long",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "clearances_8015_a_d",
+          "status": "promoted",
+          "totalJudged": 13,
+          "landed": [
+            "sera-923-2012-extracted::clearances_8015_a_d::e9bcbf63cef66c9f",
+            "sera-923-2012-extracted::clearances_8015_a_d::16c964d35f0be52b",
+            "sera-923-2012-extracted::clearances_8015_a_d::f5231a6d849f258b",
+            "sera-923-2012-extracted::clearances_8015_a_d::aafde492d71b4094",
+            "sera-923-2012-extracted::clearances_8015_a_d::4b0a625825f970d7",
+            "sera-923-2012-extracted::clearances_8015_a_d::cca5642c4573b49a",
+            "sera-923-2012-extracted::clearances_8015_a_d::71d49568f9d6b39a",
+            "sera-923-2012-extracted::clearances_8015_a_d::56ad086ca9f11071",
+            "sera-923-2012-extracted::clearances_8015_a_d::9285a92b423c68d6",
+            "sera-923-2012-extracted::clearances_8015_a_d::886221665bbeb27f",
+            "sera-923-2012-extracted::clearances_8015_a_d::b3c28b3abc9299fb",
+            "sera-923-2012-extracted::clearances_8015_a_d::a554ea11f1287a61"
+          ],
+          "pending": [
+            "sera-923-2012-extracted::clearances_8015_a_d::71094db33155f93d"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "sera-923-2012-extracted::clearances_8015_a_d::71094db33155f93d",
+              "originalCandidateId": "sera_8015_d_5_other_instructions",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "readback_8015_e",
+          "status": "promoted",
+          "totalJudged": 7,
+          "landed": [
+            "sera-923-2012-extracted::readback_8015_e::913a7181c8e8bdd9",
+            "sera-923-2012-extracted::readback_8015_e::6f0febfaed2fc9cb",
+            "sera-923-2012-extracted::readback_8015_e::8309dddc12b245d4",
+            "sera-923-2012-extracted::readback_8015_e::f6dfa2180974b992",
+            "sera-923-2012-extracted::readback_8015_e::77e2b70b41027ce4",
+            "sera-923-2012-extracted::readback_8015_e::33e432d1782dad2d",
+            "sera-923-2012-extracted::readback_8015_e::23f3fac68277ae11"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "separation_minima_8010",
+          "status": "promoted",
+          "totalJudged": 4,
+          "landed": [
+            "sera-923-2012-extracted::separation_minima_8010::bdcea86227fc2f84",
+            "sera-923-2012-extracted::separation_minima_8010::62c3fbbf1d1c30f4"
+          ],
+          "pending": [
+            "sera-923-2012-extracted::separation_minima_8010::e254c674f789e45e",
+            "sera-923-2012-extracted::separation_minima_8010::14871d3b19e91d53"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "sera-923-2012-extracted::separation_minima_8010::e254c674f789e45e",
+              "originalCandidateId": "sera_8010_c1_notification_to_ats",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::separation_minima_8010::14871d3b19e91d53",
+              "originalCandidateId": "sera_8010_c2_notification_to_pilots",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "slovenia-vfr-extracted",
+      "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 8,
+      "sectionResults": [
+        {
+          "documentId": "slovenia-vfr-extracted",
+          "sectionId": "readback",
+          "status": "promoted",
+          "totalJudged": 8,
+          "landed": [
+            "slovenia-vfr-extracted::readback::e13320f1fbb573c1",
+            "slovenia-vfr-extracted::readback::f586b025372a3411"
+          ],
+          "pending": [
+            "slovenia-vfr-extracted::readback::be884ba067e3c04b",
+            "slovenia-vfr-extracted::readback::2397c3fc7f51c903",
+            "slovenia-vfr-extracted::readback::34951c851cc73e37",
+            "slovenia-vfr-extracted::readback::a6eb85ecaac0bd8b",
+            "slovenia-vfr-extracted::readback::a55009e7044c1c4b",
+            "slovenia-vfr-extracted::readback::fd9994dd1fc98ea3"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "slovenia-vfr-extracted::readback::be884ba067e3c04b",
+              "originalCandidateId": "req_mandatory_readback_items",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "slovenia-vfr-extracted::readback::2397c3fc7f51c903",
+              "originalCandidateId": "def_wilco",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "slovenia-vfr-extracted::readback::34951c851cc73e37",
+              "originalCandidateId": "req_acknowledgement_non_readback",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "slovenia-vfr-extracted::readback::a6eb85ecaac0bd8b",
+              "originalCandidateId": "req_transmitting_technique",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "slovenia-vfr-extracted::readback::a55009e7044c1c4b",
+              "originalCandidateId": "opt_readback_order",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "slovenia-vfr-extracted::readback::fd9994dd1fc98ea3",
+              "originalCandidateId": "opt_departure_takeoff_order",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    }
+  ]
+}

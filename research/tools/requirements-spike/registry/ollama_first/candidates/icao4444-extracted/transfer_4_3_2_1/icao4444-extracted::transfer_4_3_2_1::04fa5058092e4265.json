@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::04fa5058092e4265",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "familyId": "icao4444_transfer_family",
+  "claimText": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time that clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely manner.",
+  "rationale": "Guidance on the timing of communication transfer to ensure timely issuance of clearances and traffic info.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Transfer of communications to the aerodrome controller should be effected at such a point, level or time that clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely manner."
+  ],
+  "sourceItemIds": [
+    "4.3.2.1.2"
+  ],
+  "claimSha256": "d86ee44c413ab1ef1fa6e3523bfbeed16095161c953422595c3b4ac59b97af24",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3086,
+    "endLine": 3131
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_transfer_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "transfer_comm_timely",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim and fully supports the claim, and the candidate correctly preserves the source\u2019s \u201cshould\u201d modality as operational guidance rather than an authoritative requirement. There are no accepted sibling atomic candidates making this redundant, and no identity-field or schema issue requires correction.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:18:39Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/transfer_4_3_2_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:18:39Z"
+  }
+}

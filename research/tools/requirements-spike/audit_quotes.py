@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Falsifiability audit: are `exactSourceQuotes` actually verbatim?
 
-For each accepted candidate in a per-document `accepted_candidates.json`,
-check that every entry in its `exactSourceQuotes` array appears in the
-source file after whitespace normalisation. Reports any mismatches.
+For each accepted candidate, check that every entry in its `exactSourceQuotes`
+array appears in the source file after whitespace normalisation. Reports any
+mismatches.
 
 Usage:
+
+    python3 research/tools/requirements-spike/audit_quotes.py \\
+        --registry-root research/tools/requirements-spike/registry/ollama_first
+
+Historical ingest-output mode is still available:
 
     python3 research/tools/requirements-spike/audit_quotes.py \\
         --output-root /tmp/overnight-shakedown
@@ -94,34 +99,121 @@ def audit_document(document_dir: Path) -> dict[str, Any]:
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--output-root", type=Path, required=True)
-    args = parser.parse_args()
+def accepted_registry_candidate_paths(registry_root: Path) -> list[Path]:
+    candidates_root = registry_root / "candidates"
+    if not candidates_root.exists():
+        return []
+    return [
+        path
+        for path in sorted(candidates_root.rglob("*.json"))
+        if path.name != "_section.json"
+    ]
 
-    document_dirs = [d for d in args.output_root.iterdir() if d.is_dir()]
-    audits = []
-    for d in sorted(document_dirs):
-        audit = audit_document(d)
-        audits.append(audit)
-        if "error" in audit:
-            print(f"{d.name}: {audit['error']}")
+
+def audit_registry(registry_root: Path) -> list[dict[str, Any]]:
+    source_cache: dict[str, str] = {}
+    audits_by_document: dict[str, dict[str, Any]] = {}
+    for candidate_path in accepted_registry_candidate_paths(registry_root):
+        candidate = json.loads(candidate_path.read_text(encoding="utf-8"))
+        if candidate.get("lifecycle", {}).get("state") != "accepted":
             continue
+        document_id = candidate.get("documentId")
+        source_path = candidate.get("provenance", {}).get("sourcePath")
+        if not document_id or not source_path:
+            document_id = document_id or str(candidate_path.parent)
+            audit = audits_by_document.setdefault(
+                document_id,
+                {
+                    "documentId": document_id,
+                    "sourcePath": source_path,
+                    "candidatesAudited": 0,
+                    "totalQuotes": 0,
+                    "totalMisses": 0,
+                    "candidatesWithMisses": [],
+                    "errors": [],
+                },
+            )
+            audit["errors"].append({
+                "candidatePath": str(candidate_path),
+                "error": "missing documentId or provenance.sourcePath",
+            })
+            continue
+        if source_path not in source_cache:
+            source_cache[source_path] = load_source(source_path)
+        candidate_audit = audit_candidate(candidate, source_cache[source_path])
+        audit = audits_by_document.setdefault(
+            document_id,
+            {
+                "documentId": document_id,
+                "sourcePath": source_path,
+                "candidatesAudited": 0,
+                "totalQuotes": 0,
+                "totalMisses": 0,
+                "candidatesWithMisses": [],
+                "errors": [],
+            },
+        )
+        audit["candidatesAudited"] += 1
+        audit["totalQuotes"] += candidate_audit["totalQuotes"]
+        audit["totalMisses"] += len(candidate_audit["misses"])
+        if candidate_audit["misses"]:
+            audit["candidatesWithMisses"].append(candidate_audit)
+
+    for audit in audits_by_document.values():
+        total_quotes = audit["totalQuotes"]
+        audit["missRate"] = (audit["totalMisses"] / total_quotes) if total_quotes else 0.0
+    return list(audits_by_document.values())
+
+
+def print_audits(audits: list[dict[str, Any]]) -> tuple[int, int, int]:
+    error_count = 0
+    for audit in sorted(audits, key=lambda item: item.get("documentId") or ""):
+        if "error" in audit:
+            print(f"{audit.get('documentDir', audit.get('documentId'))}: {audit['error']}")
+            error_count += 1
+            continue
+        for error in audit.get("errors", []):
+            print(f"{audit['documentId']}: {error['candidatePath']}: {error['error']}")
+            error_count += 1
         print(
             f"{audit['documentId']}: {audit['candidatesAudited']} candidates, "
             f"{audit['totalQuotes']} quotes, {audit['totalMisses']} misses "
             f"({audit['missRate']:.1%})"
         )
-        for c in audit["candidatesWithMisses"]:
-            for m in c["misses"]:
-                excerpt = m["quote"][:120].replace("\n", " ")
-                print(f"  MISS — {c['sectionId']}::{c['candidateId']}: \"{excerpt}\"")
+        for candidate in audit["candidatesWithMisses"]:
+            for miss in candidate["misses"]:
+                excerpt = str(miss["quote"])[:120].replace("\n", " ")
+                print(
+                    f"  MISS - {candidate['sectionId']}::"
+                    f"{candidate['candidateId']}: \"{excerpt}\""
+                )
     overall_quotes = sum(a.get("totalQuotes", 0) for a in audits)
     overall_misses = sum(a.get("totalMisses", 0) for a in audits)
+    return overall_quotes, overall_misses, error_count
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--output-root", type=Path)
+    source.add_argument(
+        "--registry-root",
+        type=Path,
+        help="Promoted registry root containing candidates/*/*.json records",
+    )
+    args = parser.parse_args()
+
+    if args.registry_root:
+        audits = audit_registry(args.registry_root)
+    else:
+        document_dirs = [d for d in args.output_root.iterdir() if d.is_dir()]
+        audits = [audit_document(d) for d in sorted(document_dirs)]
+
+    overall_quotes, overall_misses, error_count = print_audits(audits)
     print()
     print(f"OVERALL: {overall_quotes} quotes, {overall_misses} misses "
           f"({overall_misses / overall_quotes:.1%} miss rate)" if overall_quotes else "no quotes audited")
-    return 0
+    return 1 if overall_misses or error_count else 0
 
 
 if __name__ == "__main__":

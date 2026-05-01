@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::readback_2_68_2_71::07c68d8e755e5c46",
+  "documentId": "cap413-extracted",
+  "sectionId": "readback_2_68_2_71",
+  "familyId": "cap413_readback_family",
+  "claimText": "If an aircraft read back of a clearance or instruction is incorrect, the controller shall transmit the word 'NEGATIVE' followed by the correct version.",
+  "rationale": "Direct normative statement in clause 2.71 imposing a mandatory phraseology requirement on the controller for incorrect readbacks.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "If an aircraft read back of a clearance or instruction is incorrect, the controller shall transmit the word \u2018NEGATIVE\u2019 followed by the correct version"
+  ],
+  "sourceItemIds": [
+    "clause_2.71"
+  ],
+  "claimSha256": "bb9de8db761cc24f7bc1f8b7c220a32fb248cb0e46874a41101e82ffe22814aa",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6429,
+    "endLine": 6555
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "cap413_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_negative_correction",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/cap413-extracted/readback_2_68_2_71/judged_candidates.json"
+  }
+}

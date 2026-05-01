@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::11f3df660516dfe3",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "familyId": "h01_readback_family",
+  "claimText": "Voice read-back of CPDLC messages shall not be required.",
+  "rationale": "Consistent authoritative requirement waiving voice readback for CPDLC.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Voice read-back of CPDLC messages shall not be required."
+  ],
+  "sourceItemIds": [
+    "3.8.1f_en"
+  ],
+  "claimSha256": "1c20cdcecacdcb98908d90f70532a48566fb64f4cbe1a99c9946f9cb77ec3030",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 4197,
+    "endLine": 4337
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "h01_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "no_voice_readback_cpdlc",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::corrections_3_8_3::3da4e8a007c77a4a",
+  "documentId": "h01-extracted",
+  "sectionId": "corrections_3_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.98,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is supported verbatim by the source, uses the source\u2019s \u201cshould\u201d modality, and is correctly classified as operational guidance rather than an authoritative requirement. It is an atomic item not already covered by the accepted siblings; the judge\u2019s advisory-only rationale does not identify an identity or schema defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/corrections_3_8_3/h01-extracted::corrections_3_8_3::3da4e8a007c77a4a.json",
+    "toPath": "candidates/h01-extracted/corrections_3_8_3/h01-extracted::corrections_3_8_3::3da4e8a007c77a4a.json"
+  },
+  "curatedAt": "2026-04-29T09:10:24Z"
+}

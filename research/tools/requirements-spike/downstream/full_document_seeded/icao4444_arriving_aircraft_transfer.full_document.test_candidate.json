@@ -1,0 +1,31 @@
+{
+  "testCandidateId": "tc-icao4444-4.3.2.1.1-arriving-transfer-conditions-full-document",
+  "verificationMode": "property_or_family_test",
+  "targetLayer": "coordination logic integration",
+  "goal": "Verify that arriving-aircraft control transfer is accepted only on the clause-defined arrival transfer conditions and remains traceable to the chosen branch.",
+  "scenarioFamilies": [
+    {
+      "familyId": "arriving-transfer-visual-reference",
+      "sourceAtomId": "icao4444:4.3.2.1.1:arriving_transfer_conditions"
+    },
+    {
+      "familyId": "arriving-transfer-prescribed-point-or-level",
+      "sourceAtomId": "icao4444:4.3.2.1.1:arriving_transfer_conditions"
+    },
+    {
+      "familyId": "arriving-transfer-landed",
+      "sourceAtomId": "icao4444:4.3.2.1.1:arriving_transfer_conditions"
+    }
+  ],
+  "expectedObservations": [
+    "Arrival transfer is accepted when one of the clause-defined conditions is satisfied.",
+    "Arrival transfer that does not satisfy any clause-defined condition is rejected or flagged as non-compliant.",
+    "The chosen transfer condition remains explicit and traceable in the evaluation."
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.3.2.1.1",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3090-3103"
+  },
+  "sourcePromotionId": "accepted-atoms:icao4444:4.3.2.1.1:full-document"
+}

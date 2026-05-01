@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::readback_2_68_2_71::77defe5f0684579f",
+  "documentId": "cap413-extracted",
+  "sectionId": "readback_2_68_2_71",
+  "familyId": "cap413_readback_family",
+  "claimText": "Items which do not appear in the list in 2.69 may be acknowledged with an abbreviated read back.",
+  "rationale": "Defines the permissible alternative (abbreviated readback) for messages not in the full readback list.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Items which do not appear in the above list may be acknowledged with an abbreviated read back"
+  ],
+  "sourceItemIds": [
+    "clause_2.70"
+  ],
+  "claimSha256": "dbacd334b7be3d3820bc5df9100918890cc8dc133637c35e434f7ac0572a6a9f",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6429,
+    "endLine": 6555
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "cap413_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_abbreviated_readback",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/cap413-extracted/readback_2_68_2_71/judged_candidates.json"
+  }
+}

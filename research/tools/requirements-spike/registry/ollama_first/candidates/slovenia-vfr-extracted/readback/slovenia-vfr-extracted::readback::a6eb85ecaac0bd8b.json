@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "slovenia-vfr-extracted::readback::a6eb85ecaac0bd8b",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "familyId": "slovenia_vfr_readback_family",
+  "claimText": "Transmissions shall be conducted concisely in a normal conversational tone.",
+  "rationale": "Attempts 2 and 3 correctly classify this as advisory/review-only due to subjective terms. Attempt 1's 'promote' is less conservative given the testability issues.",
+  "modality": "shall",
+  "authorityClass": "best_practice",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Transmissions shall be conducted concisely in a normal conversational tone."
+  ],
+  "sourceItemIds": [
+    "transmitting_technique"
+  ],
+  "claimSha256": "9027a632d27b8ac6626d8dd87ed22c99fdd45df12f05f4856ef0fe3abb0f4587",
+  "provenance": {
+    "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+    "sourceSha256": "506ad45fae6c6f58665c12d57cb14c84b42e57fe77761bac1dd9bc2a8c1310dd",
+    "startLine": 524,
+    "endLine": 565
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "slovenia_vfr_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_transmitting_technique",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted sentence appears verbatim in the source, the claim text is identical to the source wording, and the modality 'shall' correctly reflects the quoted language. The authorityClass is already conservatively set to best_practice for the Slovenia VFR material, and the item is not redundant with the accepted readback-specific siblings.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:26:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/slovenia-vfr-extracted/readback/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:26:45Z"
+  }
+}

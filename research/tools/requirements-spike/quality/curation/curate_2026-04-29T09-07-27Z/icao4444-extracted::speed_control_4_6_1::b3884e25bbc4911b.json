@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::b3884e25bbc4911b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.95,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is directly supported by ICAO 4444 section 4.6.1.4, and the candidate correctly uses should with operational_guidance. It is atomic and not redundant with the accepted sibling covering the separate sentence about frequent speed changes.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::b3884e25bbc4911b.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::b3884e25bbc4911b.json"
+  },
+  "curatedAt": "2026-04-29T09:17:25Z"
+}

@@ -1,0 +1,12 @@
+{
+  "schemaName": "manual_coverage_repair_audit",
+  "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+  "createdAt": "2026-04-29T22:00:00Z",
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::2ac77403a4c942d9",
+  "action": "manual_add_accept",
+  "reasoning": "Adds the source-supported Position 5 fact with corrected descriptive wording after the original shall-strength candidate was rejected.",
+  "exactSourceQuotes": [
+    "The following positions of aircraft in the traffic and taxi circuits are the positions where aircraft normally receive\naerodrome control tower clearances.",
+    "Position 5. Clearance to taxi to apron is issued here."
+  ]
+}

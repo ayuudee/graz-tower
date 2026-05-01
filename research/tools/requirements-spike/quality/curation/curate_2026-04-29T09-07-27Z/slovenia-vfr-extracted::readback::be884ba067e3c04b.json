@@ -1,0 +1,20 @@
+{
+  "canonicalId": "slovenia-vfr-extracted::readback::be884ba067e3c04b",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.13,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuote is not present verbatim in the source window: the source uses \u201ctake\u2010off\u201d and a line break between \u201ccross or\u201d and \u201cbacktrack,\u201d while the candidate quote uses \u201ctake-off\u201d and continuous wording. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::be884ba067e3c04b.json",
+    "toPath": "rejected/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::be884ba067e3c04b.json"
+  },
+  "curatedAt": "2026-04-29T09:26:51Z"
+}

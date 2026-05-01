@@ -1,0 +1,11 @@
+{
+  "documentId": "icao4444-extracted",
+  "sectionId": "readback_4_5_7_5",
+  "familyId": "icao4444_readback_family",
+  "sourcePath": "research/txt/icao4444-extracted.txt",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "startLine": 3401,
+  "endLine": 3429,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

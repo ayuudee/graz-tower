@@ -1,0 +1,48 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.3.2.1.1:full-document",
+  "bundleId": "icao4444-extracted:4.3.2.1.1",
+  "promotionBasis": {
+    "promotionMode": "deterministic_seeded_full_document",
+    "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+    "policyId": "icao4444-downstream-policy",
+    "sourceRunManifest": "/tmp/icao4444-pipeline-widening-pre-fixture/run_manifest.json",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "property_or_family_test",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.3.2.1.1:arriving_transfer_conditions",
+      "claimText": "Control of an arriving aircraft shall be transferred from the unit providing approach control service to the unit providing aerodrome control service when the aircraft is in the vicinity of the aerodrome and it is considered that approach and landing will be completed in visual reference to the ground, or the aircraft has reached uninterrupted visual meteorological conditions, or the aircraft is at a prescribed point or level, or the aircraft has landed, as specified in letters of agreement or ATS unit instructions.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444::numeric_clause::01324::unit",
+        "icao4444::list_item::01325::unit",
+        "icao4444::sub_list_item::01326::unit",
+        "icao4444::sub_list_item::01327::unit",
+        "icao4444::list_item::01328::unit",
+        "icao4444::list_item::01329::unit"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "unit providing approach control service",
+        "unit providing aerodrome control service"
+      ],
+      "requiredBehaviour": [
+        "transfer control of an arriving aircraft only when one of the clause-defined arrival transfer conditions is satisfied"
+      ],
+      "applicability": [
+        "arriving controlled aircraft transitioning from approach control service to aerodrome control service"
+      ],
+      "sourceSupport": [
+        "Arriving aircraft. Control of an arriving aircraft shall be transferred from the unit providing approach control service to the unit providing aerodrome control service when the aircraft:",
+        "is in the vicinity of the aerodrome, and",
+        "it is considered that approach and landing will be completed in visual reference to the ground, or",
+        "has reached uninterrupted visual meteorological conditions, or",
+        "is at a prescribed point or level, or",
+        "has landed,",
+        "as specified in letters of agreement or ATS unit instructions."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "version": 2,
+  "description": "Initial benchmark set for requirement-registry research. Cases are intentionally small and cover three source families with different structural risks.",
+  "families": [
+    {
+      "familyId": "icao4444",
+      "authorityClassCeiling": "authoritative_requirement",
+      "notes": "Clause-oriented authoritative regulation."
+    },
+    {
+      "familyId": "h01",
+      "authorityClassCeiling": "operational_guidance",
+      "notes": "Bilingual/manual phraseology with interleaved examples."
+    },
+    {
+      "familyId": "egast_vfr",
+      "authorityClassCeiling": "best_practice",
+      "notes": "Advisory/best-practice prose."
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "icao4444_readback_main_clause",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::clause::4.5.7.5.1",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Main readback obligation with subordinate list."
+    },
+    {
+      "caseId": "icao4444_readback_other_clearances",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::clause::4.5.7.5.1.1",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Compound rule with read-back or acknowledgement semantics."
+    },
+    {
+      "caseId": "icao4444_readback_controller_correction",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::clause::4.5.7.5.2",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Clean controller obligation. Good baseline extraction case."
+    },
+    {
+      "caseId": "icao4444_readback_cpdlc_exception",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::clause::4.5.7.5.2.1",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Exception-style rule. Good split-vs-bundle case."
+    },
+    {
+      "caseId": "icao4444_readback_route_clearances_item",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::list_item::4.5.7.5.1::a)",
+      "expectedUnitKind": "list_item",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Subordinate list item. Should usually remain attached to parent requirement."
+    },
+    {
+      "caseId": "icao4444_readback_runway_ops_item",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::list_item::4.5.7.5.1::b)",
+      "expectedUnitKind": "list_item",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Runway operations list item. Strong bundle candidate."
+    },
+    {
+      "caseId": "icao4444_transfer_to_aerodrome_controller",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_transfer",
+      "unitId": "icao4444_transfer::clause::4.3.2.1.2",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Transfer timing rule using should-language."
+    },
+    {
+      "caseId": "icao4444_departing_aircraft_transfer",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_transfer",
+      "unitId": "icao4444_transfer::clause::4.3.2.1.3",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Parent clause with subordinate conditions."
+    },
+    {
+      "caseId": "h01_ack_from_aircraft",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::a",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Aircraft acknowledgement composition rule."
+    },
+    {
+      "caseId": "h01_readback_main_clause",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::c",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Manual analogue of the ICAO readback clause."
+    },
+    {
+      "caseId": "h01_other_clearances",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::d",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Read-back or acknowledgement semantics in manual form."
+    },
+    {
+      "caseId": "h01_controller_correction",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::e",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Mixed bilingual unit. Tests pairing quality and extraction conservatism."
+    },
+    {
+      "caseId": "h01_cpdlc_readback_not_required",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::f",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Exception-style manual rule."
+    },
+    {
+      "caseId": "h01_weather_received_ack",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::h",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Advisory/readback support rule with mixed examples."
+    },
+    {
+      "caseId": "h01_transfer_initial_contact",
+      "familyId": "h01",
+      "sliceId": "h01_transfer",
+      "unitId": "h01_transfer::lettered::b",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Initial-contact information requirement."
+    },
+    {
+      "caseId": "h01_leave_control_frequency",
+      "familyId": "h01",
+      "sliceId": "h01_transfer",
+      "unitId": "h01_transfer::lettered::c",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Control-frequency departure constraint."
+    },
+    {
+      "caseId": "h01_transfer_message_contains_unit_and_frequency",
+      "familyId": "h01",
+      "sliceId": "h01_transfer",
+      "unitId": "h01_transfer::lettered::d",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Transfer phraseology content rule."
+    },
+    {
+      "caseId": "h01_transfer_dialogue_example",
+      "familyId": "h01",
+      "sliceId": "h01_transfer",
+      "unitId": "h01_transfer::dialogue::d::4693",
+      "expectedUnitKind": "dialogue_example",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Example-only unit. Good overpromotion risk case."
+    },
+    {
+      "caseId": "egast_readback_required_items",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:",
+      "expectedUnitKind": "best_practice_note",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Advisory list of items requiring readback."
+    },
+    {
+      "caseId": "egast_callsign_acknowledgement",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::best_practice_note::Acknowledgement by Callsign",
+      "expectedUnitKind": "best_practice_note",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Messier advisory unit. Good overpromotion risk case."
+    },
+    {
+      "caseId": "egast_wilco_background",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::background_explanation::Items to be Read back",
+      "expectedUnitKind": "background_explanation",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Background explanation. Should usually remain support-only."
+    },
+    {
+      "caseId": "egast_general_readback_explanation",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::background_explanation::General",
+      "expectedUnitKind": "background_explanation",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Messy explanatory prose with embedded advice."
+    },
+    {
+      "caseId": "egast_conditional_clearance_readback",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::best_practice_note::Brief reiteration of the condition",
+      "expectedUnitKind": "best_practice_note",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Should remain best-practice, not overpromote to law."
+    },
+    {
+      "caseId": "egast_heading_only_read_back",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::best_practice_note::Read back",
+      "expectedUnitKind": "best_practice_note",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Heading-like unit. Good malformed/under-specified rejection case."
+    }
+  ]
+}

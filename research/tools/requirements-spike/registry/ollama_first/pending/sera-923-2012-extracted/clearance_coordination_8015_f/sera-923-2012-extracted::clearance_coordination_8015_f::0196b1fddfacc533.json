@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::0196b1fddfacc533",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "clearance_coordination_8015_f",
+  "familyId": "sera_clearance_comms_contract_family",
+  "claimText": "When an aircraft intends to leave a control area for flight outside controlled airspace, and will subsequently reenter the same or another control area, a clearance from the point of departure to the aerodrome of first intended landing may be issued. Such clearance or revisions thereto shall apply only to those portions of the flight conducted within controlled airspace.",
+  "rationale": "Permissive rule for full clearances on flights exiting/entering controlled airspace.",
+  "modality": "may",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "When an aircraft intends to leave a control area for flight outside controlled airspace, and will subsequently reenter the same or another control area, a clearance from the point of departure to the aerodrome of first intended landing may be issued. Such clearance or revisions thereto shall apply only to those portions of the flight conducted within controlled airspace."
+  ],
+  "sourceItemIds": [
+    "sera_923_f_6"
+  ],
+  "claimSha256": "7c5b099e2816ee4abb9c3c1e0425f80ab34efa1358b2594167e97498ad8fe581",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2038,
+    "endLine": 2071
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+    "caseId": "sera_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_923_f_6_outside_controlled_airspace_clearance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "fail",
+      "modality": "may",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": false,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": "(modality='may', authorityClass='authoritative_requirement') violates AUTHORITY_CLASS_BY_FLOOR"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-01T10:49:29Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/sera-923-2012-extracted/clearance_coordination_8015_f/judged_candidates.json"
+  }
+}

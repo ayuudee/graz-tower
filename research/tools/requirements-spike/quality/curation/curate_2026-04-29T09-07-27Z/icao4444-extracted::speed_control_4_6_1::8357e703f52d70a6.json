@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::8357e703f52d70a6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim, self-contained, and not redundant with the accepted sibling candidates. Its modality and authorityClass are appropriately conservative for a non-normative ICAO note, but the requirementKind should not be 'definition' because the source is a performance-limitation note rather than a definition.",
+    "corrections": {
+      "requirementKind": "performance_limitation_note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::8357e703f52d70a6.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::8357e703f52d70a6.json",
+    "correctionsApplied": {
+      "requirementKind": "performance_limitation_note"
+    }
+  },
+  "curatedAt": "2026-04-29T09:16:44Z"
+}

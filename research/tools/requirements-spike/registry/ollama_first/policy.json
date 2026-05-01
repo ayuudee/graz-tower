@@ -1,0 +1,30 @@
+{
+  "schemaName": "ollama_first_registry_policy",
+  "formatVersion": "2026-04-28-v1",
+  "promotion": {
+    "autoAcceptRequires": [
+      "judge.decision == 'accepted'",
+      "gate.overallStatus == 'pass'",
+      "audit.verbatimQuoteCheck.status == 'pass'",
+      "candidate_schema.validate_pipeline_candidate returns []"
+    ],
+    "stashToPendingOn": [
+      "judge.decision in {advisory_only, ambiguous, needs_human_review, needs_split, needs_bundle}",
+      "any required schema field missing",
+      "verbatim quote audit fails",
+      "authority/modality consistency check fails (G3) and override path was not taken"
+    ],
+    "neverAutoReject": "Rejection is a human curation step. The promoter only stashes to pending."
+  },
+  "regression": {
+    "hardFailOnAcceptedToNonAcceptedFlipWithStableContext": true,
+    "sectionAcceptedCountDropPercentThreshold": 20,
+    "softWarnOverrideFireRateChangePercent": 25
+  },
+  "reproducibility": {
+    "rationaleByteMatchIsHardFail": false,
+    "claimTextByteMatchIsHardFail": true,
+    "canonicalIdMustMatch": true
+  },
+  "documentOverrides": {}
+}

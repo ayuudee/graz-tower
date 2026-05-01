@@ -1,0 +1,29 @@
+3401: 4.5.7.5
+3402: 
+3403: READBACK OF CLEARANCES
+3404: 
+3405: 4.5.7.5.1 The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and
+3406: instructions which are transmitted by voice. The following items shall always be read back:
+3407: a)
+3408: 
+3409: ATC route clearances;
+3410: 
+3411: b) clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any
+3412: runway; and
+3413: c)
+3414: 
+3415: runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and, whether
+3416: issued by the controller or contained in automatic terminal information service (ATIS) broadcasts, transition
+3417: levels.
+3418: 
+3419: Note.— If the level of an aircraft is reported in relation to standard pressure 1 013.2 hPa, the words “FLIGHT
+3420: LEVEL” precede the level figures. If the level of the aircraft is reported in relation to QNH/QFE, the figures are followed
+3421: by the word “METRES” or “FEET”, as appropriate.
+3422: 4.5.7.5.1.1 Other clearances or instructions, including conditional clearances, shall be read back or acknowledged
+3423: in a manner to clearly indicate that they have been understood and will be complied with.
+3424: 4.5.7.5.2 The controller shall listen to the readback to ascertain that the clearance or instruction has been correctly
+3425: acknowledged by the flight crew and shall take immediate action to correct any discrepancies revealed by the readback.
+3426: 4.5.7.5.2.1 Unless specified by the appropriate ATS authority, voice readback of controller-pilot data link
+3427: communications (CPDLC) messages shall not be required.
+3428: Note.— The procedures and provisions relating to the exchange and acknowledgement of CPDLC messages are
+3429: contained in Annex 10, Volume II and the PANS-ATM, Chapter 14.

@@ -2,12 +2,17 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import inspect
 import json
 import time
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+
+PROMPT_VERSION = "ollama-first-2026-04-28"
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -930,6 +935,77 @@ Return JSON with exactly this shape:
     return system, user
 
 
+# SHA-256 of the source code of every prompt-builder function. Bumps
+# whenever any prompt template is edited, even if the surface label
+# `PROMPT_VERSION` is left unchanged. This is the field the regression
+# detector joins on to spot "you bumped a prompt and didn't tell me".
+#
+# Per-stage SHAs are also emitted so the regression detector can
+# pinpoint *which* prompt changed when the all-stages SHA differs.
+# Whitespace/comment edits change the SHA — that's correct (the source
+# IS what changed); reformat with care.
+_PROMPT_BUILDERS_BY_STAGE: dict[str, tuple[Any, ...]] = {
+    "structure": (),  # populated below — forward references resolved
+}
+
+
+def _safe_getsource(fn: Any) -> str:
+    """`inspect.getsource` raises OSError on .pyc-only deploys / zipimport.
+    Fall back to a stable token derived from the function's qualified name
+    so import never blows up in a frozen env. The fallback intentionally
+    differs from any real source SHA so a frozen-env run is recognisable
+    in the manifest.
+    """
+    try:
+        return inspect.getsource(fn)
+    except (OSError, TypeError):
+        return f"<source-unavailable:{fn.__module__}.{fn.__qualname__}>"
+
+
+def _sha256_of_sources(fns: tuple[Any, ...]) -> str:
+    return hashlib.sha256(
+        "\n\n".join(_safe_getsource(fn) for fn in fns).encode("utf-8")
+    ).hexdigest()
+
+
+_PROMPT_BUILDERS_BY_STAGE = {
+    "structure": (structure_prompts, reconcile_structure_prompts),
+    "extraction": (requirement_prompts, reconcile_prompts),
+    "challenge": (challenge_prompts,),
+    "defense": (defense_prompts,),
+    "bundleGate": (bundle_gate_prompts,),
+    "judge": (judge_prompts,),
+}
+
+# Defensive: if any future refactor wraps a prompt builder in a decorator,
+# `inspect.getsource` returns the wrapper, not the inner function. Assert
+# every builder is a plain function so the SHA stays semantically meaningful.
+# `inspect.isfunction` is intentionally strict: staticmethods, partials,
+# and bound methods all fail the check. Prompt builders must remain
+# module-level plain functions; if you need to refactor, update this
+# guard at the same time.
+if not _PROMPT_BUILDERS_BY_STAGE:
+    raise RuntimeError(
+        "_PROMPT_BUILDERS_BY_STAGE is empty — PROMPT_VERSION_SHA cannot be "
+        "computed. Did a partial migration leave the dict unpopulated?"
+    )
+for _stage, _fns in _PROMPT_BUILDERS_BY_STAGE.items():
+    for _fn in _fns:
+        if not inspect.isfunction(_fn):
+            raise RuntimeError(
+                f"prompt builder {_fn!r} for stage {_stage!r} is not a plain function "
+                "— PROMPT_VERSION_SHA via inspect.getsource may not capture the real prompt"
+            )
+del _stage, _fn, _fns
+
+PROMPT_VERSION_SHAS_BY_STAGE: dict[str, str] = {
+    stage: _sha256_of_sources(fns) for stage, fns in _PROMPT_BUILDERS_BY_STAGE.items()
+}
+PROMPT_VERSION_SHA = _sha256_of_sources(
+    tuple(fn for fns in _PROMPT_BUILDERS_BY_STAGE.values() for fn in fns)
+)
+
+
 def render_summary(
     *,
     window: dict[str, Any],
@@ -1307,6 +1383,9 @@ def run_pipeline(
         },
         "structurePromptChars": structure_result["requestPromptChars"],
         "requirementPromptChars": requirement_result["requestPromptChars"],
+        "promptVersion": PROMPT_VERSION,
+        "promptVersionSha": PROMPT_VERSION_SHA,
+        "promptVersionShasByStage": PROMPT_VERSION_SHAS_BY_STAGE,
         "candidateCount": len(requirement_result["parsed"]["candidates"]),
         "judgedCandidateCount": len(judged_candidates),
         "judgeOutcomes": [

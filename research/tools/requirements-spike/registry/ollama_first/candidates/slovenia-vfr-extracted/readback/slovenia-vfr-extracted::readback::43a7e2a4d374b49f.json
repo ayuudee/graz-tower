@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "slovenia-vfr-extracted::readback::43a7e2a4d374b49f",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "familyId": "slovenia_vfr_readback_family",
+  "claimText": "If a transmission contains information that does not need to be read back, the pilot should acknowledge it by transmitting his call sign or by transmitting his call sign preceded by the word ′ROGER′.",
+  "rationale": "All attempts agree on the recommendation ('should') and the specific phraseology options.",
+  "modality": "should",
+  "authorityClass": "best_practice",
+  "requirementKind": "phraseology_rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "If a transmission contains information that does not need to be read back, the pilot should acknowledge it by transmitting his call sign or by transmitting his call sign preceded by the word ′ROGER′."
+  ],
+  "sourceItemIds": [
+    "acknowledgement_by_call_sign"
+  ],
+  "claimSha256": "299e70475614555c267cd74475a82bc83ef7b6d258e9629426bf7aa30bb37335",
+  "provenance": {
+    "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+    "sourceSha256": "506ad45fae6c6f58665c12d57cb14c84b42e57fe77761bac1dd9bc2a8c1310dd",
+    "startLine": 524,
+    "endLine": 565
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "slovenia_vfr_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_acknowledgement_non_readback",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "should",
+      "authorityClass": "best_practice"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_corrected_replacement_accept",
+      "confidence": "high",
+      "reasoning": "Corrected Slovenia VFR quote typography and promoted the source-supported record.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:18:31Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Corrected Slovenia VFR quote typography and promoted the source-supported record.",
+      "appliedAt": "2026-04-29T20:18:31Z",
+      "previousCanonicalId": "slovenia-vfr-extracted::readback::34951c851cc73e37"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:18:31Z"
+  }
+}

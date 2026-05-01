@@ -31,6 +31,41 @@
       "startLine": 1985,
       "endLine": 2022,
       "notes": "SERA.8015 Air traffic control clearances paragraphs (a)-(d): (a) basis of clearances, (b) operation subject to clearance with sub-numbered cases, (c) potential reclearance, (d) contents of clearances (5 numbered fields). The (e) readback paragraph already covered separately as readback_8015_e."
+    },
+    {
+      "sectionId": "clearance_coordination_8015_f",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2038,
+      "endLine": 2071,
+      "notes": "SERA.8015(f) Coordination of clearances: route coverage, downstream clearances, and controlled-airspace scope. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "adherence_flight_plan_8020",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2072,
+      "endLine": 2129,
+      "notes": "SERA.8020 Adherence to flight plan: controlled-flight adherence, amended clearance, emergency deviation, and requested change content. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "position_reports_8025",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2130,
+      "endLine": 2138,
+      "notes": "SERA.8025 Position reports: controlled-flight reporting duty and data-link exception. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "termination_control_8030",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2139,
+      "endLine": 2141,
+      "notes": "SERA.8030 Termination of control: duty to advise ATC when no longer subject to ATC service. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "communications_8035",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2142,
+      "endLine": 2160,
+      "notes": "SERA.8035 Communications: continuous voice watch, two-way communication as necessary, CPDLC persistence, and comms-failure reference. Hardened in clearance_comms_2026-04-30."
     }
   ]
 }

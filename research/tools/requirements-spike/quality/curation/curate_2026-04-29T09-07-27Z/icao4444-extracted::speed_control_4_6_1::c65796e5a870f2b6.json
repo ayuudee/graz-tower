@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::c65796e5a870f2b6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.45,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim, with 'should' correctly classified as operational_guidance. It is not redundant because the sibling accepted item covers the at-or-above FL 250 case, while this candidate covers the below FL 250 IAS case.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::c65796e5a870f2b6.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::c65796e5a870f2b6.json"
+  },
+  "curatedAt": "2026-04-29T09:17:37Z"
+}

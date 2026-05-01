@@ -1,0 +1,47 @@
+{
+  "schemaName": "ollama_first_registry_manifest",
+  "formatVersion": "2026-04-28-v1",
+  "createdAt": "2026-04-25T00:00:00Z",
+  "updatedAt": "2026-05-01T10:49:29Z",
+  "counts": {
+    "candidates": 285,
+    "pending": 26,
+    "rejected": 16,
+    "byDocument": {
+      "cap413-extracted": 20,
+      "egast-vfr-extracted": 17,
+      "h01-extracted": 24,
+      "icao4444-extracted": 107,
+      "icao9432-extracted": 19,
+      "safetysense22-extracted": 15,
+      "sera-923-2012-extracted": 68,
+      "slovenia-vfr-extracted": 15
+    },
+    "byAuthorityClass": {
+      "authoritative_requirement": 163,
+      "background_support": 13,
+      "best_practice": 48,
+      "operational_guidance": 61
+    },
+    "byModality": {
+      "may": 18,
+      "must": 24,
+      "none": 7,
+      "note": 16,
+      "shall": 190,
+      "should": 30
+    }
+  },
+  "documents": [
+    "cap413-extracted",
+    "egast-vfr-extracted",
+    "h01-extracted",
+    "icao4444-extracted",
+    "icao9432-extracted",
+    "safetysense22-extracted",
+    "sera-923-2012-extracted",
+    "slovenia-vfr-extracted"
+  ],
+  "lastRunId": null,
+  "notes": "Curated registry of Ollama-first source units. Mutated by promote_to_registry.py after gates G1-G6 pass and by explicit curation actions recorded under quality/curation/. /tmp run output is the working directory; this is the audit trail. Pending and rejected entries are tracked here too \u2014 the project's history of 'what we considered and chose not to accept' is part of the audit trail."
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::98068c7af46e0390",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.22,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuotes field is not verbatim in the source window because it uses an ellipsis and omits intervening subordinate text, so G1 fails on an identity field that cannot be corrected in this pass. The claim is also incomplete because the IMC transfer condition depends on the subordinate timing alternatives: immediately after airborne or at a prescribed point/level.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::98068c7af46e0390.json",
+    "toPath": "rejected/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::98068c7af46e0390.json"
+  },
+  "curatedAt": "2026-04-29T09:18:59Z"
+}

@@ -1,0 +1,17 @@
+{
+  "generationId": "safe-case-generation:controller_readback_v1:accepted-atoms:icao4444:4.5.7.5.1:full-document",
+  "profileId": "controller_readback_v1",
+  "profileVersion": "2026-04-24-v1",
+  "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+  "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "generatedCaseCount": 3,
+  "blockedResidualCount": 1,
+  "artifacts": [
+    "generated_cases.json",
+    "blocked_residuals.json",
+    "generation_review_queue.json",
+    "generation_review_pack.md",
+    "generation_summary.md"
+  ]
+}

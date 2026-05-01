@@ -1,0 +1,27 @@
+{
+  "canonicalId": "egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f",
+  "documentId": "egast-vfr-extracted",
+  "sectionId": "readback_advisory",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.58,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim accurately captures explanatory background rather than an operative readback obligation. Because the source wording is non-normative rationale, it should remain a note but be classified as background support rather than best practice.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/egast-vfr-extracted/readback_advisory/egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f.json",
+    "toPath": "candidates/egast-vfr-extracted/readback_advisory/egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "background_support"
+    }
+  },
+  "curatedAt": "2026-04-29T09:08:39Z"
+}

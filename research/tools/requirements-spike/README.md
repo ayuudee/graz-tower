@@ -2,7 +2,23 @@
 
 Small prototypes for the requirement-first ATC source-ingestion pipeline.
 
-## Current direction (2026-04-27)
+## Current direction (2026-05-01)
+
+The promoted registry is a **landed 30-window extraction slice**.
+The live manifests in `research/tools/requirements-spike/documents/*.json`
+now contain 46 sections: the landed 30 plus 16 clearance/communications
+windows selected for the next ingestion pass. The manifest-only additions are
+not accepted registry coverage until they pass ingest, promote, curate, audit,
+snapshot, and adequacy review. The registry is not a full-document or
+full-corpus extraction.
+
+Use `registry/ollama_first/DECLARED_SLICE.md` as the scope contract. Use
+`quality/source_inventory/source_inventory_2026-04-29/source_document_inventory.md`
+for the source-file inventory behind that contract. Use
+`quality/source_section_ledger/source_section_ledger_2026-04-30/source_section_ledger.md`
+as the section-level disposition ledger before widening the slice.
+The current 16-window Ollama batch is
+`quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json`.
 
 Two lanes coexist:
 
@@ -119,6 +135,12 @@ Current goals:
   accepted `ICAO 4444` promotions using an explicit capability profile.
 - `check_icao4444_safe_case_generation.py`
   Compares a generated safe-case run against the checked proof-case fixtures.
+- `build_registry_adequacy_review.py`
+  Builds the RR-13 fixed-seed independent-review pack for the Ollama-first
+  registry: sampled record review CSV, sampled source-window omission CSV,
+  markdown instructions, and line-numbered source windows.
+  The latest filled adequacy output is the RR-17 post-repair resample at
+  `quality/adequacy/adequacy_2026-04-29-rr17-post-repair-resample/`.
 
 Supporting artifacts:
 
@@ -143,6 +165,23 @@ Supporting artifacts:
 - `downstream/*.review_candidate.json`
   Advisory review or suspicion-seed consumer artifacts for best-practice
   sources.
+- `registry/ollama_first/DECLARED_SLICE.md`
+  Scope contract for the landed 30-window extraction slice and the live
+  46-section manifest.
+- `quality/source_inventory/source_inventory_2026-04-29/`
+  Repo-local source/PDF inventory proving that the 46-window frame is not a
+  full-corpus extraction.
+- `quality/source_section_ledger/source_section_ledger_2026-04-30/`
+  Table-of-contents / major-section disposition ledger for all local
+  `research/txt/` extracts, plus exact rows for the 46 current manifest
+  sections.
+- `quality/source_processing_queue/source_processing_queue_2026-05-01/`
+  Current ready-to-ingest queue: 16 exact manifest windows and 26 already
+  produced pending records for curation.
+- `quality/coverage/coverage_2026-04-29-rr17-80-20/`
+  22-section coverage ledger and concept crosswalk for the RR-17 frame. Treat
+  this as adequacy evidence for that older frame only, not for the newer
+  clearance/communications widening or for full-document coverage.
 
 Current whole-document normalization status:
 
@@ -163,13 +202,13 @@ Current whole-document normalization status:
 ## Typical Usage
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/prototype_slice.py \
     --output-dir /tmp/requirements-spike"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/ollama_requirement_trial.py \
     --input /tmp/requirements-spike/icao4444_readback.json \
     --unit-id icao4444_readback::clause::4.5.7.5.1 \
@@ -180,7 +219,7 @@ nix-shell -p python3 --run \
 The second command assumes `biggy:11434` is reachable from the environment.
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/run_benchmark_matrix.py \
     --manifest research/tools/requirements-spike/benchmark_manifest.json \
     --output-dir /tmp/requirements-benchmark-run \
@@ -188,7 +227,7 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/run_benchmark_matrix.py \
     --manifest research/tools/requirements-spike/benchmark_manifest_guardrail_subset.json \
     --output-dir /tmp/requirements-benchmark-guardrail-run \
@@ -197,19 +236,19 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/summarize_benchmark_judgements.py \
     --csv research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/build_icao4444_bundles.py \
     --output /tmp/icao4444-bundles.json"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/bundle_atom_trial.py \
     --input research/tools/requirements-spike/downstream/icao4444_bundle_prototype.json \
     --bundle-id icao4444-extracted:4.5.7.5.1 \
@@ -218,13 +257,13 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/normalize_icao4444.py \
     --output-dir /tmp/icao4444-normalization-run"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/run_icao4444_pipeline.py \
     --output-dir /tmp/icao4444-pipeline-proof \
     --require-machine-gate-pass \
@@ -233,33 +272,33 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/validate_icao4444_normalization.py \
     --run-dir /tmp/icao4444-normalization-run \
     --unknown-structure-threshold 0"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/render_icao4444_normalization_summary.py \
     --run-dir /tmp/icao4444-normalization-run"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/build_icao4444_review_pack.py \
     --run-dir /tmp/icao4444-normalization-run"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/export_icao4444_golden_fixtures.py \
     --run-dir /tmp/icao4444-normalization-run \
     --output-dir research/tools/requirements-spike/golden/icao4444"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/check_icao4444_golden_regression.py \
     --run-dir /tmp/icao4444-normalization-run \
     --fixture-dir research/tools/requirements-spike/golden/icao4444 \
@@ -267,14 +306,14 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/build_icao4444_downstream_baseline.py \
     --run-dir /tmp/icao4444-normalization-run \
     --output /tmp/icao4444-downstream-baseline.json"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/build_icao4444_seeded_promotions.py \
     --run-dir /tmp/icao4444-normalization-run \
     --baseline /tmp/icao4444-downstream-baseline.json \
@@ -283,7 +322,7 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/check_icao4444_seeded_promotions.py \
     --promotion-dir /tmp/icao4444-pipeline-proof/seeded_promotions \
     --fixture-dir research/tools/requirements-spike/downstream/full_document_seeded \
@@ -291,14 +330,14 @@ nix-shell -p python3 --run \
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/build_icao4444_safe_cases.py \
     --promotion-dir research/tools/requirements-spike/downstream/full_document_seeded \
     --output-dir /tmp/icao4444-safe-cases"
 ```
 
 ```bash
-nix-shell -p python3 --run \
+nix --extra-experimental-features 'nix-command flakes' develop path:. -c bash -lc \
   "python3 research/tools/requirements-spike/check_icao4444_safe_case_generation.py \
     --run-dir /tmp/icao4444-safe-cases \
     --fixture-dir research/tools/requirements-spike/downstream/generated/icao4444/controller_readback_v1 \

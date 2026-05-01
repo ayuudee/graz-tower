@@ -1,0 +1,43 @@
+{
+  "testCandidateId": "tc-icao4444-4.5.7.5.2-correct-discrepancies",
+  "sourceBundleId": "icao4444:4.5.7.5.2",
+  "sourceAtomIds": [
+    "icao4444:4.5.7.5.2:listen_to_readback",
+    "icao4444:4.5.7.5.2:correct_discrepancies"
+  ],
+  "verificationMode": "deterministic_test",
+  "targetLayer": "controller+sim integration",
+  "goal": "Verify that the controller detects an incorrect readback and issues a corrective transmission before treating the instruction as correctly acknowledged.",
+  "scenarioPreconditions": [
+    "A pilot is on voice communications with the controller.",
+    "The controller can issue a clearance or instruction that requires readback.",
+    "The harness can observe both controller state and controller transmissions."
+  ],
+  "stimulus": [
+    {
+      "actor": "controller",
+      "action": "issue_instruction_requiring_readback",
+      "notes": "The specific instruction can vary by seam as long as it has a correct and incorrect readback form."
+    },
+    {
+      "actor": "pilot",
+      "action": "transmit_incorrect_readback",
+      "notes": "The incorrect readback should preserve enough structure to be recognizably a readback with a discrepancy."
+    }
+  ],
+  "expectedObservations": [
+    "The controller listens to and evaluates the readback.",
+    "The controller does not treat the instruction as correctly acknowledged after the incorrect readback.",
+    "The controller emits a corrective transmission or equivalent corrective action.",
+    "The system only transitions to a correctly acknowledged state after a corrected readback or equivalent successful correction path."
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.5.7.5.2",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3424-3425"
+  },
+  "notes": [
+    "This is a downstream proof artifact, not yet an executable test.",
+    "Its purpose is to show that an accepted requirement bundle can be turned into a concrete integration-test candidate without losing source traceability."
+  ]
+}

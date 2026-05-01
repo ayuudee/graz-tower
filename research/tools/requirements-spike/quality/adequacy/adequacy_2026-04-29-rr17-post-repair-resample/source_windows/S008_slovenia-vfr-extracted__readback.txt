@@ -1,0 +1,42 @@
+524: ◊ Read back
+525: Reading back a clearance and any safety critical information helps both the pilot and the
+526: controller understand what the aircraft has been instructed to do. It also serves as a check
+527: that the right aircraft, and only that aircraft, will take action on the clearance. It will be
+528: easier for the pilot to read back the clearance if he notes it down.
+529: ◊ Items to be read back
+530: Messages containing the following must be read back:
+531: 
+532: 
+533: 
+534: 
+535: 
+536: 
+537: 
+538: 
+539: 
+540: ATC route clearance
+541: clearances/instructions to enter, land on, take‐off from, hold short of, cross or
+542: backtrack any runway
+543: runway in use
+544: altimeter settings
+545: SSR codes
+546: level or heading instructions
+547: speed instructions
+548: transition levels
+549: 
+550: 6
+551: 
+552: When a read back is required, the pilot must make sure it is complete and finish it with the
+553: call sign. It is normally best to read back the items in the order given. If the departure
+554: instructions are transmitted together with a take‐off clearance, it is more appropriate to
+555: read back the take‐off clearance first, followed by the departure instructions.
+556: ◊ Use of ′wilco′
+557: ′WILCO′ means ′I understand your message and will comply with it′. This standard phrase
+558: should not be used instead of a full read back of the items from the previous paragraph.
+559: ◊ Acknowledgement by call sign
+560: If a transmission contains information that does not need to be read back, the pilot should
+561: acknowledge it by transmitting his call sign or by transmitting his call sign preceded by the
+562: word ′ROGER′.
+563: ◊ Transmitting technique
+564: Transmissions shall be conducted concisely in a normal conversational tone.
+565: 

@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::readback_4_5_7_5::80a171af98372544",
+  "documentId": "icao4444-extracted",
+  "sectionId": "readback_4_5_7_5",
+  "familyId": "icao4444_readback_family",
+  "claimText": "The procedures and provisions relating to the exchange and acknowledgement of CPDLC messages are contained in Annex 10, Volume II and the PANS-ATM, Chapter 14.",
+  "rationale": "Note providing referential information to other documents, classified as support.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Note.\u2014 The procedures and provisions relating to the exchange and acknowledgement of CPDLC messages are contained in Annex 10, Volume II and the PANS-ATM, Chapter 14."
+  ],
+  "sourceItemIds": [
+    "note_4.5.7.5.2.1"
+  ],
+  "claimSha256": "be0f1de0927ca97aa7d45dcf1b8df3ea555dfd022d2264ec1516fb69b1c656fa",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3401,
+    "endLine": 3429
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "support_cpdlc_reference",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "Manual RR-11 decision: ICAO Doc 4444 section 4.5.7.5.2.1 Note is verbatim non-normative background support. It is accepted as review-only support, not as an executable rule, consistent with existing accepted background_support note records.",
+      "confidence": "medium",
+      "curatedAt": "2026-04-29T14:39:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/readback_4_5_7_5/judged_candidates.json",
+    "curatedAt": "2026-04-29T14:39:20Z"
+  }
+}

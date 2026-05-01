@@ -1,0 +1,40 @@
+1934: SERA.8005 Operation of air traffic control service
+1935: (a) In order to provide air traffic control service, an air traffic control unit shall:
+1936: (1) be provided with information on the intended movement of each aircraft, or variations therefrom, and with
+1937: current information on the actual progress of each aircraft;
+1938: (2) determine from the information received, the relative positions of known aircraft to each other;
+1939: (3) issue clearances and information for the purpose of preventing collision between aircraft under its control and of
+1940: expediting and maintaining an orderly flow of traffic;
+1941: (4) coordinate clearances as necessary with other units:
+1942: (i) whenever an aircraft might otherwise conflict with traffic operated under the control of such other units;
+1943: (ii) before transferring control of an aircraft to such other units.
+1944: (b) Clearances issued by air traffic control units shall provide separation:
+1945: (1) between all flights in airspace Classes A and B;
+1946: (2) between IFR flights in airspace Classes C, D and E;
+1947: (3) between IFR flights and VFR flights in airspace Class C;
+1948: (4) between IFR flights and special VFR flights;
+1949: (5) between special VFR flights unless otherwise prescribed by the competent authority;
+1950: except that, when requested by the pilot of an aircraft and agreed by the pilot of the other aircraft and if so prescribed
+1951: by the competent authority for the cases listed under b) above in airspace Classes D and E, a flight may be cleared
+1952: subject to maintaining own separation in respect of a specific portion of the flight below 3 050 m (10 000 ft) during
+1953: climb or descent, during day in visual meteorological conditions.
+1954: 
+1955: 13.10.2012
+1956: 
+1957: 13.10.2012
+1958: 
+1959: EN
+1960: 
+1961: Official Journal of the European Union
+1962: 
+1963: (c) Except for cases when a reduction in separation minima in the vicinity of aerodromes can be applied, separation by an
+1964: air traffic control unit shall be obtained by at least one of the following:
+1965: (1) vertical separation, obtained by assigning different levels selected from the table of cruising levels in Appendix 3
+1966: to the Annex to this Regulation, except that the correlation of levels to track as prescribed therein shall not apply
+1967: whenever otherwise indicated in appropriate aeronautical information publications or air traffic control clearances.
+1968: The vertical separation minimum shall be a nominal 300 m (1 000 ft) up to and including FL 410 and a nominal
+1969: 600 m (2 000 ft) above this level;
+1970: (2) horizontal separation, obtained by providing:
+1971: (i) longitudinal separation, by maintaining an interval between aircraft operating along the same, converging or
+1972: reciprocal tracks, expressed in time or distance; or
+1973: (ii) lateral separation, by maintaining aircraft on different routes or in different geographical areas.

@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::separation_minima_8010::14871d3b19e91d53",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "separation_minima_8010",
+  "familyId": "sera_separation_minima_family",
+  "claimText": "Details of the selected separation minima and of their areas of application shall be notified to pilots and aircraft operators through aeronautical information publications, where separation is based on the use by aircraft of specified navigation aids or specified navigation techniques.",
+  "rationale": "All attempts consistently identify the notification obligation to pilots/operators via AIPs as a sub-requirement of (c).",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "deterministic_test",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "(c) Details of the selected separation minima and of their areas of application shall be notified:",
+    "(2) to pilots and aircraft operators through aeronautical information publications, where separation is based on the use by aircraft of specified navigation aids or specified navigation techniques."
+  ],
+  "sourceItemIds": [
+    "sera_8010_c",
+    "sera_8010_c2"
+  ],
+  "claimSha256": "d153052debfb337e6c06434a8fd11ff85eccd2277a1efc792fbc0f982652980b",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 1974,
+    "endLine": 1984
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "sera_separation_minima_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8010_c2_notification_to_pilots",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted source verbatim supports the atomic obligation to notify pilots and aircraft operators through AIPs under the stated condition. The omitted subparagraph (c)(1) is a separate recipient obligation, not an operative qualification needed to understand this candidate, and the accepted siblings do not redundantly cover it.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:25:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/sera-923-2012-extracted/separation_minima_8010/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:25:45Z"
+  }
+}

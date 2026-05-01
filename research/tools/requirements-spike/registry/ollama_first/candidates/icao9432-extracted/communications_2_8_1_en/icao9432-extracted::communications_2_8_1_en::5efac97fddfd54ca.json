@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+  "documentId": "icao9432-extracted",
+  "sectionId": "communications_2_8_1_en",
+  "familyId": "icao9432_communications_family",
+  "claimText": "When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call \"ALL STATIONS\".",
+  "rationale": "All attempts agree on the guidance nature ('should') and the specific prefix requirement for aircraft broadcasts.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call\" ALL STATIONS\"."
+  ],
+  "sourceItemIds": [
+    "sec_2.8.1.3_eng"
+  ],
+  "claimSha256": "b5e9149538460bf062b2475f8f6b4854b8649437c8e7ff068971bc71ce2b9a83",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3642,
+    "endLine": 3697
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao9432_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_2.8.1.3_aircraft_broadcast",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim supported, the schema and authority/modality audits pass, and the candidate is not redundant with the accepted sibling. The source uses \u201cshould,\u201d and the candidate correctly frames it as operational guidance rather than an authoritative requirement.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:22:10Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:22:10Z"
+  }
+}

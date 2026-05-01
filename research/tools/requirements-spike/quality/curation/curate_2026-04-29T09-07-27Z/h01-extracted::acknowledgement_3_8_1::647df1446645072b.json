@@ -1,0 +1,19 @@
+{
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::647df1446645072b",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.76,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted sentence is verbatim and has shall-strength authority, but the operative scope depends on the immediately following list of items that define what must always be read back. Because that dependency is not fully bundled and one list item appears not to be represented among accepted siblings, resolving this requires bundling or re-extraction rather than a modality or authority correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::647df1446645072b.json"
+  },
+  "curatedAt": "2026-04-29T09:09:40Z"
+}

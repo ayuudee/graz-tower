@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::reduced_runway_7_11::66fc07893e930bcb",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduced_runway_7_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.89,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the candidate's permissive 'may be prescribed' claim, and the accepted siblings do not already cover this authorization. The only issue is the schema floor violation: a 'may' modality cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduced_runway_7_11/icao4444-extracted::reduced_runway_7_11::66fc07893e930bcb.json",
+    "toPath": "candidates/icao4444-extracted/reduced_runway_7_11/icao4444-extracted::reduced_runway_7_11::66fc07893e930bcb.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    }
+  },
+  "curatedAt": "2026-04-29T09:15:09Z"
+}

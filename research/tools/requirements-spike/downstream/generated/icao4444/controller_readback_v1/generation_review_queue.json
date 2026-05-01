@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "reviewItemId": "split-case::case-icao4444-4.5.7.5.1-operational-items-supported-controller-readback-v1",
+      "reviewKind": "split_supported_case",
+      "targetId": "case-icao4444-4.5.7.5.1-operational-items-supported-controller-readback-v1",
+      "reason": "Case was emitted from a source family that required supported/blocked facet splitting."
+    },
+    {
+      "reviewItemId": "blocked-residual::residual-icao4444-4.5.7.5.1-operational-items-unmodelled-controller-readback-v1",
+      "reviewKind": "blocked_residual",
+      "targetId": "residual-icao4444-4.5.7.5.1-operational-items-unmodelled-controller-readback-v1",
+      "reason": "missing_instruction_model"
+    }
+  ]
+}

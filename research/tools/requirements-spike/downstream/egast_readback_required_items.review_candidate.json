@@ -1,0 +1,26 @@
+{
+  "reviewCandidateId": "rv-egast-readback-required-items",
+  "sourcePromotionId": "accepted-atoms:egast:readback_required_items",
+  "verificationMode": "exploratory_probe",
+  "consumerType": "advisory_suspicion_seed",
+  "goal": "Use EGAST best-practice readback-sensitive item categories to seed exploratory review of whether the system appears to under-require readback on operationally important message families.",
+  "reviewPrompts": [
+    "For each item family, look for scenarios where the system accepts silence, a generic acknowledgement, or an incomplete reply where a readback-sensitive response would be operationally safer.",
+    "Treat any finding as a suspicion that must be cross-checked against higher-authority material before promotion."
+  ],
+  "probeFamilies": [
+    "runway-entry-or-crossing-messages",
+    "runway-in-use announcements",
+    "altimeter-setting messages",
+    "SSR-code assignments"
+  ],
+  "sourceTraceability": {
+    "document": "EGAST VFR",
+    "section": "Messages containing the following must be read back",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/egast-vfr-extracted.txt:539-545"
+  },
+  "notes": [
+    "This is best-practice/advisory material, not a legal or regulatory oracle.",
+    "Its role is to guide exploratory review and suspicion seeding."
+  ]
+}

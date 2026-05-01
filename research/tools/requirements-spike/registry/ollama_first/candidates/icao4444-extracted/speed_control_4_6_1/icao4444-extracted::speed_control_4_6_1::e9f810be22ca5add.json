@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::e9f810be22ca5add",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "familyId": "icao4444_speed_control_family",
+  "claimText": "Provisions concerning longitudinal separation using the Mach number technique are contained in Chapter 5, Separation Methods and Minima.",
+  "rationale": "All attempts classify this as a referential note.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "cross_reference",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Provisions concerning longitudinal separation using the Mach number technique are contained in Chapter 5, Separation Methods and Minima."
+  ],
+  "sourceItemIds": [
+    "note_4.6.1.1_2"
+  ],
+  "claimSha256": "aca88509dcfc34fcf444bdc34dbb679e3d6f10fe1e5bacc59ed27e1547c8ab32",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3431,
+    "endLine": 3473
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_speed_control_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "note_mach_separation_ref",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and the claim is a standalone non-normative cross-reference note, not an unsupported or redundant umbrella item. Its modality and authority class are already appropriate, but the requirement kind should not be treated as a definition.",
+      "corrections": {
+        "requirementKind": "cross_reference"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:18:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/speed_control_4_6_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:18:12Z"
+  }
+}

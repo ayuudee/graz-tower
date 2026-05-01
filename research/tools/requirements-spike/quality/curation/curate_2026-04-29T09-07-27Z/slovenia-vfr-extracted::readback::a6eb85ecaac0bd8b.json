@@ -1,0 +1,20 @@
+{
+  "canonicalId": "slovenia-vfr-extracted::readback::a6eb85ecaac0bd8b",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.17,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source, the claim text is identical to the source wording, and the modality 'shall' correctly reflects the quoted language. The authorityClass is already conservatively set to best_practice for the Slovenia VFR material, and the item is not redundant with the accepted readback-specific siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::a6eb85ecaac0bd8b.json",
+    "toPath": "candidates/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::a6eb85ecaac0bd8b.json"
+  },
+  "curatedAt": "2026-04-29T09:26:45Z"
+}

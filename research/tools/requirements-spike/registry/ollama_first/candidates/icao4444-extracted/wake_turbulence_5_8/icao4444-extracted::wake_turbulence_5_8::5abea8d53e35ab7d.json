@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::wake_turbulence_5_8::5abea8d53e35ab7d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_5_8",
+  "familyId": "icao4444_wake_turbulence_family",
+  "claimText": "A minimum separation of 2 minutes shall be applied between a LIGHT or MEDIUM aircraft taking off behind a HEAVY aircraft or a LIGHT aircraft taking off behind a MEDIUM aircraft when the aircraft are using crossing runways if the projected flight path of the second aircraft will cross the projected flight path of the first aircraft at the same altitude or less than 300 m (1 000 ft) below.",
+  "rationale": "Specific quantitative separation minima for departing aircraft on crossing runways.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "A minimum separation of 2 minutes shall be applied between a LIGHT or MEDIUM aircraft taking off behind a HEAVY aircraft or a LIGHT aircraft taking off behind a MEDIUM aircraft when the aircraft are using:",
+    "c) crossing runways if the projected flight path of the second aircraft will cross the projected flight path of the first aircraft at the same altitude or less than 300 m (1 000 ft) below;"
+  ],
+  "sourceItemIds": [
+    "5.8.3.1",
+    "5.8.3.1c"
+  ],
+  "claimSha256": "3bd07fdd647b2addb868f36ea4a33682f421b2eaaf902b75e8e99e2de9d6f1c4",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6487,
+    "endLine": 6584
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_wake_turbulence_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "wake_dep_2min_crossing",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_corrected_replacement_accept",
+      "confidence": "high",
+      "reasoning": "Corrected quote shape for an ICAO 4444 wake-turbulence separation rule and promoted it.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Corrected quote shape for an ICAO 4444 wake-turbulence separation rule and promoted it.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "icao4444-extracted::wake_turbulence_5_8::b2209483e71c53c3"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

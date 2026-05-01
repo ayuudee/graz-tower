@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::9e7501b932c88a64",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.82,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the candidate accurately captures a standalone ICAO Note as non-normative background support with modality `note`. It is not redundant with the accepted sibling notes and requires no identity or authority/modality correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::9e7501b932c88a64.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::9e7501b932c88a64.json"
+  },
+  "curatedAt": "2026-04-29T09:16:58Z"
+}

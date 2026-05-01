@@ -1,0 +1,25 @@
+{
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::d19604b475643777",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.84,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim as a permissive/advisory operational provision, and it is not redundant with the accepted sibling atomic items. The only issue is classification: this is a permission/advisory item rather than a best-practice requirement.",
+    "corrections": {
+      "requirementKind": "advisory_permission"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::d19604b475643777.json",
+    "toPath": "candidates/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::d19604b475643777.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_permission"
+    }
+  },
+  "curatedAt": "2026-04-29T09:09:51Z"
+}

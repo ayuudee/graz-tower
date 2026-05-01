@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::reduced_runway_7_11::36b3687091f0d92b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduced_runway_7_11",
+  "familyId": "icao4444_reduced_runway_family",
+  "claimText": "Wake turbulence separation minima shall be applied when using reduced runway separation minima.",
+  "rationale": "Condition requiring wake turbulence separation. Consistent across all attempts.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Reduced runway separation minima shall be subject to the following conditions:",
+    "wake turbulence separation minima shall be applied;"
+  ],
+  "sourceItemIds": [
+    "7.11.6_a"
+  ],
+  "claimSha256": "b462ff795cd280f4adf92958ac58c44f23b1825527694e921c5545fc26cd9d21",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9175,
+    "endLine": 9245
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_reduced_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_wake_turbulence_separation",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_quote_context_repair",
+      "confidence": "high",
+      "reasoning": "Added ICAO 4444 7.11.6 parent condition clause so the reduced-runway-separation condition claim is quote-supported.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Added ICAO 4444 7.11.6 parent condition clause so the reduced-runway-separation condition claim is quote-supported.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "icao4444-extracted::reduced_runway_7_11::55b938c3b83c1785"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

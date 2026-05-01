@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::communications_8035::996a596e0c83ca99",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "communications_8035",
+  "familyId": "sera_clearance_comms_contract_family",
+  "claimText": "The Commission shall propose common European procedures by 31 December 2015 at latest, for implementation of the said ICAO provisions in Union law.",
+  "rationale": "Only Attempt 1 separates this distinct obligation (Commission's deadline) from the Member States' compliance duty. It is a separate authoritative requirement with a different subject and deadline.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The Commission shall propose common European procedures by 31 December 2015 at latest, for implementation of the said ICAO provisions in Union law."
+  ],
+  "sourceItemIds": [
+    "sera_8035_b"
+  ],
+  "claimSha256": "d12e6643f7fdfa937e64f8cf7ff9162b234db70ab5be1706037527d00fe1e14e",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2142,
+    "endLine": 2160
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+    "caseId": "sera_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8035_b_commission_proposal",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-01T10:49:29Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/sera-923-2012-extracted/communications_8035/judged_candidates.json"
+  }
+}

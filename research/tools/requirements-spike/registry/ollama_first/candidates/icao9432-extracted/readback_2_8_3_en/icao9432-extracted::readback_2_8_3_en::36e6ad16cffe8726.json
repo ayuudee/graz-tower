@@ -1,0 +1,104 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726",
+  "documentId": "icao9432-extracted",
+  "sectionId": "readback_2_8_3_en",
+  "familyId": "icao9432_readback_family",
+  "claimText": "Whenever possible, controllers should pass a route clearance to an aircraft before start-up.",
+  "rationale": "The existing registry captured slow/clear delivery and avoiding taxi/line-up/take-off workload, but missed the before-start-up timing guidance.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Whenever possible, a route clearance should be passed to an\naircraft before start up."
+  ],
+  "sourceItemIds": [
+    "2.8.3.2_clearance_timing"
+  ],
+  "claimSha256": "9cafdba72e096686292b6b76907485d2cf808b57f3fd97cbc775341010dfa8b1",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3903,
+    "endLine": 3950
+  },
+  "ingestionRun": {
+    "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+    "runStartedAt": "2026-04-29T22:00:00Z",
+    "caseId": "icao9432_readback_family",
+    "models": {
+      "structure": "manual_rr17_coverage_review",
+      "extraction": "manual_rr17_coverage_review",
+      "challenge": "manual_rr17_coverage_review",
+      "defense": "manual_rr17_coverage_review",
+      "bundleGate": "manual_rr17_coverage_review",
+      "judge": "manual_rr17_coverage_review"
+    },
+    "promptVersion": "manual_rr17_coverage_review",
+    "promptVersionSha": "manual_rr17_coverage_review",
+    "originalCandidateId": "manual_rr17_route_clearance_before_startup_when_possible"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_add_accept",
+      "reasoning": "Adds a missed source-supported controller timing best practice from ICAO Doc 9432 section 2.8.3.2.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T22:00:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T22:00:00Z",
+    "promotedFrom": "manual RR-17 coverage ledger repair",
+    "curatedAt": "2026-04-29T22:00:00Z"
+  }
+}

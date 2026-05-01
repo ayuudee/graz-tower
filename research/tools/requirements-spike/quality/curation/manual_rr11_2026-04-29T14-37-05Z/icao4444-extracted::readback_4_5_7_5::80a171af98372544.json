@@ -1,0 +1,19 @@
+{
+  "canonicalId": "icao4444-extracted::readback_4_5_7_5::80a171af98372544",
+  "documentId": "icao4444-extracted",
+  "sectionId": "readback_4_5_7_5",
+  "model": "human-curator",
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "Manual RR-11 decision: ICAO Doc 4444 section 4.5.7.5.2.1 Note is verbatim non-normative background support. It is accepted as review-only support, not as an executable rule, consistent with existing accepted background_support note records.",
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/readback_4_5_7_5/icao4444-extracted::readback_4_5_7_5::80a171af98372544.json",
+    "toPath": "candidates/icao4444-extracted/readback_4_5_7_5/icao4444-extracted::readback_4_5_7_5::80a171af98372544.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-04-29T14:37:05Z"
+}

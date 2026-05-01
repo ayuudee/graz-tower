@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+  "documentId": "icao9432-extracted",
+  "sectionId": "communications_2_8_1_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 32.34,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim-supported, schema and authority/modality gates passed, and there are no accepted sibling candidates making it redundant. The source uses 'shall', while the operational_guidance authorityClass appropriately preserves the conservative status of ICAO 9432 material without overstating it as authoritative.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::0a964f42b6100596.json",
+    "toPath": "candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::0a964f42b6100596.json"
+  },
+  "curatedAt": "2026-04-29T09:21:57Z"
+}

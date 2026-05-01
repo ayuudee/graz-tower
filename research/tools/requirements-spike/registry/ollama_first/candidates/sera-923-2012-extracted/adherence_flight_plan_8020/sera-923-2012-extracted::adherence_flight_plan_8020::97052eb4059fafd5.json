@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::97052eb4059fafd5",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "adherence_flight_plan_8020",
+  "familyId": "sera_clearance_comms_contract_family",
+  "claimText": "Deviation from the VOR changeover requirements shall be notified to the appropriate air traffic services unit.",
+  "rationale": "Mandatory notification requirement for deviations from specific navigation guidance rules.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Deviation from the requirements in (2) shall be notified to the appropriate air traffic services unit"
+  ],
+  "sourceItemIds": [
+    "sera_8020_a_3"
+  ],
+  "claimSha256": "41851156b22972e8b375158e3b0e84c6e9853c7e382c198cd5809b64438855cb",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2072,
+    "endLine": 2129
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+    "caseId": "sera_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8020_a_3_deviation_notify",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-01T10:49:29Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/sera-923-2012-extracted/adherence_flight_plan_8020/judged_candidates.json"
+  }
+}

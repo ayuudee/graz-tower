@@ -1,0 +1,20 @@
+{
+  "canonicalId": "slovenia-vfr-extracted::readback::fd9994dd1fc98ea3",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.36,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is substantively supported and correctly advisory, but its exactSourceQuote is not verbatim: the source uses the non-ASCII hyphen in \u201ctake\u2010off,\u201d while the candidate quote uses \u201ctake-off.\u201d Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::fd9994dd1fc98ea3.json",
+    "toPath": "rejected/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::fd9994dd1fc98ea3.json"
+  },
+  "curatedAt": "2026-04-29T09:26:59Z"
+}

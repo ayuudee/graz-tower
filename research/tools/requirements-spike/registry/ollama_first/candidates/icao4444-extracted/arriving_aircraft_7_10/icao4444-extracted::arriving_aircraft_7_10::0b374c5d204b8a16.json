@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::0b374c5d204b8a16",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "familyId": "icao4444_arriving_aircraft_family",
+  "claimText": "A landing aircraft may be requested to vacate the runway at a specified exit taxiway.",
+  "rationale": "Optional instruction type. Consistent across all attempts.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "c) vacate the runway at a specified exit taxiway;"
+  ],
+  "sourceItemIds": [
+    "7.10.3.1",
+    "7.10.3.1_c"
+  ],
+  "claimSha256": "85c5e8ab3ec2a7116be29ad78247fc6d25fc671b41c2f53f01638abd5fb2d226",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9122,
+    "endLine": 9166
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_arriving_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "7.10.3.1c_vacate_specified",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted list item is verbatim and, with its parent clause in the source window, supports the claim that a landing aircraft may be requested to vacate at a specified exit taxiway. The only defect is the G3 mismatch: a permissive \u201cmay\u201d clause cannot be classified as an authoritative_requirement under the authority floor table, so the authorityClass should be lowered.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:12:04Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_human_review",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/arriving_aircraft_7_10/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:12:04Z"
+  }
+}

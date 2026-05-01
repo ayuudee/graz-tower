@@ -13,6 +13,60 @@ This file is the canonical backlog. It is maintained by both human and AI contri
 
 ## Active items
 
+### Research review findings (2026-04-30)
+
+**RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)
+`CertifiedAtc.lean` now imports `ObservationReconciliation` after adding the
+missing `Std` import, so the reconciliation proof is root-gated. The older
+non-world-backed route-adjacent Phase B files remain tracked historical context
+because their proof shape no longer builds against the current world-backed
+semantics; docs and module comments now say that explicitly.
+Impact: H | Effort: M
+
+**RRD-2 - TLA+ status claim has no checked artifacts** - DONE (2026-04-30)
+`docs/design/clearance-model-design.md` no longer claims current TLA+
+verification for `ClearanceLifecycle.tla` and `ClearanceActivation.tla`. It now
+states that those files are unavailable historical references and that the
+invariants remain design requirements until restored as checked TLA+ or Lean
+artifacts.
+Impact: M | Effort: L
+
+**RRD-3 - Research gates are not reproducible from documented shell** - DONE (2026-04-30)
+`flake.nix` / `flake.lock` now pin nixpkgs for the repo development shell and
+the `.#r1` research-tool shell. The root shell includes Elan, Python 3, and
+Node 22, and the FM / reviewer docs now use `nix --extra-experimental-features 'nix-command flakes' develop path:. -c ...` instead of
+ad hoc `nix-shell -p ...` commands. `default.nix` and
+`research/tools/r1/default.nix` also use the same pinned nixpkgs fallback for
+legacy callers, but the documented reproducible path is the flake shell.
+Impact: M | Effort: M
+
+**RRD-4 - Requirements quote audit lacks durable input artifact** - DONE (2026-04-30)
+`audit_quotes.py` now supports `--registry-root` and audits promoted accepted
+candidate records directly from `registry/ollama_first`, using each record's
+`provenance.sourcePath`. The runbook now includes this registry-root audit in
+the normal audit flow. Verified against the current registry: 342 quotes,
+0 misses.
+Impact: M | Effort: M
+
+**RRD-5 - Requirements scope counts need reconciliation** - DONE (2026-04-30; refreshed 2026-05-01)
+Current scope docs now distinguish the 30 landed/promoted registry windows
+from the 46 live `documents/*.json` manifest sections. The 16 remaining
+clearance/communications manifest-only additions are explicitly not accepted
+coverage until they pass ingest, promote, curate, audit, snapshot, and
+adequacy review. The source-section ledger wording now explains why it has
+46 exact manifest-section rows while the RR-17 adequacy evidence remains
+limited to the older landed 22-window frame.
+Impact: M | Effort: L
+
+**RRD-6 - Adjacent research tooling is local-only, not repo-reproducible** - DONE (2026-04-30)
+`research/tools/README.md` now declares `r1` and `atc-reviewer-spike` as
+repo-reproducible research-tool surfaces, with source/config intended for
+tracking and generated/vendor/local output kept local. `r1` already ignored
+`dist/`, `node_modules/`, and local workspaces; its README now uses the
+reproducible `.#r1` flake shell and `npm ci`. `atc-reviewer-spike` now ignores
+`runs/`, Python caches, and `.env`, and its README states the same boundary.
+Impact: M | Effort: M
+
 ### High impact, low-medium effort — do soon
 
 **B3 — Emergency readback atoms missing** — DONE (2026-04-22)
@@ -439,10 +493,10 @@ Impact: M | Effort: M
 **RR-18 — Source-document manifest shows the 22-section frame is not full-corpus ingestion** — DONE (2026-04-29)
 Built a checked source inventory under
 `research/tools/requirements-spike/quality/source_inventory/source_inventory_2026-04-29/`.
-The current `documents/*.json` frame is 8 document manifests and 22 selected line-range
-sections, covering 1,538 unique source-line records. That is 1.69% of the 90,910 line
-records in the 8 manifested `research/txt/` extracts and 1.08% of all 141,767 line
-records across the 12 local `research/txt/` extracts. Four text extracts are not
+Refreshed on 2026-05-01, the current `documents/*.json` frame is 8 document manifests
+and 46 selected line-range sections, covering 2,431 unique source-line records. That is
+2.67% of the 90,910 line records in the 8 manifested `research/txt/` extracts and 1.71%
+of all 141,767 line records across the 12 local `research/txt/` extracts. Four text extracts are not
 referenced by any requirements-spike document manifest: the CAP 413, H01, and ICAO 9432
 aerodrome excerpts, plus the Nolan textbook extract. Repo-wide PDF scan found 25 PDFs:
 9 requirements-source PDFs under `research/pdf/` and 16 chart/OFM metadata PDFs outside
@@ -451,17 +505,19 @@ RR-17 quality result for the declared 22 windows; downstream consumers must not 
 the current registry as a full-document extraction.
 Impact: H | Effort: L
 
-**RR-19 — Declared-slice scope contract and source-section disposition ledger** — DONE (2026-04-30)
-Froze the current registry as a declared 22-window extraction slice in
+**RR-19 — Declared-slice scope contract and source-section disposition ledger** — DONE (2026-04-30; refreshed 2026-05-01)
+Froze the registry scope contract in
 `registry/ollama_first/DECLARED_SLICE.md` and linked that contract from the
-requirements-spike README, runbook, and registry status snapshot. Built the
+requirements-spike README, runbook, and registry status snapshot. As of the 2026-05-01
+refresh it declares 30 landed windows, 46 live manifest windows, 16 manifest-only windows,
+and 285 accepted / 26 pending / 16 rejected registry records. Built the
 section-level control surface under
-`quality/source_section_ledger/source_section_ledger_2026-04-30/`: 457 ledger
-rows at TOC/major-section granularity plus exact rows for the 22 current
-manifest windows. The ledger marks each row as `extracted_current`, `extract`,
+`quality/source_section_ledger/source_section_ledger_2026-04-30/`: 481 ledger
+rows at TOC/major-section granularity plus exact rows for the 46 current
+manifest windows. The refreshed ledger marks each row as `extracted_current`, `manifest_only`, `extract`,
 `partially_extracted`, `support_only`, `duplicate_subset`, `out_of_scope`,
-`defer_with_reason`, or `background_only`. It identifies 92 high-priority
-`extract`/`partially_extracted` rows for future widening and keeps the three
+`defer_with_reason`, or `background_only`. It identifies 83 high-priority
+non-manifest `extract`/`partially_extracted` rows for future widening and keeps the three
 aerodrome excerpt files as `duplicate_subset` rather than independent ingestion
 targets.
 Impact: H | Effort: M
@@ -478,12 +534,29 @@ SERA.8020, SERA.8025, SERA.8030, SERA.8035; ICAO Doc 4444 §§4.3, 4.5, 4.11,
 4.14, and limited §§12.1-12.3 phraseology support; ICAO Doc 9432 §2.8; CAP 413
 Chapter 2; AIC A 21/23 H01 §§3.3, 3.8-3.10. Exact line-range hardening and
 language-boundary checks are complete for the first batch. The initial 16-window
-shape was revised to 19 recommended manifest additions after live ingestion of
+shape was revised to 24 recommended manifest additions after live ingestion of
 the combined CAP 413 §§2.54-2.67 window produced 21 candidates while the
-pipeline reviews at most 20; that CAP material is now split into four smaller
-windows. Explicit deferrals remain for H01 §§3.3/3.9/3.10 and ICAO Doc 4444
-position-reporting phraseology. Next: bounded manifest widening, ingest/promote/
-curate/audit/snapshot, and targeted omission review.
+pipeline reviews at most 20, and the first transfer split still produced
+invalid truncated JSON. CAP 413 §§2.82-2.91 was also split into compliance
+timing, air-ground communication failure, and ground-air communication failure
+after live ingestion showed the combined window was too heavy and mixed two
+procedural topics. That CAP material is now split into smaller windows. The
+2026-04-30 v2 ingestion run is quarantined: it timed out on the old combined
+CAP 413 §§2.82-2.91 window and then SERA / ICAO Doc 4444 / ICAO Doc 9432 calls
+failed with Ollama connection timeouts. Clean v3 promotion on 2026-05-01 landed
+the highest-value subset: SERA.8015(f), SERA.8020, SERA.8025, SERA.8030, and
+SERA.8035 (30 accepted, 6 pending), plus CAP 413 §§2.82-2.91 as three split
+windows (12 accepted, 20 pending). Registry reproducibility audit passed after
+promotion. The remaining ICAO Doc 4444 / ICAO Doc 9432 / CAP 413 §§2.54-2.75
+first-batch windows are exact-manifested but not landed. The current processing
+queue lives at
+`quality/source_processing_queue/source_processing_queue_2026-05-01/`: 16 exact
+windows ready for Ollama-backed ingestion (8 CAP 413, 7 ICAO Doc 4444, 1 ICAO
+Doc 9432), 26 existing pending records requiring curation, and 83 high-priority
+non-manifest rows that need future source-window hardening. Explicit deferrals
+remain for H01 §§3.3/3.9/3.10 and ICAO Doc 4444 position-reporting
+phraseology. Next: run the 16-window batch with `ingest_section_batch.py`, promote,
+audit, then curate remaining pending records.
 Impact: H | Effort: M
 
 ---

@@ -1,0 +1,104 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::68998a3add172915",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "familyId": "icao4444_speed_control_family",
+  "claimText": "Aircraft may, subject to conditions specified by the appropriate authority, be instructed to adjust speed in a specified manner.",
+  "rationale": "The registry covered limits, persistence, cancellation, units, and inability handling, but missed the top-level speed-control permission in section 4.6.1.1.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_permission",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "In order to facilitate a safe and orderly flow of traffic, aircraft may, subject to conditions specified by the\nappropriate authority, be instructed to adjust speed in a specified manner."
+  ],
+  "sourceItemIds": [
+    "4.6.1.1_speed_adjustment_permission"
+  ],
+  "claimSha256": "12abcdb8b200e155d4ad2dfca05f48a55e3b5e22e5e855758adfdc7295cd5722",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3431,
+    "endLine": 3473
+  },
+  "ingestionRun": {
+    "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+    "runStartedAt": "2026-04-29T22:00:00Z",
+    "caseId": "icao4444_speed_control_family",
+    "models": {
+      "structure": "manual_rr17_coverage_review",
+      "extraction": "manual_rr17_coverage_review",
+      "challenge": "manual_rr17_coverage_review",
+      "defense": "manual_rr17_coverage_review",
+      "bundleGate": "manual_rr17_coverage_review",
+      "judge": "manual_rr17_coverage_review"
+    },
+    "promptVersion": "manual_rr17_coverage_review",
+    "promptVersionSha": "manual_rr17_coverage_review",
+    "originalCandidateId": "manual_rr17_speed_adjustment_permission"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_add_accept",
+      "reasoning": "Adds the missed source-supported top-level permission that makes the existing speed-control constraints actionable.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T22:00:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T22:00:00Z",
+    "promotedFrom": "manual RR-17 coverage ledger repair",
+    "curatedAt": "2026-04-29T22:00:00Z"
+  }
+}

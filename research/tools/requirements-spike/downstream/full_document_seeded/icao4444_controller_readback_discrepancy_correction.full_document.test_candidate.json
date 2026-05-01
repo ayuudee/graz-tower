@@ -1,0 +1,26 @@
+{
+  "testCandidateId": "tc-icao4444-4.5.7.5.2-controller-discrepancy-correction-full-document",
+  "verificationMode": "property_or_family_test",
+  "targetLayer": "controller+sim integration",
+  "goal": "Verify that the controller checks readbacks for correctness and corrects discrepancies immediately rather than treating them as successful acknowledgements.",
+  "scenarioFamilies": [
+    {
+      "familyId": "incorrect-readback-correction",
+      "sourceAtomId": "icao4444:4.5.7.5.2:controller_discrepancy_correction"
+    },
+    {
+      "familyId": "correct-readback-confirmation",
+      "sourceAtomId": "icao4444:4.5.7.5.2:controller_discrepancy_correction"
+    }
+  ],
+  "expectedObservations": [
+    "A correct readback is accepted.",
+    "A discrepant readback routes into immediate correction rather than successful acknowledgement."
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.5.7.5.2",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3424-3425"
+  },
+  "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.2:full-document"
+}

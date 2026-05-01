@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_7_9::770b652d9783ff76",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_7_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.88,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim text is verbatim supported by the source and the modality is correctly captured as permissive \"may\". Under the authority floor rules, a \"may\" statement cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_7_9/icao4444-extracted::departing_aircraft_7_9::770b652d9783ff76.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_7_9/icao4444-extracted::departing_aircraft_7_9::770b652d9783ff76.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    }
+  },
+  "curatedAt": "2026-04-29T09:13:42Z"
+}

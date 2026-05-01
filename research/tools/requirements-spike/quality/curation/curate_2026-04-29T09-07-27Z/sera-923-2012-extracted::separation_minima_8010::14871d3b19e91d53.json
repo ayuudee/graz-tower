@@ -1,0 +1,20 @@
+{
+  "canonicalId": "sera-923-2012-extracted::separation_minima_8010::14871d3b19e91d53",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "separation_minima_8010",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.43,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source verbatim supports the atomic obligation to notify pilots and aircraft operators through AIPs under the stated condition. The omitted subparagraph (c)(1) is a separate recipient obligation, not an operative qualification needed to understand this candidate, and the accepted siblings do not redundantly cover it.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/separation_minima_8010/sera-923-2012-extracted::separation_minima_8010::14871d3b19e91d53.json",
+    "toPath": "candidates/sera-923-2012-extracted/separation_minima_8010/sera-923-2012-extracted::separation_minima_8010::14871d3b19e91d53.json"
+  },
+  "curatedAt": "2026-04-29T09:25:45Z"
+}

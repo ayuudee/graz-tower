@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::clearances_8015_a_d::2e38db256d177b3e",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "clearances_8015_a_d",
+  "familyId": "sera_clearances_family",
+  "claimText": "An air traffic control clearance shall indicate any necessary instructions or information on other matters such as approach or departure manoeuvres, communications and the time of expiry of the clearance.",
+  "rationale": "Operative requirement from SERA.8015(d) and (d)(5) mandating the inclusion of additional necessary instructions/information in clearances.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "An air traffic control clearance shall indicate:",
+    "(5) any necessary instructions or information on other matters such as approach or departure manoeuvres, communi­\ncations and the time of expiry of the clearance."
+  ],
+  "sourceItemIds": [
+    "sera_8015_d_5"
+  ],
+  "claimSha256": "994d519c15d47f9b5ca9fcd90de8dd6cebbd6b327f2a233cac0aaf041292f2d8",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 1985,
+    "endLine": 2022
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "sera_clearances_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8015_d_5_other_instructions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_corrected_replacement_accept",
+      "confidence": "high",
+      "reasoning": "Corrected SERA.8015(d) quote to preserve the source soft-hyphen line-break form and promoted it.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:18:31Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Corrected SERA.8015(d) quote to preserve the source soft-hyphen line-break form and promoted it.",
+      "appliedAt": "2026-04-29T20:18:31Z",
+      "previousCanonicalId": "sera-923-2012-extracted::clearances_8015_a_d::71094db33155f93d"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:18:31Z"
+  }
+}

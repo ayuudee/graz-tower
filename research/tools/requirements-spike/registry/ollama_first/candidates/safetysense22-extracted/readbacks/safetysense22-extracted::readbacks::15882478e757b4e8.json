@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "safetysense22-extracted::readbacks::15882478e757b4e8",
+  "documentId": "safetysense22-extracted",
+  "sectionId": "readbacks",
+  "familyId": "safetysense22_readback_family",
+  "claimText": "Approach clearances must be read back in their entirety.",
+  "rationale": "Specific list item 6.",
+  "modality": "must",
+  "authorityClass": "best_practice",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The following items must be read back in their entirety if addressed to you in a transmission from an ATSU:",
+    "6. Approach clearances"
+  ],
+  "sourceItemIds": [
+    "item_6"
+  ],
+  "claimSha256": "5a2864b926fda2bc1c5e8cbfc596ba8c624f777b267a713a5a04d0b5ff5837df",
+  "provenance": {
+    "sourcePath": "research/txt/safetysense22-extracted.txt",
+    "sourceSha256": "6043feda926c11b3b2ba0ec50be9987ce8fc38d4bcac6e65a58f885c464aa741",
+    "startLine": 485,
+    "endLine": 552
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-43-49Z_a0a1",
+    "caseId": "safetysense22_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "readback_approach",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:43:49Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "must",
+      "authorityClass": "best_practice"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_quote_context_repair",
+      "confidence": "high",
+      "reasoning": "Added the SafetySense Readbacks parent list heading so the item-level must-read-back claim is quote-supported.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Added the SafetySense Readbacks parent list heading so the item-level must-read-back claim is quote-supported.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "safetysense22-extracted::readbacks::48323d8e204141cc"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

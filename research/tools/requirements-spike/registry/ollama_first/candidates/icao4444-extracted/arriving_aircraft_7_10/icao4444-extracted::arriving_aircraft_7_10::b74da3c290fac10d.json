@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::b74da3c290fac10d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "familyId": "icao4444_arriving_aircraft_family",
+  "claimText": "Wake turbulence categories of aircraft and longitudinal separation minima are contained in Chapter 4, Section 4.9 and Chapter 5, Section 5.8, respectively.",
+  "rationale": "Referential note. Consistent across all attempts.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Note 2.\u2014 Wake turbulence categories of aircraft and longitudinal separation minima are contained in Chapter 4, Section 4.9 and Chapter 5, Section 5.8, respectively."
+  ],
+  "sourceItemIds": [
+    "7.10.1_note2"
+  ],
+  "claimSha256": "9c3733f5afb7bd51a2afc832d5b4a0ef4b82a738dd3250d767055d4cc2e3af0d",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9122,
+    "endLine": 9166
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_arriving_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "7.10.1_note2",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The candidate is verbatim-supported, structurally complete, and correctly classified as a non-normative note with background_support authority. It is not redundant with the accepted sibling requirements, which cover operational landing rules rather than this cross-reference note.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:12:55Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/arriving_aircraft_7_10/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:12:55Z"
+  }
+}

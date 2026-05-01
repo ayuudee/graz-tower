@@ -19,6 +19,13 @@
       "notes": "§2.8.1 Establishment and continuation of communications, English-language portion only (the Polish translation begins at line 3699). Initial-contact rules, callsign abbreviations, transfer-of-frequency procedures."
     },
     {
+      "sectionId": "transfer_communications_2_8_2_en",
+      "familyId": "icao9432_clearance_comms_phraseology_family",
+      "startLine": 3830,
+      "endLine": 3855,
+      "notes": "ICAO Doc 9432 §2.8.2 English-only transfer-of-communications guidance and examples. Polish translation begins after this window. Hardened in clearance_comms_2026-04-30."
+    },
+    {
       "sectionId": "taxi_4_4_en",
       "familyId": "icao9432_taxi_family",
       "startLine": 4917,
