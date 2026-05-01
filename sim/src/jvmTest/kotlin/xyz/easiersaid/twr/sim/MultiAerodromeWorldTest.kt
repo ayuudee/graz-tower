@@ -75,14 +75,14 @@ class MultiAerodromeWorldTest {
             role = RoleName.TOWER,
             aerodromeId = AerodromeId("LOWG"),
             frequency = Frequency.unsafe("118.200"),
-            responsibilities = emptySet(),
+            responsibilities = emptyMap(),
         )
         val ljmbTower = ControllerSpec(
             id = ControllerId("LJMB_TWR"),
             role = RoleName.TOWER,
             aerodromeId = AerodromeId("LJMB"),
             frequency = Frequency.unsafe("119.205"),
-            responsibilities = emptySet(),
+            responsibilities = emptyMap(),
         )
 
         val worldIndex = WorldIndex(
@@ -170,14 +170,14 @@ class MultiAerodromeWorldTest {
             role = RoleName.TOWER,
             aerodromeId = AerodromeId("LOWG"),
             frequency = Frequency.unsafe("118.200"),
-            responsibilities = emptySet(),
+            responsibilities = emptyMap(),
         )
         val ljmbTower = ControllerSpec(
             id = ControllerId("LJMB_TWR"),
             role = RoleName.TOWER,
             aerodromeId = AerodromeId("LJMB"),
             frequency = Frequency.unsafe("119.205"),
-            responsibilities = emptySet(),
+            responsibilities = emptyMap(),
         )
         val state = SimState.initial(
             seed = 0L,

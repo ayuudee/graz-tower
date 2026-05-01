@@ -1025,6 +1025,26 @@ data class SetSquawk(
     val squawk: Squawk
 ) : SurveillanceInstruction
 
+/**
+ * Terminate radar service and release the aircraft to uncontrolled
+ * airspace (or to whatever frequency the pilot navigates to next).
+ *
+ * Pass 7 (D-PF.7 closure): the alternative to [ContactFrequency] when the
+ * next role is published-but-unstaffed and the aircraft has reached the
+ * airspace boundary. Per ICAO Doc 4444 §10.1.4: *"radar service terminated,
+ * squawk 7000, frequency change approved"*.
+ *
+ * Carries [Option] for both fields because at small aerodromes a release
+ * may not have a known successor frequency, and the pilot's existing
+ * squawk may be appropriate to keep. [None] / [None] is "service
+ * terminated, do whatever you like."
+ */
+data class RadarServiceTerminated(
+    override val target: AircraftId,
+    val suggestedFrequency: arrow.core.Option<Frequency> = arrow.core.None,
+    val squawk: arrow.core.Option<Squawk> = arrow.core.None,
+) : SurveillanceInstruction
+
 data class ConfirmSquawk(
     override val target: AircraftId,
     val squawk: Squawk
@@ -1220,10 +1240,6 @@ data class NotIdentified(
 ) : ControllerResponse
 
 data class RadarContact(
-    override val target: AircraftId
-) : ControllerResponse
-
-data class RadarServiceTerminated(
     override val target: AircraftId
 ) : ControllerResponse
 

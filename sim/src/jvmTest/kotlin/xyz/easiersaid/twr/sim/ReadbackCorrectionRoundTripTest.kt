@@ -92,12 +92,12 @@ class ReadbackCorrectionRoundTripTest {
         val worldIndex = world.buildWorldIndex()
 
         // ── Controller + aircraft fixture ───────────────────────────────
-        val tower = ControllerSpec(
+        val tower = ControllerSpec.withOwned(
             id = controllerId,
             role = RoleName.TOWER,
             aerodromeId = lowg,
             frequency = frequency,
-            responsibilities = setOf(aircraftId),
+            ownedAircraft = setOf(aircraftId),
         )
 
         val now = SimTime.ZERO

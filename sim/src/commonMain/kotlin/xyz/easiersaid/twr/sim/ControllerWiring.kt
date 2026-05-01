@@ -43,17 +43,22 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     val spec = requireNotNull(state.controllers[controllerId]) {
         "Controller $controllerId not registered in SimState"
     }
+    // Pass 7 (D-AUDIT.5): the controller view exposes only OWNED aircraft —
+    // i.e. those the controller is currently talking to. `Watching`
+    // (incoming handoff) and `HandingOff` (outgoing) are sim-side state
+    // only; rules don't see them yet (D-PF.8 owns the future projection).
+    val ownedIds = spec.ownedAircraft
     // Project each responsible aircraft through SensorReading — the typed
     // boundary that enforces the firewall. AircraftState is never read by
     // the controller side; toSensorReading is the only allowed projection.
-    val readings = spec.responsibilities
+    val readings = ownedIds
         .mapNotNull { id -> state.aircraft[id]?.toSensorReading(state) }
     val observations = readings.associate { it.id to toObservation(it, state.worldIndex) }
     // Pre-briefing back-channel: project flight strips to AircraftIntent
     // values for aircraft on the controller's frequency. The strip is the
     // sim-side analogue of "the controller already knew this aircraft was
     // departing/arriving from the schedule" — operationally legitimate.
-    val flightStripIntents = spec.responsibilities
+    val flightStripIntents = ownedIds
         .mapNotNull { id -> state.aircraft[id]?.toFlightStrip()?.let { it.aircraft to it.intent } }
         .toMap()
     // Pass 6 (D-AUDIT.12 + post-impl Impact-M.1): the set of roles with a
@@ -69,7 +74,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         controllerId = controllerId,
         role = spec.role,
         aerodromeId = spec.aerodromeId,
-        responsibilities = spec.responsibilities,
+        responsibilities = ownedIds,
         aircraft = observations,
         runways = deriveRunwayObservations(state, spec.aerodromeId),
         activeClearances = emptyMap(),

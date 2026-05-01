@@ -281,6 +281,34 @@ data class HandoffAction(val toRole: RoleName) : RuleAction {
     }
 }
 
+/**
+ * Pass 7 (D-PF.7 closure): emit `RadarServiceTerminated` when the next
+ * controller is unstaffed and the aircraft has reached the CTR boundary.
+ * Mirrors [HandoffAction]'s shape but produces no peer transition — the
+ * sim drops the aircraft from the sender's responsibilities once the
+ * pilot reads back.
+ *
+ * [forRole] names the role this action releases — i.e. the role that
+ * *would have* received the handoff. Used by `BoundaryReleaseFirewallTest`
+ * (E17) to verify every `HandoffAction(role)` rule has a sibling
+ * `TerminateRadarServiceAction(forRole=role)` rule.
+ */
+data class TerminateRadarServiceAction(
+    val forRole: RoleName,
+    val suggestedFrequency: arrow.core.Option<xyz.easiersaid.twr.protocol.Frequency> = arrow.core.None,
+    val squawk: arrow.core.Option<xyz.easiersaid.twr.protocol.Squawk> = arrow.core.None,
+) : RuleAction {
+    override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> =
+        ProposedAction(
+            ac.id,
+            xyz.easiersaid.twr.protocol.RadarServiceTerminated(
+                target = ac.id,
+                suggestedFrequency = suggestedFrequency,
+                squawk = squawk,
+            ),
+        ).right()
+}
+
 data object TaxiToHoldingAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {
         val runway = commitment.runway ?: ctx.beliefs.activeRunway

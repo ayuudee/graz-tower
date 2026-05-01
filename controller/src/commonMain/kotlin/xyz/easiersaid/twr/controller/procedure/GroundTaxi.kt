@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.TerminateRadarServiceAction
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
 import xyz.easiersaid.twr.controller.bdi.StageExpectation
 import xyz.easiersaid.twr.controller.bdi.TaxiRequested
@@ -87,6 +88,23 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
                 // Stay at AwaitAtHolding. Pruning happens when responsibility actually
                 // transfers (orphan-prune in reconcileCommitments).
+            ),
+            // Pass 7 (D-PF.7 closure): boundary-release sibling for the
+            // unstaffed-TOWER case (small uncontrolled field where AFIS
+            // works alone, or shift transitions). Aircraft is at the
+            // holding point; the radius gate is moot but kept for E17
+            // sibling-pairing.
+            AtcRule(
+                id = "GND-RADAR-SERVICE-TERMINATED",
+                description = "Terminate service when TOWER unstaffed and aircraft at holding point",
+                regulations = listOf(ICAO4444_7_6, ICAO9432_TAXI),
+                guard = AllOf(listOf(
+                    AtHoldingPoint,
+                    Not(IsTransferTargetStaffed(RoleName.TOWER)),
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
+                )),
+                action = TerminateRadarServiceAction(forRole = RoleName.TOWER),
+                advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),
         // ── Arrival: taxi to stand ───────────────────────────────────

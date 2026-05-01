@@ -371,6 +371,46 @@ data class WithinDistanceOfThreshold(val maxMetres: Meters) : RuleGuard {
     }
 }
 
+/**
+ * Aircraft is more than [thresholdMetres] from the aerodrome reference point —
+ * a **radial-distance approximation** of "outside the CTR boundary."
+ *
+ * Pass 7 (D-PF.7 closure): used by the boundary-release rules to gate
+ * `TerminateRadarServiceAction`. The conservative 12 NM (~22.2 km) default
+ * fails closed: aircraft past the actual CTR but inside 12 NM stay with
+ * the controller until they reach the threshold (under-fires the release
+ * rather than over-firing inside controlled airspace, which would be
+ * regulatorily wrong).
+ *
+ * Real CTR boundaries are typed polygons — `OutsideAerodromeRadius` flags
+ * the approximation in its name so a future polygon guard
+ * `OutsideAirspaceVolume(AirspaceVolume)` reads as a sibling, not a
+ * rename. **D-AUDIT.7** owns the polygon-membership upgrade.
+ *
+ * Reads the aerodrome's reference point or threshold; conservatively
+ * returns false when the position cannot be resolved (unknown position =
+ * do not release).
+ */
+data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
+    override val failureMessage = "Aircraft within ${thresholdMetres.value}m radial of aerodrome (still in CTR scope)"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId] ?: return false
+        // Use the first runway's threshold as a stand-in for the aerodrome
+        // reference point. Real ARPs come with the airport manifest under
+        // a separate `referencePoint` field; today the field exists on
+        // Aerodrome but isn't populated for every aerodrome (some are null
+        // until D-AUDIT.7's CTR-polygon work). The threshold is a reasonable
+        // proxy at small fields.
+        val arpPointId = aerodrome.runways.values.firstOrNull()?.threshold ?: return false
+        val acPos = ctx.worldIndex.positions[ac.position] ?: return false
+        val arpPos = ctx.worldIndex.positions[arpPointId] ?: return false
+        val dx = acPos.xMeters - arpPos.xMeters
+        val dy = acPos.yMeters - arpPos.yMeters
+        val limit = thresholdMetres.value
+        return (dx * dx + dy * dy) > limit * limit
+    }
+}
+
 /** Pilot reported going around this cycle. */
 data object GoAroundEvent : RuleGuard {
     override val failureMessage = "No go-around reported this cycle"

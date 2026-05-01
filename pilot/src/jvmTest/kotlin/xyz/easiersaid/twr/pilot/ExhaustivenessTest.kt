@@ -257,9 +257,9 @@ class ExhaustivenessTest {
          * The exact-equals check (FP review S.1) means any future leaf
          * addition fails this test — bump the constant in the same PR.
          */
-        const val ATC_INSTRUCTION_LEAF_COUNT: Int = 99
+        const val ATC_INSTRUCTION_LEAF_COUNT: Int = 100
 
         /** Concrete-leaf count of [ControllerResponse]'s sealed hierarchy. */
-        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 12
+        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 11
     }
 }

@@ -62,6 +62,7 @@ import xyz.easiersaid.twr.protocol.ResumeNormalSpeed
 import xyz.easiersaid.twr.protocol.RouteAsFiled
 import xyz.easiersaid.twr.protocol.RunwayInUseAdvisory
 import xyz.easiersaid.twr.protocol.SetPressure
+import xyz.easiersaid.twr.protocol.RadarServiceTerminated
 import xyz.easiersaid.twr.protocol.SetSquawk
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
 import xyz.easiersaid.twr.protocol.SquawkIdent
@@ -140,7 +141,6 @@ import xyz.easiersaid.twr.protocol.ExpectVectors
 import xyz.easiersaid.twr.protocol.Identified
 import xyz.easiersaid.twr.protocol.NotIdentified
 import xyz.easiersaid.twr.protocol.RadarContact
-import xyz.easiersaid.twr.protocol.RadarServiceTerminated
 import xyz.easiersaid.twr.protocol.ReadBackCorrect
 import xyz.easiersaid.twr.protocol.ReadbackCorrection
 import xyz.easiersaid.twr.protocol.Standby
@@ -204,7 +204,6 @@ fun processControllerResponse(
     is Identified -> ResponseReaction.silent(mission)
     is NotIdentified -> ResponseReaction.silent(mission)
     is RadarContact -> ResponseReaction.silent(mission)
-    is RadarServiceTerminated -> ResponseReaction.silent(mission)
     is AcknowledgeEmergency -> ResponseReaction.silent(mission)
     is TrafficInformation -> ResponseReaction.silent(mission)
     is CautionWakeTurbulence -> ResponseReaction.silent(mission)
@@ -427,7 +426,13 @@ private fun stepTransmission(
     MissionStep.REQUEST_STARTUP -> if (isFirstTick) Request(RequestStartup()) else null
     MissionStep.REQUEST_TAXI -> if (isFirstTick) Request(RequestTaxi()) else null
     MissionStep.REPORT_READY -> if (isFirstTick) Report(listOf(ReportEvent.Ready)) else null
-    MissionStep.CALL_INBOUND -> if (isFirstTick) InitialContact(stationCalled = xyz.easiersaid.twr.protocol.RoleName.TOWER) else null
+    MissionStep.CALL_INBOUND -> if (isFirstTick) InitialContact(
+        // Pass 7 (D-AUDIT.5): the role to call is whoever the pilot was
+        // most recently told to contact (e.g. GROUND after the post-vacate
+        // handoff). Falls back to TOWER for the original arrival case
+        // where the pilot's first call after spawning is to Tower.
+        stationCalled = mission.pendingInitialContactRole.getOrElse { xyz.easiersaid.twr.protocol.RoleName.TOWER },
+    ) else null
     MissionStep.REPORT_DOWNWIND ->
         if (mission.lastReportedLeg != Some(LegName.DOWNWIND)) {
             // CAP 413 para 4.50/4.51: qualify downwind with circuit intent.
@@ -572,7 +577,28 @@ fun processInstruction(
             // the new frequency — e.g., a fresh Report(Ready) at AWAIT_LINE_UP
             // after a GND→TWR handoff — is not suppressed by a stale
             // lastTransmittedStep value left over from the old frequency).
-            mission.copy(contactedOnFrequency = false, lastTransmittedStep = None)
+            //
+            // Pass 7 (D-AUDIT.5): also remember the role the pilot was told
+            // to contact, so the next CALL_INBOUND emission targets that
+            // role rather than the hardcoded TOWER. Real-world parallel:
+            // the controller said "OE-ABC, contact ground 121.9" — the
+            // pilot calls "Ground, OE-ABC" next, not "Tower."
+            mission.copy(
+                contactedOnFrequency = false,
+                lastTransmittedStep = None,
+                pendingInitialContactRole = Some(instruction.role),
+            )
+
+        is RadarServiceTerminated ->
+            // Pass 7 (D-PF.7): boundary release. Pilot acknowledges (the
+            // readback is generated separately via InstructionReadback's
+            // squawk-readback rule) and clears their contact state. No
+            // pendingInitialContactRole — there's no successor controller.
+            mission.copy(
+                contactedOnFrequency = false,
+                lastTransmittedStep = None,
+                pendingInitialContactRole = None,
+            )
 
         // ── Route overrides: vectors / holds suspend FPL-based routing ──
         is FlyHeading ->
@@ -891,6 +917,8 @@ private fun runwayFromInstruction(
     is StopDescentAt -> None
     is StopImmediately -> None
     is StopSquawk -> None
+    // Pass 7 (D-PF.7): boundary release carries no runway.
+    is RadarServiceTerminated -> None
     is StopTurn -> None
     is TakeoffImmediatelyOrHoldShort -> None
     is TakeoffImmediatelyOrVacateRunway -> None
@@ -937,7 +965,14 @@ private fun applyFplAmendment(
 /** Update mission after any pilot transmission. */
 fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): PilotMission = when (tx) {
     is Report -> tx.events.fold(mission) { m, evt -> updateAfterReport(m, evt) }
-    is InitialContact -> mission.copy(contactedOnFrequency = true)
+    is InitialContact -> mission.copy(
+        contactedOnFrequency = true,
+        // Pass 7 (D-AUDIT.5): clear the pending-role so a future
+        // CALL_INBOUND step (e.g. a re-handoff later) reads None and
+        // either falls back to TOWER or — better — reads a freshly-set
+        // pendingInitialContactRole from a subsequent ContactFrequency.
+        pendingInitialContactRole = None,
+    )
     // Readbacks, acknowledgements, requests, and comms management — no mission effect.
     is Readback,
     is Request,

@@ -184,9 +184,9 @@ data class SimState(
                 if (controller.aerodromeId !in world.aerodromes) {
                     return InitError.ControllerAerodromeNotInWorld(controller.id, controller.aerodromeId)
                 }
-                for (responsibility in controller.responsibilities) {
-                    if (responsibility !in aircraftIds) {
-                        return InitError.ResponsibilityForUnknownAircraft(controller.id, responsibility)
+                for (responsibilityId in controller.responsibilities.keys) {
+                    if (responsibilityId !in aircraftIds) {
+                        return InitError.ResponsibilityForUnknownAircraft(controller.id, responsibilityId)
                     }
                 }
             }

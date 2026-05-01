@@ -133,12 +133,12 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
     val worldIndex = world.buildWorldIndex()
 
     val controllers = controllerRoles.associateWith { role ->
-        ControllerSpec(
+        ControllerSpec.withOwned(
             id = ControllerId("${aerodromeId.value}_${role.name}"),
             role = role,
             aerodromeId = aerodromeId,
             frequency = frequency,
-            responsibilities = if (role == RoleName.GROUND) groundResponsibilities else emptySet(),
+            ownedAircraft = if (role == RoleName.GROUND) groundResponsibilities else emptySet(),
         )
     }
 

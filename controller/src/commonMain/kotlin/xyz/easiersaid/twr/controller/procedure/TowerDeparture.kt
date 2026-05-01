@@ -22,6 +22,8 @@ import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.NoRunwayClearanceIssued
 import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.OutsideAerodromeRadius
+import xyz.easiersaid.twr.controller.bdi.TerminateRadarServiceAction
 import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.OnGround
 import xyz.easiersaid.twr.controller.bdi.OnRunway
@@ -272,6 +274,32 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
                 )),
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Pass 7 (D-PF.7 closure): boundary release sibling for the
+            // unstaffed-APPROACH case. Same compatibility set as DEP-HANDOFF
+            // except `Not(IsTransferTargetStaffed)` and the aircraft has
+            // crossed the CTR boundary (12 NM radial conservative). Per
+            // ICAO Doc 4444 §10.1.4: "radar service terminated, squawk
+            // 7000, frequency change approved." E17 architectural test
+            // pairs this with DEP-HANDOFF.
+            AtcRule(
+                id = "DEP-RADAR-SERVICE-TERMINATED",
+                description = "Terminate radar service when APPROACH unstaffed and aircraft past CTR boundary",
+                regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
+                guard = AllOf(listOf(
+                    Airborne,
+                    AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
+                    Not(IsCircuitTraffic),
+                    AircraftIntentIs(xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing),
+                    Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH)),
+                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM — D-AUDIT.7
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
+                )),
+                action = TerminateRadarServiceAction(
+                    forRole = xyz.easiersaid.twr.protocol.RoleName.APPROACH,
+                    squawk = arrow.core.Some(xyz.easiersaid.twr.protocol.Squawk.unsafe(7000)),
+                ),
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),

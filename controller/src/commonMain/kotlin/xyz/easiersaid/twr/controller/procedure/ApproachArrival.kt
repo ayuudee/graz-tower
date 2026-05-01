@@ -6,6 +6,8 @@ import xyz.easiersaid.twr.controller.bdi.AtcRule
 import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
+import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.TerminateRadarServiceAction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
@@ -51,6 +53,22 @@ fun approachArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                     IsTransferTargetStaffed(RoleName.TOWER),
                 )),
                 action = HandoffAction(RoleName.TOWER),
+                nextStage = ApproachArrivalStage.Complete,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // Pass 7 (D-PF.7 closure): boundary release if TOWER unstaffed.
+            // Approach controller terminates radar service and the aircraft
+            // continues VFR or with another agency.
+            AtcRule(
+                id = "APP-RADAR-SERVICE-TERMINATED",
+                description = "Terminate radar service if TOWER is unstaffed at the destination",
+                regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
+                guard = AllOf(listOf(
+                    OnCircuitLeg(LegName.DOWNWIND),
+                    Not(IsTransferTargetStaffed(RoleName.TOWER)),
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
+                )),
+                action = TerminateRadarServiceAction(forRole = RoleName.TOWER),
                 nextStage = ApproachArrivalStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),

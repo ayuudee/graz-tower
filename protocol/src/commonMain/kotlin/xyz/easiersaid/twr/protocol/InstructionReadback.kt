@@ -168,6 +168,14 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is SquawkStandby -> emptySet()
     is SquawkNormal -> emptySet()
     is StopSquawk -> emptySet()
+    // Pass 7 (D-PF.7): boundary release per ICAO Doc 4444 §10.1.4. Pilot
+    // reads back the squawk if one was assigned (typically 7000 for VFR
+    // release). Frequency change approval is acknowledged separately by
+    // the pilot's frequency-change in the next tick.
+    is RadarServiceTerminated -> instruction.squawk.fold(
+        { emptySet() },
+        { sq -> setOf(SquawkReadback(sq)) },
+    )
 
     // ── Airspace / emergency / misc ──────────────────────────────────────
     is DivertTo -> error("Readback atoms not yet implemented for DivertTo")

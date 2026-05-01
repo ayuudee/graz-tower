@@ -151,6 +151,10 @@ fun instructionMetadata(instruction: AtcInstruction): InstructionMetadata = when
     is SquawkStandby -> InstructionMetadata(InstructionTiming.IMMEDIATE, ClearanceDomain.SQUAWK, CompletionCategory.SELF_COMPLETING, mayBeConditional = false)
     is SquawkNormal -> InstructionMetadata(InstructionTiming.IMMEDIATE, ClearanceDomain.SQUAWK, CompletionCategory.SELF_COMPLETING, mayBeConditional = false)
     is StopSquawk -> InstructionMetadata(InstructionTiming.IMMEDIATE, ClearanceDomain.SQUAWK, CompletionCategory.SELF_COMPLETING, mayBeConditional = false)
+    // Pass 7 (D-PF.7): boundary release. Treated as an immediate frequency-
+    // domain instruction for metadata purposes — the pilot acknowledges the
+    // squawk-and-frequency-change-approved phraseology in one tick.
+    is RadarServiceTerminated -> InstructionMetadata(InstructionTiming.IMMEDIATE, ClearanceDomain.FREQUENCY, CompletionCategory.SELF_COMPLETING, mayBeConditional = false)
 
     // ---- Frequency ----
     is ContactFrequency -> InstructionMetadata(InstructionTiming.IMMEDIATE, ClearanceDomain.FREQUENCY, CompletionCategory.EXTERNAL_EVENT, mayBeConditional = false)

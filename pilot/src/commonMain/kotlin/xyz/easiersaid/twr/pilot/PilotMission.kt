@@ -63,6 +63,21 @@ data class PilotMission(
     /** Whether initial contact has been made on the current frequency. */
     val contactedOnFrequency: Boolean = false,
 
+    /**
+     * The role the pilot was last told to contact via [ContactFrequency].
+     *
+     * Pass 7 (D-AUDIT.5): the responsibility transition fires on
+     * `Utterance.FromPilot(InitialContact(stationCalled=X))` — *which* role
+     * X is determined by what `ContactFrequency` instruction the pilot
+     * most recently received. Pre-Pass-7, `CALL_INBOUND` hardcoded TOWER;
+     * post-Pass-7 it reads this field for the contextual role.
+     *
+     * Set by [processInstruction] on `ContactFrequency(role)`; cleared by
+     * [updateAfterTransmission] when the matching `InitialContact` is
+     * transmitted. [None] before the first ContactFrequency.
+     */
+    val pendingInitialContactRole: Option<xyz.easiersaid.twr.protocol.RoleName> = None,
+
     // ── Phase-local (reset on go-around — see resetForGoAround) ────
     /** Timer for missing-clearance escalation (millis since step entered). */
     val stepEnteredAt: SimTime = SimTime.ZERO,
@@ -373,7 +388,16 @@ fun arrivalJoinTask(): CompoundTask = CompoundTask(TaskName.ArrivalJoin, listOf(
     PrimitiveTask(MissionStep.AWAIT_JOINING_INSTRUCTIONS, CompletionMode.INSTRUCTION_GATED),
 ))
 
-/** Build the GROUND_ARRIVAL compound task. */
+/**
+ * Build the GROUND_ARRIVAL compound task.
+ *
+ * Pass 7 (D-AUDIT.5): no dedicated CALL_INBOUND step needed for this
+ * task — the responsibility transition fires on any pilot transmission
+ * to a Watching controller (per ICAO Doc 4444 §10.1.1, two-way comms
+ * via "receiving station acknowledges receipt"). The first transmission
+ * here is REPORT_RUNWAY_VACATED, which doubles as initial contact (real
+ * phraseology: "Ground, OE-ABC, runway 16C vacated, request taxi to stand").
+ */
 fun groundArrivalTask(): CompoundTask = CompoundTask(TaskName.GroundArrival, listOf(
     PrimitiveTask(MissionStep.REPORT_RUNWAY_VACATED, CompletionMode.REPORTED),
     PrimitiveTask(MissionStep.AWAIT_VACATE_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
