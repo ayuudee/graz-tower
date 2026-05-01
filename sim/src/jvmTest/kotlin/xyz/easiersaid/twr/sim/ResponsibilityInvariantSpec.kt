@@ -162,6 +162,44 @@ class ResponsibilityInvariantSpec {
         }
     }
 
+    @Test
+    fun `unpaired HandingOff (no matching Watching at receiver) fails the invariant`() {
+        // Pass 7 re-review Test-M.1 fold-in: symmetric coverage of the
+        // pairing rule. The previous row tests the receiver-side desync
+        // (Watching present but sender is Owned). This row tests the
+        // sender-side desync (HandingOff present but receiver is Owned/
+        // empty/wrong-Watching). Step.kt's invariant covers both
+        // directions; this row pins the second direction at the spec
+        // level so a regression that only checks one side fails loudly.
+        val ac = AircraftId("OE-ABC")
+        val now = SimTime.ofMillis(0)
+        val aId = ControllerId("CTRL_A")
+        val bId = ControllerId("CTRL_B")
+        val ctrlA = ControllerSpec(
+            id = aId,
+            role = RoleName.TOWER,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ResponsibilityState.HandingOff(
+                target = xyz.easiersaid.twr.protocol.HandoffTarget.Peer(bId), since = now,
+            )),
+        )
+        val ctrlB = ControllerSpec(
+            id = bId,
+            role = RoleName.GROUND,
+            aerodromeId = AerodromeId("LOWG"),
+            frequency = Frequency.unsafe("118.200"),
+            responsibilities = mapOf(ac to ResponsibilityState.Owned(now)),  // not Watching
+        )
+        val state = minimalSimStateWith(listOf(ctrlA, ctrlB))
+        val ex = assertFailsWith<IllegalStateException> {
+            assertResponsibilityInvariant(state)
+        }
+        check(ex.message?.contains("pairing") == true) {
+            "Expected pairing violation; got: ${ex.message}"
+        }
+    }
+
     private fun minimalSimStateWith(controllers: List<ControllerSpec>): SimState {
         // Construct a SimState directly. For invariant checking we only
         // need state.controllers populated; other fields are unused but

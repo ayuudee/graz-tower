@@ -84,6 +84,7 @@ import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.RadarServiceTerminated
 import xyz.easiersaid.twr.protocol.HandoffTarget
 import xyz.easiersaid.twr.protocol.ResponsibilityState
+import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.NumberInSequence
 import xyz.easiersaid.twr.protocol.Orbit
 import xyz.easiersaid.twr.protocol.ProceedDirect
@@ -137,6 +138,7 @@ import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Disregard
 import xyz.easiersaid.twr.protocol.EmergencyInstruction
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.FrequencyInstruction
 import xyz.easiersaid.twr.protocol.GroundInstruction
 import xyz.easiersaid.twr.protocol.InitialContact
@@ -222,6 +224,17 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
  *
  * Violations throw `IllegalStateException` with a clear diagnostic
  * naming the conflict.
+ *
+ * **No-self-handoff is unrepresentable, not invariant-enforced** (Pass 7
+ * post-impl re-review FP-M-new.1): a single controller cannot
+ * `HandingOff(Peer(self))` for one aircraft, because `responsibilities`
+ * is `Map<AircraftId, ResponsibilityState>` — there is one state per
+ * aircraft, not one per (aircraft, peer-relationship). The data shape
+ * makes the case unrepresentable. **A future refactor that flattens
+ * responsibility to `Map<(ControllerId, AircraftId), ResponsibilityState>`
+ * (e.g. for diagnostic indexing) re-introduces the gap loudly** —
+ * extend this invariant with a `senderId == target.controllerId` check
+ * at that point.
  */
 internal fun assertResponsibilityInvariant(state: SimState) {
     // (1) at most one Owned per aircraft
@@ -307,9 +320,9 @@ private fun handlePhysicsTick(
 /** Earliest moment at or after [earliest] when [frequency] is clear of in-flight transmissions. */
 private fun pilotFrequencyFreeFrom(
     state: SimState,
-    frequency: xyz.easiersaid.twr.protocol.Frequency,
-    earliest: xyz.easiersaid.twr.protocol.SimTime,
-): xyz.easiersaid.twr.protocol.SimTime {
+    frequency: Frequency,
+    earliest: SimTime,
+): SimTime {
     val blocking = state.inFlightTransmissions.values
         .filter { it.frequency == frequency && it.endsAt > earliest }
         .maxByOrNull { it.endsAt.millis }
@@ -585,7 +598,7 @@ private fun handleTransmissionEnd(
             // set on InitialContact specifically (its semantics are
             // "the pilot has uttered the dedicated InitialContact phrase
             // at least once" — a separate concern from sim-side responsibility).
-            val pilotTransmission: xyz.easiersaid.twr.protocol.AircraftId? =
+            val pilotTransmission: AircraftId? =
                 (msg as? ReceivedMessage.Clear)?.aircraft
             val withMissionAcked = if (pilotTransmission != null) {
                 val acId = pilotTransmission
@@ -1171,21 +1184,41 @@ internal fun applyRadarServiceTerminated(
 internal fun applyTwoWayCommsEstablished(
     state: SimState,
     ac: AircraftState,
-    stationCalled: xyz.easiersaid.twr.protocol.RoleName,
+    stationCalled: RoleName,
 ): SimState {
     // Find the controller this aircraft is being handed off TO — the one
     // whose role matches the called station and who is Watching this aircraft.
+    //
+    // Pass 7 post-impl Impact-O.1: silent-ignore on missing Watching is the
+    // correct semantic for "stray pilot transmission with no pending handoff"
+    // — a pilot calling on a frequency where no one was expecting them.
+    // Real ATC: the call goes nowhere; the controller may or may not respond
+    // depending on whether they have time. The future D-PF.8 watching-
+    // projection work + D-AUDIT.2 coordination ledger will surface a
+    // diagnostic emit here ("controller heard a call but didn't expect it").
+    // Pass 7 keeps it silent.
     val target = state.controllers.values.firstOrNull { spec ->
         spec.role == stationCalled &&
             spec.responsibilities[ac.id] is ResponsibilityState.Watching
-    } ?: return state // pilot called a station that isn't watching them — silent ignore
-    // Find the sender (the HandingOff controller).
+    } ?: return state
+    // Find the sender (the HandingOff controller). Pass 7 post-impl FP-P-new.1:
+    // a missing sender at this point is a paired-state violation — the
+    // receiver Watching state references a non-existent HandingOff(Peer).
+    // The post-step assertResponsibilityInvariant would fire on this, but
+    // catching it loudly here gives a more direct stack trace. Asymmetric
+    // totality (one branch silent, one loud) is the design — distinct
+    // failure modes (phraseology mismatch vs wiring defect) deserve
+    // distinct treatments.
     val sender = state.controllers.values.firstOrNull { spec ->
         val r = spec.responsibilities[ac.id]
         r is ResponsibilityState.HandingOff &&
             r.target is HandoffTarget.Peer &&
             (r.target as HandoffTarget.Peer).controllerId == target.id
-    } ?: return state
+    } ?: error(
+        "applyTwoWayCommsEstablished: receiver ${target.id} is Watching $ac.id but no controller " +
+            "has HandingOff(Peer(${target.id})) for that aircraft. Paired-state violation — " +
+            "applyContactFrequency must transition both sides atomically.",
+    )
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[target.id] = target.copy(
         responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Owned(state.now)),
