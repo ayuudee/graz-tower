@@ -63,7 +63,6 @@ class GuardSpec {
             activeClearances = emptyMap(),
             receivedMessages = emptyList(),
             weather = null,
-            pendingInboundHandoffs = emptyList(),
             worldIndex = WorldIndex(),
         ),
         beliefs = beliefs,

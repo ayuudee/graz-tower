@@ -81,7 +81,6 @@ fun BeliefState.withCircuitIntentEvents(events: List<ControllerEvent>): BeliefSt
             is ControllerEvent.ReadbackReceived,
             is ControllerEvent.StartupRequested,
             is ControllerEvent.TaxiRequested,
-            is ControllerEvent.HandoffOffered,
             is ControllerEvent.ResponsibilityTaken,
             is ControllerEvent.UnableReceived,
             is ControllerEvent.TrafficInSightReceived,
@@ -130,7 +129,6 @@ internal fun aircraftIdOf(event: ControllerEvent): AircraftId? = when (event) {
     is ControllerEvent.StartupRequested -> event.aircraft
     is ControllerEvent.TaxiRequested -> event.aircraft
     is ControllerEvent.GoAroundDetected -> event.aircraft
-    is ControllerEvent.HandoffOffered -> event.aircraft
     is ControllerEvent.ResponsibilityTaken -> event.aircraft
     is ControllerEvent.UnableReceived -> event.aircraft
     is ControllerEvent.TrafficInSightReceived -> event.aircraft
@@ -205,7 +203,6 @@ internal fun intentFromRadio(event: ControllerEvent): arrow.core.Option<Aircraft
     is ControllerEvent.StartupRequested,
     is ControllerEvent.TaxiRequested,
     is ControllerEvent.GoAroundDetected,
-    is ControllerEvent.HandoffOffered,
     is ControllerEvent.ResponsibilityTaken,
     is ControllerEvent.UnableReceived,
     is ControllerEvent.TrafficInSightReceived,

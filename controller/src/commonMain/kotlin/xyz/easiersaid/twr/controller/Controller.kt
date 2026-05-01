@@ -78,8 +78,7 @@ private val PROCEDURES: Map<CommitmentKind, ProcedureSpec> by lazy {
  * Controller decision function. Pure: (View, State) -> (Output, State).
  */
 fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: AviationWorld): ControllerDecisionResult {
-    val events = deriveEventsFromMessages(view.receivedMessages) +
-        view.pendingInboundHandoffs.map { ControllerEvent.HandoffOffered(it.aircraft, it.from) }
+    val events = deriveEventsFromMessages(view.receivedMessages)
 
     val contactedAircraft = events.contactedAircraft()
 

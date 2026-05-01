@@ -80,7 +80,6 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         activeClearances = emptyMap(),
         receivedMessages = state.controllerInbox[controllerId].orEmpty(),
         weather = state.weatherByAerodrome[spec.aerodromeId],
-        pendingInboundHandoffs = emptyList(),
         worldIndex = state.worldIndex,
         flightStripIntents = flightStripIntents,
         staffedRoles = staffingPanel.roles,

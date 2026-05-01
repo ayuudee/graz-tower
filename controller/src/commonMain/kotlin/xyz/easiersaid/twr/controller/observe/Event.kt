@@ -43,7 +43,6 @@ sealed interface ControllerEvent {
     data class StartupRequested(val aircraft: AircraftId) : ControllerEvent
     data class TaxiRequested(val aircraft: AircraftId) : ControllerEvent
     data class GoAroundDetected(val aircraft: AircraftId) : ControllerEvent
-    data class HandoffOffered(val aircraft: AircraftId, val from: ControllerId) : ControllerEvent
     data class ResponsibilityTaken(val aircraft: AircraftId) : ControllerEvent
 
     /**

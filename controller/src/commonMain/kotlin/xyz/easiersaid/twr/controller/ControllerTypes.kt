@@ -42,7 +42,6 @@ data class ControllerView(
     val activeClearances: Map<ClearanceId, ClearanceSummary>,
     val receivedMessages: List<ReceivedMessage>,
     val weather: WeatherObservation?,
-    val pendingInboundHandoffs: List<PendingHandoff>,
     val worldIndex: WorldIndex,
     /**
      * Low Visibility Procedures active. Derived from visibility < 550m or RVR < 550m.
@@ -166,8 +165,6 @@ sealed interface WindReport {
  * "no report" case explicitly.
  */
 data class WeatherObservation(val wind: WindReport, val qnh: PressureSetting?, val visibility: Int?)
-
-data class PendingHandoff(val aircraft: AircraftId, val from: ControllerId)
 
 /** Channel-resolved pilot message — what was actually heard. Wraps PilotTransmission. */
 sealed interface ReceivedMessage {
