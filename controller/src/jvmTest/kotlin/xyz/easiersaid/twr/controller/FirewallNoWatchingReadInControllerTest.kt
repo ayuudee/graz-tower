@@ -42,9 +42,12 @@ class FirewallNoWatchingReadInControllerTest {
         val controllerCommon = projectRoot()
             .resolve("controller/src/commonMain/kotlin")
         // Word-boundary regexes — match the symbols as bare identifiers,
-        // not as substrings of larger names. KDoc / line comments are
-        // stripped before scanning so prose references (e.g. discussing
-        // the deferment in a doc comment) don't trip the test.
+        // not as substrings of larger names. KDoc, block comments, line
+        // comments, and string literals (raw + regular) are stripped
+        // before scanning so prose references (e.g. discussing the
+        // deferment in a doc comment, or a future error message naming
+        // the symbol in a """..."""-quoted diagnostic) don't trip the
+        // test. Only live code references are caught.
         val forbidden = listOf(
             Regex("""\bResponsibilityState\b"""),
             Regex("""\bIncomingHandoff\b"""),
@@ -65,6 +68,13 @@ class FirewallNoWatchingReadInControllerTest {
                     .replace(Regex("""/\*\*[\s\S]*?\*/"""), "")
                     .replace(Regex("""/\*[\s\S]*?\*/"""), "")
                     .replace(Regex("""//[^\n]*"""), "")
+                    // Raw triple-quoted strings (multi-line). Strip first so
+                    // the regular-string regex below doesn't try to escape
+                    // through them.
+                    .replace(Regex("\"\"\"[\\s\\S]*?\"\"\""), "")
+                    // Regular strings on a single line. Allow escaped quotes
+                    // inside via `\\.` so a literal `"foo\"bar"` is one match.
+                    .replace(Regex("\"(?:\\\\.|[^\"\\\\\\n])*\""), "")
                 for (pat in forbidden) {
                     pat.findAll(codeOnly).forEach { match ->
                         violations.add("${file.fileName}: pattern ${pat.pattern} matched `${match.value}`")
