@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::647df1446645072b",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "familyId": "h01_readback_family",
+  "claimText": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and instructions which are transmitted by voice.",
+  "rationale": "Consistent general obligation for readback established in item c).",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and instructions which are transmitted by voice."
+  ],
+  "sourceItemIds": [
+    "3.8.1c_en"
+  ],
+  "claimSha256": "3a423fb6e2165037af823b6224bdda2c933a485c8c562b5b8bbe95dbe0ca7629",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 4197,
+    "endLine": 4337
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "h01_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "crew_readback_safety_parts",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "Manual RR-11 decision: AIC A 21/23 H01 section 3.8.1(c) is a parent/umbrella statement whose operative scope depends on the immediately following always-read-back list. The accepted sibling records already capture the four item-level obligations, so retaining this broad parent as a standalone partially executable rule would overstate precision. Reject as redundant umbrella / needs-bundle material.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T14:39:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T14:39:20Z"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schemaName": "manual_coverage_repair_audit",
+  "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+  "createdAt": "2026-04-29T22:00:00Z",
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::a26c04036fcf96bb",
+  "action": "manual_add_accept",
+  "reasoning": "Adds the source-supported Position 3 fact with corrected non-mandatory wording after the original shall-strength candidate was rightly rejected.",
+  "exactSourceQuotes": [
+    "The following positions of aircraft in the traffic and taxi circuits are the positions where aircraft normally receive\naerodrome control tower clearances.",
+    "Position 3. Take-off clearance is issued here, if not practicable at position 2."
+  ]
+}

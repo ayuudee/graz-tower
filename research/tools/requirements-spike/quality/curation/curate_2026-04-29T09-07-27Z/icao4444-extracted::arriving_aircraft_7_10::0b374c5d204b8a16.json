@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::0b374c5d204b8a16",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.07,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item is verbatim and, with its parent clause in the source window, supports the claim that a landing aircraft may be requested to vacate at a specified exit taxiway. The only defect is the G3 mismatch: a permissive \u201cmay\u201d clause cannot be classified as an authoritative_requirement under the authority floor table, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::0b374c5d204b8a16.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::0b374c5d204b8a16.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    }
+  },
+  "curatedAt": "2026-04-29T09:12:04Z"
+}

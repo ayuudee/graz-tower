@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_5_8::a9c15fac90c928a2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_5_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.16,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not present verbatim in the source window: the source separates the parent clause from subparagraphs a) and b), and includes intervening list structure and wording not reflected in the quoted string. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this G1 failure requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_5_8/icao4444-extracted::wake_turbulence_5_8::a9c15fac90c928a2.json",
+    "toPath": "rejected/icao4444-extracted/wake_turbulence_5_8/icao4444-extracted::wake_turbulence_5_8::a9c15fac90c928a2.json"
+  },
+  "curatedAt": "2026-04-29T09:21:01Z"
+}

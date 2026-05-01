@@ -1,0 +1,16 @@
+{
+  "reviewCandidateId": "rc-icao4444-4.5.7.5.2.1-cpdlc-voice-readback-full-document",
+  "targetLayer": "data-link conformance or protocol review",
+  "goal": "Review whether any CPDLC implementation or conformance logic incorrectly requires voice readback when no appropriate ATS authority override exists.",
+  "focusAreas": [
+    "CPDLC acknowledgement handling",
+    "voice readback requirements",
+    "authority-specific overrides"
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.5.7.5.2.1",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3426-3429"
+  },
+  "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.2.1:full-document"
+}

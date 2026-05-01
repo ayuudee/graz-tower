@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2",
+  "documentId": "icao9432-extracted",
+  "sectionId": "readback_2_8_3_en",
+  "familyId": "icao9432_readback_family",
+  "claimText": "Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres.",
+  "rationale": "Operational guidance from section 2.8.3.2 regarding the manner and timing of clearance transmission. Merged split candidates from attempts 2 and 3 for completeness.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Controllers should pass a clearance slowly and clearly",
+    "controllers should avoid passing a clearance to a pilot engaged in complicated taxiing manoeuvres",
+    "on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres."
+  ],
+  "sourceItemIds": [
+    "item_2.8.3.2"
+  ],
+  "claimSha256": "966df6ccd60caccb3467812282e2a4252690d3e06beedf80a0bef9158fb8d8c5",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3903,
+    "endLine": 3950
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao9432_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "clearance_passing_guidance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted source text verbatim supports the claim, and the candidate correctly uses should-modality with operational_guidance authority for ICAO 9432 advisory material. It is not redundant with the accepted sibling read-back requirements, which cover different provisions.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:23:23Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:23:23Z"
+  }
+}

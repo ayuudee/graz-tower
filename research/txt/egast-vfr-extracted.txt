@@ -1,0 +1,2154 @@
+A Guide to phraseology
+FOR GENERAL AVIATION PILOTS IN EUROPE
+
+EGAST
+Component of ESSI
+
+European General Aviation Safety Team
+
+2
+
+Good Radiotelephony Practice
+
+4
+
+3
+
+General Phraseology
+
+8
+
+4
+
+Departure Phraseology
+
+15
+
+5
+
+Aerodrome Phraseology for Helicopters
+
+22
+
+6
+
+Cross Country Flight Phraseology
+
+24
+
+7
+
+Arrival Phraseology
+
+36
+
+8
+
+Unattended Aerodrome Phraseology
+
+43
+
+Symbols used in RTF examples
+Phraseology used by a pilot
+Phraseology used by an Air Traffic Controller
+Phraseology used by an Aerodrome Flight
+Information Service Officer (AFISO)
+
+Audio
+Play
+
+Introduction &
+Abbreviations
+
+A Guide to Phraseology for
+General Aviation Pilots in Europe
+1
+
+Good RTF
+Practice
+
+1
+
+Introduction
+The priorities for safe flying are ‘Aviate, Navigate, then Communicate’. Whilst this is
+always true, correct standard radiotelephony (RTF) phraseology makes an important
+contribution to the safe and efficient operation of aircraft. Communication errors
+and inappropriate use of phraseology continue to feature as contributory factors in
+safety-related incidents throughout Europe involving General Aviation (GA) aircraft,
+such as AIRPROXES, runway incursions and airspace infringements.
+
+General
+Phraseology
+
+Introduction and Abbreviations
+
+To conform to International Civil Aviation Organisation (ICAO) Language Proficiency
+requirements, pilots and others who use radiotelephony communications must have
+achieved a specified level of proficiency in English. GA pilots come from different
+backgrounds, and some have difficulty learning or remembering how to use RTF
+efficiently. This document provides pilots with a guide in English to common
+phraseology used during GA flights in Europe and explains why certain words and
+phrases are used. The aim is to improve safety by helping pilots and ground stations
+communicate clearly.
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+1
+
+Phraseology has been developed over time to provide maximum clarity and brevity
+in communications. However, while standard phraseology is available to cover most
+routine situations, not everything can be catered for or remembered. Therefore,
+pilots should be prepared to use simple language when necessary, keeping phrases
+as clear and concise as possible. Long radio calls with unnecessary information
+waste time and may endanger others.
+
+Select this icon to listen to an audio of the RTF phraseology
+
+The diagram on the inside back cover and photographs on pages 5, 14, 25, 26,
+29, 32, 43 and 44 are from ‘A Reference Guide to UK Phraseology for General
+Aviation Pilots’ and are reproduced here by kind permission of the UK Civil
+Aviation Authority. The photographs on pages 35 and 40 are reproduced with
+the permission of David Cockburn, a member of the European General Aviation
+Safety Team (EGAST). The remaining photographs are reproduced by permission
+of Jan Fridrich, also of EGAST.
+
+introduction AND ABBREVIATIONS
+
+1
+
+Unattended
+Aerodromes
+
+Contents
+
+A number of common abbreviations are used in this Guide. Those marked in the
+following list with an asterisk are normally spoken as a complete word, e.g ‘Ay-tiss’.
+The remainder are normally spoken using their constituent letters rather than the
+spelling alphabet, e.g. ‘Vee-dee-eff’.
+
+2
+
+introduction AND ABBREVIATIONS
+
+Introduction &
+Abbreviations
+
+AFIS
+
+Aerodrome flight information service
+
+AFISO
+
+Aerodrome flight information service officer
+
+AIP
+
+Aeronautical information publication
+
+AMSL
+
+Above mean sea level
+
+ATC
+
+Air traffic control
+
+ATIS*
+
+Automatic terminal information service
+
+ATS
+
+Air traffic service
+
+ATZ
+
+Aerodrome traffic zone
+
+FIS
+
+Flight information service
+
+IMC
+
+Instrument meteorological conditions
+
+POB
+
+Persons on board
+
+PTT
+
+Press to transmit
+
+QDM
+
+Magnetic heading (assuming no wind) to a VDF station
+
+QDR
+
+Magnetic bearing of aircraft from a VDF station
+
+QFE
+
+Atmospheric pressure at aerodrome level (or runway
+threshold)
+
+QNH
+
+Altimeter subscale setting to indicate elevation (AMSL) when
+on the ground and altitude when in the air
+
+QTE
+
+True bearing
+
+RTF
+
+Radiotelephony
+
+RVR
+
+Runway visual range
+
+SSR
+
+Secondary surveillance radar
+
+VDF
+
+Very high frequency direction finding
+
+VHF
+
+Very high frequency (30 to 300 MHz)
+
+VFR
+
+Visual flight rules
+
+VOLMET*
+
+Meteorological information for aircraft in flight
+
+introduction AND ABBREVIATIONS
+
+Good RTF
+Practice
+
+Airborne collision avoidance system
+
+General
+Phraseology
+
+ACAS*
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+Common Abbreviations
+
+Commonly used Abbreviations
+
+3
+
+Unattended
+Aerodromes
+
+This guide incorporates a range of material published by ICAO, Eurocontrol and
+the UK Civil Aviation Authority. Some States may specify national differences from
+the ICAO standard phraseology in the individual State’s Aeronautical Information
+Publication (AIP). Pilots should consult the appropriate AIP(s) when planning
+international flights.
+
+Introduction &
+Abbreviations
+
+When you transmit
+Use a normal conversational tone and speak clearly and distinctly. Do not talk too
+fast and maintain an even rate of speech – not more than 100 words per minute.
+Remember the recipient may be writing down parts of the message.
+
+Good RTF
+Practice
+
+Good Radiotelephony Practice
+
+Keep the microphone close to your lips but not touching them. Do not hold the
+boom of a combined headset/microphone system, as this can distort speech. If
+using a hand-held microphone do not turn your head away from it while speaking.
+
+General
+Phraseology
+
+Many transmissions contain numbers. A short pause before and after numbers
+makes them easier for the other person to understand.
+Avoid hesitation sounds such as ‘umm’ and ‘er’. Release the transmit button if you
+need time to think – a controller will normally ask for anything you may have missed.
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+When transmitting a long message, it is helpful to interrupt your transmission from
+time to time to confirm that the frequency is clear and allow the recipient to request
+a repeat of any parts not received.
+Use standard phraseology where possible and avoid unnecessary RTF. However
+plain language is always better than silence or incorrect and potentially confusing
+phraseology.
+
+Before you transmit
+Make sure that the volume and squelch controls on the radio are correctly set. The
+best way to do this is to wait for and listen to another station transmitting on the
+frequency – ideally the station you are going to call.
+Ensure that the intercom, if fitted, does not drown out radio calls. Make sure that
+any headset volume controls are also correctly set and that the microphone boom
+stays in its set position.
+Before starting a flight ensure that you can hear others’ transmissions and they can
+hear you. You should also check that you know how to change frequencies and
+that the frequency selected is the one you want to use first.
+Many frequencies are very busy, so after changing frequency wait and listen before
+transmitting. Do not interrupt other transmissions and allow time for any necessary
+reply from someone else.
+Think about what you are going to say before you transmit. When time and other
+circumstances permit, try to say the message just to yourself before you press the
+transmit button. This is also known as the press to transmit (PTT).
+Depress the transmit button fully before you start to talk. This avoids ‘clipping’
+transmissions and the possible loss of important information.
+
+4
+
+Good RADIOTELEPHONY Practice
+
+Good RADIOTELEPHONY Practice
+
+5
+
+Unattended
+Aerodromes
+
+2
+
+Introduction &
+Abbreviations
+
+After you transmit
+Do not release the transmit button until after you have finished speaking.
+
+Good RTF
+Practice
+
+A jammed frequency is potentially dangerous. Ensure that you release the transmit
+button after each transmission. Make sure that a handheld radio or microphone is
+never placed where the transmit button is pressed in, as this will jam the frequency
+and no one else will be heard if they transmit. Most radios show a symbol on the
+display (e.g. TX) when transmitting.
+
+General
+Phraseology
+
+After making a transmission, wait at least 10 seconds before attempting a second
+call. This will allow the other person time to reply to your first call and helps avoid
+unnecessary transmissions.
+
+Always read back any instructions you are given and include your callsign after the
+information. It is normally best to read back the items in the order given, but there
+are some exceptions to this. It may help to note down instructions. For more details
+see the list of messages to be read back on page 10 of this guide.
+If you do not understand the instructions you are given, ask for clarification. Never
+guess what you are being told to do.
+
+Listening
+Listen carefully to make sure you understand what is said to you - it is easy to hear
+what you expect, rather than what is actually said.
+At all times listen for your callsign and any new instructions or information. As the
+situation changes you may be given different instructions or new information.
+Transmissions from other pilots also contain valuable information about their
+intentions that can help you maintain awareness of the other traffic around you.
+Listening out is a useful addition to look-out, particularly in the aerodrome circuit.
+Check your radio, especially the position of the transmit button, if there seems a long
+break in activity on the frequency.
+
+6
+
+Good RADIOTELEPHONY Practice
+
+Good RADIOTELEPHONY Practice
+
+7
+
+Unattended
+Aerodromes
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+If there is no response to your transmission, check your volume level – for example
+you might have been briefing your passengers and turned it down. Alternatively
+increase the squelch (SQ) until you hear the noise and adjust the volume to the
+expected level.
+
+Introduction &
+Abbreviations
+Unit or service
+
+Callsign Suffix
+
+Instructions or information
+
+Air Traffic Control
+(ATC) unit at an
+aerodrome
+
+‘‘GROUND’
+‘TOWER’
+‘APPROACH’
+‘ARRIVAL’
+‘DEPARTURE’
+‘DELIVERY’
+
+ATC service is provided to prevent
+collisions between aircraft
+and on the manoeuvring area
+between aircraft and obstructions.
+You should comply with ATC
+instructions unless you advise
+the controller that you are unable
+to do so. At busy aerodromes
+separate controllers may use
+different callsigns for different
+tasks as shown
+
+Radar unit (ATC)
+
+‘RADAR’
+
+Radar unit in general
+
+Area control
+centre (ATC)
+
+‘CONTROL’
+
+Area control centre
+
+Aerodrome Flight
+Information
+Service (AFIS)
+
+‘INFORMATION’
+
+AFIS provides pilots with
+information useful for the safe and
+efficient conduct of aerodrome
+traffic. An AFISO may relay ATC
+clearances issued by a controller.
+
+Flight
+Information
+Service (FIS)
+
+‘‘INFORMATION’
+
+FIS provides pilots with
+information useful for the safe and
+efficient conduct of flight. A FISO
+may relay ATC clearances issued
+by a controller.
+
+Aeronautical
+Station
+
+‘RADIO’
+
+Aeronautical station in general
+
+Aircraft Callsign Prefixes
+Where the additional information may help the controller or other pilots, the
+name of the aircraft manufacturer or name of the aircraft model may be used as a
+prefix to the registration, e.g. ‘Cessna F-DCBA’ or ‘Harvard G-ABCD’. This may be
+especially useful if the aircraft has particular operational characteristics. However
+you must not change your type of callsign during a flight, unless you are instructed
+to do so by an air traffic control unit, usually because an aircraft with a similar
+callsign is on the same frequency.
+
+Broadcast Calls
+Broadcast calls to aircraft operating on a frequency normally start with ‘All stations’.
+However, when operating at an unattended aerodrome, your transmissions should
+start with the aerodrome’s name as shown on pages 43 and 44. Including the
+aerodrome name helps other pilots understand where you are.
+
+Ground Station Callsigns
+Ground stations are identified by the name of the location followed by a word
+(suffix) indicating the type of unit or the service provided. This will normally be
+either air traffic control or flight information service. You must be familiar with the
+differences between the services that may be offered and what your own actions
+should be. Examples of ground station callsigns follow.
+Once satisfactory communication has been established and provided that it will
+not be confusing, the name of the location or the callsign suffix may be omitted,
+e.g. ‘Tower’ or ‘Borton’.
+
+8
+
+GENERAL PHRASEOLOGY
+
+General Phraseology
+
+General
+General
+Phraseology
+Phraseology
+
+Pilots either use their aircraft registration, e.g. ‘F-ABCD’, or for many commercial
+aircraft a company callsign followed by a number, letters or both, e.g. ‘Blue Skies
+347A’. Aircraft registered in some countries may use a registration consisting of
+numbers or letters and numbers.
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+Aircraft Callsigns
+
+Good RTF
+Practice
+
+General Phraseology
+
+9
+
+Unattended
+Aerodromes
+
+3
+
+Messages containing the following must be read back:
+
+•
+•
+
+Clearances/instructions to enter,
+land on, take-off from, hold short of,
+cross or backtrack any runway
+Runway in use
+Altimeter settings
+
+• SSR codes
+
+Acknowledgement by Callsign
+If a transmission contains information that does not need to be read back, you
+should acknowledge by transmitting your callsign. You may also transmit your
+callsign together with the word ‘roger’, which means ‘I have received all your last
+transmission’.
+
+• Level or heading
+instructions
+
+• Speed instructions
+• Transition levels
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+•
+
+ATC route clearance
+
+Good RTF
+Practice
+
+Items to be Read back
+
+‘Wilco’ means ‘I understand your message and will comply’. It should not be used
+in place of a full read back of the items on page 10. It may be used for brevity, or
+where readback of an instruction or part of an instruction might be confused with a
+transmission advising completion of the action instructed.
+
+General
+General
+Phraseology
+Phraseology
+
+Reading back a clearance and any safety critical information helps both the pilot
+and the controller understand what the aircraft has been instructed to do. It also
+serves as a check that the right aircraft, and only that aircraft, will take action on
+the clearance. It may help to note down the clearance prior to read back and ask
+any other pilots (or an educated passenger) in the aircraft to listen to all clearances,
+including taxi clearance. If in any doubt you must request clarification.
+
+•
+
+Introduction &
+Abbreviations
+
+Use of ‘Wilco’
+
+When a read back is required you must ensure it is complete and follow it with
+your callsign. It is normally best to read back the items in the order given, as this
+makes it easier for the controller to check the accuracy and identify any missing
+items. However, there are some exceptions to this, e.g. if departure instructions are
+transmitted together with a take-off clearance, it may be more logical to read back
+the take-off clearance first, followed by the departure instructions.
+
+10
+
+General Phraseology
+
+General Phraseology
+
+11
+
+Unattended
+Aerodromes
+
+Read back
+
+Condition
+Clearance
+Brief reiteration of the condition
+
+Correct and full read back of a conditional clearance is vital. The condition must
+be the first item read back so that the controller is aware that you have heard the
+condition on which the clearance is based.
+
+RTF
+
+Conditional Clearance
+
+Transmitted as
+
+800
+
+Eight hundred
+
+3 400
+
+Three thousand four hundred
+
+12 000
+
+One two thousand
+
+Cloud height
+
+Transmitted as
+
+2 200
+
+Two thousand two hundred
+
+4 300
+
+Four thousand three hundred
+
+Visibility
+
+Transmitted as
+
+1 000
+
+Visibility one thousand
+
+700
+
+Visibility seven hundred
+
+Runway Visual Range
+
+Transmitted as
+
+600
+
+RVR six hundred
+
+1 700
+
+RVR one thousand seven hundred
+
+General
+General
+Phraseology
+Phraseology
+
+Aircraft callsign
+
+Altitude
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+Conditional clearances consist of:
+
+Good RTF
+Practice
+
+For clarity and brevity, numbers used in the transmission of altitude, cloud height,
+visibility and runway visual range (RVR) information are transmitted as shown below.
+
+A conditional clearance allows a pilot to carry out an action only after another
+action has taken place. Conditional clearances speed up traffic flow, but you
+must follow the instructions carefully and make sure you have identified the
+correct aircraft or vehicle on which the clearance is based. Where there might be
+ambiguity as to the subject of the condition the controller will give additional
+details such as aircraft type, colour or position in order to help you identify the
+correct aircraft or vehicle. The structure and order of conditional clearances is
+essential to their safe execution, but if in doubt, you should hold position and ask
+for clarification.
+
+•
+•
+•
+•
+
+Introduction &
+Abbreviations
+
+Transmission of Numbers
+
+F-CD, behind the landing PA 28 line up behind
+Behind the PA 28, lining up behind, F-CD
+Play
+
+Other numbers are transmitted by pronouncing each digit separately, e.g. ‘Blue Skies
+two four seven’, ‘runway three two’, ‘heading zero eight zero’, ‘flight level six zero’,
+‘QNH one zero one zero’ and ‘squawk four two one three’.
+
+Pronunciation of Numbers
+To reduce the possibility of numbers being misheard, the number ‘9’ is transmitted
+as ‘niner’ in RTF phraseology.
+
+12
+
+General Phraseology
+
+General Phraseology
+
+13
+
+Unattended
+Aerodromes
+
+Conditional Clearances
+
+‘Visibility’, ‘cloud’ and ‘height’ in meteorological reports
+‘Hectopascals’ when giving pressure settings
+
+VHF Frequencies - Use of Six Digits
+To prevent confusion, you should transmit all 6 digits of a VHF frequency except
+where the final two digits of the frequency are both zero in which case only the
+first four digits need to be transmitted, e.g. ‘One two three decimal six’. The word
+‘decimal’ indicates the position of the decimal point.
+
+Introduction &
+Abbreviations
+
+Aerodrome with ATC
+This section provides examples of the RTF typically used by a pilot departing from a
+controlled aerodrome. Make sure you know what kind of service is provided at each
+aerodrome. Even if the aerodrome has a control tower building, you may not be
+calling during its hours of operation and an ATC service may not be available.
+
+Good RTF
+Practice
+
+‘Degrees’ in relation to radar headings
+
+Departure Phraseology
+
+Establishing Communication
+
+General
+Phraseology
+
+‘Surface’ in relation to surface wind direction and speed
+
+4
+
+To reduce the possibility of confusion, you must use the full callsigns of both stations
+in your initial call, first saying whom you are calling then who you are.
+
+Continuing Communication
+Once satisfactory communication has been established the ground station may
+abbreviate callsigns, e.g. ‘F-CD’ or ‘Cessna CD’. To reduce the possibility of confusion
+with other aircraft on frequency, do not shorten the callsign of your aircraft until after
+the ground station has shortened it. Only a ground station can shorten your callsign.
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+The following words may be omitted from transmissions as described below
+provided that no confusion will result. However, adding the word ‘degrees’ to any
+heading ending in zero reduces the risk of headings being confused with flight
+levels.
+
+Test Transmissions
+When testing a radio you should follow the format shown in the example on page
+16. The format is designed to identify the frequency used and allow the receiving
+station time to assess the transmission quality. Using the readability scale, ‘5’ means
+perfectly readable. At the other end of the scale, ‘1’ means unreadable.
+
+Automatic Terminal Information Service (ATIS)
+At aerodromes where departure information is broadcast on an ATIS, the request for
+departure information is omitted. When requested to do so on the ATIS broadcast
+you should acknowledge receipt of the ATIS information by including the ATIS
+identifying letter in your request for taxi.
+
+14
+
+General Phraseology
+
+Departure Phraseology
+
+15
+
+Unattended
+Aerodromes
+
+Omitting Words from Transmissions
+
+Introduction &
+Abbreviations
+
+Taxi Clearance
+Start Up and Taxi
+
+Borton Tower, F-ABCD, radio check 118.725
+F-ABCD, Borton Tower, reading you 5
+F-ABCD, request departure information
+F-CD, runway 24, wind 220 degrees 6 knots, QNH 990,
+temperature 2 dewpoint minus 1
+
+In relation to runway movements, and to avoid confusion, the word ‘cleared’ is only
+used in connection with a clearance to take-off or land. For other RTF exchanges,
+words such as ‘cross’, ‘departure’ and ‘approved’ should be used.
+
+F-CD, C172 at the south side hangars, request taxi VFR to
+Walden, 2 POB*
+
+After Departure
+
+Taxi holding point G1 runway 24, QNH 990, F-CD
+Play
+
+Once satisfactory communication has been established, a message is normally prefixed
+with the aircraft callsign. However, when you need to read back an instruction or
+important information the instruction or information is repeated first followed by the
+aircraft callsign. This makes it easier for the controller to check that you have received
+all of the instruction or information correctly.
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+For the same reason, the words ‘take-off’ are only used when an aircraft is cleared
+for take-off, or when cancelling a take-off clearance. At other times you should use
+the terms ‘departure’ and ‘airborne’.
+
+F-CD, taxi to holding point G1 runway 24, QNH 990
+
+Placing of Callsigns
+
+General
+Phraseology
+
+Clearance for Take-off or Landing
+
+Runway 24, QNH 990, F-CD
+
+* POB (total persons on board and pronounced ‘pee- oh-bee’) may be included, e.g. where a
+flight plan is not required and has not been filed
+
+Good RTF
+Practice
+
+All taxi clearances contain a clearance limit, which is the point at which you must
+stop unless further permission to proceed is given. A taxi clearance in any case is not
+a clearance to enter the runway or take-off. Sometimes the controller may use the
+additional phrase ‘hold short’ to emphasise a clearance limit or where no defined
+point, e.g. holding point, exists. Omission of the phrase ‘hold short’ does not mean
+you have clearance to enter the runway. Taxi clearances can be complicated. Noting
+them down whenever possible helps to prevent runway incursions.
+
+‘After departure’ is not a clearance to take-off – do not assume you are cleared to
+take-off and depart. The expression ‘after departure’ is used when issuing or reading
+back departure instructions or route clearances.
+
+Hold Position
+If there is conflicting traffic, the controller may instruct you to ‘hold position’. You
+should always acknowledge an instruction to hold and you must not proceed until
+the controller calls back with permission. Revised clearances and post-departure
+instructions may also be prefixed with an instruction from the controller to ‘hold
+position’, as shown below.
+
+Clarification of Instructions
+If you do not fully understand the instructions given, or they are inconsistent with your
+request, you must ask that they are repeated or clarified. The phrase ‘say again’ means
+repeat the entire message.
+
+16
+
+Departure Phraseology
+
+Departure Phraseology
+
+17
+
+Unattended
+Aerodromes
+
+RTF
+
+Introduction &
+Abbreviations
+
+Changing Frequency
+Take-off
+
+You will normally be advised by the ground station to change from one radio
+frequency to another in accordance with agreed procedures. In the absence of
+such advice, you must notify the ground station before changing frequency, using
+the expression ‘changing to’ followed by the name of the next air traffic service
+unit. However in controlled airspace you must get permission from the controlling
+authority before changing frequency.
+
+F-CD, ready for departure, request right turn when airborne
+F-CD, hold position. After departure right turn approved climb
+not above 1500 feet until the control zone boundary
+
+Good RTF
+Practice
+
+RTF
+
+F-CD, wind 220 degrees 4 knots, runway 24 cleared for takeoff
+
+General
+Phraseology
+
+Holding. After departure right turn approved, not above 1500
+feet until the control zone boundary, F-CD
+
+RTF Climb Out
+
+Runway 24 cleared for take-off, F-CD
+Play
+
+F-CD, contact Borton Approach 118.750
+
+If you are unsure of the position of your aircraft on the aerodrome, you should stop the
+aircraft and advise the controller, including your last known position. If however you are
+on a runway you should advise the controller and vacate the runway before stopping.
+
+Borton Approach, F-ABCD, airborne turning right, climbing to
+1200 feet
+F-CD, Borton Approach, report control zone boundary
+Wilco, F-CD
+F-CD, passing the control zone boundary, 1200 feet
+F-CD, contact Montana Information 125.250
+Montana Information, 125.250, F-CD
+Play
+
+18
+
+Departure Phraseology
+
+Departure Phraseology
+
+19
+
+Unattended
+Aerodromes
+
+Unsure of Position
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+118.750, F-CD
+
+Introduction &
+Abbreviations
+
+Aerodrome with AFIS
+
+Circuit Direction
+The visual circuit direction may be a left hand or a right hand pattern. When planning
+a flight always check the circuit directions at your destination aerodrome. If you are
+going to fly a right hand pattern you must include this in your transmissions, as shown
+in the examples on pages 21 and 37 to 39. You need not specify a left hand pattern,
+although it is advisable to do so if you are at an aerodrome where the circuit direction
+is variable and there has been a recent change. If there is any possibility of confusion,
+you should include the circuit direction.
+
+Parallel Runways
+Some aerodromes have parallel runways. These have the same numerical designator
+but they are distinguished by adding the word ‘left’ or ‘right’ after the number, e.g.
+‘Runway 27 left’ and ‘Runway 27 right’. At aerodromes with parallel runways you
+should take extra care and ensure you use the correct runway.
+
+Good RTF
+Practice
+
+Walden Information, D-ABCD, radio check 119.725
+D-ABCD, Walden Information, reading you 5
+Walden Information, D-ABCD, request departure information
+D-CD, runway 06 right hand circuit, wind 060 degrees 10
+knots, QNH 1002
+
+General
+Phraseology
+
+An AFISO may request pilots to report at a specified position, as shown in the following
+exchange. These are requests, not instructions, but it is expected that pilots will comply
+in order to help improve the situational awareness of the AFISO and pilots of other
+aircraft. For safety reasons pilots should always report ‘final’.
+
+Start Up, Taxi and Take-off
+
+Runway 06 right hand circuit, QNH1002, D-CD
+D-CD, ready to taxi at the pumps, VFR local flight
+D-CD, taxiway Charlie available to holding point C1 runway 06
+right hand circuit
+Will taxi via taxiway Charlie to holding point C1 runway 06
+right hand circuit, D-CD
+
+Play
+
+D-CD, ready for departure
+D-CD, no reported traffic, runway 06 right hand circuit free for
+departure, wind 090 degrees 8 knots, report airborne
+Runway 06 right hand circuit free for departure, wilco, D-CD
+D-CD, airborne departing to the west
+D-CD, roger, report passing Westfield
+Report passing Westfield, D-CD
+D-CD, passing Westfield, changing to Arcoville Information
+Play
+
+20
+
+Departure Phraseology
+
+Departure Phraseology
+
+21
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+Position Reports
+
+RTF
+
+Unattended
+Aerodromes
+
+This section provides examples of the RTF typically used by a pilot departing from an
+aerodrome with an AFISO on duty. An AFISO provides information useful for the safe
+and efficient conduct of aerodrome traffic. AFIS is not air traffic control and as a pilot
+using the service it is your responsibility to maintain proper spacing in compliance with
+the Rules of the Air.
+
+Similarly, if you intend to air taxi you should include the term ‘air taxi’ in your taxi
+request.
+
+Operating at Aerodromes with ATC
+The remainder of this section shows examples of phraseology for use by helicopter
+pilots at an aerodrome with ATC.
+
+Introduction &
+Abbreviations
+Good RTF
+Practice
+
+Subject to the appropriate permission, helicopters may be able to land on or takeoff from areas of the aerodrome other than the runway. Therefore it is important
+that you make clear in your transmissions which area of the aerodrome you intend
+to use. This helps improve the situational awareness of the controller and other
+pilots.
+
+You should use the phraseology in the example below when you intend to take-off
+from the runway. Where take-off is to be from another point on the manoeuvring
+area, e.g. a designated helicopter landing area, you should specify the area by
+transmitting for example, ‘F-HELI, Area Whiskey ready for departure’ and the
+controller will preface the take-off clearance with the words ‘Area Whiskey’.
+
+General
+Phraseology
+
+Helicopter Operations
+
+Helicopter Take-off
+
+RTF Helicopter Taxi and Take-off from the Runway
+
+Borton Tower, F-HELI, request air-taxiing from fuel station to
+holding point Runway 06
+F-HELI, Borton Tower, air-taxi direct to holding point H1
+runway 06, avoid PA28 on taxiway Bravo
+Air-taxi direct to holding point H1 runway 06, traffic in sight,
+F-HELI
+F-HELI, ready for departure
+F-LI, wind 070 degrees 15 knots, runway 06 cleared for takeoff
+Runway 06 cleared for take-off, F-LI
+Play
+
+Helicopter Landing
+When you intend to land on the runway, you should include the runway designator
+in your transmissions and use the phraseology ‘F-LI, final runway 06’.
+When you intend to land at another point on the manoeuvring area you should
+include the name of the area, e.g. ‘F-LI, final Area Whiskey’.
+
+22
+
+Aerodrome Phraseology for Helicopters
+
+Aerodrome Phraseology for Helicopters
+
+23
+
+Arrival
+AerodromeRTF
+RTF Departure
+Cross Country Aerodrome
+Phraseology
+forHelicopters
+Helicopters Phraseology
+for
+Flight RTF
+
+Aerodrome Phraseology for Helicopters
+
+Unattended
+Aerodromes
+
+5
+
+To make it easier for the recipient who will be expecting the information in a standard
+format you should reply with the information in the order shown below:
+
+RTF Squawking
+
+Aircraft callsign and type
+
+Montana Control, F-ABCD
+
+Flight rules, and departure and destination aerodromes
+
+F-ABCD, Montana Control
+
+Flight level or altitude, including passing level and cleared level if not in
+level flight
+
+F-ABCD, C172 VFR from Walden to Borton, 2 miles north of
+Wicken, flight level 50, Seatown 08, Weston 22
+
+Additional details, e.g. next way point with time, subsequent planned
+route
+
+F-CD, squawk 2433
+Squawk 2433, F-CD
+F-CD, identified 2 miles north of Wicken. Next report at
+Seatown
+
+RTF
+RTF Initial Call
+
+Arcoville Information, F-ABCD
+
+Wilco, F-CD
+
+F-ABCD, Arcoville Information
+
+Play
+
+F-ABCD, C172 VFR from Walden to Borton, 15 miles south of
+Eastville, 2500 feet, Seatown 55, Eastwick 06, Weston 19
+Play
+
+24
+
+Cross Country Flight PHRASEOLOGY
+
+CROSS COUNTRY FLIGHT PHRASEOLOGY
+
+25
+
+Arrival
+RTF Departure
+Helicopter
+Cross Country Aerodrome
+Phraseology
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+
+Position
+
+Unattended
+Aerodromes
+
+•
+
+General
+Phraseology
+
+Initial Call
+
+Good RTF
+Practice
+
+Using your transponder helps the controller and the pilots of other aircraft that are
+fitted with airborne collision avoidance system (ACAS). If you have a transponder,
+you should select and transmit the conspicuity code 7000 with Mode C (altitude
+reporting) unless another code is appropriate or the controller instructs you
+otherwise, as shown in the example below. Occasionally, controllers may give you
+vectors to help establish the identification of your aircraft.
+
+When establishing contact your initial call should consist of your callsign and that
+of the unit you are calling. Normally the ground station will reply with your callsign
+followed by its own. You should then reply with the necessary information to advise
+the ground station of your position, intentions and service required.
+
+•
+•
+•
+•
+
+Introduction &
+Abbreviations
+
+Identification by Squawk
+
+6 Cross Country Flight Phraseology
+
+Introduction &
+Abbreviations
+
+Avoiding Action
+
+General
+Phraseology
+
+Good RTF
+Practice
+
+When a controller at a radar unit considers that an imminent risk of collision will
+exist if action is not taken immediately, the controller will provide avoiding action
+in the form of radar vectors as shown in the examples below. Information on
+conflicting traffic is given in the form of relative bearing of the conflicting traffic in
+terms of the 12 hour clock, your distance from the conflicting traffic, the direction
+of flight of the conflicting traffic followed by any other pertinent information where
+known, such as its general speed, aircraft type and level and whether climbing or
+descending.
+
+RTF Avoiding Action
+
+F-CD, turn left immediately heading 340 to avoid unidentified
+traffic one o’clock 5 miles opposite direction slow moving
+
+Traffic Information
+
+Right 40 degrees, F-CD
+Play
+
+Arrival
+RTF Departure
+Helicopter
+Cross Country Aerodrome
+Phraseology
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+
+F-CD, turn right 40 degrees immediately, to avoid unidentified
+traffic one o’clock 5 miles opposite direction, fast moving
+
+Controllers also provide traffic information on other aircraft in your vicinity to assist
+with your situational awareness in circumstances where immediate action is not
+necessary. The phrase ‘looking out’ acknowledges the traffic information and tells
+the controller that you are looking for the other traffic. The controller may ask if you
+need radar vectors, as shown below. When you have located the other traffic you
+should advise the controller by transmitting ‘traffic in sight’. If you cannot locate the
+other traffic you should advise the controller using the phrase ‘negative contact’.
+You can request radar vectors by transmitting ‘negative contact, request vectors’.
+
+Use of Immediately
+The word ‘immediately’ is only used in RTF transmissions when immediate action
+is required for safety reasons.
+
+RTF
+
+Traffic Information
+
+D-CD, traffic 2 o’clock 5 miles northbound, Cherokee at 2000
+feet
+Looking out, D-CD
+D-CD, do you want vectors?
+D-CD, negative vectors, traffic in sight
+D-CD
+Play
+
+26
+
+Cross Country Flight PHRASEOLOGY
+
+CROSS COUNTRY FLIGHT PHRASEOLOGY
+
+27
+
+Unattended
+Aerodromes
+
+Left heading 340, F-CD
+
+Position
+
+•
+•
+
+Flight level or altitude including passing level and cleared level if not in
+level flight
+
+Good RTF
+Practice
+
+•
+
+Departure is from an aerodrome with an air traffic service unit, but the
+flight is outside their normal hours of operation
+Departure is from an aerodrome without an air traffic service unit
+Departure is from a private air strip
+
+General
+Phraseology
+
+Aircraft callsign
+
+Having filed the flight plan on-line, by fax or telephone, you need to activate it once
+airborne. This can be done by a responsible person telephoning the flight briefing
+unit at the appropriate parent air traffic service unit as soon as you are airborne
+and passing a departure time. Alternatively, you may ask an air traffic service unit to
+activate the flight plan for you.
+
+RTF VFR Position Reports
+
+D-CD, overhead Wicken, leaving 2500 feet climbing to flight
+level 50
+Play
+
+Transmission of time
+When transmitting time only the minutes of the hour are normally required and
+each digit is pronounced separately. However the hour should be included where
+any possibility of confusion is likely to arise.
+
+RTF Activating a Flight Plan (assumes communication already established)
+
+D-CD, request activate flight plan. D-ABCD departed Borton
+for Seaville at 38
+D-CD, departure time 38, flight plan activated
+Play
+
+28
+
+Cross Country Flight PHRASEOLOGY
+
+CROSS COUNTRY FLIGHT PHRASEOLOGY
+
+29
+
+Arrival
+RTF Departure
+Helicopter
+Cross Country Aerodrome
+Phraseology
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+
+•
+•
+•
+
+Introduction &
+Abbreviations
+
+Activating Flight Plans
+As the aircraft pilot you are responsible for filing a flight plan in specified
+circumstances. In addition you are responsible for activating and closing the flight
+plan in the following circumstances:
+
+Unattended
+Aerodromes
+
+VFR Position Reports
+Position reports provide valuable situational awareness information for the
+controller and other pilots. In order to help the controller and other pilots on the
+frequency you should provide the following elements in the standard order.
+
+Introduction &
+Abbreviations
+
+Closing a Flight Plan
+
+Requesting Weather Information
+
+If you are landing at an aerodrome in another country, or at an aerodrome
+which was not your planned destination, you must close the flight plan to avoid
+unnecessary search and rescue activity. Even if you land at an aerodrome with an
+ATS unit, it is wise to confirm they have closed your flight plan. You may do this by
+radio just before landing (as shown below) or by telephone after landing.
+
+Good RTF
+Practice
+
+Useful weather information in the form of reports, forecasts or warnings is provided
+either by broadcast systems, e.g. ATIS, VOLMET, or by specific transmissions from
+ground stations as shown below.
+
+RTF Weather Request
+RTF Closing a Flight Plan
+
+F-CD, Walden Approach, present weather wind 360 degrees 5
+knots, visibility 20 kilometres, few 2500 feet, QNH 1008
+QNH 1008, F-CD
+Play
+
+Changing from IFR to VFR Flight
+
+Weather Avoidance
+
+During a flight a pilot may change from IFR to VFR flight.
+
+RTF
+
+Play
+
+Weather does not always do what the forecasts predict and it can deteriorate very
+fast. For a VFR pilot, it is important to recognise cloud ahead early enough to avoid
+it. If you are receiving an air traffic control service you should advise the controller of
+the situation and request an alternative level or route.
+
+Changing from IFR to VFR
+
+Montana, F-CD, request cancel my IFR flight, proceeding VFR
+estimating Borton at 1701
+
+Your first priority as always is to fly the aircraft.
+
+F-CD, IFR flight cancelled at 35, contact Montana Information
+125.750
+Play
+If the controller has any meteorological information which suggests that flight
+under VFR may not be possible, the controller will transmit this. You may then
+choose to continue IFR.
+
+30
+
+Cross Country Flight PHRASEOLOGY
+
+RTF Unable to Maintain VMC
+
+F-CD, unable maintain VMC due cloud over Seaville, request
+turn left to Littletown
+Play
+
+CROSS COUNTRY FLIGHT PHRASEOLOGY
+
+31
+
+Arrival
+RTF Departure
+Helicopter
+Cross Country Aerodrome
+Phraseology
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+
+D-CD, arrival time 30, flight plan closed
+
+Unattended
+Aerodromes
+
+D-CD, request close flight plan. D-ABCD arrived Borton at 30,
+original destination Seaville
+
+General
+Phraseology
+
+Walden Approach, F-ABCD, request Walden weather
+
+Introduction &
+Abbreviations
+
+Navigational Assistance: Very High Frequency Direction Finding
+(VDF)
+
+Good RTF
+Practice
+
+A VDF station can provide you with various types of navigational information on
+request. These include the magnetic heading to steer (assuming no wind) to reach
+the VDF station (QDM), the magnetic bearing of the aircraft from the VDF station
+(QDR) and the true bearing of the aircraft from the VDF station (QTE).
+
+Approach, D-CD, 2000 feet heading 190 degrees, unsure of
+my position, request heading to Walden
+D-CD, Approach, fly heading 160 degrees, your position 6
+miles north of Walden
+
+General
+Phraseology
+
+When requesting a bearing you should end the transmission by repeating your
+callsign. This lengthens the transmission and helps to confirm that the correct
+information is given to the correct aircraft. If the transmission has been too short for
+the VDF station to obtain a bearing, you may be asked to transmit again and given
+specific instructions about the length of the transmission, e.g. you may be asked to
+transmit for bearing or give a short count.
+
+RTF Lost
+
+The accuracy of the bearing is classified as follows:
+
+Heading 160 degrees, D-CD
+Play
+
+Class A – accurate within plus or minus 2 degrees;
+Class B – accurate within plus or minus 5 degrees;
+Class C – accurate within plus or minus 10 degrees;
+Class D – accuracy less than Class C.
+
+RTF Requesting VDF
+
+Borton Approach, D-ABCD, request QDM (or QDR), D-ABCD
+D-ABCD, Borton Approach, QDM (or QDR) 090 degrees, class
+Bravo
+Class Bravo 090 degrees, D-ABCD
+Play
+
+32
+
+Cross Country Flight PHRASEOLOGY
+
+CROSS COUNTRY FLIGHT PHRASEOLOGY
+
+33
+
+Arrival
+RTF Departure
+Helicopter
+Cross Country Aerodrome
+Phraseology
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+
+Immediately that you suspect that you are lost make a note of the time and, if you
+are in touch with an ATC unit, request assistance. If you are also short of fuel, or are
+experiencing other additional problems, you should declare a PAN as described on
+the back cover of this guide. However, an early call for assistance will often prevent
+the situation becoming more serious.
+
+Unattended
+Aerodromes
+
+Navigational Assistance: Lost
+
+Introduction &
+Abbreviations
+
+Crossing Controlled Airspace
+
+Good RTF
+Practice
+
+If you are planning to fly through controlled airspace, you will need to obtain
+clearance to enter it, and will need to follow ATC instructions. You must make the
+initial call in good time (normally at least 5 minutes) and as part of your request you
+should advise the controller where you plan to enter the airspace and at what time.
+To make this easier you should work these out as part of your pre-flight planning.
+
+General
+Phraseology
+
+RTF Requesting Crossing Clearance
+
+Seaville Radar, F-ABCD
+F-ABCD, Seaville Radar
+
+Play
+
+Arrival
+RTF Departure
+Helicopter
+Cross Country Aerodrome
+Phraseology
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+
+35
+
+Unattended
+Aerodromes
+
+F-ABCD C172, VFR from Walden to Borton, 15 miles south of
+Eastville,1500 feet. Seatown 25. Request cross Seaville Zone
+from Seatown to Eastwick
+F-CD, squawk 3651
+Squawk 3651, F-CD
+F-CD, enter Seaville Zone, via Seatown, route to Eastwick VFR,
+not below 2000 feet QNH 1007
+Enter Seaville Zone, via Seatown, route to Eastwick VFR, not
+below 2000 feet QNH 1007, F-CD
+
+Unable to Comply with Clearance
+Play
+
+If the clearance is different from your intended route or altitude, make sure you can
+follow it safely. If you cannot do so, you must advise the controller and explain why.
+Depending on circumstances, it may be possible for the controller to amend the
+clearance or you may have to hold or route round.
+
+RTF Unable to Comply with Clearance
+
+F-CD, unable comply due cloud at 2000 feet, request 1500 feet
+
+34
+
+Cross Country Flight PHRASEOLOGY
+
+CROSS COUNTRY FLIGHT PHRASEOLOGY
+
+This section provides examples of the RTF typically used by a pilot arriving at a
+controlled aerodrome. The examples in this section are for a right hand circuit and
+show the pilot carrying out a normal visual circuit and landing.
+
+Introduction &
+Abbreviations
+Good RTF
+Practice
+
+Aerodrome with ATC
+
+Timing of Initial Call
+You should make your initial call in sufficient time (normally at least 5 minutes
+is required) to allow a planned entry into the circuit, and where applicable the
+Aerodrome Traffic Zone (ATZ), or controlled airspace. You must also take account of
+other traffic in the vicinity. All clearances contain a clearance limit, which is the point
+that you must not pass unless further permission to proceed is given.
+
+Arrival and Radio Failure Procedures
+
+Receipt of ATIS Broadcast
+If an ATIS is provided, you should listen early, write down the details and
+acknowledge receipt of the broadcast in the initial call, as shown in the following
+example. If the aerodrome does not have ATIS, the controller will transmit the
+aerodrome information which you should read back in the usual way.
+
+RTF Inbound for Join
+
+General
+General
+Phraseology
+Phraseology
+
+Not all aerodromes have the same radio failure procedures. If your destination
+aerodrome publishes radio failure procedures, you should make yourself familiar
+with these when planning the flight and expect to follow them unless ATC instruct
+otherwise. Details of individual aerodromes and heliports can be found in each
+State’s AIP.
+
+Borton Approach, F-ABCD
+F-ABCD, Borton Approach
+F-ABCD, Seneca VFR from Walden, 2500 feet, 8 miles
+west of the control zone boundary, for landing at Borton,
+Information Golf
+F-CD enter Borton Control Zone proceed to Borton VFR,
+runway 34 right hand circuit, QNH 1012, traffic southbound
+Cherokee 2000 feet VFR
+Enter Borton Control Zone, cleared to Borton VFR, runway 34
+right hand circuit QNH 1012, traffic in sight, F-CD
+F-CD, report aerodrome in sight
+Wilco, F-CD
+F-CD, aerodrome in sight
+F-CD, contact Borton Tower 118.7
+Borton Tower 118.7, F-CD
+Play
+
+36
+
+ARRIVAL PHRASEOLOGY
+
+ARRIVAL PHRASEOLOGY
+
+37
+
+Arrival
+Cross
+RTF Departure
+Helicopter
+Cross Country
+Country Aerodrome
+Phraseology
+Flight
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+RTF
+
+Arrival Phraseology
+
+Unattended
+Aerodromes
+
+7
+
+Introduction &
+Abbreviations
+
+Circuit and Landing
+RTF Joining the Circuit
+
+Borton Tower, F-ABCD
+F-ABCD, Borton Tower
+F-ABCD, 5 miles north of Borton 2000 feet for landing.
+
+Good RTF
+Practice
+
+Having joined the circuit you should make reports as required by local procedures.
+If you are planning to make a touch and go or low approach and go-around, it is
+useful to advise the controller as part of the downwind call, e.g. ‘F-CD, downwind
+touch and go’. This helps the controller and other pilots plan ahead. If you do not
+state your intentions, the controller will assume that you intend to land, as shown in
+the example.
+
+General
+General
+Phraseology
+Phraseology
+
+The runway designator is not normally included with a position call, but if there is
+any possibility of confusion, e.g. more than one runway is in use or there has been a
+recent runway change, you should include the designator.
+
+F-CD, proceed via overhead to join right hand downwind
+runway 34, QNH 1012
+Proceed via overhead to join right hand downwind runway 34,
+QNH 1012, F-CD
+
+RTF
+
+F-CD, overhead 1500 feet
+
+Circuit and Landing
+
+Number 2, traffic in sight, F-CD
+
+F-CD, descending
+
+F-CD, right base
+
+F-CD, report right hand downwind runway 34
+
+F-CD, report final
+
+F-CD
+Play
+
+F-CD
+F-CD, final
+
+Calls in the Circuit
+It is particularly important that RTF calls when joining and flying in the visual circuit
+are made in the correct positions. A diagram showing the visual circuit and the
+positions at which you should make your calls is on the back inside cover of this
+leaflet.
+
+F-CD, continue approach, vehicle crossing
+Continue approach, F-CD
+F-CD, runway 34 cleared to land, wind 310 degrees 7 knots
+Runway 34, cleared to land, F-CD
+Play
+
+38
+
+ARRIVAL PHRASEOLOGY
+
+ARRIVAL PHRASEOLOGY
+
+39
+
+Unattended
+Aerodromes
+
+F-CD, number 2, follow Cherokee on right base
+
+F-CD
+
+Arrival
+Cross
+RTF Departure
+Helicopter
+Cross Country
+Country Aerodrome
+Phraseology
+Flight
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+RTF
+
+F-CD, right hand downwind
+
+F-CD, report descending
+
+Introduction &
+Abbreviations
+
+Vacating the Runway
+To avoid confusion with clearances to land or take-off, you should use the expression
+‘vacated’ when taxiing off the runway.
+
+Go Around Initiated by ATC
+
+RTF Vacating the Runway
+
+F-CD, taxi to the end, report runway vacated
+
+General
+General
+Phraseology
+Phraseology
+
+In order to avert an unsafe situation, a controller may instruct you to carry out a
+‘go around’ using the phraseology shown below. If time permits it, the controller
+may add the reason for the instruction. You should read back the instruction and,
+if operating under VFR, you should continue into the normal traffic circuit, unless
+instructed otherwise.
+
+Taxi to the end, wilco, F-CD
+F-CD, runway vacated
+
+RTF
+
+Go around initiated by ATC
+
+F-CD, taxi to the flying club via taxiway Kilo
+
+F-CD, go around, aircraft on the runway
+
+Taxi to the flying club via taxiway Kilo, F-CD
+
+Going around, F-CD
+Play
+
+Play
+
+Go Around Initiated by the Pilot
+In the event that you need to initiate a go-round for any reason, you should use the
+phrase ‘going around’ to advise the controller and other pilots in the circuit.
+
+RTF
+
+Go around Initiated by the Pilot
+
+F-CD, going around
+F-CD, roger, report downwind runway 05
+Wilco, F-CD
+Play
+
+40
+
+ARRIVAL PHRASEOLOGY
+
+ARRIVAL PHRASEOLOGY
+
+41
+
+Arrival
+Cross
+RTF Departure
+Helicopter
+Cross Country
+Country Aerodrome
+Phraseology
+Flight
+for Helicopters
+Aerodrome
+RTF Phraseology
+Flight RTF
+RTF
+
+If you are following another aircraft, and the runway is expected to be available
+within a few seconds, the controller may change the word order and transmit the
+surface wind followed by your landing clearance.
+
+Good RTF
+Practice
+
+The runway is vacated when the whole aircraft is beyond the relevant runway
+holding position. Make sure you understand the taxiway markings and do not stop
+before the runway holding point.
+
+Unattended
+Aerodromes
+
+Continue Approach
+‘Continue approach’ is not a clearance to land. If the runway is obstructed when
+you report final, but it is expected to be available in good time for you to make a
+safe landing, the controller will delay landing clearance by issuing the instruction
+to continue your approach.
+
+8
+
+This section provides examples of the RTF typically used by a pilot arriving at an
+aerodrome with an AFISO on duty. The examples in this section show the pilot
+carrying out a left base join and landing.
+
+Unattended Aerodrome Phraseology
+Operations outside the hours of ATS
+
+Joining Information
+
+Good RTF
+Practice
+
+At some aerodromes operations may take place outside the promulgated hours
+of watch of the air traffic service unit. To improve safety, you should broadcast
+information on your position and intentions to other aircraft that may be operating
+on or in the vicinity of the aerodrome.
+
+An AFISO will provide joining information, not instructions, and you should position
+your aircraft accordingly.
+
+As some aerodromes share frequencies, you should include the name of the
+aerodrome in your transmissions. At unattended aerodromes including the runway
+designator of the runway you intend to use is particularly helpful to other pilots.
+
+Left Base Join and Landing
+
+General
+General
+Phraseology
+Phraseology
+
+RTF
+
+Introduction &
+Abbreviations
+
+Aerodrome with AFISO on Duty
+
+Walden Information, D-ABCD
+D-ABCD, Walden Information
+
+Lexington Aerodrome, HB-CDA, lining up for departure
+runway 09
+
+Runway 27, QNH 1004, wilco, D-CD
+
+Lexington Aerodrome, HB-CDA, airborne departing north
+
+D-CD, left base
+
+Play
+
+D-CD, report final
+D-CD
+
+Play
+
+D-CD, final
+D-CD, runway 27 free for landing, wind 260 5 knots
+Runway 27 free for landing, D-CD
+D-CD, runway vacated
+D-CD, taxiway Alpha available to the flying club
+Will taxi to the flying club, via taxiway Alpha, D-CD
+Play
+
+42
+
+ARRIVAL PHRASEOLOGY
+
+UNATTENDED AERODROME PHRASEOLOGY
+
+43
+
+Unattended
+Aerodromes
+
+Lexington Aerodrome, HB-CDA, taxiing runway 09
+
+D-CD, runway 27, wind 260 5 knots, temperature 15, QNH
+1004, no reported traffic, report left base
+
+Arrival
+Arrival
+Cross
+Cross Country
+Country Aerodrome RTF Departure
+Phraseology
+Phraseology Flight
+for Helicopters Phraseology
+Flight RTF
+RTF
+
+RTF Taxiing and Departure
+
+D-ABCD, C152 over Seatown, 1800 feet, for landing
+
+Left-Hand Circuit
+
+Introduction &
+Abbreviations
+General
+Phraseology
+
+Good RTF
+Practice
+
+Aerodrome Traffic Circuit
+
+Position 3: Aircraft reports ‘Base’ leg (if required).
+Position 4: Aircraft reports ‘Final’. Clearance to land issued here.
+
+The arrival transmissions shown here are examples relating to a normal traffic
+pattern and pilots should be prepared to make, omit or adapt calls as necessary
+depending on the situation and any other traffic in the vicinity. At unattended
+aerodromes including the runway designator of the runway you intend to use is
+particularly helpful to other pilots.
+
+Position 5: Pilot reports ‘Long final’ (between 8 and 4 miles) when aircraft is on a
+straight in approach.
+© European Organisation for the Safety of Air Navigation (EUROCONTROL). All Rights Reserved
+and
+© European General Aviation Safety Team (EGAST), 2010. All Rights Reserved.
+
+RTF Arrival
+
+This document is jointly published by EGAST and EUROCONTROL in the interest of safety
+information exchange. Reproduction is authorised, provided the source is acknowledged,
+save where otherwise stated.
+
+Lexington Aerodrome, HB-CDA, overhead 2000 feet , joining
+righthand downwind runway 09
+
+The information contained in this document may not be modified without prior written
+authorisation from EGAST and EUROCONTROL.
+
+Lexington Aerodrome, HB-CDA, righthand downwind runway
+09
+
+To the maximum extent permitted by law, EUROCONTROL, EGAST and its member
+Organisations are not liable for any loss or damage arising from the use, or display of the
+materials of this document. This disclaimer is not intended to limit the liability of EGAST in
+contravention of any requirements laid down in applicable national law or to exclude its
+liability for matters which may not be excluded under that law.
+
+Lexington Aerodrome, HB-CDA, right base runway 09
+Lexington Aerodrome, HB-CDA, final runway 09
+Play
+
+The information contained should not be relied upon as a statement, as any form of warranty,
+representation, undertaking, contractual, or other commitment binding in law upon EGAST or
+EUROCONTROL.
+An interactive version of this document is available in electronic format at
+www.eurocontrol.int/safety and http://easa.europa.eu/essi/egastEN.html
+
+44
+
+UNATTENDED AERODROME PHRASEOLOGY
+
+Unattended
+Aerodromes
+
+Position 2: Aircraft reports ‘Late downwind’ if it is on the downwind leg, has been
+unable to report ‘Downwind’ and has passed the downwind end of the runway.
+
+Arrival Transmissions
+Your initial call should be made in good time, normally 5 minutes before you reach
+the aerodrome.
+
+Arrival
+Cross Country Aerodrome RTF Departure
+Phraseology
+for Helicopters Phraseology
+Flight RTF
+
+Position 1: Aircraft reports on ‘Downwind’ leg.
+
+Emergency Messages
+Pilots should seek assistance whenever there is any doubt
+about the safety of a flight. An early call may prevent serious
+problems later.
+The word ‘MAYDAY’ identifies a distress message transmitted because there is serious and/or imminent danger which
+requires immediate assistance. The words ‘PAN PAN’ identify an
+urgency message, concerning the safety of an aircraft or other
+vehicle, or of some person on board or within sight, but not
+requiring immediate assistance.
+Pilots should stop using any frequency on which distress or
+urgency messages are being transmitted, until the emergency
+has been terminated.
+To help controllers to give maximum assistance, the emergency
+message should contain as much of the following information
+as possible, ideally in the order given. However you may need
+to change the phraseology to fit your specific needs and the
+time available.
+a) ‘MAYDAY / MAYDAY / MAYDAY’ or
+‘PAN PAN / PAN PAN / PAN PAN’
+b) Name of the station addressed
+c) Callsign of the aircraft
+d) Nature of the emergency
+e)
+
+Intention of the person in command
+
+f)
+
+Position (present or last known), level and heading of the
+aircraft
+
+g) Any other useful information
+
+

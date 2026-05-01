@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b",
+  "documentId": "cap413-extracted",
+  "sectionId": "readback_2_68_2_71",
+  "familyId": "cap413_readback_family",
+  "claimText": "If a readback is not received for a required message, the pilot/driver will be asked to do so.",
+  "rationale": "Describes the procedural consequence (request for readback) when the mandatory readback is missing.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "If a readback is not received the pilot/driver will be asked to do so"
+  ],
+  "sourceItemIds": [
+    "clause_2.69"
+  ],
+  "claimSha256": "8735570ffeefbf2da75e47b7c989b9d3520525dadb7f18eda3f09c6b1baa9867",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6429,
+    "endLine": 6555
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "cap413_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_readback_missing",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote exists verbatim and supports the claim as a procedural consequence, and it is not redundant with the accepted sibling candidates. However, the cited wording uses \u201cwill be asked,\u201d not shall/must language, so the modality should be lowered while retaining operational_guidance authority.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:07:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_human_review",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/cap413-extracted/readback_2_68_2_71/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:07:38Z"
+  }
+}

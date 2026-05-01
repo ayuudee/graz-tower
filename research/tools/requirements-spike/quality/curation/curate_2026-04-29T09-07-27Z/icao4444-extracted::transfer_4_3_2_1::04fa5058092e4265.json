@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::04fa5058092e4265",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.82,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and fully supports the claim, and the candidate correctly preserves the source\u2019s \u201cshould\u201d modality as operational guidance rather than an authoritative requirement. There are no accepted sibling atomic candidates making this redundant, and no identity-field or schema issue requires correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::04fa5058092e4265.json",
+    "toPath": "candidates/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::04fa5058092e4265.json"
+  },
+  "curatedAt": "2026-04-29T09:18:39Z"
+}

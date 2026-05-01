@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::f968d421f3a2eeeb",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.96,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source, and the source wording uses 'should', matching the candidate's advisory modality and operational_guidance authority class. It is not redundant with the accepted sibling candidates, which cover different speed-control provisions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::f968d421f3a2eeeb.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::f968d421f3a2eeeb.json"
+  },
+  "curatedAt": "2026-04-29T09:18:25Z"
+}

@@ -1,0 +1,25 @@
+{
+  "canonicalId": "egast-vfr-extracted::readback_advisory::2a5d4629a99284e3",
+  "documentId": "egast-vfr-extracted",
+  "sectionId": "readback_advisory",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.75,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim text is verbatim supported by the source, and the source uses the word \u201cmust\u201d for this specific instruction. Because the authority class is already best_practice, this does not improperly elevate the advisory document to an authoritative requirement, but the modality should match the source wording.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/egast-vfr-extracted/readback_advisory/egast-vfr-extracted::readback_advisory::2a5d4629a99284e3.json",
+    "toPath": "candidates/egast-vfr-extracted/readback_advisory/egast-vfr-extracted::readback_advisory::2a5d4629a99284e3.json",
+    "correctionsApplied": {
+      "modality": "must"
+    }
+  },
+  "curatedAt": "2026-04-29T09:08:15Z"
+}

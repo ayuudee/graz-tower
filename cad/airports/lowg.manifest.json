@@ -1,0 +1,1048 @@
+{
+  "airportCode": "LOWG",
+  "airportName": "Graz Airport",
+  "geometricControl": {
+    "referenceRunway": "16C",
+    "mode": "full_strip_axis",
+    "displacedThresholdModelled": false,
+    "designatorNote": "16C/34C is a project-internal disambiguation against the parallel grass strips 16L/34R and 16R/34L. The published ICAO designator for the paved runway is 16/34; the C suffix is *not* what real-world ATC says on RT."
+  },
+  "frequencies": {
+    "atis": "126.130",
+    "tower": "118.200",
+    "towerRadarVfr": "119.300",
+    "source": "X-Plane 12 Global Airports apt.dat (row 1050/1054/1055 LOWG block); tower also confirmed by working_airspace.dxf ctrLegend 'GRAZ TOWER 118.200'.",
+    "note": "LOWG has no discrete APPROACH unit. 119.300 is the GRAZ TOWER RADAR/INFORMATION position offering VFR radar service from the tower (see ad_5_miscellaneous: 'GRAZ TWR provides radar service for VFR flights'). IFR approach service in the Graz TMA is provided by Wien ACC. Do not spawn RoleName.APPROACH from this frequency."
+  },
+  "plates": [
+    "AD-1", "AD-6", "AD-3", "AD-4", "AD-5",
+    "PRC-1", "PRC-2", "PRC-3", "PRC-4", "PRC-5",
+    "ENR-1", "AD-2", "ARR-1"
+  ],
+  "sources": {
+    "aptDat": "migration/src/commonTest/resources/airports/LOWG.dat",
+    "cifp": "data/cifp/LOWG.dat",
+    "ofmx": "data/ofm/austria/ofmx_extracted/ofmx_lo/isolated/ofmx_lo.ofmx",
+    "chartsDirectory": "data/charts/LOWG"
+  },
+  "reportThresholds": {
+    "markerOkMeters": 25.0,
+    "markerSuspectMeters": 100.0,
+    "componentMeanEdgeOkMeters": 15.0,
+    "componentMeanEdgeSuspectMeters": 60.0,
+    "towerResidualOkMeters": 50.0,
+    "towerResidualSuspectMeters": 150.0,
+    "segmentJoinToleranceDrawingUnits": 0.001
+  },
+  "authoringStatus": [
+    {
+      "id": "ground_graph",
+      "status": "partial",
+      "artifact": "cad/airports/lowg.dxf",
+      "notes": [
+        "Ground geometry exists and aligns promisingly against the X-Plane taxi graph.",
+        "Holding markers are drawn as unlabeled DXF points.",
+        "The 16/34L glider-use area diverges from the X-Plane reference and should be treated as a known source mismatch, not an unresolved suspect."
+      ]
+    },
+    {
+      "id": "vfr_circuit",
+      "status": "partial",
+      "artifact": "cad/airports/lowg_circuits.dxf",
+      "notes": [
+        "This drawing covers the VFR circuit only.",
+        "The drawing should be treated as shared graph geometry, not final procedures.",
+        "Open chains are expected at this stage."
+      ]
+    },
+    {
+      "id": "vfr_routes_beyond_circuit",
+      "status": "partial",
+      "artifact": "cad/airports/lowg.manifest.json",
+      "notes": [
+        "The reporting-point portions of the VFR routes are defined by joining the existing mapped VFR reporting points in the declared order.",
+        "Only the circuit-join attachments remain unresolved geometry."
+      ]
+    },
+    {
+      "id": "ifr_geometry",
+      "status": "missing",
+      "artifact": null,
+      "notes": [
+        "CIFP procedure content exists, but the local geometry graph is not authored yet.",
+        "Fix-position coverage still needs explicit reconciliation."
+      ]
+    },
+    {
+      "id": "airspace_attachment",
+      "status": "not_started",
+      "artifact": null,
+      "notes": [
+        "OFMX airspace and frequency data are available but not attached to authored geometry yet."
+      ]
+    }
+  ],
+  "drawings": [
+    {
+      "id": "ground",
+      "path": "cad/airports/lowg.dxf",
+      "role": "ground",
+      "expectedGeometryEntities": [
+        "LINE",
+        "POINT"
+      ],
+      "pointLabelsPresent": false,
+      "layerSemanticsPresent": false,
+      "transform": {
+        "strategy": "longest_line_to_runway_axis",
+        "orientation": "forward"
+      },
+      "notes": [
+        "The obvious runway line is used as the control object.",
+        "Do not infer semantic labels from DXF layers; the file currently uses one geometry layer."
+      ]
+    },
+    {
+      "id": "vfr_circuit",
+      "path": "cad/airports/lowg_circuits.dxf",
+      "role": "vfr_circuit",
+      "expectedGeometryEntities": [
+        "LINE",
+        "POINT"
+      ],
+      "pointLabelsPresent": false,
+      "layerSemanticsPresent": false,
+      "transform": {
+        "strategy": "farthest_marker_pair_to_runway_axis",
+        "orientation": "forward",
+        "crossCheck": "tower_residual"
+      },
+      "graphRules": {
+        "allowOpenChains": true,
+        "splitEndpointOnSegment": true,
+        "treatAsSharedGraph": true
+      },
+      "notes": [
+        "The two farthest marker points are expected to be the center-runway anchors.",
+        "The remaining marker point is expected to land near the tower viewpoint.",
+        "Endpoint-on-segment joins are expected where side procedures attach to shared legs."
+      ]
+    }
+  ],
+  "workingDxf": {
+    "path": "cad/airports/lowg_working_combined.dxf",
+    "layers": {
+      "authoredParkingGraph": "NEW_Parking",
+      "authoredParkingPoints": "NEW_Parking_Points"
+    },
+    "parkingPointNaming": {
+      "rowOrder": "bottom_to_top",
+      "withinRowOrder": "left_to_right",
+      "rows": [
+        [
+          "F1",
+          "F2",
+          "F4",
+          "F6"
+        ],
+        [
+          "F7",
+          "F8",
+          "F10",
+          "F12"
+        ],
+        [
+          "G1",
+          "G2",
+          "G4"
+        ],
+        [
+          "G5",
+          "G6",
+          "G7",
+          "G8"
+        ],
+        [
+          "G9",
+          "G10",
+          "G11",
+          "G12"
+        ],
+        [
+          "G13",
+          "G14",
+          "G15"
+        ],
+        [
+          "G16",
+          "G17",
+          "G18"
+        ],
+        [
+          "G19",
+          "G20"
+        ],
+        [
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "20",
+          "22",
+          "26",
+          "28"
+        ],
+        [
+          "30",
+          "32",
+          "35",
+          "38"
+        ]
+      ],
+      "note": "User-authored stand naming sequence applied to NEW_Parking_Points."
+    }
+  },
+  "namedMappings": {
+    "groundMarkers": [
+      {
+        "markerIndex": 1,
+        "drawingPoint": {
+          "x": 189.2400693309519,
+          "y": 1626.685537686273
+        },
+        "status": "resolved",
+        "finalName": "D",
+        "semanticRole": "holding point",
+        "referenceHint": "near apt.dat taxi node D_stop / taxiway D",
+        "note": "Likely a holding/stop marker on the D side."
+      },
+      {
+        "markerIndex": 2,
+        "drawingPoint": {
+          "x": 633.9989763247397,
+          "y": 1708.306850526668
+        },
+        "status": "resolved",
+        "finalName": "C",
+        "semanticRole": "holding point",
+        "referenceHint": "near apt.dat taxi node C_stop / taxiway C",
+        "note": "Likely a holding/stop marker on the C side."
+      },
+      {
+        "markerIndex": 3,
+        "drawingPoint": {
+          "x": 1132.206688490385,
+          "y": 1789.403363380696
+        },
+        "status": "resolved",
+        "finalName": "B",
+        "semanticRole": "holding point",
+        "referenceHint": "near apt.dat taxi node N_stop / taxiway B",
+        "note": "Likely a holding/stop marker near the B/N area."
+      },
+      {
+        "markerIndex": 4,
+        "drawingPoint": {
+          "x": 1250.208211804248,
+          "y": 1559.353786827339
+        },
+        "status": "resolved",
+        "finalName": "Z",
+        "semanticRole": "holding point",
+        "referenceHint": "near apt.dat taxiway X",
+        "note": "One of two nearby markers in the X area; exact meaning still needs assignment."
+      },
+      {
+        "markerIndex": 5,
+        "drawingPoint": {
+          "x": 1253.00492252917,
+          "y": 1542.350191504245
+        },
+        "status": "DELETE",
+        "finalName": null,
+        "semanticRole": null,
+        "referenceHint": "near apt.dat taxiway X",
+        "note": "One of two nearby markers in the X area; exact meaning still needs assignment."
+      },
+      {
+        "markerIndex": 6,
+        "drawingPoint": {
+          "x": 1879.953635257259,
+          "y": 1693.422692916656
+        },
+        "status": "resolved",
+        "finalName": "Y",
+        "semanticRole": "holding_point",
+        "referenceHint": "16/34L glider-use area",
+        "note": "Known divergence from the X-Plane reference. This marks the 16/34L glider area, but the final in-world semantics still need to be decided."
+      }
+    ],
+    "groundComponents": [
+      {
+        "componentIndex": 1,
+        "status": "assigned",
+        "finalName": "16C/34C control axis",
+        "semanticRole": "runway_axis_control",
+        "associatedMarkerIndexes": [],
+        "referenceHint": "Longest ground DXF line; used for runway-axis fit only.",
+        "note": "Geometric control object, not an operational taxiway."
+      },
+      {
+        "componentIndex": 2,
+        "status": "assigned",
+        "finalName": "A",
+        "displayLabel": "A",
+        "semanticRole": "taxiway",
+        "associatedMarkerIndexes": [
+          1
+        ],
+        "candidateNameFromMarkers": "D",
+        "secondaryNameCandidates": [
+          "A"
+        ],
+        "referenceHint": "Marker 1 sits on this component; X-Plane taxi routes also place named A segments through this cluster.",
+        "note": "Tower-side mixed ground cluster. It appears to be D at the runway-end turn and A for the rest toward the tower/apron side, so keep it as an explicit mixed assignment rather than collapsing it to a single taxiway name."
+      },
+      {
+        "componentIndex": 3,
+        "status": "assigned",
+        "finalName": "Y",
+        "semanticRole": "taxiway",
+        "associatedMarkerIndexes": [
+          6
+        ],
+        "candidateNameFromMarkers": "Y",
+        "referenceHint": "Marker 6 sits on this component.",
+        "note": "Known 16/34L glider-use divergence area. Marker Y is on this component, but the final world semantics still need to be decided."
+      },
+      {
+        "componentIndex": 4,
+        "status": "assigned",
+        "finalName": "B",
+        "semanticRole": "taxiway",
+        "associatedMarkerIndexes": [
+          3
+        ],
+        "candidateNameFromMarkers": "B",
+        "referenceHint": "Marker 3 sits on this component.",
+        "note": "Likely the B-side taxiway cluster."
+      },
+      {
+        "componentIndex": 5,
+        "status": "assigned",
+        "finalName": "C",
+        "semanticRole": "taxiway_or_ground_path",
+        "associatedMarkerIndexes": [
+          2
+        ],
+        "candidateNameFromMarkers": "C",
+        "referenceHint": "Marker 2 sits on this component.",
+        "note": "Likely the C-side taxiway cluster."
+      },
+      {
+        "componentIndex": 6,
+        "status": "assigned",
+        "finalName": "Z",
+        "semanticRole": "taxiway_or_ground_path",
+        "associatedMarkerIndexes": [
+          4,
+          5
+        ],
+        "candidateNameFromMarkers": "Z",
+        "referenceHint": "Markers 4 and 5 sit on this component; nearest apt.dat edge name is X.",
+        "note": "Assigned as Z from the hand-authored geometry. X-Plane still places the nearest reference edge under X, so this remains a naming divergence rather than an unresolved assignment."
+      }
+    ],
+    "vfrReportingPoints": [
+      {
+        "codeId": "GRAZ-NORD",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-MRP"
+      },
+      {
+        "codeId": "SENDER DOBL",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-RP"
+      },
+      {
+        "codeId": "KALSDORF",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-RP"
+      },
+      {
+        "codeId": "AUTOBAHN-OST",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-RP"
+      },
+      {
+        "codeId": "AUTOBAHN-WEST",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-RP"
+      },
+      {
+        "codeId": "GREEN CITY",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-RP"
+      },
+      {
+        "codeId": "GLEISDORF",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-MRP"
+      },
+      {
+        "codeId": "LASSNITZHÖHE",
+        "status": "needs_route_geometry",
+        "geometryPresent": false,
+        "type": "VFR-MRP"
+      }
+    ],
+    "vfrRoutes": [
+      {
+        "routeId": "vfr_northeast_entry_path",
+        "status": "reporting_point_path_defined_with_explicit_circuit_anchor",
+        "routeType": "arrival_path",
+        "pathDefinition": {
+          "representation": "ordered_existing_point_path",
+          "nodeSequence": [
+            {
+              "nodeRef": "GLEISDORF",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "LASSNITZHÖHE",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "AUTOBAHN-OST",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "circuit_ne_entry",
+              "nodeType": "planned_circuit_anchor",
+              "geometrySource": "authoring_manifest"
+            }
+          ],
+          "segmentSequence": [
+            {
+              "from": "GLEISDORF",
+              "to": "LASSNITZHÖHE",
+              "status": "resolved_by_existing_reporting_points"
+            },
+            {
+              "from": "LASSNITZHÖHE",
+              "to": "AUTOBAHN-OST",
+              "status": "resolved_by_existing_reporting_points"
+            },
+            {
+              "from": "AUTOBAHN-OST",
+              "to": "circuit_ne_entry",
+              "status": "resolved_by_explicit_circuit_anchor"
+            }
+          ],
+          "joinsGraphAt": "circuit_ne_entry"
+        },
+        "altitudeConstraintNote": "LASSNITZHÖHE is also the CTR entry; remain at or below 3000 ft before joining the circuit.",
+        "note": "User-confirmed path. The reporting-point portion is the literal join GLEISDORF -> LASSNITZHÖHE -> AUTOBAHN-OST; the final join now targets the explicit NE circuit anchor from lowg_circuits.dxf."
+      },
+      {
+        "routeId": "vfr_western_corridor_path",
+        "status": "reporting_point_path_defined",
+        "routeType": "transit_or_departure_path",
+        "pathDefinition": {
+          "representation": "ordered_existing_point_path",
+          "nodeSequence": [
+            {
+              "nodeRef": "SENDER DOBL",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "AUTOBAHN-WEST",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "GREEN CITY",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "GRAZ-NORD",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            }
+          ],
+          "segmentSequence": [
+            {
+              "from": "SENDER DOBL",
+              "to": "AUTOBAHN-WEST",
+              "status": "resolved_by_existing_reporting_points"
+            },
+            {
+              "from": "AUTOBAHN-WEST",
+              "to": "GREEN CITY",
+              "status": "resolved_by_existing_reporting_points"
+            },
+            {
+              "from": "GREEN CITY",
+              "to": "GRAZ-NORD",
+              "status": "resolved_by_existing_reporting_points"
+            }
+          ]
+        },
+        "note": "User-confirmed path. This route is the literal join SENDER DOBL -> AUTOBAHN-WEST -> GREEN CITY -> GRAZ-NORD. The NW circuit point is treated as AUTOBAHN-WEST, so this route already lands on the existing circuit attachment there."
+      },
+      {
+        "routeId": "vfr_southwest_entry_path",
+        "status": "reporting_point_path_defined_with_explicit_circuit_anchor",
+        "routeType": "arrival_path",
+        "pathDefinition": {
+          "representation": "ordered_existing_point_path",
+          "nodeSequence": [
+            {
+              "nodeRef": "SENDER DOBL",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "circuit_sw_entry",
+              "nodeType": "planned_circuit_anchor",
+              "geometrySource": "authoring_manifest"
+            }
+          ],
+          "segmentSequence": [
+            {
+              "from": "SENDER DOBL",
+              "to": "circuit_sw_entry",
+              "status": "resolved_by_explicit_circuit_anchor"
+            }
+          ],
+          "joinsGraphAt": "circuit_sw_entry"
+        },
+        "note": "User-confirmed western circuit entry option. From SENDER DOBL aircraft can join the circuit via the explicit SW anchor depending on runway direction."
+      },
+      {
+        "routeId": "vfr_southeast_entry_path",
+        "status": "reporting_point_path_defined_with_existing_circuit_endpoint",
+        "routeType": "arrival_path",
+        "pathDefinition": {
+          "representation": "ordered_existing_point_path",
+          "nodeSequence": [
+            {
+              "nodeRef": "KALSDORF",
+              "nodeType": "vfr_reporting_point",
+              "geometrySource": "OFMX"
+            },
+            {
+              "nodeRef": "circuit_se_entry",
+              "nodeType": "planned_circuit_anchor",
+              "geometrySource": "authoring_manifest"
+            }
+          ],
+          "segmentSequence": [
+            {
+              "from": "KALSDORF",
+              "to": "circuit_se_entry",
+              "status": "resolved_by_existing_circuit_endpoint"
+            }
+          ],
+          "joinsGraphAt": "circuit_se_entry"
+        },
+        "note": "User-confirmed SE arrival path into the circuit. KALSDORF is the literal reporting-point anchor and the join uses the existing SE circuit endpoint."
+      }
+    ],
+    "operationalSectors": [
+      {
+        "sectorId": "sector_whiskey",
+        "label": "SECTOR WHISKEY",
+        "status": "scaffolded_from_aip_chart_and_user_confirmation",
+        "kind": "vfr_operational_sector",
+        "geometrySource": "working_airspace_dxf",
+        "anchorPointRef": "SENDER DOBL",
+        "anchorRole": "ctr_boundary_reporting_point",
+        "entryExitPointRefs": [
+          "SENDER DOBL"
+        ],
+        "associatedProcedureIds": [
+          "prc_2_arrival_sender_dobl",
+          "prc_2_departure_sender_dobl"
+        ],
+        "contactRequirement": {
+          "role": "TOWER",
+          "beforeEntry": true
+        },
+        "altitudeLimits": {
+          "upperFeetMsl": 3000
+        },
+        "relationToCtr": "boundary_or_overlap_operational_sector",
+        "behaviourNote": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume.",
+        "specialProcedureNote": "Within CTR LOWG the highway A2 shall under no circumstances be overflown, to avoid drifting unintentionally into TRA LOWG GLIDER L or U."
+      },
+      {
+        "sectorId": "sector_echo",
+        "label": "SECTOR ECHO",
+        "status": "scaffolded_from_aip_chart_and_user_confirmation",
+        "kind": "vfr_operational_sector",
+        "geometrySource": "working_airspace_dxf",
+        "anchorPointRef": "KALSDORF",
+        "anchorRole": "ctr_boundary_reporting_point",
+        "entryExitPointRefs": [
+          "KALSDORF"
+        ],
+        "associatedProcedureIds": [
+          "prc_3_arrival_kalsdorf",
+          "prc_3_departure_kalsdorf"
+        ],
+        "contactRequirement": {
+          "role": "TOWER",
+          "beforeEntry": true
+        },
+        "altitudeLimits": {
+          "upperFeetMsl": 3000
+        },
+        "relationToCtr": "boundary_or_overlap_operational_sector",
+        "behaviourNote": "Published as a VFR arrival/departure sector tied to the CTR procedures rather than as a standalone classed airspace volume."
+      }
+    ],
+    "publishedVfrProcedures": [
+      {
+        "procedureId": "prc_1_arrival_graz_nord",
+        "plateId": "PRC-1",
+        "status": "scaffolded_from_ofm",
+        "kind": "arrival_only",
+        "publishedSequence": [
+          "GRAZ-NORD",
+          "GREEN CITY",
+          "AUTOBAHN-WEST"
+        ],
+        "contactRequirement": {
+          "role": "TOWER",
+          "before": "GRAZ-NORD"
+        },
+        "contactNote": "Contact GRAZ TWR before approaching GRAZ-NORD (2500 max, TMA above).",
+        "altitudeConstraintNote": "Approach GRAZ-NORD at max 2500 ft; TMA above.",
+        "mapWaypointLabels": [
+          {
+            "pointRef": "GRAZ-NORD",
+            "label": "GRAZ-NORD @3500 MSL (-)"
+          },
+          {
+            "pointRef": "GREEN CITY",
+            "label": "GREEN CITY @3500 MSL (-)"
+          },
+          {
+            "pointRef": "AUTOBAHN-WEST",
+            "label": "AUTOBAHN-WEST @3000 MSL (-)"
+          }
+        ],
+        "terminatesAt": "AUTOBAHN-WEST",
+        "holdAt": "AUTOBAHN-WEST",
+        "commFailureExitSequence": [
+          "AUTOBAHN-WEST",
+          "GREEN CITY",
+          "GRAZ-NORD"
+        ],
+        "commFailureNote": "If COM FAILURE, SQ 7600, leave CTR via this route in opposite direction, via GRAZ-NORD; review AD-4.",
+        "note": "Published OFM arrival procedure. The route via GREEN CITY ends at AUTOBAHN-WEST, where aircraft should hold for further clearance unless approach/landing clearance has already been received."
+      },
+      {
+        "procedureId": "prc_1_departure_graz_nord",
+        "plateId": "PRC-1",
+        "status": "scaffolded_from_ofm",
+        "kind": "departure_only",
+        "publishedSequence": [
+          "AUTOBAHN-WEST",
+          "GREEN CITY",
+          "GRAZ-NORD"
+        ],
+        "departureRunwaySet": [
+          "16C",
+          "34C",
+          "16R",
+          "34L",
+          "16L",
+          "34R"
+        ],
+        "altitudeConstraintNote": "Climb to 3500 ft as soon as practicable for noise abatement.",
+        "reportingNote": "Unless instructed otherwise, do not report when passing AUTOBAHN-WEST.",
+        "routeNote": "Departures via reporting point GRAZ-NORD shall follow the depicted VFR route from AUTOBAHN-WEST via GREEN CITY.",
+        "note": "Published OFM departure procedure for departures via reporting point GRAZ-NORD."
+      },
+      {
+        "procedureId": "prc_2_arrival_sender_dobl",
+        "plateId": "PRC-2",
+        "status": "scaffolded_from_ofm",
+        "kind": "arrival_only",
+        "publishedSequence": [
+          "SECTOR WHISKEY",
+          "SENDER DOBL"
+        ],
+        "contactRequirement": {
+          "role": "TOWER",
+          "before": "SECTOR WHISKEY"
+        },
+        "contactNote": "Contact GRAZ TWR before entering SECTOR W and CTR at max 3000 ft.",
+        "altitudeConstraintNote": "Enter SECTOR WHISKEY at max 3000 ft.",
+        "mapWaypointLabels": [
+          {
+            "pointRef": "SENDER DOBL",
+            "label": "SENDER DOBL @3000 MSL (-)"
+          }
+        ],
+        "terminatesAt": "SENDER DOBL",
+        "holdAt": "SENDER DOBL",
+        "commFailureExitSequence": [
+          "SENDER DOBL",
+          "SECTOR WHISKEY"
+        ],
+        "commFailureNote": "If COM FAILURE, SQ 7600, leave CTR via this route in opposite direction, via SENDER DOBL -> SECTOR W; review AD-4.",
+        "specialProcedureNote": "Within CTR LOWG the highway A2 shall under no circumstances be overflown, to avoid drifting unintentionally into TRA LOWG GLIDER L or U.",
+        "note": "Published OFM arrival procedure. The route ends at SENDER DOBL, where aircraft should hold for further clearance unless approach/landing clearance has already been received."
+      },
+      {
+        "procedureId": "prc_2_departure_sender_dobl",
+        "plateId": "PRC-2",
+        "status": "scaffolded_from_ofm",
+        "kind": "departure_only",
+        "publishedSequence": [
+          "SENDER DOBL",
+          "SECTOR WHISKEY"
+        ],
+        "altitudeConstraintNote": "Climb to max 3000 ft as soon as practicable for noise abatement.",
+        "reportingNote": "Unless instructed otherwise, do not report when passing SENDER DOBL.",
+        "specialProcedureNote": "Within CTR LOWG the highway A2 shall under no circumstances be overflown, to avoid drifting unintentionally into TRA LOWG GLIDER L or U.",
+        "note": "Published OFM departure procedure via SENDER DOBL."
+      },
+      {
+        "procedureId": "prc_3_arrival_kalsdorf",
+        "plateId": "PRC-3",
+        "status": "scaffolded_from_ofm",
+        "kind": "arrival_only",
+        "publishedSequence": [
+          "SECTOR ECHO",
+          "KALSDORF"
+        ],
+        "contactRequirement": {
+          "role": "TOWER",
+          "before": "SECTOR ECHO"
+        },
+        "contactNote": "Contact GRAZ TWR before entering SECTOR E and CTR at max 3000 ft.",
+        "altitudeConstraintNote": "Enter SECTOR ECHO at max 3000 ft.",
+        "mapWaypointLabels": [
+          {
+            "pointRef": "KALSDORF",
+            "label": "KALSDORF @2500 MSL"
+          }
+        ],
+        "terminatesAt": "KALSDORF",
+        "holdAt": "KALSDORF",
+        "commFailureExitSequence": [
+          "KALSDORF",
+          "SECTOR ECHO"
+        ],
+        "commFailureNote": "If COM FAILURE, SQ 7600, leave CTR via this route in opposite direction, via KALSDORF -> SECTOR E; review AD-4.",
+        "note": "Published OFM arrival procedure. The route ends at KALSDORF, where aircraft should hold for further clearance unless approach/landing clearance has already been received."
+      },
+      {
+        "procedureId": "prc_3_departure_kalsdorf",
+        "plateId": "PRC-3",
+        "status": "scaffolded_from_ofm",
+        "kind": "departure_only",
+        "publishedSequence": [
+          "KALSDORF",
+          "SECTOR ECHO"
+        ],
+        "altitudeConstraintNote": "Climb to max 3000 ft as soon as practicable for noise abatement.",
+        "reportingNote": "Unless instructed otherwise, do not report when passing KALSDORF.",
+        "note": "Published OFM departure procedure via KALSDORF."
+      },
+      {
+        "procedureId": "prc_4_west_traffic_circuit",
+        "plateId": "PRC-4",
+        "status": "scaffolded_from_ofm",
+        "kind": "traffic_circuit",
+        "applicableRunwaySet": [
+          "16R",
+          "34L"
+        ],
+        "altitudeConstraintNote": "Traffic circuit west at 2500 ft MSL.",
+        "specialProcedureNote": "The aerodrome traffic circuit west is intended to keep traffic clear of the parachute area west of runway 16R/34L; pilots are required to adhere to it as best as possible.",
+        "availabilityNote": "Traffic circuit west is not available for flights from and to 16L/34R, but is available from 16C/34C according to ATC.",
+        "note": "Published OFM west traffic circuit procedure."
+      },
+      {
+        "procedureId": "prc_5_east_hold",
+        "plateId": "PRC-5",
+        "status": "scaffolded_from_ofm",
+        "kind": "circuit_attached_hold",
+        "publishedSequence": [
+          "TFC 16C/34C 16L/34R EAST TFC",
+          "EAST HOLD (NON-STD)"
+        ],
+        "altitudeConstraintNote": "Traffic circuit east of field at 2500 ft MSL.",
+        "availabilityNote": "If runway 16C/34C is in use, ATC may assign either the east or west traffic pattern.",
+        "note": "Published OFM east traffic / non-standard east hold for 16C/34C and 16L/34R. Geometry and semantics still need to be reconciled against the intended loiter-area model."
+      },
+      {
+        "procedureId": "arr_1_gleisdorf_arrival_only",
+        "plateId": "ARR-1",
+        "status": "scaffolded_from_ofm",
+        "kind": "arrival_only",
+        "publishedSequence": [
+          "GLEISDORF",
+          "LASSNITZHÖHE",
+          "AUTOBAHN-OST"
+        ],
+        "contactRequirement": {
+          "role": "TOWER",
+          "before": "GLEISDORF"
+        },
+        "contactNote": "Approaching GLEISDORF max 3000 (TMA above), contact GRAZ TOWER.",
+        "altitudeConstraintNote": "Approach GLEISDORF at max 3000 ft; TMA above.",
+        "routeNote": "Traffic circuit east of field, 2500 ft.",
+        "commFailureExitSequence": [
+          "GLEISDORF",
+          "LASSNITZHÖHE",
+          "AUTOBAHN-OST",
+          "nordo_holding_east_of_tower"
+        ],
+        "commFailureNote": "In case of COM FAILURE, SQ7600, review AD-4.",
+        "note": "Published OFM arrival-only / NORDO-arrival plate. This is the dedicated Gleisdorf arrival axis and comm-failure reference route."
+      }
+    ],
+    "publishedAerodromeInformation": [
+      {
+        "sectionId": "ad_1_taxi_layout",
+        "plateId": "AD-1",
+        "status": "present_reference_only",
+        "notes": [
+          "The taxi-layout sheet provides a compact aerodrome-reference plate tying together runway data, taxi layout, frequencies, and nearby parachute-area context."
+        ],
+        "note": "Useful as a final plate-style review artifact reference, even though structured runway and taxi data continue to come primarily from apt.dat and CAD."
+      },
+      {
+        "sectionId": "ad_3_local_regulations",
+        "plateId": "AD-3",
+        "status": "ported_from_ofm",
+        "preCoordinationContact": "+43 5 1703 6710",
+        "preCoordinationRequiredFor": [
+          "Solo flights by student pilots without a qualified instructor on board.",
+          "Simulated instrument flights.",
+          "Flights with a special program, including aerial work, aerobatics, parachute activity, and similar special operations."
+        ],
+        "trafficCircuitRestrictions": [
+          "Traffic circuits on grass runways 16L/34R (east) and 16R/34L (west) are not allowed on Saturdays after 1300 local time, on Sundays and public holidays all day, and after 2200 local time until end of operating hours on other days.",
+          "Helicopter traffic circuits on grass runways 16L/34R and 16R/34L are subject to the same time restrictions."
+        ],
+        "note": "Local aerodrome regulations from the OFM briefing pages."
+      },
+      {
+        "sectionId": "ad_4_vfr_briefing",
+        "plateId": "AD-4",
+        "status": "ported_from_ofm",
+        "arrivalPolicy": [
+          "Arrival routes/sectors end overhead AUTOBAHN-OST, KALSDORF, SENDER DOBL, or AUTOBAHN-WEST; hold there for further clearance unless approach or landing clearance has already been received.",
+          "For noise abatement, maximum altitudes on entry routes/sectors should be maintained as long as practicable."
+        ],
+        "departurePolicy": [
+          "Unless otherwise instructed by ATC, departing VFR flights should omit position reports overhead AUTOBAHN-OST, KALSDORF, AUTOBAHN-WEST, and SENDER DOBL.",
+          "For noise abatement, the published maximum altitudes on departure routes/sectors should be reached as soon as practicable."
+        ],
+        "transitPolicy": [
+          "Transit flights will be cleared only if traffic situation permits."
+        ],
+        "commFailureProcedures": [
+          "Before receiving an entry clearance: if possible divert to an uncontrolled aerodrome; otherwise squawk 7600 and enter the CTR via the NORDO route GLEISDORF -> LASSNITZHÖHE -> AUTOBAHN-OST, then continue to the NORDO holding east of the tower at 2500 ft and await light signals.",
+          "After receiving an entry clearance: squawk 7600, leave the CTR without delay via the entry route/sector and divert if possible, except for the GLEISDORF -> LASSNITZHÖHE -> AUTOBAHN-OST and SECTOR ECHO -> KALSDORF cases, then re-enter via the NORDO route to the NORDO holding east of the tower at 2500 ft and await light signals."
+        ],
+        "note": "General VFR approach/departure/transit briefing and comm-failure procedure."
+      },
+      {
+        "sectionId": "ad_5_miscellaneous",
+        "plateId": "AD-5",
+        "status": "ported_from_ofm",
+        "notes": [
+          "GRAZ TWR provides radar service for VFR flights.",
+          "Outside duty hours of the Graz ATC unit, pilots shall contact ACC/FIC Wien for clearance.",
+          "Glider flying and parachute jumping are permitted in the western area of the aerodrome only.",
+          "Parachute area established west of the airport over the lakes.",
+          "Preferably power flying should be conducted in the eastern area of the aerodrome only (traffic circuits to the east).",
+          "The west traffic circuit around runway 16R/34L is intended to keep traffic clear of the parachute area and should be flown as accurately as possible.",
+          "The west traffic circuit is not available for flights from and to 16L/34R."
+        ],
+        "note": "Miscellaneous operational notes with real training value."
+      },
+      {
+        "sectionId": "ad_6_glider_ops",
+        "plateId": "AD-6",
+        "status": "ported_from_ofm",
+        "notes": [
+          "Runway and taxiway surfaces in the glider-ops area require clearance by GRAZ TWR.",
+          "ATC area of responsibility for glider ops includes runway 16R/34L and attached taxiways; contact Tower for clearance.",
+          "Temporary reserved areas apply; see AIC B 1/24."
+        ],
+        "note": "Glider-operations-specific aerodrome information from the dedicated ground sheet."
+      },
+      {
+        "sectionId": "enr_1_vfr_transit",
+        "plateId": "ENR-1",
+        "status": "partially_ported_from_ofm",
+        "comFailurePhone": "+43 5 1703 6712",
+        "ctrLegend": [
+          "LOWG - CTR: GRAZ TOWER 118.200",
+          "LOXZ - CTR: ZELTWEG TWR 135.380"
+        ],
+        "notes": [
+          "The transit sheet provides the combined CTR/TMA context for PRC-1 through PRC-5 and identifies FIC SOUTH / WIEN INFORM as the relevant information service outside the immediate LOWG control context."
+        ],
+        "note": "Transit geometry and sector semantics still need a deeper pass if we want to model through-transits explicitly."
+      },
+      {
+        "sectionId": "ad_2_apron_parking",
+        "plateId": "AD-2",
+        "status": "ported_from_xplane_v1",
+        "notes": [
+          "Version 1 now uses the authored NEW_Parking graph and NEW_Parking_Points stand set as the primary apron/parking source."
+        ],
+        "note": "Apron/building footprints are still lighter than the OFM sheet, but the visible stand inventory and apron graph are now ported into the shared LOWG data from the authored working DXF, with only the taxiway-A joins still projected."
+      }
+    ],
+    "procedureAnchors": [
+      {
+        "anchorId": "ground_control_axis",
+        "drawingId": "ground",
+        "status": "assigned",
+        "anchorType": "runway_axis_control",
+        "referenceRunwayPair": "16C/34C",
+        "note": "Uses the obvious runway line in lowg.dxf as the geometric control for the ground drawing."
+      },
+      {
+        "anchorId": "vfr_circuit_point_1",
+        "drawingId": "vfr_circuit",
+        "drawingPointIndex": 1,
+        "drawingPoint": {
+          "x": 828.1841678201872,
+          "y": 1647.339871748437
+        },
+        "status": "virtual",
+        "anchorType": "runway_end_anchor_candidate",
+        "assignedMeaning": null,
+        "note": "User-confirmed original centre-runway marker. Used explicitly as one of the two transform anchors for lowg_circuits.dxf."
+      },
+      {
+        "anchorId": "vfr_circuit_point_2",
+        "drawingId": "vfr_circuit",
+        "drawingPointIndex": 2,
+        "drawingPoint": {
+          "x": 917.0041834226158,
+          "y": 1144.213945791417
+        },
+        "status": "virtual",
+        "anchorType": "runway_end_anchor_candidate",
+        "assignedMeaning": null,
+        "note": "User-confirmed original centre-runway marker. Used explicitly as one of the two transform anchors for lowg_circuits.dxf."
+      },
+      {
+        "anchorId": "vfr_circuit_point_3",
+        "drawingId": "vfr_circuit",
+        "drawingPointIndex": 3,
+        "drawingPoint": {
+          "x": 946.5119565279799,
+          "y": 1489.506016262443
+        },
+        "status": "virtual",
+        "anchorType": "tower_crosscheck_candidate",
+        "assignedMeaning": null,
+        "note": "The third circuit marker. Currently treated as the tower cross-check point."
+      },
+      {
+        "anchorId": "circuit_ne_entry",
+        "drawingId": "vfr_circuit",
+        "drawingPointIndex": 4,
+        "drawingPoint": {
+          "x": 1063.875886219425,
+          "y": 1871.599681379151
+        },
+        "displayLabel": "NE",
+        "status": "assigned",
+        "anchorType": "vfr_route_join",
+        "assignedMeaning": "circuit_entry_ne",
+        "note": "User-authored explicit NE circuit entry point in lowg_circuits.dxf. Northeast arrivals via AUTOBAHN-OST join here."
+      },
+      {
+        "anchorId": "circuit_nw_entry",
+        "drawingId": "vfr_circuit",
+        "endpointRole": "nw",
+        "reportingPointRef": "AUTOBAHN-WEST",
+        "displayLabel": "NW / AUTOBAHN-WEST",
+        "status": "assigned",
+        "anchorType": "vfr_route_join",
+        "assignedMeaning": "circuit_entry_nw",
+        "note": "User-confirmed NW circuit point. For simplicity this is treated as AUTOBAHN-WEST on the existing circuit graph."
+      },
+      {
+        "anchorId": "circuit_se_entry",
+        "drawingId": "vfr_circuit",
+        "endpointRole": "se",
+        "displayLabel": "SE",
+        "status": "assigned",
+        "anchorType": "vfr_route_join",
+        "assignedMeaning": "circuit_entry_se",
+        "note": "User-confirmed SE circuit point. This uses the existing SE open endpoint in the circuit graph rather than a separate DXF POINT marker."
+      },
+      {
+        "anchorId": "circuit_sw_entry",
+        "drawingId": "vfr_circuit",
+        "drawingPointIndex": 5,
+        "drawingPoint": {
+          "x": 502.5953645026131,
+          "y": 982.7003299280013
+        },
+        "displayLabel": "SW",
+        "status": "assigned",
+        "anchorType": "vfr_route_join",
+        "assignedMeaning": "circuit_entry_sw",
+        "note": "User-authored explicit SW circuit entry point in lowg_circuits.dxf. From SENDER DOBL aircraft can route here or to AUTOBAHN-WEST depending on runway direction."
+      }
+    ]
+  },
+  "reconciliationOverrides": {
+    "ground": {
+      "components": [
+        {
+          "componentIndex": 3,
+          "classification": "known_divergence",
+          "label": "16/34L glider area",
+          "note": "This geometry is intentional. The CAD reflects the real glider-use area more closely than the X-Plane taxi reference."
+        }
+      ],
+      "markers": [
+        {
+          "markerIndex": 6,
+          "classification": "known_divergence",
+          "label": "glider area marker",
+          "note": "This marker sits in the 16/34L glider-use area and should not be treated as an unresolved outlier."
+        }
+      ]
+    }
+  },
+  "knownGaps": [
+    "No semantic labels are embedded in either DXF; names and meaning must live in the sidecar data.",
+    "The current report does not attempt to generate a final AviationWorld.",
+    "Displaced-threshold geometry is intentionally deferred in this slice.",
+    "The current report only scans OFMX designated points for fix-position reconciliation; it does not yet parse navaids or shape extensions.",
+    "The current hand-authored VFR circuit omits the eastern holding-point join used by the charted NE reporting-point route; that geometry is still pending DXF update.",
+    "SECTOR WHISKEY and SECTOR ECHO are not yet modeled as boundary-sector constructs with the corresponding CTR cut-outs. A provisional sketch now exists on the VFR Op Sectors layer in the working airspace DXF and can be shown as a render overlay, but the runtime/model still misplaces SENDER DOBL and KALSDORF as interior reporting points instead of CTR-boundary intersections."
+  ]
+}

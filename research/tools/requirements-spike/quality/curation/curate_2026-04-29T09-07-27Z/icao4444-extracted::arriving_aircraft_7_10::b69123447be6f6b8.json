@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::b69123447be6f6b8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.3,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and correctly classified as a non-normative note, but the unit is only a bare cross-reference (\u201cSee 7.6.3.1.2.2.\u201d) with no standalone regulatory content to curate as an accepted candidate. The judge\u2019s advisory-only rationale is therefore appropriate and no modality/authority correction would make it promotable.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::b69123447be6f6b8.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::b69123447be6f6b8.json"
+  },
+  "curatedAt": "2026-04-29T09:12:41Z"
+}

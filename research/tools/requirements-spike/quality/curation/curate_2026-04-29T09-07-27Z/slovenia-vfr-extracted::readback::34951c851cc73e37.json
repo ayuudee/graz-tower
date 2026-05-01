@@ -1,0 +1,20 @@
+{
+  "canonicalId": "slovenia-vfr-extracted::readback::34951c851cc73e37",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.31,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source supports the substance, but the exactSourceQuote is not verbatim: the source uses the prime-style quotation marks around \u2032ROGER\u2032, while the candidate quote uses ASCII apostrophes. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::34951c851cc73e37.json",
+    "toPath": "rejected/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::34951c851cc73e37.json"
+  },
+  "curatedAt": "2026-04-29T09:26:10Z"
+}

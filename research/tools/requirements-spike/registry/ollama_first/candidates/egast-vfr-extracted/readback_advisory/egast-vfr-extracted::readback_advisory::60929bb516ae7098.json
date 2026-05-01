@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "egast-vfr-extracted::readback_advisory::60929bb516ae7098",
+  "documentId": "egast-vfr-extracted",
+  "sectionId": "readback_advisory",
+  "familyId": "egast_vfr_readback_family",
+  "claimText": "It is normally best to read back the items in the order given.",
+  "rationale": "Advisory best practice for readback order, explicitly allowing exceptions.",
+  "modality": "should",
+  "authorityClass": "best_practice",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "It is normally best to read back the items in the order given"
+  ],
+  "sourceItemIds": [
+    "clause_readback_procedure"
+  ],
+  "claimSha256": "f8ecd3a0fa9bd661dbae320f513a2828535bae8bfe35dda77aab586c41e15f79",
+  "provenance": {
+    "sourcePath": "research/txt/egast-vfr-extracted.txt",
+    "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+    "startLine": 539,
+    "endLine": 608
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "egast_vfr_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_readback_order",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "best_practice",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote exists verbatim and supports the claim as an advisory best-practice statement, with no identity-field problem. The candidate is atomic and is not already covered by the accepted siblings; the pending status appears to stem from the advisory-only handling rather than a substantive defect.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:08:52Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:08:52Z"
+  }
+}

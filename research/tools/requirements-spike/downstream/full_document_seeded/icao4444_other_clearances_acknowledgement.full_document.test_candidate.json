@@ -1,0 +1,26 @@
+{
+  "testCandidateId": "tc-icao4444-4.5.7.5.1.1-other-clearances-acknowledgement-full-document",
+  "verificationMode": "property_or_family_test",
+  "targetLayer": "controller+sim integration",
+  "goal": "Verify that other clearances or instructions, including conditional clearances, require a readback or acknowledgement that clearly indicates understanding and intended compliance.",
+  "scenarioFamilies": [
+    {
+      "familyId": "conditional-clearance-acknowledgement",
+      "sourceAtomId": "icao4444:4.5.7.5.1.1:other_clearances_acknowledgement"
+    },
+    {
+      "familyId": "non-standard-instruction-acknowledgement",
+      "sourceAtomId": "icao4444:4.5.7.5.1.1:other_clearances_acknowledgement"
+    }
+  ],
+  "expectedObservations": [
+    "A response that clearly indicates understanding and compliance is accepted.",
+    "Silence or an acknowledgement that does not clearly indicate understanding and compliance is rejected or flagged as insufficient."
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.5.7.5.1.1",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3422-3423"
+  },
+  "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1.1:full-document"
+}

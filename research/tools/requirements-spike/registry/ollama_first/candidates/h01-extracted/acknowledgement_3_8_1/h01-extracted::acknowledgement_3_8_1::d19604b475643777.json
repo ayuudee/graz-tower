@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::d19604b475643777",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "familyId": "h01_readback_family",
+  "claimText": "It is permissible for verification for the receiving station to read back the message as an additional acknowledgement of receipt.",
+  "rationale": "Consistent operational guidance permitting additional readback.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_permission",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "It is permissible for verification for the receiving station to read back the message as an additional acknowledgement of receipt."
+  ],
+  "sourceItemIds": [
+    "3.8.1g_en"
+  ],
+  "claimSha256": "57584edffb27c9a5f75a01fc22a45fd180128787eb9ea4956e5ae463a91de50f",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 4197,
+    "endLine": 4337
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "h01_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "perm_station_readback",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and supports the claim as a permissive/advisory operational provision, and it is not redundant with the accepted sibling atomic items. The only issue is classification: this is a permission/advisory item rather than a best-practice requirement.",
+      "corrections": {
+        "requirementKind": "advisory_permission"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-04-29T09:09:51Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:09:51Z"
+  }
+}

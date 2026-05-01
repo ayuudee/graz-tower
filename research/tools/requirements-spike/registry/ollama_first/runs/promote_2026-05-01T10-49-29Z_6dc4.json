@@ -1,0 +1,165 @@
+{
+  "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+  "runStartedAt": "2026-05-01T10:49:29Z",
+  "documents": [
+    {
+      "documentId": "sera-923-2012-extracted",
+      "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 36,
+      "sectionResults": [
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "adherence_flight_plan_8020",
+          "status": "promoted",
+          "totalJudged": 17,
+          "landed": [
+            "sera-923-2012-extracted::adherence_flight_plan_8020::0ccb4077c14f6537",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::83e082063e018253",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::5a93e0ad6c4a6b75",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::bbcacbf78ec28313",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::97052eb4059fafd5",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::dc2509cbc36c719e",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::3c47f87e7738eaf1",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::6f5b51171212286d",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::d3f956fa92fdaf74",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::67c0341b7954f110",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::ce2a07c80f9d8f39",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::5587f561b2b841f0",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::c4592c773b09ae97",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::4cc2faa835b27c40",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::2e3cebc07c4d9062"
+          ],
+          "pending": [
+            "sera-923-2012-extracted::adherence_flight_plan_8020::31b9cff5534bef98",
+            "sera-923-2012-extracted::adherence_flight_plan_8020::35da37ec7ec88084"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::31b9cff5534bef98",
+              "originalCandidateId": "sera_8020_a_1_ii_direct_route",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::35da37ec7ec88084",
+              "originalCandidateId": "sera_8020_c_2_ii_route_changed",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "clearance_coordination_8015_f",
+          "status": "promoted",
+          "totalJudged": 10,
+          "landed": [
+            "sera-923-2012-extracted::clearance_coordination_8015_f::f612b2751f03d9d5",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::4d3567cb80f1d996",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::a96876703f6229a0",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::2d0bd78608a289eb",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::148998ba421cd37d",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::d3c1030429d5c986",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::c193e83fe1368e07"
+          ],
+          "pending": [
+            "sera-923-2012-extracted::clearance_coordination_8015_f::dc4cfc4dc348807d",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::2456f0967378ae5e",
+            "sera-923-2012-extracted::clearance_coordination_8015_f::0196b1fddfacc533"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::dc4cfc4dc348807d",
+              "originalCandidateId": "sera_923_f_2_ii_full_route_reasonable_assurance",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::2456f0967378ae5e",
+              "originalCandidateId": "sera_923_f_4_contact_downstream",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::0196b1fddfacc533",
+              "originalCandidateId": "sera_923_f_6_outside_controlled_airspace_clearance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "communications_8035",
+          "status": "promoted",
+          "totalJudged": 4,
+          "landed": [
+            "sera-923-2012-extracted::communications_8035::086ef53818cb66e4",
+            "sera-923-2012-extracted::communications_8035::112cd249e59d6d2b",
+            "sera-923-2012-extracted::communications_8035::996a596e0c83ca99"
+          ],
+          "pending": [
+            "sera-923-2012-extracted::communications_8035::d87a9dd92c5ecbeb"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "sera-923-2012-extracted::communications_8035::d87a9dd92c5ecbeb",
+              "originalCandidateId": "sera_8035_a_aircraft_comms",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "position_reports_8025",
+          "status": "promoted",
+          "totalJudged": 4,
+          "landed": [
+            "sera-923-2012-extracted::position_reports_8025::7bb9658f2df18285",
+            "sera-923-2012-extracted::position_reports_8025::876fe5f74bc6d2ae",
+            "sera-923-2012-extracted::position_reports_8025::e10c37271b7cb5b8",
+            "sera-923-2012-extracted::position_reports_8025::bd7128fc8f5e4fa3"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        },
+        {
+          "documentId": "sera-923-2012-extracted",
+          "sectionId": "termination_control_8030",
+          "status": "promoted",
+          "totalJudged": 1,
+          "landed": [
+            "sera-923-2012-extracted::termination_control_8030::136e4c34fc24875c"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "fixtureId": "appendix_route_examples_table_window",
+  "fixtureKind": "structure_window",
+  "selector": {
+    "type": "line_window",
+    "start": 20429,
+    "end": 20435
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "blocks": [
+      {
+        "blockId": "icao4444::table_fragment::05922",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05920",
+        "lineStart": 20429,
+        "lineEnd": 20429,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "(4)"
+      },
+      {
+        "blockId": "icao4444::table_fragment::05923",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05920",
+        "lineStart": 20431,
+        "lineEnd": 20431,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "LN/N0284A045"
+      },
+      {
+        "blockId": "icao4444::table_fragment::05924",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05920",
+        "lineStart": 20432,
+        "lineEnd": 20432,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "MAY/N0305Fl80"
+      },
+      {
+        "blockId": "icao4444::table_fragment::05925",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05920",
+        "lineStart": 20433,
+        "lineEnd": 20433,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "HADDY/N0420F330"
+      },
+      {
+        "blockId": "icao4444::table_fragment::05926",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05920",
+        "lineStart": 20434,
+        "lineEnd": 20434,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "4602N07805W/N0500F350"
+      },
+      {
+        "blockId": "icao4444::table_fragment::05927",
+        "blockKind": "table_fragment",
+        "label": null,
+        "title": null,
+        "parentBlockId": "icao4444::section_heading::05920",
+        "lineStart": 20435,
+        "lineEnd": 20435,
+        "sectionPath": [
+          "MISCELLANEOUS PROCEDURES",
+          "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)"
+        ],
+        "normalizedText": "46N078W/M082F330"
+      }
+    ],
+    "units": []
+  }
+}

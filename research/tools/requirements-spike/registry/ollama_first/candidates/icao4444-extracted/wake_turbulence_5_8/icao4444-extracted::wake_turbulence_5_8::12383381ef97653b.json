@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::wake_turbulence_5_8::12383381ef97653b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_5_8",
+  "familyId": "icao4444_wake_turbulence_family",
+  "claimText": "A separation minimum of 2 minutes shall be applied to a MEDIUM aircraft landing behind a HEAVY aircraft.",
+  "rationale": "Specific quantitative separation minima for arriving aircraft.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Except as provided for in 5.8.1.1 a) and b), the following separation minima shall be applied. The following minima shall be applied to aircraft landing behind a HEAVY or a MEDIUM aircraft:",
+    "MEDIUM aircraft behind HEAVY aircraft — 2 minutes;"
+  ],
+  "sourceItemIds": [
+    "5.8.2.1.1a"
+  ],
+  "claimSha256": "e4a9e24f510afcde0ad17a424b980cc22a0e4677817e12116a7b88e084f9ba71",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6487,
+    "endLine": 6584
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_wake_turbulence_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "wake_min_medium_behind_heavy",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_quote_context_repair",
+      "confidence": "high",
+      "reasoning": "Added ICAO 4444 5.8.2.1.1 parent landing-minima clause so the table-row claim is quote-supported.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Added ICAO 4444 5.8.2.1.1 parent landing-minima clause so the table-row claim is quote-supported.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "icao4444-extracted::wake_turbulence_5_8::68ace43862437dfb"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

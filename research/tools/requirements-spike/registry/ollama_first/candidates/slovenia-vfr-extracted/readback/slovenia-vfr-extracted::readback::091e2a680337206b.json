@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "slovenia-vfr-extracted::readback::091e2a680337206b",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "familyId": "slovenia_vfr_readback_family",
+  "claimText": "The standard phrase 'WILCO' should not be used instead of a full read back of the items from the previous paragraph.",
+  "rationale": "Attempts 2 and 3 correctly identify 'should not' as the modality. Attempt 1's 'shall' is less precise regarding the source text. This is a strong prohibition but technically a best practice recommendation in this context.",
+  "modality": "should",
+  "authorityClass": "best_practice",
+  "requirementKind": "phraseology_rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "′WILCO′ means ′I understand your message and will comply with it′.",
+    "This standard phrase should not be used instead of a full read back of the items from the previous paragraph."
+  ],
+  "sourceItemIds": [
+    "use_of_wilco"
+  ],
+  "claimSha256": "308394b55b17cd179d2eddeb94142dfd69a04a19126cc1ba789b0d1479851933",
+  "provenance": {
+    "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+    "sourceSha256": "506ad45fae6c6f58665c12d57cb14c84b42e57fe77761bac1dd9bc2a8c1310dd",
+    "startLine": 524,
+    "endLine": 565
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "slovenia_vfr_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_wilco_prohibition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "should",
+      "authorityClass": "best_practice"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_quote_context_repair",
+      "confidence": "high",
+      "reasoning": "Added the preceding WILCO definition quote so the 'standard phrase' reference is supported.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Added the preceding WILCO definition quote so the 'standard phrase' reference is supported.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "slovenia-vfr-extracted::readback::f586b025372a3411"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao9432-extracted::taxi_4_4_en::9b3186528c0a6e32",
+  "documentId": "icao9432-extracted",
+  "sectionId": "taxi_4_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.69,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim Polish source text, with the source wording \u201cpowinien\u201d matching the candidate\u2019s should modality. The operational_guidance authority class is appropriate for ICAO 9432 advisory phraseology, and the item is atomic rather than redundant with the accepted sibling on general pushback phraseology.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/taxi_4_4_en/icao9432-extracted::taxi_4_4_en::9b3186528c0a6e32.json",
+    "toPath": "candidates/icao9432-extracted/taxi_4_4_en/icao9432-extracted::taxi_4_4_en::9b3186528c0a6e32.json"
+  },
+  "curatedAt": "2026-04-29T09:24:13Z"
+}

@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::86dd6fa9b1c3d453",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "familyId": "icao4444_transfer_family",
+  "claimText": "Control of an arriving aircraft shall be transferred from the unit providing approach control service to the unit providing aerodrome control service when the aircraft satisfies one of the conditions listed in ICAO Doc 4444 section 4.3.2.1.1, as specified in letters of agreement or ATS unit instructions.",
+  "rationale": "Manual split from ICAO Doc 4444 section 4.3.2.1 parent. The arriving-aircraft branch is the operative transfer rule and its condition set is preserved as a bundled family-test candidate rather than flattened into a single condition.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "4.3.2.1.1 Arriving aircraft. Control of an arriving aircraft shall be transferred from the unit providing approach\ncontrol service to the unit providing aerodrome control service when the aircraft:\na)\n\nis in the vicinity of the aerodrome, and\n1) it is considered that approach and landing will be completed in visual reference to the ground, or\n2) has reached uninterrupted visual meteorological conditions, or\n\nb) is at a prescribed point or level, or\nc)\n\nhas landed,\n\nas specified in letters of agreement or ATS unit instructions."
+  ],
+  "sourceItemIds": [
+    "4.3.2.1.1"
+  ],
+  "claimSha256": "962ea78044231cf8a071711062ce9533f2c4fcfe27dbe2c2fbb4ab725f52db98",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3086,
+    "endLine": 3131
+  },
+  "ingestionRun": {
+    "runId": "manual_rr11_2026-04-29T14-37-05Z",
+    "caseId": "icao4444_transfer_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "manual_split_arriving_control_transfer_4_3_2_1_1",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_split_accept",
+      "reasoning": "Manual split from ICAO Doc 4444 section 4.3.2.1 parent. The arriving-aircraft branch is the operative transfer rule and its condition set is preserved as a bundled family-test candidate rather than flattened into a single condition.",
+      "sourceParentCanonicalId": "icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T14:37:05Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T14:37:05Z",
+    "promotedFrom": "manual RR-11 split of icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502",
+    "curatedAt": "2026-04-29T14:37:05Z"
+  }
+}

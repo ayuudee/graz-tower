@@ -1,0 +1,100 @@
+{
+  "fixtureId": "tranche_exit_4_5_7_5_1",
+  "fixtureKind": "bundle_anchor",
+  "selector": {
+    "type": "label",
+    "value": "4.5.7.5.1"
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "primaryBlock": {
+      "blockId": "icao4444::numeric_clause::01432",
+      "blockKind": "numeric_clause",
+      "label": "4.5.7.5.1",
+      "title": null,
+      "parentBlockId": "icao4444::section_heading::01431",
+      "lineStart": 3405,
+      "lineEnd": 3406,
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "READBACK OF CLEARANCES",
+        "4.5.7.5.1"
+      ],
+      "normalizedText": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and\ninstructions which are transmitted by voice. The following items shall always be read back:"
+    },
+    "primaryUnit": {
+      "sourceUnitId": "icao4444::numeric_clause::01432::unit",
+      "unitKind": "normative_clause",
+      "parentSourceUnitId": "icao4444::section_heading::01431::unit",
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "READBACK OF CLEARANCES",
+        "4.5.7.5.1"
+      ],
+      "normalizedText": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and\ninstructions which are transmitted by voice. The following items shall always be read back:"
+    },
+    "bundle": {
+      "bundleId": "icao4444:icao4444::numeric_clause::01432",
+      "bundleKind": "clause_with_list",
+      "recommendation": "bundle_required",
+      "memberIds": [
+        "icao4444::numeric_clause::01432::unit",
+        "icao4444::list_item::01433::unit",
+        "icao4444::list_item::01434::unit",
+        "icao4444::list_item::01435::unit"
+      ]
+    },
+    "memberUnits": [
+      {
+        "sourceUnitId": "icao4444::numeric_clause::01432::unit",
+        "unitKind": "normative_clause",
+        "parentSourceUnitId": "icao4444::section_heading::01431::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "READBACK OF CLEARANCES",
+          "4.5.7.5.1"
+        ],
+        "normalizedText": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and\ninstructions which are transmitted by voice. The following items shall always be read back:"
+      },
+      {
+        "sourceUnitId": "icao4444::list_item::01433::unit",
+        "unitKind": "list_item",
+        "parentSourceUnitId": "icao4444::numeric_clause::01432::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3407-3409",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "READBACK OF CLEARANCES",
+          "a)"
+        ],
+        "normalizedText": "ATC route clearances;"
+      },
+      {
+        "sourceUnitId": "icao4444::list_item::01434::unit",
+        "unitKind": "list_item",
+        "parentSourceUnitId": "icao4444::numeric_clause::01432::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3411-3412",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "READBACK OF CLEARANCES",
+          "b)"
+        ],
+        "normalizedText": "clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any\nrunway; and"
+      },
+      {
+        "sourceUnitId": "icao4444::list_item::01435::unit",
+        "unitKind": "list_item",
+        "parentSourceUnitId": "icao4444::numeric_clause::01432::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3413-3417",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "READBACK OF CLEARANCES",
+          "c)"
+        ],
+        "normalizedText": "runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and, whether\nissued by the controller or contained in automatic terminal information service (ATIS) broadcasts, transition\nlevels."
+      }
+    ]
+  }
+}

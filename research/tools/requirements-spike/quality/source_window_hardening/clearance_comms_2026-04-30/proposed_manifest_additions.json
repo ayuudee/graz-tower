@@ -1,0 +1,198 @@
+{
+  "batchId": "clearance_comms_2026-04-30",
+  "intent": "First bounded manifest widening for the clearance and communications contract seam.",
+  "recommendedAdditions": [
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sectionId": "clearance_coordination_8015_f",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2038,
+      "endLine": 2071,
+      "notes": "SERA.8015(f) Coordination of clearances: route coverage, downstream clearances, and controlled-airspace scope."
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sectionId": "adherence_flight_plan_8020",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2072,
+      "endLine": 2129,
+      "notes": "SERA.8020 Adherence to flight plan: controlled-flight adherence, amended clearance, emergency deviation, and requested change content."
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sectionId": "position_reports_8025",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2130,
+      "endLine": 2138,
+      "notes": "SERA.8025 Position reports: controlled-flight reporting duty and data-link exception."
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sectionId": "termination_control_8030",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2139,
+      "endLine": 2141,
+      "notes": "SERA.8030 Termination of control: duty to advise ATC when no longer subject to ATC service."
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sectionId": "communications_8035",
+      "familyId": "sera_clearance_comms_contract_family",
+      "startLine": 2142,
+      "endLine": 2160,
+      "notes": "SERA.8035 Communications: continuous voice watch, two-way communication as necessary, CPDLC persistence, and comms-failure reference."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "control_responsibility_4_3_1",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3071,
+      "endLine": 3085,
+      "notes": "ICAO Doc 4444 4.3.1 General: ATS authority designation of ATC unit and working-position responsibility."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "control_transfer_app_acc_sector_4_3_3_to_4_3_5",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3132,
+      "endLine": 3164,
+      "notes": "ICAO Doc 4444 4.3.3-4.3.5: approach/area and sector responsibility transfer rules."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3265,
+      "endLine": 3400,
+      "notes": "ICAO Doc 4444 4.5.1-4.5.7.4: clearance scope, purpose, timing, contents, clearance limit, route, level, and amended-clearance semantics."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3723,
+      "endLine": 3808,
+      "notes": "ICAO Doc 4444 4.11.1-4.11.3: position-report timing, voice-report contents, and initial call content after channel change."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "systems_equipment_failure_4_14",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 4116,
+      "endLine": 4120,
+      "notes": "ICAO Doc 4444 4.14: ATC unit reporting of communication, navigation, surveillance, or other safety-significant system failures."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "phraseology_transfer_frequency_12_3_1_4",
+      "familyId": "icao4444_clearance_comms_phraseology_family",
+      "startLine": 13784,
+      "endLine": 13833,
+      "notes": "ICAO Doc 4444 12.3.1.4: transfer of control/frequency change phraseologies."
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "phraseology_clearance_issuance_12_3_2_1",
+      "familyId": "icao4444_clearance_comms_phraseology_family",
+      "startLine": 14257,
+      "endLine": 14293,
+      "notes": "ICAO Doc 4444 12.3.2.1: clearance issuance and reclearance phraseologies."
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "sectionId": "transfer_communications_2_8_2_en",
+      "familyId": "icao9432_clearance_comms_phraseology_family",
+      "startLine": 3830,
+      "endLine": 3855,
+      "notes": "ICAO Doc 9432 2.8.2 English-only transfer-of-communications guidance and examples."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "corrections_2_54_to_2_55",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6255,
+      "endLine": 6272,
+      "notes": "CAP 413 2.54-2.55: correction and full-message repetition phraseology."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "acknowledgement_receipt_2_56",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6273,
+      "endLine": 6287,
+      "notes": "CAP 413 2.56: acknowledgement of receipt by callsign or Roger/callsign."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "transfer_content_2_57_to_2_59",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6288,
+      "endLine": 6306,
+      "notes": "CAP 413 2.57-2.59: transfer-instruction content, single-message guidance, readback-before-transfer guidance, and assumption of satisfactory transfer."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "frequency_change_permission_2_60_to_2_61",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6308,
+      "endLine": 6324,
+      "notes": "CAP 413 2.60-2.61: advised frequency change, pilot notification before unauthorised change, and controlled-airspace permission before changing frequency."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "standby_monitor_conditional_contact_2_62_to_2_63",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6326,
+      "endLine": 6379,
+      "notes": "CAP 413 2.62-2.63: standby/monitor use, contact at a point or level, and radar-heading report on transfer."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "freecall_change_intention_2_64",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6381,
+      "endLine": 6390,
+      "notes": "CAP 413 2.64: pilot request or notification when intending to freecall or change to another agency."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "clearance_issue_context_2_65_to_2_67",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6391,
+      "endLine": 6428,
+      "notes": "CAP 413 2.65-2.67: clearance issue context before the existing readback window."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6556,
+      "endLine": 6604,
+      "notes": "CAP 413 2.72-2.75: UNABLE, revised-clearance cancellation, and critical-information repetition."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "compliance_timing_2_82_to_2_87",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6703,
+      "endLine": 6783,
+      "notes": "CAP 413 2.82-2.87: prompt compliance, delay advice, timing modifiers, urgency modifiers, and phrase placement examples."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "air_ground_communication_failure_2_88",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6784,
+      "endLine": 6832,
+      "notes": "CAP 413 2.88: aircraft-side communication-failure checks, alternate-frequency attempts, blind transmissions, receiver-failure reports, and intention transmission."
+    },
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "ground_air_communication_failure_2_89_to_2_91",
+      "familyId": "cap413_clearance_comms_guidance_family",
+      "startLine": 6833,
+      "endLine": 6864,
+      "notes": "CAP 413 2.89-2.91: ground-station communication-failure checks, blind transmission, and assumed level/route/EAT/weather message content."
+    }
+  ]
+}

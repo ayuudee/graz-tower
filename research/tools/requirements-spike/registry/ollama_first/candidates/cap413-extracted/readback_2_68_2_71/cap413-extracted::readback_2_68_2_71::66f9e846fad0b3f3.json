@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::readback_2_68_2_71::66f9e846fad0b3f3",
+  "documentId": "cap413-extracted",
+  "sectionId": "readback_2_68_2_71",
+  "familyId": "cap413_readback_family",
+  "claimText": "The pilot/driver is expected to request that instructions are repeated or clarified if any are not fully understood.",
+  "rationale": "Uses 'expected to', indicating a strong operational expectation/guidance rather than a hard 'shall' constraint.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "exploratory_probe",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Similarly, the pilot/ driver is expected to request that instructions are repeated or clarified if any are not fully understood"
+  ],
+  "sourceItemIds": [
+    "clause_2.69"
+  ],
+  "claimSha256": "b8f225db92740c8ed18349fef8857a81c23f115e4773a8a62f497677066757dc",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6429,
+    "endLine": 6555
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "cap413_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_request_repetition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is directly supported by a verbatim source quote, and the candidate\u2019s advisory/operational-guidance framing matches CAP 413\u2019s wording of \u201cexpected to.\u201d It is not redundant with the accepted sibling candidates, which address readback requirements and controller corrections rather than the pilot/driver expectation to request repetition or clarification.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:08:06Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/cap413-extracted/readback_2_68_2_71/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:08:06Z"
+  }
+}

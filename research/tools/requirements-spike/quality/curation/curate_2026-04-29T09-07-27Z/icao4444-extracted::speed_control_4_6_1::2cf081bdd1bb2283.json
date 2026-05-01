@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::2cf081bdd1bb2283",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 32.39,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim standalone ICAO 4444 note, the quote audit and schema/authority audits all pass, and it is not redundant with the accepted sibling atomic requirements. Its existing note modality and background_support authority correctly reflect the non-normative conversion information.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::2cf081bdd1bb2283.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::2cf081bdd1bb2283.json"
+  },
+  "curatedAt": "2026-04-29T09:16:02Z"
+}

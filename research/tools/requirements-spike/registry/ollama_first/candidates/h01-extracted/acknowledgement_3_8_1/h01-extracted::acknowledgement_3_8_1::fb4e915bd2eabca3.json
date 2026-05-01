@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "familyId": "h01_readback_family",
+  "claimText": "Runway-in-use, altimeter settings, SSR codes, newly assigned communication channels, level instructions, heading and speed instructions shall always be read back.",
+  "rationale": "Consistent specific mandatory readback item from the list in c).",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The following items shall always be read back:",
+    "Runway-in-use, altimeter settings, SSR codes, newly assigned communication channels, level instructions, heading and speed instructions"
+  ],
+  "sourceItemIds": [
+    "3.8.1c_en",
+    "3.8.1c_en_list_3"
+  ],
+  "claimSha256": "04fb573e1c8c8a469c6afa7e76b892adc4eafe61e5a518bcd288ea533afbb64d",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 4197,
+    "endLine": 4337
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "h01_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "readback_operational_data",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact quotes are present and the parent clause supplies the mandatory 'shall always be read back' modality for the cited list item. This is an atomic list item not already covered by the accepted siblings, which cover items 1, 2, and 4, so rejection as a redundant umbrella is not appropriate.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:10:03Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "unsupported_by_source",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:10:03Z"
+  }
+}

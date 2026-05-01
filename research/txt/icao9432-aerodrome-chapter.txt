@@ -1,0 +1,3001 @@
+transmitted as*
+
+800
+3 400
+12 000
+
+eight hundred
+three thousand four hundred
+one two thousand
+
+cloud base
+
+transmitted as
+
+2 200
+4 300
+
+two thousand two hundred
+four thousand three hundred
+
+Visibility
+
+transmitted as
+
+1 000
+700
+runway visual range
+
+visibility one thousand
+visibility seven hundred
+transmitted as
+
+600
+1 700
+
+RVR six hundred
+RVR one thousand seven hundred
+
+flight levels
+
+transmitted as
+
+FL100
+
+flight level one hundred
+
+transponder codes
+
+transmitted as
+
+7000
+
+squawk seven thousand
+
+altimeter setting
+
+transmitted as
+
+1000
+
+QNH one thousand
+
+2.4.4 Except as specified in 2.4.5 all six digits of the numerical designator should be used to identify the
+transmitting channel in VHF radiotelephony communications, except in the case of both the fifth and sixth digits
+being zeros, in which case only the first four digits should be used.
+5 See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-4
+
+
+Kurs
+100 stopni
+080 stopni
+kierunek wiatru i prędkość
+200 stopni 25 węzłów
+160 stopni 18 węzłów
+porywy 30 węzłów
+kody transpondera
+2400
+4203
+
+wymawiane jako
+kurs jeden zero zero
+kurs zero osiem zero
+
+Pas
+27
+30
+
+wymawiane jako
+pas dwa siedem
+pas trzy zero
+
+nastawianie wysokościomierza
+998
+1010
+1008
+
+wymawiane jako*
+QNH dziewięć dziewięć osiem
+QNH dziesięć dziesięć
+QNH dziesięć zero osiem
+
+wymawiane jako*
+wiatr dwieście stopni dwadzieścia pięć węzłów
+wiatr sto sześćdziesiąt stopni osiemnaście węzłów
+porywy trzydzieści węzłów
+trzydzieści
+wymawianewęzłów
+jako
+squawk dwa cztery zero zero
+squawk cztery dwa zero trzy
+
+2.4.3 Liczby wykorzystywane do określania wysokości bezwzględnej, podstawy chmur, widzialności,
+RVR, poziomów lotu, kodów transpondera oraz wartości wykorzystywane do nastawiania wysokościomierza,
+które składają się z pełnych setek i/lub pełnych tysięcy, należy wymawiać tak, jak w języku potocznym6:
+wysokość bezwzględna
+800
+3 400
+12 000
+
+wymawiane jako*
+osiemset
+trzy tysiące czterysta
+dwanaście tysięcy
+
+podstawa chmur
+2 200
+4 300
+
+wymawiane jako
+dwa tysiące dwieście
+cztery tysiące trzysta
+
+Widzialność
+1 000
+700
+
+wymawiane jako
+widzialność tysiąc
+widzialność siedemset
+
+zasięg widzenia wzdłuż drogi startowej
+600
+1 700
+
+wymawiane jako
+RVR sześćset
+RVR tysiąc siedemset
+
+poziomy lotu
+FL 100
+
+wymawiane jako
+poziom [lotu] sto
+
+kody transpondera
+
+wymawiane jako
+
+7000
+nastawianie wysokościomierza
+
+squawk siedem tysięcy
+wymawiane jako
+
+1000
+
+QNH tysiąc
+
+2.4.4 Z wyjątkiem przykładów wymienionych w pkt 2.4.5, w łączności radiotelefonicznej
+sześciocyfrowe częstotliwości powinny być podawane poprzez przeczytanie wszystkich cyfr. Jeżeli
+dwie ostatnie wartości stanowi zero – należy przeczytać tylko cztery pierwsze cyfry.
+
+6 Patrz: ZAŁĄCZNIK 1 ODSTĘPSTWA OD RADIOTELEFONICZNEJ FRAZEOLOGII LOTNICZEJ oraz AIP Polska GEN 1.7
+
+2-5
+
+Manual of Radiotelephony
+
+
+Note 1.– The following examples illustrate the application of the procedure in 2.4.4:
+Channel
+
+Transmitted as*
+
+118.000
+
+ONE ONE EIGHT DECIMAL ZERO
+
+118.005
+
+ONE ONE EIGHT DECIMAL ZERO ZERO FIVE
+
+118.010
+
+ONE ONE EIGHT DECIMAL ZERO ONE ZERO
+
+118.025
+
+ONE ONE EIGHT DECIMAL ZERO TWO FIVE
+
+118.050
+
+ONE ONE EIGHT DECIMAL ZERO FIVE ZERO
+
+118.100
+
+ONE ONE EIGHT DECIMAL ONE
+
+Note 2. – Caution must be exercised with respect to the indication of transmitting channels in VHF
+radiotelephony communications when all six digits of the numerical designator are used in airspace where
+communication channels are separated by 25 kHz, because on aircraft installations with a channel separation
+capability of 25 kHz or more, it is only possible to select the first five digits of the numerical designator on the
+radio management panel.
+Note 3.- The numerical designator corresponds to the channel identification in Annex 10, Volume V,
+Table 4-1 (bis).
+2.4.5
+In airspace where all VHF voice communications channels are separated by 25 kHz or more
+and the use of six digits as in 2.4.4 is not substantiated by the operational requirement determined by the
+appropriate authorities, the first five digits of the numerical designator should be used, except in the case of
+both the fifth and sixth digits being zeros, in which case only the first four digits should be used.
+Note 1. – The following examples illustrate the application of the procedure in 2.4.5 and the associated
+settings of the aircraft radio management panel for communication equipment with channel separation
+capabilities of 25 kHz and 8.33/25k Hz:
+Radio management panel setting for
+communication equipment with
+
+Channel
+
+Transmitted as*
+
+25 kHz
+(5 digits)
+
+8.33 / 25 kHz
+(6 digits)
+
+118.000
+
+ONE ONE EIGHT DECIMAL ZERO
+
+118.00
+
+118.000
+
+118.025
+
+ONE ONE EIGHT DECIMAL ZERO TWO
+
+118.02
+
+118.025
+
+118.050
+
+ONE ONE EIGHT DECIMAL ZERO FIVE
+
+118.05
+
+118.050
+
+118.075
+
+ONE ONE EIGHT DECIMAL ZERO SEVEN
+
+118.07
+
+118.075
+
+118.100
+
+ONE ONE EIGHT DECIMAL ONE
+
+118.10
+
+118.100
+
+Note 2.- Caution must be exercised with respect to the indication of transmitting channels in VHF
+radiotelephony communications when five digits of the numerical designator are used in airspace where aircraft
+are also operated with channel separation capabilities of 8.33/25k Hz. On aircraft installations with a channel
+separation capability of 8.33k Hz and more, it is possible to select six digits on the radio management panel. It
+should therefore be ensured that the fifth and sixth digits are set to 25 kHz channels (see Note 1).
+Note 3.– The numerical designator corresponds to the channel identification in Annex 10, Volume V,
+Table 4-1 (bis).
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-5
+
+
+Uwaga 1. – Poniższe przykłady obrazują zastosowanie procedury opisanej w pkt 2.4.4 W polskiej frazeologii wartości liczbowe
+przed kropką należy wymawiać tak, jak w mowie potocznej, natomiast po kropce poprzez przeczytanie każdej cyfry oddzielnie. W
+warunkach słyszalności innej niż bardzo dobra, każdą cyfrę należy przeczytać oddzielnie7.
+Kanał
+
+Wymawiany jako*
+
+118.000
+
+STO OSIEMNAŚCIE KROPKA ZERO
+
+118.005
+
+STO OSIEMNAŚCIE KROPKA ZERO ZERO PIĘĆ
+
+118.010
+
+STO OSIEMNAŚCIE KROPKA ZERO JEDEN ZERO
+
+118.025
+
+STO OSIEMNAŚCIE KROPKA ZERO DWA PIĘĆ
+
+118.050
+
+STO OSIEMNAŚCIE KROPKA ZERO PIĘĆ ZERO
+
+118.100
+
+STO OSIEMNAŚCIE KROPKA JEDEN
+
+Uwaga 2. - Należy zachować ostrożność określając kanał łączności radiotelefonicznej VHF sześcioma cyframi w przestrzeni
+powietrznej, w której kanały łączności posiadają separację 25 kHz, ponieważ na pokładowych urządzeniach radiowych z seperacją kanałów
+co 25 kHz lub więcej, możliwy jest wybór tylko pierwszych pięciu cyfr oznacznika liczbowego kanału łączności.
+Uwaga 3. - Oznacznik liczbowy odpowiada oznaczeniu kanałów w Załączniku 10 ICAO, tom V, tabela 4–1 (bis).
+2.4.5
+W przestrzeni powietrznej, gdzie wszystkie kanały łączności głosowej VHF posiadają separację 25 kHz lub
+więcej i stosowanie sześciu cyfr (jak podano w pkt 2.4.4) nie jest potwierdzane wymogiem operacyjnym określanym przez
+właściwe władze, należy stosować pierwsze pięć cyfr oznacznika liczbowego, z wyjątkiem przypadków, kiedy dwie ostatnie cyfry
+to zera - wtedy wystarczy podać tylko pierwsze cztery.
+Uwaga 1. - Poniższe przykłady przedstawiają zastosowanie procedury opisanej w pkt 2.4.5 i przykłady nastawienia panela
+sterowania radiostacji statku powietrznego z możliwością separacji kanałowej 25 kHz i 8.33/25 kHz. W warunkach słyszalności innej niż
+bardzo dobra, każdą cyfrę należy przeczytać oddzielnie 8:
+Nastawienie panela sterowania radiostacji
+dla urządzeń łączności
+
+Kanał
+
+Wymawiany jako*
+
+25 kHz
+(5 cyfr)
+
+8.33 / 25 kHz
+(6 cyfr)
+
+118.000
+
+STO OSIEMNAŚCIE KROPKA ZERO
+
+118.00
+
+118.000
+
+118.025
+
+STO OSIEMNAŚCIE KROPKA ZERO DWA
+
+118.02
+
+118.025
+
+118.050
+
+STO OSIEMNAŚCIE KROPKA ZERO PIĘĆ
+
+118.05
+
+118.050
+
+118.075
+
+STO OSIEMNAŚCIE KROPKA ZERO SIEDEM
+
+118.07
+
+118.075
+
+118.100
+
+STO OSIEMNAŚCIE KROPKA JEDEN
+
+118.10
+
+118.100
+
+Uwaga 2. - Należy zachować ostrożność przy określaniu kanałów nadawania w łączności radiotelefonicznej VHF,
+kiedy pięć cyfr oznacznika liczbowego stosuje się w przestrzeni powietrznej, w której statki powietrzne są obsługiwane z
+zapewnieniem separacji międzykanałowej 8.33/25 kHz. Na statkach powietrznych z możliwością separacji międzykanałowej
+8.33 kHz i więcej istnieje możliwość wybrania sześciu cyfr na panelu sterowania radiostacji, dlatego należy zapewnić, aby piąta
+i szósta cyfra były nastawione na kanały 25 kHz (patrz Uwaga 1).
+Uwaga 3. - Oznacznik liczbowy odpowiada oznaczeniu kanałów w Załączniku 10 ICAO, tom V, tabela 4–1 (bis).
+
+7 Patrz również pkt 2.4.2
+8 Jw
+
+2-6
+
+Manual of Radiotelephony
+
+
+2.5 TRANSMISSION OF TIME
+
+2.5.1
+When transmitting time, only the minutes of the hour should normally be required. Each digit
+should be pronounced separately. However, the hour should be included when any possibility of confusion is
+likely to result.
+Note.– The following example illustrates the application of this procedure:
+Time
+
+Statement
+
+0920 (9:20 A.M.)
+
+TOO ZE-RO or ZE-RO NIN-er TOO ZE-RO
+
+1643 (4:43 P.M.)
+
+FOW-er TREE or WUN SIX FOW-er TREE
+
+2.5.2
+Pilots may check the time with the appropriate ATS unit. Time checks shall be given to the
+nearest half minute.
+
+FASTAIR 345 TIME 0611
+or
+FASTAIR 345 TIME 0715
+
+FASTAIR 345 REQUEST TIME
+CHECK
+
+2.6 STANDARD WORDS AND PHRASES
+
+The following words and phrases shall be used in radiotelephony communications as appropriate and shall have
+the meaning given below.
+Word/Phrase
+
+Meaning
+
+ACKNOWLEDGE
+
+"Let me know that you have received and understood this message."
+
+AFFIRM
+
+"Yes."
+
+APPROVED
+
+"Permission for proposed action granted."
+
+BREAK
+
+''I hereby indicate the separation between portions of the message."
+Note.– To be used where there is no clear distinction between the
+text and other portions of the message.
+
+BREAK BREAK
+
+"I hereby indicate the separation between messages transmitted to
+different aircraft in a very busy environment."
+
+CANCEL
+
+"Annul the previously transmitted clearance."
+
+CHECK
+
+"Examine a system or procedure."
+Note.– Not to be used in any other context. No answer is normally
+expected.
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-6
+
+
+2.5
+
+NADAWANIE CZASU
+
+2.5.1
+Podczas nadawania czasu, o ile nie spowoduje to nieporozumienia, wystarczy podać wyłącznie
+minuty danej godziny. Każda cyfra powinna być przeczytana oddzielnie. Jeżeli istnieje ryzyko pomyłki, należy
+przeczytać godzinę wraz z minutami.
+Uwaga: Poniższy przykład obrazuje zastosowanie tej procedury.
+Czas
+
+Wymowa angielska
+
+Wymowa polska
+
+0920 (9:20 A.M.)
+
+TU ZI-RO lub ZI-RO NAJN-er
+TU ZI-RO
+
+DWA ZERO lub ZERO
+DZIEWIĘĆ DWA ZERO
+
+1643 (4:43 P.M.)
+
+FAU-er TRI lub ŁAN SIKS
+FAU-er TRI
+
+CZTERY TRZY lub JEDEN
+SZEŚĆ CZTERY TRZY
+
+2.5.2
+Pilot może poprosić personel ATS o sprawdzenie czasu. Czas podawany jest z
+dokładnością do najbliższej pół minuty.
+
+FASTAIR 345 CZAS 0611
+lub
+FASTAIR 345 CZAS 0715
+
+2.6
+
+FASTAIR 345 PROSZĘ
+AKTUALNY CZAS
+
+STANDARDOWE SŁOWA I WYRAŻENIA
+
+W łączności radiotelefonicznej powinny być stosowane słowa i wyrażenia o znaczeniu wyjaśnionym poniżej.
+Słowo/Wyrażenie
+
+Znaczenie
+
+ACKNOWLEDGE/
+POTWIERDŹ [ODBIÓR]
+
+„Powiadom mnie, czy odebrałeś i zrozumiałeś tę wiadomość”.
+
+AFFIRM/
+POTWIERDZAM
+
+„Tak”.
+
+APPROVED/ MOŻNA
+
+„Nie ma przeciwwskazań do wykonania proponowanej czynności”.
+
+BREAK
+
+„Niniejszym sygnalizuje się odstęp między częściami depeszy”.
+Uwaga: Do stosowania, gdy nie ma odpowiedniego odstępu pomiędzy oddzielnymi
+częściami depeszy.
+
+BREAK BREAK
+
+„Niniejszym sygnalizuje się odstęp między depeszami nadawanymi do różnych statków
+powietrznych znajdujących się w przestrzeni o bardzo dużym natężeniu ruchu lotniczego”.
+
+CANCEL / ANULUJĘ
+
+„Anuluję uprzednio wydane zezwolenie”.
+
+CHECK / SPRAWDŹ
+
+„Sprawdź system lub procedurę”.
+Uwaga: Nie należy stosować w jakimkolwiek innym kontekście. Zazwyczaj odpowiedzi nie
+wymaga się.
+
+2-7
+
+Manual of Radiotelephony
+
+
+Word/Phrase
+
+Meaning
+
+CLEARED
+
+“Authorized to proceed under the conditions specified.”
+
+CONFIRM
+
+“I request verification of: (clearance, instruction, action, information).”
+
+CONTACT
+
+“Establish communications with . . .”
+
+CORRECT
+
+“True” or “Accurate”.
+
+CORRECTION
+
+“An error has been made in this transmission (or message indicated). The correct version is…”
+
+DISREGARD
+
+“Ignore.”
+
+HOW DO YOU READ
+
+“What is the readability of my transmission?”
+
+I SAY AGAIN
+
+“I repeat for clarity or emphasis.”
+
+MAINTAIN
+
+Continue in accordance with the condition(s) specified or in its literals sense, e .g. “maintain
+VFR”
+
+MONITOR9
+
+“Change frequency as instructed and standby (another ATS unit will call you)” or “Listen out
+on (frequency).”
+
+NEGATIVE
+
+“No” or “Permission not granted” or “That is not correct” or “not capable”.
+
+OUT
+
+“This exchange of transmissions is ended and no response is expected.”
+Note.– Not normally used in VHF communications.
+
+OVER
+
+“My transmission is ended and I expect a response from you.”
+Note.- Not normally used in VHF communications.
+
+READ BACK
+
+“Repeat all or the specified part of this message back to me exactly as received.”
+
+RECLEARED
+
+“A change has been made to your last clearance and this new clearance supersedes your
+previous clearance or part thereof.”
+
+REPORT
+
+„Pass me the following information...”
+
+REQUEST
+
+“I should like to know. . .”or “ I wish to obtain..."
+
+ROGER
+
+“I have received all of your last transmission.”
+Note.-- Under no circumstances to be used in reply to a question requiring “READ BACK”
+or a direct answer in the affirmative (AFFIRM) or negative (NEGATIVE).
+
+SAY AGAIN
+
+“Repeat all, or the following part of your last transmission.”
+
+SPEAK SLOWER
+
+“Reduce your rate of speech.”
+
+STANDBY
+
+“Wait and I will call you.”
+Note.-- The caller would normally re-establish contact if the delay is lengthy. STANDBY
+is not an approval or denial.
+
+9 See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-7
+
+
+Słowo/Wyrażenie
+
+Znaczenie
+
+CLEARED / ZEZWALAM
+
+„Udziela się zezwolenia na wykonywanie działań zgodnie z określonymi warunkami”.
+
+CONFIRM / POTWIERDŹ
+
+„Proszę o potwierdzenie: (zezwolenia, instrukcji, czynności, informacji)”.
+
+CONTACT / ŁĄCZNOŚĆ
+
+„Nawiąż łączność radiową z ...”
+
+CORRECT /PRAWIDŁOWO
+
+„Prawidłowo”.
+
+CORRECTION / POPRAWIAM
+
+„Pomyliłem się podczas nadawania, prawidłowa wersja brzmi następująco:”
+
+DISREGARD / POMIŃ TĘ
+TRANSMISJĘ
+
+„Uznaj, że ta wiadomość nie została nadana”.
+
+HOW DO YOU READ / JAK
+MNIE SŁYSZYSZ
+I SAY AGAIN / POWTARZAM
+
+„Jaka jest czytelność mojej transmisji?”
+„Powtarzam dla jasności lub powtórzenia”
+
+MAINTAIN / UTRZYMUJ
+
+„Kontynuuj zgodnie z określonymi warunkami” lub w znaczeniu dosłownym, np. „utrzymuj
+VFR”.
+
+MONITOR / MONITORUJ10
+
+„Zmień częstotliwość zgodnie z instrukcją i czekaj na wywołanie przez personel ATS” lub
+„przesłuchaj wiadomości nadawane przez służbę rozgłaszania (częstotliwość)”.
+
+NEGATIVE / NIE; ZABRANIAM
+
+„Nie” lub „Zgody nie udzielono” lub „Nieprawidłowo” lub „Nie ma takiej możliwości”.
+
+OUT / KONIEC
+
+„Wymiana informacji zakończona i odpowiedź nie jest oczekiwana”.
+Uwaga: Wyrażenie zazwyczaj nie jest stosowane w łączności VHF.
+
+OVER / ODBIÓR
+
+„Skończyłem nadawanie i oczekuję od ciebie odpowiedzi”.
+Uwaga: Wyrażenie zazwyczaj nie jest stosowane w łączności VHF.
+
+READ BACK / POWTÓRZ
+
+„Powtórz całą lub określoną część mojej transmisji dokładnie tak, jak ją odebrałeś”.
+
+RECLEARED / ZMIANA
+ZEZWOLENIA
+
+„Została wprowadzona zmiana do twojego ostatniego zezwolenia, a nowe zezwolenie
+zastępuje poprzednie lub jego część”.
+
+REPORT / ZGŁOŚ, PODAJ
+
+„Podaj mi następującą informację...”
+
+REQUEST / PROSZĘ O
+
+„Chciałbym wiedzieć...” lub „Chciałbym uzyskać...”
+
+ROGER / PRZYJĄŁEM
+
+„Otrzymałem całą nadaną przez ciebie informację”.
+Uwaga: W żadnym wypadku nie można powiedzieć PRZYJĄŁEM, gdy wymagane jest
+powtórzenie transmisji, odpowiedź twierdząca (POTWIERDZAM) lub przecząca (NIE)”.
+
+SAY AGAIN / POWTÓRZ
+
+„Powtórz całość lub określoną część twojej ostatniej transmisji”.
+
+SPEAK SLOWER / MÓW
+WOLNIEJ
+
+„Mów wolniej”.
+
+STANDBY / CZEKAJ
+[WYWOŁAM CIĘ]
+
+„Czekaj, wkrótce cię wywołam”.
+Uwaga: Jeżeli po słowie STANDBY przez dłuższy czas nie nastąpiło wywołanie, stacja inicjująca
+kontakt radiowy powinna ponowić próbę nawiązania łączności. Wyrażenie STANDBY nie stanowi ani
+akceptacji ani odmowy.
+
+10 Patrz: ZAŁĄCZNIK 1 ODSTĘPSTWA OD RADIOTELEFONICZNEJ FRAZEOLOGII LOTNICZEJ oraz AIP Polska GEN 1.7
+
+2-8
+
+Manual of Radiotelephony
+
+
+Word/Phrase
+
+Meaning
+
+UNABLE
+
+"I cannot comply with your request in instruction or clearance."
+Note.-UNABLE is normally followed by a reason.
+
+WILCO
+
+(Abbreviation for "will comply".)
+"I understand your message and will comply with it."
+
+WORDS TWICE
+
+a) As a request:
+"Communication is difficult. Please send every word or group of words twice."
+b) As information:
+"Since communications is difficult, every word or group of words in this message will be
+sent twice."
+
+Note.– The phrase "GO AHEAD" has been deleted, in its place the use of the calling aeronautical
+station’s call sign followed by the answering aeronautical station’s call sign shall be considered the invitation to
+proceed with transmission by the station calling.
+2.7 CALL SIGNS
+2.7.1 Call signs for aeronautical stations
+
+2.7.1.1 Aeronautical stations are identified by the name of the location followed by a suffix. The suffix
+indicates the type of unit or service provided.
+Unit or service
+
+Call sign suffix
+
+Area control centre
+
+CONTROL
+
+Radar (in general)
+
+RADAR
+
+Approach control
+
+APPROACH
+
+Approach control radar arrivals
+
+ARRIVAL11
+
+Approach control radar departures
+
+DEPARTURE
+
+Aerodrome control
+
+TOWER
+
+Surface movement control
+
+GROUND
+
+Clearance delivery
+
+DELIVERY
+
+Precision approach radar
+
+PRECISION
+
+Direction-finding station
+
+HOMER
+
+Flight information service
+
+INFORMATION
+
+Apron control
+
+APRON
+
+Company dispatch
+
+DISPATCH
+
+Aeronautical station
+
+RADIO
+
+2.7.1.2 When satisfactory communication has been established, and provided that it will not be
+confusing, the name of the location and/or the call sign suffix call sign may be omitted12.
+
+11 In Poland suffix DIRECTOR is in use – see: APENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+12 See: APENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-8
+
+
+Słowo/Wyrażenie
+UNABLE / NIE MOGĘ
+
+Znaczenie
+„Nie mogę zastosować się do twojej instrukcji lub zezwolenia”.
+Uwaga: Po wyrażeniu NIE MOGĘ zazwyczaj podaje się przyczynę.
+
+WILCO / TAK BĘDZIE
+
+(W języku angielskim: skrót od „will comply” – zastosuję się.)
+„Zrozumiałem twoją transmisję i zastosuję się”.
+
+WORDS TWICE / SŁOWA
+DWUKROTNIE
+
+a)
+
+Jako prośba:
+„Warunki łączności są trudne. Nadawaj każde słowo lub grupę słów dwukrotnie”.
+
+b)
+
+Jako zawiadomienie:
+„Ze względu na trudne warunki łączności, każde słowo lub grupa słów w tej depeszy będą nadawane
+dwukrotnie”.
+
+Uwaga.: Zwrot „GO AHEAD” został wycofany, zamiast niego po wstępnym wywołaniu należy powtórzyć całą nazwę stacji
+wywołującej, a następnie własną. Takie wywołanie traktowane jest jako sygnał, że stacja wywołująca może nadać swoją depeszę.
+
+2.7
+2.7.1
+
+ZNAKI WYWOŁAWCZE
+Znaki wywoławcze stacji lotniczych
+
+2.7.1.1
+Znaki wywoławcze służb ruchu lotniczego składają się z dwóch elementów: nazwy miejsca lokalizacji oraz nazwy
+organu lub rodzaju zapewnianej służby.
+Organ lub służba
+Ośrodek kontroli obszaru
+Radar (ogólnie)
+Kontrola zbliżania
+Radarowa kontrola zbliżania – przyloty
+Radarowa kontrola zbliżania – odloty
+Kontrola lotniska
+Kontrola ruchu naziemnego
+Wydawanie zezwoleń
+Radar precyzyjnego podejścia
+Stacja radionamiarowa
+Służba informacji powietrznej
+Służba kontroli/zarządzania na płycie
+Odprawa przez towarzystwo lotnicze
+Radiostacja lotnicza
+
+Sufiks znaku wywoławczego
+
+Sufiks znaku wywoławczego
+
+CONTROL
+
+KONTROLA
+
+RADAR
+
+RADAR
+
+APPROACH
+
+ZBLIŻANIE
+
+ARRIVAL13
+
+PRZYLOTY
+
+DEPARTURE
+
+ODLOTY
+
+TOWER
+
+WIEŻA
+
+GROUND
+
+GROUND
+
+DELIVERY
+
+DELIVERY
+
+PRECISION
+
+PRECYZYJNY
+
+HOMER
+
+GONIO
+
+INFORMATION
+
+INFORMACJA
+
+APRON
+
+APRON
+
+DISPATCH
+
+KOORDYNACJA
+
+RADIO
+
+RADIO
+
+2.7.1.2
+Jeśli została nawiązana łączność i nie spowoduje to nieporozumienia, nazwa miejsca lokalizacji organu (służby) i/lub
+sufix znaku wywoławczego mogą zostać pominięte 14.
+
+13 W Polsce stosuje się nazwę DIRECTOR – patrz: ZAŁĄCZNIK 1 ODSTĘPSTWA OD RADIOTELEFONICZNEJ FRAZEOLOGII
+
+LOTNICZEJ oraz AIP Polska GEN 1.7
+14 Patrz: ZAŁĄCZNIK 1 ODSTĘPSTWA OD RADIOTELEFONICZNEJ FRAZEOLOGII LOTNICZEJ oraz AIP Polska GEN 1.7
+
+2-9
+
+Manual of Radiotelephony
+
+
+2.7.2 Aircraft call signs
+
+2.7.2.1
+
+An aircraft call sign shall be one of the following types:
+
+Type
+
+Example
+
+a) the characters corresponding to the registration marking of the aircraft;
+
+G-ABCD or
+Cessna G-ABCD
+
+b) the telephony designator of the aircraft operating agency, followed by the last
+four characters of the registration marking of the aircraft; or
+
+FASTAIR DCAB
+
+c) the telephony designator of the aircraft operating agency, followed by the
+flight identification
+
+FASTAIR 345
+
+Note.– The name of the aircraft manufacture or name of aircraft model may be used as a
+radiotelephony prefix to the Type a) above.
+
+2.7.2.2 After satisfactory communication has been established, and provided that no confusion is likely
+to occur, aircraft call signs specified in 2.7.2.1may be abbreviated as follows:
+
+Type
+a) the first and at least the last two characters of the aircraft registration;
+
+Example
+
+b) the telephony designator of the aircraft operating agency followed
+by at least the last two characters of the aircraft registration;
+
+FASTAIR AB
+
+c) no abbreviated form
+
+G-CD or
+Cessna CD
+
+
+
+Note.– The abbreviated examples correspond to 2.7.2.1.
+
+2.7.2.2.1 An aircraft shall use its abbreviated call sign only after it has been addressed in this manner by
+the aeronautical station.
+2.7.2.3
+An aircraft shall not change its type of call sign during flight except when there is a likelihood
+that confusion may occur because of similar call signs; in such cases, an aircraft may be instructed by an air
+traffic control unit to change the type of its call sign temporarily.
+2.7.2.4
+Aircraft in the heavy wake turbulence category shall include the word "HEAVY" immediately
+after the aircraft call sign in the initial contact between such aircraft and ATS units.
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-9
+
+
+2.7.2
+
+2.7.2.1
+
+Znaki wywoławcze statków powietrznych
+
+Znakiem wywoławczym statku powietrznego mogą być:
+
+Rodzaj
+
+Przykład
+
+a) znaki rejestracyjne statku powietrznego;
+
+G-ABCD lub
+Cessna G-ABCD
+
+b) znak wywoławczy linii lotniczej oraz cztery ostatnie litery znaków
+rejestracyjnych statku powietrznego; lub
+
+FASTAIR DCAB
+
+c) znak wywoławczy linii lotniczej oraz przydzielony numer rejsu
+
+FASTAIR 345
+
+Uwaga: Nazwa modelu lub nazwa producenta danego statku powietrznego może być użyta jako
+prefiks w pkt a)
+
+2.7.2.2
+Jeśli została już nawiązana łączność i nie istnieje ryzyko popełnienia błędu, znaki wywoławcze
+statków powietrznych wymienione w pkt 2.7.2.1 mogą być skrócone w następujący sposób:
+
+Rodzaj
+
+Przykład
+
+a) pierwszy i co najmniej dwa ostatnie znaki rejestracyjne statku powietrznego
+
+G-CD lub Cessna
+CD
+
+b) znak wywoławczy linii lotniczej oraz dwie ostatnie litery znaków
+rejestracyjnych statku powietrznego;
+c) brak postaci skróconej
+
+FASTAIR AB
+-
+
+Uwaga.- Przykłady skróconych znaków wywoławczych odnoszą się do pkt 2.7.2.1.
+
+2.7.2.2.1 Statek powietrzny może stosować swój skrócony znak wywoławczy wyłącznie po wywołaniu
+go w ten sposób przez personel ATS.
+2.7.2.3 Statek powietrzny nie może podczas lotu zmieniać swojego znaku wywoławczego, chyba że
+jednocześnie na danej częstotliwości pojawiają się samoloty o podobnie brzmiących numerach. W takiej
+sytuacji służby ruchu lotniczego mogą zaproponować tymczasową zmianę znaków wywoławczych.
+2.7.2.4 Statek powietrzny o kategorii turbulencji w śladzie aerodynamicznym „CIĘŻKI” powinien
+podczas nawiązania łączności z personelem ATS dodać do swojego znaku wywoławczego słowo „CIĘŻKI”.
+
+2-10
+
+Manual of Radiotelephony
+
+
+2.8 COMMUNICATIONS
+2.8.1 Establishment and continuation of communications
+
+2.8.1.1 When establishing communications, an, aircraft should use the full call sign of both the aircraft
+and the aeronautical station.
+
+STEPHENVILLE TOWER G-ABCD
+
+G-ABCD STEPHENVILLE TOWER
+
+2.8.1.2 When a ground station wishes to broadcast information, the message should be prefaced by the
+call "ALL STATIONS".
+
+ALL STATIONS ALEXANDER
+CONTROL, FUEL DUMPING
+COMPLETED
+
+2.8.1.3 When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should
+be prefaced by the call" ALL STATIONS".
+ALL STATIONS G-CDAB
+WESTBOUND MARLO VOR TO
+STEPHENVILLE LEAVING FL 260
+DESCENDING FL 150
+
+No reply is expected to such general calls unless individual stations are subsequently called upon to
+acknowledge receipt.
+2.8.1.4 If there is doubt that a message has been correctly received, a repetition of the messages shall be
+requested either in full or in part.
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-10
+
+
+2.8
+2.8.1
+
+ŁĄCZNOŚĆ
+
+Nawiązywanie i utrzymywanie łączności
+
+2.8.1.1 Nawiązując łączność pilot powinien użyć pełnych znaków wywoławczych, zarówno swoich
+jak i wywoływanej służby ruchu lotniczego.
+
+STEPHENVILLE WIEŻA GABCD
+G-ABCD STEPHENVILLE WIEŻA
+
+2.8.1.2
+Jeśli personel ATS zamierza nadać informację dla wszystkich statków powietrznych na danej
+częstotliwości, powinien poprzedzić ją słowami „DO WSZYSTKICH STACJI”.
+
+DO WSZYSTKICH STACJI
+ALEXANDER KONTROLA,
+ZRZUT PALIWA ZAKOŃCZONY
+
+2.8.1.3
+Jeśli załoga zamierza nadać informację dla wszystkich statków powietrznych znajdujących się w
+pobliżu, powinna poprzedzić ją słowami „DO WSZYSTKICH STACJI”.
+DO WSZYSTKICH STACJI GCDAB LOT W KIERUNKU
+ZACHODNIM OD MARLO VOR
+DO STEPHENVILLE
+OPUSZCZAM FL 260 ZNIŻAM
+FL 150
+
+Na wywołanie ogólne nie wymaga się odpowiedzi, chyba że poszczególne załogi proszone są o
+potwierdzenie odbioru.
+2.8.1.4 Jeżeli istnieje wątpliwość, czy dana informacja została prawidłowo zrozumiana, można
+poprosić odbiorcę o powtórzenie całej transmisji lub jej części.
+
+2-11
+
+Manual of Radiotelephony
+
+
+Examples:
+Phrase
+
+Meaning
+
+SAY AGAIN
+
+Repeat entire message
+
+SAY AGAIN … (item)
+
+Repeat specific item
+
+SAY AGAIN ALL BEFORE … (the first word
+satisfactorily received)
+
+Repeat part of message
+
+SAY AGAIN ALL AFTER . (the last word
+satisfactorily received)
+
+Repeat part of message
+
+SAY AGAIN ALL BETWEEN. . . AND . . .
+
+Repeat part of message
+
+2.8.1.5 When a station is called but is uncertain of the identity of the calling station, the calling station
+should be requested to repeat its call sign until the identity is established.
+GEORGETOWN GROUND ... 345
+STATION CALLING GEORGETOWN
+GROUND SAY AGAIN YOUR CALL SIGN
+
+GEORGETOWN GROUND
+FASTAIR 345
+
+2.8.1.6 When an error is made in a transmission, the word "CORRECTION" shall be spoken, the last
+correct group or phrase repeated and then the correct version transmitted.
+FASTAIR 345 WICKEN 47 FL
+330 MARLO 07 CORRECTION
+MARLO 57
+FASTAIR 345 ROGER
+
+2.8.1.7
+If a correction can best be made by repeating the entire message, the operator shall use the
+phrase "CORRECTION I SAY AGAIN" before transmitting the message a second time.
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-11
+
+
+Przykłady:
+Wyrażenie
+
+Znaczenie
+
+POWTÓRZ / SAY AGAIN
+
+Powtórz całą depeszę
+
+POWTÓRZ … (fragment)
+
+Powtórz określony fragment depeszy
+
+POWTÓRZ WSZYSTKO PRZED… (pierwsze
+słowo odebrane poprawnie)
+
+Powtórz część depeszy
+
+POWTÓRZ WSZYSTKO PO … (ostatnie słowo
+odebrane poprawnie)
+
+Powtórz część depeszy
+
+POWTÓRZ WSZYSTKO MIĘDZY … I …
+
+Powtórz część depeszy
+
+2.8.1.5
+Jeżeli personel ATS nie usłyszy znaku wywoławczego wzywającego go statku powietrznego,
+powinien poprosić o powtórne przedstawienie się:
+GEORGETOWN GROUND
+... 345
+
+WOŁAJĄCY GEORGETOWN GROUND
+POWTÓRZ ZNAK WYWOŁAWCZY
+
+GEORGETOWN
+GROUND FASTAIR 345
+
+2.8.1.6 Jeżeli podczas transmisji zostanie popełniony błąd, należy użyć słowa „POPRAWIAM”, a
+następnie prawidłowo powtórzyć wybrany fragment.
+FASTAIR 345 WICKEN 47
+FL 330 MARLO 07
+POPRAWIAM MARLO 57
+
+FASTAIR 345 PRZYJĄŁEM
+
+2.8.1.7 Jeżeli najlepszym rozwiązaniem będzie powtórzenie całej poprawianej wiadomości, należy
+poprzedzić ją zwrotem „POPRAWIAM OD POCZĄTKU”.
+
+2-12
+
+Manual of Radiotelephony
+
+
+2.8.1.8 When it is considered that reception is likely to be difficult, important elements of the message
+should be spoken twice.
+GEORGETOWN, G-ABCD WALDEN
+ALTITUDE 2 500 FEET, I SAY AGAIN
+ALTITUDE 2 500 FEET, ENGINE
+LOSING POWER, ENGINE LOSING
+POWER
+
+2.8.2 Transfer of communications
+
+2.8.2.1 An aircraft shall be advised by the appropriate aeronautical station to change from one radio
+frequency to another in accordance with agreed procedures. In the absence of such advice, the aircraft shall
+notify the aeronautical station before such a change takes place.
+
+FASTAIR 345 CONTACT ALEXANDER
+CONTROL 129.1
+129.1 FASTAIR 345
+---------------FASTAIR 345 WHEN PASSING FL 80
+CONTACT ALEXANDER CONTROL
+129.1
+WHEN PASSING FL 80
+129.1 FASTAIR 345
+
+2.8.2.2 An aircraft may be instructed to MONITOR a frequency – change a frequency as instructed and
+standby (another ATS unit will initiate communications)15, and MONITOR a frequency on which information is
+being broadcast.
+
+FASTAIR 345 MONITOR
+STEPHENVILLE TOWER 118.9
+118.9 FASTAIR 345
+---------------FASTAIR 345 MONITOR ATIS 123.250
+MONITORING 123.250 FASTAIR 345
+
+15 See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-12
+
+
+2.8.1.8
+W warunkach słabej słyszalności ważniejsze elementy depeszy można powtórzyć dwukrotnie.
+
+GEORGETOWN G-ABCD WALDEN
+ALTITUDE 2 500 STÓP, POWTARZAM
+ALTITUDE 2 500 STÓP, SILNIK TRACI
+MOC, SILNIK TRACI MOC
+
+2.8.2 Przekazywanie łączności
+
+2.8.2.1 Służby ruchu lotniczego mają obowiązek poinformować załogę statku powietrznego o
+potrzebie zmiany częstotliwości zgodnie z określonymi procedurami. Jeżeli pilot nie otrzyma takiego polecenia,
+musi powiadomić o zamiarze przejścia na inną częstotliwość.
+
+FASTAIR 345 ŁĄCZNOŚĆ
+ALEXANDER KONTROLA 129.1
+129.1 FASTAIR 345
+---------------FASTAIR 345 PRZECINAJĄC
+FL 80 NAWIĄŻ ŁĄCZNOŚĆ
+ALEXANDER KONTROLA 129.1
+PRZECINAJĄC FL 80
+129.1 FASTAIR 345
+
+2.8.2.2 Pilot może usłyszeć polecenie MONITORUJ częstotliwość, tj. przełącz się na wskazaną
+częstotliwość i czekaj na wywołanie przez personel ATS16, lub przesłuchaj wiadomości nadawane przez służbę
+rozgłaszania.
+
+FASTAIR 345 MONITORUJ
+STEPHENVILLE WIEŻA 118.9
+118.9 FASTAIR 345
+---------------FASTAIR 345 MONITORUJ ATIS
+123.250
+MONITORUJĘ 123.250 FASTAIR 345
+
+16 Patrz: ZAŁĄCZNIK 1 ODSTĘPSTWA OD RADIOTELEFONICZNEJ FRAZEOLOGII LOTNICZEJ oraz AIP Polska GEN 1.7
+
+2-13
+
+Manual of Radiotelephony
+
+
+2.8.3 Issue of clearance and read-back requirements
+
+2.8.3.1
+Provisions governing clearances are contained in Annex 11 – Air Traffic Services and the
+Procedures for Air Navigation Services – Air Traffic Management (PANS-ATM, Doc 4444). A clearance may
+vary in content from a detailed description of the route and levels to be flown to a brief landing clearance.
+2.8.3.2
+Controllers should pass a clearance slowly and clearly since the pilot needs to write it down
+and wasteful repetition will thus be avoided. Whenever possible, a route clearance should be passed to an
+aircraft before start up. In any case, controllers should avoid passing a clearance to a pilot engaged in
+complicated taxiing manoeuvres and on no occasion should a clearance be passed when the pilot is engaged in
+line up or take-off manoeuvres.
+2.8.3.3
+An air traffic control (ATC) route clearance is not an instruction to take off or enter an active
+runway. The words "TAKE OFF" are used only when an aircraft is cleared for take-off, or when canceling a
+take-off clearance. At other times, the word "DEPARTURE" or "AIRBORNE" is used.
+2.8.3.4
+Read-back requirements have been introduced in the interests of flight safety. The stringency of
+the read-back requirement is directly related to the possible seriousness of a misunderstanding in the
+transmission and receipt of ATC clearances and instructions. Strict adherence to read-back procedures ensures
+not only that the clearance has been received correctly but also that the clearance was transmitted as intended. It
+also serves as a check that the right aircraft, and only that aircraft, will take action on the clearance.
+2.8.3.5
+
+The following shall always be read back:
+a) ATC route clearances;
+b) clearances and instructions to enter, land on, take off from, hold short of, cross and
+backtrack on any runway; and
+c) runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed
+instructions and, whether issued by the controller or contained in ATIS broadcasts,
+transition levels.
+
+2.8.3.6
+Other clearances or instructions, including conditional clearances, shall be read back or
+acknowledged in a manner to clearly indicate that they have been understood and will be complied with.
+FASTAIR 345 CLEARED TO
+KENNINGTON, VIA A1 FL 280 WICKEN 3
+DELTA DEPARTURE, SQUAWK 5501
+
+CLEARED TO KENNINGTON, VIA A1 FL
+280 WICKEN 3 DELTA DEPARTURE,
+SQUAWK 5501 FASTAIR 345
+
+---------------G-CD WHEN AIRBORNE TURN RIGHT,
+LEAVE CONTROL ZONE VIA ROUTE
+ECHO
+RIGHT TURN VIA
+ROUTE ECHO G-CD
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-13
+
+
+2.8.3
+
+Udzielanie zezwoleń i potwierdzanie odbioru depeszy
+
+2.8.3.1 Przepisy określające zasady wydawania zezwoleń opisano w dwóch dokumentach: Załącznik 11
+ICAO — Służby ruchu lotniczego oraz Procedury służb ruchu lotniczego — Zarządzanie ruchem lotniczym
+(PANS-ATM, Doc 4444). Zezwolenie może być rozbudowane i szczegółowe (np. opis nakazanej trasy i
+wysokości lotu), albo krótkie i zwięzłe (np. zezwolenie na lądowanie).
+2.8.3.2 Kontrolerzy powinni wypowiadać zezwolenie powoli i wyraźnie, aby umożliwić pilotowi
+zapisanie jego treści oraz uniknąć konieczności powtarzania wypowiedzi. W miarę możliwości zezwolenie na
+lot po trasie powinno być przekazywane na pokład statku powietrznego przed uruchomieniem silników. Nie
+należy przekazywać załodze zezwolenia, kiedy samolot wykonuje skomplikowany manewr kołowania, zajmuje
+pas czy startuje.
+2.8.3.3 Zezwolenie ATC na lot po trasie nie jest zezwoleniem na start lub na zajęcie pasa w użyciu.
+Wyraz „START” jest używany wyłącznie podczas udzielania zezwolenia na start lub jego anulowania. W
+pozostałych przypadkach używa się określenia „PO ODLOCIE” lub „W POWIETRZU”.
+2.8.3.4 Potwierdzenie odbioru depeszy ma ogromny wpływ na bezpieczeństwo ruchu lotniczego –
+pomaga zminimalizować ryzyko powstawania nieporozumień podczas wydawania zezwoleń ATC i instrukcji.
+W trakcie powtarzania przez pilota treści depeszy kontroler może upewnić się, że nie popełnił błędu podczas
+nadawania depeszy, jej treść została prawidłowo odczytana, a działania zawarte w zezwoleniu lub instrukcji
+podejmie tylko i wyłącznie załoga, do której wypowiedź była skierowana.
+2.8.3.5
+
+Następujące depesze wymagają potwierdzenia odbioru:
+a) zezwolenia ATC na lot po trasie;
+b) zezwolenia i instrukcje dotyczące zajęcia, lądowania na, startu z, zatrzymania przed,
+przecięcia pasa, kołowania po pasie w kierunku przeciwnym do odbywających się na nim
+operacji (backtrack); oraz
+c) pas w użyciu, nastawianie wysokościomierza, kody SSR, polecenia dotyczące wysokości,
+kursu i prędkości oraz wysokość przejściowa niezależnie od tego, czy określa ją kontroler
+czy jest ona podawana w komunikacie ATIS.
+
+2.8.3.6 Odbiór pozostałych instrukcji lub zezwoleń (także warunkowych) powinien być potwierdzany w
+taki sposób, aby kontroler miał pewność, że załoga prawidłowo odebrała depeszę i zastosuje się do jej treści.
+FASTAIR 345 ZEZWALAM DO
+KENNINGTON, PRZEZ A1 FL 280
+STANDARDOWY ODLOT WICKEN 3
+DELTA SQUAWK 5501
+
+ZEZWALASZ DO KENNINGTON,
+PRZEZ A1 FL 280, STANADRDOWY
+ODLOT WICKEN 3 DELTA SQUAWK
+5501 FASTAIR 345
+
+---------------G-CD W POWIETRZU SKRĘĆ W
+PRAWO, OPUŚĆ CTR TRASĄ ECHO
+W PRAWO TRASĄ ECHO G-CD
+
+2-14
+
+Manual of Radiotelephony
+
+
+
+2.8.3.7
+
+An aircraft should terminate the read-back by its call sign.
+
+G-ABCD CROSS A1 AT WICKEN FL 70
+CROSS A1 AT
+WICKEN FL 70 G-ABCD
+----------------G-CD HOLD POSITION
+HOLDING G-CD
+----------------G-CD CONTACT GROUND 118.050
+118.050 G-CD
+----------------FASTAIR 345 SQUAWK 6402
+6402 FASTAIR 345
+
+2.8.3.8 The controller shall listen to the read-back to ascertain that the clearance or instruction has been
+correctly acknowledged by the flight crew and shall take immediate action to correct any discrepancies revealed
+by the read-back.
+2.8.3.9 If an aircraft read-back of a clearance or instruction is incorrect, the controller shall transmit the
+word "NEGATIVE17" followed by the correct version.
+
+G-CD QNH 1003
+QNH 1013 G-CD
+G-CD NEGATIVE, QNH 1003
+QNH 1003 G-CD
+
+17 See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-14
+
+
+2.8.3.7
+Pilot potwierdzając odbiór depeszy powinien podać swój znak wywoławczy na końcu zdania.
+
+G-ABCD PRZETNIJ A1 NAD WICKEN FL 70
+PRZETNĘ A1 NAD
+WICKEN FL 70 G-ABCD
+----------------G-CD STÓJ
+STOJĘ G-CD
+----------------G-CD ŁĄCZNOŚĆ GROUND 118.050
+118,050 G-CD
+----------------FASTAIR 345 SQUAWK 6402
+6402 FASTAIR 345
+
+2.8.3.8
+Kontroler zobowiązany jest do wysłuchania powtarzanego przez pilota zezwolenia lub instrukcji w
+celu upewnienia się, że transmisja została prawidłowo zrozumiana. W przeciwnym wypadku należy natychmiast
+poprawić dostrzeżone nieprawidłowości .
+2.8.3.9 Jeżeli statek powietrzny błędnie powtórzył instrukcję lub zezwolenie, kontroler powinien użyć słowa
+„NIEPRAWIDŁOWO18”, a następnie powtórzyć właściwą wersję.
+
+G-CD QNH 1003
+QNH 1013 G-CD
+G-CD NIEPRAWIDŁOWO, QNH 1003
+QNH 1003 G-CD
+
+18 Patrz: ZAŁĄCZNIK 1 ODSTĘPSTWA OD RADIOTELEFONICZNEJ FRAZEOLOGII LOTNICZEJ oraz AIP Polska GEN 1.7
+
+2-15
+
+Manual of Radiotelephony
+
+
+2.8.3.10 If there is a doubt as to whether a pilot can comply with an ATC clearance or instruction, the
+controller may follow the clearance or instruction by the phrase “if unable”, and subsequently offer an
+alternative. If at any time a pilot receives a clearance or instruction which cannot be complied with, that pilot
+should advise the controller using the phrase “UNABLE” and give the reasons.
+
+FASTAIR 345 GEORGETOWN
+DEPARTURE, CLEARED TO
+COLINTON FL 290, CROSS WICKEN
+FL 150 OR ABOVE, IF UNABLE,
+MAINTAIN FL 130
+
+2.8.4
+
+2.8.4.1
+
+GEORGETOWN DEPARTURE
+UNABLE TO CROSS WICKEN
+FL 150 DUE WEIGHT,
+MAINTAINING FL 130 FASTAIR
+345
+
+Test procedures
+
+Test transmissions should take the following form:
+a) the identification of the aeronautical station being called;
+b) the aircraft identification;
+c) the words "RADIO CHECK"; and
+d) the frequency being used.
+
+2.8.4.2
+
+Replies to test transmissions should be as follows:
+a)
+
+the identification of the station calling;
+
+b)
+
+the identification of the station replying; and
+
+c)
+
+information regarding the readability of the transmission.
+
+2.8.4.3 The readability of transmissions should be classified in accordance with the following
+readability scale:
+1. Unreadable.
+2. Readable now and then.
+3. Readable but with difficulty.
+4. Readable.
+5. Perfectly readable.
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-15
+
+
+2.8.3.10 Jeżeli kontroler ma wątpliwości, czy pilot jest w stanie zastosować się do instrukcji lub
+zezwolenia, może zaproponować alternatywne rozwiązanie poprzedzone słowami: „jeśli nie możesz”. Gdy pilot
+otrzyma zezwolenie lub instrukcję, której nie jest w stanie wykonać, powinien zawiadomić o tym słowami „NIE
+MOGĘ” i podać przyczynę.
+
+FASTAIR 345 GEORGETOWN
+ODLOTY, ZEZWALAM DO COLINTON
+FL 290, PRZEJDŹ WICKEN FL 150 LUB
+POWYŻEJ, JEŚLI NIE MOŻESZ,
+UTRZYMUJ FL 130
+GEORGETOWN ODLOTY NIE
+MOGĘ PRZECIĄĆ WICKEN NA FL
+150 Z POWODU CIĘŻARU,
+UTRZYMUJĘ FL 130 FASTAIR 345
+
+2.8.4
+
+2.8.4.1
+
+Procedury sprawdzania łączności
+
+Transmisje sprawdzające łączność powinny zawierać:
+a) znak wywoławczy wzywanej służby ruchu lotniczego;
+b) znak wywoławczy statku powietrznego;
+c) wyrażenie „PRÓBA RADIA”; i
+d) częstotliwość w użyciu.
+
+2.8.4.2
+
+Odpowiedzi na transmisje sprawdzające łączność powinny zawierać:
+a) znak wywoławczy radiostacji wywołującej;
+b) znak wywoławczy radiostacji odpowiadającej; i
+c) ocenę czytelności transmisji.
+
+2.8.4.3
+
+Czytelność transmisji powinna być oceniana według następującej skali:
+1. Transmisja nieczytelna.
+2. Transmisja czytelna z przerwami.
+3. Transmisja czytelna z trudnością.
+4. Transmisja czytelna.
+5. Transmisja w pełni czytelna.
+
+2-16
+
+Manual of Radiotelephony
+
+
+STEPHENVILLE TOWER G-ABCD
+RADIO CHECK 118.7
+STATION CALLING STEPHENVILLE
+TOWER
+YOU ARE UNREADABLE
+or
+G-ABCD TOWER READING YOU THREE,
+LOUD BACKGROUND WHISTLE
+or
+G-ABCD TOWER READING
+YOU FIVE
+
+2.8.4.4
+When it is necessary for a ground station to make test signals, either for the adjustment of a
+transmitter before making a call or for the adjustment of a receiver, such signals shall not continue for more than
+10 seconds and shall be composed of spoken numbers (ONE, TWO, THREE, etc.) followed by the radio call
+sign of the station transmitting the test signals.
+
+——————————
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+2-16
+
+
+STEPHENVILLE WIEŻA G-ABCD PRÓBA
+RADIA 118.7
+WOŁAJĄCY STEPHENVILLE WIEŻA
+TRANSMISJA NIECZYTELNA
+lub
+G-ABCD WIEŻA SŁYSZĘ NA 3, SILNY
+GWIZD
+lub
+G-ABCD WIEŻA SŁYSZĘ NA 5
+
+2.8.4.4
+Personel ATS może nadać sygnał kontrolny w celu dostrojenia nadajnika lub odbiornika. Taka
+transmisja nie może trwać dłużej niż 10 sekund, a jej treść będzie składać się z kolejnych cyfr (JEDEN, DWA,
+TRZY, itd.) zakończonych znakiem wywoławczym nadawcy.
+
+——————————
+
+Chapter 3
+GENERAL PHRASEOLOGY
+3.1 INTRODUCTION
+
+3.1.1
+The phraseology detailed in this manual has been established for the purpose of ensuring
+uniformity in RTF communications. Obviously, it is not practicable to detail phraseology examples suitable for
+every situation which may occur. However, if standard phrases are adhered to when composing a message, any
+possible ambiguity will be reduced to a minimum.
+3.1.2
+Some abbreviations, which by their common usage have become part of aviation terminology,
+may be spoken using their constituent letters rather than the spelling alphabet, for example, ILS, QNH, RVR,
+(see 1.2).
+3.1.3
+The following words may be omitted from transmissions provided that no confusion or
+ambiguity will result:
+a) "SURFACE" in relation to surface wind direction and speed.
+b) "DEGREES" in relation to radar headings.
+c) "VISIBILITY", "CLOUD" and" HEIGHT" in meteorological reports.
+d) "HECTOPASCALS" when giving pressure settings.
+3.1.4
+3.1.5
+reasons.
+
+The use of courtesies should be avoided.
+The word "IMMEDIATELY" should only be used when immediate action is required for safety
+
+3.2 AN EXPLANATION OF THE ROLE OF PHRASEOLOGIES AND
+PLAIN LANGUAGE IN RADIOTELEPHONY COMMUNICATIONS
+
+3.2.1
+The use of language in radiotelephony communications is governed by Standards and
+Recommended Practices (SARPs) and Procedures for Air Navigation Services (PANS) contained in Annex 10 –
+Aeronautical Telecommunications and the PANS-ATM. Specific language proficiency requirements are
+contained in Annex 1 – Personnel Licensing. ICAO phraseologies are published in Annex 10, Volume II –
+Communication Procedures including those with PANS status and the PANS-ATM. The phraseologies
+contained in these documents are not intended to be exhaustive and both documents refer, in several instances,
+to the need for "additional phraseologies", or "appropriate subsidiary phraseologies", or "plain language". An
+explanation of the role of phraseologies in radiotelephony communications will clarify their appropriate use.
+
+3-1
+
+Rozdział 3
+FRAZEOLOGIA OGÓLNA
+3.1
+
+WSTĘP
+
+3.1.1
+Przykłady frazeologii lotniczej zebrane w Podręczniku mają służyć ujednoliceniu
+komunikacji radiotelefonicznej. Oczywiście nie ma możliwości stworzenia dialogów dla wszystkich
+potencjalnych sytuacji w lotnictwie, jednak stosowanie standardowych zwrotów i wyrażeń może
+wyeliminować ryzyko powstawania nieporozumień.
+3.1.2
+Niektóre skróty, takie jak np. ILS, QNH czy RVR zostały włączone do frazeologii lotniczej.
+Wymawia się je tak samo jak skróty w języku potocznym, tj. każdą literę osobno bez konieczności
+posługiwania się alfabetem ICAO (patrz pkt 1.2).
+3.1.3
+
+Następujące wyrazy można pominąć pod warunkiem, że nie spowoduje to nieporozumienia:
+
+a) „PRZYZIEMNY” w odniesieniu do kierunku i prędkości wiatru przyziemnego.
+b) „STOPNIE” przy określaniu kursu statku powietrznego.
+c) „WIDZIALNOŚĆ”,
+meteorologicznych.
+
+„CHMURA”
+
+i
+
+„WYSOKOŚĆ
+
+WZGLĘDNA”
+
+w
+
+komunikatach
+
+d) „HEKTOPASKALE”, przy podawaniu wartości ciśnienia.
+3.1.4
+
+Należy unikać stosowania zwrotów grzecznościowych.
+
+3.1.5
+Wyrazu „NATYCHMIAST” należy używać tylko wówczas, gdy ze względów
+bezpieczeństwa zachodzi konieczność podjęcia natychmiastowego działania.
+
+3.2. WYJAŚNIENIE ROLI FRAZEOLOGII I JĘZYKA POTOCZNEGO W RADIOTELEFONICZNEJ
+ŁĄCZNOŚCI LOTNICZEJ
+
+3.2.1
+Komunikacja radiotelefoniczna w łączności „pilot – personel ATS” regulowana jest przez
+Standardy i zalecane praktyki (SARPs) oraz Procedury Służb Żeglugi Powietrznej (PANS) zawarte w
+Załączniku 10 ICAO — Łączność lotnicza oraz w PANS-ATM (Doc 4444). Wymagania dotyczące znajomości
+frazeologii opisane są w Załączniku 1 ICAO — Licencjonowanie personelu. Frazeologia ICAO jest
+opublikowana w Załączniku 10 ICAO, tom II — Procedury telekomunikacyjne. Powyższe dokumenty nie
+precyzują całego zakresu tematycznego łączności lotniczej i w wielu przypadkach odwołują się do konieczności
+użycia „dodatkowej frazeologii”, „frazeologii zastępczej”, lub „tekstu otwartego”. Wyjaśnienie roli frazeologii
+w radiotelefonicznej łączności lotniczej umożliwi prawidłowe jej stosowanie.
+
+3-1
+
+3-2
+
+Manual of Radiotelephony
+
+
+3.2.2
+Phraseologies have evolved over time with periodic initiatives by bodies responsible for
+codifying and standardizing their use. ICAO phraseologies are developed to provide maximum clarity, brevity,
+and unambiguity in communications. Phraseologies are applicable to most routine situations; however, they are
+not intended to cover every conceivable situation which may arise. The success and widespread adoption of the
+ICAO phraseologies has given rise, to some degree, to an expectation on the part of some users that
+phraseologies alone could suffice for all the communicative needs of radiotelephony communications. ICAO
+provisions related to the use of language adopted by the ICAO Council in 2003 better clarify that, while ICAO
+phraseologies should always be used whenever they are applicable, there also exists an inherent requirement that
+users also have sufficient "plain" language proficiency. ICAO documents make this clear in a number of
+instances.
+
+3.2.3
+In the PANS-ATM, it is further emphasized that the phraseologies contained therein are not
+intended to be exhaustive, and when circumstances differ, pilots, ATS personnel and other ground personnel will
+be expected to use appropriate subsidiary phraseologies which should be as clear and concise as possible and
+designed to avoid possible confusion by those persons using a language other than one of their national
+languages. "Appropriate subsidiary phraseologies" can either refer to the use of plain language, or the use of
+regionally or locally adopted phraseologies. Either should be used in the same manner in which phraseologies
+are used: clearly, concisely, and unambiguously. Additionally, such appropriate subsidiary phraseologies
+should not be used instead of ICAO phraseologies, but in addition to ICAO phraseologies when required, and
+users should keep in mind that many speakers/listeners will be using English as a second or foreign language.
+3.2.4
+The use of plain language required when phraseologies are not available should not be taken as
+licence to chat, to joke or to degrade in any way good radiotelephony techniques. All radiotelephony
+communications should respect both formal and informal protocols dictating clarity, brevity, and unambiguity.
+
+3.3
+
+LEVEL INSTRUCTIONS
+
+3.3.1
+Only basic level instructions are detailed in this chapter. More comprehensive phrases are
+contained in subsequent chapters in the context in which they are most commonly used.
+3.3.2
+The precise phraseology used in the transmission and acknowledgement of climb and descent
+clearances will vary depending upon the circumstances, such as traffic density and the nature of the flight
+operations. However, care must be taken to ensure that misunderstandings are not generated as a consequence of
+the phraseology employed during these phases of flight. For example, levels may be reported as altitude, height
+or flight levels according to the phase of flight and the altimeter setting.
+3.3.3
+stated.
+
+When a change is made to any part of a level clearance, the entire level clearance shall be re-
+
+3.3.3.1
+In the following examples, the operations of climbing and descending are interchangeable and
+examples of only one form are given.
+G-AB REPORT LEVEL
+MAINTAINING ALTITUDE 3 000 FEET G-AB
+G-AB REPORT PASSING FL 80
+WILCO G-AB … G-AB PASSING FL 80
+
+---------------
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+3-2
+
+
+
+3.2.2
+Frazeologia ICAO powstała w celu ujednolicenia komunikacji „pilot – personel ATS”. Podobnie jak język
+potoczny, również frazeologia stale ewoluuje, dlatego jest regularnie aktualizowana i dostosowana do zmieniających się wymogów
+ruchu lotniczego. Frazeologia z założenia odnosi się wyłącznie do standardowych przypadków i nie ma na celu ustanowienia
+gotowych zwrotów dla każdej sytuacji mogącej mieć miejsce w lotnictwie. Stosowanie frazeologicznych zwrotów i wyrażeń
+umożliwi jasny i zwięzły przekaz w każdej, nawet nietypowej sytuacji. ICAO w swoich dokumentach stale podkreśla, że
+frazeologia powinna być używana wszędzie tam, gdzie jest to możliwe, jednak w wielu przypadkach pojawia się konieczność
+posłużenia się „tekstem otwartym”, dlatego tak ważna jest również odpowiednia znajomość języka potocznego.
+3.2.3
+W dokumencie PANS-ATM bardzo wyraźnie podkreślono, że zawarta w nim frazeologia nie wyczerpuje całej
+dostępnej tematyki lotniczej. W przypadkach nie objętych opracowaniem należy używać stosownej frazeologii zastępczej, która
+oznacza zarówno posługiwanie się tekstem otwartym, jak również lokalnie przyjętymi zwrotami i wyrażeniami. W obydwu
+przypadkach należy pamiętać, że „stosowna frazeologia zastępcza” również musi być jasna, zwięzła i jednoznaczna. W ten sposób
+można zminimalizować ryzyko popełnienia błędu w interpretacji przez osoby, dla których angielski nie jest językiem ojczystym. W
+żadnym wypadku język potoczny nie może zastąpić frazeologii ICAO w sytuacjach, dla których ustalono zwroty frazeologiczne.
+3.2.4
+Używanie mowy potocznej w sytuacjach wychodzących poza zakres frazeologii lotniczej nie zwalnia ze
+stosowania się do zasad obowiązujących w łączności radiotelefonicznej. W szczególności należy unikać żartów i pogawędek, a
+komunikaty powinny pozostawać jasne, zwięzłe i jednoznaczne.
+3.3
+
+INSTRUKCJE DOTYCZĄCE WYSOKOŚCI
+
+3.3.1
+Niniejszy rozdział zawiera wyłącznie podstawowe zwroty związane ze zmianą wysokości statku
+powietrznego. Szczegółowe omówienie tematyki oraz przykłady stosowania znajdują się kolejnych rozdziałach .
+3.3.2
+Frazeologia związana z wydawaniem i potwierdzaniem zezwoleń na zmianę wysokości różni się w
+zależności od natężenia ruchu lotniczego i fazy lotu. Aby wyelimonować ryzyko nieporozumienia należy pamiętać, że
+wysokość może być określana jako wysokość bezwzględna, względna lub poziom lotu - zgodnie z fazą lotu i ustawieniami
+wysokościomierza.
+3.3.3
+być powtórzone.
+3.3.3.1
+
+Jeżeli nastąpiła zmiana w jakiejkolwiek części zezwolenia dotyczącego wysokości, całe zezwolenie musi
+Poniższe przykłady frazeologii mają zastosowanie zarówno wobec statków powietrznych
+
+będących w trakcie wznoszenia jak i zniżania.
+G-AB PODAJ WYSOKOŚĆ
+UTRZYMUJĘ ALTITUDE 3 000 STÓP G-AB
+G-AB ZGŁOŚ PRZECIĘCIE FL 80
+TAK BĘDZIE G-AB ... G-AB PRZECINAM FL 80
+
+---------------
+
+3-3
+
+Manual of Radiotelephony
+
+
+G-AB MAINTAIN ALTITUDE 2 500
+FEET
+MAINTAINING ALTITUDE 2 500 FEET G-AB
+
+--------------G-AB CLIMB FL 70
+LEAVING ALTITUDE 2 500 FEET CLIMBING FL 70
+G-AB
+G-AB REQUEST DESCENT
+G-AB DESCEND FL 60
+LEAVING FL 90 DESCENDING FL 60 G-AB
+
+--------------FASTAIR 345 AFTER PASSING NORTH
+CROSS NDB DESCENT FL 80
+
+AFTER NORTH CROSS NDB DESCEND FL 80
+FASTAIR 345
+
+3.3.3.2
+
+Once having been given an instruction to climb or descend, a further overriding instruction may be given to a
+
+pilot.
+
+FASTAIR 345 STOP
+DESCENT AT FL 150
+STOPPING DESCENT AT FL 150 FASTAIR 345
+
+--------------FASTAIR 345 CONTINUE CLIMB FL 330
+CLIMBING FL 330 FASTAIR 345
+
+--------------FASTAIR 345 RECLEARED FL 330
+RECLEARED FL 330 FASTAIR 345
+
+3.3.3.3.
+
+Occasionally, for traffic reasons, a higher than normal rate-of-climb or descent may be required.
+FASTAIR 345 EXPEDITE
+DESCENT FL 80
+EXPEDITING DESCENT FL 80 FASTAIR 345
+
+---------------
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+3-3
+
+
+G-AB UTRZYMUJ ALTITUDE 2 500
+STÓP
+UTRZYMUJĘ ALTITUDE 2 500 STÓP G-AB
+
+--------------G-AB WZNOŚ SIĘ FL 70
+OPUSZCZAM ALTITUDE 2 500 STÓP, WZNOSZĘ
+SIĘ FL 70 G-AB
+G-AB PROSZĘ O ZNIŻANIE
+G-AB ZNIŻAJ FL 60
+OPUSZCZAM FL 90 ZNIŻAM FL 60 G-AB
+
+--------------FASTAIR 345 PO MINIĘCIU NORTH CROSS
+NDB ZNIŻAJ FL 80
+
+PO MINIĘCIU NORTH CROSS NDB ZNIŻAM FL
+80 FASTAIR 345
+
+3.3.3.2
+Jeśli pilot otrzymał wcześniej instrukcje dotyczące wznoszenia lub zniżania, kontroler może je
+zmodyfikować lub odwołać w następujący sposób:
+FASTAIR 345
+ZATRZYMAJ ZNIŻANIE
+FL 150
+ZATRZYMUJĘ ZNIŻANIE FL 150 FASTAIR 345
+
+--------------FASTAIR 345 KONTYNUUJ WZNOSZENIE
+FL 330
+WZNOSZĘ SIĘ FL 330 FASTAIR 345
+
+--------------ZMIANA ZEZWOLENIA FL 330
+FASTAIR 345
+
+FASTAIR 345 ZMIANA ZEZWOLENIA FL 330
+
+3.3.3.3
+
+Sytuacja ruchowa może wymusić konieczność zwiększenia prędkości wznoszenia lub zniżania.
+FASTAIR 345
+PRZYSPIESZ ZNIŻANIE
+FL 80
+PRZYSPIESZAM ZNIŻANIE FL 80 FASTAIR 345
+
+---------------
+
+3-4
+
+Manual of Radiotelephony
+
+
+FASTAIR 345 CLIMB FL 240 EXPEDITE
+UNTIL PASSING FL 180
+CLIMBING FL 240 EXPEDITING UNTIL
+PASSING FL 180 FASTAIR 345
+or
+UNABLE TO EXPEDITE FASTAIR 345
+
+3.4 POSITION REPORTING
+
+3.4.1
+Position reports shall contain the following elements of information, except that elements 4), 5)
+and 6) may be omitted when prescribed on the basis of regional air navigation agreements. (Element 4) shall be
+included in the initial call after changing to a new frequency):
+1) aircraft identification;
+2) position;
+3) time;
+4) flight level or altitude including passing level and cleared level if not maintaining the cleared level;
+5) next position and time over; and
+6) ensuing significant point.
+FASTAIR 345 WICKEN 47 FL 330 MARLO 57
+COLIN NEXT
+FASTAIR 345 ROGER
+
+3.4.2
+Where adequate flight progress data are available from other sources, such as surveillance
+radar, flights may be exempted from the requirement to make compulsory position reports.
+FASTAIR 345 NEXT
+REPORT COLIN
+WILCO FASTAIR 345
+
+--------------FASTAIR 345 OMIT POSITION
+REPORTS UNTIL FIR BOUNDARY,
+NEXT REPORT COLIN
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+3-4
+
+
+FASTAIR 345 WZNOŚ SIĘ
+FL 240 PRZYSPIESZ DO PRZECIĘCIA FL 180
+WZNOSZĘ SIĘ FL 240 PRZYSPIESZAM DO
+PRZECIĘCIA FL 180 FASTAIR 345
+lub
+NIE MOGĘ PRZYSPIESZYĆ FASTAIR 345
+
+3.4
+
+3.4.1
+
+MELDUNEK POZYCYJNY
+
+Meldunek pozycyjny składa się z następujących elementów:
+
+1) znak wywoławczy;
+2) pozycja;
+3) czas;
+4) poziom lotu lub wysokość bezwzględna wraz z aktualnie przecinaną wysokością oraz wysokością
+zezwoloną, o ile samolot jeszcze jej nie osiągnął;
+5) następna pozycja i czas przelotu nad nią;
+6) następny znaczący punkt nawigacyjny.
+Punkty 4), 5) i 6) mogą być pominięte stosownie do obowiązujących regionalnych porozumień żeglugi
+powietrznej. Punkt 4) jest obowiązkowym elementem korespondencji podczas nawiązania łączności na nowej
+częstotliwości.
+FASTAIR 345 WICKEN 47 FL 330 MARLO 57
+NASTĘPNIE COLIN
+FASTAIR 345 PRZYJĄŁEM
+
+3.4.2
+Jeżeli personel ATS dysponuje zobrazowaniem radarowym, które umożliwia śledzenie postępu
+lotu statku powietrznego, nie ma dodatkowej potrzeby zgłaszania przez pilota meldunków pozycyjnych.
+FASTAIR 345 NASTĘPNY
+MELDUNEK NAD COLIN
+TAK BĘDZIE FASTAIR 345
+
+--------------FASTAIR 345 POMIŃ MELDUNKI
+POZYCYJNE DO GRANICY FIR,
+NASTĘPNY MELDUNEK NAD COLIN
+
+3-5
+
+Manual of Radiotelephony
+
+
+WILCO FASTAIR 345
+--------------FASTAIR 345 RESUME POSITION
+REPORTING
+WILCO FASTAIR 345
+
+3.5 FLIGHT PLANS
+
+3.5.1
+A pilot may file a flight plan with an ATS unit during flight, although the use of busy air traffic
+control channels for this purpose should be avoided. Details should be passed using the flight plan format.
+ALEXANDER INFORMATION G-CDAB
+REQUEST FILE FLIGHT PLAN
+G-CDAB ALEXANDER INFORMATION
+READY TO COPY
+
+3.5.2
+
+During a flight a pilot may change from IFR to VFR flight.
+ALEXANDER CONTROL G-AB
+CANCELLING MY IFR FLIGHT.
+PROCEEDING VFR ESTIMATING
+STEPHENVILLE AT 1732
+G-AB IFR FLIGHT CANCELLED AT 47.
+CONTACT ALEXANDER
+INFORMATION 125.750
+
+3.5.3
+When a pilot has expressed the intention to change from IFR to VFR flight, the ATS unit
+should pass to the pilot any available meteorological information which makes it likely that flight in VMC
+cannot be maintained.
+G-AB INSTRUMENT
+METEOROLOGICAL CONDITIONS
+REPORTED IN THE VICINITY OF
+KENNINGTON
+
+ROGER MAINTAINING IFR G-AB
+
+
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+3-5
+
+
+TAK BĘDZIE FASTAIR 345
+--------------FASTAIR 345 WZNÓW MELDUNKI
+POZYCYJNE
+TAK BĘDZIE FASTAIR 345
+
+3.5
+
+PLANY LOTU
+
+3.5.1
+Pilot może złożyć plan lotu z powietrza, jednak wskazane jest unikanie dłuższego blokowania
+częstotliwości, szczególnie w sektorach o dużym natężeniu ruchu lotniczego. Elementy planu lotu podaje się w
+kolejności wynikającej ze stosownego formularza.
+ALEXANDER INFORMACJA G-CDAB
+PROSZĘ O ZAPISANIE PLAN LOTU
+G-CDAB ALEXANDER INFORMACJA
+GOTOWY DO ZAPISANIA
+
+3.5.2
+
+Podczas lotu pilot może przejść z lotu IFR do VFR.
+ALEXANDER KONTROLA G-AB
+ANULUJĘ IFR PRZECHODZĘ DO LOTU
+VFR PRZEWIDUJĘ
+STEPHENVILLE O 1732
+G-AB IFR ANULOWANY O
+47.ŁĄCZNOŚĆ
+ALEXANDER INFORMACJA
+125.750
+
+3.5.3
+Jeżeli pilot poinformował o zamiarze przejścia z lotu IFR do VFR, personel ATS powinien
+przekazać mu wszelkie dostępne informacje meteorologiczne, mogące mieć wpływ na ewentualną zmianę
+decyzji.
+G-AB IMC ZGŁOSZONE W OKOLICY
+KENNINGTON
+
+PRZYJĄŁEM UTRZYMUJĘ IFR, G-AB
+
+
+
+Chapter 4
+AERODROME CONTROL: AIRCRAFT
+4.1 INTRODUCTION
+
+4.1.1
+Concise and unambiguous phraseology used at the correct time is vital to the smooth, safe and
+expeditious operation of an aerodrome. It is not only the means by which controllers carry out their task, but it
+also assists pilots in maintaining an awareness of other traffic in their vicinity, particularly in poor visibility
+conditions.
+4.1.2
+Controllers should not transmit to an aircraft during take-off, initial climb, the last part of final
+approach or the landing roll, unless it is necessary for safety reasons, as it may be distracting to the pilot at a
+time when the cockpit workload is at its highest.
+
+4.2 DEPARTURE INFORMATION AND
+ENGINE STARTING PROCEDURES
+
+4.2.1
+Where no ATIS is provided, the pilot may ask for current aerodrome information before
+requesting start up.
+
+GEORGETOWN GROUND FASTAIR
+345, IFR TO STEPHENVILLE,
+REQUEST DEPARTURE
+INFORMATION
+FASTAIR 345 DEPARTURE RUNWAY 32,
+WIND 290 DEGREES 4 KNOTS,
+QNH 1022, TEMPERATURE MINUS 2,
+DEWPOINT MINUS 3, RVR 550 METRES
+TIME 27
+RUNWAY 32, QNH 1022, WILL CALL FOR
+START UP, FASTAIR 345
+
+4.2.2
+Requests to start engines are normally made to facilitate ATC planning and to avoid excessive
+fuel burn by aircraft delayed on the ground. Along with the request, the pilot will state the location of the aircraft
+and acknowledge receipt of the ATIS broadcast. When the departure of the aircraft will be delayed, the
+controller will normally indicate a start up time or an expected start up time.
+
+4-1
+
+Rozdział 4
+KONTROLA LOTNISKA: STATKI POWIETRZNE
+4.1
+
+WSTĘP
+
+4.1.1
+Zwięzła i jednoznaczna frazeologia stosowana we właściwym czasie jest istotna dla sprawnego i
+bezpiecznego wykonywania operacji lotniczych. Jest ona środkiem, za pomocą którego kontrolerzy wykonują swoje
+zadania oraz umożliwia pilotom orientację w sytuacji ruchowej, szczególnie w warunkach słabej widzialności.
+4.1.2
+Kontrolerzy nie powinni przekazywać informacji do samolotu w czasie startu, początkowego
+wznoszenia, ostatniej fazy podejścia lub dobiegu, chyba że jest to konieczne ze względów bezpieczeństwa. W
+przeciwnym wypadku może to rozproszyć uwagę załogi w czasie największego obciążenia pracą.
+
+4.2
+
+INFORMACJE DO ODLOTU I PROCEDURY URUCHAMIANIA SILNIKÓW
+
+4.2.1
+Jeżeli lotnisko nie jest wyposażone w ATIS, pilot może poprosić o informacje do odlotu przed
+zgłoszeniem się po zgodę na uruchamianie silników.
+
+GEORGETOWN GROUND
+FASTAIR 345 IFR DO STEPHENVILLE,
+PROSZĘ O INFORMACJE DO ODLOTU
+FASTAIR 345 ODLOT Z PASA 32,
+WIATR 290 STOPNI 4 WĘZŁY, QNH 1022,
+TEMPERATURA MINUS 2, PUNKT ROSY
+MINUS 3,
+RVR 550 METRÓW CZAS 27
+PAS 32, QNH 1022, ZGŁOSZĘ SIĘ PO URUCHOMIENIE,
+FASTAIR 345
+
+4.2.2
+Prośba o zgodę na uruchamianie silników ma na celu ułatwienie kontrolerowi rozplanowania sytuacji
+ruchowej i tym samym ograniczenie zbędnego zużywania paliwa przez statek powietrzny oczekujący na kołowanie.
+Pilot prosząc o uruchamianie powinien podać swoje miejsce postoju oraz potwierdzić odsłuchanie komunikatu ATIS.
+Jeżeli odlot statku powietrznego będzie opóźniony, kontroler zazwyczaj poda czas uruchomienia lub spodziewany czas
+uruchomienia.
+
+4-1
+
+4-2
+
+Manual of Radiotelephony
+
+
+GEORGETOWN GROUND FASTAIR 345
+STAND 24 REQUEST START
+UP, INFORMATION BRAVO
+FASTAIR 345 START UP
+APPROVED QNH 1009
+or
+FASTAIR 345 START UP AT 35
+QNH 1009
+or
+FASTAIR 345 EXPECT START UP AT 35 QNH 1009
+or
+FASTAIR 345 EXPECT DEPARTURE AT 49 START UP AT
+OWN DISCRETION QNH 1009
+
+4.2.3
+
+Having received ATC approval, the pilot starts the engines assisted as necessary by ground
+
+crew.
+
+READY TO START UP
+START NUMBER ONE
+STARTING NUMBER ONE
+
+4.3 PUSH-BACK OR POWER-BACK19
+
+4.3.1
+At many aerodromes at which large aircraft operate, the aircraft are parked with the nose
+towards the terminal. Aircraft have to be pushed backwards by tugs before they can taxi for departure. Requests
+for push-back or power-back are made to ATC or apron management depending on the local procedures.
+
+APRON FASTAIR 345 STAND 27
+REQUEST PUSH-BACK
+FASTAIR 345 PUSH-BACK
+APPROVED
+or
+FASTAIR 345 STANDBY. EXPECT ONE MINUTE
+DELAY DUE B747 TAXIING BEHIND
+
+19 Power-back is used by aircraft to reverse
+
+using the power of their engines (e.g. turboprop aircraft). See:
+APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-2
+
+
+GEORGETOWN GROUND
+FASTAIR 345 STANOWISKO 24 PROSZĘ
+O URUCHAMIANIE, INFORMACJA
+BRAVO
+FASTAIR 345 MOŻESZ URUCHAMIAĆ
+QNH 1009
+lub
+FASTAIR 345 MOŻESZ URUCHAMIAĆ O 35, QNH 1009
+lub
+FASTAIR 345 SPODZIEWANE
+URUCHAMIANIE O 35 QNH 1009
+lub
+FASTAIR 345 SPODZIEWANY ODLOT O 49
+URUCHAMIANIE WEDŁUG WŁASNEGO UZNANIA
+QNH 1009
+
+4.2.3
+Po otrzymaniu od kontrolera zgody pilot uruchamia silniki korzystając w miarę potrzeby z
+pomocy personelu naziemnego.
+GOTOWY DO URUCHAMIANIA
+
+URUCHAMIAJ NUMER JEDEN
+URUCHAMIAM NUMER JEDEN
+
+4.3
+
+WYPYCHANIE LUB POWER-BACK20
+
+4.3.1
+Jeżeli samolot został zaparkowany nosem w kierunku terminala lub innego statku
+powietrznego, przed rozpoczęciem kołowania musi zostać wypchnięty przez pojazd holujący. W
+zależności od lokalnych procedur prośbę o wypychanie lub power-back kieruje się do ATC lub do
+zarządzającego płytą.
+APRON FASTAIR 345 STANOWISKO
+27 PROSZĘ O WYPYCHANIE
+FASTAIR 345 MOŻESZ
+WYPYCHAĆ
+lub
+FASTAIR 345 CZEKAJ.
+SPODZIEWAJ SIĘ 1 MINUTY OPÓŹNIENIA Z POWODU
+B747 KOŁUJĄCEGO ZA TOBĄ
+
+20 Zwrot "POWER-BACK" zamiast "WYPYCHANIE" jest używany w przypadku samolotów turbośmigłowych, które
+
+wykonują tzw. wypychanie na własnych silnikach.
+
+4-3
+
+Manual of Radiotelephony
+
+
+4.3.2
+The following phraseology should be used by the pilot and the ground crew to coordinate the
+push-back.
+
+READY FOR PUSH-BACK
+
+CONFIRM BRAKES RELEASED
+
+BRAKES RELEASED
+COMMENCING PUSH-BACK
+PUSH-BACK COMPLETED, CONFIRM BRAKES SET
+
+BRAKES SET: DISCONNECT
+DISCONNECTING STANDBY FOR VISUAL AT YOUR
+LEFT
+ROGER
+
+4.3.3
+When the manoeuvre is complete the ground crew gives the pilot a visual signal to indicate that
+the aircraft is free to taxi. Should the pilot wish to stop the manoeuvre at any stage, the phrase "stop push-back"
+should be used.
+
+4.4 TAXI INSTRUCTIONS
+
+4.4.1
+Taxi instruction issued by a controller will always contain a clearance limit, which is the point
+at which the aircraft must stop until further permission to proceed is given. For departing aircraft, the clearance
+limit will normally be the taxi-holding point of the runway in use, but it may be any other position on the
+aerodrome depending on the prevailing traffic circumstances.
+4.4.2
+When a taxi clearance contains a taxi limit beyond a runway, it shall contain an explicit
+clearance to cross, or an instruction to hold short of that runway.
+
+STEPHENVILLE TOWER G-ABCD
+C172 AT THE SOUTH SIDE
+HANGARS REQUEST TAXI FOR
+LOCAL VFR FLIGHT
+G-ABCD TAXI VIA TAXIWAY
+CHARLIE TO HOLDING POINT
+RUNWAY 24 WIND 250 DEGREES
+8 KNOTS QNH 1010
+TIME TWO THREE
+QNH 1010 REQUEST RUNWAY 14 G-ABCD
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-3
+
+
+4.3.2
+Poniższa frazeologia powinna być stosowana przez pilota i obsługę naziemną podczas
+koordynacji wypychania.
+
+POTWIERDŹ ZWOLNIENIE
+HAMULCÓW
+
+GOTOWY DO WYPYCHANIA
+HAMULCE ZWOLNIONE
+
+ZACZYNAM WYPYCHANIE
+WYPYCHANIE ZAKOŃCZONE, POTWIERDŹ
+WŁĄCZENIE HAMULCÓW
+HAMULCE WŁĄCZONE: ROZŁĄCZ SIĘ
+ROZŁĄCZAM: OCZEKUJ NA SYGNAŁ WZROKOWY Z
+TWOJEJ LEWEJ
+PRZYJĄŁEM
+
+4.3.3
+Po zakończeniu wypychania obsługa naziemna podaje pilotowi sygnał wzrokowy informujący, że nie
+ma przeciwwskazań do rozpoczęcia kołowania. Jeżeli pilot zamierza przerwać manewr wypychania, powinien użyć
+wyrażenia: „przerwij wypychanie”.
+
+4.4
+
+INSTRUKCJE KOŁOWANIA
+
+4.4.1 Instrukcja kołowania zawsze zawiera granicę zezwolenia, czyli miejsce, w którym samolot musi się
+zatrzymać i zaczekać na kolejne instrukcje. W przypadku odlatujących statków powietrznych jest to zazwyczaj
+punkt oczekiwania przed pasem w użyciu. Sytuacja ruchowa może jednak wymusić konieczność zatrzymania statku
+powietrznego w dowolnym innym miejscu.
+4.4.2 Jeżeli kołowanie wymaga przecięcia drogi startowej w użyciu, zezwolenie musi zawierać wyraźne
+zezwolenie na cięcie pasa lub instrukcję zatrzymania się przed nim.
+
+STEPHENVILLE WIEŻA
+G-ABCD C172 PRZY HANGARACH
+PO POŁUDNIOWEJ STRONIE
+PROSZĘ O KOŁOWANIE, LOT VFR
+W REJONIE
+G-ABCD KOŁUJ DROGĄ CHARLIE
+DO PUNKTU OCZEKIWANIA PRZED
+PASEM 24 WIATR 250 STOPNI 8
+WĘZŁÓW QNH 1010 CZAS DWA
+TRZY
+QNH 1010 PROSZĘ O PAS 14, G-ABCD
+
+4-4
+
+Manual of Radiotelephony
+
+
+G-CD RECLEARED HOLDING POINT RUNWAY 14,
+TAXI BEHIND SENECA COMING FROM YOUR LEFT
+HOLDING POINT RUNWAY 14 TRAFFIC
+IN SIGHT G-CD
+----------------STEPHENVILLE TOWER G-ABCD C172 AT THE FUEL
+STATION VFR TO WALDEN REOUEST TAXI
+G-ABCD RUNWAY 06 WIND 080 DEGREES
+10 KNOTS QNH 1012 VISIBILITY 8 KM TIME 04 TAXI TO
+HOLDING POINT RUNWAY 06 VIA TAXIWAY ALPHA
+RUNWAY 06 QNH 1012 REQUEST TAXIWAY BRAVO
+AND BACKTRACK G-ABCD
+G-CD APPROVED, TAXI VIA BRAVO ENTER RUNWAY
+24 BACKTRACK AND LINE UP 06
+HOLD SHORT OF RUNWAY 14
+BRAVO ENTER RUNWAY 24 BACKTRACK AND LINE UP 06,
+HOLDING SHORT OF RUNWAY 14 G–CD
+G-CD HOLDING SHORT OF RUNWAY 14
+----------------G-CD EXPEDITE TAXI TRAFFIC ON
+FINAL RUNWAY 24, REPORT RUNWAY 24 VACATED
+EXPEDITING G-CD
+G-CD RUNWAY VACATED
+----------------STEPHENVILLE TOWER G-ABCD AT THE FUEL
+STATION REQUEST TAXI TO FLYING CLUB
+G-ABCD TAXI TO HOLDING POINT RUNWAY 24 VIA
+TAXIWAY CHARLIE
+VIA CHARLIE HOLDING POINT RUNWAY 24 G-ABCD
+G-CD APPROACHING HOLDING POINT REQUEST CROSS
+RUNWAY 24
+G-CD HOLD SHORT OF RUNWAY 24
+HOLDING SHORT G-CD
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-4
+
+
+G-CD ZMIANA ZEZWOLENIA PUNKT
+OCZEKIWANIA PRZED PASEM 14, KOŁUJ ZA
+SENEKĄ Z TWOJEJ LEWEJ
+PUNKT OCZEKIWANIA PRZED PASEM 14
+WIDZĘ RUCH, G-CD
+--------------STEPHENVILLE WIEŻA G-ABCD C172 PRZY STACJI
+PALIW, VFR DO WALDEN, PROSZĘ O KOŁOWANIE
+
+G-ABCD PAS 06 WIATR 080 STOPNI
+10 WĘZŁÓW QNH 1012 WIDZIALNOŚĆ 8
+KM CZAS 04 KOŁUJ DO PUNKTU
+OCZEKIWANIA PRZED PASEM 06 DROGĄ
+ALFA
+PAS 06 QNH 1012 PROSZĘ O KOŁOWANIE DROGĄ BRAVO I
+BACKTRACK G-ABCD
+G-CD MOŻESZ KOŁOWAĆ DROGĄ BRAVO, KOŁUJ
+PASEM 24 BACKTRACK DO ODLOTU PAS 06
+OCZEKUJ PRZED PASEM 14
+BRAVO, KOŁUJĘ PASEM 24 BACKTRACK DO ODLOTU PAS
+06, BĘDĘ OCZEKIWAĆ PRZED PASEM 14 G-CD
+G-CD OCZEKUJĘ PRZED PASEM 14
+----------------G-CD PRZYSPIESZ KOŁOWANIE,
+RUCH NA PROSTEJ PAS 24
+PRZYSPIESZAM, G-CD
+G-CD PAS ZWOLNIONY
+----------------STEPHENVILLE WIEŻA G-ABCD PRZY STACJI PALIW
+PROSZĘ O KOŁOWANIE DO AEROKLUBU
+G-ABCD KOŁUJ DO PUNKTU OCZEKIWANIA PRZED
+PASEM 24 DROGĄ CHARLIE
+DROGĄ CHARLIE DO PUNKTU OCZEKIWANIA
+PRZED PASEM 24 G-ABCD
+G-CD ZBLIŻAM SIĘ DO PUNKTU OCZEKIWANIA, PROSZĘ
+O PRZECIĘCIE PASA 24
+G-CD OCZEKUJ PRZED PASEM 24
+BĘDĘ OCZEKIWAĆ PRZED PASEM, G-CD
+
+4-5
+
+Manual of Radiotelephony
+
+
+G-CD CROSS RUNWAY 24 REPORT VACATED
+CONTINUE TO FLYING CLUB
+CROSSING, WILCO G-CD
+G-CD RUNWAY VACATED
+G-CD ROGER
+----------------G-HELI REQUEST AIR-TAXIING FROM FUEL STATION TO
+APRON
+G-HELI AIR TAXI DIRECT FROM FUEL STATION TO
+APRON, AVOID B747 TAXIING FROM STAND 27 TO
+HOLDING POINT RUNWAY 24
+AIR TAXI DIRECT FROM FUEL STATION TO APRON, TRAFFIC
+IN SIGHT, G-HELI
+
+Note. – The runway is vacated when the entire aircraft is beyond the relevant runway-holding position.
+4.4.3
+Where an aircraft acknowledges receipt of the ATIS broadcast, the controller does not need to
+pass departure information to the pilot when giving taxiing instructions.
+
+GEORGETOWN GROUND FASTAIR 345
+HEAVY REQUEST TAXI
+INFORMATION CHARLIE
+FASTAIR 345 TAXI TO HOLDING
+POINT RUNWAY 27 GIVE WAY
+TO B747 PASSING LEFT TO RIGHT
+QNH 1019
+HOLDING POINT
+RUNWAY 27 QNH 1019, GIVING WAY
+TO B747 FASTAIR 345
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-5
+
+
+G-CD PRZETNIJ PAS 24 ZGŁOŚ ZWOLNIENIE
+KOŁUJ DO AEROKLUBU
+PRZECINAM, ZGŁOSZĘ G-CD
+G-CD PAS ZWOLNIONY
+G-CD PRZYJĄŁEM
+----------------G-HELI PROSZĘ O PODLOT ZE STACJI PALIW NA PŁYTĘ
+G-HELI WYKONAJ PODLOT ZE STACJI PALIW NA
+PŁYTĘ, OMIŃ B747 KOŁUJĄCEGO ZE STANOWISKA 27
+DO PUNKTU OCZEKIWANIA PRZED PASEM 24
+PODLOT ZE STACJI PALIW NA PŁYTĘ, WIDZĘ RUCH, G-HELI
+
+Uwaga: Pas uważa się za zwolniony, gdy cały statek powietrzny znajduje się za punktem oczekiwania przed
+drogą startową.
+4.4.3
+Jeżeli pilot potwierdzi odsłuchanie komunikatu ATIS, nie ma potrzeby przekazywania mu
+informacji do odlotu podczas wydawania instrukcji kołowania.
+
+GEORGETOWN GROUND FASTAIR 345
+CIĘŻKI
+PROSZĘ O KOŁOWANIE
+INFORMACJA CHARLIE
+FASTAIR 345 KOŁUJ DO PUNKTU
+OCZEKIWANIA PRZED PASEM 27
+PRZEPUŚĆ B747 KOŁUJĄCEGO Z
+LEWEJ NA PRAWĄ QNH 1019
+PUNKT OCZEKIWANIA PRZED PASEM 27
+QNH 1019, PRZEPUSZCZĘ B747
+FASTAIR 345
+
+4-6
+
+Manual of Radiotelephony
+
+
+4.5 TAKE-OFF PROCEDURES
+
+4.5.1
+At busy aerodromes with separate GROUND and TOWER functions, aircraft are usually
+transferred to the TOWER at, or when approaching, the runway-holding position.
+4.5.2
+Since misunderstandings in the granting and acknowledgement of take-off clearances can result
+in serious consequences, care should be taken to ensure that the phraseology employed during the taxi
+manoeuvres cannot be interpreted as a clearance to enter the runway or to take-off.
+4.5.3
+Some aircraft may be required to carry out checks prior to departure and are not always ready
+for take-off when they reach the holding point.
+
+G-CD REPORT WHEN READY
+FOR DEPARTURE
+WILCO G-CD
+
+G-CD READY
+G-CD LINE UP AND WAIT
+LINING UP G-CD
+
+4.5.4
+Except in cases of emergency, controllers should not transmit to an aircraft in the process of
+taking off or during the early stage of climb.
+
+G-CD RUNWAY 06 CLEARED
+FOR TAKE-OFF
+RUNWAY 06 CLEARED FOR TAKEOFF G-CD
+
+4.5.5
+
+For traffic reasons, it may be necessary for the aircraft to take off immediately after lining up.
+
+G-CD ARE YOU READY
+FOR IMMEDIATE DEPARTURE
+G-CD AFIRM
+G-CD LINE UP. BE READY FOR
+IMMEDIATE DEPARTURE
+
+LINING UP G-CD
+G-CD RUNWAY 06 CLEARED FOR TAKE-OFF
+RUNWAY 06 CLEARED FOR TAKE-OFF G-CD
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-6
+
+
+4.5
+
+PROCEDURY STARTOWE
+
+4.5.1 Na lotniskach o dużym natężeniu ruchu, z rozdzielonymi stanowiskami GROUND i WIEŻA,
+statki powietrzne są zazwyczaj przekazywane na łączność z WIEŻĄ przed lub w punkcie oczekiwania przed
+drogą startową.
+4.5.2 Należy zwracać szczególną uwagę, aby instrukcje kołowania nie zostały odebrane przez pilota
+jako zezwolenie na zajęcie pasa lub zezwolenie na start. Taka błędna interpretacja może spowodować bardzo
+poważne konsekwencje.
+4.5.3 Zdarza się, że załogi statków powietrznych potrzebują dodatkowego czasu na przeprowadzenie
+określonych czynności i nie zawsze są gotowe do startu zaraz po osiągnięciu punktu oczekiwania.
+G-CD ZGŁOŚ
+GDY GOTOWY DO ODLOTU
+ZGŁOSZĘ G-CD
+
+G-CD
+GOTOWY
+G-CD ZAJMIJ PAS I CZEKAJ
+ZAJMUJĘ PAS G-CD
+
+4.5.4 Z wyjątkiem sytuacji awaryjnych kontrolerzy nie powinni przekazywać załogom żadnych
+informacji, kiedy samolot wykonuje rozbieg lub znajduje się w początkowej fazie wznoszenia.
+G-CD PAS 06 ZEZWALAM
+STARTOWAĆ
+PAS 06 ZEZWALASZ STARTOWAĆ
+G-CD
+
+4.5.5
+
+Ze względów ruchowych może zaistnieć konieczność wystartowania natychmiast po zajęciu
+
+pasa.
+G-CD CZY JESTEŚ GOTOWY DO
+NATYCHMIASTOWEGO ODLOTU
+GOTOWY G-CD
+G-CD ZAJMIJ PAS.
+BĄDŹ GOTOWY DO
+NATYCHMIASTOWEGO ODLOTU
+ZAJMUJĘ PAS G-CD
+G-CD PAS 06 ZEZWALAM STARTOWAĆ
+PAS 06 ZEZWALASZ STARTOWAĆ G-CD
+
+4-7
+
+Manual of Radiotelephony
+
+
+4.5.6
+In poor visibility, the controller may request the pilot to report when airborne.
+FASTAIR 345 RUNWAY 24
+CLEARED FOR
+TAKE-OFF REPORT
+AIRBORNE
+
+RUNWAY 24 CLEARED
+FOR TAKE-OFF
+WILCO FASTAIR 345
+
+FASTAIR 345 AIRBORNE 57
+FASTAIR 345 CONTACT
+DEPARTURE 121.750
+121.750 FASTAIR 345
+
+4.5.7
+Conditional clearances shall not be used for movements affecting the active runway(s), except
+when the aircraft or vehicles concerned are seen by both the controller and pilot. When the conditional clearance
+involves a departing aircraft and an arriving aircraft, it is important that the departing aircraft correctly identifies
+the arriving aircraft on which the conditional clearance is based. Reference to the arriving aircraft type may be
+insufficient and it may be necessary to add a description of the colour or the company name to ensure correct
+identification. A conditional clearance shall be given as follows:
+1) call sign;
+2) the condition;
+3) the clearance;
+4) brief reiteration of the condition.
+FASTAIR 345 REPORT THE
+AIRBUS ON FINAL IN SIGHT
+
+AIRBUS IN SIGHT FASTAIR 345
+
+FASTAIR 345 BEHIND LANDING AIRBUS LINE UP
+AND WAIT BEHIND
+BEHIND AIRBUS, LINING UP AND WAITING
+BEHIND, FASTAIR 345
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-7
+
+
+4.5.6
+W warunkach słabej widzialności kontroler może poprosić pilota o zgłoszenie się w
+powietrzu.
+FASTAIR 345 PAS 24 ZEZWALAM
+STARTOWAĆ ZGŁOŚ W
+POWIETRZU
+
+PAS 24 ZEZWALASZ STARTOWAĆ
+ZGŁOSZĘ FASTAIR 345
+
+FASTAIR 345 W POWIETRZU 57
+FASTAIR 345 ŁĄCZNOŚĆ ODLOTY
+121.750
+121.750 FASTAIR 345
+
+4.5.7
+Zezwolenie warunkowe na zajęcie/przecięcie pasa w użyciu może być udzielone wyłącznie w
+sytuacji, gdy kiedy zarówno kontroler jak i pilot widzą statki powietrzne lub pojazdy, których ono dotyczy.
+Kontroler wydając zezwolenie warunkowe odlatującemu statkowi powietrznemu musi mieć całkowitą pewność,
+że załoga prawidłowo zidentyfikowała ruch podchodzący do lądowania. W tym celu należy podać typ statku
+powietrznego i w miarę potrzeby jego kolor. Zezwolenie warunkowe składa się z następujących elementów:
+1)
+
+znak wywoławczy;
+
+2)
+
+warunek;
+
+3)
+
+zezwolenie;
+
+4)
+
+powtórzenie warunku.
+FASTAIR 345
+ZGŁOŚ Z WIDOCZNOŚCIĄ
+AIRBUSA NA PROSTEJ
+
+WIDZĘ AIRBUSA FASTAIR 345
+
+FASTAIR 345 ZA LĄDUJĄCYM AIRBUSEM ZAJMIJ
+PAS I CZEKAJ ZA LĄDUJĄCYM
+ZA AIRBUSEM ZAJMUJĘ PAS I CZEKAM ZA AIRBUSEM,
+FASTAIR 345
+
+4-8
+
+Manual of Radiotelephony
+
+
+4.5.8
+When several runways are in use and there is any possibility that the pilot may be confused as
+to which one to use, the runway number should be stated in the take-off clearance.
+FASTAIR 345 RUNWAY 09
+CLEARED FOR TAKE-OFF
+CLEARED FOR TAKE-OFF
+RUNWAY 09 FASTAIR 345
+
+4.5.9
+Departure instructions may be given with the take-off clearance. Such instructions are normally
+given to ensure separation between aircraft operating in the vicinity of the aerodrome.
+FASTAIR 345 CLIMB STRAIGHT
+AHEAD UNTIL ALTITUDE 2 500 FEET
+BEFORE TURNING RIGHT,
+RUNWAY 24 CLEARED
+FOR TAKE-OFF
+STRAIGHT AHEAD ALTITUDE 2 500
+FEET RIGHT TURN CLEARED FOR
+TAKE-OFF RUNWAY 24
+FASTAIR 345
+---------------G-CD REQUEST RIGHT TURN
+WHEN AIRBORNE
+G-CD RIGHT TURN APPROVED RUNWAY 06
+CLEARED FOR TAKE-OFF
+RUNWAY 06 CLEARED FOR TAKE-OFF RIGHT TURN G-CD
+
+4.5.10
+Due to unexpected traffic developments, or a departing aircraft taking longer to take off than
+anticipated, it is occasionally necessary to cancel the take-off clearance or quickly free the runway for landing
+traffic.
+G-CD TAKE OFF
+IMMEDIATELY OR HOLD
+SHORT OF RUNWAY
+HOLDING SHORT G-CD
+----------------
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-8
+
+
+4.5.8
+Jeżeli w użyciu jest więcej niż jedna droga startowa, przed wydaniem zezwolenia na start kontroler
+powinien podać numer pasa, którego zezwolenie dotyczy.
+FASTAIR 345 PAS 09 ZEZWALAM
+STARTOWAĆ
+ZEZWALASZ STARTOWAĆ PAS 09
+FASTAIR 345
+
+4.5.9
+Wraz z zezwolenia na start kontroler może także wydać instrukcje odlotu, aby zapewnić w ten
+sposób odpowiednią separację między statkami powietrznymi.
+FASTAIR 345 WZNOŚ SIĘ NA WPROST
+ALTITUDE 2 500 STÓP, NASTĘPNIE
+[SKRĘĆ] W PRAWO,
+PAS 24 ZEZWALAM STARTOWAĆ
+NA WPROST ALTITUDE 2 500 STÓP,
+ZAKRĘT W PRAWO ZEZWALASZ
+STARTOWAĆ PAS 24 FASTAIR 345
+---------------G-CD PO ODLOCIE PROSZĘ O
+ZAKRĘT W PRAWO
+G-CD PO ODLOCIE MOŻESZ WYKONAĆ ZAKRĘT W
+PRAWO
+PAS 06 ZEZWALAM STARTOWAĆ
+PAS 06 ZEZWALASZ STARTOWAĆ,
+ZAKRĘT W PRAWO G-CD
+
+4.5.10
+Sytuacja ruchowa lub zbyt długie przygotowywanie się załogi do odlotu może wymusić
+konieczność anulowania zezwolenia na start lub szybkie zwolnienie pasa, aby umożliwić lądowanie innemu statkowi
+powietrznemu.
+G-CD STARTUJ
+NATYCHMIAST LUB
+OCZEKUJ PRZED PASEM
+BĘDĘ OCZEKIWAĆ PRZED
+PASEM G-CD
+----------------
+
+4-9
+
+Manual of Radiotelephony
+
+
+G-CD TAKE OFF IMMEDIATELY OR
+VACATE RUNWAY
+TAKING OFF G-CD
+----------------G-CD HOLD POSITION, CANCEL TAKEOFF I SAY AGAIN CANCEL
+TAKE-OFF VEHICLE ON RUNWAY
+HOLDING G-CD
+
+4.5.11
+When an aircraft has commenced the take-off roll, and it is necessary for the aircraft to
+abandon take-off in order to avert a dangerous traffic situation, the aircraft should be instructed to stop
+immediately and the instruction and call sign repeated.
+FASTAIR 345 STOP
+IMMEDIATELY FASTAIR 345
+STOP IMMEDIATELY
+STOPPING FASTAIR 345
+
+4.5.12
+When a pilot abandons the take-off manoeuvre, the control tower should be so informed as
+soon as practicable, and assistance or taxi instructions should be requested as required.
+
+FASTAIR 345 STOPPING
+FASTAIR 345 ROGER
+
+FASTAIR 345 REQUEST RETURN TO RAMP
+FASTAIR 345 TAKE NEXT RIGHT RETURN TO RAMP
+CONTACT GROUND 118.350
+NEXT RIGHT RETURN TO RAMP 118.350 FASTAIR 345
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-9
+
+
+G-CD STARTUJ NATYCHMIAST LUB ZWOLNIJ
+PAS
+STARTUJĘ G-CD
+----------------G-CD STÓJ ANULUJĘ START
+POWTARZAM ANULUJĘ START
+POJAZD NA PASIE
+STOJĘ G-CD
+
+4.5.11
+Jeżeli zaistniała konieczność przerwania startu, a statek powietrzny rozpoczął już rozbieg,
+należy go dwukrotnie wywołać i nakazać natychmiastowe przerwanie rozbiegu.
+FASTAIR 345 PRZERWIJ ROZBIEG
+NATYCHMIAST
+FASTAIR 345 PRZERWIJ ROZBIEG
+NATYCHMIAST
+PRZERYWAM ROZBIEG FASTAIR 345
+
+4.5.12
+Jeżeli pilot przerwie rozbieg, powinien jak najwcześniej poinformować o tym wieżę i w
+miarę potrzeby poprosić o pomoc lub instrukcje kołowania.
+
+FASTAIR 345 PRZERWYWAM
+ROZBIEG
+FASTAIR 345 PRZYJĄŁEM
+
+FASTAIR 345 PROSZĘ O POWRÓT NA PŁYTĘ
+FASTAIR 345 NAJBLIŻSZA W PRAWO POWRÓT NA PŁYTĘ
+ŁĄCZNOŚĆ GROUND 118.350
+NAJBLIŻSZA W PRAWO POWRÓT NA PŁYTĘ 118.350
+FASTAIR 345
+
+4-10
+
+Manual of Radiotelephony
+
+
+4.6 AERODROME TRAFFIC CIRCUIT
+
+(See Figure 1)
+4.6.1
+Requests for instructions to join the traffic circuit should be made in sufficient time to allow for
+a planned entry into the circuit taking other traffic into account. When the traffic circuit is in a right-hand pattern
+this should be specified. A. left-hand pattern need not be specified although it may be advisable to do so if there
+has been a recent change where the circuit direction is variable.
+
+Podręcznik radiotelefonicznej frazeologii lotniczej
+
+4-10
+
+
+4.6
+
+KRĄG NADLOTNISKOWY
+
+(Patrz: Rysunek 1)

@@ -1,0 +1,58 @@
+{
+  "bundleId": "icao4444:4.5.7.5.2",
+  "sourceUnitId": "icao4444_readback::clause::4.5.7.5.2",
+  "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3424-3425",
+  "documentId": "icao4444-extracted",
+  "sectionPath": [
+    "READBACK OF CLEARANCES",
+    "4.5.7.5.2"
+  ],
+  "promotionStatus": "accepted_bundle",
+  "authorityClass": "authoritative_requirement",
+  "promotionNotes": [
+    "Derived from the first judged benchmark run.",
+    "Uses the qwen2.5-coder split as the best structural baseline for this clause."
+  ],
+  "atoms": [
+    {
+      "atomId": "icao4444:4.5.7.5.2:listen_to_readback",
+      "claimText": "The controller shall listen to the readback to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew.",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "workflow_constraint",
+      "actors": [
+        "controller"
+      ],
+      "applicability": [
+        "when a flight crew provides a readback of a clearance or instruction"
+      ],
+      "requiredBehaviour": [
+        "listen to the readback",
+        "ascertain that the clearance or instruction has been correctly acknowledged by the flight crew"
+      ],
+      "verificationMode": "deterministic_test",
+      "sourceSupport": [
+        "The controller shall listen to the readback",
+        "ascertain that the clearance or instruction has been correctly acknowledged by the flight crew"
+      ]
+    },
+    {
+      "atomId": "icao4444:4.5.7.5.2:correct_discrepancies",
+      "claimText": "The controller shall take immediate action to correct any discrepancies revealed by the readback.",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "workflow_constraint",
+      "actors": [
+        "controller"
+      ],
+      "applicability": [
+        "when a discrepancy is revealed by a readback"
+      ],
+      "requiredBehaviour": [
+        "take immediate action to correct any discrepancies revealed by the readback"
+      ],
+      "verificationMode": "deterministic_test",
+      "sourceSupport": [
+        "shall take immediate action to correct any discrepancies revealed by the readback"
+      ]
+    }
+  ]
+}

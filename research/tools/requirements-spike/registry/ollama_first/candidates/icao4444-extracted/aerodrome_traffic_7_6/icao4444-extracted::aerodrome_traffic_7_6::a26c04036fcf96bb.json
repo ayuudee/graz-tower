@@ -1,0 +1,105 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::a26c04036fcf96bb",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_7_6",
+  "familyId": "icao4444_aerodrome_traffic_family",
+  "claimText": "Position 3 is a normal point for issuing take-off clearance when issuing it at Position 2 is not practicable.",
+  "rationale": "Corrected replacement for a rejected over-promoted Position 3 record. The source describes normal aerodrome-control positions; it does not state a shall-strength obligation.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The following positions of aircraft in the traffic and taxi circuits are the positions where aircraft normally receive\naerodrome control tower clearances.",
+    "Position 3. Take-off clearance is issued here, if not practicable at position 2."
+  ],
+  "sourceItemIds": [
+    "7.6.2_position_3"
+  ],
+  "claimSha256": "12affd068d2e3a95de92d631ffe87a540eda5a5f0b67dbb3729e219e6fac60c3",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8716,
+    "endLine": 8810
+  },
+  "ingestionRun": {
+    "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+    "runStartedAt": "2026-04-29T22:00:00Z",
+    "caseId": "icao4444_aerodrome_traffic_family",
+    "models": {
+      "structure": "manual_rr17_coverage_review",
+      "extraction": "manual_rr17_coverage_review",
+      "challenge": "manual_rr17_coverage_review",
+      "defense": "manual_rr17_coverage_review",
+      "bundleGate": "manual_rr17_coverage_review",
+      "judge": "manual_rr17_coverage_review"
+    },
+    "promptVersion": "manual_rr17_coverage_review",
+    "promptVersionSha": "manual_rr17_coverage_review",
+    "originalCandidateId": "manual_rr17_pos3_takeoff_clearance_normal_position"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_add_accept",
+      "reasoning": "Adds the source-supported Position 3 fact with corrected non-mandatory wording after the original shall-strength candidate was rightly rejected.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T22:00:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T22:00:00Z",
+    "promotedFrom": "manual RR-17 coverage ledger repair",
+    "curatedAt": "2026-04-29T22:00:00Z"
+  }
+}

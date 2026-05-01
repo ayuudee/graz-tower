@@ -1,0 +1,11 @@
+{
+  "documentId": "h01-extracted",
+  "sectionId": "end_of_conversation_3_8_2",
+  "familyId": "h01_end_of_conversation_family",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+  "startLine": 4339,
+  "endLine": 4348,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

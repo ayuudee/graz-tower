@@ -1,0 +1,20 @@
+{
+  "canonicalId": "egast-vfr-extracted::readback_advisory::60929bb516ae7098",
+  "documentId": "egast-vfr-extracted",
+  "sectionId": "readback_advisory",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.87,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim and supports the claim as an advisory best-practice statement, with no identity-field problem. The candidate is atomic and is not already covered by the accepted siblings; the pending status appears to stem from the advisory-only handling rather than a substantive defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/egast-vfr-extracted/readback_advisory/egast-vfr-extracted::readback_advisory::60929bb516ae7098.json",
+    "toPath": "candidates/egast-vfr-extracted/readback_advisory/egast-vfr-extracted::readback_advisory::60929bb516ae7098.json"
+  },
+  "curatedAt": "2026-04-29T09:08:52Z"
+}

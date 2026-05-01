@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::2198f6235c44d5d7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.37,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not verbatim in the source window because it uses an ellipsis and omits intervening subconditions. Since quotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying VMC transfer requirement being substantively present.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::2198f6235c44d5d7.json",
+    "toPath": "rejected/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::2198f6235c44d5d7.json"
+  },
+  "curatedAt": "2026-04-29T09:18:45Z"
+}

@@ -1,0 +1,38 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.3.2.1.2:full-document",
+  "bundleId": "icao4444-extracted:4.3.2.1.2",
+  "promotionBasis": {
+    "promotionMode": "deterministic_seeded_full_document",
+    "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+    "policyId": "icao4444-downstream-policy",
+    "sourceRunManifest": "/tmp/icao4444-pipeline-widening-pre-fixture/run_manifest.json",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+  },
+  "authorityClass": "operational_guidance",
+  "verificationMode": "review_only",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.3.2.1.2:arriving_transfer_timing",
+      "claimText": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time that clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely manner.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444::numeric_clause::01330::unit"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "unit providing approach control service",
+        "aerodrome controller"
+      ],
+      "requiredBehaviour": [
+        "effect transfer of communications to the aerodrome controller at a point, level or time that still permits timely landing clearance or alternative instructions and essential local traffic information"
+      ],
+      "applicability": [
+        "when transferring communications for arriving aircraft to the aerodrome controller"
+      ],
+      "sourceSupport": [
+        "Transfer of communications to the aerodrome controller should be effected at such a point, level or time",
+        "that clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely manner."
+      ]
+    }
+  ]
+}

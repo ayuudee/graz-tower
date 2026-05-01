@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departing_aircraft_7_9::770b652d9783ff76",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_7_9",
+  "familyId": "icao4444_departing_aircraft_family",
+  "claimText": "Take-off clearance may be issued to an aircraft when there is reasonable assurance that the separation in 7.9.2, or prescribed in accordance with 7.11, will exist when the aircraft commences take-off.",
+  "rationale": "Prerequisite condition for issuing take-off clearance.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Take-off clearance may be issued to an aircraft when there is reasonable assurance that the separation in 7.9.2, or prescribed in accordance with 7.11, will exist when the aircraft commences take-off."
+  ],
+  "sourceItemIds": [
+    "7.9.3.1"
+  ],
+  "claimSha256": "da864de42fa347e2c7ea0c916e490cf62d2f3e73c376954387643a99f65f6d3e",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9031,
+    "endLine": 9110
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_departing_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "dep_clearance_separation_assurance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim text is verbatim supported by the source and the modality is correctly captured as permissive \"may\". Under the authority floor rules, a \"may\" statement cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:13:42Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/departing_aircraft_7_9/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:13:42Z"
+  }
+}

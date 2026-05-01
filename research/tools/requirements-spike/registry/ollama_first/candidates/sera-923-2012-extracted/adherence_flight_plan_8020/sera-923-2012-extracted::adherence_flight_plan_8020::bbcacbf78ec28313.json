@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::bbcacbf78ec28313",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "adherence_flight_plan_8020",
+  "familyId": "sera_clearance_comms_contract_family",
+  "claimText": "An aircraft operating along an ATS route segment defined by VOR shall change over for its primary navigation guidance from the facility behind the aircraft to that ahead of it at, or as close as operationally feasible to, the changeover point, where established, unless otherwise authorised or directed.",
+  "rationale": "Mandatory procedure for VOR navigation changeover points.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "an aircraft operating along an ATS route segment defined by reference to very high frequency omnidirectional radio ranges shall change over for its primary navigation guidance from the facility behind the aircraft to that ahead of it at, or as close as operationally feasible to, the changeover point, where established"
+  ],
+  "sourceItemIds": [
+    "sera_8020_a_2"
+  ],
+  "claimSha256": "d7acc5767fc70adfe8c64f8b06ad75b000f1adba190a8fa1de5f1078abbc8390",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2072,
+    "endLine": 2129
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+    "caseId": "sera_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8020_a_2_nav_changeover",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-01T10:49:29Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/sera-923-2012-extracted/adherence_flight_plan_8020/judged_candidates.json"
+  }
+}

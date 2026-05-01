@@ -1,0 +1,17 @@
+{
+  "document": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "fixtureCount": 10,
+  "fixtures": [
+    "tranche_exit_4_3_2_1_1.json",
+    "tranche_exit_4_3_2_1_2.json",
+    "tranche_exit_4_3_2_1_3.json",
+    "tranche_exit_4_5_7_5_1.json",
+    "tranche_exit_4_5_7_5_1_1.json",
+    "tranche_exit_4_5_7_5_2.json",
+    "tranche_exit_4_5_7_5_2_1.json",
+    "appendix_var_form_stub_window.json",
+    "appendix_route_examples_table_window.json",
+    "appendix_supplementary_data_table_window.json"
+  ]
+}

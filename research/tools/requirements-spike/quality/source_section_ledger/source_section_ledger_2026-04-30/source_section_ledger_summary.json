@@ -1,0 +1,41 @@
+{
+  "by_disposition": {
+    "background_only": 13,
+    "defer_with_reason": 100,
+    "duplicate_subset": 3,
+    "extract": 93,
+    "extracted_current": 45,
+    "manifest_only": 19,
+    "out_of_scope": 13,
+    "partially_extracted": 12,
+    "support_only": 183
+  },
+  "by_document": {
+    "cap413-aerodrome-chapter": 1,
+    "cap413-extracted": 49,
+    "egast-vfr-extracted": 9,
+    "h01-aerodrome-chapter": 1,
+    "h01-extracted": 53,
+    "icao4444-extracted": 146,
+    "icao9432-aerodrome-chapter": 1,
+    "icao9432-extracted": 94,
+    "nolan-fundamentals-extracted": 13,
+    "safetysense22-extracted": 30,
+    "sera-923-2012-extracted": 71,
+    "slovenia-vfr-extracted": 13
+  },
+  "by_priority": {
+    "high": 102,
+    "low": 47,
+    "medium": 258,
+    "none": 74
+  },
+  "generated": "2026-05-01",
+  "high_priority_extract_or_partial_count": 83,
+  "high_priority_rows_needing_exact_windows": 83,
+  "landed_manifest_window_rows": 30,
+  "ledger_row_count": 481,
+  "manifest_only_window_rows": 16,
+  "manifest_window_rows": 46,
+  "scope_note": "TOC/major-section granularity plus exact manifest windows; not paragraph-level atomization."
+}

@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atc_service_8005",
+  "familyId": "sera_atc_service_family",
+  "claimText": "A flight may be cleared subject to maintaining own separation in respect of a specific portion of the flight below 3 050 m (10 000 ft) during climb or descent, during day in visual meteorological conditions, when requested by the pilot of an aircraft and agreed by the pilot of the other aircraft and if so prescribed by the competent authority for the cases listed under b) above in airspace Classes D and E.",
+  "rationale": "Direct authoritative exception from SERA.8005(b) allowing reduced separation under specific conditions in Class D/E.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "except that, when requested by the pilot of an aircraft and agreed by the pilot of the other aircraft and if so prescribed by the competent authority for the cases listed under b) above in airspace Classes D and E, a flight may be cleared subject to maintaining own separation in respect of a specific portion of the flight below 3 050 m (10 000 ft) during climb or descent, during day in visual meteorological conditions."
+  ],
+  "sourceItemIds": [
+    "sera_8005_b_except"
+  ],
+  "claimSha256": "88b1d82877f23812f0e812bdeca346c64a3b10d41c0bcf13802439bb2e48abeb",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 1934,
+    "endLine": 1973
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "sera_atc_service_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8005_b_except_own_sep",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and the claim accurately reflects the permissive exception in SERA.8005(b). Because the source uses \u201cmay,\u201d the modality is correct, but under the authority floor table a may-statement cannot remain classified as authoritative_requirement and should be lowered one rung.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:24:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/sera-923-2012-extracted/atc_service_8005/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:24:45Z"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atc_service_8005::dd09fb0eb790d595",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atc_service_8005",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.81,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source text verbatim supports an authoritative shall requirement for longitudinal horizontal separation, using the parent operative clause in SERA.8005(c). The accepted lateral-separation sibling is complementary rather than redundant, and the candidate is an atomic item rather than an umbrella requiring rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atc_service_8005/sera-923-2012-extracted::atc_service_8005::dd09fb0eb790d595.json",
+    "toPath": "candidates/sera-923-2012-extracted/atc_service_8005/sera-923-2012-extracted::atc_service_8005::dd09fb0eb790d595.json"
+  },
+  "curatedAt": "2026-04-29T09:25:21Z"
+}

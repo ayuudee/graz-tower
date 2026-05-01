@@ -1,0 +1,115 @@
+{
+  "profileId": "controller_readback_v1",
+  "profileVersion": "2026-04-24-v1",
+  "sourceDocumentId": "icao4444-extracted",
+  "targetLayer": "controller_readback",
+  "generationMode": "deterministic_seeded_safe_case_v1",
+  "supportedCases": [
+    {
+      "caseId": "case-icao4444-4.5.7.5.1-route-clearance-controller-readback-v1",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_route_clearances"
+      ],
+      "supportedFacetIds": [
+        "route_clearances"
+      ],
+      "goal": "Verify that route clearance instructions are treated as requiring pilot readback and do not transition to successful acknowledgement on silence or non-readback acknowledgement.",
+      "instructionFamilies": [
+        "ClearedTo",
+        "ProceedDirect",
+        "WhenAbleProceedDirect",
+        "ResumeOwnNavigation",
+        "RouteAsFiled",
+        "JoinAirway",
+        "RejoinSidAt",
+        "LeaveHoldProceedDirect"
+      ],
+      "expectedObservations": [
+        "The controller marks supported route-clearance instructions as requiring readback.",
+        "A correct route readback satisfies the requirement.",
+        "Silence or a generic acknowledgement without the route readback does not satisfy the requirement.",
+        "Incorrect route readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+      ]
+    },
+    {
+      "caseId": "case-icao4444-4.5.7.5.1-runway-movement-controller-readback-v1",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_runway_movements"
+      ],
+      "supportedFacetIds": [
+        "runway_movements"
+      ],
+      "goal": "Verify that runway movement clearances and instructions are treated as requiring pilot readback and do not transition to successful acknowledgement on silence or non-readback acknowledgement.",
+      "instructionFamilies": [
+        "LineUpAndWait",
+        "ClearedToLand",
+        "ClearedForTakeoff",
+        "HoldShortOf",
+        "CrossRunway",
+        "TaxiViaRunway",
+        "BacktrackRunway"
+      ],
+      "expectedObservations": [
+        "The controller marks supported runway movement instructions as requiring readback.",
+        "A correct runway movement readback satisfies the requirement.",
+        "Silence or a generic acknowledgement without the required runway movement readback does not satisfy the requirement.",
+        "Incorrect runway movement readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+      ]
+    },
+    {
+      "caseId": "case-icao4444-4.5.7.5.1-operational-items-supported-controller-readback-v1",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_runway_altimeter_ssr_levels"
+      ],
+      "supportedFacetIds": [
+        "altimeter_settings",
+        "ssr_codes",
+        "level_instructions",
+        "heading_instructions",
+        "speed_instructions"
+      ],
+      "blockedSiblingFacetIds": [
+        "runway_in_use",
+        "transition_levels"
+      ],
+      "goal": "Verify that the supported operational-item subfamily is treated as requiring pilot readback and does not transition to successful acknowledgement on silence or non-readback acknowledgement.",
+      "instructionFamilies": [
+        "SetPressure",
+        "SetSquawk",
+        "ClimbTo",
+        "DescendTo",
+        "MaintainLevel",
+        "FlyHeading",
+        "TurnHeading",
+        "MaintainSpeed",
+        "ReduceSpeedTo",
+        "IncreaseSpeedTo"
+      ],
+      "expectedObservations": [
+        "The controller marks supported operational-item instructions as requiring readback.",
+        "A correct supported operational-item readback satisfies the requirement.",
+        "Silence or a generic acknowledgement without the supported operational-item readback does not satisfy the requirement.",
+        "Incorrect supported operational-item readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+      ]
+    }
+  ],
+  "blockedResiduals": [
+    {
+      "residualId": "residual-icao4444-4.5.7.5.1-operational-items-unmodelled-controller-readback-v1",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_runway_altimeter_ssr_levels"
+      ],
+      "blockedFacetIds": [
+        "runway_in_use",
+        "transition_levels"
+      ],
+      "blockedReason": "missing_instruction_model",
+      "requiredModelGap": "The current instruction model has no standalone ATC instruction types for explicit runway-in-use advisories or transition-level issuance."
+    }
+  ],
+  "notes": [
+    "This profile is deliberately narrow and only covers the first seeded proof case.",
+    "Supported cases must not imply support for blocked sibling facets.",
+    "The operational-item family is split explicitly because the source clause is broader than the current downstream capability surface."
+  ]
+}

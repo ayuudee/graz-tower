@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::wake_turbulence_5_8::fe4b6bb1fe26e2cd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_5_8",
+  "familyId": "icao4444_wake_turbulence_family",
+  "claimText": "A separation minimum of 3 minutes shall be applied between a LIGHT or MEDIUM aircraft when taking off behind a HEAVY aircraft or a LIGHT aircraft when taking off behind a MEDIUM aircraft from an intermediate part of the same runway.",
+  "rationale": "Specific quantitative separation minima for departing aircraft from intermediate runway positions.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "A separation minimum of 3 minutes shall be applied between a LIGHT or MEDIUM aircraft when taking off behind a HEAVY aircraft or a LIGHT aircraft when taking off behind a MEDIUM aircraft from:",
+    "a) an intermediate part of the same runway; or"
+  ],
+  "sourceItemIds": [
+    "5.8.3.2",
+    "5.8.3.2a"
+  ],
+  "claimSha256": "7f796128c7911bcce6cf4878e2f1311a5b4d91dde8f649380083d66a3ddaa749",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6487,
+    "endLine": 6584
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_wake_turbulence_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "wake_dep_3min_intermediate",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_corrected_replacement_accept",
+      "confidence": "high",
+      "reasoning": "Corrected quote shape for an ICAO 4444 wake-turbulence separation rule and promoted it.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Corrected quote shape for an ICAO 4444 wake-turbulence separation rule and promoted it.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "icao4444-extracted::wake_turbulence_5_8::341594e5786999a5"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

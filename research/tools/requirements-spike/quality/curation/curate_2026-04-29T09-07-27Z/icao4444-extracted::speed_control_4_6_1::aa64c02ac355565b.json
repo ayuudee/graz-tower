@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::aa64c02ac355565b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.88,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source, and the candidate accurately preserves the source\u2019s 'should' modality as operational guidance. It is an atomic clause not already covered by the accepted siblings, and all gate audits passed; the judge\u2019s advisory-only demotion does not identify a source or schema defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::aa64c02ac355565b.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::aa64c02ac355565b.json"
+  },
+  "curatedAt": "2026-04-29T09:17:12Z"
+}

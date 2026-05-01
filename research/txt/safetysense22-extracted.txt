@@ -1,0 +1,2002 @@
+T
+EP
+
+23
+
+S
+
+RADIOTELEPHONY
+FOR GENERAL AVIATION PILOTS
+
+SAF
+
+NSE
+
+ETY SE
+SSL 22
+
+CAA / September 2023
+
+YOUR SAFETY SENSE LEAFLET FOR:
+
+RADIOTELEPHONY
+
+Correct radiotelephony (RTF) is essential for the safe operation of aircraft in a busy
+air traffic environment. However, many student and qualified pilots find the subject
+challenging to master.
+This leaflet provides guidance on RTF for General Aviation (GA) pilots flying
+under Visual Flight Rules (VFR). It includes some key material from CAP 413:
+Radiotelephony Manual and the Skyway Code.
+Requirements for standardised RTF phraseology are set out in Section 14 of the
+UK Standardised European Rules of the Air (UK Part-SERA). CAP 413 contains
+guidance on RTF in the UK and highlights phraseology that is additional to
+the ICAO standard.
+
+Table of contents
+Radio Licensing and Approval
+3
+Radio Equipment		
+3
+Frequency selection		
+3
+Volume & Squelch		
+4
+Intercom			4
+Transponder			5
+Frequency Monitoring Codes
+5
+Making radio Calls		
+6
+Use of Callsigns			
+6
+Readbacks			7
+Changing frequency		
+7
+Aerodrome operations		
+8
+In the Circuit			
+8
+ATC Aerodrome			9
+Aerodrome Flight			12
+Information Service
+Air/Ground 			15
+Communication Service
+
+Unattended Aerodrome		
+17
+UK Flight Information Services 19
+UK FIS Sectors			
+20
+Lower Airspace Radar Services
+21
+Requesting a UK Flight 		
+22
+Information Service
+Transit of Controlled Airspace
+23
+Special VFR			24
+Military ATC			25
+Military Air Traffic Zone		
+25
+Mayday or Pan call		 27
+Radio Failure			
+29
+Lost procedures			30
+Further Reading			30
+
+Safety Sense / 02 / Radiotelephony
+
+2
+
+CAA / September 2023
+
+RADIOTELEPHONY
+Radio Licensing and Approval
+It is a requirement in most circumstances when
+operating an aeronautical radio to hold a Flight
+Radiotelephony Operators Licence (FRTOL).
+The FRTOL is issued by the CAA and can be
+either stand-alone or in conjunction with a flight
+crew licence.
+
+An Aircraft Radio Licence is required for radio
+equipment installed in an aircraft. A Transportable
+Radio Licence is required for any hand-held
+VHF radio transmitting equipment that has an
+integral antenna and power supply. Aircraft Radio
+Licences are issued by Ofcom.
+
+Glider pilots and student pilots under training
+are, subject to certain conditions, exempt
+from the requirement to hold a FRTOL under
+Article 139 of the Air Navigation Order 2016.
+However, glider pilots without an FRTOL are not
+permitted to use the radio to communicate with
+an Air Traffic Service Unit (ATSU) or Air/Ground
+Communication Service (AGCS).
+
+The aircraft radio equipment, whether installed
+or hand-held, is also required to be approved by
+the CAA.
+Note that many hand-held radios with 8.33 kHz
+channel spacing are subject to a general CAA
+Light Aircraft Class 3 Equipment Approval – see
+the Aircraft Equipment page of the CAA website
+for more details.
+
+Radio Equipment
+Frequency selection
+Aircraft VHF radios for voice communication
+operate in the aeronautical frequency band
+117.975 MHz to 137.000 MHz with an 8.33 kHz
+channel spacing. 8.33 kHz gives the potential for
+2280 individual channels within the band. Some
+VHF radio equipment also includes coverage of
+the aeronautical radio navigation band 108.000
+MHz – 117.975 MHz which is used by radio
+navigation facilities such as VOR and ILS.
+On some radios an additional switch selection
+is necessary to adjust the smaller decimals of
+a frequency. This may take the form of a toggle
+switch or require a rotary knob to be pulled
+out. The channel spacing may also need to be
+specifically set to 8.33 kHz. VHF radios are often
+integrated with other systems, such as a
+GNSS navigation device. On some modern
+integrated systems, inputs are made via a
+touchscreen, which allows the user to type in
+the desired frequency.
+
+Always review the applicable user manuals
+and seek instruction if you are unfamiliar
+with a particular radio installation. Avionics
+and devices such as VFR Moving Maps or
+Electronic Conspicuity may cause serious
+distraction in flight if you do not familiarise
+yourself with them first.
+
+Safety Sense / 02 / Radiotelephony
+
+3
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Volume & Squelch
+‘Squelch’ is an electronic
+switch that mutes the receiver
+audio output when very weak
+or no signal is received. This is
+designed to reduce operator
+fatigue from the background
+audio noise that would
+otherwise be continuously
+outputted by the radio.
+When a continuous radio
+signal is received, this lifts
+the squelch so that the
+transmission can be heard.
+Where a variable squelch
+control is fitted, this allows
+the operator to determine
+the strength of the signal
+required to lift the squelch,
+which may also be activated
+by bursts of noise.
+
+Procedure for manual
+squelch setting:
+>
+
+set the volume control to
+approximately halfway;
+
+>
+
+turn the squelch up until
+a ‘hiss’ can be heard,
+this is the background
+‘static’ noise;
+
+>
+
+turn the squelch back
+until the hiss has just
+stopped (this should
+occur abruptly); and
+
+>
+
+leave the squelch control
+in this position.
+
+On some radios the squelch
+function is automatic - these
+sets will typically have a ‘TEST’
+switch which removes the
+squelch. Lifting the squelch
+allows the user to assess the
+volume setting against the
+background noise or to
+receive a weak signal, for
+example a distant ATIS
+broadcast that would
+otherwise be filtered out.
+The squelch cannot be set
+correctly while you are
+receiving a transmission.
+If the volume control is set
+excessively high, sound
+distortion may occur.
+Ideally the volume control
+should not exceed 70% of
+the available range.
+
+Intercom
+Aircraft are normally fitted with an intercom which allows dialogue between the occupants of the
+aircraft wearing headsets. The intercom and any headset controls should be checked and adjusted
+independently of the radio. Obtain a good balance between intercom and radio volume
+- if the intercom is too loud, radio calls may be missed if they occur during conversation.
+Some intercoms incorporate a squelch
+function as well - this controls the volume
+threshold at which the intercom will
+activate and is separate from the radio
+transmission squelch.
+Always refer to the user guide for the
+radio equipment fitted to your aircraft, as
+procedures will vary.
+
+Safety Sense / 02 / Radiotelephony
+
+4
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Transponder
+
+4 nm
+
+2000 ft
+
+Most light aircraft are equipped
+with a transponder which
+transmits a 4-digit Secondary
+Surveillance Radar (SSR)
+code, commonly known as
+a ‘squawk’ code. The code
+is then displayed on the
+surveillance screens of air
+traffic service units (ATSU).
+The SSR code allows an
+air traffic controller to
+identify a radar return as a
+specific aircraft.
+Transponder operation
+
+IDENT
+VFR
+
+ALT
+
+7000
+
+SBY
+
+ON
+
+and 2000 for IFR. Note 2000
+for IFR is not used in all ICAO
+states, check the relevant state
+AIP for more information.
+There are also codes to
+indicate non-normal situations:
+>
+
+7500 - aircraft is subject
+to unlawful interference
+
+>
+
+7600 - radio
+communication failure
+
+>
+
+7700 - emergency
+
+>
+
+0030 - lost (UK procedure)
+
+ALT
+
+OFF
+
+An SSR code is either issued
+to a specific aircraft by an
+ATSU or, if no specific code
+has been issued, one of the
+‘conspicuity’ codes should be
+selected by the pilot to indicate
+the flight rules under which the
+aircraft is flying – 7000 for VFR,
+
+Almost all transponders
+will now incorporate Mode C
+(Charlie), which transmits
+the aircraft’s level
+(relative to 1013.2 hPa)
+alongside the squawk code.
+Transmission of level
+information requires the
+‘Altitude’ (ALT) function to
+be selected.
+
+Always select ALT by default,
+unless otherwise dictated
+by local procedure or ATC.
+Adjustment of the aircraft’s
+altimeter pressure setting
+has no effect on the altitude
+information sent by
+the transponder.
+Most transponders now also
+feature Mode S (Sierra), which
+includes enhanced aircraft
+identification and the potential
+to display more data regarding
+the flight. Information on Mode
+S equipage requirements is
+contained in the UK AIP and
+Skyway Code.
+Pressing the ‘IDENT’ button
+highlights the aircraft’s return
+on the surveillance display,
+enabling ATC to identify a
+particular aircraft. Only operate
+the function when instructed
+by ATC to ‘squawk IDENT’.
+
+Frequency Monitoring Codes
+A Frequency Monitoring Code (FMC) is a squawk
+code for use by aircraft monitoring the frequency
+of a particular ATSU, without having established
+communication. You might use an FMC if a
+frequency is very busy or if you do not wish to
+request an air traffic service. More information
+on FMCs can be found in the UK AIP, ENR 1.6.
+A map of FMCs is available via the Airspace &
+Safety Initiative (ASI) and in the Skyway Code.
+
+FMCs allow surveillance equipped ATSUs to
+identify aircraft that are listening to a particular
+frequency and therefore enable contact to be
+made if necessary – for example if the aircraft
+has (or appears to be about to) infringed
+controlled airspace (CAS).
+When leaving the relevant frequency, remember
+to return the squawk to the appropriate
+conspicuity code or another applicable FMC.
+
+Note: Use of an FMC does not guarantee a warning will be issued to an aircraft before an airspace infringement may occur,
+however it will allow ATC to make swift contact with the aircraft and reduce the severity of the infringement.
+
+Safety Sense / 02 / Radiotelephony
+
+5
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Making Radio Calls
+Always use the standard phrases and procedures. Unnecessarily long or imprecise radio calls waste
+time and may delay others from using the frequency. Only revert to ‘plain language’ when you need to
+convey something outside the normal RTF vocabulary.
+When two stations transmit simultaneously on the same frequency the signals can mix and this
+normally renders one or both transmissions unreadable. Always listen before speaking and
+keep transmissions concise.
+When speaking:
+>
+
+>
+
+To assist the vocal clarity of transmissions:
+
+Avoid unnecessary ‘filler’ words
+such as ‘this is’, ‘and’ or ‘with you’
+at the start of transmissions; and
+
+>
+
+Keep the microphone close to your mouth;
+
+>
+
+Speak directly into the microphone; and
+
+Avoid using voice inflections to imply
+meaning, for example to ask question –
+instead use a questioning word or phrase,
+e.g., “Confirm descent to altitude three
+thousand feet?”
+
+>
+
+Ensure that the transmit button is
+firmly pressed prior to speaking and
+not released until you have finished.
+
+Use of Callsigns
+When making an initial call,
+you should address the name
+of the station you are calling,
+followed by your own callsign.
+
+Aircraft
+”Gatwick Approach,
+G-ABCD”
+
+“G-ABCD, Gatwick
+Approach, pass
+your message”
+ATC
+
+“G-CD,
+hold position”
+
+When making further calls,
+just give your own callsign.
+Only reply with an abbreviated
+callsign if the ATSU has
+addressed you as such.
+
+Aircraft
+“G-ABCD, ready
+for departure”
+
+When responding to another
+station, give the response
+then finish with your callsign.
+
+ATC
+
+“G-CD, runway 06,
+surface wind 270o/15
+kts, cleared for take-off”
+ATC
+
+Aircraft
+
+“Runway 06,
+cleared for
+take-off,
+G-CD”
+
+Safety Sense / 02 / Radiotelephony
+
+6
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Readbacks
+The following items must be read back in their entirety if addressed to you in a transmission
+from an ATSU:
+1.
+
+Taxi/towing instructions
+
+2.
+
+Level instructions
+
+3.
+
+Heading instructions
+
+4.
+
+Speed instructions
+
+5.
+
+Airway or enroute clearances
+
+6.
+
+Approach clearances
+
+7.
+
+Runway-in-use
+
+8.
+
+Clearance to take off or land
+
+9.
+
+Clearance to enter, backtrack, cross,
+or hold short of an active runway
+
+10.
+
+Transponder instructions
+(squawk codes and Ident)
+
+11.
+
+Altimeter settings (including units when
+the setting is below 1000 hectopascals)
+
+12.
+
+VDF information
+
+13.
+
+Frequency changes
+
+14.
+
+Type of ATS service
+
+15.
+
+Transition Levels
+
+Changing frequency
+When you wish to change to another frequency, inform the associated station (or via blind
+call for an unattended frequency) that you are leaving the frequency and your subsequent intentions.
+Set the appropriate conspicuity squawk code or frequency monitoring code (FMC), with the ‘ALT’
+function selected.
+
+Aircraft
+“G-CD, changing to Wrayton
+Information 124.750”
+
+“G-CD, roger”
+ATC
+
+Safety Sense / 02 / Radiotelephony
+
+7
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Aerodrome operations
+In the Circuit
+The circuit can be a busy place where multiple aircraft operate in close proximity. Position reports on
+the radio are an important source of situational information for pilots, helping them to avoid collisions.
+It is therefore important that you make the correct radio calls when in the circuit.
+
+Circuit Radio Calls
+DEADSIDE
+
+Final
+‘Final’ radio call
+
+LIVESIDE
+
+Crosswind leg
+
+Base leg*
+
+‘Downwind’ radio call
+Downwind leg
+Late downwind*
+
+*Announce these positions if it would
+enhance situational awareness or if calls
+were not possible at the standard positions.
+
+At most aerodromes, pilots are expected to report when on the downwind leg and on final approach
+to land. In some situations extra calls such as ‘base leg’ may be advisable, to assist the situational
+awareness of others. When joining the circuit, be clear about your intentions - for example when
+making an overhead join, report in the overhead and when descending ‘deadside’.
+
+COMMON ERROR: INCORRECT ‘FINAL’ CALL
+‘Final’ (singular) is a position in the circuit
+pattern between four nautical miles (NM)
+and the landing threshold. ‘Long final’ is a
+position between four and eight NM from
+the threshold.
+
+There is no official report ‘short final’,
+however if you need to report proximity
+to the landing threshold, specifying the
+distance is a more useful indication of
+position, e.g., announce ‘half-mile final’.
+
+Safety Sense / 02 / Radiotelephony
+
+8
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+ATC Aerodrome
+Some aerodromes operate an Air Traffic Control
+Service (ATC). ATC can only be provided by
+Air Traffic Control Officers (ATCO). ATC may
+issue clearances and instructions to aircraft on
+the ground and in the air, within the applicable
+area of operation. Within the aerodrome air
+traffic zone (ATZ) or controlled airspace (CAS),
+compliance with ATC instructions is mandatory.
+
+ATC services at an aerodrome will often be split
+between an approach control service (callsign
+‘Approach’ or ‘Radar’) and an Aerodrome
+Control Service (callsign ‘Tower’). Where both
+services are in operation, an approach controller
+will be your first point of contact and they will
+pass you over to ‘Tower’ as you get closer to the
+aerodrome. Larger aerodromes may also have a
+ground control frequency (callsign ‘Ground’).
+
+Arrival
+When arriving at an ATC aerodrome you
+should call 15 NM or 5 minutes flying
+time from the ATZ boundary (whichever is
+greater) and request joining instructions
+– this will give the controller time to plan
+your arrival:
+>
+
+>
+
+Pilots should state their intention
+on initial call (e.g., request
+[circuit] join) – this will help ATC
+distinguish joining traffic from
+traffic requesting other services.
+Where an Aeronautical Terminal
+Information Service (ATIS) frequency
+is established at an aerodrome,
+receipt of the broadcast should be
+acknowledged in the initial call.
+
+Aircraft
+“Biggin
+Approach,
+G-ABCD,
+request join”
+
+“G-ABCD, Biggin
+Approach, pass
+your message”
+ATC
+
+Aircraft
+“Biggin Approach,
+G-ABCD,
+Information Bravo,
+request join”
+
+“G-ABCD,
+Biggin
+Approach,
+pass your
+message”
+ATC
+
+Safety Sense / 02 / Radiotelephony
+
+9
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Arrival - Continued
+When invited to pass message, you should pass details of your aircraft, location and altitude:
+Aircraft
+“G-ABCD, C172
+inbound from
+Stourton, 10 miles
+west, altitude 2500 ft
+QNH 1010”
+
+Aircraft
+“G-CD, join
+right-hand
+downwind
+runway 21,
+QFE 1006”
+
+“Join right-hand
+downwind
+runway 21, QFE
+1006, G-CD”
+
+ATC
+A controller may instruct a pilot to report at a specific position. This could be part of the established
+circuit, or it may be a position relative to one of the aerodrome’s established Visual Reference Points
+(VRPs). You may be asked to route via a position not obvious to you - if in doubt, request clarification.
+Simple instructions to report at a particular location do not require readback. Confirm that you have
+understood and will comply – ‘wilco’:
+ATC
+“G-CD, report downwind”
+
+“Wilco, G-CD”
+Aircraft
+
+ATC will provide pilots with details of other traffic in the circuit and may assign a priority order for
+landing. This priority order must be complied with:
+Aircraft
+“G-CD, downwind”
+
+“G-CD, number
+2, follow the
+Cherokee on base”
+
+Aircraft
+“Number 2, Cherokee
+in sight, G-CD”
+
+ATC
+You must only land at an ATC aerodrome when you have received the appropriate clearance:
+Aircraft
+“G-CD, final”
+
+“G-CD, runway
+21, surface wind
+270o/7 kts,
+cleared to land”
+
+Aircraft
+“Runway 21 cleared
+to land, G-CD”
+
+ATC
+
+Safety Sense / 02 / Care of Passengers
+
+10
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Departure
+Taxi instructions issued by an air traffic controller will always contain a clearance limit, which is the
+point at which the aircraft must stop, unless further permission to proceed is given. For departing
+aircraft, the clearance limit will normally be the holding point of the runway in use, but it may be any
+position on the aerodrome, depending on the prevailing traffic.
+Taxi requests should include information on type of aircraft, parking location and details of the flight to
+be undertaken, including persons on board (POB):
+Aircraft
+“Borton Tower,
+G-ABCD, Cessna
+172 on the
+northern apron,
+request taxi for
+VFR flight to North
+Weald, 2 POB”
+
+Aircraft
+“G-ABCD, taxi
+holding point G2
+runway 24 via
+taxiway Charlie,
+QNH 1020”
+
+“Taxi holding
+point G2 runway
+24 via taxiway
+Charlie, QNH
+1020, G-ABCD”
+
+ATC
+If an ATIS broadcast has been received, this should be included as part of your initial call. When
+including the ATIS information letter, also include the QNH as ATC will check you have this correct.
+When you have completed checks and are ready to get airborne, indicate this to an ATC by saying
+‘ready for departure’. When the runway is free, ATC will then issue a take-off clearance. You should
+not say the words ‘take-off’ until the appropriate clearance has been received:
+Aircraft
+
+Aircraft
+“G-CD, ready for
+departure”
+
+“G-ABCD, cleared for
+take-off”
+
+“Cleared for
+take-off, G-CD”
+
+ATC
+
+Safety Sense / 02 / Radiotelephony
+
+11
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Aerodrome Flight Information Service
+An Aerodrome Flight Information Service (AFIS) can be identified by the callsign suffix
+‘Information’. AFIS provides information to pilots for the conduct of their flight at an aerodrome
+and within the associated ATZ. In the UK, an AFIS is permitted to issue mandatory instructions to
+aircraft on the ground up until the aircraft passes a runway holding point. Note this is a UK
+difference from ICAO, in most states AFIS does not issue instructions at all.
+AFIS units do not issue instructions to aircraft in the air, however they may request position
+reports that are consistent with the aerodrome’s published traffic procedures. An AFIS unit will
+usually pass information about known traffic in the vicinity of the aerodrome, although this should
+be treated as advisory only.
+
+Arrival
+Your request should be included in an initial call to an AFIS station. A request to join the aerodrome
+traffic circuit should be made in advance of arrival at the ATZ boundary:
+Aircraft
+“Duxford
+Information,
+G-ABCD,
+request join”
+
+“G-ABCD, Duxford
+Information, pass
+your message”
+AFIS
+
+Aircraft
+“G-ABCD, 10 NM
+south of Duxford,
+descending to
+height 1000 ft”
+
+Aircraft
+“Runway 24L,
+left-hand
+circuit, QFE
+1019, G-ABCD”
+
+“G-ABCD, runway
+24L, left-hand
+circuit, QFE 1019”
+AFIS
+
+Rule 11 of the UK Rules of the Air 2015 requires that pilots report their position and height when
+entering or leaving an ATZ.
+
+Aircraft
+“G-ABCD, entering
+the ATZ from the
+south, 1000 ft”
+
+Aircraft
+“G-CD, roger,
+report joining
+downwind”
+
+“Wilco, G-CD”
+
+AFIS
+
+Safety Sense / 02 / Radiotelephony
+
+12
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Arrival - Continued
+When in the circuit, the FISO may request additional position reports, or they may simply ask you to
+report ‘Final’. They should advise if any traffic is ahead of you:
+
+Aircraft
+“G-CD joining
+downwind”
+
+Aircraft
+
+“G-CD roger, 1
+ahead, PA28
+late downwind,
+report final
+runway 24L”
+AFIS
+
+“Wilco, G-CD”
+
+The term “land at your discretion” is used by AFISOs to aircraft on final. It emphasises that it is the
+pilot’s decision whether to land or not. “Land at your discretion” is not a clearance to land. Pilots must
+exercise their own judgement and ensure the runway is clear before landing.
+
+Aircraft
+“G-CD, final 24L”
+
+Aircraft
+“G-CD surface wind
+280o/9 kts, runway
+24L, land at your
+discretion”
+
+“Landing 24L,
+G-CD”
+
+AFIS
+
+COMMON ERROR – USE OF TERM “DISCRETION”
+At Aerodromes with an Aerodrome Flight Information Service (AFIS), the phrase “at your
+discretion” is used to indicate that the Flight Information Service Officer (FISO) is not issuing
+a clearance. Pilots should not respond using the phrase “at my discretion” but instead reply
+with their intentions, for example “landing”.
+
+Safety Sense / 02 / Radiotelephony
+
+13
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Departure
+When making an initial departure call to an AFIS, you should provide details of your aircraft, parking
+location and the flight to be undertaken. This will prompt the FISO to give you the QNH, runway in
+use and taxi instructions.
+
+Aircraft
+“Duxford Information,
+G-ABCD, Cessna 172 on the
+eastern apron, request taxi
+for VFR flight to Beccles,
+2 POB”
+
+“G-ABCD, Duxford
+Information, taxi
+holding point Echo for
+runway 24L, left-hand
+circuit, QNH 1024”
+AFIS
+
+Once at the hold and any necessary checks complete, report “ready for departure”. It is not correct
+to report “ready for take-off”. Only use the phrase “take-off” or “taking off” when announcing your
+intention to do so.
+
+Aircraft
+“G-ABCD,
+holding at
+Echo, ready
+for departure”
+
+“G-CD roger, no
+reported traffic,
+surface wind
+260o/14 kts,
+take off at your
+discretion”
+AFIS
+
+Aircraft
+“Taking off
+runway 24L,
+G-CD”
+
+The phrase “take-off at your discretion” signals the point at which the FISO is no longer
+giving you instructions. You are solely responsible for determining whether it is safe to take off.
+Once airborne and transitioning to enroute flight, you should report leaving the ATZ and frequency
+at the appropriate time. It is good practice to let the current station know which frequency you are
+changing to.
+
+Safety Sense / 02 / Radiotelephony
+
+14
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Air/Ground Communication Service
+Air/Ground Communication Service (AGCS) is the
+most basic form of aeronautical ground station
+you will encounter at an aerodrome. Provision
+of AGCS does not have formal status as an air
+traffic service. AGCS stations can be identified
+by the callsign suffix ‘Radio’.
+
+The radio operator has no power to issue
+clearances or instruct aircraft either in the air or
+on the ground. While information provided by the
+radio operator may be used to assist a pilot in
+making a decision, the safe conduct of the flight
+remains the pilot’s responsibility.
+
+The operator of an AGCS may provide traffic and
+weather information to pilots operating on and in
+the vicinity of the aerodrome. Traffic information
+is normally based on reports from other pilots.
+It is not a requirement for an AGCS operator to
+have a continuous view of the ATZ environment
+or movement area, so such information may not
+be complete or accurate.
+
+When operating in the AGCS environment, the
+basic principle is that aircraft announce their
+position and separate themselves from other
+aircraft in accordance with the Rules of the Air
+and any published aerodrome procedures. Only
+carry out a manoeuvre (such as taxiing, take-off
+or landing) if you are satisfied that it is safe to do
+so and that it will not bring you into conflict with
+other traffic.
+
+Arrival
+As with other types of ATSU, you should report your position and request on
+first contact with an AGCS:
+Aircraft
+“Thruxton Radio,
+G-ABCD, 10 miles
+west of Thruxton,
+request join”
+
+“G-CD, Thruxton
+Radio, Runway 25
+right hand, QFE
+1005. Traffic is a
+PA28 reported
+right base”
+AGCS
+
+Aircraft
+“Roger,
+Runway 25
+right hand
+circuit, QFE
+1005, G-CD”
+
+Any traffic information given by an AGCS will be based on the position reports of other pilots and
+should be treated as advisory only:
+
+Aircraft
+“G-CD, joining downwind
+for runway 25”
+
+“G-CD, roger, no
+reported traffic”
+AGCS
+
+Safety Sense / 02 / Radiotelephony
+
+15
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Arrival - Continued
+Pilots should make standard position reports in the circuit to facilitate the situational awareness of
+other traffic and the AGCS operator, who may not have a clear view of the circuit. On approach to land,
+it is usual to call ‘Final’ which will prompt the operator to offer information about surface wind and
+other traffic on the aerodrome:
+Aircraft
+“G-CD, final”
+
+“G-CD, roger, surface
+wind 220o/15 kts.
+Traffic is a Cessna 172
+reported lining up to
+depart”
+AGCS
+
+An AGCS will not issue a taxi clearance. Instead, you should announce your position and intentions:
+
+Aircraft
+“G-CD, runway vacated,
+returning to the club”
+
+“G-CD, roger”
+AGCS
+
+COMMON ERROR – INSTRUCTIONS
+Requests for “instructions” should not be made to stations providing an AGCS or AFIS. AGCS
+operators and FISOs are not permitted to give instructions, except in the case of a FISO
+communicating with an aircraft on the ground.
+
+Safety Sense / 02 / Radiotelephony
+
+16
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Unattended Aerodrome
+SAFETYCOM is a common traffic advisory
+frequency for use at aerodromes that do not
+have an assigned frequency. It is currently
+135.480 MHz and may be used within 10 NM
+and up to 1000 ft above the height of the traffic
+circuit at an aerodrome.
+
+Some UK aerodromes allow aircraft movements
+to take place outside the hours during which
+an air traffic service or AGCS is normally
+provided. In this case pilots should commence
+transmissions with“[aerodrome name] Traffic”
+on the allocated frequency for that aerodrome.
+
+Aircraft should announce their position and
+intentions at the normal points using the
+callsign “Traffic” after stating the name of the
+aerodrome they are operating at. Repeating
+the name of the aerodrome at the end of
+the transmission further mitigates the risk of
+confusion when aerodromes are in proximity
+to each other.
+
+Arrival
+When arriving at an unattended aerodrome, pilots should announce their position and intentions on
+SAFETYCOM or the allocated frequency for the aerodrome. You must make your own decision on
+runway and circuit direction in accordance with the aerodrome’s published procedures.
+When other aircraft are in the circuit, listen out for their positions and plan your entry accordingly:
+
+Aircraft
+“Borton Traffic, G-ABCD, 10
+miles southwest, joining
+overhead, Borton”
+
+Aircraft
+“Borton Traffic, G-ABCD,
+overhead, joining for
+Runway 09, Borton”
+
+Aircraft
+“Borton Traffic, G-ABCD,
+descending dead side,
+Runway 09, Borton”
+
+Safety Sense / 02 / Radiotelephony
+
+17
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Arrival - Continued
+Position reports at an unattended aerodrome are at pilot discretion but it is recommended to
+announce the normal downwind and final calls and others may be advisable, depending on other
+traffic in the vicinity:
+
+Aircraft
+“Borton Traffic, G-ABCD
+downwind right-hand,
+runway 09, Borton”
+
+Aircraft
+“Borton Traffic, G-ABCD, final
+runway 09, Borton”
+
+Departure
+When departing from an unattended aerodrome, announce on the radio your intention to taxi and
+when entering a runway for departure:
+
+Aircraft
+“Borton Traffic, G-ABCD,
+taxiing for Runway 09,
+Borton”
+
+Aircraft
+“Borton Traffic, G-ABCD,
+lining up for departure
+Runway 09, Borton”
+
+Make additional calls as required to indicate whether you are remaining in the aerodrome circuit or
+departing the area.
+
+Safety Sense / 02 / Radiotelephony
+
+18
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+UK Flight Information Services
+Pilots are encouraged to make use of the UK Flight Information Services (UK FIS) when flying outside
+controlled airspace. UK FIS is primarily provided by ATSUs participating in the Lower Airspace Radar
+Services (LARS) and the UK Area Control Centres (AAC), either London or Prestwick.
+Within the UK FIS there are distinct levels of service available to aircraft:
+Basic Service
+A Basic Service is intended to offer the pilot maximum autonomy and is available to IFR
+flights in Class G airspace, or VFR flights in Class E and Class G airspace. If the ATCO or FISO
+are aware of airspace activity that may affect your flight they will tell you; however, this is
+subject to their workload and the avoidance of other traffic is soley the pilot’s responsibility.
+Maintain a good lookout.
+Traffic Service
+Under a Traffic Service, an ATCO will use radar to provide you with detailed traffic information
+on specific conflicting aircraft; they will not provide you with deconfliction advice, regardless
+of your meteoroligical conditions. A Traffic Service is available to IFR flights in Class G
+airspace, or VFR flights in Class E and Class G airspace.
+Deconfliction Service
+Only available to IFR flights in Class G airspace. An ATCO will use radar to provide you with
+detailed traffic information on specific conflicting aircraft and advice on how to avoid that
+aircraft. However, the pilot retains responsibility for collision avoidance; you can opt not to
+follow the ATCO’s advice.
+
+For more detailed information on levels of service, see CAP 774 ‘UK Flight Information Services’.
+
+Safety Sense / 02 / Radiotelephony
+
+19
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+UK FIS Sectors
+A Basic Service is available from ‘London Information’, or ‘Scottish Information’ based in the
+Prestwick AAC. Note that the entire London Flight Information Region (FIR) may sometimes be
+operated by one FISO. Although an SSR code may be allocated by London or Scottish, this is normally
+for reference only and no surveillance service is being provided.
+Subject to controller workload, Traffic and Deconfliction Services may also be provided to flights
+outside controlled airspace by ‘Scottish Control’, based at the Prestwick AAC.
+
+Norway FIR
+Enor
+N
+
+128.675
+SCOTTISH
+Control/Information
+
+SHANWICK
+OCEANIC FIR
+EGGX
+
+134.850
+
+127.275
+
+119.875
+127.275
+
+119.875
+124.500
+134.775
+
+119.875
+124.500
+121.325
+119.875
+123.775
+125.475
+
+LONDON
+Information
+
+ER
+EH DA
+AA M
+FIR
+
+SHANNON FIR
+EIRN
+
+AM
+
+ST
+
+124.600
+
+124.750
+
+LONDON FIR
+EGTT
+
+SHANWICK
+OCEANIC FIR
+EGGX
+BREST FIR
+LRRR
+
+BRUSSELS FIR
+EBBU
+
+PARIS FIR
+LFFF
+125.700
+
+134.200
+
+London FIS – all frequencies H24, SFC-FL195
+Scottish FIS – all frequencies H24, SFC-FL245 except 119.875 available 0800-2000 local time SFC-FL55
+
+Safety Sense / 02 / Radiotelephony
+
+20
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Lower Airspace Radar Services
+Specific ATC units within the UK participate in the Lower Airspace Radar Service (LARS). The location
+of these units makes them suitable for providing surveillance-based services to enroute traffic up to
+FL100. Details of the LARS can be found in the UK AIP within ENR 1.6, with the participating units
+and their area of responsibility shown in the chart at ENR 6-11.
+
+LOSSIEMOUTH*
+
+119.575
+
+LEUCHARS
+
+126.500
+
+NEWCASTLE
+
+124.380
+
+TEESSIDE
+
+118.855
+
+LEEMING*
+
+133.375
+
+WARTON*
+
+HUMBERSIDE
+
+129.530
+
+119.130
+
+WADDINGTON
+
+119.500
+
+VALLEY*
+
+125.225
+
+CONINGSBY*
+
+119.200
+
+NORWICH
+
+119.355
+
+EAST MIDLANDS
+
+SHAWBURY*
+
+134.180
+
+133.150
+
+MARHAM*
+
+124.150
+
+BRIZE NORTON
+
+FARNBOROUGH
+
+124.275
+
+CARDIFF
+
+119.150
+
+132.800
+
+SOUTHEND
+
+BOSCOMBE
+DOWN*
+
+126.700
+
+FARNBOROUGH
+
+125.250
+
+130.780
+
+123.225
+
+YEOVILTON*
+EXETER
+
+128.980
+NEWQUAY
+
+133.405
+
+CULDROSE*
+
+134.050
+
+PLYMOUTH
+MILITARY WEST*
+
+127.350
+
+BOURNEMOUTH
+
+119.480
+
+PLYMOUTH
+MILITARY EAST*
+
+124.150
+
+* - weekdays only
+
+121.250
+
+Safety Sense / 02 / Radiotelephony
+
+21
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Requesting a UK Flight Information Service
+When operating under VFR you will normally be calling ATSUs unannounced. This is known as a
+‘freecall’. You should state the type of service desired on initial contact:
+
+Aircraft
+“East Midlands Radar, G-ABCD,
+request Basic Service”
+
+“G-ABCD, East Midlands
+Radar, pass your message”
+ATSU
+
+If the air traffic controller or FISO replies with “pass your message”, this is the invitation to
+give more details about the flight and request. If a reply “standby” is heard, there is no need to
+acknowledge this.
+Details of your flight and request should follow a standard format:
+
+1.
+
+Callsign
+
+5.
+
+Current position (using a reference
+point such as a major town
+that a controller can identify)
+
+2.
+
+Aircraft type
+
+3.
+
+Point of departure
+
+6.
+
+Current altitude and altimeter setting
+
+4.
+
+Destination
+
+7.
+
+VFR or IFR
+
+8.
+
+Routing/intentions
+
+Aircraft
+“G-ABCD, Cessna
+172, Netherthorpe
+to Cambridge, 5
+miles south of
+Mansfield, altitude
+2500 ft, QNH 1008,
+VFR, tracking to
+Langar”
+
+Aircraft
+
+“G-CD, roger, Basic
+Service, squawk
+1645”
+
+“Basic
+Service,
+squawk
+1645, G-CD”
+
+ATSU
+You do not need to repeat the original request for a service if this was stated in the initial call.
+
+Safety Sense / 02 / Radiotelephony
+
+22
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Transit of Controlled Airspace
+Most control zones (CTR) and areas (CTA) in
+the UK are designated Class D airspace, which
+permits VFR flight subject to an ATC clearance.
+
+will give the controller more confidence that
+you will be able to comply with the conditions
+of a clearance.
+
+The likelihood of obtaining a clearance to transit
+controlled airspace (CAS) will be increased by
+proficient use of RTF. Sounding professional on
+the radio and using the standard ‘freecall’ format
+
+It is good practice to request a transit around 10
+minutes flying time from the airspace boundary.
+
+Aircraft
+“Solent Radar,
+G-ABCD, request
+Basic Service and
+zone transit”
+
+Aircraft
+“G-ABCD,
+Solent
+Radar,
+pass your
+message”
+ATC
+
+“G-ABCD, Cessna 172,
+Compton Abbas to
+Shoreham. 2 miles
+south of Alderbury,
+altitude 2,300 ft, QNH
+1022, VFR. Request
+transit via Romsey and
+Bishops Waltham”
+
+When invited to pass your message, include more details of the proposed transit, such as preferred
+entry or exit point. Depending on what service you have requested and/or whether the controller
+anticipates giving you a clearance, they may reply by giving you a squawk code.
+
+ATC
+“G-CD, roger, Basic Service,
+squawk 3646 with ident,
+remain outside controlled
+airspace”
+
+“Basic Service, squawk 3646
+with ident, G-CD”
+Aircraft
+
+COMMON ERROR – READBACK ORDER
+Read back instructions in the same order that they were given – avoid reversing the order.
+
+Safety Sense / 02 / Radiotelephony
+
+23
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Transit of Controlled Airspace - Continued
+Remain clear of CAS until in receipt of a clearance. Review your ‘plan B’ route in case the clearance
+is not forthcoming. Read back the clearance with any altitude limits or other conditions. Instructions,
+such as to report at certain points in the future may be acknowledged with “wilco”.
+Aircraft
+“G-CD, identified 10 NM west of
+Southampton, cleared to cross the
+zone, VFR, not above altitude 2000
+ft, Southampton QNH 1024. Report
+entering the zone at Romsey”
+ATC
+
+Aircraft
+“G-CD, entering
+the zone at
+Romsey”
+
+“Cleared to cross the zone, VFR,
+not above altitude 2000 ft, QNH
+1024, wilco, G-CD”
+
+“G-CD roger, radar
+control service,
+report leaving the
+zone at Bishop’s
+Waltham”
+ATC
+
+Aircraft
+“Radar control
+service, wilco,
+G-CD”
+
+The term ‘radar control service’ indicates that the controller may give you instructions to alter
+course or altitude while inside controlled airspace. Such instructions are mandatory, however if
+unable to maintain VMC you must inform the controller immediately and an amended clearance
+should be issued.
+
+Special VFR
+Special VFR (SVFR) is a provision that allows flight within a control zone (CTR) when conditions are
+below VMC minima, without having to comply with the Instrument Flight Rules (IFR). SVFR clearances
+are subject to availability of ATC separation and consequently pilots may experience a delay in
+receiving the requested clearance.
+A full flight plan is not required for SVFR flight, but the pilot must give brief details of the callsign,
+aircraft type and intentions, including ETA at the proposed entry point (if applicable).
+For more details on SVFR procedures and minima, see CAP413 and the Skyway Code.
+
+Safety Sense / 02 / Radiotelephony
+
+24
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Military ATC
+GA pilots should be aware that some military procedures and phraseology are different from
+civilian ATC. Military controllers may not be aware of civilian Rules of the Air when issuing
+instructions. It is the pilot’s responsibility to advise the controller if they are unable to comply with an
+instruction and why, for example being given a clearance to over-fly a built-up area below 1,000 ft or at
+1000 ftwhere it is not possible to glide clear.
+a height
+Military ATC use frequencies in the Ultra High Frequency (UHF) band (225-380 MHz) for the primary
+function of providing air traffic services to military aircraft. When calling a military ATC unit on VHF,
+you may experience a delay in the reply if the controller is also communicating on UHF. Often military
+ATC will make transmissions on VHF and UHF simultaneously – civilian aircraft may hear the VHF
+transmission from ATC, but not the replies from the aircraft on UHF.
+1000 ft
+
+Military Air Traffic Zone
+A Military Air Traffic Zone (MATZ) is not controlled airspace to civilian aircraft, however it is strongly
+
+1000
+ft
+recommended
+that pilots contact the relevant frequency prior to penetrating any area of a MATZ
+
+and abide by any instructions or routings given by the associated ATC unit. Civilian aircraft wishing to
+transit a MATZ should request a ‘MATZ penetration service’.
+Standard MATZ with two stubs and LARS
+
+cloud
+
+4NM
+
+5NM
+
+5NM
+
+MATZ
+LARS
+125-5
+
+Standard MATZ with
+two STUBS and LARS
+frequency
+MATZ
+LARS
+126.5
+3000 ft
+above
+airfield
+level
+
+5 nm
+4 nm
+
+2000 ft
+1000 ft
+5 nm radius
+
+Safety Sense / 02 / Radiotelephony
+
+25
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Military Air Traffic Zone - Continued
+The procedure for seeking a MATZ penetration is similar to requesting a transit of controlled airspace:
+
+Aircraft
+
+Aircraft
+
+“Boscombe Zone,
+G-ABCD, request
+Basic Service and
+MATZ penetration”
+
+“G-ABCD, Cessna
+172 from Old
+Sarum to Bristol,
+overhead
+Alderbury,
+altitude 2200 ft,
+QNH 1009,
+VFR, tracking
+Bristol”
+
+“G-ABCD,
+Boscombe
+Zone, pass
+your message”
+ATC
+
+Aircraft
+
+“Squawk 2650, Basic
+Service, G-CD
+
+“G-CD, roger, squawk 2650,
+Basic Service”
+ATC
+
+ATC
+“G-CD, MATZ penetration
+approved at 1800 ft on
+Boscombe QFE 997
+hectopascals, report
+entering the MATZ”
+
+“MATZ penetration
+approved at 1800 ft
+on Boscombe QFE
+997 hectopascals,
+wilco, G-CD”
+Aircraft
+
+Aircraft
+“G-CD entering
+the MATZ”
+
+Aircraft
+“G-CD roger,
+report leaving”
+
+“Wilco, G-CD”
+
+ATC
+
+Safety Sense / 02 / Radiotelephony
+
+26
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Mayday or Pan call
+There are two radio calls a pilot may make when experiencing a non-normal or emergency situation:
+1. Distress. (MAYDAY): A condition of being threatened by serious or
+imminent danger and of requiring immediate assistance.
+2. Urgency. (PAN PAN): A condition concerning the safety of an aircraft or other vehicle,
+or some person on board or within sight, but does not require immediate assistance
+In both cases, your emergency message should have the same content:
+1.
+
+M
+ AYDAY (repeated three times) or
+PAN PAN (repeated three times).
+
+2.
+
+STATION (when appropriate / time
+and circumstances permitting).
+
+3.
+
+CALLSIGN
+
+4.
+
+TYPE of Aircraft.
+
+5.
+
+NATURE of emergency.
+
+6.
+
+INTENTION of pilot in command.
+
+7.
+
+POSITION – height and heading.
+
+8.
+
+Pilot qualification: e.g. Student pilot,
+no instrument qualification,
+IMC rating or Instrument Rating(IR).
+
+9.
+
+Any other information –
+POB, endurance etc.
+
+Using this format will advise others of who you are, where you are, what the emergency is and how
+you plan to deal with it.
+The distress or urgency call should normally be made to the ATSU you are in contact with
+at the time.
+If not in contact with an ATSU, in UK airspace the Distress and Diversion (D&D) cell, callsign
+‘London Centre’, is available on the emergency frequency 121.5 MHz.
+Use of 121.5 MHz for emergencies is an international procedure, however most states
+do not have a dedicated distress cell and rely on 121.5 MHz being monitored by normal
+ATC units.
+
+Safety Sense / 02 / Radiotelephony
+
+27
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Mayday or Pan call - Continued
+Example call:
+Aircraft
+“MAYDAY MAYDAY MAYDAY,
+Milthorpe Tower, G-ABCD,
+C172 engine failed. Will
+attempt to land Milthorpe.
+10 miles south, altitude 4000
+feet, heading 360 degrees,
+student pilot, 1 POB”
+
+“G-ABCD, Milthorpe Tower,
+Roger MAYDAY, make
+straight in approach runway
+35, wind 260O/10 kts, QFE
+1008, you are number one”
+ATC
+
+It is likely that after the initial exchange with the ATSU, you will not wish to be occupied with
+further communication on the radio. Ending a call ‘Mayday out’ indicates that you do not need
+a further reply.
+Further attention will be attracted in an emergency by selecting 7700 on your transponder; doing so
+will highlight to other ATSUs that an aircraft in the area is experiencing an emergency.
+There is no ICAO requirement to include pilot qualifications in a distress message. However, this
+information should be included whenever possible in UK emergency messages as it may help the
+controller to plan a course of action best suited to the pilot’s ability.
+Distress calls have priority over all others. On hearing an emergency call, all other pilots on frequency
+should maintain radio silence, unless they can render assistance like relaying messages to an ATSU
+that is out of range. Radio silence should be observed until the distress is cancelled, the distress
+traffic transfers to another frequency or if the ATSU gives permission to resume transmissions.
+If a situation may develop into an emergency, it is preferable to make an ‘Urgency’ (PAN PAN) call
+as soon as possible. For example, if you experience a loss of oil pressure or alternator failure,
+do not wait for the situation to deteriorate before making such a call. Notifying an ATSU of your
+situation will allow assistance to be given, such as priority landing, help with navigation or more
+timely search and rescue.
+
+Safety Sense / 02 / Radiotelephony
+
+28
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Radio Failure
+It is important to remember that VFR flight can be conducted safely without a radio - your priority
+should always be to fly the aircraft. Do not become unduly distracted by attempting to diagnose the
+problem. Continue to maintain an effective lookout and ensure the aircraft is on a trajectory that will
+remain VMC and clear of any controlled airspace.
+Many apparent communication failures are caused by incorrect setting of the radios. The following
+procedure should allow you to determine if you are experiencing a genuine equipment failure:
+
+1.
+
+Check correct frequency, ensure
+8.33/25 kHz mode set as appropriate;
+
+2. Check the station published
+hours of watch;
+3. Master Switch, avionics switch,
+individual sets all switched on;
+4. Audio selector panel set correctly;
+5. Volume and Squelch correctly set;
+6. Microphone PTT button not stuck;
+7.
+
+8. Check Circuit Breakers or
+Fuses (reset only once);
+9. Change to alternative radio set (if fitted);
+10. Ask other aircraft in the vicinity if they
+are receiving you. Another aircraft may
+be able to provide a message relay to a
+station beyond transmission range; and
+11. Try an alternative frequency, e.g
+another ATSU or the emergency
+frequency 121.5 MHZ.
+
+Headset/ microphone plugged in firmly
+– consider changing sets if possible;
+
+If unable to establish communications on the radio:
+1.
+
+Set 7600 on the transponder.
+
+2. Maintain VMC and remain clear
+of controlled airspace.
+3. Consider whether the flight can safely be
+continued without a radio. For example,
+it may be advisable to divert to a quiet
+aerodrome outside of controlled airspace.
+
+4. If it is possible that only the receive function
+has failed, state your intentions on the
+applicable frequency via ‘blind’ transmission.
+If only the transmit function has failed,
+continue to listen for any instructions or
+information from ATC (if applicable).
+5. Once overhead an aerodrome, observe the
+signal square and circuit. Watch for other
+traffic and any light signals from the ground.
+Report your landing to any relevant
+ATSUs as soon as possible.
+
+Full details of UK Radio Failure Procedures may be found within ENR 1.1 of the UK AIP.
+
+Safety Sense / 02 / Radiotelephony
+
+29
+
+CAA / September 2023
+
+RADIOTELEPHONY
+
+Lost procedures
+The use of VFR Moving Map devices has made it less common for pilots to become lost, however
+such devices may not always be available or may fail due to overheating, insufficient battery or user
+error. Pilots must therefore understand the steps to be taken if they become unsure of their position.
+Judgement should be exercised as to how serious the situation is – for example a lost situation in
+good VMC is less serious than in poor weather conditions when you may be forced into IMC or
+proximity to terrain.
+You should seek assistance from a surveillance equipped ATSU as soon as possible. If you do
+not have an assigned squawk code, 0030 should be selected with ALT mode. A request such as
+“G-ABCD, unsure of position, request position fix” would be appropriate. If requiring navigational
+assistance to a particular destination, asking for a heading is also appropriate.
+The Distress and Diversion (D&D) cell, callsign ‘London Centre’, may be contacted on 121.5 within
+UK airspace. You should make it clear that you are lost sooner rather than later. It may be possible to
+request a VHF Direction Finding (VDF) bearing or heading from certain equipped ATSUs, however a
+position fix via ATS surveillance is normally of more use. In a real lost scenario, requests for ‘training
+fixes’ are not appropriate.
+If the safety of the flight is in question, for example if you are struggling to maintain VMC, or are IMC
+without being qualified, this is an emergency and an Urgency or Distress call should be made using
+the standard format.
+
+Further reading
+> CAP 413 – Radiotelephony Manual
+> CAP 774 and CAP 1434 – UK Flight Information Services
+> CAP 1535 – The Skyway Code
+> CAP 2325 – Guidance for FRTOL Practical Test Candidates
+> CAP 2118 – FTROL Examiner Manual
+
+Safety Sense / 02 / Radiotelephony
+
+30
+
+

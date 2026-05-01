@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
+  "documentId": "icao9432-extracted",
+  "sectionId": "taxi_4_4_en",
+  "familyId": "icao9432_taxi_family",
+  "claimText": "For departing aircraft, the clearance limit will normally be the taxi-holding point of the runway in use.",
+  "rationale": "Attempts 1 and 2 identified this as a 'normal' case (best practice/advisory). Attempt 3 omitted it, likely merging it into the general limit rule. It is preserved here as a distinct advisory constraint.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "For departing aircraft, the clearance limit will normally be the taxi-holding point of the runway in use"
+  ],
+  "sourceItemIds": [
+    "4.4.1_en"
+  ],
+  "claimSha256": "ccfcd2e8fcd930c70d0df8560cb08ffe96a5f368e79785c3d77507c4bf29c625",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4917,
+    "endLine": 5139
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao9432_taxi_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_clearance_limit_default_departing",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote exists verbatim and supports the claim as an advisory/default practice, and it is not redundant with the accepted sibling covering other possible aerodrome positions. However, the source says \u201cwill normally be\u201d rather than using \u201cshould,\u201d so the modality should be corrected to non-normative.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:23:49Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:23:49Z"
+  }
+}

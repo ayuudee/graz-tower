@@ -1,0 +1,11 @@
+{
+  "schemaName": "manual_coverage_repair_audit",
+  "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+  "createdAt": "2026-04-29T22:00:00Z",
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::68998a3add172915",
+  "action": "manual_add_accept",
+  "reasoning": "Adds the missed source-supported top-level permission that makes the existing speed-control constraints actionable.",
+  "exactSourceQuotes": [
+    "In order to facilitate a safe and orderly flow of traffic, aircraft may, subject to conditions specified by the\nappropriate authority, be instructed to adjust speed in a specified manner."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::f11471c05d5603f6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_7_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.17,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote exists verbatim, but it uses descriptive language (\u201cis issued\u201d) rather than a shall-strength obligation. Because the claimText itself asserts \u201cshall be issued,\u201d correcting only modality/authority would leave an unsupported normative claim, and identity fields cannot be edited in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_7_6/icao4444-extracted::aerodrome_traffic_7_6::f11471c05d5603f6.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_traffic_7_6/icao4444-extracted::aerodrome_traffic_7_6::f11471c05d5603f6.json"
+  },
+  "curatedAt": "2026-04-29T09:11:57Z"
+}

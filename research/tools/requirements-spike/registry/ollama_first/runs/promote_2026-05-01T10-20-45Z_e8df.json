@@ -1,0 +1,265 @@
+{
+  "runId": "promote_2026-05-01T10-20-45Z_e8df",
+  "runStartedAt": "2026-05-01T10:20:45Z",
+  "documents": [
+    {
+      "documentId": "cap413-extracted",
+      "runId": "promote_2026-05-01T10-20-45Z_e8df",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 32,
+      "sectionResults": [
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "air_ground_communication_failure_2_88",
+          "status": "promoted",
+          "totalJudged": 14,
+          "landed": [
+            "cap413-extracted::air_ground_communication_failure_2_88::84c51436f0af8677",
+            "cap413-extracted::air_ground_communication_failure_2_88::7ce5fceb0be5a50d",
+            "cap413-extracted::air_ground_communication_failure_2_88::611d3f0949aeac97",
+            "cap413-extracted::air_ground_communication_failure_2_88::7fced1e35b8af3aa",
+            "cap413-extracted::air_ground_communication_failure_2_88::68a035e20fffaed7"
+          ],
+          "pending": [
+            "cap413-extracted::air_ground_communication_failure_2_88::f810c25969d74144",
+            "cap413-extracted::air_ground_communication_failure_2_88::eb1f18882f5b3ab6",
+            "cap413-extracted::air_ground_communication_failure_2_88::7b7c78e8b7527ebc",
+            "cap413-extracted::air_ground_communication_failure_2_88::00ffd71c61b2af40",
+            "cap413-extracted::air_ground_communication_failure_2_88::7aa4f94c98e5247f",
+            "cap413-extracted::air_ground_communication_failure_2_88::0570b0911f506872",
+            "cap413-extracted::air_ground_communication_failure_2_88::72b18dcbe8946b9b",
+            "cap413-extracted::air_ground_communication_failure_2_88::b3a23d330ba4d104",
+            "cap413-extracted::air_ground_communication_failure_2_88::8d2caa3a520ede11"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::f810c25969d74144",
+              "originalCandidateId": "cap413_check_freq",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::eb1f18882f5b3ab6",
+              "originalCandidateId": "cap413_check_station_open",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::7b7c78e8b7527ebc",
+              "originalCandidateId": "cap413_check_radio_range",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::00ffd71c61b2af40",
+              "originalCandidateId": "cap413_check_receiver_volume",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::7aa4f94c98e5247f",
+              "originalCandidateId": "cap413_check_aircraft_equipment",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::0570b0911f506872",
+              "originalCandidateId": "cap413_check_microphone",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::72b18dcbe8946b9b",
+              "originalCandidateId": "cap413_listen_out",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::b3a23d330ba4d104",
+              "originalCandidateId": "cap413_carrier_wave",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::8d2caa3a520ede11",
+              "originalCandidateId": "cap413_aip_ref_ifr",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "compliance_timing_2_82_to_2_87",
+          "status": "promoted",
+          "totalJudged": 13,
+          "landed": [
+            "cap413-extracted::compliance_timing_2_82_to_2_87::2651085b246b469d",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::7d70fa2148b3cdb3",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::08f15178cd0d832d",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::1b5fe754f21da675"
+          ],
+          "pending": [
+            "cap413-extracted::compliance_timing_2_82_to_2_87::711e42eb82b28951",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::4572d506abfa0b2d",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::fd8e5ed1bb806d67",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::1d282822ce603e58",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::974226ef57772042",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::16ae1b859dbd3904",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::5c5c755385928028",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::4cb8628d976ff868",
+            "cap413-extracted::compliance_timing_2_82_to_2_87::46285f98dfc77f22"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::711e42eb82b28951",
+              "originalCandidateId": "cap413_2.82_prompt_compliance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::4572d506abfa0b2d",
+              "originalCandidateId": "cap413_2.82_delay_advice",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::fd8e5ed1bb806d67",
+              "originalCandidateId": "cap413_2.85_now_definition",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::1d282822ce603e58",
+              "originalCandidateId": "cap413_2.85_immediately_definition",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::974226ef57772042",
+              "originalCandidateId": "cap413_2.87_scope",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::16ae1b859dbd3904",
+              "originalCandidateId": "cap413_example_1",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::5c5c755385928028",
+              "originalCandidateId": "cap413_example_2",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::4cb8628d976ff868",
+              "originalCandidateId": "cap413_example_3",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::46285f98dfc77f22",
+              "originalCandidateId": "cap413_example_4",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "ground_air_communication_failure_2_89_to_2_91",
+          "status": "promoted",
+          "totalJudged": 5,
+          "landed": [
+            "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::8ecfa21e49ea4045",
+            "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::2c8e4ae8a7963a0e",
+            "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::09054270a4754282"
+          ],
+          "pending": [
+            "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::d18240dcecab405d",
+            "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::7e0ef5ac8c4e7229"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::d18240dcecab405d",
+              "originalCandidateId": "cap413_req_blind_msg_level_route_eat",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::7e0ef5ac8c4e7229",
+              "originalCandidateId": "cap413_ref_aip_enr",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    }
+  ]
+}

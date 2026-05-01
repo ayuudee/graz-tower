@@ -1,0 +1,11 @@
+{
+  "schemaName": "manual_coverage_repair_audit",
+  "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+  "createdAt": "2026-04-29T22:00:00Z",
+  "canonicalId": "icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726",
+  "action": "manual_add_accept",
+  "reasoning": "Adds a missed source-supported controller timing best practice from ICAO Doc 9432 section 2.8.3.2.",
+  "exactSourceQuotes": [
+    "Whenever possible, a route clearance should be passed to an\naircraft before start up."
+  ]
+}

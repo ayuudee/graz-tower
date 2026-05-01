@@ -1,0 +1,77 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.3.2.1.3:full-document",
+  "bundleId": "icao4444-extracted:4.3.2.1.3",
+  "promotionBasis": {
+    "promotionMode": "deterministic_seeded_full_document",
+    "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+    "policyId": "icao4444-downstream-policy",
+    "sourceRunManifest": "/tmp/icao4444-pipeline-widening-pre-fixture/run_manifest.json",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "property_or_family_test",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.3.2.1.3:vmc_transfer_branch",
+      "claimText": "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service when visual meteorological conditions prevail in the vicinity of the aerodrome, prior to the aircraft leaving the vicinity of the aerodrome, prior to the aircraft entering instrument meteorological conditions, or when the aircraft is at a prescribed point or level, as specified in letters of agreement or ATS unit instructions.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444::list_item::01333::unit",
+        "icao4444::sub_list_item::01334::unit",
+        "icao4444::sub_list_item::01335::unit",
+        "icao4444::sub_list_item::01336::unit"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444::numeric_clause::01332::unit"
+      ],
+      "actors": [
+        "unit providing aerodrome control service",
+        "unit providing approach control service"
+      ],
+      "requiredBehaviour": [
+        "transfer control of a departing aircraft under the visual-meteorological branch at one of the specified permitted points or times"
+      ],
+      "applicability": [
+        "visual meteorological conditions prevail in the vicinity of the aerodrome"
+      ],
+      "sourceSupport": [
+        "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service:",
+        "when visual meteorological conditions prevail in the vicinity of the aerodrome:",
+        "prior to the time the aircraft leaves the vicinity of the aerodrome,",
+        "prior to the aircraft entering instrument meteorological conditions, or",
+        "when the aircraft is at a prescribed point or level,",
+        "as specified in letters of agreement or ATS unit instructions;"
+      ]
+    },
+    {
+      "atomId": "icao4444:4.3.2.1.3:imc_transfer_branch",
+      "claimText": "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service when instrument meteorological conditions prevail at the aerodrome, immediately after the aircraft is airborne, or when the aircraft is at a prescribed point or level, as specified in letters of agreement or local instructions.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444::list_item::01337::unit",
+        "icao4444::sub_list_item::01338::unit",
+        "icao4444::sub_list_item::01339::unit"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444::numeric_clause::01332::unit"
+      ],
+      "actors": [
+        "unit providing aerodrome control service",
+        "unit providing approach control service"
+      ],
+      "requiredBehaviour": [
+        "transfer control of a departing aircraft under the instrument-meteorological branch immediately after airborne or at the prescribed point or level"
+      ],
+      "applicability": [
+        "instrument meteorological conditions prevail at the aerodrome"
+      ],
+      "sourceSupport": [
+        "Control of a departing aircraft shall be transferred from the unit providing aerodrome control service to the unit providing approach control service:",
+        "when instrument meteorological conditions prevail at the aerodrome:",
+        "immediately after the aircraft is airborne, or",
+        "when the aircraft is at a prescribed point or level,",
+        "as specified in letters of agreement or local instructions."
+      ]
+    }
+  ]
+}

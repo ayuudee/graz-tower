@@ -1,0 +1,30 @@
+{
+  "testCandidateId": "tc-h01-ack-from-aircraft-callsign",
+  "sourcePromotionId": "accepted-atoms:h01:ack_from_aircraft",
+  "verificationMode": "deterministic_test",
+  "targetLayer": "pilot phraseology or transmission generation",
+  "goal": "Verify that an aircraft acknowledgement of receipt includes the aircraft call sign.",
+  "scenarioPreconditions": [
+    "A message is received by an aircraft and an acknowledgement of receipt is required.",
+    "The harness can observe or generate the acknowledgement transmission text."
+  ],
+  "stimulus": [
+    {
+      "actor": "aircraft",
+      "action": "generate_acknowledgement_of_receipt"
+    }
+  ],
+  "expectedObservations": [
+    "The acknowledgement includes the aircraft call sign.",
+    "An acknowledgement missing the aircraft call sign is rejected or classified as non-conforming."
+  ],
+  "sourceTraceability": {
+    "document": "H01",
+    "section": "readback a)",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/h01-extracted.txt:4206-4208"
+  },
+  "notes": [
+    "This is operational-guidance level, not an authoritative law claim.",
+    "It is still suitable as a phraseology/conformance consumer artifact."
+  ]
+}

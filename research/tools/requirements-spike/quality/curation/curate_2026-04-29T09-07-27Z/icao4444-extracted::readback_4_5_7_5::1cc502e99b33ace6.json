@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::readback_4_5_7_5::1cc502e99b33ace6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "readback_4_5_7_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.38,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the quoted parent sentence is verbatim and has shall-strength authority, its operative scope is defined by the immediately following listed items. Those atomic obligations are already present in siblingAccepted, so this candidate functions as a redundant umbrella and should not be promoted separately.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/readback_4_5_7_5/icao4444-extracted::readback_4_5_7_5::1cc502e99b33ace6.json",
+    "toPath": "rejected/icao4444-extracted/readback_4_5_7_5/icao4444-extracted::readback_4_5_7_5::1cc502e99b33ace6.json"
+  },
+  "curatedAt": "2026-04-29T09:14:40Z"
+}

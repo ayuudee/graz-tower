@@ -1,0 +1,20 @@
+{
+  "canonicalId": "slovenia-vfr-extracted::readback::a55009e7044c1c4b",
+  "documentId": "slovenia-vfr-extracted",
+  "sectionId": "readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.92,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is directly supported by the source, and the advisory modality/authorityClass correctly reflect the non-mandatory wording \u201cnormally best.\u201d It is an atomic best-practice item and is not redundant with the accepted sibling readback requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::a55009e7044c1c4b.json",
+    "toPath": "candidates/slovenia-vfr-extracted/readback/slovenia-vfr-extracted::readback::a55009e7044c1c4b.json"
+  },
+  "curatedAt": "2026-04-29T09:26:28Z"
+}

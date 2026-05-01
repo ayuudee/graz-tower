@@ -1,0 +1,1774 @@
+Prepared by:
+
+Karmen Štumberger, MSc
+
+Contents
+1. Introduction
+2. General
+3. Departure phraseology
+4. En‐route phraseology
+5. Arrival phraseology
+6. Emergency and urgency messages
+7. Helicopter operations
+8. Unattended aerodromes
+9. Aerodromes with a flight information service officer
+10. Gliding
+11. Ballooning
+12. Complete flights
+
+1
+2
+12
+16
+20
+23
+25
+26
+27
+29
+31
+32
+
+Symbols used in the examples of use
+Phraseology used by an airplane pilot
+Phraseology used by a helicopter pilot
+Phraseology used by a sailplane pilot
+Phraseology used by a balloon pilot
+Phraseology used by an air traffic controller
+Phraseology used by an aeronautical station operator
+
+Tables 2, 3, 4 and 5 are from Commission Implementing Regulation (EU) 2016/1185 of 20 July 2016
+(Part C SERA). The photographs on pages i, 9 and 17 were made by photographer and pilot Miro
+Majcen. The photographs on pages 13 and 15 were reproduced here with the permission of Primož
+Jovanovič. The photograph on page 31 was taken by Rok Piciga. The photograph on page 26 was
+contributed by Letalski klub Novo mesto, and photographs on pages 29 and 30 were reproduced
+here by kind permission of Letalski center Maribor.
+
+Acknowledgment
+Special thanks go to Andrej Perc, Rastko Debevec and Vito Persoglia for their help with examples of
+use and the director of CAA Rok Marolt for his support.
+
+ii
+
+A GUIDE TO VFR PHRASEOLOGY
+FOR GENERAL AVIATION PILOTS IN SLOVENIA
+
+Introduction
+In spite of the common belief that the priorities for safe flying are ′aviate, navigate and then
+communicate′, the correct use of standard phraseology (RTF) makes an important
+contribution to the safe and efficient operation of aircraft. Standard phraseology should be
+used for all situations for which it has been determined. Only when it cannot serve the
+purpose of transmission, plain language should be used.
+The purpose of this guide is to illustrate the use of standard ICAO phraseology in English for
+VFR flights conducted in Slovenia and neighbouring states. The first chapter, explaining voice
+communication procedures, is relevant also for pilots flying in accordance with instrument
+flight rules.
+The guide depicts the use of phraseology during arrival and departure, en route and for
+training. It further describes the use of phraseology for helicopter operations, soaring,
+ballooning and flying at uncontrolled aerodromes. It does not explain the use of all phrases
+foreseen for VFR flights. Therefore, for the extensive list of phrases pilots should see Chapter
+12 of the ICAO Document 4444, Air Traffic Management.
+We tried to make the examples of use of RTF as realistic as possible. The examples, however,
+should not be understood as prescribed communication in a given situation.
+The use of generic pronoun he in this guide refers to both male and female.
+This guide is based on the Guide to Phraseology for General Aviation Pilots in Europe,
+published by European General Aviation Safety Team (EGAST) and Eurocontrol. Other
+sources used in its preparation are the course book ′Letalska frazeologija, How do you read
+(me)?′, written by Alenka Kukovec, M.Sc., Commission Implementing Regulation (EU) No.
+2016/1185 (Part C SERA) and ICAO Document 4444.
+
+Maribor Tower S5‐DII,
+how do you read?
+
+S5‐DII Maribor
+Tower, read you 5
+
+1
+
+General
+◊ Aircraft call signs
+The radiotelephony call sign of a general aviation aircraft is usually the aircraft registration,
+e.g. S5‐DAS. The call sign of an aircraft used in commercial aviation is the telephony
+designator of the aircraft operator, followed by the last four characters of the registration
+marking of the aircraft, or by the flight identification, e.g. Easy 3246.
+Aircraft call signs may be abbreviated. Abbreviated call signs contain the first character of
+the registration and last two characters of the call sign, e.g. S‐AS, or the telephony
+designator of the aircraft operator, followed by at least the last two characters of the call
+sign, e.g. Adria AB. An aircraft shall not change the type of its radiotelephony call sign during
+flight, except temporarily on the instruction of the controller.
+◊ Ground station call signs
+Ground stations are identified by the name of the location followed by a word (suffix)
+denoting the type of unit or the service provided. This will normally be an air traffic control
+or flight information service. Examples of ground station call signs are given in the table
+below.
+Table 1
+Unit
+
+Call sign Suffix
+
+Instructions or information
+
+Aerodrome control
+
+GROUND
+TOWER
+APPROACH
+
+Prevents collisions between
+aircraft and on the
+manoeuvring area between
+aircraft and obstructions.
+
+Radar Unit (ATC)
+
+RADAR
+
+Radar unit in general
+
+Area Control Centre
+
+CONTROL
+
+Area control centre
+
+Flight Information Service
+(FIS)
+
+INFORMATION
+
+Provides information for safe
+and efficient conduct of flights.
+
+Aeronautical Station
+
+RADIO
+
+Aeronautical station in general
+
+Once satisfactory communication has been established, the name of the location or the call
+sing suffix may be omitted, e.g. ′Tower′ or ′Maribor′.
+
+2
+
+◊ Transmission of letters
+When proper names, service abbreviations and other words are spelled out in
+radiotelephony, the alphabet in Table 2 shall be used.
+Table 2
+Letter
+
+Word
+
+Approximate pronunciation (for Slovene
+speakers of English)
+
+A
+
+Alfa
+
+AL FA
+
+B
+
+Bravo
+
+BRA VOU
+
+C
+
+Charlie
+
+ČAR LI or ŠAR LI
+
+D
+
+Delta
+
+DEL TA
+
+E
+
+Echo
+
+EK OU
+
+F
+
+Foxtrot
+
+FOKS TROT
+
+G
+
+Golf
+
+GOLF
+
+H
+
+Hotel
+
+HOU TEL
+
+I
+
+India
+
+IN DI JA
+
+J
+
+Juliett
+
+ĐU LI JET
+
+K
+
+Kilo
+
+KI LOU
+
+L
+
+Lima
+
+LI MA
+
+M
+
+Mike
+
+MAJK
+
+N
+
+November
+
+NO VEM BA
+
+O
+
+Oscar
+
+OS KA
+
+P
+
+Papa
+
+PA PA
+
+Q
+
+Quebec
+
+KI BEK
+
+R
+
+Romeo
+
+RO MI OU
+
+S
+
+Sierra
+
+SI ER A
+
+T
+
+Tango
+
+TEN GOU
+
+U
+
+Uniform
+
+JU NI FORM or U NI FORM
+
+V
+
+Victor
+
+VIK TOR
+
+W
+
+Whiskey
+
+WIS KI
+
+X
+
+X‐ray
+
+EKS REJ
+
+Y
+
+Yankee
+
+JEN KI
+
+Z
+
+Zulu
+
+ZU LU
+
+With help of the alphabet from the above table, pilots transmit letters in the aircraft call
+sign, names of reporting points, taxiway codes and certain parking position codes and ATIS
+codes.
+
+3
+
+Examples
+S5‐DAC
+
+Sierra five Delta Alpha Charlie
+
+DOL
+
+(Delta Oscar Lima)
+
+Taxiway T
+
+(Taxiway Tango)
+
+ATIS R
+
+(Information Romeo)
+
+◊ Transmission of numbers
+Clear and comprehensive transmission of numbers is of vital importance in radiotelephony
+communications. Therefore, to achieve the best readability on the frequency, a more
+suitable form of pronunciation and transmission of numbers has been adopted.
+All numbers used in the transmission of aircraft call signs, headings, runway, wind direction
+and speed shall be transmitted by pronouncing each digit separately.
+Flight levels shall be transmitted by pronouncing each digit separately, except for the case of
+flight levels in whole hundreds.
+The altimeter setting shall be transmitted by pronouncing each digit separately, except for
+the case of a setting of 1 000 hPa, which shall be transmitted as ′ONE THOUSAND′.
+All numbers used in the transmission of transponder codes shall be transmitted by
+pronouncing each digit separately except, when the transponder codes contain whole
+thousands only.
+Examples
+
+Transmitted as
+
+Adria 14
+
+Adria one four
+
+RWY 30
+
+runway three zero
+
+Heading 101
+
+heading one zero one
+
+FL 100
+
+flight level one hundred
+
+QNH 1010
+
+QNH one zero one zero
+
+SQUAWK 6503
+
+SQUAWK six five zero three
+
+All numbers containing whole hundreds and whole thousands (e.g. used in the transmission
+of altitude, cloud height, visibility and runway visual range) shall be transmitted by
+pronouncing each digit in the number of hundreds or thousands followed by the word
+′HUNDRED′ or ′THOUSAND′, as appropriate. Combinations of thousands and whole hundreds
+shall be transmitted by pronouncing each digit in the number of thousands followed by the
+word ′THOUSAND′, followed by the number of hundreds followed by the word ′HUNDRED′.
+
+4
+
+Examples
+
+Transmitted as
+
+altitude 2 300 feet
+
+two thousand three hundred feet
+
+cloud height 2 600 feet
+
+two thousand six hundred feet
+
+visibility 800 meters
+
+eight hundred meters
+
+When providing information regarding the relative bearing to an object or to conflicting
+traffic in terms of the 12‐hour clock, the information shall be given pronouncing the digits
+together such as ′TEN O'CLOCK′ or ′ELEVEN O'CLOCK′.
+Numbers containing a decimal point shall be transmitted as prescribed in second paragraph
+with the decimal point in appropriate sequence, indicated by the word ′DECIMAL′.
+◊ Pronunciation of numbers
+Numbers shall be transmitted using the pronunciation shown in Table 3.
+Table 3
+Numeral or numeral element
+
+Pronunciation (for Slovene speakers of English)
+
+0
+
+ZI‐RO
+
+1
+
+WAN
+
+2
+
+TU
+
+3
+
+TRI
+
+4
+
+FO‐r
+
+5
+
+FAJF
+
+6
+
+SIKS
+
+7
+
+SEV‐n
+
+8
+
+EJT
+
+9
+
+NAJN‐r
+
+10
+
+TEN
+
+11
+
+I‐LE‐VN
+
+12
+
+TWELF
+
+Decimal
+
+DE‐SI‐MAL
+
+Hundred
+
+HAN‐drid
+
+Thousand
+
+TAU‐SND
+
+5
+
+◊ VHF frequencies
+All six digits of the numerical designator shall be used to identify the transmitting channel in
+very high frequency (VHF) radiotelephony communications, except when the fifth and sixth
+digits are zeros, in which case only the first four digits shall be used.
+Examples
+118,0
+
+one one eight decimal zero
+
+128.880
+
+one two eight decimal eight eight zero
+
+128.175
+
+one two eight decimal one seven five
+
+◊ Transmission of time
+Normally, only minutes are passed. If there is any possibility of confusion, the hour should be
+included.
+Examples
+07 08
+
+zero eight
+
+or
+
+zero seven zero eight
+
+14 25
+
+two five
+
+or
+
+one four two five
+
+◊ Read back
+Reading back a clearance and any safety critical information helps both the pilot and the
+controller understand what the aircraft has been instructed to do. It also serves as a check
+that the right aircraft, and only that aircraft, will take action on the clearance. It will be
+easier for the pilot to read back the clearance if he notes it down.
+◊ Items to be read back
+Messages containing the following must be read back:
+
+
+
+
+
+
+
+
+
+ATC route clearance
+clearances/instructions to enter, land on, take‐off from, hold short of, cross or
+backtrack any runway
+runway in use
+altimeter settings
+SSR codes
+level or heading instructions
+speed instructions
+transition levels
+
+6
+
+When a read back is required, the pilot must make sure it is complete and finish it with the
+call sign. It is normally best to read back the items in the order given. If the departure
+instructions are transmitted together with a take‐off clearance, it is more appropriate to
+read back the take‐off clearance first, followed by the departure instructions.
+◊ Use of ′wilco′
+′WILCO′ means ′I understand your message and will comply with it′. This standard phrase
+should not be used instead of a full read back of the items from the previous paragraph.
+◊ Acknowledgement by call sign
+If a transmission contains information that does not need to be read back, the pilot should
+acknowledge it by transmitting his call sign or by transmitting his call sign preceded by the
+word ′ROGER′.
+◊ Transmitting technique
+Transmissions shall be conducted concisely in a normal conversational tone.
+
+◊ Standard words and phrases
+The following words and phrases shall be used in radiotelephony communications as
+appropriate, and shall have the meaning ascribed in Table 4.
+Table 4
+Phrase
+
+Meaning
+
+ACKNOWLEDGE
+
+,Let me know that you have received and understood this
+message.‘
+
+AFFIRM
+
+,Yes‘
+
+APPROVED
+
+,Permission for proposed action granted.‘
+
+BREAK
+
+,I hereby indicate the separation between portions of the
+message.‘
+
+BREAK BREAK
+
+,I hereby indicate the separation between messages
+transmitted to different aircraft in a very busy environment.‘
+
+CANCEL
+
+,Annul the previously transmitted clearance.‘
+
+CHECK
+
+,Examine a system or procedure.‘
+
+CLEARED
+
+,Authorised to proceed under the conditions specified.‘
+
+CONFIRM
+
+,I request verification of: (clearance, instruction, action,
+
+7
+
+information).‘
+CONTACT
+
+,Establish communications with ...‘
+
+CORRECT
+
+,True‘ or ,Accurate‘.
+
+CORRECTION
+
+,An error has been made in this transmission (or message
+indicated). The correct version is ...‘
+
+DISREGARD
+
+,Ignore‘
+
+HOW DO YOU READ
+
+,What is the readability of my transmission?‘
+
+I SAY AGAIN
+
+,I repeat for clarity or emphasis.‘
+
+MAINTAIN
+
+,Continue in accordance with the condition(s) specified‘ or in its
+literal sense.
+
+MONITOR
+
+,Listen out on (frequency).‘
+
+NEGATIVE
+
+,No‘ or ,Permission not granted‘ or ,That is not correct ‘ or ,Not
+capable‘.
+
+OVER
+
+,My transmission is ended, and I expect a response from you.‘
+
+OUT
+
+,This exchange of transmissions is ended and no response is
+expected.‘
+
+READ BACK
+
+,Repeat all, or the specified part, of this message back to me
+exactly as received‘.
+
+RECLEARED
+
+,A change has been made to your last clearance and this new
+clearance supersedes your previous clearance or part thereof.‘
+
+REPORT
+
+,Pass me the following information.‘
+
+REQUEST
+
+,I should like to know...‘ or ,I wish to obtain...‘
+
+ROGER
+
+,I have received all of your last transmission.‘
+
+SAY AGAIN
+
+,Repeat all, or the following part, of your last transmission.‘
+
+SPEAK SLOWER
+
+,Reduce your rate of speech.‘
+
+STANDBY
+
+,Wait and I will call you.‘
+
+UNABLE
+
+,I cannot comply with your request, instruction, or clearance.‘
+
+WILCO
+
+(Abbreviation for ,will comply‘)
+,I understand your message and will comply with it.‘
+
+WORDS TWICE
+
+a) As a request: ,Communication is difficult. Please send every
+word, or group of words, twice.‘
+b) As information: ,Since communication is difficult, every word,
+or group of words, in this message will be sent twice.‘
+
+8
+
+◊ Conditional Clearance
+Conditional clearances, such as ′BEHIND LANDING AIRCRAFT′ or ′AFTER DEPARTING
+AIRCRAFT′, shall not be used for movements affecting the active runway(s), except when the
+aircraft or vehicles concerned are seen by the appropriate controller and pilot. The aircraft
+or vehicle causing the condition in the clearance issued shall pass in front of the other
+aircraft. A conditional clearance shall be given in the following order and consists of:
+
+
+
+
+
+the call sign;
+the condition;
+the clearance; and
+a brief repetition of the condition.
+
+RTF Conditional Clearance
+1.
+S5‐DBS, report Seneca on final in sight
+Seneca in sight, S5‐DBS
+S5‐DBS, behind the landing Seneca, line up behind
+behind the landing Seneca, line up behind, S5‐DBS
+
+2.
+S‐GI, report departing Cessna in sight
+Cessna in sight, S‐GI
+S‐GI, after departing Cessna has passed, runway 14, cleared to land, wind calm
+after departing Cessna has passed, runway 14, cleared to land, S‐GI
+
+9
+
+◊ Categories of messages
+The categories of messages handled by the aeronautical mobile service, and the order of
+priority in the establishment of communications and the transmission of messages shall be
+in accordance with the Table 5.
+Table 5
+Message category and radiotelephony order of priority
+signal
+
+Radiotelephony signal
+
+1. Distress calls, distress messages and distress
+traffic
+
+MAYDAY
+
+2. Urgency messages, including messages
+preceded by the medical transport signal
+
+PAN PAN or PAN PAN MEDICAL
+
+3. Communications related to direction finding
+
+–
+
+4. Flight safety messages
+
+–
+
+5. Meteorological messages
+
+–
+
+6. Flight regularity messages
+
+–
+
+ Flight safety messages include movement and control messages, messages sent by an aircraft operator or by
+an aircraft and meteorological advice of immediate concern to an aircraft.
+
+◊ Test transmissions
+The test transmission shall follow the format shown in the example on page 12. It includes
+identification of the station being called, identification of the station calling, the words
+′RADIO CHECK′ and the frequency being used. The readability of the station making the test
+transmission is assessed in accordance with the following scale:
+1. Unreadable
+2. Readable now and then
+3. Readable but with difficulty
+4. Readable
+5. Perfectly readable
+◊ Clarification of instructions and corrections
+If the pilot does not fully understand the instructions given, or they are inconsistent with his
+request, the pilot asks the controller to repeat the message using the phrase ′SAY AGAIN′.
+When an error has been made in transmission, the word ′CORRECTION′ shall be spoken, the
+last correct group or phrase repeated, and then the correct version transmitted.
+
+10
+
+◊ Use of blind transmission
+When an aircraft fails to establish contact on the designated channel(s), and fails to establish
+communication with the ATS unit(s), or other aircraft, the aircraft shall transmit its message
+twice preceded by the phrase ΄TRANSMITTING BLIND΄. When an aircraft is unable to
+establish communication due to receiver failure, it shall transmit reports at the scheduled
+times, or positions, on the channel in use preceded by the phrase ΄TRANSMITTING BLIND
+DUE TO RECEIVER FAILURE΄.
+◊ Establishing and continuing communication
+Full radiotelephony call signs shall always be used when establishing communication.
+Aircraft shall start their call by the designation of the station called, followed by the
+designation of the station calling.
+The reply to the above calls shall use the call sign of the station calling, followed by the call
+sign of the station answering, which shall be considered an invitation to proceed with
+transmission.
+Communications shall begin with a call and a reply when it is desired to establish contact,
+except that, when it is certain that the station called will receive the call, the calling station
+may transmit the message, without waiting for a reply from the station called.
+Once satisfactory communication has been established, the abbreviated call signs shall be
+used. The pilot shall use the shortened call sign when addressed in this manner by the
+controller.
+◊ Placing of call signs
+Once satisfactory communication has been established, the message is normally prefixed
+with the aircraft call sign. However, when the pilot needs to read back an instruction or
+important information, he places the call sign at the end of the message.
+◊ Reporting
+Aircraft equipped with suitable two‐way radio‐communications shall report during the
+period 20 to 40 minutes to indicate that the flight is progressing according to plan. Such
+report to comprise identification of the aircraft and the words ΄OPERATIONS NORMAL΄.
+
+11
+
+Departure Phraseology
+◊ Departure from an aerodrome with ATC
+This section provides examples of the RTF typically used by a pilot departing from a
+controlled aerodrome. Pilots need to be familiar with the type of air traffic control service
+provided at each aerodrome and working hours of the ATC service.
+RTF Engine start‐up and radio check
+Portorož Tower S5‐DAA, radio check 115,15
+S5‐DAA Portorož Tower, read you 5
+S5‐DAA, request departure information
+S‐AA, runway 33, wind 090 degrees 6 knots, QNH 1014, temperature 5, dew point 3, clouds scattered
+at 2000 feet
+runway 33, QNH 1014, S‐AA
+
+◊ Automatic Terminal Information Service (ATIS)
+At aerodromes where departure information is broadcast on an ATIS, the request for
+departure information is omitted. The pilot acknowledges receipt of the ATIS information by
+including the ATIS identifying letter in the request for taxi.
+◊ Taxi instructions
+All taxi instructions contain a limit which represents the point at which the pilot must stop
+unless a permission to proceed is given. Taxi instructions are not a permission to enter a
+runway or a clearance for take‐off. Sometimes the controller may use the additional phrase
+′HOLD SHORT (OF)′ to stress the limit. Taxi instructions may be complicated. Writing them
+down whenever possible helps to prevent runway incursions.
+RTF Taxiing
+1.
+Maribor Approach S5‐DBS, main apron, information R, request taxi for VFR flight to Lesce
+S‐BS Maribor Approach, taxi to holding point A, runway 14, QNH 1002, report ready for departure
+taxiing to holding point A, runway 14, QNH 1002, wilco, S‐BS
+
+2.
+Ljubljana Tower S5‐DAT, position G, information C, request detailed taxi instructions
+S‐AT Ljubljana Tower, taxi to holding point runway 30 via T, A and K, QNH 1003, report ready for
+departure
+taxiing to holding point runway 30 via T, A and K, QNH 1003, wilco, S‐AT
+
+12
+
+Important phrases (taxiing)
+start up at (time)
+taxi to holding point runway (number)
+taxi via (taxiways)
+cross runway
+hold short of runway (number)
+expedite taxi
+line up
+hold position
+
+request start up
+request taxi
+request detailed taxi instructions
+request cross runway
+runway vacated
+expediting taxi
+lining up
+holding position
+
+◊ Clearance for take‐off
+In relation to runway movements, the word ′CLEARED′ is only used in connection with a
+clearance to take‐off or land. For other RTF exchanges, words such as ′cross′, ′departure′ and
+′approved′ should be used. In addition, the word take‐off shall be used in the take‐off
+clearance or its cancellation. At other times, pilot should use the terms ′departure′ and
+′airborne′. If there is conflicting traffic, the controller may instruct the pilot to ′HOLD
+POSITION′. This instruction needs to be acknowledged by the pilot with the phrase
+′HOLDING′.
+RTF Take‐off
+1.
+
+Maribor
+S‐BS, ready for departure
+S‐BS, line up and wait
+lining up and waiting, S‐BS
+S‐BS, runway 14 cleared for take‐off, wind 120 degrees 6 knots, after departure turn right to MS1,
+climb to 3500 feet, report MS1
+runway 14 cleared for take‐off, wind 120 degrees 6 knots, after departure turn right to MS1, climb
+to 3500 feet, wilco, S‐BS
+
+13
+
+2.
+
+Ljubljana
+S‐AT, ready for departure
+S‐AT, line up runway 12, cleared for take‐off, wind 090 degrees 6 knots, after departure turn right
+to S3, climb to 2500 feet
+line up runway 12, cleared for take‐off, turn right to S3, climb to 2500 feet, S‐AT
+S‐AT, hold position, I say again, hold position, obstacle on runway 12
+holding position, S‐AT
+
+3.
+
+Portorož
+S‐EW, ready for departure
+S‐EW line up runway 33, cleared for take‐off, after departure turn right to PE2, climb to 3000 feet,
+report PE1
+line up runway 33, cleared for take‐off, after departure turn right to PE2, climb to 3000 feet, wilco,
+S‐EW
+
+Important phrases (take‐off)
+report when ready [for departure]?
+Are you ready [for departure]
+line up runway (number)
+line up [and wait)
+runway (number) cleared for take‐off
+[after departure] turn right (or left or
+climb)
+report airborne
+continue runway heading
+
+ready for departure
+ready
+lining up runway (number)
+lining up and waiting
+runway (number) cleared for take‐off
+re quest right (or left) turn
+airborne
+
+14
+
+◊ Changing frequency
+Pilots will normally be advised by a ground station to change from one radio frequency to
+another. In absence of such advice, the pilot has to notify the ground station before
+changing frequency, using the phrase ′REQUEST CHANGE TO (ATS unit)′. In controlled
+airspace, the pilot must get permission from the ATC before changing frequency.
+RTF Departure
+S‐AT, airborne at 08, report S3 at 2500 feet
+wilco, climbing to 2500 feet, S‐AT
+S‐AT, passing S3 at 43
+S‐AT, contact Ljubljana Information 118,475
+118,475, S‐AT
+Ljubljana Information S5‐DAT, passing S3 at 43, to Novo mesto
+S‐AT, QNH 1012, continue visually to Novo mesto, report before changing to local frequency
+QNH 1012, continuing visually to Novo mesto, wilco, S‐AT
+
+Important phrases (departure, frequency change)
+frequency change approved
+contact (unit call sign, frequency)
+stand‐by for (unit call sign, frequency)
+monitor (station, frequency)
+when ready contact
+remain this frequency
+
+request change to (frequency)
+monitoring (frequency)
+
+15
+
+En‐route Phraseology
+◊ Initial call
+When establishing contact, the initial call consists of the call sign of the unit the pilot is
+calling followed by his own call sign. The ground unit will reply with the call sign of the plane
+followed by their own. Then the pilot informs the ground station of his position, intentions
+and service required. Reports should be transmitted in the standard order:
+
+
+
+
+
+
+Aircraft call sign (and type if necessary)
+Position (and time over)
+Flight level or altitude
+Next position and time over and following significant point
+Additional information (e.g.: purpose at the aerodrome)
+
+The pilot shall report position over important reporting points. Position reporting may be
+omitted if flight progress data is available from other sources such as radar, or if requested
+by the controller (e.g.: ′OMIT POSITION REPORTING′).
+RTF Position Reporting
+Ljubljana Information S5‐DEW
+S5‐DEW Ljubljana Information
+S5‐DEW overhead Velike Lašče at 24, passing 4500 feet, climbing to 6500 feet, estimating ILB at 40,
+PE1 next
+S‐EW report three minutes before PE1
+wilco, S‐EW
+
+◊ Identification by transponder
+Use of the transponder helps the controller and pilots of other aircraft fitted with airborne
+collision avoidance system (ACAS). If an aircraft carries a serviceable transponder, the pilot
+shall operate it at all times during flight. The pilot shall select codes as instructed by the
+controller. In absence of such instructions, the pilot selects the code 2000.
+To indicate the state of emergency, the pilot selects Code 7700. Code 7600 is selected to
+indicate a state of radio‐communication failure and Code 7500 is reserved for unlawful
+interference.
+
+SQUA
+SQUA
+
+WK
+WK
+
+Squawks, or squawking has its origins in The Second World War, when the
+Identification Friend or Foe systems were first installed. This IFF system was
+codenamed parrot during the war and hence the modern term “squawk.”
+
+16
+
+RTF Squawk
+S‐AA, advise transponder capability
+transponder Charlie, S‐AA
+S‐AA, squawk 6503
+squawk 6503, S‐AA
+
+Important phrases (transponder)
+advise transponder capability
+reset squawk (code)
+for departure squawk (code)
+confirm squawk (code)
+squawk ident / MAYDAY
+
+transponder (as in the flight plan)
+resetting (mode, code)
+squawk (code)
+squawking (code)
+negative transponder
+
+◊ Traffic information and avoiding action
+VFR flights should maintain their own separation. They are assisted by ATC who provide
+information on other traffic in their vicinity and avoiding action. Information on other traffic
+is given in the form of a relative bearing of the conflicting traffic in terms of 12‐hour clock,
+distance from the conflicting traffic and its direction followed by other related information.
+The pilot acknowledges the traffic information with the phrase ′LOOKING OUT′. When the
+pilot locates the other traffic, he advises the controller using the phrase ′TRAFFIC IN SIGHT′.
+If he cannot locate the other traffic, he uses the phrase ′NEGATIVE CONTACT′.
+RTF Traffic information
+S‐AB, light aircraft 11 o'clock, crossing left to right at 4500 feet
+looking out, S‐AB
+S‐AA, light aircraft 2 o'clock, crossing right to left at 4000 feet
+S‐AA, traffic in sight
+
+Aviation humour:
+
+′Traffic is a light aircraft, 9 o'clock, range 4 meters, same direction, same altitude ′
+
+17
+
+Important phrases (traffic information)
+traffic (number) o’clock (distance,
+direction) fast moving, closing, opposite
+direction, crossing left to right
+Do you want vectors?
+clear of traffic
+
+traffic in sight
+looking out
+negative contact
+request vectors
+
+◊ Flight plans
+When the pilot files the flight plan during flight, he should contact flight information service
+and transmit data in the flight plan format.
+Ljubljana Information S5‐DAA, request file flight plan
+S5‐DAA Ljubljana Information, ready to copy
+
+When the pilot is landing at an aerodrome which is not his planned destination, he must
+close the flight plan to avoid unnecessary search and rescue activity. The pilot may do this by
+radio before landing or by telephone after landing.
+RTF Closing a flight plan
+Ljubljana Information S5‐DJJ, airport Lesce in sight, changing to local frequency, request close flight
+plan
+S5‐DJJ Ljubljana Information, flight plan closed at 40
+
+If the weather permits, the pilot may change an IFR flight to VFR flight.
+RTF Changing from IFR to VFR
+Ljubljana Radar S5‐DAA, cancelling my IFR flight, continuing VFR to S1
+S5‐DAA Ljubljana Radar, IFR flight cancelled at 25, continue to S1, contact Ljubljana Information
+118,475
+
+◊ Weather information
+The pilot may obtain weather information in the form of reports, forecasts and warnings on
+ATIS or VOLMET frequency, from a tower controller or flight information services operator.
+RTF Requesting weather data
+Maribor Tower S5‐DBS, request present weather
+S5‐DBS Maribor Tower, wind 120 degrees 5 knots, clouds scattered 2000 feet, temperature 5, dew
+point 3, QNH 1023
+QNH 1023, S5‐DBS
+
+18
+
+◊ Runway condition
+Runway condition can be included in departure or arrival information, it can, however, be
+also transmitted to the pilot at the appropriate time.
+RTF Runway condition
+S5‐DSC, runway 30 cleared to land, just landed Cessna reported braking action poor
+runway 30 cleared to land, roger, S5‐DSC
+
+Important phrases (weather information and runway condition)
+temperature ‐2, dew point 0
+wind gusting at (number of knots)
+moderate turbulence
+
+runway (number) condition (condition)
+landing surface (condition)
+caution construction works/obstacle
+runway wet/covered with snow
+breaking action good/medium/poor
+
+◊ Weather avoidance
+Weather does not always do what the forecasts predict and it can deteriorate very fast. When the
+pilot is receiving ATC service, he should advise the controller of the situation and request an
+alternative level or route.
+RTF Unable to maintain VMC
+S5‐DAA, unable to maintain VMC due clouds, request turn left to Ptuj
+
+◊ Crossing controlled airspace
+If the pilot intends to fly through controlled airspace, he needs to obtain clearance to enter it and has
+to follow ATC instructions. The request needs to be made in good time (at least 5 minutes before),
+and should include the position and time of entering the controlled airspace.
+RTF Crossing of controlled airspace
+Maribor Approach S5‐DAS
+S5‐DAS Maribor Approach
+S5‐DAS, VFR from Murska Sobota to Celje, 15 miles north of Maribor, climbing to 2500 feet, request
+climb to 4000 feet and cross controlled airspace from ME1 to MS3
+S‐AS, maintain 2500 feet, report over ME1
+S‐AS, over ME1, 2500 feet
+S‐AS, report over MS3, climb to 4000 feet
+climbing to 4000 feet, wilco, S‐AS
+S‐AS, over MS3, 4000 feet
+S‐AS, contact Ljubljana Information 118,475
+
+19
+
+Arrival Phraseology
+◊ First call
+The pilot should make the initial call in sufficient time to allow a planned entry into the
+circuit, Aerodrome Traffic Zone or controlled airspace. If the aerodrome provides ATIS, the
+pilot acknowledges the receipt by including the ATIS code in the initial call. The controller
+gives the pilot appropriate instructions.
+RTF Entering the controlled airspace
+Ljubljana Information S5‐DBS
+S5‐DBS Ljubljana Information
+S5‐DBS, VFR from Maribor to Ljubljana, altitude 4000 feet, estimating NE at 24
+S‐BS, report 3 minutes before NE, QNH 1012
+QNH 1012, wilco, S‐BS
+S‐BS, 3 minutes before NE
+S‐BS, contact Ljubljana tower 118.0
+118.0, S‐BS
+
+◊ Straight‐in‐approach
+Depending on prevailing traffic condition and the direction from which an aircraft is arriving,
+the controller may give the pilot a straight‐in‐approach.
+RTF Straight‐in‐approach and landing
+Ljubljana Tower S5‐DJP, passing W1 at 4000 feet, for landing
+S5‐DJP Ljubljana Tower, cleared straight‐in‐approach runway 12, wind 140 degrees 8 knots, QNH
+1013, report final
+cleared straight‐in‐approach runway 12, QNH 1013, will report final, S5‐DJP
+S5‐DJP, final runway 12
+S‐JP, runway 12 cleared to land, wind 140 degrees 8 knots
+runway 12 cleared to land, S‐JP
+
+Important phrases (approach and landing)
+
+report runway (lights, field) in sight
+hold visual over / between ….. and…..
+orbit right/left
+(due traffic, spacing, delay)
+cleared (type of approach) runway
+(number)
+cleared to land
+
+request landing instructions
+runway in sight
+request straight‐in‐approach
+
+20
+
+◊ Traffic circuit and landing
+The pilot should make the request for instructions to join the traffic circuit in good time.
+Having joined the traffic circuit, the pilot makes routine reports. The compulsory reports are
+downwind and final, other reports are made on request. The examples in this section refer
+to the left‐hand pattern. When the traffic circuit is in a right traffic pattern, IT should be
+specified, e.g. ΄REPORT RIGHT DOWNWIND΄. Left‐hand patters don't have to be specified.
+
+Picture : Left‐hand pattern
+RTF Joining the circuit and landing
+Portorož Approach S5‐DMN, over PE1, 3000 feet, for landing
+S5‐DMN Portorož Approach, QNH 1021, runway in use 33, continue to the airport, descend visually
+to 1000 feet, report runway in sight
+QNH 1021, runway in use 33, continuing to the airport, descending visually to 1000 feet, wilco, S5‐
+DMN
+S5‐DMN, runway in sight
+S‐MN, number 2, traffic is Piper Tomahawk on final, runway 33, report base
+traffic in sight, will report base, S‐MN
+S‐MN, base
+S‐MN, runway 33, cleared to land, wind 300 degrees, 8 knots gusting at 12
+runway 33, cleared to land, S‐MN
+
+Important phrases (joining the circuit and landing)
+join [direction of circuit] (position in
+circuit) (runway)
+report downwind/base/final
+extend downwind
+make short/long approach
+number… follow (A/C type and position)
+runway (number) cleared to land
+vacate (via) / report (runway) vacated
+
+(position)(level) for landing
+downwind/final
+
+21
+
+RTF Landing and vacating runway
+S‐MN, vacate right, report runway vacated, continue to general aviation apron via taxiways A and T
+vacating right, continuing to general aviation apron via taxiways A and T, wilco, S‐MN
+S‐MN, runway vacated
+
+◊ Missed approach
+
+To avert an unsafe situation, the controller may instruct the pilot to perform a missed
+approach. The pilot reads back the instruction and continues into the traffic circuit if no
+other instruction is given. The manoeuver may be initiated by the pilot who informs the
+controller about it using the phrase ′GOING AROUND΄.
+RTF Missed approach
+S‐JP, go around, vehicle on the runway
+going around, S‐JP
+
+◊ Training
+
+For training purposes, the pilot might request an approach along or parallel to the runway,
+without stopping.
+If the pilot wishes to land and take‐off again, he may ask for a touch‐and‐go. However, if the
+pilot wants to perform a normal landing and then take‐off again, he requests a stop‐and‐go.
+When he finishes the training, he requests a full‐stop.
+RTF Touch‐and‐go
+S‐AT, downwind, request touch‐and‐go
+S‐AT, expect touch‐and‐go, report final runway 14
+will report final, S‐AT
+S‐AT, final runway 14
+S‐AT, runway 14, cleared touch‐and‐go, wind 120 degrees 5 knots
+runway 14 cleared touch‐and‐go, S‐AT
+
+Important phrases (training)
+cleared low approach runway (number)
+expect touch‐and‐go
+make full stop
+cleared low pass
+
+request low approach (reasons)
+request touch‐and‐go
+request stop‐and‐go
+request low pass
+request full stop
+
+22
+
+Distress message
+The word ′MAYDAY′ announces a distress message that should be sent by an aircraft
+experiencing a condition of being threatened by serious and/or imminent danger and of
+requiring immediate assistance. A distress message should normally be made on the
+frequency used at the time. The pilot may change to the emergency frequency 121.500 MHz
+or another frequency if better assistance can be provided on these frequencies.
+Distress messages shall consist of as many as possible of the following elements spoken
+distinctly and, if possible, in the following order:
+Content
+distress signal
+
+Example
+MAYDAY MAYDAY MAYDAY
+
+the name of the station addressed
+
+Maribor Approach
+
+the identification of the aircraft
+
+S5‐DAT
+
+the nature of the distress condition
+
+engine shutdown
+
+the intention of the pilot‐in‐command
+
+landing at airfield Cerkvenjak
+
+position, level and heading
+
+overhead Lenart, 4500 feet
+
+The ATS unit addressed by an aircraft in distress acknowledges the receipt of the distress
+message with the phrase ′ROGER MAYDAY′. The unit takes control of the communication or
+clearly transfers that responsibility.
+The ATS unit in control of distress traffic may imposes radio silence, either on all stations in
+the area or on any station which interferes with the distress traffic, using the phrase ′STOP
+TRANSMITTING, MAYDAY′.
+All stations/S5‐DBS Ljubljana Approach, stop transmitting, MAYDAY
+
+When an aircraft is no longer in distress, it shall transmit a message cancelling the distress
+condition.
+S5‐DAT Maribor Tower, cancel distress, fire extinguished
+
+The controller terminates the distress communication and silence conditions by
+transmitting a message, including the words ′DISTRESS TRAFFIC ENDED΄.
+
+23
+
+Distress situations
+engine shutdown / on fire / losing
+power
+short of fuel / fuel
+severe icing problem
+
+lost [in cloud, fog]
+technical trouble
+electrical failure
+smoke in the cockpit
+
+Urgency message
+An aircraft sends out the urgency message if she wishes to give notice of a condition,
+concerning the safety of an aircraft or other vehicle, or of some person on board or within
+sight, but which does not require immediate assistance. The pilot starts the message with
+the word ′PAN PAN′, preferably spoken three times. The urgency message shall be made on
+the frequency in use at the time and shall contain the following elements:
+Content
+urgency signal
+
+Example
+PAN PAN PAN PAN PAN PAN
+
+the name of the station addressed
+
+Portorož Approach
+
+the identification of the aircraft
+
+S5‐PEA
+
+the nature of the urgency condition
+
+passenger with health problems
+
+the intention of the pilot‐in‐command
+
+request immediate landing
+
+position, level and heading
+
+overhead Piran, at 2000 feet
+
+The ATS unit addressed by an aircraft acknowledges the receipt of the urgency message
+and, if necessary, exercises control of communications.
+Urgency situations
+bird strike
+minor technical failure
+
+pilot’s health trouble
+passenger's health trouble
+
+A hawk with a mouse caught by a web camera at Aerodrome Ljubljana
+
+24
+
+Helicopter Operations
+Based on an appropriate permission, helicopters may be able to land and take‐off from areas
+of the aerodrome other than the runway. Therefore, helicopter pilots need to inform the
+controller which area of the aerodrome they intend to use. When the take‐off is made from
+the runway, the phraseology in the example below should be used.
+RTF Air taxiing
+Ljubljana Tower S5‐HNM, on military apron, Information C, request air‐taxiing
+S‐NM Ljubljana Tower, air‐taxi to holding point runway 30 via F, QNH 1003, report ready for
+departure
+air‐taxi to holding point runway 30 via F, QNH 1003, wilco, S‐NM
+
+When the pilot takes off from another point on the manoeuvring area, the area needs to be
+specified in the transmission, e.g. ′(area), READY FOR DEPARTURE′.
+RTF Departure
+Ljubljana Tower S5‐HNM, request departure instructions from present position to Kredarica
+S‐NM Ljubljana Tower, cleared for take‐off, after departure turn right, direction 30, climb to 6000
+feet
+cleared for take‐off, after departure turn right, direction 30, climb to 6000 feet, S‐NM
+
+Important phrases (departure)
+air‐taxi to holding point runway
+(number) via (route)
+air‐taxi to (location)
+air‐taxi via (route) to (location)
+caution dust, blowing snow, debris
+
+request air‐taxiing from … to
+request departure instructions from (take
+off area) to
+
+25
+
+Unattended Aerodromes
+◊ Operations outside the hours of ATS
+At some aerodromes operations may take place outside working hours of an air traffic
+services unit. To improve safety at such aerodromes, the pilot should broadcast information
+on his position and intentions to other aircraft that may be operating on or in the vicinity of
+the aerodrome. Besides position and intentions, his transmissions shall include the name of
+the aerodrome and the runway he intends to use.
+RTF Taxiing and departure
+Aerodrome Novo mesto, S5‐DBK, taxiing to runway 23
+Aerodrome Novo mesto, S5‐DBK, lining up runway 23 for departure
+Aerodrome Novo mesto, S5‐DBK, airborne, departing north
+
+◊ Arrival Transmissions
+The initial call should be made 5 minutes before arriving at the aerodrome. The examples
+below show arrival transmissions relating to a normal traffic pattern. Pilots may adapt calls
+as necessary depending on the situation and any other traffic in the vicinity.
+RTF Arrival
+Aerodrome Novo mesto, S5‐DBK, at 2000 feet, joining right‐hand circuit runway 23
+Aerodrome Novo mesto, S5‐DBK, right downwind, runway 23
+Aerodrome Novo mesto, S5‐DBK, final runway 23
+
+26
+
+Aerodromes with a flight information service officer
+This section provides examples of the RTF used by a pilot at an aerodrome with a flight
+information service officer on duty. The AFIS officer provides information necessary for the
+safe and efficient operation of aerodrome traffic.
+◊ Taxiing and departure
+The mobile station operator provides information regarding taxiing and occupation of the
+runway.
+RTF Taxiing and take‐off
+Aerodrome Lesce S5‐DJJ, good day
+S‐JJ, Aerodrome Lesce, good day
+S‐JJ, request taxi for work in zone Vrba
+S‐JJ, taxi to runway 14, wind 160 degrees 2 knots, report ready for departure
+taxiing to runway 14, wilco, S‐JJ
+S‐JJ, holding point runway 14, ready for departure
+S‐JJ, runway 14 free for departure, wind 100 degrees 3 knots, report overhead Vrba
+runway 14 free for departure, wilco, S‐JJ
+
+◊ Training
+For training purposes, the pilot may ask for permission to fly in the traffic circuit or to
+perform an approach along or parallel to the runway. He can further ask for a touch‐and‐go,
+stop‐and‐go, flying in the zone or engine failure imitation.
+RTF Training (traffic circuit)
+S5‐DJJ, ready for departure, traffic patterns
+S‐JJ, runway free for departure, left‐hand pattern, report downwind
+left‐hand pattern, will report downwind, S‐JJ
+S‐JJ, downwind, runway 14
+S‐JJ, report final
+will report final, S‐JJ
+S‐JJ, final runway 14, for touch‐and‐go
+S‐JJ, runway 14 free for touch‐and‐go, wind 130 degrees 2 knots
+runway 14 free for touch‐and‐go, S‐JJ
+
+27
+
+RTF Training (engine failure imitation)
+Lesce S‐JJ, left‐hand traffic circuit, for engine failure imitation
+S‐JJ, engine failure imitation approved, report one minute before imitation
+engine failure imitation approved, wilco, S‐JJ
+Lesce S‐JJ, one minute before start of imitation
+S‐JJ, runway 14, land at own discretion, wind 130 degrees 2 knots
+runway 14, land at own discretion, S‐JJ
+
+◊ Approach
+The aeronautical station operator provides information for joining the traffic circuit and
+landing. He does not give instructions and clearances.
+RTF Joining the circuit and landing
+Aerodrome Lesce S5‐DJJ, good morning
+S‐JJ Aerodrome Lesce, good morning
+S‐JJ, over W2, altitude 3000 feet, for landing
+S‐JJ, join left‐hand circuit, runway 14, report downwind
+join left‐hand circuit, runway 14, will report downwind, S‐JJ
+S‐JJ, downwind
+S‐JJ, report final runway 14
+will report final, S‐JJ
+S5‐DJJ, final runway 14
+S‐JJ, runway 14 free for landing, wind 100 degrees 2 knots
+runway 14 free for landing, S‐JJ
+
+28
+
+Gliding
+
+◊ Departure
+RTF Take‐off and rope dropping
+Bovec Blanik 10, radio check 123.500
+Blanik 10, read you 4
+Blanik 10, ready for departure
+Blanik 10, roger
+S‐AR, runway free for departure
+runway free for departure, S‐AR
+
+Bovec Blanik 10, disconnected
+Blanik 10, roger
+
+S‐AR, for dropping (rope)
+S‐AR, continue runway 07, for dropping
+S‐AR, rope dropped (retracted)
+S‐AR, (rope dropped) report final runway 25
+S‐AR, final runway 25
+S‐AR, runway 25, land at own discretion, wind 120 degrees 5 knots
+runway 25, land at own discretion, S‐AR
+
+◊ Sailing
+RTF Sailing
+Cirus 16 Podpeč, report position
+Cirus 16, over Krvavec, 4000 meters, climbing 3 meters per second
+Cirus 16
+
+29
+
+◊ Approach
+RTF Approach
+Podpeč Blanik 10, overhead Grintavec, at 2000 m, on course to Podpeč
+Blanik 10, contact Ljubljana Approach 118.750 for crossing TMA Ljubljana
+118.750, Blanik 10
+
+Ljubljana Approach Blanik 10, over Krvavec, at 1800 meters, request crossing TMA Ljubljana
+Blanik 10, continue direct to S3, call over airport Ljubljana
+continuing direct to S3, wilco, Blanik 10
+Blanik 10, over airport Ljubljana, at 1700 meters, on course to S3
+Blanik 10, report passing S3, caution light aircraft approaching head on
+wilco, light aircraft in sight, Blanik 10
+Blanik 10 over S3, at 1500 meters
+Blanik 10, contact Podpeč 123.500
+123.500, Blanik 10
+
+Podpeč Blanik 10, zone Podpeč, gear down and locked
+Blanik 10 Podpeč, runway 26 free for landing, land on T
+runway 26 free for landing, wilco, Blanik 10
+
+30
+
+Ballooning
+
+The balloon pilot makes contact with air traffic control after take‐off. He reports his position,
+height and flight direction. If the altitude changes during the flight, the change is reported to
+the controller. The controller states the conditions under which the pilot may continue his
+flight, and instructs the pilot to report when he will start the landing manoeuvre.
+RTF Airborne
+Ljubljana Information S5‐ORP, airborne at Barje at 15, intended altitude 2000 feet, direction Ig
+S5‐ORP Ljubljana Information, roger, QNH 1002, Squawk 7001, report before landing
+QNH 1002, Squawk 7001, wilco, S5‐ORP
+
+RTF Position reporting
+S5‐ORP Ljubljana Information, report position
+Ljubljana Information S5‐ORP, over Matena, altitude 2000 feet, direction east
+
+RTF Change of altitude
+Ljubljana Information S5‐ORP, request level change
+S‐RP Ljubljana Information, climb to 4000 feet approved
+climb to 4000 feet approved, S‐RP
+
+RTF Landing
+Ljubljana Information S5‐ORP, starting landing procedure
+S‐RP Ljubljana Information, roger, report after landing. Do you request close flight plan?
+wilco, request close flight plan, S‐RP
+
+or
+wilco, will inform you after landing over the phone, S‐RP
+
+31
+
+Complete flights
+1.
+
+RTF A cross‐country flight to Ronchi departing from Portorož
+S‐BS, runway 15 cleared for take‐off, wind 120 degrees 6 knots, after departure turn left, climb to
+2000 feet, report PN1
+runway 15 cleared for take‐off, after departure turn left, climb to 2000 feet, wilco, S‐BS
+S‐BS, over PN1, 2000 feet
+S‐BS, continue direct to VICKY, climb to 2500 feet
+continue direct to VICKY, climbing to 2500 feet, S‐BS
+S‐BS, overhead VICKY, 2500 feet
+S‐BS, contact Ronchi Approach 119,15
+119,15, S‐BS
+Ronchi Approach, S5‐BS, passing VICKY, at 2500 feet, proceeding to GRADO, Ronchi next, for touch‐
+and‐go
+S‐BS, sr, sh…, fdvn
+Ronchi Approach, S5‐BS, say again, unreadable
+S5‐BS, Ronchi Approach, proceed to GRADO, maintain 2500 feet, QNH 1013, report GRADO
+proceed to GRADO, maintain 2500 feet, QNH 1013, wilco, S‐BS
+S‐BS, overhead GRADO
+S‐BS, contact Ronchi Tower 130,2
+130,2, S‐BS
+Ronchi Tower, S5‐DBS, passing GRADO, for touch‐and‐go
+S‐BS Ronchi Tower, join left base runway 09, report final
+joining left base runway 09, will report final, S‐BS
+S‐BS, final
+S‐BS, runway 09, cleared touch‐and‐go, wind 070 degrees 8 knots, after touch‐and‐go proceed to
+RIFEN, climb to 2500 feet, report RIFEN
+runway 09, cleared touch‐and‐go, after touch‐and‐go proceed to RIFEN, climb to 2500 feet, willco, S‐
+BS
+Ronchi Tower, S5‐DBS, passing RIFEN at 2500 feet
+S‐BS, Contact Ljubljana Information 118,475
+
+32
+
+2.
+
+RTF A cross‐country flight to Venice departing from Ljubljana
+Ljubljana Tower S5‐DAA, dober dan.
+S5‐DAA Ljubljana Tower, dober dan, go ahead
+position G9, request taxi for a VFR flight, via S3, S5‐DAA.
+S‐AA, stand‐by, traffic entering GA apron.
+S‐AA
+
+…
+9A‐DVW, expedite via RWY A to GA apron.
+expediting, 9A‐DVW.
+
+…
+S‐AA, taxi to holding point F, via TWY T and A, QNH 999.
+taxiing to holding point F, via TWY T and A, QNH 999, S‐AA.
+
+…
+S‐AA, ready for departure.
+S‐AA, RWY 12, cleared for take‐off, wind 140 degrees, 8 knots, after departure turn right to S3, climb
+to 2500 feet, squawk 3363
+RWY 12, cleared for take‐off, after departure turn right to S3, climb to 2500 feet, squawk 3663, S‐AA
+S‐AA, negative, squawk 3363.
+squawk 3363, S‐AA
+
+…
+S‐AA, over S3, 2500 feet
+S‐AA, contact Ljubljana Information, 118,475
+118,475, S‐AA
+Ljubljana Information, S5‐DAA, dober dan
+S‐AA Ljubljana Information, dober dan
+over S3, estimating S1 at 53’, RIFEN next, request 6500 feet
+S‐AA, maintain 1000 feet AGL, report abeam Logatec
+maintaining 1000 feet AGL, wilco, S‐AA
+
+…
+S‐AA, abeam Logatec
+S‐AA, 6500 feet approved, report estimated time over RIFEN
+climbing to 6500 feet, estimating RIFEN at 15 next hour, S‐AA
+S‐AA, roger
+
+…
+S‐AA Padova, request, 3000 feet over RIFEN, report 2 minutes before
+descending to cross RIFEN at 3000 feet, wilco, S‐AA.
+
+…
+S‐AA, 2 minutes to RIFEN
+S‐AA, contact Padova Information, 124,150
+
+33
+
+124,150, S‐AA.
+Padova Information S5‐DAA, good day.
+S‐AA Padova Information, good day, QNH 1000, report Grado.
+QNH 1000, wilco, S‐AA.
+
+…
+S‐AA, overhead Grado.
+S‐AA, descend to 1000 feet AGL, report PZE1
+descending to 1000 feet AGL, wilco, S‐AA
+S‐AA, over PZE1
+S‐AA, switch to Lido airport information, 118,525
+118,525, S‐AA
+Lido S5‐DAA, overhead PZE1, 1000 feet AGL.
+S‐AA, Lido, good day, runway in use 05, report right downwind, traffic is Cessna, turning base
+runway 05, will report right downwind, looking out, S‐AA
+
+…
+S‐AA, right downwind RWY 05
+S‐AA, report final RWY 05
+will report final, RWY 05, S‐AA
+I‐MISA, vacating left, to the apron.
+I‐MISA, good day
+S‐AA, RWY 05, wind 110 degrees, 5 knots, land at own discretion, vacate convenient left.
+RWY 05, landing at own discretion, wilco, S‐AA.
+S‐AA, continue to parking by the windsock, good day.
+wilco, S‐AA, good day.
+
+34
+
+3.
+
+RTF A cross‐country flight to Gyor departing from Maribor
+
+Maribor Approach S5‐DMG, on Letalski center, dober dan
+S5‐DMG Maribor Approach, dober dan, go ahead
+S5‐DMG, request taxi for VFR route to Gyor
+S‐MG, QNH 1030, line up runway 14, squawk 7003, report ready for departure
+QNH 1030, lining up runway 14, squawk 7003, ready for departure, S‐MG
+S‐MG cleared to destination, after departure turn left to ME2, climb to 3500 feet
+cleared to destination, after departure left to ME2, climb to 3500 feet, S‐MG
+S‐MG correct, runway 14, cleared for take‐off
+runway 14, cleared for take‐off, S‐MG
+S‐MG airborne at 20, next report ME2
+willco, S‐MG
+Maribor Approach S‐MG, over ME2 at time 25, maintaining 3500 feet, estimating DIMLO at time 42
+S‐MG report 3 minutes before DIMLO
+willco, S‐MG
+
+…
+Maribor Approach S‐MG, 3 minutes before DIMLO
+S‐MG contact Budapest info 125.50
+125.50, na svidenje, S‐MG
+Adijo
+
+…
+Budapest Info S5‐DMG, overhead DIMLO at time 43, maintaining 3500, Jó napot kívánok, request
+S5‐DMG Budapest info, servus, go ahead
+If possible, I would like to cross Papa air base CTR direct Gyor‐PER via Panonhalma reporting point,
+S5‐DMG
+S‐MG stay on my frequency, coordinating
+roger, S‐MG
+S‐MG contact PAPA APP 131.25
+131.25, S‐MG, szia
+szia
+Papa APP S5‐DMG, good afternoon
+SM‐G good afternoon, identified, turn 045, maintain 3000 feet
+turning 045, maintaining 3000 feet, S‐MG
+S‐MG crossing of airfield approved, maintain 3000 feet
+crossing approved, maintaining 3000 feet, S‐MG
+S‐MG contact Gyor‐per, 129.9, Goodbye
+129.9, S‐MG, Goodbye
+Gypr‐per S5‐DMG, Jonapot
+
+35
+
+S5‐DMG servus, QNH 1028, proceed via Panonhalma to GYR, report reaching
+QNH 1028, willco, S5‐DMG
+S5‐DMG, overhead GYR
+S5‐DMG report long final runway 12
+long final runway 12, S5‐DMG
+S5‐DMG, land at own discretion, wind 120 degrees 10 knots
+land at own discretion, S5‐DMG
+S5‐DMG taxi to apron 1 via A
+to apron 1 via A S5‐DMG.
+
+36
+
+Sources:
+EGAST and Eurocontrol: A Guide to Phraseology for General Aviation Pilots in Europe. ‐
+http://essi.easa.europa.eu/egast/?p=214, 2010
+Kukovec, Alenka: Letalska frazeologija, How do you read (me)? ‐ Ljubljana: DIOM, 2010
+Commission Implementing Regulation (EU) 2016/1185 of 20 July 2016 amending
+Implementing Regulation (EU) No 923/2012 as regards the update and completion of the
+common rules of the air and operational provisions regarding services and procedures in air
+navigation (SERA Part C) and repealing Regulation (EC) No 730/2006 (Text with EEA
+relevance)
+Doc 4444 ‐ PANS‐ATM, Procedures for Navigation Services – Air Traffic Management (16th
+Edition), Chapter 12, Phraseologies – Montreal: ICAO, 2016
+
+Ljubljana, October 2017
+1st Issue
+
+37
+
+

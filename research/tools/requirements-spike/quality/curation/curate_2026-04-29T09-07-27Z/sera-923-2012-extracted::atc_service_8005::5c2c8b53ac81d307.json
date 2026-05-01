@@ -1,0 +1,20 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atc_service_8005::5c2c8b53ac81d307",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atc_service_8005",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.8,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source text verbatim supports this atomic SERA.8005(a)(4)(ii) requirement, with a shall-strength parent obligation applying to coordination before transfer of control. The bundle concern identifies a missing sibling condition under (i), but that does not make this candidate an unsupported umbrella or require changing its identity fields.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atc_service_8005/sera-923-2012-extracted::atc_service_8005::5c2c8b53ac81d307.json",
+    "toPath": "candidates/sera-923-2012-extracted/atc_service_8005/sera-923-2012-extracted::atc_service_8005::5c2c8b53ac81d307.json"
+  },
+  "curatedAt": "2026-04-29T09:24:59Z"
+}

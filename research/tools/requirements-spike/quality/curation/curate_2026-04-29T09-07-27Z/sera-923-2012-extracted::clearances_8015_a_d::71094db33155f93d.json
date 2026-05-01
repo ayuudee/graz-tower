@@ -1,0 +1,20 @@
+{
+  "canonicalId": "sera-923-2012-extracted::clearances_8015_a_d::71094db33155f93d",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "clearances_8015_a_d",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.75,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The substantive claim is supported and the shall/authoritative classification is appropriate, but one exactSourceQuotes entry is not present verbatim in the source window because the source splits \u201ccommunications\u201d with a soft hyphen/line break. Since quote identity fields cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/clearances_8015_a_d/sera-923-2012-extracted::clearances_8015_a_d::71094db33155f93d.json",
+    "toPath": "rejected/sera-923-2012-extracted/clearances_8015_a_d/sera-923-2012-extracted::clearances_8015_a_d::71094db33155f93d.json"
+  },
+  "curatedAt": "2026-04-29T09:25:29Z"
+}

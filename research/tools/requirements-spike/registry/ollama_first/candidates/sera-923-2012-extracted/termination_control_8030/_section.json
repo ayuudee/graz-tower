@@ -1,0 +1,11 @@
+{
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "termination_control_8030",
+  "familyId": "sera_clearance_comms_contract_family",
+  "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+  "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+  "startLine": 2139,
+  "endLine": 2141,
+  "lastPromotedRunId": "promote_2026-05-01T10-49-29Z_6dc4",
+  "lastPromotedAt": "2026-05-01T10:49:29Z"
+}

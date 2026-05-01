@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::reduced_runway_7_11::35d63e617f89e3cc",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduced_runway_7_11",
+  "familyId": "icao4444_reduced_runway_family",
+  "claimText": "There shall be available means, such as suitable landmarks, to assist the controller in assessing the distances between aircraft. If a surface surveillance system is utilized, approval for operational use must include a safety assessment ensuring all requisite operational and performance requirements are met.",
+  "rationale": "Merged requirement from 7.11.6 d. Attempts 2 and 3 split this into two candidates; Attempt 1 kept them together. Merging is conservative to preserve the single-source clause integrity.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Reduced runway separation minima shall be subject to the following conditions:",
+    "there shall be available means, such as suitable landmarks, to assist the controller in assessing the distances between aircraft.",
+    "provided that approval for operational use of such equipment includes a safety assessment to ensure that all requisite operational and performance requirements are met;"
+  ],
+  "sourceItemIds": [
+    "7.11.6_d"
+  ],
+  "claimSha256": "f71d2e5e87825a5b38255b0247ecb1c13440403377d0ef80bbea969782ed6a33",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9175,
+    "endLine": 9245
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_reduced_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_distance_assistance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3,
+    "runStartedAt": "2026-04-28T19:35:19Z"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "invariantViolated": false,
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_quote_context_repair",
+      "confidence": "high",
+      "reasoning": "Added ICAO 4444 7.11.6 parent condition clause so the reduced-runway-separation condition claim is quote-supported.",
+      "model": "codex-same-agent",
+      "runId": "rr13_manual_repair_2026-04-29",
+      "appliedAt": "2026-04-29T20:16:15Z"
+    },
+    "manualRepair": {
+      "runId": "rr13_manual_repair_2026-04-29",
+      "reasoning": "Added ICAO 4444 7.11.6 parent condition clause so the reduced-runway-separation condition claim is quote-supported.",
+      "appliedAt": "2026-04-29T20:16:15Z",
+      "previousCanonicalId": "icao4444-extracted::reduced_runway_7_11::116fad1ed40d1fe8"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T20:16:15Z"
+  }
+}

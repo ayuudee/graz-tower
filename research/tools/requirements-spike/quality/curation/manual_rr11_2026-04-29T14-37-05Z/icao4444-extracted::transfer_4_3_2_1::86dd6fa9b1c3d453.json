@@ -1,0 +1,18 @@
+{
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::86dd6fa9b1c3d453",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "model": "human-curator",
+  "gptResponse": {
+    "action": "manual_split_accept",
+    "reasoning": "Manual split from ICAO Doc 4444 section 4.3.2.1 parent. The arriving-aircraft branch is the operative transfer rule and its condition set is preserved as a bundled family-test candidate rather than flattened into a single condition.",
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "manual_split_accept",
+    "fromPath": "pending/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::9e13513d0ea84502.json",
+    "toPath": "candidates/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::86dd6fa9b1c3d453.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-04-29T14:37:05Z"
+}

@@ -1,0 +1,70 @@
+539: Messages containing the following must be read back:
+540: 
+541: •
+542: •
+543: 
+544: Clearances/instructions to enter,
+545: land on, take-off from, hold short of,
+546: cross or backtrack any runway
+547: Runway in use
+548: Altimeter settings
+549: 
+550: • SSR codes
+551: 
+552: Acknowledgement by Callsign
+553: If a transmission contains information that does not need to be read back, you
+554: should acknowledge by transmitting your callsign. You may also transmit your
+555: callsign together with the word ‘roger’, which means ‘I have received all your last
+556: transmission’.
+557: 
+558: • Level or heading
+559: instructions
+560: 
+561: • Speed instructions
+562: • Transition levels
+563: 
+564: Arrival
+565: Cross Country Aerodrome RTF Departure
+566: Phraseology
+567: for Helicopters Phraseology
+568: Flight RTF
+569: 
+570: •
+571: 
+572: ATC route clearance
+573: 
+574: Good RTF
+575: Practice
+576: 
+577: Items to be Read back
+578: 
+579: ‘Wilco’ means ‘I understand your message and will comply’. It should not be used
+580: in place of a full read back of the items on page 10. It may be used for brevity, or
+581: where readback of an instruction or part of an instruction might be confused with a
+582: transmission advising completion of the action instructed.
+583: 
+584: General
+585: General
+586: Phraseology
+587: Phraseology
+588: 
+589: Reading back a clearance and any safety critical information helps both the pilot
+590: and the controller understand what the aircraft has been instructed to do. It also
+591: serves as a check that the right aircraft, and only that aircraft, will take action on
+592: the clearance. It may help to note down the clearance prior to read back and ask
+593: any other pilots (or an educated passenger) in the aircraft to listen to all clearances,
+594: including taxi clearance. If in any doubt you must request clarification.
+595: 
+596: •
+597: 
+598: Introduction &
+599: Abbreviations
+600: 
+601: Use of ‘Wilco’
+602: 
+603: When a read back is required you must ensure it is complete and follow it with
+604: your callsign. It is normally best to read back the items in the order given, as this
+605: makes it easier for the controller to check the accuracy and identify any missing
+606: items. However, there are some exceptions to this, e.g. if departure instructions are
+607: transmitted together with a take-off clearance, it may be more logical to read back
+608: the take-off clearance first, followed by the departure instructions.

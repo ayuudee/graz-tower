@@ -1,0 +1,25 @@
+{
+  "canonicalId": "cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b",
+  "documentId": "cap413-extracted",
+  "sectionId": "readback_2_68_2_71",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.62,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim as a procedural consequence, and it is not redundant with the accepted sibling candidates. However, the cited wording uses \u201cwill be asked,\u201d not shall/must language, so the modality should be lowered while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/readback_2_68_2_71/cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b.json",
+    "toPath": "candidates/cap413-extracted/readback_2_68_2_71/cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    }
+  },
+  "curatedAt": "2026-04-29T09:07:38Z"
+}

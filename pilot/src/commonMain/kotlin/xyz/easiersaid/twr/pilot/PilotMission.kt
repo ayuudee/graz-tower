@@ -1,0 +1,591 @@
+package xyz.easiersaid.twr.pilot
+
+import arrow.core.None
+import arrow.core.Option
+import xyz.easiersaid.twr.protocol.SimTime
+
+/**
+ * High-level goal given to the pilot at spawn. The pilot's planner decomposes
+ * this into an HTN task tree. Pilot-internal — never crosses the firewall to
+ * the controller; the controller learns broad service intent from the
+ * [xyz.easiersaid.twr.sim.FlightStrip] back-channel and per-circuit intent
+ * from the pilot's downwind radio call.
+ */
+sealed interface HighLevelGoal {
+    data class Departure(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+    data class Arrival(val from: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+    data class CircuitTraining(val circuits: Int, val fullStopOnLast: Boolean = true) : HighLevelGoal {
+        init { require(circuits > 0) { "CircuitTraining requires at least 1 circuit" } }
+    }
+    data class Transit(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+}
+
+/**
+ * Hierarchical Task Network for the pilot agent.
+ *
+ * A mission decomposes a [HighLevelGoal] into a tree of [Task]s:
+ *   - [CompoundTask]: decomposes into ordered children (sequential execution)
+ *   - [PrimitiveTask]: leaf node with a specific step, completion mode, and optional transmission
+ *
+ * Interrupts work through subtree replacement: go-around replaces the current
+ * CIRCUIT compound task. Touch-and-go loops the CIRCUIT compound. Extend-downwind
+ * scopes a constraint to the DOWNWIND primitive within the circuit subtree.
+ */
+data class PilotMission(
+    // ── Structural (set at creation, rarely mutated) ────────────────
+    val goal: HighLevelGoal,
+    val root: CompoundTask,
+    /** How the pilot derives their route — set at creation, updated on ATC amendments. */
+    val navigationMode: Option<NavigationMode> = None,
+    /**
+     * Active runway and the clearance class that assigned it. Populated only
+     * by [processInstruction] from radio-derived sources: TaxiTo (via the
+     * holding-point→runway reverse lookup), LineUpAndWait, ClearedForTakeoff,
+     * ClearedToLand, ClearedTouchAndGo, BacktrackRunway. [None] until the
+     * controller speaks — the pilot is genuinely silent at sim init, no peek
+     * at the controller's commitment ledger.
+     *
+     * Phase C of the pilot-firewall plan (`/home/andrew/.claude/plans/pilot-firewall.md`).
+     *
+     * Pass 5 (D-PF.2 closure): the carrier is now [RunwayAssignment]
+     * (runway + source). Updates apply [applyPrecedence] so anomalous
+     * orderings (e.g. a `Takeoff` clearance arriving while the prior
+     * `Land` was for a different runway) are detected and surfaced rather
+     * than silently overwritten.
+     */
+    val activeRunway: Option<xyz.easiersaid.twr.protocol.RunwayAssignment> = None,
+
+    // ── Cross-cutting (set by ATC at any time, reset depends on context) ──
+    /** Instructions received from ATC that modify current step behaviour. */
+    val activeConstraints: Set<ActiveConstraint> = emptySet(),
+    /** Temporary route replacement — suspends FPL-based routing when active. */
+    val routeOverride: Option<RouteOverride> = None,
+    /** Whether initial contact has been made on the current frequency. */
+    val contactedOnFrequency: Boolean = false,
+
+    /**
+     * The role the pilot was last told to contact via [ContactFrequency].
+     *
+     * Pass 7 (D-AUDIT.5): the responsibility transition fires on
+     * `Utterance.FromPilot(InitialContact(stationCalled=X))` — *which* role
+     * X is determined by what `ContactFrequency` instruction the pilot
+     * most recently received. Pre-Pass-7, `CALL_INBOUND` hardcoded TOWER;
+     * post-Pass-7 it reads this field for the contextual role.
+     *
+     * Set by [processInstruction] on `ContactFrequency(role)`; cleared by
+     * [updateAfterTransmission] when the matching `InitialContact` is
+     * transmitted. [None] before the first ContactFrequency.
+     */
+    val pendingInitialContactRole: Option<xyz.easiersaid.twr.protocol.RoleName> = None,
+
+    // ── Phase-local (reset on go-around — see resetForGoAround) ────
+    /** Timer for missing-clearance escalation (millis since step entered). */
+    val stepEnteredAt: SimTime = SimTime.ZERO,
+    /** Last circuit leg where a position report was made (suppress duplicates). */
+    val lastReportedLeg: Option<xyz.easiersaid.twr.core.world.LegName> = None,
+    /** Set true when pilot has reported runway vacated. Used by REPORT_RUNWAY_VACATED completion. */
+    val reportedVacated: Boolean = false,
+    /** Set true when ClearedToLand/ClearedTouchAndGo received. Used by go-around decision. */
+    val hasClearance: Boolean = false,
+    /**
+     * Circuit leg where an arriving aircraft was instructed to join, from [JoinCircuit].
+     *
+     * [None] means no join instruction has been received yet — route planner defaults to
+     * [LegName.DOWNWIND]. Set when [processInstruction] handles [JoinCircuit]; reset to
+     * [None] on go-around (the aircraft re-enters from the go-around path, not the original join).
+     */
+    val joinLeg: Option<xyz.easiersaid.twr.core.world.LegName> = None,
+
+    /**
+     * ATC-issued altitude restriction in metres, from [StopClimbAt].
+     *
+     * When [Some], the route planner caps [PilotRoute.Airborne.targetAltitudeM] at this value.
+     * The pilot will level off at the restriction rather than climbing to full circuit altitude.
+     * [None] means unrestricted — pilot climbs to the procedure-defined altitude.
+     *
+     * Reset on go-around: the aircraft is climbing away from the runway and the approach
+     * phase restrictions no longer apply.
+     */
+    val altitudeRestrictionM: Option<Double> = None,
+
+    /**
+     * The mission step for which the pilot most recently emitted a
+     * "first-tick" transmission (request, ready report, position report).
+     * Used by [stepTransmission] to fire the per-step transmission exactly
+     * once per step entry, irrespective of timing — replaces a brittle
+     * `(now - stepEnteredAt) < window` check that double-fired on adjacent
+     * pilot ticks.
+     *
+     * Reset to [None] on go-around so the rejoined circuit's transmissions
+     * fire fresh.
+     */
+    val lastTransmittedStep: Option<MissionStep> = None,
+
+    /**
+     * Bounded ring of [xyz.easiersaid.twr.protocol.AnomalousAssignment]s
+     * surfaced by [xyz.easiersaid.twr.protocol.applyPrecedence] when the
+     * pilot's runway-assignment update was anomalous (e.g. a `Takeoff` after
+     * a `Land` for a different runway).
+     *
+     * The pilot's [updateActiveRunwayFromInstruction] obeys the latest
+     * controller statement (the new assignment proceeds), but retains the
+     * anomaly here so Pass 7's coordination ledger can consume it without
+     * re-deriving the history. Capped at [MAX_ANOMALY_HISTORY]; the oldest
+     * is dropped.
+     *
+     * Pass 5 (D-PF.2 closure): retention only — no consumer reads this slot
+     * yet. Pass 7 will route entries through a typed `ControllerEvent` for
+     * the controller-side reconciliation.
+     */
+    val recentAnomalies: List<xyz.easiersaid.twr.protocol.AnomalousAssignment> = emptyList(),
+) {
+    companion object {
+        const val MAX_ANOMALY_HISTORY: Int = 8
+    }
+
+    /** The current primitive task being executed (leftmost incomplete leaf). */
+    val currentTask: PrimitiveTask? get() = root.currentPrimitive()
+    val isComplete: Boolean get() = root.isComplete
+}
+
+/**
+ * Reset phase-local state for go-around. The tree (root) is handled
+ * separately by subtree replacement in [processInstruction].
+ *
+ * Every existing field is named here — either reset (with a value) or
+ * explicitly preserved (in the trailing comment block). Adding a new
+ * field to [PilotMission] requires deciding go-around behavior for it
+ * and updating the call sites here. There is no compile-time guarantee
+ * the new field is named — reviewers touching this function should
+ * re-check the comment block matches the current field set.
+ */
+fun PilotMission.resetForGoAround(now: SimTime): PilotMission = copy(
+    // Phase-local — reset to defaults.
+    stepEnteredAt = now,
+    lastReportedLeg = None,
+    reportedVacated = false,
+    hasClearance = false,
+    // Cross-cutting — reset on go-around (extend-downwind and vectors are
+    // invalidated by the approach abort).
+    activeConstraints = emptySet(),
+    routeOverride = None,
+    // joinLeg: reset — go-around re-enters circuit from go-around path, not original join.
+    joinLeg = None,
+    // altitudeRestrictionM: reset — go-around discards approach-phase level restrictions.
+    altitudeRestrictionM = None,
+    // lastTransmittedStep: reset — rejoined circuit's transmissions fire fresh.
+    lastTransmittedStep = None,
+    // Structural + cross-cutting — preserved.
+    // goal: unchanged (still the same mission)
+    // root: handled by caller (subtree replacement)
+    // navigationMode: unchanged (still VFR/IFR)
+    // activeRunway: unchanged (same runway)
+    // contactedOnFrequency: unchanged (still on same frequency)
+)
+
+// ── Task tree ────────────────────────────────────────────────────────
+
+/**
+ * Typed task name for compound tasks. Carries the pilot's mission-level
+ * categorisation of what the aircraft is currently doing — read by
+ * [xyz.easiersaid.twr.sim.toFlightStrip] to derive a broad service intent
+ * for the controller's pre-briefing, and by go-around subtree replacement
+ * (`isCircuitLike`) to scope the rewrite to the active circuit compound.
+ *
+ * The previous reference to `derivePilotGoal` here was stale — that
+ * function was removed when the controller-facing `PilotGoal` type was
+ * deleted as part of the firewall work.
+ */
+sealed interface TaskName {
+    data object Depart : TaskName
+    data object Arrive : TaskName
+    data object TouchAndGo : TaskName
+    data object Transit : TaskName
+    data object GroundDeparture : TaskName
+    data object GroundArrival : TaskName
+    data object Circuit : TaskName
+    data object CircuitAfterGoAround : TaskName
+    data object CircuitTraining : TaskName
+    data object ArrivalJoin : TaskName
+    data object GoAround : TaskName
+}
+
+/**
+ * A compound task that decomposes into ordered children.
+ * Children are executed left-to-right. The compound is complete when all children are complete.
+ */
+data class CompoundTask(
+    val name: TaskName,
+    val children: List<TaskNode>,
+) : TaskNode {
+    init { require(children.isNotEmpty()) { "CompoundTask '${name::class.simpleName}' must have at least one child" } }
+    override val isComplete: Boolean get() = children.all { it.isComplete }
+
+    /** Find the leftmost incomplete primitive leaf. */
+    fun currentPrimitive(): PrimitiveTask? {
+        for (child in children) {
+            if (child.isComplete) continue
+            return when (child) {
+                is PrimitiveTask -> child
+                is CompoundTask -> child.currentPrimitive()
+            }
+        }
+        return null
+    }
+
+    /** Replace the first child matching [predicate] with [replacement]. */
+    fun replaceChild(predicate: (TaskNode) -> Boolean, replacement: TaskNode): CompoundTask {
+        var replaced = false
+        return copy(children = children.map { child ->
+            if (!replaced && predicate(child)) { replaced = true; replacement } else child
+        })
+    }
+
+    /** Mark the current primitive as complete and return the updated tree. */
+    fun advanceCurrent(): CompoundTask {
+        val current = currentPrimitive() ?: return this
+        return markComplete(current.step)
+    }
+
+    /** Mark the first incomplete instance of [step] in the tree. Only one node is marked per call. */
+    fun markComplete(step: MissionStep): CompoundTask {
+        var found = false
+        val updated = children.map { child ->
+            if (found) return@map child
+            when (child) {
+                is PrimitiveTask -> if (child.step == step && !child.completed) {
+                    found = true; child.copy(completed = true)
+                } else child
+                is CompoundTask -> {
+                    val after = child.markComplete(step)
+                    // Check structural equality — copy() creates a new object even if nothing changed
+                    if (after != child) found = true
+                    after
+                }
+            }
+        }
+        return copy(children = updated)
+    }
+}
+
+/**
+ * A primitive (leaf) task with a specific mission step.
+ *
+ * Each primitive declares its [completionMode] — how it becomes complete:
+ *   - PHYSICAL: completes when aircraft reaches a physical state (phase, position)
+ *   - REPORTED: completes when a report has been transmitted
+ *   - INSTRUCTION_GATED: completes only when a specific ATC instruction arrives
+ *   - TIMED: completes after a time delay (e.g., run-up checks)
+ *   - INSTANT: completes immediately (structural marker)
+ */
+data class PrimitiveTask(
+    val step: MissionStep,
+    val completionMode: CompletionMode,
+    val completed: Boolean = false,
+) : TaskNode {
+    override val isComplete: Boolean get() = completed
+}
+
+/** Sealed type for task tree nodes — dispatch via when-is. */
+sealed interface TaskNode {
+    val isComplete: Boolean
+}
+
+enum class CompletionMode {
+    /** Completes when aircraft reaches a physical state (phase, position). */
+    PHYSICAL,
+    /** Completes when a report has been transmitted (lastReportedLeg check). */
+    REPORTED,
+    /** Completes only when a specific ATC instruction arrives. */
+    INSTRUCTION_GATED,
+    /** Completes after a time delay. */
+    TIMED,
+    /** Completes immediately — structural marker. */
+    INSTANT,
+}
+
+/** An ATC instruction that modifies pilot behaviour without changing the mission plan. */
+sealed interface ActiveConstraint {
+    data object ExtendingDownwind : ActiveConstraint
+    data object Orbiting : ActiveConstraint
+    data class SpeedRestriction(val targetKnots: Int) : ActiveConstraint
+}
+
+/**
+ * A temporary route replacement — suspends FPL-based routing.
+ *
+ * Distinct from [ActiveConstraint]: constraints modify HOW the pilot follows
+ * their route; overrides REPLACE the route entirely. When the override is
+ * cleared (resume own navigation / leave hold), FPL-based routing resumes.
+ */
+sealed interface RouteOverride {
+    /** Pilot flies a heading assigned by ATC (radar vectors). */
+    data class Vectoring(val heading: xyz.easiersaid.twr.protocol.Heading) : RouteOverride
+    /** Pilot flies a holding pattern at a fix. */
+    data class Holding(val hold: xyz.easiersaid.twr.protocol.HoldSpec) : RouteOverride
+}
+
+// ── Mission step enum ────────────────────────────────────────────────
+
+enum class MissionStep {
+    // Ground (pre-departure)
+    REQUEST_STARTUP, AWAIT_STARTUP_APPROVAL, REQUEST_TAXI, TAXI_TO_HOLDING,
+    RUN_UP_CHECKS, REPORT_READY, AWAIT_LINE_UP, AWAIT_TAKEOFF_CLEARANCE,
+    // Airborne (VFR circuit)
+    FLY_DEPARTURE, FLY_DOWNWIND, REPORT_DOWNWIND, AWAIT_SEQUENCING,
+    FLY_BASE, REPORT_BASE, FLY_FINAL, REPORT_FINAL, AWAIT_LANDING_CLEARANCE,
+    // Airborne (IFR)
+    FLY_SID, FLY_EN_ROUTE, FLY_STAR, FLY_APPROACH, FLY_MISSED_APPROACH,
+    // Landing + post-landing
+    LAND, REPORT_RUNWAY_VACATED, AWAIT_VACATE_INSTRUCTION, TAXI_TO_STAND, SHUTDOWN,
+    // Arrival (pre-circuit)
+    CALL_INBOUND, AWAIT_JOINING_INSTRUCTIONS,
+    // Special states
+    GOING_AROUND, AWAITING_ATC_INSTRUCTION,
+}
+
+// ── Task tree construction ───────────────────────────────────────────
+
+/**
+ * Build the GROUND_DEPARTURE compound task. Uniform across AI and human
+ * pilots — same mission tree, same timing rules.
+ *
+ * `REQUEST_STARTUP` and `AWAIT_STARTUP_APPROVAL` are not part of the tree.
+ * This is **rot, not a design choice** (deferment **D-PF.1**): we have not
+ * built the controller-side `CLEARANCE_DELIVERY` procedure that would gate
+ * those steps, so rather than leave dead steps in the tree (or paper over
+ * the gap with a `humanPiloted` short-circuit) the steps are simply absent.
+ * When an airport requiring startup clearance is exercised (LOWS, LOWW,
+ * LJLJ are candidates), D-PF.1 brings the steps back the right way — gated
+ * on the airport's procedural requirement, not on cockpit type.
+ */
+fun groundDepartureTask(): CompoundTask = CompoundTask(TaskName.GroundDeparture, listOf(
+    PrimitiveTask(MissionStep.REQUEST_TAXI, CompletionMode.INSTRUCTION_GATED),
+    PrimitiveTask(MissionStep.TAXI_TO_HOLDING, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.RUN_UP_CHECKS, CompletionMode.TIMED),
+    PrimitiveTask(MissionStep.REPORT_READY, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_LINE_UP, CompletionMode.INSTRUCTION_GATED),
+    PrimitiveTask(MissionStep.AWAIT_TAKEOFF_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+))
+
+/** Build the CIRCUIT compound task (downwind through landing). */
+fun circuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
+    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_SEQUENCING, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_BASE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_BASE, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_FINAL, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_LANDING_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+    PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL),
+))
+
+/** Build the ARRIVAL_JOIN compound task (inbound call + joining). */
+fun arrivalJoinTask(): CompoundTask = CompoundTask(TaskName.ArrivalJoin, listOf(
+    PrimitiveTask(MissionStep.CALL_INBOUND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_JOINING_INSTRUCTIONS, CompletionMode.INSTRUCTION_GATED),
+))
+
+/**
+ * Build the GROUND_ARRIVAL compound task.
+ *
+ * Pass 7 (D-AUDIT.5): no dedicated CALL_INBOUND step needed for this
+ * task — the responsibility transition fires on any pilot transmission
+ * to a Watching controller (per ICAO Doc 4444 §10.1.1, two-way comms
+ * via "receiving station acknowledges receipt"). The first transmission
+ * here is REPORT_RUNWAY_VACATED, which doubles as initial contact (real
+ * phraseology: "Ground, OE-ABC, runway 16C vacated, request taxi to stand").
+ */
+fun groundArrivalTask(): CompoundTask = CompoundTask(TaskName.GroundArrival, listOf(
+    PrimitiveTask(MissionStep.REPORT_RUNWAY_VACATED, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_VACATE_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
+    PrimitiveTask(MissionStep.TAXI_TO_STAND, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+))
+
+/**
+ * Build the GO_AROUND compound task (VFR — rejoin circuit).
+ *
+ * VFR go-arounds are autonomous: the pilot reports "going around" then
+ * re-enters the circuit independently. No AWAITING_ATC_INSTRUCTION step —
+ * that would block the pilot until ATC re-sequences, which is correct for
+ * IFR (see [ifrGoAroundTask]) but wrong for VFR where ATC may only say
+ * "go around, report downwind" and the pilot self-navigates from there.
+ *
+ * Used for both self-initiated and ATC-instructed VFR go-arounds.
+ */
+fun goAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
+    PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
+))
+
+/** Build the GO_AROUND compound task (IFR — fly published missed approach). */
+fun ifrGoAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
+    PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.FLY_MISSED_APPROACH, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.AWAITING_ATC_INSTRUCTION, CompletionMode.INSTRUCTION_GATED),
+))
+
+/**
+ * Pilot planner: decompose a [HighLevelGoal] into the full HTN tree.
+ *
+ * This is the pilot's planning function — it decides HOW to achieve the goal.
+ * The controller never sees this tree. The pilot expresses their plan to
+ * the controller through the radio (Reports, Requests, Acknowledgements);
+ * the broad service intent is in the flight strip pre-briefing.
+ */
+fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when (goal) {
+    is HighLevelGoal.Departure -> if (!ifr) CompoundTask(TaskName.Depart, listOf(
+        groundDepartureTask(),
+        PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+    )) else CompoundTask(TaskName.Depart, listOf(
+        groundDepartureTask(),
+        PrimitiveTask(MissionStep.FLY_SID, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+    ))
+    is HighLevelGoal.Arrival -> if (!ifr) CompoundTask(TaskName.Arrive, listOf(
+        arrivalJoinTask(),
+        circuitTask().let { it.copy(children = it.children.drop(1)) }, // skip FLY_DEPARTURE for arrivals
+        groundArrivalTask(),
+    )) else CompoundTask(TaskName.Arrive, listOf(
+        PrimitiveTask(MissionStep.FLY_STAR, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.FLY_APPROACH, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL),
+        groundArrivalTask(),
+    ))
+    is HighLevelGoal.CircuitTraining -> {
+        // Circuit training is always VFR — ifr parameter is ignored.
+        val circuitTasks = (1..goal.circuits).map { i ->
+            val isLast = i == goal.circuits && goal.fullStopOnLast
+            if (isLast) circuitTask() // full stop: includes LAND
+            else touchAndGoCircuitTask() // T&G: includes LAND then lifts off
+        }
+        CompoundTask(TaskName.CircuitTraining,
+            listOf(groundDepartureTask()) + circuitTasks + listOf(groundArrivalTask()))
+    }
+    is HighLevelGoal.Transit -> if (!ifr) CompoundTask(TaskName.Transit, listOf(
+        PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+    )) else CompoundTask(TaskName.Transit, listOf(
+        PrimitiveTask(MissionStep.FLY_SID, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
+    ))
+}
+
+/** Build a T&G circuit: fly the pattern, land, then take off again. */
+fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.TouchAndGo, listOf(
+    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_SEQUENCING, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_BASE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_BASE, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_FINAL, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_LANDING_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+    PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL),
+    // After landing, the aircraft lifts off again for the next circuit.
+    // ARR-TNG-AIRBORNE on the controller side completes the arrival
+    // commitment so the next circuit can form a fresh one.
+    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+))
+
+/**
+ * True for circuit task names that can be active during a circuit pattern.
+ *
+ * Used in go-around replacement to find the active circuit task regardless
+ * of whether it's a full-stop or touch-and-go circuit. Intentionally includes
+ * [TaskName.TouchAndGo] — a go-around during a T&G approach replaces that task.
+ */
+fun TaskName.isCircuitLike(): Boolean = when (this) {
+    is TaskName.Circuit, is TaskName.CircuitAfterGoAround, is TaskName.TouchAndGo -> true
+    is TaskName.Depart, is TaskName.Arrive, is TaskName.Transit,
+    is TaskName.GroundDeparture, is TaskName.GroundArrival,
+    is TaskName.CircuitTraining, is TaskName.ArrivalJoin,
+    is TaskName.GoAround -> false
+}
+
+/** Find the active (leftmost incomplete) compound task at the top level. */
+fun CompoundTask.activeCompound(): CompoundTask? {
+    for (child in children) {
+        if (child.isComplete) continue
+        return when (child) {
+            is CompoundTask -> child
+            is PrimitiveTask -> null // primitive at top level, no compound
+        }
+    }
+    return null
+}
+
+/** Create a fresh mission for an aircraft. */
+fun createMission(
+    goal: HighLevelGoal,
+    startPhase: PilotPhase,
+    time: SimTime,
+): PilotMission {
+    var root = planMission(goal)
+    root = skipCompletedSteps(root, startPhase)
+    return PilotMission(goal = goal, root = root, stepEnteredAt = time)
+}
+
+/** Mark steps as completed that the starting phase has already passed. */
+@Suppress("CyclomaticComplexMethod")
+private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): CompoundTask {
+    val preStartup = setOf(
+        MissionStep.REQUEST_STARTUP, MissionStep.AWAIT_STARTUP_APPROVAL,
+    )
+    val preTaxi = preStartup + MissionStep.REQUEST_TAXI
+    val preHold = preTaxi + MissionStep.TAXI_TO_HOLDING
+    val preLineUp = preHold + setOf(
+        MissionStep.RUN_UP_CHECKS, MissionStep.REPORT_READY, MissionStep.AWAIT_LINE_UP,
+    )
+    val preAirborne = preLineUp + MissionStep.AWAIT_TAKEOFF_CLEARANCE
+    val preCircuit = preAirborne + setOf(
+        MissionStep.CALL_INBOUND, MissionStep.AWAIT_JOINING_INSTRUCTIONS,
+        MissionStep.FLY_DEPARTURE, MissionStep.FLY_DOWNWIND,
+    )
+    val preBase = preCircuit + setOf(
+        MissionStep.REPORT_DOWNWIND, MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE,
+    )
+    val preFinal = preBase + setOf(MissionStep.REPORT_BASE, MissionStep.FLY_FINAL)
+    val preLand = preFinal + setOf(
+        MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND,
+    )
+
+    val stepsToSkip = when (startPhase) {
+        is PilotPhase.AtStand, is PilotPhase.Parked -> emptySet()
+        is PilotPhase.Taxiing -> preTaxi
+        is PilotPhase.HoldingShort -> preHold
+        is PilotPhase.LinedUp -> preLineUp
+        is PilotPhase.Downwind -> preCircuit
+        is PilotPhase.Base -> preBase
+        is PilotPhase.Final -> preFinal
+        is PilotPhase.LandingRoll -> preLand
+        // Mid-departure: skip ground + departure steps. The pilot is already airborne.
+        is PilotPhase.TakeoffRoll, is PilotPhase.Climbing, is PilotPhase.Crosswind ->
+            preLineUp + MissionStep.AWAIT_TAKEOFF_CLEARANCE
+        // Mid-vacate: skip through landing. The pilot is exiting the runway.
+        is PilotPhase.Vacating, is PilotPhase.ClearOfRunway -> preLand
+    }
+    return markStepsComplete(root, stepsToSkip)
+}
+
+/** Mark steps as complete, but only in the first incomplete subtree — don't touch future circuits. */
+private fun markStepsComplete(task: CompoundTask, steps: Set<MissionStep>): CompoundTask {
+    var reachedIncomplete = false
+    return task.copy(children = task.children.map { child ->
+        when (child) {
+            is PrimitiveTask -> if (child.step in steps) child.copy(completed = true) else child
+            is CompoundTask -> if (child.isComplete && !reachedIncomplete) {
+                child // skip completed compounds
+            } else {
+                reachedIncomplete = true
+                markStepsComplete(child, steps)
+            }
+        }
+    })
+}

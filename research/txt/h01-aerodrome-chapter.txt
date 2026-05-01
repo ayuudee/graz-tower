@@ -1,0 +1,2301 @@
+answered by
+L: RUFE INNSBRUCK TOWER 120.100 beantwortet;
+A: CONTACT INNSBRUCK TOWER 120.100 and
+das sofortige Umschalten wird erwartet.
+immediate change of frequency is expected.
+13. Die Anweisung
+B: VERLASSEN DER FREQUENZ
+GENEHMIGT/VERLASSEN SIE FREQUENZ
+B: FREQUENZWECHSEL GENEHMIGT wird
+beantwortet mit
+L: VERLASSEN DER FREQUENZ GENEHMIGT oder
+L: VERLASSE FREQUENZ oder
+L: FREQUENZWECHSEL GENEHMIGT
+Anmerkung:
+WILCO oder das Luftfahrzeugrufzeichen als Antwort ist
+hier ungenügend.
+14. Die Anweisung
+B: MELDEN SIE… wird oft auch mit
+L: WERDE … MELDEN beantwortet, da es sich um
+eine Anweisung handeln kann, der erst in Zukunft
+Folge geleistet werden kann.
+B: OE-FFF MELDEN SIE [ABFLUG]BEREIT
+L: OE-FFF [ABFLUG]BEREIT
+L: WERDE [ABFLUG]BEREIT MELDEN OE-FFF
+B: OE-AAA MELDEN SIE MÜNCHENDORF
+L: WERDE MÜNCHENDORF MELDEN OE-AAA
+
+13. The instructions
+G: [APPROVED TO] LEAVE FREQUENCY and
+G: FREQUENCY CHANGE APPROVED are answered
+by either
+A: [APPROVED TO] LEAVE FREQUENCY or
+A: LEAVING FREQUENCY or
+A: FREQUENCY CHANGE APPROVED
+Note:
+WILCO as an answer or answering with the call sign of
+the aircraft is insufficient.
+14. The instruction
+G: REPORT… may also be answered by
+A: WILL REPORT… as this instruction may not always
+be followed on receipt.
+G: OE-FFF REPORT WHEN READY [FOR
+DEPARTURE]
+A: OE-FFF READY [FOR DEPARTURE]
+A: WILL REPORT WHEN READY [FOR
+DEPARTURE] OE-FFF
+G: OE-AAA REPORT MÜNCHENDORF
+A: WILL REPORT MÜNCHENDORF OE-AAA
+
+15. Das Wort START wird in der deutschen Phraseologie
+nur mit der Startfreigabe, der Aufhebung der
+Startfreigabe und den Anweisungen zum Fehlanflug
+und zum Aufsetzen und Durchstarten übermittelt. Für
+alle anderen Übermittlungen den Abflugvorgang
+betreffend muss das Wort ABFLUG verwendet
+werden.
+
+15. The expression TAKE-OFF shall only be used in
+radiotelephony when an aircraft is cleared for take off
+or when cancelling a take-off clearance. In all other
+situations regarding the take off the word
+DEPARTURE shall be transmitted.
+
+Anmerkung:
+Der Ausdruck TORA, ausgesprochen TOR-AH, wird
+für die Angabe der verfügbaren Startlaufstrecke
+verwendet.
+
+Note:
+The expression TORA, pronounced TOR-AH, may be
+used to indicate take-off run available.
+
+16. Anweisungen zur Änderung von Höhe werden
+folgendermaßen übermittelt:
+B: STEIGEN/SINKEN SIE AUF 2000 FUSS
+B: STEIGEN/SINKEN SIE AUF FLUGFLÄCHE 110
+
+© Austro Control GmbH
+
+16. Instructions to change levels are normally transmitted
+as follows:
+G: CLIMB/DESCEND [TO] 2000 FEET
+G: CLIMB/DESCEND [TO] FLIGHT LEVEL 110
+
+45
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+Anmerkung:
+im Deutschen nicht anwendbar.
+
+28 DEC 2023
+
+Note:
+In circumstances where clarification is required, the
+word "ALTITUDE" or "HEIGHT" may be included, e.g.
+"DESCEND TO ALTITUDE TWO THOUSAND FEET".
+
+17. Gibt es mehrere parallele Pisten, werden diese z.B. als 17. Parallel runways are specified as
+03 LINKS, 03 CENTER, oder 03 RECHTS bezeichnet.
+e.g. 03 LEFT, 03 CENTER or 03 RIGHT
+B: OE-ABC… PISTE 03 CENTER LANDUNG FREI
+18. Eine richtig zurückgelesene Streckenfreigabe muss
+von ATC folgendermaßen bestätigt werden:
+B: OEABC [FREIGABE] KORREKT
+
+© Austro Control GmbH
+
+G: OE-ABC... RUNWAY 03 CENTER CLEARED TO
+LAND
+18. A correct read back of the route clearance shall be
+acknowledged by ATC as follows:
+G: OEABC [CLEARANCE] CORRECT
+
+46
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+5.3. KONTROLLIERTE FLUGPLÄTZE
+
+5.3. CONTROLLED AERODROMES
+
+5.3.1. AM BODEN
+
+5.3.1. ON GROUND
+
+5.3.1.1. Zeitvergleich und Flugplatzinformationen für
+abfliegende LFZ
+L: ERBITTE ZEITVERGLEICH
+B: ZEIT (Zeit)
+B: MONITOR [ATIS] INFORMATION (ATIS
+Kennbuchstabe) [(Frequenz oder VOR)]
+L: INFORMATION (ATIS Kennbuchstabe) [ERHALTEN]
+
+5.3.1.1. Time check and aerodrome information for
+departure
+A: REQUEST TIME CHECK
+G: TIME (time)
+G: MONITOR [ATIS] INFORMATION (ATIS identification)
+[(frequency or VOR)]
+A: INFORMATION (ATIS identification) [RECEIVED]
+
+Anmerkung 1:
+Die Flugplatzkontrollstelle hat, bevor das Luftfahrzeug zum
+Start rollt, dem Piloten die genaue Uhrzeit zu übermitteln,
+sofern keine Vorkehrungen dafür getroffen wurden, dass er
+die Uhrzeit aus einer anderen Quelle erhält.
+Flugverkehrskontrollstellen teilen Luftfahrzeugen darüber
+hinaus auf Anfrage die genaue Zeit mit. Zeitvergleiche
+müssen mindestens auf eine Minute genau sein.
+
+Note 1:
+Aerodrome control towers shall, prior to an aircraft taxiing for
+take-off, provide the pilot with the correct time, unless
+arrangements have been made for the pilot to obtain it from
+other sources. Air traffic services units shall, in addition,
+provide aircraft with the correct time on request. Time
+checks shall be given at least to the nearest minute.
+
+Anmerkung 2:
+Ein Zeitvergleich vor dem Start hat über das sich im LFZ
+befindliche luftzugelassene GPS (korrigiert auf UTC) zu
+erfolgen. Sollte dies nicht möglich sein, hat der Pilot die
+Flugplatzkontrollstelle zu informieren und die Uhrzeit zu
+erfragen.
+
+Note 2:
+A time check before take-off must be done via the airapproved GPS in the aircraft (corrected to UTC). If this is not
+possible the pilot must inform aerodrome control and ask for
+the correct time.
+
+5.3.1.1.1. Wenn kein ATIS verfügbar ist
+L: ERBITTE ABFLUGINFORMATIONEN
+B: PISTE (Nummer), [BODEN] WIND (Zahl) GRAD (Zahl)
+KNOTEN
+QNH/QFE (Wert)
+[TEMPERATUR [MINUS] (Wert)]
+[TAUPUNKT [MINUS] (Wert)]
+[SICHT (Wert und Einheit)/PISTENSICHTWEITE/RVR
+[PISTE(Nummer) (Wert und Einheit)]
+[ZEIT (Zeit)]
+
+5.3.1.1.1. When no ATIS broadcast is available
+A: REQUEST DEPARTURE INFORMATION
+G: RUNWAY (number), [SURFACE] WIND (number)
+DEGREES (number) KNOTS
+QNH/QFE (number)
+[TEMPERATURE [MINUS] (number)]
+[DEW POINT [MINUS] (number)]
+[VISIBILITY (distance) (units) [(direction)]/RUNWAY
+VISUAL RANGE/RVR [RUNWAY (number) (distance,
+units)]
+[TIME (time)]
+
+Anmerkung:
+Note:
+Auf Flugplätzen, wo ATIS automatisch abgestrahlt wird, ist
+At aerodromes where departure information is broadcast on
+die Bitte um Abfluginformationen zu unterlassen. Die
+ATIS, the request for departure information is omitted.
+Bestätigung des Empfangs der ATIS Information muss mit
+Acknowledge receipt of the ATIS information must be made
+der Übermittlung des ATIS Kennbuchstabens bei der Bitte
+by including the ATIS identifying letter in the request for start
+um Start up (IFR) oder der Rollfreigabe (VFR) erfolgen- bzw. up (IFR) or for taxi (VFR). At aerodromes however, where
+beim Einholen der Streckenfreigabe, wenn diese von einer route clearances are delivered on a special frequency (i.e.
+anderen Stelle (z.B. WIEN DELIVERY) übermittelt wird.
+WIEN DELIVERY) the ATIS identifying letter has to be
+included in the request for the route clearance.
+5.3.1.2. Schleppzugverfahren
+L: ERBITTE SCHLEPP [(Luftfahrtgesellschaft)] (LFZType) VON (Position) ZU (Position)
+
+5.3.1.2. Towing procedures
+A: REQUEST TOW [(company name)] (A/C type) FROM
+(location) TO (location)
+
+Anmerkung: wird von der Einheit Flugzeug/Schleppfahrzeug Note: denotes transmission from aircraft/tow vehicle
+übermittelt.
+combination
+B: SCHLEPP GENEHMIGT ÜBER (Strecke)
+B: HALTEN SIE POSITION
+B: STAND BY
+
+G: TOW APPROVED VIA (specific route to be followed)
+G: HOLD POSITION
+G: STAND BY
+
+5.3.1.3. Anlassverfahren
+L: [(Flugzeugposition)] ERBITTE ANLASSEN,
+INFORMATION (ATIS-Kennbuchstabe)
+
+5.3.1.3. Starting procedures
+A: [(A/C location)] REQUEST START UP, INFORMATION
+[IS] (ATIS identification)
+
+© Austro Control GmbH
+
+47
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+B:
+B:
+B:
+B:
+B:
+
+ANLASSEN GENEHMIGT
+STAND BY FÜR ANLASSEN (Begründung)
+ANLASSEN NEGATIV (Begründung)
+[ERWARTEN SIE] ANLASSEN UM (Zeit)
+[ERWARTEN SIE ABFLUG UM (Zeit)] ANLASSEN
+NACH EIGENEM ERMESSEN
+B: MELDEN SIE ANLASSBEREIT
+
+G:
+G:
+G:
+G:
+G:
+
+5.3.1.4. Pushback/Powerback Verfahren
+L: [(Flugzeugposition)] ERBITTE
+PUSHBACK/POWERBACK
+G: PUSHBACK/POWERBACK GENEHMIGT
+G: NEGATIV PUSHBACK/POWERBACK
+G: STAND-BY
+G: ERWARTEN SIE (Minutenanzahl) VERZÖGERUNG
+[WEGEN (Grund)]
+B: PUSHBACK NACH EIGENEM ERMESSEN
+L: PUSHBACK/POWERBACK BEENDET
+
+5.3.1.4. Pushback/power back procedures
+A: [(A/C location)] REQUEST PUSHBACK/POWERBACK
+
+5.3.1.5. Sprechfunk zwischen Boden- und
+Cockpitmannschaft
+Nur in Englisch vorgesehen
+
+START UP APPROVED
+STAND BY FOR START UP (reason)
+NEGATIVE START UP (reason)
+[EXPECT] START UP AT (time)/IN (number) MINUTES
+[EXPECT DEPARTURE AT (time)/IN (number)
+MINUTES] START UP AT OWN DISCRETION
+G: REPORT [WHEN] READY FOR START UP
+
+G:
+G:
+G:
+G:
+
+PUSHBACK/POWERBACK APPROVED
+NEGATIVE PUSH BACK/POWERBACK
+STAND BY
+EXPECT (number) MINUTES DELAY [DUE (reason)]
+
+G: PUSHBACK AT OWN DISCRETION
+A: PUSHBACK/POWERBACK COMPLETED
+5.3.1.5. Ground crew/flight crew phraseologies
+G: [ARE YOU] READY TO START UP
+A: STARTING NUMBER (engine number(s))
+Note 1:
+The ground crew should follow this exchange by either a
+reply on the intercom or a distinct visual signal to indicate
+that all is clear and that the start-up as indicated may
+proceed.
+Note 2:
+Unambiguous identification of the parties concerned is
+essential in any communications between ground crew and
+pilots.
+G:
+A:
+G:
+A:
+A:
+A:
+G:
+G:
+A:
+A:
+G:
+
+[ARE YOU] READY FOR PUSH BACK/POWER BACK
+READY FOR PUSH BACK/POWER BACK
+CONFIRM BRAKES RELEASED
+BRAKES RELEASED
+COMMENCING PUSH BACK/POWER BACK
+PUSHBACK/POWER BACK COMPLETED
+STOP PUSH BACK/POWER BACK
+CONFIRM BRAKES SET
+BRAKES SET
+DISCONNECT
+DISCONNECTING STAND BY FOR VISUAL YOUR
+LEFT/RIGHT
+
+Note:
+This exchange is followed by a visual signal to the pilot to
+indicate that disconnect is completed and all is clear for
+taxiing.
+5.3.1.5.1. Vor der Enteisung
+Nur in Englisch vorgesehen
+
+© Austro Control GmbH
+
+5.3.1.5.1. Prior to de/anti-icing (ground crew (iceman)/flight
+crew)
+G: STANDING BY TO DE-ICE, CONFIRM BRAKES SET
+AND TREATMENT REQUIRED
+A: [AFFIRM] BRAKES SET, REQUEST (type or de/antiicing treatment and areas to be treated)
+G: HOLD POSITION AND CONFIRM AIRCRAFT
+CONFIGURED
+A: [AFFIRM] AIRCRAFT CONFIGURED, READY FOR
+DE-ICING
+48
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+G: DE-ICING STARTS NOW
+5.3.1.5.2. Nach Beendigung der Enteisung
+Nur in Englisch vorgesehen
+
+5.3.1.5.2. Upon concluding de-icing/anti-icing procedure
+G: DE-ICING ON (areas treated) COMPLETE. ADVISE
+WHEN READY FOR INFORMATION
+G: TYPE OF FLUID (Type I/II/III/IV)
+G: HOLDOVER TIME STARTED AT (time)
+G: ANTI-ICING CODE (appropriate anti-icing code)
+5.3.1.5.3. For a two-step de-icing/anti-icing operation
+Note:
+Anti-icing code example:
+A de-icing/anti-icing procedure whose last step is the use of
+a mixture of 75% of a Type II fluid and 25% water,
+commencing at 13:35h local time, is recorded as follows:
+TYPE II/75 13:35 (followed by complete name of anti-icing
+fluid)
+G: FINAL STEP STARTED AT (time)
+
+5.3.1.5.4. Nach der Enteisung
+Nur in Englisch vorgesehen
+
+5.3.1.5.4. De-icing/anti-icing complete
+G: POST DE-ICING CHECK COMPLETED
+G: PERSONNEL AND EQUIPMENT CLEAR OF
+AIRCRAFT
+
+5.3.1.5.5. Störfälle beim Enteisen
+Nur in Englisch vorgesehen
+
+5.3.1.5.5. Abnormal operations
+G: BE ADVISED NOZZLE PROXIMITY ACTIVATION ON
+(significant point on aircraft) [NO VISUAL DAMAGE or
+DAMAGE (description of damage) OBSERVED] [SAY
+INTENTIONS];
+G: EMERGENCY IN DE-ICING BAY (de-icing bay
+number) [SHUT DOWN ENGINES or STANDBY OR
+FURTHER INSTRUCTIONS]
+
+5.3.1.6. Rollverfahren
+
+5.3.1.6. Taxi procedures
+
+Anmerkung:
+Bleibt frei
+
+Note:
+In radiotelephony phraseologies, the expression “holding
+point” is used to designate the runway-holding position
+
+L:
+
+A: [(A/C type)] [SUPER] [HEAVY] [(A/C location)]
+[INFORMATION (ATIS designator)] REQUEST TAXI
+[TO (position)] [VIA (route)] [(destination on aerodrome)]
+A: [(A/C type)] [(wake turbulence category if
+HEAVY/SUPER)] [(A/C location)] (flight rules) TO
+(aerodrome of destination) REQUEST TAXI
+[(intentions)]
+A: [(A/C type)] [(wake turbulence category if
+HEAVY/SUPER)] REQUEST DETAILED TAXI
+INSTRUCTIONS
+G: TAXI TO HOLDING POINT [(number)] RUNWAY
+(number) [VIA (specific route to be followed) [TIME
+(time)]
+G: TAXI TO HOLDING POINT RUNWAY (number) [HOLD
+SHORT OF RUNWAY (number)]
+G: TAXI TO HOLDING POINT RUNWAY (number)
+[(followed by aerodrome information as applicable)]
+[TIME (time)]
+G: TAXI/TURN
+• FIRST/SECOND/CONVENIENT TAXIWAY
+• [SHARP/HALF] LEFT/RIGHT
+• STRAIGHT AHEAD
+
+L:
+L:
+B:
+B:
+B:
+B:
+
+[(LFZ-Type)] [SUPER] [HEAVY] [(Standort)]
+[INFORMATION (ATIS Kennbuchstabe)] ERBITTE
+ROLLEN [ZU/NACH (Position)] [ÜBER (Strecke)]
+[(Destination am Flugplatz)]
+[(LFZ-Type)] [(Wirbelschleppenkategorie wenn
+HEAVY/SUPER)] [(Standort)] (Flugregeln) NACH
+(Destination) ERBITTE ROLLEN [(Absichten)]
+[(LFZ-Type)] [(Wirbelschleppenkategorie wenn
+HEAVY/SUPER)] ERBITTE DETAILLIERTE
+ROLLANWEISUNGEN
+ROLLEN SIE ZUM ROLLHALT [(Nummer)] PISTE
+(Nummer) [ÜBER (genaue Streckenbeschreibung)
+[ZEIT (Zeit)]
+ROLLEN SIE ZUM ROLLHALT PISTE (Nummer)
+[HALTEN SIE KURZ VOR PISTE (Nummer)]
+ROLLEN SIE ZUM ROLLHALT PISTE (Nummer)
+[(gefolgt von Flugplatzinformationen wenn anwendbar)]
+[ZEIT (Zeit)]
+ROLLEN/DREHEN SIE [IN DIE]
+• ERSTE/ZWEITE/PASSENDE ROLLBAHN
+• [SCHARF/HALB] LINKS/RECHTS
+• GERADEAUS
+
+© Austro Control GmbH
+
+49
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+• ZUR HALTEBUCHT
+B: ROLLEN SIE [VON (Standort)] ZU (Standort) [ÜBER
+(Strecke)]
+B: ROLLEN SIE ÜBER (Strecke)
+B: ROLLEN SIE ÜBER (Kennzeichnung der Rollbahn)
+B: ROLLEN SIE ÜBER PISTE (Nummer)
+B: ROLLEN SIE VORSICHTIG
+B: BESCHLEUNIGEN SIE ROLLEN [(Begründung)]
+L: BESCHLEUNIGE
+B: [VORSICHT] ROLLEN SIE LANGSAMER
+(Begründung)
+L: ROLLE LANGSAMER
+B: ROLLEN SIE ZUM/R TERMINAL/ALLGEMEINEN
+LUFTFAHRT/ STAND (Nummer)
+B: FOLGEN SIE DEM EINWINKER [FAHRZEUG]
+/(Beschreibung des anderen LFZs oder Fahrzeugs)]
+
+28 DEC 2023
+
+• INTO HOLDING BAY
+G: TAXI [FROM (position)] TO (position) [VIA (route)]
+G:
+G:
+G:
+G:
+G:
+A:
+G:
+
+TAXI VIA (route)
+TAXI VIA (identification of taxiway)
+TAXI VIA RUNWAY (number)
+TAXI WITH CAUTION
+EXPEDITE TAXI [(reason)]
+EXPEDITING
+[CAUTION] TAXI SLOWER (reason)
+
+A: SLOWING DOWN
+G: TAXI TO TERMINAL/GENERAL AVIATION
+AREA/STAND (number)
+G: FOLLOW MARSHALLER [CAR]/(description of other
+aircraft or vehicle)
+
+5.3.1.6.1. Hubschrauber
+L: (Standort) ERBITTE SCHWEBEN
+• VON/ZU (Ort oder entsprechende Strecke)
+• DIREKT ZU (Ort)
+B: SCHWEBEN SIE
+• ZU (Ort, Hubschrauberlandeplatz, Einsatzbereich,
+aktive oder inaktive Piste) [ÜBER (Ort oder
+Strecke)]
+• DIREKT ZU (Ort)
+• ÜBER (Strecke)
+• WIE GEWÜNSCHT ZU/ZUR/ZUM
+B: VORSICHT [(nähere Angaben, z. B. Staub,
+Schneetreiben, loser Schutt, rollendes
+Leichtluftfahrzeug, Personal, usw.)]
+B: VERMEIDEN SIE (Luftfahrzeuge, Fahrzeuge oder
+Personal)
+L: SCHWEBE (Anweisungen)
+
+A: AIR-TAXIING (instructions)
+
+5.3.1.6.1.1 An einem Ort in der Luft bleiben
+L: ERBITTE SCHWEBEN ÜBER (Ort)
+G: SCHWEBEN SIE ÜBER (Ort)
+G: SCHWEBEN ÜBER (Ort) GENEHMIGT
+
+5.3.1.6.1.1 when remaining in one place in the air
+A: REQUEST HOVERING OVERHEAD (location)
+G: HOVER OVERHEAD (location)
+G: HOVERING OVERHEAD (location) APPROVED
+
+Anmerkung:
+Der Begriff „Rollflug“ aus EU Verordnung 923/2012 bzw.
+1185/2016 wurde nicht in die deutsche Phraseologie
+übernommen.
+
+Note not applicable
+
+5.3.1.6.2. Verkehrsinformation
+B: WEICHEN SIE (Beschreibung und Position des
+Verkehrs) AUS/LASSEN SIE (Beschreibung und
+Position des Verkehrs) VORBEI
+L: WEICHE (Verkehr) AUS/LASSE (Verkehr) VORBEI
+B: FOLGEN SIE (Beschreibung des anderen (Luft)fahrzeugs)
+L: VERKEHR (LFZ-Type) IN SICHT
+B: ROLLEN SIE HINTER (Beschreibung und Position des
+Verkehrs)
+B: WENN FREI VON (Beschreibung und Position des
+Verkehrs)
+
+5.3.1.6.2. Traffic information
+G: GIVE WAY TO (description and position of other traffic)
+
+5.3.1.6.3. Zurückrollen
+L: ERBITTE ZURÜCKROLLEN [AUF PISTE (Nummer)]
+
+© Austro Control GmbH
+
+5.3.1.6.1. For helicopter operations
+A: (position) REQUEST AIR-TAXIING
+• FROM/TO (location or routing as appropriate)
+• DIRECT TO (location)
+G: AIR-TAXI
+• TO (location, heliport, operating or movement
+area, active or inactive runway) [VIA (location or
+route)]
+• DIRECT TO (location)
+• VIA (location or routing as appropriate)
+• AS REQUESTED TO
+G: CAUTION [(detailed information, e.g. dust, blowing
+snow, loose debris, taxiing light aircraft, personnel etc)]
+G: AVOID (aircraft or vehicles or personnel)
+
+A: GIVING WAY TO (traffic)
+G: FOLLOW (description of other A/C or vehicle)
+A: TRAFFIC (or type of A/C) IN SIGHT
+G: TAXI BEHIND (description and position of other traffic)
+G: WHEN CLEAR OF (description and position of other
+traffic)
+5.3.1.6.3. Backtrack
+A: REQUEST BACKTRACK [RUNWAY (number)]
+
+50
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+B: ZURÜCKROLLEN [AUF PISTE (Nummer)]
+GENEHMIGT
+B: ROLLEN SIE AUF PISTE (Nummer) ZURÜCK
+B: ROLLEN SIE AUF PISTE ZURÜCK. ROLLEN SIE
+ZUM ABFLUGPUNKT PISTE (Nummer)
+A: ROLLE AUF PISTE ZURÜCK. ROLLE ZUM
+ABFLUGPUNKT PISTE (Nummer)
+
+28 DEC 2023
+
+G: BACKTRACK [RUNWAY (number)] APPROVED
+G: BACKTRACK RUNWAY (number)
+G: BACKTRACK LINE UP RUNWAY (number)
+A: BACKTRACK LINE UP RUNWAY (number)
+
+5.3.1.6.4. Halten
+B: HALTEN SIE (Richtung) VON (Position, Piste Nummer,
+usw.)
+B: HALTEN SIE POSITION
+B: HALTEN SIE (Distanz) VON (Position)
+B: HALTEN SIE KURZ VOR (Position)
+B: HALTEN SIE AM ROLLHALT
+
+G:
+G:
+G:
+G:
+
+Anmerkung:
+Diese Anweisungen müssen durch den Piloten bestätigt
+werden.
+
+Note:
+Those instructions require specific acknowledgement from
+the pilot
+
+L:
+L:
+
+HALTE
+HALTE VOR (Position)
+
+5.3.1.6.4. Holding
+G: HOLD (direction) OF (position, runway number, etc.)
+HOLD POSITION
+HOLD (distance) FROM (position)
+HOLD SHORT OF (position)
+MAINTAIN HOLDING POINT
+
+A: HOLDING
+A: HOLDING SHORT
+
+Anmerkung 1:
+Grundsätzlich wird in der deutschen Sprache das Wort
+HALTEN nur am Boden verwendet – das Wort WARTEN in
+der Luft.
+
+Note 1:
+Not applicable.
+
+Anmerkung 2:
+Die Redewendungen VERSTANDEN und WILCO sind keine
+ausreichenden Bestätigungen für die Anweisungen HALTEN
+SIE, HALTEN SIE POSITION und HALTEN SIE KURZ VOR
+(Position). In jedem Fall ist mit HALTE, HALTE POSITION,
+HALTE KURZ VOR zu antworten.
+
+Note 2:
+The procedure words ROGER and WILCO are insufficient
+acknowledgement of the instructions HOLD, HOLD
+POSITION and HOLD SHORT OF (position). In each case
+the acknowledgement shall be by the phraseology
+HOLDING or HOLDING SHORT, as appropriate.
+
+5.3.1.6.5. Überqueren einer Piste
+L: ERBITTE ÜBERQUEREN PISTE (Nummer)
+B: ÜBERQUEREN SIE PISTE (Nummer) [MELDEN SIE
+VERLASSEN]
+
+5.3.1.6.5. To cross a runway
+A: REQUEST CROSS RUNWAY (number)
+G: CROSS RUNWAY (number) [REPORT VACATED]
+
+Anmerkung:
+Wenn der Kontrollturm das kreuzende (Luft)fahrzeug nicht
+sehen kann (z. B. bei Nacht, schlechter Sicht), sollte diese
+Anweisung immer mit der Aufforderung, zu melden, wenn
+die Piste verlassen wurde, verbunden werden.
+
+Note:
+If the control tower is unable to see the crossing aircraft (e.g.
+night, low visibility) the instruction should always be
+accompanied by a request to report when the aircraft has
+vacated the runway.
+
+B: BESCHLEUNIGEN SIE ÜBERQUEREN PISTE
+G: EXPEDITE CROSSING RUNWAY (number) [TRAFFIC
+(Nummer) [VERKEHR (LFZ-Type) (Zahl) MEILEN
+(A/C type) (number) MILES FINAL]
+ENDANFLUG]
+B: ROLLEN SIE ZUM ROLLHALT PISTE (Nummer),
+G: TAXI TO HOLDING POINT RUNWAY (number) VIA
+ÜBER (Strecke), ÜBERQUEREN SIE PISTE (Nummer)
+(specific route to be followed), CROSS RUNWAY
+(number)
+L: [HABE] PISTE VERLASSEN
+A: RUNWAY VACATED
+Anmerkung:
+Die Besatzung wird „PISTE VERLASSEN“ melden, wenn
+sich das ganze Luftfahrzeug hinter dem betreffenden
+Rollhalt befindet.
+
+Note:
+The pilot will, when requested, report “RUNWAY VACATED”
+when the entire aircraft is beyond the relevant
+runway-holding position.
+
+5.3.1.6.6. Rollen zur Zwischenhalteposition
+5.3.1.6.6. Taxi to intermediate holding position
+B: ROLLEN SIE ZU (Bezeichnung Zwischenhaltepostition) G: TAXI TO (designator of IHP) [VIA (route)]
+[ÜBER (Route)]
+L: ROLLE ZU (Beschreibung Zwischenhalteposition)
+A: TAXI TO (designator of IHP) [VIA (route)]
+[ÜBER (Route)]
+B: ROLLEN SIE ZU MIKE 2 [ÜBER (Route)]
+G: TAXI TO MIKE 2 [VIA (route)]
+© Austro Control GmbH
+
+51
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+L:
+
+ROLLE ZU MIKE 2 [ÜBER (Route)]
+
+28 DEC 2023
+
+A: TAXI TO MIKE 2 [VIA (route)]
+
+Anmerkung:
+Die korrekte Phraseologie in Bezug auf Rollfreigaben zu
+Intermediate Holding Positions (IHPs) ist durch ICAO oder
+SERA nicht geregelt. Die Verwendung von „Holding Point“
+ist nur in Zusammenhang mit Pisten vorgesehen, nicht aber
+für IHPs.
+
+Note:
+Correct phraseologies for taxi clearances to Intermediate
+Holding Positions (IHPs) are not regulated by ICAO or
+SERA. The term "holding point" shall only be intended for
+runways but not for IHPs.
+
+5.3.1.7. Vor dem Abflug: Abfluganweisungen
+
+5.3.1.7. Prior departure: departure instructions
+
+5.3.1.7.1. VFR-Streckenfreigabe
+5.3.1.7.1. VFR departure route clearance
+B: VERLASSEN SIE KONTROLLZONE
+G: LEAVE CONTROL ZONE [NIGHT VFR] VIA [VFR]
+[NACHTSICHTFLUG] ÜBER [VFR]
+[ROUTE/SECTOR] (route description) AT (level) [OR
+[STRECKE/SEKTOR] (Streckenbezeichnung) IN (Höhe)
+ABOVE/OR BELOW)] [SQAWK (code)] [RIGHT/LEFT
+[ODER HÖHER/ODER TIEFER] [SQUAWK (Code)]
+TURN AFTER DEPARTURE]
+[RECHTS/LINKS KURVE NACH DEM ABFLUG]
+L: VERLASSE KONTROLLZONE [NACHTSICHTFLUG] A: LEAVING CONTROL ZONE [NIGHT VFR] VIA [VFR]
+ÜBER [VFR] [STRECKE/SEKTOR]
+[ROUTE/SECTOR] (route description) AT (level) [OR
+(Streckenbezeichnung) IN (Höhe) [ODER
+ABOVE/OR BELOW)] [SQAWK (code)] [RIGHT/LEFT
+HÖHER/TIEFER] [SQUAWK (Code)] [RECHTS/LINKS
+TURN AFTER DEPARTURE]
+KURVE NACH DEM ABFLUG]
+5.3.1.7.2. IFR Streckenfreigabe
+Nur in Englisch vorgesehen
+
+5.3.1.7.2. IFR departure route clearance:
+G: CLEARED TO (clearance limit) [VIA] (route
+description/SID designator) [CLIMB] LEVEL
+(number)/(number) FEET [QNH (number)] SQUAWK
+(code) [(slot)] [(additional instructions)]
+G: UNABLE TO ISSUE (designator) DEPARTURE
+(reasons)
+Note:
+For detailed information about standard instrument
+departure route clearances see Phraseologies 5.7.1.1
+
+5.3.1.7.3. Zusätzliche Anweisungen
+B: FREI [GEGEBEN] NACH (Freigabegrenze) ÜBER
+(Bezeichnung)
+Nur in Englisch vorgesehen
+
+© Austro Control GmbH
+
+5.3.1.7.3. Additional instructions
+G: CLEARED TO (clearance limit) VIA (designation)
+A: REQUEST VISUAL DEPARTURE [DIRECT] TO/UNTIL
+(navaid, waypoint, altitude)
+A: REQUEST VISUAL LEFT/RIGHT TURN [DIRECT/TO
+(navaid, waypoint)]
+G: ADVISE IF ABLE TO ACCEPT VISUAL DEPARTURE
+[DIRECT] TO/UNTIL (navaid, waypoint, altitude)
+G: VISUAL DEPARTURE RUNWAY (number)
+APPROVED, TURN LEFT/RIGHT [DIRECT] TO
+(navaid, heading, waypoint), MAINTAIN VISUAL
+REFERENCE UNTIL [PASSING] (level)
+G: VISUAL LEFT/RIGHT TURN [RUNWAY (number)]
+[DIRECT] TO (navaid, waypoint, altitude) APPROVED
+A: VISUAL DEPARTURE TO/UNTIL (navaid,
+waypoint/level)
+G: (standard departure name and number) DEPARTURE
+
+52
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+5.3.1.7.4. Anweisungen für nach dem Start, übermittelt vor
+dem Abflug
+L: ERBITTE RECHTS/LINKS KURVE [NACH DEM
+ABFLUG]
+B: NACH DEM ABFLUG (Anweisungen)
+B: NACH DEM ABFLUG FLIEGEN SIE STEUERKURS
+(drei Ziffern)
+Nur in Englisch vorgesehen
+B: LINKS/RECHTS KURVE NACH DEM ABFLUG
+B: NACH DEM ABFLUG STEIGEN SIE (Anweisungen)
+B: [NACH DEM ABFLUG] RECHTS/LINKS KURVE
+STEUERKURS (drei Ziffern)
+B: [NACH DEM ABFLUG] BLEIBEN SIE IN
+PISTENRICHTUNG/BLEIBEN SIE AUF
+VERLÄNGERTER PISTENMITTELLINIE BIS [(Höhe
+oder signifikanter Punkt)] [(andere Anweisungen wenn
+erforderlich)]
+B: NACH ERREICHEN/PASSIEREN VON (Höhe oder
+signifikanter Punkt) (Anweisungen)
+Nur in Englisch vorgesehen
+
+28 DEC 2023
+
+5.3.1.7.4. Turn or climb instructions after departure,
+transmitted before departure
+A: REQUEST RIGHT/LEFT TURN [AFTER DEPARTURE]
+G: AFTER DEPARTURE (instructions)
+G: AFTER DEPARTURE FLY HEADING (three digits)
+G: AFTER DEPARTURE TURN RIGHT/LEFT
+HEADING (three digits) TO (level) [TO INTERCEPT
+(track, route, airway, etc.)]
+G: LEFT/RIGHT TURN AFTER DEPARTURE
+G: AFTER DEPARTURE CLIMB (instructions)
+G: [AFTER DEPARTURE] TURN RIGHT/LEFT HEADING
+(three digits)
+G: [AFTER DEPARTURE] CONTINUE RUNWAY
+HEADING/TRACK EXTENDED CENTRE LINE TO
+(level/significant point) [(other instructions as required)]
+G: AFTER REACHING/PASSING (level or significant
+point) (instructions)
+G: TRACK (three digits) DEGREES [MAGNETIC/TRUE)
+TO/FROM (significant point) UNTIL (time)/REACHING
+(fix or significant point or level) [BEFORE
+PROCEEDING ON COURSE]
+
+5.3.1.8. Rollen zum Abflugpunkt
+5.3.1.8. Clearance to enter runway
+B: ROLLEN SIE ZUM ABFLUGPUNKT PISTE (Nummer) G: LINE UP RUNWAY (number) [AND WAIT]
+[DORT HALTEN]
+B: ROLLEN SIE ZUM ABFLUGPUNKT PISTE (Nummer), G: LINE UP RUNWAY (number) PREPARE/BE READY
+BEREITHALTEN FÜR SOFORTABFLUG
+FOR IMMEDIATE DEPARTURE
+5.3.1.8.1. Mehrfaches Rollen zum Abflugpunkt
+B: ROLLEN SIE ZUM ABFLUGPUNKT PISTE (Nummer)
+UND HALTEN SIE DORT; KREUZUNG (Name) (zu
+beachtender Verkehr)
+
+5.3.1.8.1. Multiple line up
+G: LINE UP AND WAIT RUNWAY (number)
+INTERSECTION (name of intersection) (essential local
+traffic information)
+
+5.3.1.9. Konditionelle Freigaben
+
+5.3.1.9. Conditional clearances
+
+5.3.1.9.1.
+5.3.1.9.1.
+Konditionelle Redewendungen, wie ‚behind landing aircraft‘ Conditional phrases, such as ‘behind landing aircraft’ or
+(‚hinter landendem Luftfahrzeug‘) oder ‚after departing
+‘after departing aircraft’, shall not be used for movements
+aircraft‘ (‚hinter abfliegendem Luftfahrzeug‘) dürfen nicht für affecting the active runway(s), except when the aircraft or
+Bewegungen verwendet werden, die die aktive(n) Piste(n)
+vehicles concerned are seen by the appropriate controller
+betreffen, außer wenn der jeweilige Lotse und der Pilot die
+and pilot. The aircraft or vehicle causing the condition in the
+betreffenden Luftfahrzeuge oder Bodenfahrzeuge sieht. Das clearance issued shall be the first aircraft/vehicle to pass in
+Luftfahrzeug oder das Bodenfahrzeug, das Ursache für die front of the other aircraft concerned.
+Angabe einer Bedingung in der erteilten Freigabe ist, muss
+das erste Luftfahrzeug/Bodenfahrzeug sein, das sich vor
+dem anderen betroffenen Luftfahrzeug vorbeibewegt.
+In allen Fällen ist eine konditionelle Freigabe in der
+In all cases, a conditional clearance shall be given in the
+nachstehenden Reihenfolge zu erteilen und muss Folgendes following order and consist of:
+umfassen:
+1. das Rufzeichen
+1. the call sign
+2. die Bedingung
+2. the condition
+3. die Freigabe, und
+3. the clearance, and
+4. eine kurze Wiederholung der Bedingung
+4. a brief reiteration of the condition
+B: HINTER (Beschreibung des Verkehrs) (Position des
+Verkehrs) ROLLEN SIE ZUM ABFLUGPUNKT PISTE
+(Nummer) [KREUZUNG (Bezeichnung oder Name)]
+
+© Austro Control GmbH
+
+G: BEHIND (description of traffic) (position of traffic) LINE
+UP RUNWAY (number) [INTERSECTION (designation
+or name)] BEHIND [AND WAIT] [CAUTION JET
+
+53
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+DAHINTER [DORT HALTEN] [VORSICHT
+TRIEBWERKSSTRAHL/PROPELLERSTRAHL]
+B: HINTER (Beschreibung des Verkehrs) (Position des
+Verkehrs) ÜBERQUEREN SIE PISTE (Nummer)
+DAHINTER [VORSICHT
+TRIEBWERKSSTRAHL/PROPELLERSTRAHL]
+B: HINTER (Beschreibung des Verkehrs) (Position des
+Verkehrs) ÜBERQUEREN SIE PISTE (Nummer),
+KREUZUNG (Bezeichnung oder Name) DAHINTER
+
+G: BEHIND (description of traffic) (position of traffic)
+CROSS RUNWAY (number) INTERSECTION (number)
+BEHIND
+
+Beispiel:
+
+Example:
+
+B: HINTER ABFLIEGENDER B737 ROLLEN SIE ZUM
+ABFLUGPUNKT PISTE EINS SECHS DAHINTER
+
+G: BEHIND DEPARTING B737 LINE UP RUNWAY ONE
+SIX BEHIND
+
+5.3.1.9.2. Zurücklesen einer konditionellen Freigabe
+L: HINTER (Beschreibung des Verkehrs) (Postion des
+Verkehrs) ROLLE ZUM ABFLUGPUNKT PISTE
+(Nummer) [KREUZUNG (Bezeichnung oder Name)]
+DAHINTER
+
+5.3.1.9.2. Acknowledgement of a conditional clearance
+A: BEHIND (description of traffic) (position of traffic)
+LINING UP RUNWAY (number) [INTERSECTION
+(designation or name)] BEHIND [AND WAIT]
+
+Anmerkung:
+Dies setzt voraus, dass das LFZ, das die konditionelle
+Freigabe erhält, das LFZ oder Fahrzeug identifizieren kann,
+das die konditionelle Freigabe verursacht.
+
+Note:
+This implies the need for the aircraft receiving the conditional
+clearance to identify the aircraft or vehicle causing the
+conditional clearance.
+
+5.3.1.9.3. Bestätigung einer (konditionellen) Freigabe
+
+5.3.1.9.3. Confirmation or otherwise of the read back of
+(conditional) clearance
+G: [CLEARANCE] CORRECT
+G: [THAT IS] CORRECT
+G: NEGATIVE [I SAY AGAIN] (as appropriate)
+
+B: [FREIGABE] KORREKT
+B: [DAS IST] KORREKT
+B: NEGATIV [ICH WIEDERHOLE] (entsprechende
+Richtigstellung)
+
+BLAST/PROPELLER SLIPSTREAM]
+G: BEHIND (description of traffic) (position of traffic)
+CROSS RUNWAY (number) BEHIND [CAUTION JET
+BLAST/PROPELLER SLIPSTREAM]
+
+5.3.1.10. Abflugvorbereitung
+B: MELDEN SIE [ABFLUG]BEREIT
+B: SIND SIE [ABFLUG]BEREIT
+L: [ABFLUG]BEREIT
+B: SIND SIE BEREIT ZUM SOFORTABFLUG
+L: [BIN] BEREIT ZUM SOFORTABFLUG
+B: HALTEN SIE (Begründung)
+
+5.3.1.10. Preparation for take off
+G: REPORT [WHEN] READY [FOR DEPARTURE]
+G: ARE YOU READY [FOR DEPARTURE]
+A: READY [FOR DEPARTURE]
+G: ARE YOU READY FOR IMMEDIATE DEPARTURE
+A: READY FOR IMMEDIATE [DEPARTURE]
+G: HOLD (reasons)
+
+5.3.1.11. Abflug von einer Kreuzung
+L: ERBITTE ABFLUG VON PISTE (Nummer)
+KREUZUNG (Bezeichnung oder Name der Kreuzung)
+B: GENEHMIGT, ROLLEN SIE ZUM ROLLHALT PISTE
+(Nummer), KREUZUNG (Bezeichnung oder Name der
+Kreuzung)
+B: NEGATIV, ROLLEN SIE ZUM ROLLHALT PISTE
+(Nummer), [KREUZUNG (Bezeichnung oder Name der
+Kreuzung)]
+B: MELDEN SIE OB ABFLUG VON PISTE (Nummer)
+KREUZUNG (Bezeichnung oder Name der Kreuzung)
+MÖGLICH IST
+B: VERKÜRZTE TORA PISTE (Nummer) VON
+KREUZUNG (Bezeichnung oder Name der Kreuzung),
+(Entfernung) METER
+
+5.3.1.11. Intersection take off
+A: REQUEST DEPARTURE FROM RUNWAY (number)
+INTERSECTION (designation or name of intersection)
+G: APPROVED, TAXI TO HOLDING POINT RUNWAY
+(number) INTERSECTION (designation or name of
+intersection)
+G: NEGATIVE, TAXI TO HOLDING POINT RUNWAY
+(number), [INTERSECTION (designation or name of
+intersection)]
+G: ADVISE IF ABLE TO DEPART FROM RUNWAY
+(number) INTERSECTION (designation or name of
+intersection)
+G: TORA RUNWAY (number) FROM INTERSECTION
+(designation or name of intersection), (distance)
+METRES
+
+5.3.1.12. Startfreigabe
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE (Nummer)
+START FREI/FREI ZUM SOFORTSTART [MELDEN
+SIE AIRBORNE]
+
+5.3.1.12. Take off clearance
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number), CLEARED FOR TAKE
+OFF/IMMEDIATE TAKE OFF [REPORT AIRBORNE]
+
+© Austro Control GmbH
+
+54
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+Anmerkung:
+Note:
+Das Wort START wird in der deutschen Phraseologie nur mit The term TAKE OFF shall only be used for transmission or
+der Startfreigabe, der Aufhebung der Startfreigabe und der cancellation of the take off clearance itself. In all other
+Anweisung zum Fehlanflug übermittelt. Für alle anderen
+situations concerning the departure of an aircraft the word
+Übermittlungen den Abflugvorgang betreffend muss das
+DEPARTURE shall be used.
+Wort ABFLUG verwendet werden.
+5.3.1.12.1. Wenn der Startfreigabe noch nicht
+nachgekommen wurde
+B: MELDEN SIE ROLLEN
+L: ROLLE
+B: STARTEN SIE SOFORT ODER VERLASSEN SIE DIE
+PISTE [(Anweisungen)]
+L: STARTE [SOFORT]
+L: VERLASSE PISTE [ÜBER (Strecke)]
+B: STARTEN SIE SOFORT ODER HALTEN SIE AM
+ROLLHALT/KURZ VOR PISTE
+L: HALTE [AM ROLLHALT]
+
+5.3.1.12.1. When take off clearance has not been complied
+with
+G: REPORT ROLLING
+A: ROLLING
+G: TAKE OFF IMMEDIATELY OR VACATE RUNWAY
+[(instructions)]
+A: TAKING OFF [IMMEDIATELY]
+A: VACATING RUNWAY [VIA (route)]
+G: TAKE OFF IMMEDIATELY OR HOLD AT HOLDING
+POINT/SHORT OF RUNWAY
+A: HOLDING [AT HOLDING POINT]
+
+5.3.1.12.2. Streichen einer Startfreigabe
+B: HALTEN SIE POSITION, STARTFREIGABE
+AUFGEHOBEN, ICH WIEDERHOLE,
+STARTFREIGABE AUFGEHOBEN (Begründung)
+L: HALTE [POSITION]
+
+5.3.1.12.2. To cancel a take off clearance
+G: HOLD POSITION, CANCEL TAKE OFF, I SAY AGAIN
+CANCEL TAKE OFF (reasons)
+
+5.3.1.12.3. Startabbruch, nachdem ein LFZ den Startlauf
+bereits begonnen hat
+B: SOFORT ANHALTEN [(Wiederholung des
+Rufzeichens) SOFORT ANHALTEN]
+L: HALTE AN
+
+5.3.1.12.3. To stop a take off after an A/C has commenced
+take off roll
+G: STOP IMMEDIATELY [(repeat A/C call sign) STOP
+IMMEDIATELY]
+A: STOPPING
+
+Anmerkung:
+HALTE und HALTE AN sind die verfahrenstechnischen
+Antworten zu Punkt 5.3.1.12.2. und 5.3.1.12.3.
+
+Note:
+HOLDING and STOPPING are the procedural responses to
+5.3.1.12.2. and 5.3.1.12.3.
+
+5.3.1.12.4. Wenn reduzierte Pistenstaffelung angewandt
+wird
+B: (Verkehrsinformation) PISTE (Nummer) START FREI
+
+5.3.1.12.4. When reduced runway separation is used
+
+5.3.1.13. Abflug für Hubschrauber
+L: ERBITTE ABFLUGANWEISUNGEN
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE (Nummer),
+START FREI
+B: WIND (Zahl) GRAD (Zahl) KNOTEN [VON (Standort)
+GEGENWÄRTIGER POSITION/ROLLBAHN
+(Bezeichnung)/ENDANFLUGSBEREICH PISTE
+(Nummer)], START NACH EIGENEM ERMESSEN
+
+5.3.1.13. Departure for helicopter operations
+A: REQUEST DEPARTURE INSTRUCTIONS
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number) CLEARED FOR TAKE OFF
+G: WIND (number) DEGREES (number) KNOTS [FROM
+(location) PRESENT POSITION/ TAXIWAY
+(designator)/ FINAL APPROACH AREA (number)]
+TAKE OFF AT OWN DISCRETION
+
+5.3.2. NACH DEM ABFLUG/IN DER LUFT
+
+5.3.2. AFTER DEPARTURE/AIRBORNE
+
+B:
+L:
+L:
+B:
+
+MELDEN SIE AIRBORNE
+AIRBORNE
+ERBITTE ABFLUGZEIT
+ABFLUG [UM] (Zeit)
+
+A: HOLDING [POSITION]
+
+G: (traffic information) RUNWAY (number) CLEARED FOR
+TAKE OFF
+
+G:
+A:
+A:
+G:
+
+REPORT AIRBORNE
+AIRBORNE
+REQUEST AIRBORNE TIME
+AIRBORNE [AT] (time)
+
+5.3.2.1. Anweisungen für Steigen und Richtungsänderungen 5.3.2.1. Turn or climb instructions after take off
+nach dem Abflug
+L: ERBITTE RECHTS/LINKS KURVE
+A: REQUEST RIGHT/LEFT TURN
+B: LINKS/RECHTS KURVE GENEHMIGT/NEGATIV
+G: LEFT/RIGHT TURN APPROVED/NEGATIVE
+B: WARTEN SIE AUF LINKS/RECHTS KURVE
+G: STAND BY FOR LEFT/RIGHT TURN
+B: RUFE SIE FÜR RECHTS/LINKS KURVE
+G: WILL ADVISE LATER FOR RIGHT/LEFT TURN
+© Austro Control GmbH
+
+55
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+L: LINKS/RECHTS KURVE NICHT MÖGLICH
+B: NACH ÜBER/DURCH FLIEGEN VON (Höhe, Position)
+(Anweisungen)
+B: BLEIBEN SIE IN PISTENRICHTUNG (Anweisungen)
+B: STEIGEN SIE GERADEAUS (Anweisungen)
+B: STEIGEN SIE IN PISTENRICHTUNG (Anweisungen)
+B: FREIGEGEBEN ÜBER (Bezeichnung)
+B: FREIGEGEBEN NACH (Freigabegrenze) [ÜBER
+(Strecke)(Bezeichnung)]
+
+A: UNABLE LEFT/RIGHT TURN
+G: AFTER OVERFLYING/PASSING (level, position)
+(instructions)
+G: CONTINUE RUNWAY HEADING (instructions)
+G: CLIMB STRAIGHT AHEAD (instructions)
+G: CLIMB ON RUNWAY HEADING (instructions)
+G: CLEARED VIA (designation)
+G: CLEARED TO (clearance limit) [VIA
+(route)(designation)]
+
+5.3.2.2. Einflug in/Durchflug durch die Kontrollzone/den
+kontrollierten Luftraum
+L: [(LFZ-Type)] [VFR] (Standort)(Höhe) INFORMATION
+(ATIS-Kennbuchstabe) ZUR LANDUNG/ZUM
+TIEFANFLUG/ZUM AUFSETZEN UND
+DURCHSTARTEN
+B: FLIEGEN SIE IN DIE KONTROLLZONE
+[SONDERSICHTFLUG/NACHTSICHTFLUG] ÜBER
+[VFR] (Strecke) [IN] (Höhe), PISTE (Nummer), [WIND
+(Zahl) GRAD (Zahl) KNOTEN], QNH (Nummer)
+[SQUAWK (Code)]
+L: [(LFZ-Type)] [VFR] (Standort) (Höhe) ERBITTE
+EIN/DURCHFLUG IN/DURCH DIE
+KONTROLLZONE/DEN KONTROLLIERTEN
+LUFTRAUM ÜBER (Strecke) [IN] [(Höhe)]
+
+5.3.2.2. Entering/crossing control zone/controlled airspace
+A: [(A/C type)] [VFR] (position) (level) INFORMATION
+(ATIS identification) FOR LANDING/LOW
+APPROACH/TOUCH AND GO
+G: ENTER CONTROL ZONE [SPECIAL VFR/NIGHT VFR]
+VIA [VFR] (route) [AT] (level), RUNWAY (number),
+[WIND (number) DEGREES (number) KNOTS], QNH
+(number) [SQUAWK (code)]
+A: [(A/C type)] [VFR] (position) (level) REQUEST
+CROSSING/ENTERING CONTROL
+ZONE/CONTROLLED AIRSPACE VIA (route) [AT]
+[(level)]
+
+B: FLIEGEN SIE IN/DURCH DIE KONTROLLZONE/DEN G: ENTER/CROSS CONTROL ZONE/CONTROLLED
+KONTROLLIERTEN LUFTRAUM
+AIRSPACE [VFR/NIGHT VFR] VIA (route) [AT] (level)
+[VFR/NACHTSICHTFLUG] ÜBER (Strecke) [IN] (Höhe)
+QNH (number) [SQUAWK (code)]
+QNH (Nummer) [SQUAWK (Code)]
+B: VERLASSEN SIE KONTROLLIERTEN LUFTRAUM
+G: LEAVE CONTROLLED AIRSPACE [VIA (significant
+[ÜBER (signifikanter Punkt oder Strecke)] IN (Höhe)/IM
+point or route)] AT (level)/CLIMBING/DESCENDING
+STEIGFLUG/SINKFLUG
+Anmerkung:
+Vor dem Abflug von einem kontrollierten Flugplatz bzw. vor
+dem Einflug in die Kontrollzone zum Zweck der Landung,
+eines Tiefanflugs oder zum Aufsetzen und Durchstarten ist
+das ATIS verpflichtend abzuhören.
+
+Note:
+Before departing on a controlled aerodrome as well as
+before entering a control zone for landing/low
+approach/touch and go ATIS shall be monitored.
+
+5.3.2.3. Einflug in eine Platzrunde
+L: ERBITTE [RECHTS]PLATZRUNDE
+B: FLIEGEN SIE IN DEN [RECHTEN] (Position in der
+Platzrunde), PISTE (Nummer) [WIND (Zahl) GRAD
+(Zahl) KNOTEN] [VERKEHR (Details)]
+
+5.3.2.3. Entering an aerodrome traffic circuit
+A: REQUEST [RIGHT [HAND]] [TRAFFIC] CIRCUIT
+G: JOIN [RIGHT HAND] (position in the circuit) RUNWAY
+(number), [WIND (number) DEGREES (number)
+KNOTS] [QNH/QFE (number)] [(units)] [TRAFFIC
+(details)]
+B: FLIEGEN SIE [RECHTS] PLATZRUNDE[N] PISTE
+G: FLY [RIGHT [HAND]] [TRAFFIC] CIRCUIT[S]
+(Nummer) [WIND (Zahl) GRAD (Zahl) KNOTEN]
+RUNWAY (number) [WIND (number) DEGREES
+[QNH/QFE (Nummer)] [(Einheit)] [VERKEHR (Details)]
+(number) KNOTS] [TRAFFIC (details)]
+B: MACHEN SIE GERADEAUS/DIREKT ANFLUG PISTE G: MAKE STRAIGHT-IN/DIRECT APPROACH RUNWAY
+(Nummer) [WIND (Zahl) GRAD (Zahl) KNOTEN
+(number) [WIND (number) DEGREES (number)
+[VERKEHR (Details)]
+KNOTS] [TRAFFIC (details)]
+B: FREI ZUM ANFLUG PISTE (Nummer)]
+G: CLEARED APPROACH RUNWAY (number)
+5.3.2.4. In der Platzrunde
+L: ERBITTE KURZEN/LANGEN ANFLUG PISTE
+(Nummer)
+B: MACHEN SIE KURZEN/LANGEN ANFLUG PISTE
+(Nummer)
+B: VERLÄNGERN/VERKÜRZEN SIE ANFLUG PISTE
+(Nummer)
+© Austro Control GmbH
+
+5.3.2.4. In the circuit
+A: REQUEST SHORT/LONG APPROACH RUNWAY
+(number)
+G: MAKE SHORT/LONG APPROACH RUNWAY
+(number)
+G: EXTEND/SHORTEN APPROACH RUNWAY (number)
+
+56
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+B: VERLÄNGERN SIE [RECHTEN] GEGENANFLUG
+G:
+PISTE (Nummer)
+B: BLEIBEN SIE IM [RECHTEN] GEGENANFLUG PISTE G:
+(Nummer)
+L: ERBITTE [RECHTEN] QUERANFLUG PISTE
+A:
+(Nummer)
+B: MELDEN SIE [RECHTEN]
+G:
+QUERANFLUG/ENDANFLUG/LANGEN ENDANFLUG
+PISTE (Nummer)
+B: MELDEN SIE FLUGPLATZ/PISTE/
+G:
+ANFLUGBEFEUERUNG IN SICHT
+B: SETZEN SIE ANFLUG FORT [ERWARTEN SIE EINEN G:
+MÖGLICHEN ABBRUCH]
+B: SETZEN SIE [RECHTEN]
+G
+GEGENANFLUG/QUERANFLUG/ENDANFLUG FORT
+B: DREHEN SIE IN DEN [RECHTEN]
+G:
+QUERANFLUG/ENDANFLUG
+5.3.2.5. Verzögerungs-/Warteverfahren
+B: KREISEN SIE ÜBER DEM FLUGPLATZ
+B: KREISEN SIE RECHTS/LINKS [ÜBER
+GEGENWÄRTIGER POSITION] (Grund)
+B: WARTEN SIE ÜBER (Position) (Grund [IN (Zahl) FUSS
+oder FLUGFLÄCHE (Zahl)] [ERWARTEN SIE
+FREIGABE UM (Zeit) UHR/IN (Ziffer(n)) MINUTE[N]
+B: MACHEN SIE EINEN VOLLKREIS [NACH
+RECHTS/LINKS[(Grund)]
+B: FLIEGEN SIE NOCH EINE [RECHTS] PLATZRUNDE
+L:
+
+WARTE
+
+EXTEND [RIGHT [HAND]] DOWNWIND RUNWAY
+(number)
+MAINTAIN [RIGHT [HAND]] DOWNWIND RUNWAY
+(number)
+REQUEST [RIGHT [HAND]] BASE RUNWAY (number)
+REPORT [RIGHT [HAND]] BASE/FINAL/LONG FINAL
+RUNWAY (number)
+REPORT FIELD/RUNWAY/APPROACH LIGHTS IN
+SIGHT
+CONTINUE APPROACH [PREPARE FOR POSSIBLE
+GO AROUND]
+CONTINUE [RIGHT[HAND]]
+DOWNWIND/BASE/FINAL
+TURN [RIGHT [HAND]] BASE/FINAL
+
+5.3.2.5. Delaying manoeuvres
+G: CIRCLE THE AERODROME
+G: ORBIT RIGHT/LEFT [FROM PRESENT POSITION]
+(reason)
+G: HOLD OVER (position) (reason) [IN (number) FEET or
+LEVEL (number)] [EXPECT FURTHER CLEARANCE
+AT/IN (number) MINUTE[S]
+G: MAKE A THREE SIXTY [TURN RIGHT/LEFT (reason)]
+G: MAKE ANOTHER [RIGHT [HAND]] [TRAFFIC]
+CIRCUIT
+A: HOLDING
+
+5.3.2.6. Meldungen in der Platzrunde
+B: MELDEN SIE
+• [ÜBER] (Position)
+• [RECHTEN] GEGENANFLUG
+• [RECHTEN] QUERANFLUG
+• KURZEN/LANGEN ENDANFLUG
+• DREI MEILEN ENDANFLUG
+L: [POSITION] (Position)
+• [RECHTER] GEGENANFLUG
+• [RECHTER] QUERANFLUG
+• KURZER/LANGER ENDANFLUG
+• DREI MEILEN ENDANFLUG
+
+5.3.2.6. Reports in the traffic circuit
+G: REPORT
+• [OVER] (position)
+• [RIGHT [HAND]] DOWNWIND
+• [RIGHT [HAND]] BASE
+• SHORT/LONG FINAL
+• THREE MILES FINAL
+A: [POSITION] (position)
+• [RIGHT [HAND]] DOWNWIND
+• [RIGHT [HAND]] BASE
+• SHORT/LONG FINAL
+• THREE MILES FINAL
+
+5.3.2.7. Freigaben zum Aufsetzen und Durchstarten,
+Tiefanflug, tiefen Vorbeiflug
+L: ERBITTE AUFSETZEN UND
+DURCHSTARTEN/TIEFANFLUG/TIEFEN
+VORBEIFLUG [(Grund)]
+L: ERBITTE ABBRUCH (Grund)
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE (Nummer)
+FREI ZUM AUFSETZEN UND
+DURCHSTARTEN/TIEFANFLUG/TIEFEN
+VORBEIFLUG [(Höhenbeschränkung falls erforderlich)
+(Anweisungen zum Abbruch)]
+B: FREI ZUM ABBRUCH [(Anweisungen)]
+
+5.3.2.7. Clearances for touch and go, low approach, low
+pass
+A: REQUEST TOUCH AND GO/LOW APPROACH/LOW
+PASS [(reasons)]
+
+5.3.2.8. Identifizierung
+B: SCHALTEN SIE LANDESCHEINWERFER EIN
+B: BESTÄTIGEN SIE DURCH BEWEGEN DER
+QUERRUDER/DES SEITENRUDERS
+
+5.3.2.8. Identification of aircraft
+G: SHOW LANDING LIGHTS
+G: ACKNOWLEDGE BY MOVING AILERONS/RUDDER
+
+© Austro Control GmbH
+
+A: REQUEST BRAKE OFF (reasons)
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number) CLEARED TOUCH AND GO/LOW
+APPROACH/LOW PASS) [(altitude restriction if
+required) (go around instructions)]
+G: CLEARED BRAKE OFF [(instructions)]
+
+57
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+B: BESTÄTIGEN SIE DURCH WACKELN
+B: BESTÄTIGEN SIE DURCH BLINKEN MIT DEN
+LANDESCHEINWERFERN
+
+G: ACKNOWLEDGE BY ROCKING WINGS
+G: ACKNOWLEDGE BY FLASHING LANDING LIGHTS
+
+5.3.2.9. Landeeinteilung
+B: LANDENUMMER (Nummer) HINTER (LFZ-Type)
+(Standort) (Höhe)
+B: LANDENUMMER (Nummer) FOLGEN SIE (LFZ Type
+und Position) [(zusätzliche Anweisungen, falls
+erforderlich)]
+B: VORSICHT WIRBELSCHLEPPEN [VON GERADE
+LANDENDER/ABGEFLOGENER] (LFZ-Type)
+[(zusätzliche Informationen falls erforderlich)]
+B: HALTEN SIE SELBST ABSTAND
+
+5.3.2.9. Landing sequences
+G: NUMBER (number) BEHIND (type of A/C) (position)
+(level)
+G: NUMBER (number) FOLLOW (A/C type and position)
+[(additional instructions if required)]
+G: CAUTION WAKE TURBULENCE [FROM
+ARRIVING/DEPARTING] (type of A/C) [(additional
+information as required)]
+G: MAINTAIN OWN SEPARATION
+
+5.3.2.10. Landefreigabe
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE (Nummer),
+LANDUNG FREI
+B: MACHEN SIE ABSCHLUSSLANDUNG
+B: MACHEN SIE KURZE/LANGE LANDUNG
+
+5.3.2.10. Landing clearance
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number) CLEARED TO LAND
+G: MAKE FULL STOP
+G: MAKE SHORT/LONG LANDING
+
+5.3.2.10.1 wenn reduzierte Pistenstaffelung angewendet
+wird
+B: (Verkehrsinformation) WIND (Zahl) GRAD (Zahl)
+KNOTEN PISTE (Nummer), LANDUNG FREI
+
+5.3.2.10.1 when reduced runway separation is used
+
+5.3.2.10.2. Für Hubschrauber
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE
+(Nummer)/HELIPAD (Standort) LANDUNG FREI
+
+5.3.2.10.2. For helicopters
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number)/HELIPAD (location on aerodrome)
+CLEARED TO LAND
+G: WIND (number) DEGREES (number) KNOTS (position)
+LAND AT OWN DISCRETION
+A: REQUEST STRAIGHT-IN APPROACH/CIRCLING
+APPROACH/LEFT/RIGHT TURN TO (location)
+
+B: WIND (Zahl) GRAD (Zahl) KNOTEN (Standort)
+LANDUNG NACH EIGENEM ERMESSEN
+L: ERBITTE GERADEAUSANFLUG/
+PLATZRUNDENANFLUG/RECHTSKURVE/
+LINKSKURVE ZU (Ort)
+B: MACHEN SIE GERADEAUSANFLUG
+/PLATZRUNDENANFLUG [RECHTS/LINKS KURVE
+NACH (Ort, Piste, Rollbahn, Endanflug- und
+Startbereich)] [ARRIVAL/ANFLUGROUTE (Nummer,
+Name oder Code)][HALTEN SIE KURZ VOR (Piste,
+verlängerter Pistenmittellinie u.a.)] [BLEIBEN SIE
+(Richtung oder Distanz) VON (Piste, Pistenmittellinie,
+anderen Hubschraubern oder Luftfahrzeugen)
+ENTFERNT [VORSICHT (Stromleitungen,
+unbeleuchtete Hindernisse, Wirbelschleppen usw)]
+5.3.2.11. Fehlanflug
+B: STARTEN SIE [SOFORT] DURCH [(Anweisungen)]
+(Grund)
+Nur in Englisch vorgesehen
+
+G: (traffic information) WIND (number) DEGREES (number)
+KNOTS RUNWAY (number) CLEARED TO LAND
+
+G: MAKE STRAIGHT-IN/CIRCLING APPROACH
+[LEFT/RIGHT TURN TO (location, runway, taxiway,
+final approach and take-off area)] [ARRIVAL/ARRIVAL
+ROUTE (number, name or code)] [HOLD SHORT OF
+(active runway, extended runway centre line, other)]
+[REMAIN (direction or distance) FROM (runway,
+runway centre line, other helicopter or
+aircraft)][CAUTION (power lines, unlighted obstructions,
+wake turbulence, etc.)]
+5.3.2.11. Missed approach
+G: GO AROUND [IMMEDIATELY] [(instructions)] (reason)
+G: CONTINUE VISUALLY OR GO AROUND [(missed
+approach instructions)]
+G. ARE YOU GOING AROUND
+G: IN CASE OF GO AROUND (instructions)
+
+B: SIND SIE IM FEHLANFLUG
+B: FALLS SIE EINEN FEHLANFLUG MACHEN
+(Anweisungen)
+L: STARTE DURCH
+A: GOING AROUND
+B: SETZEN SIE ANFLUG FORT [ERWARTEN SIE EINEN G: CONTINUE APPROACH [PREPARE FOR POSSIBLE
+MÖGLICHEN FEHLANFLUG]
+GO AROUND]
+
+5.3.3. NACH DER LANDUNG
+
+5.3.3. AFTER LANDING
+
+5.3.3.1. Verlassen der Piste
+B: VERLASSEN SIE PISTE [ÜBER (Strecke)]
+
+5.3.3.1. Runway vacating
+G: VACATE RUNWAY [VIA (route)]
+
+© Austro Control GmbH
+
+58
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+L:
+B:
+L:
+B:
+L:
+B:
+B:
+B:
+B:
+B:
+
+L:
+B:
+
+VERLASSE PISTE
+MELDEN SIE PISTE [(Nummer)] VERLASSEN
+[HABE] PISTE [(Nummer)] VERLASSEN
+BESCHLEUNIGEN SIE DAS VERLASSEN [PISTE
+(Nummer)] [(Begründung)]
+BESCHLEUNIGE
+NEHMEN/DREHEN/VERLASSEN SIE
+ERSTE[N]/ZWEITE[N]/PASSENDE[N] NACH
+LINKS/RECHTS
+RUFEN SIE ROLLKONTROLLE (Frequenz)]
+NACH VERLASSEN DER PISTE RUFEN SIE
+ROLLKONTROLLE (Frequenz)
+IHR ABSTELLPLATZ/GATE (Bezeichnung)
+ROLLEN/SCHWEBEN SIE [ÜBER (Ort oder Strecke)]
+• ZUM TERMINAL [(Nummer)]
+• ZUR PARKPOSITION (Nummer)
+• ZUM ABSTELLPLATZ/GATE (Nummer)
+• ZUR ALLGEMEINEN LUFTFAHRT
+• ZU (Position)
+• ZUM HUBSCHRAUBER-ABSTELLPLATZ
+(Bereich)
+ERBITTE LANDEZEIT
+LANDEZEIT (Zeit)
+
+© Austro Control GmbH
+
+28 DEC 2023
+
+A:
+G:
+A:
+G:
+
+VACATING RUNWAY
+REPORT RUNWAY [(number)] VACATED
+RUNWAY [(number)] VACATED
+EXPEDITE VACATING [RUNWAY (number)] [(reason)]
+
+A: EXPEDITING
+G: TAKE/TURN/VACATE FIRST/SECOND/CONVENIENT
+LEFT/RIGHT
+G: CONTACT GROUND (frequency)
+G: WHEN VACATED CONTACT GROUND (frequency)
+G: YOUR STAND/GATE (designation)
+G: [AIR]TAXI TO/VIA (location or routing as appropriate)
+• TERMINAL [(number)]
+• POSITION (number)
+• STAND/GATE (number)
+• GENERAL AVIATION AREA (position)
+• (position)
+• HELICOPTER STAND/HELICOPTER PARKING
+POSITION (area)
+A: REQUEST LANDING TIME
+G: LANDING TIME (time)/ON GROUND (time)
+
+59
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+5.4. FLUGPLÄTZE OHNE FLUGVERKEHRSKONTROLLE
+
+5.4. AERODROMES WITHOUT AIR
+TRAFFIC CONTROL
+
+5.4.1. ALLGEMEINES
+
+5.4.1. GENERAL
+
+Auf unkontrollierten Flugplätzen wird kein
+Flugverkehrskontrolldienst ausgeübt. Die Flugplatzfrequenz
+der unkontrollierten Flugplätze steht vorwiegend Piloten zum
+Absetzen von Standortmeldungen zur Verfügung.
+
+Air traffic control service is not provided at uncontrolled
+aerodromes. The aerodrome frequency of uncontrolled
+aerodromes is mainly available to pilots for transmitting
+position reports.
+
+Phraseologie betreffend Fluginformationsdienst darf nur von Phraseologies regarding flight information shall only be used
+den dafür vorgesehenen ATS Stellen angewendet werden. by appropriate ATS units.
+5.4.1.1. Rollen
+L: ERBITTE ROLLINFORMATION [VON
+HANGAR/VORFELD] [ZU VORFELD/HANGAR]
+B: ROLLEN SIE NACH EIGENEM ERMESSEN ÜBER
+(Strecke)
+
+5.4.1.1. Taxiing
+A: REQUEST TAXI INFORMATION [FROM
+HANGAR/APRON] [TO APRON/HANGAR]
+G: TAXI AT OWN DISCRETION VIA (route)
+
+5.4.1.1.1 IFR Streckenfreigaben
+Anmerkung:
+Auf einigen unkontrollierten Flugplätzen wurden IFRAbflugverfahren festgelegt, auch, um vor dem Abflug eine
+IFR-Freigabe auf einer ATC Frequenz zu erhalten. Details
+sind in den veröffentlichen Verfahren der betreffenden
+Flugplätze enthalten.
+
+5.4.1.1.1 IFR route clearances
+Note:
+At some uncontrolled aerodromes IFR departure procedures
+have been established, also to obtain an IFR route
+clearance on an ATC frequency prior to departure. For
+details see published procedures for the respective
+aerodromes.
+
+Die Phraseologie dafür ist nur in Englisch
+vorgesehen.
+
+A: READY FOR DEPARTURE REQUEST IFR
+CLEARANCE [SLOT(time)]
+G: CLEARED TO (clearance limit) [VIA] (route
+description/SID designator) [CLIMB] LEVEL
+(number)/(number) FEET [QNH (number)] SQUAWK
+(code) [(additional instructions)] [CLEARANCE
+EXPIRES AT (time)]
+G: UNABLE TO ISSUE CLEARANCE (reasons)
+G: STAND BY FOR CLEARANCE
+
+5.4.1.2. Abflug
+L: ERBITTE ABFLUGINFORMATION
+B: PISTE (Nummer) [BODEN] WIND (Richtung,
+Geschwindigkeit), QNH (Nummer)
+B: MELDEN SIE [ABFLUG] BEREIT
+L: [ABFLUG] BEREIT PISTE (Nummer)
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE (Nummer)
+START NACH EIGENEM ERMESSEN [ANDERER
+VERKEHR (Angaben)] [VORSICHT (Details)]
+L: ERBITTE ABFLUGZEIT
+B: ABFLUGZEIT (Zeit)
+
+5.4.1.2. Departure
+A: REQUEST DEPARTURE INFORMATION
+G: RUNWAY (number) [SURFACE] WIND (direction,
+speed), QNH (number)
+G: REPORT WHEN READY [FOR DEPARTURE]
+A: READY [FOR DEPARTURE] RUNWAY (number)
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number) TAKE OFF AT OWN
+DISCRETION [TRAFFIC IS (details)] [CAUTION
+(details)]
+A: REQUEST AIRBORNE TIME
+G: AIRBORNE (time)
+
+5.4.1.3. Besondere Absichten des Piloten in der Platzrunde
+L: STARTE DURCH
+L: MACHE TIEFANFLUG
+L: MACHE KURZE/LANGE LANDUNG
+L: MACHE ZIELLANDUNG
+L: FLIEGE AN ZUR BANNERAUFNAHME
+L: FLIEGE AN ZUM BANNER/SEIL ABWURF
+L: FLIEGE [RECHTS] PLATZRUNDE[N]
+L: MACHE AUFSETZEN UND DURCHSTARTEN
+L: MACHE ABSCHLUSSLANDUNG
+
+5.4.1.3. Special intentions of the pilots in the traffic circuit
+A: GOING AROUND
+A: MAKING LOW APPROACH
+A: MAKING SHORT/LONG LANDING
+A: MAKING SPOT LANDINGS
+A: APPROACHING FOR BANNER PICK UP
+A: APPROACHING FOR BANNER/ROPE DROP
+A: FLYING [RIGHT [HAND]] [TRAFFIC] CIRCUIT[S]
+A: MAKING TOUCH AND GO
+A: MAKING FULL STOP
+
+© Austro Control GmbH
+
+60
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+5.4.1.4. Verlassen der Frequenz
+L: VERLASSE FREQUENZ
+B: VERSTANDEN
+
+5.4.1.4. Leaving frequency
+A: LEAVING FREQUENCY
+G: ROGER
+
+5.4.1.5. Anflug/Landung
+L: (Standortmeldung) [VFR VON (Abflugplatz)] ERBITTE
+LANDEINFORMATION
+B: PISTE (Nummer) [BODEN] WIND (Richtung,
+Geschwindigkeit), QNH (Nummer)
+B: WIND (Zahl) GRAD (Zahl) KNOTEN PISTE (Nummer)
+LANDUNG NACH EIGENEM ERMESSEN
+B: VERKEHR IST (Details) [VORSICHT (Details,
+Hindernisse etc.)] LANDUNG NACH EIGENEM
+ERMESSEN
+L: ERBITTE LANDEZEIT
+B: LANDEZEIT (Zeit)
+
+5.4.1.5. Approach/landing
+A: (position report) [VFR FROM (location of departure)]
+REQUEST LANDING INFORMATION
+G: RUNWAY (number) [SURFACE] WIND (direction,
+speed), QNH (number)
+G: WIND (number) DEGREES (number) KNOTS
+RUNWAY (number) LAND AT OWN DISCRETION
+G: TRAFFIC IS (details) [CAUTION (details, obstructions,
+etc.)] LAND AT OWN DISCRETION
+
+© Austro Control GmbH
+
+A: REQUEST LANDING TIME
+G: LANDING TIME/ON GROUND (time)
+
+61
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+5.5. DIVERSE FLUGPLATZPHRASEOLOGIE
+
+5.5. MISCELLANEOUS AERODROME
+PHRASEOLOGIES
+
+5.5.1. WETTERERSCHEINUNGEN UND
+FLUGPLATZINFORMATIONEN
+
+5.5.1. WEATHER AND AERODROME
+INFORMATION
+
+5.5.1.1. Wetter
+B: MELDEN SIE WETTERBEDINGUNGEN
+B: MELDEN SIE FLUGBEDINGUNGEN
+B: IMC GEMELDET/VORHERGESAGT IN DER NÄHE
+VON (Position)
+B: TOWER BEOBACHTET/E
+B: PILOT MELDET/E
+L: ERBITTE FLUGPLATZWETTER (Ort)
+B: DERZEITIGES WETTER (Informationen)
+B: MET REPORT (Ort) (Zeit) (Angaben)
+B: NOSIG/KEINE MARKANTE ÄNDERUNG
+
+5.5.1.1. Weather
+G: REPORT METEOROLOGICAL CONDITIONS
+G: REPORT FLIGHT CONDITIONS
+G: IMC REPORTED/FORECAST IN THE VICINITY OF
+(location)
+G: TOWER IS OBSERVING (information)
+G: PILOT IS REPORTING/HAS REPORTED
+A: REQUEST MET REPORT (location)
+G: PRESENT WEATHER (details)
+G: MET REPORT (location) (time) (details)
+G: NOSIG/NO SIGNIFICANT CHANGE
+
+5.5.1.2. Wind
+B: [BODEN] WIND (Zahl) GRAD (Zahl) KNOTEN
+
+5.5.1.2. Wind
+G: [SURFACE] WIND (number) DEGREES (number)
+KNOTS
+G: WIND AT (level) (number) DEGREES (number)
+KNOTS/KILOMETRES PER HOUR
+
+B: WIND IN (Höhe) (Zahl) GRAD (Zahl)
+KNOTEN/KILOMETER PRO STUNDE
+B: [BODEN] WIND (Zahl) GRAD (Zahl) KNOTEN
+MAXIMUM (Zahl) KNOTEN
+B: [BODEN] WIND VARIABEL ZWISCHEN (Zahl) GRAD
+UND (Zahl) GRAD (Zahl)KNOTEN
+B: [BODEN] WIND (Zahl) GRAD, (Zahl) KNOTEN
+MINIMUM/MAXIMUM (Zahl) KNOTEN
+
+G: [SURFACE] WIND (number) DEGREES (number)
+KNOTS GUSTING (number) KNOTS
+G: [SURFACE] WIND VARYING BETWEEN (number)
+DEGREES AND (number) DEGREES (number)
+KNOTS
+G: [SURFACE] WIND (number) DEGREES (number)
+KNOTS MINIMUM/MAXIMUM (number) KNOTS
+
+Anmerkung:
+Beim Wind wird immer die mittlere Richtung und
+Geschwindigkeit angegeben, sowie signifikante
+Abweichungen davon.
+
+Note:
+Wind is always expressed by giving the mean direction and
+speed and any significant variations thereof.
+
+5.5.1.3. Sicht
+B: SICHT (Distanz) METER/KILOMETER [(Richtung)]
+B: VERTIKALSICHT (Zahl) FUSS
+
+5.5.1.3. Visibility
+G: VISIBILITY (distance) METRES/KILOMETRES
+[(direction)]
+G: VERTICAL VISIBILITY (number) FEET
+
+Anmerkung: 9999 wird übermittelt als:
+B: SICHT EINS NULL KILOMETER ODER MEHR
+
+Note: 9999 is transmitted as follows:
+G: VISIBILITY ONE ZERO KILOMETRES OR MORE
+
+5.5.1.4. Wolken
+B: [BEWÖLKUNG] (Bewölkungsgrad [(Wolkenart)]
+Wolkenuntergrenze)
+• FEW: LEICHT BEWÖLKT
+• SCT: MITTEL BEWÖLKT
+• BKN: STARK BEWÖLKT
+• OVC: WOLKENDECKE GESCHLOSSEN
+• NSC: KEINE MARKANTEN WOLKEN
+• NCD: KEINE WOLKEN FESTGESTELLT
+B: CAVOK
+
+5.5.1.4. Clouds
+G: [CLOUD] (amount [(type)] and height of base) (units)
+
+Anmerkung:
+CAVOK wird als KAV-O-KEI ausgesprochen.
+
+Note:
+CAVOK pronounced CAV-O-KAY.
+
+© Austro Control GmbH
+
+• FEW:
+• SCT:
+• BKN:
+• OVC:
+• NSC:
+• NCD:
+G: CAVOK
+
+FEW
+SCATTERED
+BROKEN
+OVERCAST
+NIL SIGNIFICANT CLOUDS
+NO CLOUD DETECTED
+
+62
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+5.5.1.5. Verschiedenes
+B: TEMPERATUR [MINUS] (Zahl) TAUPUNKT [MINUS]
+(Zahl)
+B: QNH (Zahl) [(Einheit)]
+B: QFE (Zahl) [(Einheit)]
+B: (LFZ- Type) MELDETE (Beschreibung)
+EIS/TURBULENZEN [IN WOLKEN] (örtliche
+Beschreibung) (Zeit)
+
+5.5.1.5. Miscellaneous
+G: TEMPERATURE [MINUS] (number) DEW POINT
+[MINUS] (number)
+G: QNH (number) [(units)]
+G: QFE (number) [(units)]
+G: (A/C type) REPORTED (description)
+ICING/TURBULENCE [IN CLOUD] (area) (time)
+
+5.5.1.6. Pistensichtweite
+B: PISTENSICHTWEITE/RVR PISTE (Nummer) (Zahl)
+(Einheit)
+B: PISTENSICHTWEITE/RVR PISTE (Nummer) KEINE
+ANZEIGE/NICHT VERFÜGBAR
+B: PISTENSICHTWEITE/RVR PISTE (Nummer)
+[AUFSETZZONE] (Zahl) METER [MITTELTEIL] (Zahl)
+METER [STOPPENDE] (Zahl) METER
+
+5.5.1.6. Runway visual range
+G: RUNWAY VISUAL RANGE/RVR RUNWAY (number)
+(distance)(units)
+G: RUNWAY VISUAL RANGE/RVR RUNWAY (number)
+NOT AVAILABLE/ NOT REPORTED)
+G: RUNWAY VISUAL RANGE/RVR [RUNWAY (number)]
+[TOUCH DOWN] (distance) METRES [MID POINT]
+(distance) METRES [STOP END] (distance) METRES
+
+Anmerkung:
+Wenn alle drei Werte übermittelt werden, kann die
+Bezeichnung des Pistenabschnittes entfallen, wenn die
+Reihenfolge Aufsetzzone, Mittelteil, Stoppende eingehalten
+wird. Wenn die RVR eines Teils nicht verfügbar ist, wird dies
+in der vorgegebenen Reihenfolge inkludiert.
+
+Note:
+Where reports for three locations are given, the indication of
+these locations may be omitted, provided that the reports are
+passed in the order of touchdown zone, followed by midpoint
+zone and ending with the roll-out/stop end zone report. In
+the event that RVR information on any one position is not
+available this information will be included in the appropriate
+sequence.
+
+B: PISTENSICHTWEITE/RVR [PISTE (Nummer)]
+G: RUNWAY VISUAL RANGE/RVR [RUNWAY (number)]
+[AUFSETZZONE] (Zahl) METER, [MITTELTEIL] NICHT
+[TOUCH DOWN] (distance) METRES, [MID POINT]
+VERFÜGBAR/NICHT GEMELDET, [STOPPENDE]
+NOT AVAILABLE/NOT REPORTED, [STOP END]
+(Zahl) METER
+(distance) METRES
+B: RVR MEHR ALS (Zahl) METER
+G: RVR ABOVE (number) METRES
+B: MESSUNG DURCH BEOBACHTER
+G: OBSERVATION BY OBSERVER
+5.5.1.6.1 nur in Englisch vorgesehen
+
+5.5.1.6.1 To ensure that an aircraft has actually reached its
+parking position on non-visible parking positions
+G: REPORT CHOCKS ON
+A: CHOCKS ON
+
+5.5.1.7. Oberflächenzustand
+
+5.5.1.7. Surface conditions
+
+5.5.1.7.1 Pistenzustandsmeldung
+B: [(Ort)] PISTE (Nummer) PISTENZUSTAND UM (Zeit):
+PISTENZUSTANDSKENNZAHLEN (Ziffer/Ziffer/Ziffer)
+[DOWNGRADED/UPGRADED]
+
+5.5.1.7.1 Runway condition report
+G: [(location)] RUNWAY (number) CONDITION REPORT
+AT (time):
+RUNWAY CONDITION CODES (digit/digit/digit)
+[DOWNGRADED/UPGRADED]
+
+ERSTES DRITTEL
+(Nummer) PROZENT
+(Nummer) MILLIMETER
+(Art der Kontaminierung)
+
+FIRST PART
+(number) PERCENT
+(number) MILLIMETERS
+(type of descriptor)
+
+ZWEITES DRITTEL
+(Nummer) PROZENT
+(Nummer) MILLIMETER
+(Art der Kontaminierung)
+
+SECOND PART
+(number) PERCENT
+(number) MILLIMETERS
+(type of descriptor)
+
+DRITTES DRITTEL
+(Nummer) PROZENT
+NR
+(Art der Kontaminierung)
+
+THIRD PART
+(number) PERCENT
+NR
+(type of descriptor)
+
+© Austro Control GmbH
+
+63
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+28 DEC 2023
+
+wenn notwendig, gefolgt von:
+
+followed as necessary by:
+
+[PISTENBREITE (Nummer) METER]
+[PISTE (Nummer) [LÄNGE] VERKÜRZT AUF (Nummer)
+[METER]
+[PISTE (Nummer) SAND]
+[PISTE (Nummer) SCHNEEWALL (Zahl) METER
+LINKS/RECHTS/LINKS UND RECHTS DER
+[PISTEN]MITTELLINIE]
+[PISTE (Nummer) SCHNEEWEHEN]
+[PISTE (Nummer) CHEMISCH BEHANDELT]
+[PISTE (Nummer) ANGRENZENDE SCHNEEWÄLLE]
+[ROLLBAHN (Bezeichnung der Rollbahn) SCHNEEWALL
+(Zahl) METER LINKS/RECHTS/LINKS UND RECHTS DER
+[ROLLBAHN] MITTELLINIE]
+[ROLLBAHN (Bezeichnung der Rollbahn) ANGRENZENDE
+SCHNEEWÄLLE]
+[ROLLBAHN (Bezeichnung der Rollbahn)/ALLE
+ROLLBAHNEN SCHLECHT]
+[VORFELD (Bezeichnung des Vorfelds)/ALLE VORFELDER
+SCHLECHT]
+[(Anmerkungen in Normalsprache)]
+
+[RUNWAY WIDTH (number) METERS]
+[RUNWAY (number) [LENGTH] REDUCED TO (number)
+[METERS]
+[RUNWAY (number) LOOSE SAND]
+[RUNWAY (number) SNOWBANK[S] (number) METRES
+LEFT/RIGHT/LEFT AND RIGHT OF/FROM CENTRE LINE]
+
+Anmerkung 1:
+Arten von Kontaminierung:
+TROCKEN
+NASSES EIS
+WASSER AUF KOMPRIMIERTEM SCHNEE
+TROCKENER SCHNEE
+TROCKENER SCHNEE AUF EIS
+EIS
+SCHNEEMATSCH
+STEHENDES WASSER
+KOMRIMIERTER SCHNEE
+NASSER SCHNEE
+TROCKENER SCHNEE AUF KOMPRIMIERTEM SCHNEE
+NASSER SCHNEE AUF KOMPRIMIERTEM SCHNEE
+NASSER SCHNEE AUF EIS
+NASS
+GLATT UND NASS
+SPEZIELL FÜR DEN WINTER PRÄPARIERTE PISTE
+REIF
+
+[RUNWAY (number) DRIFTING SNOW]
+[RUNWAY (number) CHEMICALLY TREATED]
+[RUNWAY (number) ADJACENT SNOWBANKS]
+[TAXIWAY (identification of taxiway) SNOWBANK (number)
+METERS LEFT/RIGHT/LEFT AND RIGHT OF/FROM
+CENTRE LINE]
+[TAXIWAY (identification of taxiway) ADJACENT
+SNOWBANKS]
+[TAXIWAY (identification of taxiway)/ALL TAXIWAYS
+POOR]
+[APRON (identification of apron)/ALL APRONS POOR]
+[(plain language remarks)]
+Note 1:
+Types of descriptors:
+DRY
+WET ICE
+WATER ON TOP OF COMPACTED SNOW
+DRY SNOW
+DRY SNOW ON TOP OF ICE
+ICE
+SLUSH
+STANDING WATER
+COMPACTED SNOW
+WET SNOW
+DRY SNOW ON TOP OF COMPACTED SNOW
+WET SNOW ON TOP OF COMPACTED SNOW
+WET SNOW ON TOP OF ICE
+WET
+SLIPPERY WET
+SPECIALLY PREPARED WINTER RUNWAY
+FROST
+
+Anmerkung 2:
+Note 2:
+NR „NICHT GEMELDET“ in der Pistenzustandsmeldung bei NR "NOT REPORTED" (i.e. used for coverage or depth) is
+z.B. Belagsstärke oder Bedeckung wird nicht übermittelt.
+not transmitted.
+Anmerkung 3:
+Normalerweise wird die Pistenzustandsmeldung über ATIS
+verbreitet. Luftfahrzeuge im Nahbereich des Flugplatzes
+bzw. in allen Situationen, die eine Übermittlung der aktuellen
+Pistenzustandsmeldung durch ATIS nicht gewährleistet
+erscheinen lassen, werden per Funk über den aktuellen
+Pistenzustand informiert. Es werden dazu auf Initiative des
+ATCOs/FISOs folgende Informationen übermittelt:
+
+Note 3:
+Normally, the runway condition report is transmitted via
+ATIS. Aircraft in the vicinity of the aerodrome or in all
+situations in which transmission of the current runway
+condition report by ATIS does not appear to be warranted,
+shall be informed of the current runway condition by
+radiotelephony. The following information is transmitted on
+the ATCO' s/FISO' s initiative:
+
+a) Für Anflüge die Runway Condition Codes für das
+jeweilige Pistendrittel:
+
+a) Arrivals are provided with the Runway Condition Codes
+for the relevant runway thirds.
+Example:
+G: RUNWAY ONE SIX CONDITION REPORT AT ONE
+TWO ONE FIVE: RUNWAY CONDITION CODES
+THREE THREE THREE
+
+B: PISTE EINS SECHS PISTENZUSTAND UM EINS
+ZWO EINS FÜNF: PISTENZUSTANDSKENNZAHLEN
+DREI DREI DREI.
+
+© Austro Control GmbH
+
+64
+
+AIC A 21/23
+Sprechfunkverfahren – Radio Communication Procedures
+
+b) Für Abflüge die Runway Condition Codes für das
+jeweilige Pistendrittel und die Art der Kontamination.
+
+28 DEC 2023
+
+b) Departures are provided with the Runway Condition
+Codes for the relevant runway thirds and the types of
+contamination (descriptors).
+
+Beispiel:
+B: PISTE EINS SECHS PISTENZUSTAND UM EINS
+ZWO EINS FÜNF: PISTENZUSTANDSKENNZAHLEN
+DREI DREI DREI. ERSTES DRITTEL NASSER
+SCHNEE ZWEITES DRITTEL NASSER SCHNEE
+DRITTES DRITTEL NASSER SCHNEE
+oder auch (bei gleicher Kontaminierung auf allen
+Pistendritteln):
+PISTE BEDECKT MIT NASSEM SCHNEE.
+
+Example:
+G: RUNWAY ONE SIX CONDITION REPORT AT ONE
+TWO ONE FIVE: RUNWAY CONDITION CODES
+THREE THREE THREE. FIRST PART WET SNOW
+SECOND PART WET SNOW THIRD PART WET
+SNOW
+or also (in case of the same contamination on every
+runway third):
+RUNWAY COVERED WITH WET SNOW
+
+Die Übermittlung der gesamten Pistenzustandsmeldung
+erfolgt nur auf Anfrage der Flugzeugbesatzung.
+
+Transmission of the complete RCR will only be made on
+request by the flight crew.
+
+Anmerkung 4:
+Beispiele für die Übermittlung von
+Pistenzustandsmeldungen in Anlage 3 dieses Dokuments.
+
+Note 4:
+Example of runway condition reports in Appendix 3 of this
+document
+
+B: [(Ort)] PISTENZUSTAND PISTE (Nummer) NICHT
+AKTUELL/NICHT
+GEMELDET/LETZTE MELDUNG ERHALTEN UM (Zeit)
+
+G: [(location)] RUNWAY SURFACE CONDITION
+RUNWAY (number) NOT CURRENT/NOT
+REPORTED/LAST REPORT RECEIVED AT (time)
+
+5.5.1.7.2. Oberflächenzustand auf Bewegungsflächen
+B: ROLLBAHN (Bezeichnung der Rollbahn)
+NASS
+STEHENDES WASSER
+SCHNEE GERÄUMT [(geräumte Länge und Breite,
+wenn angegeben)]
+CHEMISCH BEHANDELT
+BEDECKT MIT:
+FLECKEN VON TROCKENEM SCHNEE/NASSEM
+SCHNEE/KOMPRIMIERTEM SCHNEE
+SCHNEEMATSCH
+GEFRORENEM SCHNEEMATSCH
+EIS
+NASSES EIS
+DARUNTER EIS
+EIS UND SCHNEE
+SCHNEEWEHEN
+GEFRORENEN RILLEN UND HÖCKERN
+SAND
+B: (Teil der Bewegungsfläche) NASS/TROCKEN
+B: PFÜTZEN AUF (Teil der Bewegungsfläche)
+B: SCHNEEWÄLLE (Höhenangabe) [LINKS/RECHTS
+VON] (Teil der Bewegungsfläche)
+B: SPRÜHEN IM GANG
+B: BEDECKUNG (Nummer) PROZENT
+B: PISTENBEFEUERUNG VERDECKT
+B: VERFÜGBARE LÄNGE/BREITE (Nummer) METER
+B: BELAGSSTÄRKE (Nummer) MILLIMETER
+B: LANDEFLÄCHENZUSTAND (Zustand)
+B: (ATS-Unit) BEOBACHTET (Wetterinformation)
+B: PILOT MELDET (Wetterinformation)
+
+5.5.1.7.2. Conditions on movement areas
+G: TAXIWAY (identification of taxiway)
+WET
+STANDING WATER
+SNOW REMOVED [(length and width as applicable)]
+
+G:
+G:
+G:
+G:
+G:
+G:
+G:
+G:
+G:
+G:
+G:
+
+CHEMICALLY TREATED

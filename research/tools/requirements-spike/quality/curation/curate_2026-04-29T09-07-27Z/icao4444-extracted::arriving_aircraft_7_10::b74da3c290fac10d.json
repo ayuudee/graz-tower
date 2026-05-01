@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::b74da3c290fac10d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.61,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The candidate is verbatim-supported, structurally complete, and correctly classified as a non-normative note with background_support authority. It is not redundant with the accepted sibling requirements, which cover operational landing rules rather than this cross-reference note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::b74da3c290fac10d.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::b74da3c290fac10d.json"
+  },
+  "curatedAt": "2026-04-29T09:12:55Z"
+}

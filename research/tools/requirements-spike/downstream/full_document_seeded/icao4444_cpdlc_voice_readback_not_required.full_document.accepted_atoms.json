@@ -1,0 +1,37 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.5.7.5.2.1:full-document",
+  "bundleId": "icao4444-extracted:4.5.7.5.2.1",
+  "promotionBasis": {
+    "promotionMode": "deterministic_seeded_full_document",
+    "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+    "policyId": "icao4444-downstream-policy",
+    "sourceRunManifest": "/tmp/icao4444-pipeline-widening-pre-fixture/run_manifest.json",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "review_only",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.5.7.5.2.1:cpdlc_voice_readback_not_required",
+      "claimText": "Unless specified by the appropriate ATS authority, voice readback of controller-pilot data link communications messages shall not be required.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "icao4444::numeric_clause::01439::unit"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "controller",
+        "flight crew"
+      ],
+      "requiredBehaviour": [
+        "do not require voice readback of CPDLC messages unless the appropriate ATS authority specifies otherwise"
+      ],
+      "applicability": [
+        "controller-pilot data link communications messages"
+      ],
+      "sourceSupport": [
+        "Unless specified by the appropriate ATS authority, voice readback of controller-pilot data link communications (CPDLC) messages shall not be required."
+      ]
+    }
+  ]
+}

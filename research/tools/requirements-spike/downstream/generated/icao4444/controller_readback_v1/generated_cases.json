@@ -1,0 +1,165 @@
+{
+  "profileId": "controller_readback_v1",
+  "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+  "caseCount": 3,
+  "cases": [
+    {
+      "caseId": "case-icao4444-4.5.7.5.1-route-clearance-controller-readback-v1",
+      "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+      "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+      "capabilityProfileId": "controller_readback_v1",
+      "generationMode": "deterministic_seeded_safe_case_v1",
+      "verificationMode": "property_or_family_test",
+      "targetLayer": "controller_readback",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_route_clearances"
+      ],
+      "supportedFacetIds": [
+        "route_clearances"
+      ],
+      "blockedSiblingFacetIds": [],
+      "goal": "Verify that route clearance instructions are treated as requiring pilot readback and do not transition to successful acknowledgement on silence or non-readback acknowledgement.",
+      "instructionFamilies": [
+        "ClearedTo",
+        "ProceedDirect",
+        "WhenAbleProceedDirect",
+        "ResumeOwnNavigation",
+        "RouteAsFiled",
+        "JoinAirway",
+        "RejoinSidAt",
+        "LeaveHoldProceedDirect"
+      ],
+      "expectedObservations": [
+        "The controller marks supported route-clearance instructions as requiring readback.",
+        "A correct route readback satisfies the requirement.",
+        "Silence or a generic acknowledgement without the route readback does not satisfy the requirement.",
+        "Incorrect route readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+      ],
+      "sourceUnitIds": [
+        "icao4444::list_item::01433::unit"
+      ],
+      "sourceTraceability": {
+        "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+        "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+        "document": "ICAO Doc 4444",
+        "section": "4.5.7.5.1"
+      },
+      "generatorBasis": {
+        "generationMode": "deterministic_seeded_safe_case_v1",
+        "profileId": "controller_readback_v1",
+        "profileVersion": "2026-04-24-v1",
+        "policyId": "icao4444-downstream-policy",
+        "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+        "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+      }
+    },
+    {
+      "caseId": "case-icao4444-4.5.7.5.1-runway-movement-controller-readback-v1",
+      "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+      "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+      "capabilityProfileId": "controller_readback_v1",
+      "generationMode": "deterministic_seeded_safe_case_v1",
+      "verificationMode": "property_or_family_test",
+      "targetLayer": "controller_readback",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_runway_movements"
+      ],
+      "supportedFacetIds": [
+        "runway_movements"
+      ],
+      "blockedSiblingFacetIds": [],
+      "goal": "Verify that runway movement clearances and instructions are treated as requiring pilot readback and do not transition to successful acknowledgement on silence or non-readback acknowledgement.",
+      "instructionFamilies": [
+        "LineUpAndWait",
+        "ClearedToLand",
+        "ClearedForTakeoff",
+        "HoldShortOf",
+        "CrossRunway",
+        "TaxiViaRunway",
+        "BacktrackRunway"
+      ],
+      "expectedObservations": [
+        "The controller marks supported runway movement instructions as requiring readback.",
+        "A correct runway movement readback satisfies the requirement.",
+        "Silence or a generic acknowledgement without the required runway movement readback does not satisfy the requirement.",
+        "Incorrect runway movement readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+      ],
+      "sourceUnitIds": [
+        "icao4444::list_item::01434::unit"
+      ],
+      "sourceTraceability": {
+        "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+        "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+        "document": "ICAO Doc 4444",
+        "section": "4.5.7.5.1"
+      },
+      "generatorBasis": {
+        "generationMode": "deterministic_seeded_safe_case_v1",
+        "profileId": "controller_readback_v1",
+        "profileVersion": "2026-04-24-v1",
+        "policyId": "icao4444-downstream-policy",
+        "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+        "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+      }
+    },
+    {
+      "caseId": "case-icao4444-4.5.7.5.1-operational-items-supported-controller-readback-v1",
+      "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+      "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+      "capabilityProfileId": "controller_readback_v1",
+      "generationMode": "deterministic_seeded_safe_case_v1",
+      "verificationMode": "property_or_family_test",
+      "targetLayer": "controller_readback",
+      "sourceAtomIds": [
+        "icao4444:4.5.7.5.1:item_runway_altimeter_ssr_levels"
+      ],
+      "supportedFacetIds": [
+        "altimeter_settings",
+        "ssr_codes",
+        "level_instructions",
+        "heading_instructions",
+        "speed_instructions"
+      ],
+      "blockedSiblingFacetIds": [
+        "runway_in_use",
+        "transition_levels"
+      ],
+      "goal": "Verify that the supported operational-item subfamily is treated as requiring pilot readback and does not transition to successful acknowledgement on silence or non-readback acknowledgement.",
+      "instructionFamilies": [
+        "SetPressure",
+        "SetSquawk",
+        "ClimbTo",
+        "DescendTo",
+        "MaintainLevel",
+        "FlyHeading",
+        "TurnHeading",
+        "MaintainSpeed",
+        "ReduceSpeedTo",
+        "IncreaseSpeedTo"
+      ],
+      "expectedObservations": [
+        "The controller marks supported operational-item instructions as requiring readback.",
+        "A correct supported operational-item readback satisfies the requirement.",
+        "Silence or a generic acknowledgement without the supported operational-item readback does not satisfy the requirement.",
+        "Incorrect supported operational-item readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+      ],
+      "sourceUnitIds": [
+        "icao4444::list_item::01435::unit"
+      ],
+      "sourceTraceability": {
+        "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document",
+        "sourceBundleId": "icao4444-extracted:4.5.7.5.1",
+        "document": "ICAO Doc 4444",
+        "section": "4.5.7.5.1"
+      },
+      "generatorBasis": {
+        "generationMode": "deterministic_seeded_safe_case_v1",
+        "profileId": "controller_readback_v1",
+        "profileVersion": "2026-04-24-v1",
+        "policyId": "icao4444-downstream-policy",
+        "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+        "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+      }
+    }
+  ]
+}

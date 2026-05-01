@@ -1,0 +1,173 @@
+{
+  "generator": "build_icao4444_bundles.py",
+  "sliceIds": [
+    "icao4444_readback",
+    "icao4444_transfer"
+  ],
+  "bundleCount": 3,
+  "bundles": [
+    {
+      "bundleId": "icao4444-extracted:4.5.7.5.1",
+      "sliceId": "icao4444_readback",
+      "primaryClauseId": "icao4444_readback::clause::4.5.7.5.1",
+      "sectionPath": [
+        "READBACK OF CLEARANCES",
+        "4.5.7.5.1"
+      ],
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+      "bundleKind": "clause_with_list_and_note",
+      "recommendation": "bundle_required",
+      "members": [
+        {
+          "sourceUnitId": "icao4444_readback::clause::4.5.7.5.1",
+          "role": "primary_clause",
+          "unitKind": "normative_clause",
+          "sectionPath": [
+            "READBACK OF CLEARANCES",
+            "4.5.7.5.1"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+          "text": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and\ninstructions which are transmitted by voice. The following items shall always be read back:"
+        },
+        {
+          "sourceUnitId": "icao4444_readback::list_item::4.5.7.5.1::a)",
+          "role": "subordinate_item",
+          "unitKind": "list_item",
+          "sectionPath": [
+            "READBACK OF CLEARANCES",
+            "4.5.7.5.1",
+            "a)"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3407-3408",
+          "text": "ATC route clearances;"
+        },
+        {
+          "sourceUnitId": "icao4444_readback::list_item::4.5.7.5.1::b)",
+          "role": "subordinate_item",
+          "unitKind": "list_item",
+          "sectionPath": [
+            "READBACK OF CLEARANCES",
+            "4.5.7.5.1",
+            "b)"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3411-3412",
+          "text": "clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any\nrunway; and"
+        },
+        {
+          "sourceUnitId": "icao4444_readback::list_item::4.5.7.5.1::c)",
+          "role": "subordinate_item",
+          "unitKind": "list_item",
+          "sectionPath": [
+            "READBACK OF CLEARANCES",
+            "4.5.7.5.1",
+            "c)"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3413-3416",
+          "text": "runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and, whether\nissued by the controller or contained in automatic terminal information service (ATIS) broadcasts, transition\nlevels."
+        },
+        {
+          "sourceUnitId": "icao4444_readback::note::4.5.7.5.1::3419",
+          "role": "supporting_note",
+          "unitKind": "background_explanation",
+          "sectionPath": [
+            "READBACK OF CLEARANCES",
+            "4.5.7.5.1",
+            "note"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3419-3421",
+          "text": "Note.\u2014 If the level of an aircraft is reported in relation to standard pressure 1 013.2 hPa, the words \u201cFLIGHT\nLEVEL\u201d precede the level figures. If the level of the aircraft is reported in relation to QNH/QFE, the figures are followed\nby the word \u201cMETRES\u201d or \u201cFEET\u201d, as appropriate."
+        }
+      ]
+    },
+    {
+      "bundleId": "icao4444-extracted:4.3.2.1.2",
+      "sliceId": "icao4444_transfer",
+      "primaryClauseId": "icao4444_transfer::clause::4.3.2.1.2",
+      "sectionPath": [
+        "4.3.2.1.2"
+      ],
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+      "bundleKind": "clause_with_support_note",
+      "recommendation": "standalone_with_support",
+      "members": [
+        {
+          "sourceUnitId": "icao4444_transfer::clause::4.3.2.1.2",
+          "role": "primary_clause",
+          "unitKind": "normative_clause",
+          "sectionPath": [
+            "4.3.2.1.2"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+          "text": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time\nthat clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely\nmanner."
+        },
+        {
+          "sourceUnitId": "icao4444_transfer::note::4.3.2.1.2::3107",
+          "role": "supporting_note",
+          "unitKind": "background_explanation",
+          "sectionPath": [
+            "4.3.2.1.2",
+            "note"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3107-3109",
+          "text": "Note.\u2014 Even though there is an approach control unit, control of certain flights may be transferred directly from an\nACC to an aerodrome control tower and vice versa, by prior arrangement between the units concerned for the relevant\npart of approach control service to be provided by the ACC or the aerodrome control tower, as applicable."
+        }
+      ]
+    },
+    {
+      "bundleId": "icao4444-extracted:4.3.2.1.3",
+      "sliceId": "icao4444_transfer",
+      "primaryClauseId": "icao4444_transfer::clause::4.3.2.1.3",
+      "sectionPath": [
+        "4.3.2.1.3"
+      ],
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3111",
+      "bundleKind": "clause_with_list_and_note",
+      "recommendation": "bundle_required",
+      "members": [
+        {
+          "sourceUnitId": "icao4444_transfer::clause::4.3.2.1.3",
+          "role": "primary_clause",
+          "unitKind": "normative_clause",
+          "sectionPath": [
+            "4.3.2.1.3"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3111",
+          "text": "Departing aircraft. Control of a departing aircraft shall be transferred from the unit providing aerodrome\ncontrol service to the unit providing approach control service:"
+        },
+        {
+          "sourceUnitId": "icao4444_transfer::list_item::4.3.2.1.3::a)",
+          "role": "subordinate_item",
+          "unitKind": "list_item",
+          "sectionPath": [
+            "4.3.2.1.3",
+            "a)"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3112-3117",
+          "text": "when visual meteorological conditions prevail in the vicinity of the aerodrome:\n1) prior to the time the aircraft leaves the vicinity of the aerodrome,\n2) prior to the aircraft entering instrument meteorological conditions, or\n3) when the aircraft is at a prescribed point or level,\nas specified in letters of agreement or ATS unit instructions;"
+        },
+        {
+          "sourceUnitId": "icao4444_transfer::list_item::4.3.2.1.3::b)",
+          "role": "subordinate_item",
+          "unitKind": "list_item",
+          "sectionPath": [
+            "4.3.2.1.3",
+            "b)"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3126-3129",
+          "text": "when instrument meteorological conditions prevail at the aerodrome:\n1) immediately after the aircraft is airborne, or\n2) when the aircraft is at a prescribed point or level,\nas specified in letters of agreement or local instructions."
+        },
+        {
+          "sourceUnitId": "icao4444_transfer::note::4.3.2.1.3::3130",
+          "role": "supporting_note",
+          "unitKind": "background_explanation",
+          "sectionPath": [
+            "4.3.2.1.3",
+            "note"
+          ],
+          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3130-3130",
+          "text": "Note.\u2014 See Note following 4.3.2.1.2."
+        }
+      ]
+    }
+  ]
+}

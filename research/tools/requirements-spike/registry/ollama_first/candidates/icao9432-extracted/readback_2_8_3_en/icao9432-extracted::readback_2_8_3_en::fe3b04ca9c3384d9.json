@@ -1,0 +1,104 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9",
+  "documentId": "icao9432-extracted",
+  "sectionId": "readback_2_8_3_en",
+  "familyId": "icao9432_readback_family",
+  "claimText": "An ATC route clearance is not an instruction to take off or enter an active runway.",
+  "rationale": "The ICAO Doc 9432 readback section states this distinction directly before the TAKE OFF phraseology rule.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "An air traffic control (ATC) route clearance is not an instruction to take off or enter an active\nrunway."
+  ],
+  "sourceItemIds": [
+    "2.8.3.3_route_clearance_scope"
+  ],
+  "claimSha256": "3e65a38c275fc649c069bb627363da5b5d4b131a89ee96e7431e25e465f176ee",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3903,
+    "endLine": 3950
+  },
+  "ingestionRun": {
+    "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+    "runStartedAt": "2026-04-29T22:00:00Z",
+    "caseId": "icao9432_readback_family",
+    "models": {
+      "structure": "manual_rr17_coverage_review",
+      "extraction": "manual_rr17_coverage_review",
+      "challenge": "manual_rr17_coverage_review",
+      "defense": "manual_rr17_coverage_review",
+      "bundleGate": "manual_rr17_coverage_review",
+      "judge": "manual_rr17_coverage_review"
+    },
+    "promptVersion": "manual_rr17_coverage_review",
+    "promptVersionSha": "manual_rr17_coverage_review",
+    "originalCandidateId": "manual_rr17_route_clearance_not_takeoff_or_runway_entry"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_add_accept",
+      "reasoning": "Adds a missed source-supported route-clearance scope rule that is distinct from the already accepted TAKE OFF word-use rule.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T22:00:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T22:00:00Z",
+    "promotedFrom": "manual RR-17 coverage ledger repair",
+    "curatedAt": "2026-04-29T22:00:00Z"
+  }
+}

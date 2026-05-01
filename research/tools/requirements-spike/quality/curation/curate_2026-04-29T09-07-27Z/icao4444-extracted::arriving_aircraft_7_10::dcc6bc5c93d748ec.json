@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::dcc6bc5c93d748ec",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.26,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the schema and authority/modality audits pass, and the candidate is a standalone source-grounded note classified as note/background_support. It is not redundant with accepted siblings, and an analogous note in the same section has already been accepted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::dcc6bc5c93d748ec.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::dcc6bc5c93d748ec.json"
+  },
+  "curatedAt": "2026-04-29T09:13:07Z"
+}

@@ -1,0 +1,107 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.5.7.5.1",
+  "bundleId": "icao4444-extracted:4.5.7.5.1",
+  "promotionBasis": {
+    "judgementCsv": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/bundle_atom_judgements_2026-04-23.csv",
+    "selectedModel": "qwen2.5-coder:32b",
+    "sourceTrial": "/tmp/requirements-bundle-atom-run/qwen2.5-coder__32b__4.5.7.5.1.json",
+    "promotionMode": "accepted_with_editorial_fixup"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "deterministic_test",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.5.7.5.1:voice_readback_core",
+      "claimText": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and instructions which are transmitted by voice.",
+      "requirementKind": "rule",
+      "sourceUnitIds": [
+        "icao4444_readback::clause::4.5.7.5.1"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "flight crew"
+      ],
+      "requiredBehaviour": [
+        "read back to the air traffic controller safety-related parts of ATC clearances and instructions transmitted by voice"
+      ],
+      "applicability": [
+        "ATC clearances and instructions transmitted by voice"
+      ],
+      "sourceSupport": [
+        "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and instructions which are transmitted by voice."
+      ]
+    },
+    {
+      "atomId": "icao4444:4.5.7.5.1:item_route_clearances",
+      "claimText": "The flight crew shall read back ATC route clearances.",
+      "requirementKind": "rule",
+      "sourceUnitIds": [
+        "icao4444_readback::list_item::4.5.7.5.1::a)"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444_readback::clause::4.5.7.5.1"
+      ],
+      "actors": [
+        "flight crew"
+      ],
+      "requiredBehaviour": [
+        "read back ATC route clearances"
+      ],
+      "applicability": [
+        "when ATC route clearances are transmitted by voice"
+      ],
+      "sourceSupport": [
+        "The following items shall always be read back:",
+        "ATC route clearances;"
+      ]
+    },
+    {
+      "atomId": "icao4444:4.5.7.5.1:item_runway_movements",
+      "claimText": "The flight crew shall read back clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any runway.",
+      "requirementKind": "rule",
+      "sourceUnitIds": [
+        "icao4444_readback::list_item::4.5.7.5.1::b)"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444_readback::clause::4.5.7.5.1"
+      ],
+      "actors": [
+        "flight crew"
+      ],
+      "requiredBehaviour": [
+        "read back clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any runway"
+      ],
+      "applicability": [
+        "when runway movement clearances or instructions are transmitted by voice"
+      ],
+      "sourceSupport": [
+        "The following items shall always be read back:",
+        "clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any runway; and"
+      ]
+    },
+    {
+      "atomId": "icao4444:4.5.7.5.1:item_runway_altimeter_ssr_levels",
+      "claimText": "The flight crew shall read back runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and transition levels.",
+      "requirementKind": "rule",
+      "sourceUnitIds": [
+        "icao4444_readback::list_item::4.5.7.5.1::c)"
+      ],
+      "dependsOnSourceUnitIds": [
+        "icao4444_readback::clause::4.5.7.5.1"
+      ],
+      "actors": [
+        "flight crew"
+      ],
+      "requiredBehaviour": [
+        "read back runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and transition levels"
+      ],
+      "applicability": [
+        "when the listed operational items are transmitted by voice or contained in ATIS broadcasts as specified by the clause"
+      ],
+      "sourceSupport": [
+        "The following items shall always be read back:",
+        "runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and, whether issued by the controller or contained in automatic terminal information service (ATIS) broadcasts, transition levels."
+      ]
+    }
+  ]
+}

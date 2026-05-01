@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::readback_4_5_7_5::5683bc5995947c9f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "readback_4_5_7_5",
+  "familyId": "icao4444_readback_family",
+  "claimText": "If the level of an aircraft is reported in relation to standard pressure 1 013.2 hPa, the words \u201cFLIGHT LEVEL\u201d precede the level figures. If the level of the aircraft is reported in relation to QNH/QFE, the figures are followed by the word \u201cMETRES\u201d or \u201cFEET\u201d, as appropriate.",
+  "rationale": "Note providing phraseology conventions for level reporting, classified as advisory.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Note.\u2014 If the level of an aircraft is reported in relation to standard pressure 1 013.2 hPa, the words \u201cFLIGHT LEVEL\u201d precede the level figures. If the level of the aircraft is reported in relation to QNH/QFE, the figures are followed by the word \u201cMETRES\u201d or \u201cFEET\u201d, as appropriate."
+  ],
+  "sourceItemIds": [
+    "note_4.5.7.5.1"
+  ],
+  "claimSha256": "7b3060b1f7a7754b66b6099380d7c4c74208eb9e9172d047dfa91e1a64f42fc5",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3401,
+    "endLine": 3429
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "guidance_level_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The source quote is verbatim, the schema and authority/modality audits pass, and the candidate correctly treats the material as a non-normative Note with operational-guidance authority. It is not redundant with the accepted sibling requirements because it covers separate level-reporting phraseology conventions.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:14:52Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/readback_4_5_7_5/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:14:52Z"
+  }
+}

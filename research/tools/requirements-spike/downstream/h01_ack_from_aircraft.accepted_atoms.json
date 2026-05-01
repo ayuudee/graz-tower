@@ -1,0 +1,40 @@
+{
+  "promotionId": "accepted-atoms:h01:ack_from_aircraft",
+  "sourceUnitId": "h01_readback::lettered::a",
+  "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/h01-extracted.txt:4206-4208",
+  "documentId": "h01-extracted",
+  "sectionPath": [
+    "a)"
+  ],
+  "promotionBasis": {
+    "judgementCsv": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv",
+    "selectedModel": "qwen2.5-coder:32b",
+    "sourceTrial": "/tmp/requirements-benchmark-run-2026-04-23/results/qwen2.5-coder__32b/h01_ack_from_aircraft.json",
+    "promotionMode": "accepted"
+  },
+  "authorityClass": "operational_guidance",
+  "verificationMode": "deterministic_test",
+  "atoms": [
+    {
+      "atomId": "h01:ack_from_aircraft:include_callsign",
+      "claimText": "When transmitted by an aircraft, the acknowledgement of receipt of a message shall comprise the call sign of that aircraft.",
+      "requirementKind": "workflow_constraint",
+      "sourceUnitIds": [
+        "h01_readback::lettered::a"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "aircraft"
+      ],
+      "requiredBehaviour": [
+        "include the aircraft call sign in the acknowledgement of receipt of a message"
+      ],
+      "applicability": [
+        "when an acknowledgement of receipt is transmitted by an aircraft"
+      ],
+      "sourceSupport": [
+        "When transmitted by an aircraft, the acknowledgement of receipt of a message shall comprise the call sign of that aircraft."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atc_service_8005",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.28,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim accurately reflects the permissive exception in SERA.8005(b). Because the source uses \u201cmay,\u201d the modality is correct, but under the authority floor table a may-statement cannot remain classified as authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atc_service_8005/sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff.json",
+    "toPath": "candidates/sera-923-2012-extracted/atc_service_8005/sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    }
+  },
+  "curatedAt": "2026-04-29T09:24:45Z"
+}

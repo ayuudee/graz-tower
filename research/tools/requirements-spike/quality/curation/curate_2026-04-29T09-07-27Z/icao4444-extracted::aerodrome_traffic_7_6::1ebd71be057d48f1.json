@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::1ebd71be057d48f1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_7_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.83,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim source says \u201cTake-off clearance is issued here\u201d within a descriptive list of positions where aircraft normally receive clearances; it does not support the claimText\u2019s mandatory \u201cshall be issued\u201d wording. Because claimText is an identity field and would need re-extraction to remove the unsupported shall-strength obligation, this cannot be fixed by corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_7_6/icao4444-extracted::aerodrome_traffic_7_6::1ebd71be057d48f1.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_traffic_7_6/icao4444-extracted::aerodrome_traffic_7_6::1ebd71be057d48f1.json"
+  },
+  "curatedAt": "2026-04-29T09:10:33Z"
+}

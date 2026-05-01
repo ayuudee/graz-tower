@@ -1,0 +1,15 @@
+{
+  "documentId": "slovenia-vfr-extracted",
+  "documentTitle": "Slovenia VFR Phraseology Guide",
+  "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+  "defaultAuthorityCeiling": "best_practice",
+  "sections": [
+    {
+      "sectionId": "readback",
+      "familyId": "slovenia_vfr_readback_family",
+      "startLine": 524,
+      "endLine": 565,
+      "notes": "Read-back / Items / Wilco / Acknowledgement-by-call-sign / Transmitting-technique sub-sections. Best-practice prose with bullet list of items requiring readback, mostly mirroring CAP 413 / EGAST shape."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "documentId": "safetysense22-extracted",
+  "sectionId": "readbacks",
+  "familyId": "safetysense22_readback_family",
+  "sourcePath": "research/txt/safetysense22-extracted.txt",
+  "sourceSha256": "6043feda926c11b3b2ba0ec50be9987ce8fc38d4bcac6e65a58f885c464aa741",
+  "startLine": 485,
+  "endLine": 552,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

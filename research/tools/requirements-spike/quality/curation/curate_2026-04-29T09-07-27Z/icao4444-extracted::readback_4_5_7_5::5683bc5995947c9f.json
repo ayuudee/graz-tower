@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::readback_4_5_7_5::5683bc5995947c9f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "readback_4_5_7_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.43,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The source quote is verbatim, the schema and authority/modality audits pass, and the candidate correctly treats the material as a non-normative Note with operational-guidance authority. It is not redundant with the accepted sibling requirements because it covers separate level-reporting phraseology conventions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/readback_4_5_7_5/icao4444-extracted::readback_4_5_7_5::5683bc5995947c9f.json",
+    "toPath": "candidates/icao4444-extracted/readback_4_5_7_5/icao4444-extracted::readback_4_5_7_5::5683bc5995947c9f.json"
+  },
+  "curatedAt": "2026-04-29T09:14:52Z"
+}

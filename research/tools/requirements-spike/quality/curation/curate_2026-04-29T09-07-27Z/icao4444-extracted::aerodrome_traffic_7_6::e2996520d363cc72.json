@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::e2996520d363cc72",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_7_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.95,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exact quote is present, but it states descriptively that clearance to taxi to apron \u201cis issued here\u201d and does not support the claim\u2019s mandatory \u201cshall be issued\u201d wording. Because the unsupported obligation is embedded in the immutable claimText, this cannot be fixed by metadata corrections alone.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_7_6/icao4444-extracted::aerodrome_traffic_7_6::e2996520d363cc72.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_traffic_7_6/icao4444-extracted::aerodrome_traffic_7_6::e2996520d363cc72.json"
+  },
+  "curatedAt": "2026-04-29T09:11:07Z"
+}

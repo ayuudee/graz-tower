@@ -1,0 +1,36 @@
+{
+  "promotionId": "accepted-atoms:icao4444:4.5.7.5.1.1:full-document",
+  "bundleId": "icao4444-extracted:4.5.7.5.1.1",
+  "promotionBasis": {
+    "promotionMode": "deterministic_seeded_full_document",
+    "seedBaselineId": "icao4444-downstream-baseline:98207a644ef4",
+    "policyId": "icao4444-downstream-policy",
+    "sourceRunManifest": "/tmp/icao4444-pipeline-widening-pre-fixture/run_manifest.json",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3"
+  },
+  "authorityClass": "authoritative_requirement",
+  "verificationMode": "property_or_family_test",
+  "atoms": [
+    {
+      "atomId": "icao4444:4.5.7.5.1.1:other_clearances_acknowledgement",
+      "claimText": "Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner that clearly indicates that they have been understood and will be complied with.",
+      "requirementKind": "rule",
+      "sourceUnitIds": [
+        "icao4444::numeric_clause::01437::unit"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "flight crew"
+      ],
+      "requiredBehaviour": [
+        "read back or acknowledge other clearances or instructions in a way that clearly indicates understanding and compliance"
+      ],
+      "applicability": [
+        "other clearances or instructions transmitted by voice, including conditional clearances"
+      ],
+      "sourceSupport": [
+        "Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with."
+      ]
+    }
+  ]
+}

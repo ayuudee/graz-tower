@@ -1,0 +1,115 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::2670284e94e0eeb0",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "familyId": "icao4444_transfer_family",
+  "claimText": "Control of an arriving aircraft shall be transferred from the unit providing approach control service to the unit providing aerodrome control service when the aircraft is at a prescribed point or level, as specified in letters of agreement or ATS unit instructions.",
+  "rationale": "Mandatory transfer condition for arriving aircraft at a prescribed point or level.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Control of an arriving aircraft shall be transferred from the unit providing approach control service to the unit providing aerodrome control service when the aircraft: b) is at a prescribed point or level... as specified in letters of agreement or ATS unit instructions."
+  ],
+  "sourceItemIds": [
+    "4.3.2.1.1",
+    "4.3.2.1.1_b",
+    "4.3.2.1.1_cond"
+  ],
+  "claimSha256": "7734820802fb7fee62483aad98cf5befb31a9b5252b969a7fc28af92c0001666",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3086,
+    "endLine": 3131
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao4444_transfer_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "transfer_arrival_point_level",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Control of an arriving aircraft shall be transferred from the unit providing approach control service to the unit providing aerodrome control service when the aircraft: b) is at a prescribed point or level... as specified in letters of agreement or ATS unit instructions.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The underlying requirement is supported by the source, but the supplied exactSourceQuote is not verbatim: it merges separated text and uses an ellipsis not present in the source. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim failure requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:18:52Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao4444-extracted/transfer_4_3_2_1/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:18:52Z"
+  }
+}

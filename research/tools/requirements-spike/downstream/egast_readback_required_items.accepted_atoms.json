@@ -1,0 +1,107 @@
+{
+  "promotionId": "accepted-atoms:egast:readback_required_items",
+  "sourceUnitId": "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:",
+  "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/egast-vfr-extracted.txt:539-545",
+  "documentId": "egast-vfr-extracted",
+  "sectionPath": [
+    "Messages containing the following must be read back:"
+  ],
+  "promotionBasis": {
+    "judgementCsv": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv",
+    "selectedModel": "qwen2.5-coder:32b",
+    "sourceTrial": "/tmp/requirements-benchmark-run-2026-04-23/results/qwen2.5-coder__32b/egast_readback_required_items.json",
+    "promotionMode": "accepted"
+  },
+  "authorityClass": "best_practice",
+  "verificationMode": "exploratory_probe",
+  "atoms": [
+    {
+      "atomId": "egast:readback_required_items:runway_clearances",
+      "claimText": "Messages containing clearances or instructions to enter, land on, take-off from, hold short of, cross or backtrack any runway should be treated as read-back-sensitive.",
+      "requirementKind": "best_practice",
+      "sourceUnitIds": [
+        "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "pilot"
+      ],
+      "requiredBehaviour": [
+        "read back runway-related clearances and instructions"
+      ],
+      "applicability": [
+        "during air traffic control communications involving runway-related clearances or instructions"
+      ],
+      "sourceSupport": [
+        "Messages containing the following must be read back:",
+        "Clearances/instructions to enter, land on, take-off from, hold short of, cross or backtrack any runway"
+      ]
+    },
+    {
+      "atomId": "egast:readback_required_items:runway_in_use",
+      "claimText": "Messages containing the runway in use should be treated as read-back-sensitive.",
+      "requirementKind": "best_practice",
+      "sourceUnitIds": [
+        "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "pilot"
+      ],
+      "requiredBehaviour": [
+        "read back messages containing the runway in use"
+      ],
+      "applicability": [
+        "during air traffic control communications containing the runway in use"
+      ],
+      "sourceSupport": [
+        "Messages containing the following must be read back:",
+        "Runway in use"
+      ]
+    },
+    {
+      "atomId": "egast:readback_required_items:altimeter",
+      "claimText": "Messages containing altimeter settings should be treated as read-back-sensitive.",
+      "requirementKind": "best_practice",
+      "sourceUnitIds": [
+        "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "pilot"
+      ],
+      "requiredBehaviour": [
+        "read back messages containing altimeter settings"
+      ],
+      "applicability": [
+        "during air traffic control communications containing altimeter settings"
+      ],
+      "sourceSupport": [
+        "Messages containing the following must be read back:",
+        "Altimeter settings"
+      ]
+    },
+    {
+      "atomId": "egast:readback_required_items:ssr_codes",
+      "claimText": "Messages containing SSR codes should be treated as read-back-sensitive.",
+      "requirementKind": "best_practice",
+      "sourceUnitIds": [
+        "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:"
+      ],
+      "dependsOnSourceUnitIds": [],
+      "actors": [
+        "pilot"
+      ],
+      "requiredBehaviour": [
+        "read back messages containing SSR codes"
+      ],
+      "applicability": [
+        "during air traffic control communications containing SSR codes"
+      ],
+      "sourceSupport": [
+        "Messages containing the following must be read back:",
+        "SSR codes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::corrections_3_8_3::16272622eb9270ac",
+  "documentId": "h01-extracted",
+  "sectionId": "corrections_3_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact source quote is present and uses 'should', supporting the candidate's advisory operational-guidance framing. The item is atomic and not redundant with the accepted sibling candidates, which cover separate shall-strength correction/repetition phrases.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/corrections_3_8_3/h01-extracted::corrections_3_8_3::16272622eb9270ac.json",
+    "toPath": "candidates/h01-extracted/corrections_3_8_3/h01-extracted::corrections_3_8_3::16272622eb9270ac.json"
+  },
+  "curatedAt": "2026-04-29T09:10:12Z"
+}

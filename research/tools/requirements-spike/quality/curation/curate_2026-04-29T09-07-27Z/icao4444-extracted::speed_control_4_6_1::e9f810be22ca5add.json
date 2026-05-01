@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_4_6_1::e9f810be22ca5add",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_4_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 34.13,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is a standalone non-normative cross-reference note, not an unsupported or redundant umbrella item. Its modality and authority class are already appropriate, but the requirement kind should not be treated as a definition.",
+    "corrections": {
+      "requirementKind": "cross_reference"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::e9f810be22ca5add.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_4_6_1/icao4444-extracted::speed_control_4_6_1::e9f810be22ca5add.json",
+    "correctionsApplied": {
+      "requirementKind": "cross_reference"
+    }
+  },
+  "curatedAt": "2026-04-29T09:18:12Z"
+}

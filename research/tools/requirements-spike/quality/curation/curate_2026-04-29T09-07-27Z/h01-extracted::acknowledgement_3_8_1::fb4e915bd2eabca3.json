@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.33,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quotes are present and the parent clause supplies the mandatory 'shall always be read back' modality for the cited list item. This is an atomic list item not already covered by the accepted siblings, which cover items 1, 2, and 4, so rejection as a redundant umbrella is not appropriate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3.json",
+    "toPath": "candidates/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3.json"
+  },
+  "curatedAt": "2026-04-29T09:10:03Z"
+}

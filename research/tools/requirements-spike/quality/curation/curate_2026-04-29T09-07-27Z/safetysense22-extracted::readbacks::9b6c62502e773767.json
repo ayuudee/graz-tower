@@ -1,0 +1,20 @@
+{
+  "canonicalId": "safetysense22-extracted::readbacks::9b6c62502e773767",
+  "documentId": "safetysense22-extracted",
+  "sectionId": "readbacks",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.66,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted parent clause is verbatim and the modality/authority pairing is acceptable, but it is an umbrella clause whose operative scope is fully defined by the 15 listed items. Those atomic readback items are already accepted as siblings, so retaining the parent clause would be redundant and structurally incomplete on its own.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/safetysense22-extracted/readbacks/safetysense22-extracted::readbacks::9b6c62502e773767.json",
+    "toPath": "rejected/safetysense22-extracted/readbacks/safetysense22-extracted::readbacks::9b6c62502e773767.json"
+  },
+  "curatedAt": "2026-04-29T09:24:39Z"
+}

@@ -1,0 +1,33 @@
+{
+  "policyId": "icao4444-downstream-policy",
+  "policyVersion": "2026-04-24-v2",
+  "sourceDocumentId": "icao4444-extracted",
+  "eligibleBundleRecommendations": [
+    "bundle_required",
+    "standalone_with_support",
+    "standalone"
+  ],
+  "disallowedBundleKinds": [
+    "manual_review_required"
+  ],
+  "disallowedDescendantBlockKinds": [
+    "label_stub",
+    "table_fragment",
+    "separator_line"
+  ],
+  "explicitlyAllowedPrimaryLabels": [
+    "4.3.2.1.1",
+    "4.3.2.1.2",
+    "4.3.2.1.3",
+    "4.5.7.5.1",
+    "4.5.7.5.1.1",
+    "4.5.7.5.2",
+    "4.5.7.5.2.1"
+  ],
+  "notes": [
+    "Bundles with unresolved structural descendants are blocked by default.",
+    "Bundles explicitly marked manual_review_required do not enter the baseline consumer.",
+    "The tranche-exit labels are explicitly allowed as the first production baseline.",
+    "table_fragment and label_stub regions remain reviewable structure, not promotion-ready semantic content."
+  ]
+}

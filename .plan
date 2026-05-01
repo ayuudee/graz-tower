@@ -1,0 +1,895 @@
+# Project Plan — Known Issues and Deferred Work
+
+This file is the canonical backlog. It is maintained by both human and AI contributors.
+
+**Maintenance rules:**
+- On every commit, check whether any item here was resolved and mark it `DONE`.
+- When work is deferred mid-session (design decision, review finding, or scope split), add it here before closing.
+- When a new issue is discovered (review, test failure, audit), add it here.
+- Items marked `DONE` are kept for one week for traceability, then removed.
+- Grade: **Impact** H/M/L × **Effort** H/M/L.
+
+---
+
+## Active items
+
+### Research review findings (2026-04-30)
+
+**RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)
+`CertifiedAtc.lean` now imports `ObservationReconciliation` after adding the
+missing `Std` import, so the reconciliation proof is root-gated. The older
+non-world-backed route-adjacent Phase B files remain tracked historical context
+because their proof shape no longer builds against the current world-backed
+semantics; docs and module comments now say that explicitly.
+Impact: H | Effort: M
+
+**RRD-2 - TLA+ status claim has no checked artifacts** - DONE (2026-04-30)
+`docs/design/clearance-model-design.md` no longer claims current TLA+
+verification for `ClearanceLifecycle.tla` and `ClearanceActivation.tla`. It now
+states that those files are unavailable historical references and that the
+invariants remain design requirements until restored as checked TLA+ or Lean
+artifacts.
+Impact: M | Effort: L
+
+**RRD-3 - Research gates are not reproducible from documented shell** - DONE (2026-04-30)
+`flake.nix` / `flake.lock` now pin nixpkgs for the repo development shell and
+the `.#r1` research-tool shell. The root shell includes Elan, Python 3, and
+Node 22, and the FM / reviewer docs now use `nix --extra-experimental-features 'nix-command flakes' develop path:. -c ...` instead of
+ad hoc `nix-shell -p ...` commands. `default.nix` and
+`research/tools/r1/default.nix` also use the same pinned nixpkgs fallback for
+legacy callers, but the documented reproducible path is the flake shell.
+Impact: M | Effort: M
+
+**RRD-4 - Requirements quote audit lacks durable input artifact** - DONE (2026-04-30)
+`audit_quotes.py` now supports `--registry-root` and audits promoted accepted
+candidate records directly from `registry/ollama_first`, using each record's
+`provenance.sourcePath`. The runbook now includes this registry-root audit in
+the normal audit flow. Verified against the current registry: 342 quotes,
+0 misses.
+Impact: M | Effort: M
+
+**RRD-5 - Requirements scope counts need reconciliation** - DONE (2026-04-30; refreshed 2026-05-01)
+Current scope docs now distinguish the 30 landed/promoted registry windows
+from the 46 live `documents/*.json` manifest sections. The 16 remaining
+clearance/communications manifest-only additions are explicitly not accepted
+coverage until they pass ingest, promote, curate, audit, snapshot, and
+adequacy review. The source-section ledger wording now explains why it has
+46 exact manifest-section rows while the RR-17 adequacy evidence remains
+limited to the older landed 22-window frame.
+Impact: M | Effort: L
+
+**RRD-6 - Adjacent research tooling is local-only, not repo-reproducible** - DONE (2026-04-30)
+`research/tools/README.md` now declares `r1` and `atc-reviewer-spike` as
+repo-reproducible research-tool surfaces, with source/config intended for
+tracking and generated/vendor/local output kept local. `r1` already ignored
+`dist/`, `node_modules/`, and local workspaces; its README now uses the
+reproducible `.#r1` flake shell and `npm ci`. `atc-reviewer-spike` now ignores
+`runs/`, Python caches, and `.env`, and its README states the same boundary.
+Impact: M | Effort: M
+
+### High impact, low-medium effort — do soon
+
+**B3 — Emergency readback atoms missing** — DONE (2026-04-22)
+`StopImmediatelyReadback`, `TakeoffImmediatelyOrVacateReadback(runway)`,
+`TakeoffImmediatelyOrHoldShortReadback(runway)` added to `PilotTransmission.kt`;
+`AtomKind` entries and `kind()` cases added; 3 `error(...)` stubs replaced in
+`requiredReadbackAtoms`.
+Impact: H | Effort: M
+
+**B1 — `ARR-TURN-BASE` fires from base leg** — DONE (2026-04-22)
+Guard narrowed to `OnCircuitLeg(DOWNWIND)` only in `TowerArrival.kt`.
+Impact: H | Effort: L
+
+**A1 — `error()` for missing waypoint in WorldIndex** — DONE (2026-04-23)
+`PilotAgent.decide()` returns `Either<RoutingError, PilotIntent>`; all 3 `error()` calls in
+`onTaxiing`, `onAirborneLeg`, `onVacating` replaced with `WaypointNotInIndex(point).left()`.
+`UnifiedPilotDecision.routingError` surfaces the defect to callers; aircraft frozen on error.
+Tests added in `PilotRoutePlannerTest`.
+Impact: H | Effort: M
+
+**B5 — No distance gate on landing clearance** — DONE (2026-04-22)
+`WithinDistanceOfThreshold(5000.0)` added to `LandingConditions`; `buildWorldIndex()` now
+populates `thresholdByRunway` via `deriveThresholdByRunway()`.
+Impact: H | Effort: L
+
+**A6 — Visual transit routed through runway departure end** — DONE (2026-04-23)
+`Depart` and `Transit` now dispatch separately in `buildVisualModeRoute`. Transit uses the
+departure route as an approximation; FLY_DEPARTURE step completion is not changed (correct —
+transit ends at zone exit, not at rotation). Comment documents the deferred zone-exit detection.
+Impact: H | Effort: M
+
+---
+
+### High impact, medium effort — next batch
+
+**A12 — Arrival join hardcoded to DOWNWIND** — DONE (2026-04-23)
+`PilotMission.joinLeg: Option<LegName>` stores the join leg from `JoinCircuit`.
+`processInstruction(JoinCircuit)` maps `JoinType → LegName` via `toCircuitLeg()` (exhaustive).
+`planRouteIfNeeded` dispatches to `buildVisualModeRoute` with `mission.joinLeg` for Visual mode.
+Tests: `JoinCircuit stores joinLeg`, `JoinType.toCircuitLeg() exhaustive mapping`, join-leg route
+start-point assertions in `PilotRoutePlannerTest`.
+Impact: H | Effort: M
+
+**A10 — ATC-instructed go-around not integration-tested** — DONE (2026-04-23)
+Also fixed: `goAroundTask()` had `AWAITING_ATC_INSTRUCTION` (INSTRUCTION_GATED) which permanently
+blocked the pilot after ATC-instructed go-around. VFR go-arounds are autonomous — removed that step.
+`checkSelfInitiatedGoAround` simplified to use `goAroundTask()` directly (was duplicating it).
+Test: `ATC-instructed go-around resets clearance and pilot eventually lands` — mission state
+assertions (hasClearance reset, tree shape, no AWAITING_ATC_INSTRUCTION) + integration.
+Impact: H | Effort: M
+
+**C1 — `ReadbackCorrection` loses `AtomDefect` list** — DONE (2026-04-22)
+`AtomDefect` moved to `protocol/PilotTransmission.kt`; `ReadbackVerdict.Incorrect.defects`
+upgraded to `NonEmptyList<AtomDefect>`; `ReadbackCorrection.kind: ReadbackCorrectionKind`
+now a derived extension; `defectsHaveWrongValue()` helper added to protocol.
+Impact: H | Effort: M
+
+**E3 — Clearance not driving `WaypointConstraints`** — DONE (2026-04-23)
+`PilotMission.altitudeRestrictionM: Double?` added; `processInstruction(StopClimbAt)` stores
+the level (via `levelToMeters`); reset to null in `resetForGoAround`. Visual-mode route planner
+now continuous: re-derives route every tick from kinematic route head + mission state. Stability
+check against `kinematicIntent.route` (not `aircraft.route`) prevents waypoint regression after
+DefaultPilot pops waypoints. Suffix suppression prevents join-point regression. Go-around
+bootstrap case (Final + FLY_DEPARTURE → `buildGoAroundRoute`) fixed. E3 test in `ArrivalRoutingTest`.
+Impact: H | Effort: M
+
+**D1 — Condition-space permutation tests departure-only** — DONE (2026-04-23)
+`ArrivalConditionSpaceTest` added: 19 tests, 208 combinations across all 5 non-Complete arrival
+stages (AwaitDownwind, AwaitApproach, LandingClearanceIssued, AwaitLandedObserved, AwaitVacating).
+Structural properties: SAFETY priority, no ambiguous overlap, no blind spots, no action failures,
+full coverage. Go-around interrupts (GA-PRE-CLEAR, GA-POST-CLEAR) verified. Ground reconciliation
+already covered by GroundReconciliationTest.kt (134 lines).
+Impact: H | Effort: M
+
+---
+
+### Medium impact, low effort — quick wins
+
+**B6 — No "report final" ATC instruction** — DONE (2026-04-22)
+`ARR-REPORT-FINAL` rule added to `TowerArrival.kt`: issues `ReportWhen(Final)` from BASE leg.
+Simple version only — stronger gating (clearance on observed final call) tracked as OR-1.
+Impact: M | Effort: L
+
+**A4 — `ContactFrequency` re-contact implicit** — DONE (pre-existing, confirmed 2026-04-22)
+`processInstruction(ContactFrequency)` correctly sets `contactedOnFrequency = false` before
+scheduling `InitialContact`. Implementation verified by code trace; already correct.
+Impact: M | Effort: L
+
+**A11 — `TaskName.TouchAndGo` dead** — DONE (2026-04-22)
+`touchAndGoCircuitTask()` now uses `TaskName.TouchAndGo`; `isCircuitLike()` predicate added
+so go-around replacement covers TouchAndGo tasks. Tests added.
+Impact: M | Effort: L
+
+**A13 — `Circuit.procedure` ID ignored in lookup** — DONE (2026-04-22)
+`CircuitLookup` sealed type (ById / ByRunway) replaces nullable param. `findRunwayAndCircuit`
+dispatches explicitly: ById for Circuit mode (procedure-authoritative, no silent fallback),
+ByRunway for Visual mode. Tests updated + ById-specific tests added.
+Impact: M | Effort: L
+
+**C2 — `AfterLandingVacateVia` can't express "when able"** — DONE (2026-04-22)
+`whenAble: Boolean = false` added to `AfterLandingVacateVia`; `classifyReadback` checks
+for `WhenAbleCondition` in the readback when `whenAble = true`.
+Impact: M | Effort: L
+
+**A5 — `derivePilotGoal` returns `DEPART` at end of arrival mission** — DONE (2026-04-22)
+Null fallback now dispatches on `mission.goal` (Arrival→ARRIVE, Departure→DEPART,
+CircuitTraining→TOUCH_AND_GO, Transit→TRANSIT). Also fixed Transit TaskName mapping (was DEPART).
+Tests cover all four null-fallback paths.
+Impact: M | Effort: L
+
+---
+
+### Medium impact, medium-high effort — architecture-dependent
+
+**D3 — Lean verification of reconciliation properties** — DONE (2026-04-24)
+`research/fm/lean/CertifiedAtc/ObservationReconciliation.lean` added (~200 lines).
+Proves 9 theorems across 4 reconciliation functions (departure, arrival, ground × 2):
+terminality (4), monotonicity (3), `dep_airborne_advances`, `arr_runway_advances`.
+All proofs closed by `cases s <;> cases p <;> decide` or `<;> simp_all [...]`.
+No Kotlin changes; sits alongside existing `CertifiedAtc` Lean work in `research/fm/lean/`.
+Impact: M | Effort: M
+
+**A9 — Manual routes in `LowgSpike` and `ArrivalVerticalTest`**
+Tests bypass the planner, creating a conformance gap. Migrate to planner-driven routes once
+IFR wiring lands.
+Impact: M | Effort: M (blocked on IFR wiring)
+
+**B7 — APP→TWR handoff at downwind (phraseologically wrong)**
+Documented in code. Correct handoff is ~8NM final or ILS intercept for IFR. Blocked on
+approach sequencing work — fixing in isolation doesn't make sense.
+Impact: M | Effort: H (blocked on APP sequencing)
+
+**F1 — Holding pattern semantics provisional**
+`HoldingPattern` is structurally minimal — no racetrack geometry, no entry procedure, no
+timing. Needed for realistic IFR holds. Blocked on geometry work.
+Impact: M | Effort: H
+
+**RR-1 — ICAO 4444 broad baseline still too wide for blind downstream use** — DONE (2026-04-25)
+The seeded set has been at 7 clauses (`4.3.2.1.1`, `4.3.2.1.2`, `4.3.2.1.3`, `4.5.7.5.1`,
+`4.5.7.5.1.1`, `4.5.7.5.2`, `4.5.7.5.2.1`) since the seeded-promotion landing — the
+"seeded trio" wording in the original RR-1 was stale. The downstream policy
+(`downstream/icao4444_downstream_policy.json`, version `2026-04-24-v2`) explicitly
+allows those seven labels and still blocks the wider mechanically-eligible baseline.
+The remaining concern was golden coverage: only 3 of the 7 seeded clauses had
+golden tranche-exit fixtures. This pass closes the gap by extending
+`export_icao4444_golden_fixtures.py` `FIXTURE_SPECS` to cover all 7 seeded labels
+(`tranche_exit_4_3_2_1_1`, `tranche_exit_4_5_7_5_1_1`, `tranche_exit_4_5_7_5_2`,
+`tranche_exit_4_5_7_5_2_1` newly added) and regenerating
+`research/tools/requirements-spike/golden/icao4444/`. The fixture manifest is now at
+10 fixtures (7 tranche exits + 3 appendix windows); `check_icao4444_golden_regression.py`
+reports `pass` on all 10. Staged-rollout policy: the deterministic lane is now frozen
+at this 7-clause baseline as a fallback per the 2026-04-24 Ollama-first pivot; further
+widening goes through the Ollama-first pipeline (RR-3..RR-8) on a per-family basis,
+not by mechanical extension of the deterministic seeded set.
+Impact: M | Effort: M
+
+**RR-2 — ICAO 4444 §4.5.7.5.1 operational-item coverage still lacks standalone transition-level / runway-in-use instructions** — DONE (2026-04-25)
+`RunwayInUseAdvisory(target, runway: RunwayId)` and
+`TransitionLevelIssuance(target, transitionLevel: Level.FlightLevel)` added to
+`protocol/Instruction.kt` as standalone `AtcInstruction` subtypes — the modelling
+gap from the LJMB-session entry is closed. Paired readback atoms
+`RunwayInUseReadback(runway)` and `TransitionLevelReadback(level)` added to
+`protocol/PilotTransmission.kt`; new `AtomKind.RunwayInUse` and `AtomKind.TransitionLevel`
+distinguish the advisories from runway clearances and assigned levels in the readback
+classifier. `requiredReadbackAtoms` in `controller/observe/Readback.kt` now emits the
+new atoms; `instructionMetadata` in `protocol/InstructionRules.kt` classifies both as
+`IMMEDIATE` / `ON_ACTIVATION` with no clearance-domain effect (informational, not a
+clearance change); `applyInstruction` in `protocol/FlightPlan.kt` returns the FPL
+unchanged for both. `ReadbackValidationTest` covers the two new instruction shapes.
+Closes the §4.5.7.5.1(c) modelling gap on the controller-side instruction model;
+the deterministic seeded-promotion lane already binds the corresponding atoms.
+Impact: M | Effort: M
+
+**RR-3 — Ollama-first transfer-family structure pass compresses nested enumerations** — DONE (2026-04-24)
+The new Ollama-first requirement pipeline works on raw `ICAO 4444` slices, but the transfer-family
+run over `4.3.2.1.1`-`4.3.2.1.3` still showed structural compression in the first pass: the model
+flattened part of the arriving-aircraft substructure, effectively losing the separate `b)` branch
+and blending nested list material into the `a)` item. Multi-attempt extraction plus reconciliation
+helped candidate stability, but this structure defect still pushed later adjudication toward
+`needs_bundle` / `needs_split`. Repeated structure attempts plus structure reconciliation now
+preserve the nested transfer hierarchy in the transfer-family run. Remaining issues are tracked
+under `RR-4`.
+Impact: M | Effort: M
+
+**RR-4 — Ollama challenger sometimes ignores source modality when disputing authority** — DONE (2026-04-25)
+Three-spike investigation in `run_icao4444_ollama_first_prototype.py`:
+- Spike 1: directional rename `wrong_authority` → `authority_too_high` / `authority_too_low`. Surfaced
+  cross-clause source contamination — the challenger pulled `should` text from §4.3.2.1.2 to argue
+  about candidates sourced from §4.3.2.1.3.
+- Spike 2: required `candidateSourceItemModalities` and `effectiveModality` fields, forcing the
+  challenger to ground modality in the candidate's own `sourceItemIds`. Eliminated contamination;
+  exposed three residual bugs (Notes-as-authoritative bias, direction inversion on advisories,
+  structural concerns mis-labelled as authority verdicts).
+- Spike 3: added Notes-as-non-normative challenger guard, verdict-direction sanity check, and a new
+  bundle-gate stage between defense and judge. Bundle gate produces a mechanical `scopeComplete`
+  per candidate; the judge now cites it directly in rationales instead of relitigating bundle/split.
+Outcome: transfer family 2 → 3 accepted on the original Spike 3 run (readback 3 → 4); cross-clause
+contamination, Notes bias, and direction inversion all eliminated and stable across reruns. The
+v4 VMC/IMC judge inconsistency is **substantially reduced but not fully eliminated** — see `RR-7`:
+a robustness rerun showed the bundle gate making asymmetric calls on parallel mutually-exclusive
+sibling clauses (VMC scope=false / IMC scope=true on identical candidate shapes), demoting one of
+the two transfer accepts to `needs_bundle`. Readback adjudication remains rock-stable across reruns.
+Surviving challenger noise (mixed-modality structural concerns labelled `authority_too_high`) was
+initially filtered by the bundle gate via the judge; closed as `RR-5`.
+Impact: M | Effort: M
+
+**RR-5 — Challenger uses `authority_too_high` for mixed-modality structural concerns** — DONE (2026-04-25)
+Spike 5 (prompt-only fix: reorder bundle gate before challenger; tell challenger to respect bundle
+gate's `scopeComplete=true`) did NOT land — the model continued to misroute structural concerns
+through authority verdicts on mixed-modality candidates regardless of prompt instruction. EGAST
+regressed (3 → 1 accepted) from unrelated judge stochasticity (now tracked under `RR-8`).
+Spike 6 fixed it deterministically: a Python post-step `apply_bundle_gate_override` examines the
+challenger's verdict alongside the bundle-gate result and the candidate's classification, and
+overrides `authority_too_high` / `authority_too_low` to `supported` only when:
+  1. bundle gate `scopeComplete=true` on the candidate's items, AND
+  2. candidate's `authorityClass` is consistent with its declared `modality`
+     (per the modality-floor mapping `_AUTHORITY_CLASS_BY_FLOOR`).
+The override declines when the candidate's authority is genuinely too high for its modality
+(e.g. `should` clause classified as `authoritative_requirement`) — preserving real challenger
+work. Audit records persist to `challenge_override/{candidateId}.json` for every fired override.
+Outcome (Spike 6 across three families): transfer 3 accepted (matches Spike 3 best); readback 4
+accepted (stable); EGAST 4 accepted — the best EGAST result yet, up from 1 in Spike 5 and 3 in
+Spike 4. 9 of 10 raw authority verdicts overridden; the 1 decline (`req_comm_transfer_timing` —
+should clause classified as authoritative_requirement) was correct: judge appropriately demoted
+to `advisory_only`.
+Impact: M | Effort: M
+
+**RR-6 — Ollama-first prototype generalises to EGAST advisory family** — DONE (2026-04-25)
+The four-stage architecture (challenger → defender → bundle gate → judge) was tested on
+`research/txt/egast-vfr-extracted.txt:539-608`, an EGAST VFR readback advisory family with
+unnumbered prose, inline page-layout noise, orphan bullet markers, and a `best_practice`
+authority ceiling instead of `authoritative_requirement`. The structure stage produced 14
+reconciled items from 70 lines of layout-noisy source; the bundle gate sensibly returned
+`scopeComplete=true` everywhere; the family ceiling held — no candidate promoted above
+`best_practice`. Final outcome: 6 candidates, 3 accepted, 3 advisory_only.
+Required mechanical adjustments: `num_predict` for extraction attempts and reconciler bumped
+from 3500 to 8000, default `num_ctx` from 12288 to 16384, to absorb the wider extraction
+output some attempts produce on advisory prose with bullet lists.
+Impact: M | Effort: M
+
+**RR-7 — Bundle gate makes asymmetric calls on parallel mutually-exclusive sibling clauses** — DONE (2026-04-25)
+Spike 7 deterministic post-step: `apply_sibling_symmetry_resolution` runs after all bundle-gate
+calls have completed for a run. It groups candidates by their direct shared parent in the
+structure (each cites a different child branch of the same parent), and if their `scopeComplete`
+verdicts disagree it forces consistency by setting all to `scopeComplete=true` (the permissive
+answer — each branch represents an independent operative scenario for its parent's rule).
+Audits persist to `bundle_gate_sibling_resolution.json`. The bundle gate stage now precedes the
+challenger and runs as a batch over all candidates so resolution can happen before the
+challenger sees scope. The override declines to fire on non-sibling candidates and on
+already-consistent groups. Spike 7 verification: same headline numbers as Spike 6 across
+readback (4), transfer (3), and EGAST (4 of 6); resolution did not fire this run because
+bundle gate happened to give scope=true on both VMC/IMC siblings, but the deterministic
+resolution will activate the moment the asymmetric pattern recurs.
+Impact: M | Effort: M
+
+**RR-8 — Judge invents over-conservative rules on best_practice content** — DONE (2026-04-25)
+Spike 7 deterministic post-step: `apply_judge_conservatism_override` runs after the judge
+returns. It overrides `decision=advisory_only` to `accepted` only when ALL of the following
+hold: (a) candidate's `promotionHint=promote`, (b) post-override challenger verdict is
+`supported` (or absent), and (c) bundle gate `scopeComplete=true`. Those three conditions
+mean there is no basis in the inputs the judge was given for downgrading; the demotion can
+only come from the judge inventing a stricter rule than its prompt actually contains.
+Audits persist to `judge_override/{candidateId}.json`. The summary now annotates
+judge-overridden rows. Spike 7 verification: EGAST `req_request_clarification` returned
+`accepted` cleanly without override firing (judge happened to follow its own rules this
+run); the deterministic guard will activate the moment the conservatism pattern recurs.
+Impact: M | Effort: M
+
+**RR-9 — Wrong-value and cross-kind tests for §4.5.7.5.1(c) standalone advisories**
+The RR-2 protocol additions (`RunwayInUseAdvisory`, `TransitionLevelIssuance`) and their
+paired atoms (`RunwayInUseReadback`, `TransitionLevelReadback`) carry their values so the
+classifier flags wrong-value mismatches, and use distinct `AtomKind` tags so cross-instruction
+satisfaction is detected. The AtomKind separation is the load-bearing safety property —
+without it, a runway-clearance readback could silently satisfy a runway-in-use advisory.
+Currently the only test coverage is the `requiredReadbackAtoms` mapping; the wrong-value
+and cross-kind paths are unverified.
+Four tests previously drafted (and lost in the controller test restructure underway in
+2026-04-27) need to be reapplied once the new test home is clear:
+- `wrong-runway readback for RunwayInUseAdvisory emits INCORRECT_ATOM`
+- `wrong-level readback for TransitionLevelIssuance emits INCORRECT_ATOM`
+- `RunwayInUseReadback does not satisfy a pending ClearedForTakeoff` (cross-kind, expects MISSING_ATOM)
+- `TransitionLevelReadback does not satisfy a pending ClimbTo` (cross-kind, expects MISSING_ATOM)
+Each ~30 lines, mirroring the `wrong-runway readback emits ReadbackCorrection(INCORRECT_ATOM)`
+and `level-change readback must match assigned level` patterns in the prior
+`ReadbackValidationTest.kt`.
+Impact: M | Effort: L
+
+**RR-10 — Persistent Ollama-first registry + machine gates + curation pass** — DONE (2026-04-29)
+Phase A–G of the source-ingestion plan landed end-to-end:
+- **Phase A** — `registry/ollama_first/` skeleton + `canonical_id.py` (content-addressed
+  `{document}::{section}::sha256[:16]`, locale-safe casefold) + `candidate_schema.py` (single-source
+  field list + `AUTHORITY_CLASS_BY_FLOOR`).
+- **Phase B** — `promote_to_registry.py` wiring G1 verbatim quote / G2 schema / G3 authority-modality
+  (re-checked unconditionally; `invariantViolated` flag) / G4 override-audit-trail / G6 parse-failure
+  recording. Cross-bucket conflicts, source-drift, and duplicate-canonicalId-within-batch all
+  surfaced as structured `conflicts` rather than silent overwrites. Re-promotion is byte-equal
+  idempotent.
+- **Phase C** — `quality/judgements.csv` outcome log (39 columns, `fcntl.flock` for concurrency)
+  + `check_ollama_first_regressions.py` (joins on `(documentId, sectionId, claimSha256)`, latest
+  per key with parsed-UTC tiebreak; matches verdict-affecting per-stage prompt SHAs only —
+  structure/extraction edits are absorbed by the join key, defense is informational).
+  Prototype emits `PROMPT_VERSION_SHA` over the source of all 8 prompt builders + per-stage SHAs.
+- **Phase D** — `audit_registry_reproducibility.py` (positive-predicate filter `looks_like_record_filename`;
+  unexpected non-canonical-shape files surface as `unexpected_file`, never silently dropped).
+- **Phase E** — full corpus ingestion: 8 documents × 22 sections → 241 candidates judged.
+  cap413 first-attempt failure (LLM omitted `rationale`) recovered on retry.
+- **Phase F** — `audit_overrides_load_bearing.py` shell for periodic override-sunset audits;
+  shared `eligible_canonical_ids_for_section` helper used by both promoter and audit so the
+  acceptance contract is single-source.
+- **Phase G** — `curate_pending_with_gpt.py` ran gpt-5.5 over the 90 pending records:
+  37 promoted, 21 promoted with modality/ceiling corrections, 29 rejected (28 in the
+  main pass + 1 from a re-curation mop-up of an OpenAI 502 transient), 3 kept pending.
+  95% high-confidence decisions. Final registry: **209 candidates, 3 pending, 29 rejected**.
+  Reproducibility audit clean across 241 records.
+- Post-cleanup (2026-04-29): RR-11/RR-12 closure resolved the three pending records,
+  added two manual split records for ICAO 4444 §4.3.2.1.1/§4.3.2.1.3, backfilled
+  curator ledger rows, and left the live registry at **212 candidates, 0 pending,
+  31 rejected** across 243 records.
+- RR-13 direct repair (2026-04-29) fixed the sampled adequacy blockers directly in the
+  structured registry output. The live registry is now **237 candidates, 0 pending,
+  16 rejected** across 253 records; 62 manual repair rows were appended to
+  `quality/judgements.csv`.
+- **`must` modality alias** added to enum after Phase E surfaced 16 SafetySense22 atomic
+  readback items mirroring the source's "must be read back" wording.
+- 104 unit tests (91 quality-gate + 13 override-contract).
+
+Known limitations carried forward:
+- Phase F tooling exists but has no automation; weekly cadence is manual per RUNBOOK.
+- The RR-13 sampled adequacy gaps have been repaired directly, but this is still a
+  same-agent repair and RR-17 follow-up rather than an external audit or a full
+  document-wide extraction beyond the declared 22-section manifest frame.
+Impact: H | Effort: H
+
+**RR-11 — 3 pending records remain after Phase G curation + mop-up** — DONE (2026-04-29)
+Manual curation run `quality/curation/manual_rr11_2026-04-29T14-37-05Z/` resolved all
+three residual records. H01 §3.8.1(c) parent was rejected as a redundant umbrella whose
+item-level obligations are already accepted. ICAO 4444 §4.3.2.1 parent was rejected as a
+non-standalone "as follows" parent and split into two accepted records for arriving and
+departing transfer branches. ICAO 4444 §4.5.7.5.2.1 CPDLC note was accepted as
+`background_support` / `review_only`, not as an executable rule. Pending count is now 0.
+Impact: L | Effort: L
+
+**RR-12 — Curator decisions don't reach `judgements.csv`** — DONE (2026-04-29)
+`curate_pending_with_gpt.py` now appends post-curation rows tagged `eventSource=curator`
+to `quality/judgements.csv`; the CSV header migrates old promoter-only ledgers in place
+under the existing file lock. The historical 2026-04-29 curation audit directories were
+backfilled into the ledger, and regression detection now treats quote-audit failures on
+rejected rows as evidence for rejection rather than current accepted-record failures.
+Verification: 91 quality-gate tests, 13 override-contract tests, reproducibility audit
+across 243 records, and baseline-vs-current regression check all pass.
+Impact: M | Effort: M
+
+**RR-13 — Independent statistical adequacy assessment for the ingested registry** — DONE (2026-04-29)
+The current registry is traceable and internally gated, but that does not prove it is a
+complete/honest translation of the source corpus. Build an independent statistical
+assessment lane: stratified sample over document, authority class, modality, lifecycle
+bucket, and high-risk source shapes; blind human review against source windows; explicit
+error taxonomy for omission, over-promotion, under-promotion, wrong modality/authority,
+bad quote support, bad split/bundle shape, and duplicate/redundant records; acceptance
+thresholds with confidence intervals. This should assess both accepted records and source
+windows with no accepted output so omissions are measurable.
+Completed as a same-agent first-pass review (not a strict external audit) in
+`quality/adequacy/adequacy_2026-04-29-rr13-80-20/`. Result: 35/48 sampled records were
+clean; 6/48 had major bad quote support, 6/48 were source-supported under-promotions due
+quote-shape defects, and 1/48 had overstated authority/modality metadata. Section review
+found 3/12 material-omission windows with 19 estimated missing actionable requirements.
+Conclusion before repair: the registry was traceable, but not yet fit as a complete
+actionable translation. The sampled blockers were then fixed directly in RR-14 to RR-16.
+Impact: H | Effort: M
+
+**RR-14 — Accepted records can have verbatim but insufficient quote support** — DONE (2026-04-29)
+G1 proves each `exactSourceQuotes[]` string appears in the source, but it does not prove
+the quote set supports the claim. RR-13 sampled accepted records where the claim inherits
+normative force or referents from a parent/list heading not present in `exactSourceQuotes`
+(examples: ICAO 4444 departing-aircraft and wake-table fragments, SafetySense22 item-level
+readbacks, SERA.8015(e) item-level readbacks, Slovenia WILCO reference). Add a support-
+sufficiency gate/review path and repair accepted records by including parent context or
+demoting claims that cannot be supported by their cited quotes.
+Direct repair added parent/list/table context to the affected accepted records and
+recomputed their canonical IDs. Accepted quote-audit failures are now 0.
+Impact: H | Effort: M
+
+**RR-15 — Source-supported facts are under-promoted after quote-shape defects** — DONE (2026-04-29)
+RR-13 found source-supported records left in `rejected/` because exact quotes had
+typographic, line-break, ellipsis, or punctuation drift and curation could not edit identity
+fields. This is honest for the malformed record but incomplete for downstream consumers
+when no corrected accepted replacement exists. Examples include ICAO 4444 departure-
+sequence factors, ICAO 4444 wake turbulence separation, SERA clearance-content item, and
+Slovenia ROGER/WILCO/readback-order guidance. Add a corrected-replacement path that keeps
+the malformed record rejected but emits a new canonical record with verbatim source quotes.
+Direct repair promoted corrected canonical replacements for the sampled source-supported
+records and added missing EGAST/Slovenia records from the reviewed source windows.
+Impact: H | Effort: M
+
+**RR-16 — Section manifests can include adjacent translation/phraseology contamination** — DONE (2026-04-29)
+RR-13 section review of `icao9432-extracted/taxi_4_4_en` found the source window is not a
+clean English §4.4 taxi slice: it includes adjacent Polish translation/pushback material,
+and accepted records from that contamination sit under the taxi section. Tighten manifest
+line ranges or split bilingual/adjacent sections so section IDs remain semantically honest.
+Direct repair rejected the three accepted Polish/pushback contamination records from the
+English ICAO 9432 taxi section. The old regression baseline now intentionally reports a
+section accepted-count drop; `judgements-2026-04-29-post-rr13-repair.csv` is the new
+baseline for RR-13/RR-16 and is superseded by the RR-17 coverage snapshot.
+Impact: M | Effort: M
+
+**RR-17 — 22-section coverage ledger, concept crosswalk, and post-repair resample** — DONE (2026-04-29)
+Post-RR-13 repair follow-up checked whether the structured registry is a full/honest
+translation of the declared ingestion frame. Six narrow source-supported gaps were repaired
+directly: corrected non-mandatory ICAO Doc 4444 §7.6.2 records for Positions 3/4/5,
+ICAO Doc 9432 §2.8.3.3 route-clearance-is-not-takeoff/runway-entry, ICAO Doc 9432
+§2.8.3.2 route-clearance-before-start-up guidance, and ICAO Doc 4444 §4.6.1.1
+speed-adjustment permission. Registry now has 243 accepted, 0 pending, 16 rejected
+records; snapshot `quality/snapshots/judgements-2026-04-29-post-rr17-coverage.csv`.
+Coverage artifacts live under
+`quality/coverage/coverage_2026-04-29-rr17-80-20/`; post-repair resample
+`quality/adequacy/adequacy_2026-04-29-rr17-post-repair-resample/` found 32/32
+sampled records correct and 0 material omissions across 8 sampled sections. Remaining
+coverage is explicitly out-of-frame or low-value: EGAST/Slovenia note-taking advice,
+ICAO Doc 9432 taxi dialogue examples, and adjacent ICAO Doc 4444 sections such as
+§7.11.7 numerical reduced-runway minima, §5.8.5 opposite-direction wake separation,
+and §7.6.3.1.2+ runway-in-use taxi/report-vacated rules.
+Impact: M | Effort: M
+
+**RR-18 — Source-document manifest shows the 22-section frame is not full-corpus ingestion** — DONE (2026-04-29)
+Built a checked source inventory under
+`research/tools/requirements-spike/quality/source_inventory/source_inventory_2026-04-29/`.
+Refreshed on 2026-05-01, the current `documents/*.json` frame is 8 document manifests
+and 46 selected line-range sections, covering 2,431 unique source-line records. That is
+2.67% of the 90,910 line records in the 8 manifested `research/txt/` extracts and 1.71%
+of all 141,767 line records across the 12 local `research/txt/` extracts. Four text extracts are not
+referenced by any requirements-spike document manifest: the CAP 413, H01, and ICAO 9432
+aerodrome excerpts, plus the Nolan textbook extract. Repo-wide PDF scan found 25 PDFs:
+9 requirements-source PDFs under `research/pdf/` and 16 chart/OFM metadata PDFs outside
+the law/phraseology ingestion scope. This is a scope finding, not a defect in the
+RR-17 quality result for the declared 22 windows; downstream consumers must not treat
+the current registry as a full-document extraction.
+Impact: H | Effort: L
+
+**RR-19 — Declared-slice scope contract and source-section disposition ledger** — DONE (2026-04-30; refreshed 2026-05-01)
+Froze the registry scope contract in
+`registry/ollama_first/DECLARED_SLICE.md` and linked that contract from the
+requirements-spike README, runbook, and registry status snapshot. As of the 2026-05-01
+refresh it declares 30 landed windows, 46 live manifest windows, 16 manifest-only windows,
+and 285 accepted / 26 pending / 16 rejected registry records. Built the
+section-level control surface under
+`quality/source_section_ledger/source_section_ledger_2026-04-30/`: 481 ledger
+rows at TOC/major-section granularity plus exact rows for the 46 current
+manifest windows. The refreshed ledger marks each row as `extracted_current`, `manifest_only`, `extract`,
+`partially_extracted`, `support_only`, `duplicate_subset`, `out_of_scope`,
+`defer_with_reason`, or `background_only`. It identifies 83 high-priority
+non-manifest `extract`/`partially_extracted` rows for future widening and keeps the three
+aerodrome excerpt files as `duplicate_subset` rather than independent ingestion
+targets.
+Impact: H | Effort: M
+
+**RR-20 — Clearance and communications contract seam widening**
+One-page plan of record:
+`docs/design/requirements-registry-clearance-comms-seam-plan-2026-04-30.md`.
+Source-window hardening artifact:
+`research/tools/requirements-spike/quality/source_window_hardening/clearance_comms_2026-04-30/clearance_comms_window_hardening.md`.
+The next source-widening batch should normalize the shared clearance/readback/
+acknowledgement/correction/communications-transfer/position-report/comms-failure
+contract before broad aerodrome/runway expansion. Scope anchors: SERA.8015,
+SERA.8020, SERA.8025, SERA.8030, SERA.8035; ICAO Doc 4444 §§4.3, 4.5, 4.11,
+4.14, and limited §§12.1-12.3 phraseology support; ICAO Doc 9432 §2.8; CAP 413
+Chapter 2; AIC A 21/23 H01 §§3.3, 3.8-3.10. Exact line-range hardening and
+language-boundary checks are complete for the first batch. The initial 16-window
+shape was revised to 24 recommended manifest additions after live ingestion of
+the combined CAP 413 §§2.54-2.67 window produced 21 candidates while the
+pipeline reviews at most 20, and the first transfer split still produced
+invalid truncated JSON. CAP 413 §§2.82-2.91 was also split into compliance
+timing, air-ground communication failure, and ground-air communication failure
+after live ingestion showed the combined window was too heavy and mixed two
+procedural topics. That CAP material is now split into smaller windows. The
+2026-04-30 v2 ingestion run is quarantined: it timed out on the old combined
+CAP 413 §§2.82-2.91 window and then SERA / ICAO Doc 4444 / ICAO Doc 9432 calls
+failed with Ollama connection timeouts. Clean v3 promotion on 2026-05-01 landed
+the highest-value subset: SERA.8015(f), SERA.8020, SERA.8025, SERA.8030, and
+SERA.8035 (30 accepted, 6 pending), plus CAP 413 §§2.82-2.91 as three split
+windows (12 accepted, 20 pending). Registry reproducibility audit passed after
+promotion. The remaining ICAO Doc 4444 / ICAO Doc 9432 / CAP 413 §§2.54-2.75
+first-batch windows are exact-manifested but not landed. The current processing
+queue lives at
+`quality/source_processing_queue/source_processing_queue_2026-05-01/`: 16 exact
+windows ready for Ollama-backed ingestion (8 CAP 413, 7 ICAO Doc 4444, 1 ICAO
+Doc 9432), 26 existing pending records requiring curation, and 83 high-priority
+non-manifest rows that need future source-window hardening. Explicit deferrals
+remain for H01 §§3.3/3.9/3.10 and ICAO Doc 4444 position-reporting
+phraseology. Next: run the 16-window batch with `ingest_section_batch.py`, promote,
+audit, then curate remaining pending records.
+Impact: H | Effort: M
+
+---
+
+### IFR wiring gaps (controller-side; LJMB geometry now landed, IFR runtime content still partial)
+
+LJMB ground/airspace geometry, fixes, circuits, and 9 of 20 SIDs are now in the runtime
+world candidate (2026-04-24). The items below are pilot/controller-side IFR state machine
+gaps, distinct from the migration-pipeline deferrals tracked under `M*` further down.
+
+**IFR-1 — `ClearedTo` from `Uncleaned` fails**
+No runway at filing time; `Uncleaned → EnRouteClearance` transition needs one.
+Needs pre-clearance runway assignment or accepting runway from a prior instruction.
+
+**IFR-2 — IFR arrival HTN has no `arrivalJoinTask()`**
+Pilot starts at `FLY_STAR` with no initial contact or inbound call.
+
+**IFR-3 — `createMission` never passes `ifr=true`**
+IFR missions cannot be constructed through that path yet.
+
+**IFR-4 — `applyFplAmendment` silently discards `AmendmentError`**
+Uses `getOrNull()` — genuine errors (FixNotOnRoute, InvalidTransition) are lost.
+
+**IFR-5 — STAR-to-approach gap**
+If last STAR waypoint ≠ first approach waypoint, a direct segment must be inserted.
+
+**IFR-6 — Altitude constraint resolution needs transition altitude awareness**
+`resolveAltitudeConstraint` must convert between QNH and STD at the transition altitude.
+
+---
+
+### Migration pipeline deferrals (LJMB and multi-aerodrome)
+
+These items are the explicit non-blockers from the LJMB migration session (2026-04-24).
+Each one is a concrete pipeline or runtime gap that limits how richly LJMB participates in
+multi-aerodrome scenarios; none of them block the integration-ready milestone for v1.
+
+**M1 — Fixless intermediate IFR legs unrepresentable in waypoint route model**
+11 of 20 LJMB SIDs (`DIML1J`, `DIML1N`, `DIML2G`, `DIML3H`, `GOLV1N`, `GOLV3H`, `MURE1N`,
+`PETO1N`, `VALU1N`, `VALU3G`, `VALU3H`) and the LJMB approach missed-approach segments
+include CIFP `VI` / `CA` legs without a fix identifier. They get filtered out in
+`bin/airport_structured_package.py` (`compiled_ifr_route_waypoints`) with the blocker
+`fixless_leg_unrepresentable_in_waypoint_route_model`. Only the leading-leg case is handled
+today (anchored to the runway threshold).
+Unlock: synthesize an intercept waypoint at the calculated heading-and-distance position
+(low-effort heuristic), or extend the route model to express vector-then-intercept legs as
+a first-class leg type (proper fix).
+Depends on: route model semantics in `core` and how the controller route-follower consumes
+unfixed legs.
+Impact: M | Effort: H
+
+**M2 — Missed-approach hold-loop compiler is hardcoded to `LOWG_GBG_MISSED_HOLD`**
+LJMB has `LJMB_MR_MISSED_HOLD` and `LJMB_ERROW_MISSED_HOLD` candidate holds in the
+structured package, but the runtime hold-loop compiler at
+`bin/airport_world_candidate.py:709` does
+`holding_candidates.get("LOWG_GBG_MISSED_HOLD")` — only LOWG's GBG hold gets a runtime
+loop. The approach projection at line 842 then requires
+`hold_id in holding_patterns` and skips every LJMB approach whose missed approach
+references the unprojected MR/ERROW hold. Net effect: LJMB world-candidate has 0 runtime
+approaches, 0 STARs (gated on approach entry points), 0 holding patterns.
+Unlock: replace the hardcoded lookup with a loop over all `holding_candidates.byId`,
+deriving loop point IDs and path IDs from each candidate's own ID
+(`{airport_code}_IFR_HOLD_{fix}_LOOP`). Generic note text. The structured-package side is
+already airport-agnostic (refactored 2026-04-24); only the world-candidate compiler is
+left.
+Impact: H | Effort: M
+
+**M3 — Operational sector boundary geometry**
+LJMB declares `ljmb_approach_sector` (TMA Maribor 1+2) and `ljmb_tower_sector` (CTR
+Maribor) in the manifest. They land in the candidate layer with empty `boundaryPathIds`
+and are filtered out of the runtime aerodrome AIP by `_aip_without_boundaryless_sectors`
+in `bin/airport_world_candidate.py`, because the Kotlin `OperationalSector.boundary:
+AirspaceBoundary` requires at least one ring. LOWG sectors get geometry from a
+working-airspace-sector DXF file; LJMB does not have one.
+Unlock options:
+- Author an LJMB sector-only DXF (manual CAD work);
+- Add a manifest mode `boundaryFromVolumeId: "LJMB_OPENAIR_CTR_MARIBOR"` that copies the
+  named airspace volume's boundary path as the sector boundary;
+- Make `OperationalSector.boundary` nullable in `core` and move enforcement into
+  `validate()`.
+Impact: M | Effort: M (manifest mode) — H (CAD authoring)
+
+**M4 — Plate renderer plate set hardcoded to LOWG plate IDs and route refs**
+`bin/render_airport_plate.py` has a hardcoded plate list (`AD-1`, `AD-2`, `AD-6`, `PRC-1`
+through `PRC-5`, `ARR-1`, `ENR-1`) and per-plate hardcoded LOWG VFR route IDs
+(`vfr_western_corridor_path` etc.) and procedure IDs (`prc_1_arrival_graz_nord`,
+`arr_1_gleisdorf_arrival_only`). LJMB plates render but PRC-1/2/3 and ARR-1 show the
+LOWG IDs as "not projected", which is cosmetically noisy.
+Unlock: lift the plate list to a manifest field `plates[]` with `{id, title, template,
+inputs}`. Each existing renderer becomes a template that takes its inputs from manifest
+rather than from hardcoded LOWG references. LOWG manifest declares its 11 plates
+explicitly; LJMB declares only the 5–6 plates that have inputs.
+Impact: L–M (cosmetic) | Effort: H
+
+**M5 — VFR route airspace profile projection hardcoded to LOWG**
+`bin/airport_structured_package.py:1873` `lowg_vfr_route_projection` hardcodes LOWG route
+IDs and airspace volume IDs (`LO585`, `LO0EF_E`). LJMB's two VFR routes
+(`ljmb_mn_corridor_inbound`, `ljmb_mw_corridor_inbound`) get `airspaceProfile: null` and
+status `direct_geometry_airspace_profile_pending`.
+Unlock: replace with point-in-polygon over the candidate airspace volumes — for each route
+segment, the volume containing both endpoints is the segment's `IN_VOLUME`; differing
+volumes produce a `SEGMENTED` profile with `TRANSITION` markers.
+Impact: L (informational metadata) | Effort: M
+
+**M6 — Multi-aerodrome enroute fix collision is resolved first-wins**
+`WorldCandidateLoader.mergeAviationWorlds` uses first-wins for shared enroute fixes
+(GOLVA, DIMLO, MUREG, PETOV, VALLU appear in both LOWG and LJMB candidates). Each airport
+produces its own airport-prefixed `pointId` for the same logical waypoint, so the same
+`FixId("GOLVA")` has two different `Fix` entries with different point references. First-
+wins keeps LOWG's copy.
+Unlock: in `bin/airport_structured_package.py`, fixes whose X-Plane `region == "ENRT"` get
+shared point IDs (`ENRT_FIX_GOLVA`) instead of `{ICAO}_FIX_GOLVA`. Both airports then
+reference the same point, and merge becomes truly union-by-equal.
+Impact: M (multi-aerodrome scenarios that share enroute waypoints) | Effort: M
+
+**M7 — Sim runtime assumes single aerodrome**
+`LowgSpike.kt` and likely other sim test fixtures call
+`world.aerodromes.values.first()`. With a merged multi-aerodrome world, this picks one
+arbitrarily. Mixed-airport scenarios cannot be exercised yet.
+Unlock: refactor sim entry points to take an explicit `AerodromeId` (or iterate). Likely
+also need a per-aerodrome "active controller" notion in test fixtures.
+Impact: H (necessary for genuine multi-aerodrome traffic test) | Effort: M
+Depends on M2 to be useful (LJMB has very limited runtime IFR until M2 lands).
+
+**M8 — No main()/runnable launcher**
+The project is library + tests only. `WorldCandidateLoader` is a library; there is no
+runnable app that loads world-candidate.json files and starts a sim. Multi-aerodrome
+integration only happens in tests.
+Unlock: add a launcher module (`:app`) or a `main()` in `:sim` that takes a list of
+manifest paths or world-candidate paths, builds a merged `AviationWorld`, and runs the
+existing sim event loop. Lowest-friction is a `main()` in `:sim`.
+Impact: M (deferred until M2 + M7 light up the runtime first) | Effort: M
+
+**M9 — LOWG world-candidate.json forcedAssumptions/omittedFeatures text drift** — DONE (2026-04-25)
+Pre-existing drift was simply regenerated. The committed JSON now matches what
+`bin/airport_world_candidate.py` produces. No semantic regression.
+
+---
+
+### Migration deferrals fixed in 2026-04-25 session
+
+**M9 — DONE.** Regenerated; committed text now matches the pipeline.
+
+**M5 — DONE.** Replaced `lowg_vfr_route_projection` with airport-agnostic
+`project_vfr_route_airspace_profile` in `bin/airport_structured_package.py`. 2D
+point-in-polygon over the runtime-projected airspace volume subset (filtered via the new
+`runtime_projected_volume_ids` helper that mirrors `_low_level_runtime_airspace_volumes`).
+Tiebreaker for stacked volumes: tighter airspace class first (A < B < C < D < E < F < G),
+then smaller bounding-box area, then volume ID. LOWG result: 3 of 4 routes byte-identical;
+the previously-`null` `vfr_northeast_entry_path` now gains a clean SEGMENTED profile
+(GLEISDORF in LO59D_E → TRANSITION_01 → LO80C_D → TRANSITION_02 → LO585). LJMB result:
+the `ljmb_mn_corridor_inbound` route gains an `IN_VOLUME` profile in
+`LJMB_OPENAIR_TMA_MARIBOR_2`; the `ljmb_mw_corridor_inbound` stays
+`direct_geometry_airspace_profile_pending` because MW1 sits outside the worked LJMB
+airspace volumes (cross-aerodrome merge step would resolve this — left as a follow-up).
+Test `LowgWorldCandidateValidationTest.assertExpectedLowgVfrRouteProfiles` updated to
+reflect the new northeast profile.
+
+**M4 — DONE (lean Option B).** Plate renderer reads a `plates: List<String>` field from
+the manifest, falling back to `airport_plate_view_model.DEFAULT_PLATE_IDS` when absent.
+Both `render_page_maps` and `render_html_document` iterate over `data.plate_ids`. LOWG
+manifest declares its 13 plates explicitly (no behavioural change — output byte-identical
+modulo M5's route-profile improvements). LJMB manifest declares 6 plates
+(`AD-1`, `AD-2`, `AD-6`, `PRC-4`, `PRC-5`, `ENR-1`), so LOWG-flavoured placeholder pages
+no longer render for LJMB. The HTML title and footer are airport-parameterised. Per-template
+input declaration in the manifest (full M4) is deferred — current scope is plate-list
+declaration only; route/procedure ID lookup inside templates remains hardcoded but is
+inert for LJMB because LJMB doesn't declare those plate IDs.
+
+**M7 — Multi-aerodrome runtime scaffolding DONE; full LOWG↔LJMB VFR golden test deferred.**
+Surveyed the codebase: the architecture is *already* multi-aerodrome aware
+(`AviationWorld.aerodromes: Map<AerodromeId, Aerodrome>`, `ControllerSpec.aerodromeId`,
+`buildControllerView` reads aerodromeId from spec). Single-aerodrome assumptions live only
+in `LowgSpike.kt` (explicitly throwaway) and a couple of helpers that already iterate over
+all aerodromes (`Step.kt:579`, `PilotRoutePlanner.kt:539,607`). New test
+`sim/src/jvmTest/.../MultiAerodromeWorldTest.kt` proves the scaffold:
+- both rendered candidates load and merge cleanly into one `AviationWorld`;
+- two independent TOWER `ControllerSpec`s (LOWG_TWR, LJMB_TWR) coexist in one
+  `SimState`;
+- each controller's view scopes only to its own runways with no cross-leakage;
+- `controllerDecide` runs cleanly for each side;
+- shared enroute fixes (GOLVA, DIMLO, MUREG, PETOV, VALLU) remain addressable through
+  the global `FixId` namespace.
+
+The full **LOWG → LJMB → LOWG VFR round-trip** golden test is the user-stated next
+deliverable. It needs:
+- a single aircraft that takes off from LOWG, transits south via Vienna FIS (no
+  controller in between), enters TMA Maribor (contacts MARIBOR APPROACH), enters CTR
+  Maribor (contacts MARIBOR TOWER), lands at LJMB, then mirrors back;
+- pilot-driven frequency changes on airspace boundary crossings (no controller
+  coordination — controllers are independent per the user's modelling decision);
+- assertions that each controller only sees the aircraft when it is on that
+  controller's frequency;
+- the actual VFR procedure semantics extracted from Jepp 19-2 (entry corridor and
+  reporting-point sequence per direction).
+Tracked as **G1** below in the new "Golden tests" section.
+
+---
+
+### Golden tests (next major deliverables)
+
+**G0 — LOWG single-aerodrome VFR circuit-training golden** (active)
+Single AI aircraft, parked at a LOWG stand, instructed to fly one VFR circuit
+and return to the stand:
+- Spawn at `LOWG_STAND_1` with `HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true)`.
+- One TOWER controller at 118.200 (per manifest — LOWG has no discrete GROUND
+  or APPROACH; the tower handles all phases).
+- `runUntil(...)` for ~30 sim minutes.
+- Assertions: aircraft parked at the stand, altitude = 0, mission complete;
+  expected instruction sequence on the wire; no looping geometry.
+
+This is the test the LJMB-pivot replaced. The cross-aerodrome G1 below was
+abandoned after a prolonged build-out delivered no flying. G0 is the first
+test that will exercise `controllerDecide`'s 15-stage pipeline on real data.
+
+Impact: H (the first end-to-end proof) | Effort: M (single airport, single role)
+
+**G1 — Cross-aerodrome VFR round-trip LOWG ↔ LJMB** (deferred behind G0)
+Originally scoped as the next golden; abandoned along with the speculative
+cross-aerodrome production code (deletion captured in commit history). Will
+return only once G0 is solid and there is concrete evidence the round-trip
+test buys distinct coverage. Specifically: independent per-aerodrome
+controllers, pilot-driven frequency changes on airspace boundaries, FIS
+segment with no modelled controller, TMA/CTR entry corridors per Jepp 19-2.
+The `MultiAerodromeWorldTest.kt` scaffold (real LOWG + LJMB merge, two
+controllers, no flying) is retained as a thin smoke layer for if/when this
+returns.
+
+Impact: H | Effort: H
+
+---
+
+### Overnight reviewer gaps
+
+**OR-1 — Contact-frequency handoff nominal-path** — DONE (2026-04-23)
+Root cause: (1) `updateBeliefs` in `Observe.kt` pruned coordinations for aircraft that left
+`tracked`, destroying the pending CF coordination as soon as `applyContactFrequency` transferred
+alpha to tower (before the readback arrived). (2) `processReadback` in `Controller.kt` had an
+early-return guard `if (msg.aircraft !in responsibilities)` that prevented ground from confirming
+the CF readback after transfer. Fixed by: (1) keeping `current.coordinations` unchanged in
+`updateBeliefs` (gc'd separately by `gcOldCoordinations`); (2) removing the responsibilities
+guard — coordination check is the correct gate, readback routing already constrains the audience.
+Result: `handoff_reissued_while_pending` now appears in the execution report on the attack path.
+
+**OR-2 — Surface-specific semantic lint incomplete** — DONE (2026-04-24)
+Phase 0 claim-probe infrastructure built from scratch in `sim/src/.../reviewer/`:
+`ClaimProbeTypes.kt` (commonMain): `ClaimProbeDisposition`, `NominalReport`, `AttackReport`,
+`ClaimProbeExecutionReport`, `computeDisposition`.
+`SharedFrequencyClaimProbeExecutor`: pure comms-layer probe (no ControllerCycle events);
+nominal checks `controllerInbox` not empty; attack injects two overlapping pilot transmissions →
+`missing_required_ack_before_state_change` fires when inbox is empty.
+`ContactFrequencyClaimProbeExecutor`: pre-seeds `beliefs[groundId].coordinations[alphaId]` with
+ISSUED CF coordination; nominal injects matching `FrequencyReadback` in inbox + ControllerCycle
+→ coordination removed; attack: no readback → coordination stays ISSUED →
+`handoff_reissued_while_pending` fires.
+`ClaimProbeMorningReview`: aggregates both surfaces, renders Markdown report.
+5 tests across 3 test classes; both surfaces report `CANDIDATE_ISSUE`;
+morning review test asserts both detector names appear in Markdown output.
+
+**OR-3 — Phase 1 (autonomous adversarial loop) not started**
+Full exploratory adversary surface (vectors, holding, sequencing stress) not yet wired.
+
+---
+
+### Controller backlog (future scope, no imminent ETA)
+
+**CB-1** — Approach sequencing: "number N", speed control, vectoring, essential traffic
+**CB-2** — Wake turbulence separation (ICAO 4444 §5.4.2 / §5.8)
+**CB-3** — LVPs / CAT II-III procedures
+**CB-4** — Intersection departures
+**CB-5** — Runway-inspection state (inhibits takeoff/landing clearances)
+**CB-6** — IFR ground flow: startup, clearance delivery, pushback (#27)
+**CB-7** — Runway crossing authorisation during taxi (#29)
+**CB-8** — Special VFR (#30)
+**CB-9** — Departure instructions after takeoff: turn direction, VFR route (#31)
+**CB-10** — `RunwayStatusChange` coordination message (TWR→APP) for closures
+
+---
+
+### Deferred findings from Phase B review
+
+**PB-1 — `CircuitAfterGoAround` goal wrong after go-around phase** — DONE (2026-04-22)
+`derivePilotGoal` for `CircuitAfterGoAround` now recurses into the active child:
+GoAround subtask active → TOUCH_AND_GO; resumed Circuit subtask → ARRIVE.
+Previously always returned TOUCH_AND_GO, causing no vacate instruction after landing.
+
+**PB-2 — `isCircuitLike()` and `isLastActiveCircuit` filter used `||` chains** — DONE (2026-04-22)
+Both converted to exhaustive `when` expressions so new TaskName variants require a conscious decision.
+
+**PB-3 — `CircuitNotFound` error when circuit leg has empty points** — DONE (2026-04-22)
+Changed to `InsufficientGeometry` (circuit exists, geometry data is incomplete).
+
+---
+
+### Deferred findings from Phase A review
+
+**PA-1 — `OnCircuitLeg` missing `failureMessage` override** — DONE (2026-04-23)
+`override val failureMessage get() = "Aircraft is not on the ${leg.name} leg"` added to
+`OnCircuitLeg` in `Guard.kt`.
+Impact: L | Effort: L
+
+**PA-2 — Raw `Double` for distance in `WithinDistanceOfThreshold`** — DONE (2026-04-23)
+`maxMetres: Double` → `maxMetres: Meters` in `WithinDistanceOfThreshold`; `Meters` import
+added to `Guard.kt`; `MAX_LANDING_CLEARANCE_DISTANCE_M` constant replaced with
+`MAX_LANDING_CLEARANCE_DISTANCE: Meters` in `TowerArrival.kt`.
+Impact: M | Effort: L
+
+**PA-3 — `§7.10.1` citation in `WithinDistanceOfThreshold` comment is not a real sub-section** — DONE (2026-04-23)
+Citation corrected to `ICAO 4444 §7.10` in `TowerArrival.kt`.
+Impact: L | Effort: L
+
+---
+
+### Protocol / data model (parked, low urgency)
+
+**P-1** — `InitialContact.atisCode: Char?` silently nullable — enforced presence needed at
+controlled aerodromes (CAP 413 §2.3).
+**P-2** — 8.33 kHz channel spacing validation not enforced in `Frequency`.
+**P-3** — Clearance amendment concept (delta) absent; all changes are full supersession.
+**P-4** — Void times not modelled (Doc 4444 §4.5.7.5 for IFR at uncontrolled aerodromes).
+
+---
+
+### By design / accepted
+
+The following were audited and confirmed as intentional:
+
+- `applyPilotHeardInstruction` `else →` — documented opt-in; sealed on intermediate types
+- `FLY_DOWNWIND` instant completion — not vestigial; completes on physical leg
+- `SimState.aircraft: LinkedHashMap` — deterministic iteration order requirement
+- `SimRandom` uses `String.hashCode()` — Kotlin stdlib guarantees MPP-stable hash
+- Hold-short conflates arrival/constraint — deferred, needs belief-delta work first
+- Cancel-takeoff has no readback guard — intentional; safety commands bypass readback horizon
+- Airspace boundary geometry — out of current FM scope
+- `DEP-CANCEL-TAKEOFF` missing readback guard — intentional for time-critical safety command
+- DFA conformance test — already done (`DfaConformanceTest.kt`)

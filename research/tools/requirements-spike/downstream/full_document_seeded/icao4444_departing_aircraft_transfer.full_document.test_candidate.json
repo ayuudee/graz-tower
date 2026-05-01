@@ -1,0 +1,28 @@
+{
+  "testCandidateId": "tc-icao4444-4.3.2.1.3-departing-transfer-branches-full-document",
+  "verificationMode": "property_or_family_test",
+  "targetLayer": "coordination logic integration",
+  "goal": "Verify that departing-aircraft control transfer is evaluated against the correct meteorological branch and only considered compliant at one of the branch-specific permitted points or times.",
+  "scenarioFamilies": [
+    {
+      "familyId": "departing-transfer-vmc",
+      "sourceAtomId": "icao4444:4.3.2.1.3:vmc_transfer_branch"
+    },
+    {
+      "familyId": "departing-transfer-imc",
+      "sourceAtomId": "icao4444:4.3.2.1.3:imc_transfer_branch"
+    }
+  ],
+  "expectedObservations": [
+    "The VMC branch accepts transfer only at the listed visual-condition points or times.",
+    "The IMC branch accepts transfer only immediately after airborne or at a prescribed point or level.",
+    "The branch decision is explicit and traceable to the meteorological condition.",
+    "A transfer that does not satisfy the active branch is rejected or flagged as non-compliant."
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.3.2.1.3",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3130"
+  },
+  "sourcePromotionId": "accepted-atoms:icao4444:4.3.2.1.3:full-document"
+}

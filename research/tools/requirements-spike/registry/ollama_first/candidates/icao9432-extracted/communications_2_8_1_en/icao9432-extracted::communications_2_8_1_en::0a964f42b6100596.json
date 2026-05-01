@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+  "documentId": "icao9432-extracted",
+  "sectionId": "communications_2_8_1_en",
+  "familyId": "icao9432_communications_family",
+  "claimText": "If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part.",
+  "rationale": "All attempts identify the mandatory nature ('shall') of requesting repetition. While one attempt suggested 'promote', the conservative approach keeps it within the document's operational guidance ceiling.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part."
+  ],
+  "sourceItemIds": [
+    "sec_2.8.1.4_eng"
+  ],
+  "claimSha256": "62c508a6e3b676435f9a772caf48751f67e8f2857f11844cc37d07c0d3361029",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3642,
+    "endLine": 3697
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "icao9432_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_2.8.1.4_repetition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted text is verbatim-supported, schema and authority/modality gates passed, and there are no accepted sibling candidates making it redundant. The source uses 'shall', while the operational_guidance authorityClass appropriately preserves the conservative status of ICAO 9432 material without overstating it as authoritative.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T09:21:57Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+    "curatedAt": "2026-04-29T09:21:57Z"
+  }
+}

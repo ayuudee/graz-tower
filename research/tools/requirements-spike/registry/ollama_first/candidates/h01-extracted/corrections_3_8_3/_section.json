@@ -1,0 +1,11 @@
+{
+  "documentId": "h01-extracted",
+  "sectionId": "corrections_3_8_3",
+  "familyId": "h01_corrections_family",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+  "startLine": 4359,
+  "endLine": 4500,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

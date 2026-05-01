@@ -1,0 +1,19 @@
+{
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::647df1446645072b",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "model": "human-curator",
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Manual RR-11 decision: AIC A 21/23 H01 section 3.8.1(c) is a parent/umbrella statement whose operative scope depends on the immediately following always-read-back list. The accepted sibling records already capture the four item-level obligations, so retaining this broad parent as a standalone partially executable rule would overstate precision. Reject as redundant umbrella / needs-bundle material.",
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::647df1446645072b.json",
+    "toPath": "rejected/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::647df1446645072b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-04-29T14:37:05Z"
+}

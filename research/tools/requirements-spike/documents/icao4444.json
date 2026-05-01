@@ -1,0 +1,115 @@
+{
+  "documentId": "icao4444-extracted",
+  "documentTitle": "ICAO Doc 4444 PANS-ATM (Procedures for Air Navigation Services - Air Traffic Management)",
+  "sourcePath": "research/txt/icao4444-extracted.txt",
+  "defaultAuthorityCeiling": "authoritative_requirement",
+  "sections": [
+    {
+      "sectionId": "transfer_4_3_2_1",
+      "familyId": "icao4444_transfer_family",
+      "startLine": 3086,
+      "endLine": 3131,
+      "notes": "§4.3.2.1 Transfer family: arriving and departing control-transfer clauses, nested conditions, and supporting note. Parent + mutually-exclusive sibling shape (a/b)."
+    },
+    {
+      "sectionId": "control_responsibility_4_3_1",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3071,
+      "endLine": 3085,
+      "notes": "ICAO Doc 4444 §4.3.1 General: ATS authority designation of ATC unit and working-position responsibility. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "control_transfer_app_acc_sector_4_3_3_to_4_3_5",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3132,
+      "endLine": 3164,
+      "notes": "ICAO Doc 4444 §§4.3.3-4.3.5: approach/area and sector responsibility transfer rules. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "readback_4_5_7_5",
+      "familyId": "icao4444_readback_family",
+      "startLine": 3401,
+      "endLine": 3429,
+      "notes": "§4.5.7.5 Readback family: parent clause, subordinate list (a/b/c), notes, and following standalone clauses (4.5.7.5.1.1, 4.5.7.5.2, 4.5.7.5.2.1)."
+    },
+    {
+      "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3265,
+      "endLine": 3400,
+      "notes": "ICAO Doc 4444 §§4.5.1-4.5.7.4: clearance scope, purpose, timing, contents, clearance limit, route, level, and amended-clearance semantics. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "departing_aircraft_7_9",
+      "familyId": "icao4444_departing_aircraft_family",
+      "startLine": 9031,
+      "endLine": 9110,
+      "notes": "§7.9 Control of Departing Aircraft: §7.9.1 Departure sequence (with priority factors a-f), §7.9.2 Separation of departing aircraft (the 'crossed end of runway / started a turn' rule), §7.9.3.1-7.9.3.5 Take-off clearance (timing, ATC clearance prerequisite, TAKE-OFF phraseology rule, 'immediate take-off' clearance). Includes inline Note text and figure-layout artifacts."
+    },
+    {
+      "sectionId": "arriving_aircraft_7_10",
+      "familyId": "icao4444_arriving_aircraft_family",
+      "startLine": 9122,
+      "endLine": 9166,
+      "notes": "§7.10 Control of Arriving Aircraft: §7.10.1 Separation of landing aircraft (mirrors §7.9.2), §7.10.2 Clearance to land timing/runway-designator rule, §7.10.3 Landing and roll-out manoeuvres (a-d list of optional instructions, HEAVY aircraft constraint, vacate-report rule)."
+    },
+    {
+      "sectionId": "speed_control_4_6_1",
+      "familyId": "icao4444_speed_control_family",
+      "startLine": 3431,
+      "endLine": 3473,
+      "notes": "§4.6.1 General Horizontal Speed Control Instructions: §4.6.1.1-7. Speed-control issuance, persistence-on-pilot-side, holding-pattern exclusion, frequency-of-changes, comply-or-inform, Mach/IAS units convention, cancellation rule. Includes inline Notes about fuel/configuration considerations."
+    },
+    {
+      "sectionId": "wake_turbulence_5_8",
+      "familyId": "icao4444_wake_turbulence_family",
+      "startLine": 6487,
+      "endLine": 6584,
+      "notes": "§5.8.1-5.8.4 Wake turbulence longitudinal separation minima: §5.8.1 Applicability, §5.8.2 Arriving aircraft, §5.8.3 Departing aircraft (parallel/displaced/opposite-direction scenarios), §5.8.4 Displaced landing threshold. Heavy regulatory text with category tables."
+    },
+    {
+      "sectionId": "reduced_runway_7_11",
+      "familyId": "icao4444_reduced_runway_family",
+      "startLine": 9175,
+      "endLine": 9245,
+      "notes": "§7.11.1-7.11.6 Reduced runway separation minima between aircraft using the same runway: safety-assessment prerequisite, hours-of-daylight constraint, aircraft classification, departing-vs-landing exclusion, conditional preconditions list."
+    },
+    {
+      "sectionId": "aerodrome_traffic_7_6",
+      "familyId": "icao4444_aerodrome_traffic_family",
+      "startLine": 8716,
+      "endLine": 8810,
+      "notes": "§7.6.1-7.6.3.1.1 Control of Aerodrome Traffic: §7.6.1 General clarity-of-instructions duty, §7.6.2 Designated positions of aircraft (positions 1-6 with associated controller actions), §7.6.3.1 Traffic on the manoeuvring area, §7.6.3.1.1 Taxi clearance content rules. Includes inline figure-layout artifacts."
+    },
+    {
+      "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 3723,
+      "endLine": 3808,
+      "notes": "ICAO Doc 4444 §§4.11.1-4.11.3: position-report timing, voice-report contents, and initial call content after channel change. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "systems_equipment_failure_4_14",
+      "familyId": "icao4444_clearance_comms_contract_family",
+      "startLine": 4116,
+      "endLine": 4120,
+      "notes": "ICAO Doc 4444 §4.14: ATC unit reporting of communication, navigation, surveillance, or other safety-significant system failures. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "phraseology_transfer_frequency_12_3_1_4",
+      "familyId": "icao4444_clearance_comms_phraseology_family",
+      "authorityCeiling": "operational_guidance",
+      "startLine": 13784,
+      "endLine": 13833,
+      "notes": "ICAO Doc 4444 §12.3.1.4: transfer of control/frequency-change phraseologies. Manifest authority ceiling is operational_guidance because this seam uses the window as phraseology support. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "phraseology_clearance_issuance_12_3_2_1",
+      "familyId": "icao4444_clearance_comms_phraseology_family",
+      "authorityCeiling": "operational_guidance",
+      "startLine": 14257,
+      "endLine": 14293,
+      "notes": "ICAO Doc 4444 §12.3.2.1: clearance issuance and reclearance phraseologies. Manifest authority ceiling is operational_guidance because this seam uses the window as phraseology support. Hardened in clearance_comms_2026-04-30."
+    }
+  ]
+}

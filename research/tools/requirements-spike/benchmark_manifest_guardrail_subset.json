@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "description": "Focused subset of benchmark cases used to test family-aware extraction guardrails against known first-pass failure modes.",
+  "cases": [
+    {
+      "caseId": "icao4444_readback_main_clause",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_readback",
+      "unitId": "icao4444_readback::clause::4.5.7.5.1",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Bundle-risk baseline from a clean authoritative clause family."
+    },
+    {
+      "caseId": "icao4444_departing_aircraft_transfer",
+      "familyId": "icao4444",
+      "sliceId": "icao4444_transfer",
+      "unitId": "icao4444_transfer::clause::4.3.2.1.3",
+      "expectedUnitKind": "normative_clause",
+      "expectedAuthorityClassCeiling": "authoritative_requirement",
+      "notes": "Colon-led parent clause that should not be promoted alone."
+    },
+    {
+      "caseId": "h01_ack_from_aircraft",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::a",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Authority-drift baseline."
+    },
+    {
+      "caseId": "h01_readback_main_clause",
+      "familyId": "h01",
+      "sliceId": "h01_readback",
+      "unitId": "h01_readback::lettered::c",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "List-introducing clause with authority-drift risk."
+    },
+    {
+      "caseId": "h01_transfer_initial_contact",
+      "familyId": "h01",
+      "sliceId": "h01_transfer",
+      "unitId": "h01_transfer::lettered::b",
+      "expectedUnitKind": "operational_guidance",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "notes": "Straightforward guidance clause that should be ceiling-clamped."
+    },
+    {
+      "caseId": "egast_readback_required_items",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:",
+      "expectedUnitKind": "best_practice_note",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Best-practice list that qwen3.6 overpromoted on the first run."
+    },
+    {
+      "caseId": "egast_callsign_acknowledgement",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::best_practice_note::Acknowledgement by Callsign",
+      "expectedUnitKind": "best_practice_note",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Best-practice clause with embedded example list."
+    },
+    {
+      "caseId": "egast_wilco_background",
+      "familyId": "egast_vfr",
+      "sliceId": "egast_vfr_readback",
+      "unitId": "egast_vfr_readback::background_explanation::Items to be Read back",
+      "expectedUnitKind": "background_explanation",
+      "expectedAuthorityClassCeiling": "best_practice",
+      "notes": "Background explanation that should stay support-only."
+    }
+  ]
+}

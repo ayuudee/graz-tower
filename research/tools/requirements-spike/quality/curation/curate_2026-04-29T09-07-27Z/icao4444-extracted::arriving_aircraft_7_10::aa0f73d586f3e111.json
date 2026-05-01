@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_7_10::aa0f73d586f3e111",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_7_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.33,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the cited source text and the quote audit passed. The only defect is the G3 mismatch: the source uses \u201cmay be requested,\u201d so the candidate\u2019s modality remains \u201cmay\u201d but its authorityClass must be lowered from authoritative_requirement to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::aa0f73d586f3e111.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_7_10/icao4444-extracted::arriving_aircraft_7_10::aa0f73d586f3e111.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    }
+  },
+  "curatedAt": "2026-04-29T09:12:26Z"
+}

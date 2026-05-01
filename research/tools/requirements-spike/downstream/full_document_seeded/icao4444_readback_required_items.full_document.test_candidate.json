@@ -1,0 +1,32 @@
+{
+  "testCandidateId": "tc-icao4444-4.5.7.5.1-readback-items-full-document",
+  "verificationMode": "property_or_family_test",
+  "targetLayer": "controller+sim integration",
+  "goal": "Verify that each always-read-back item family is treated as requiring pilot readback and does not transition to a completed acknowledgement state on silence or non-readback acknowledgement.",
+  "scenarioFamilies": [
+    {
+      "familyId": "route-clearance-readback",
+      "sourceAtomId": "icao4444:4.5.7.5.1:item_route_clearances"
+    },
+    {
+      "familyId": "runway-movement-readback",
+      "sourceAtomId": "icao4444:4.5.7.5.1:item_runway_movements"
+    },
+    {
+      "familyId": "operational-item-readback",
+      "sourceAtomId": "icao4444:4.5.7.5.1:item_runway_altimeter_ssr_levels"
+    }
+  ],
+  "expectedObservations": [
+    "The controller or protocol layer marks the item family as requiring readback.",
+    "A correct readback satisfies the requirement.",
+    "Silence or a generic acknowledgement without the required readback does not satisfy the requirement.",
+    "Incorrect readback routes into the discrepancy-correction path rather than a successful acknowledgement state."
+  ],
+  "sourceTraceability": {
+    "document": "ICAO Doc 4444",
+    "section": "4.5.7.5.1",
+    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3417"
+  },
+  "sourcePromotionId": "accepted-atoms:icao4444:4.5.7.5.1:full-document"
+}

@@ -1,0 +1,94 @@
+{
+  "fixtureId": "tranche_exit_4_3_2_1_1",
+  "fixtureKind": "bundle_anchor",
+  "selector": {
+    "type": "label",
+    "value": "4.3.2.1.1"
+  },
+  "sourceDocumentId": "icao4444-extracted",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "expected": {
+    "primaryBlock": {
+      "blockId": "icao4444::numeric_clause::01324",
+      "blockKind": "numeric_clause",
+      "label": "4.3.2.1.1",
+      "title": null,
+      "parentBlockId": "icao4444::section_heading::01321",
+      "lineStart": 3090,
+      "lineEnd": 3091,
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "4.3.2.1.1"
+      ],
+      "normalizedText": "Arriving aircraft. Control of an arriving aircraft shall be transferred from the unit providing approach\ncontrol service to the unit providing aerodrome control service when the aircraft:"
+    },
+    "primaryUnit": {
+      "sourceUnitId": "icao4444::numeric_clause::01324::unit",
+      "unitKind": "normative_clause",
+      "parentSourceUnitId": "icao4444::section_heading::01321::unit",
+      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3090-3091",
+      "sectionPath": [
+        "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+        "4.3.2.1.1"
+      ],
+      "normalizedText": "Arriving aircraft. Control of an arriving aircraft shall be transferred from the unit providing approach\ncontrol service to the unit providing aerodrome control service when the aircraft:"
+    },
+    "bundle": {
+      "bundleId": "icao4444:icao4444::numeric_clause::01324",
+      "bundleKind": "clause_with_list",
+      "recommendation": "bundle_required",
+      "memberIds": [
+        "icao4444::numeric_clause::01324::unit",
+        "icao4444::list_item::01325::unit",
+        "icao4444::list_item::01328::unit",
+        "icao4444::list_item::01329::unit"
+      ]
+    },
+    "memberUnits": [
+      {
+        "sourceUnitId": "icao4444::numeric_clause::01324::unit",
+        "unitKind": "normative_clause",
+        "parentSourceUnitId": "icao4444::section_heading::01321::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3090-3091",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "4.3.2.1.1"
+        ],
+        "normalizedText": "Arriving aircraft. Control of an arriving aircraft shall be transferred from the unit providing approach\ncontrol service to the unit providing aerodrome control service when the aircraft:"
+      },
+      {
+        "sourceUnitId": "icao4444::list_item::01325::unit",
+        "unitKind": "list_item",
+        "parentSourceUnitId": "icao4444::numeric_clause::01324::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3092-3094",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "a)"
+        ],
+        "normalizedText": "is in the vicinity of the aerodrome, and"
+      },
+      {
+        "sourceUnitId": "icao4444::list_item::01328::unit",
+        "unitKind": "list_item",
+        "parentSourceUnitId": "icao4444::numeric_clause::01324::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3098-3098",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "b)"
+        ],
+        "normalizedText": "is at a prescribed point or level, or"
+      },
+      {
+        "sourceUnitId": "icao4444::list_item::01329::unit",
+        "unitKind": "list_item",
+        "parentSourceUnitId": "icao4444::numeric_clause::01324::unit",
+        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3099-3103",
+        "sectionPath": [
+          "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
+          "c)"
+        ],
+        "normalizedText": "has landed,\nas specified in letters of agreement or ATS unit instructions."
+      }
+    ]
+  }
+}

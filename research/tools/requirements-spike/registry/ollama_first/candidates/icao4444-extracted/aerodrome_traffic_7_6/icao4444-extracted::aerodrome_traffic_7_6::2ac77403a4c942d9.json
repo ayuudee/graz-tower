@@ -1,0 +1,105 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_7_6::2ac77403a4c942d9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_7_6",
+  "familyId": "icao4444_aerodrome_traffic_family",
+  "claimText": "Position 5 is a normal point for issuing clearance to taxi to apron.",
+  "rationale": "Corrected replacement for a rejected over-promoted Position 5 record. The source describes normal aerodrome-control positions; the corrected claim keeps that descriptive force.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The following positions of aircraft in the traffic and taxi circuits are the positions where aircraft normally receive\naerodrome control tower clearances.",
+    "Position 5. Clearance to taxi to apron is issued here."
+  ],
+  "sourceItemIds": [
+    "7.6.2_position_5"
+  ],
+  "claimSha256": "3ac71921a75f6025121c6367d0fa985cfe4d64b3071ad118bf91e6cb19945158",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8716,
+    "endLine": 8810
+  },
+  "ingestionRun": {
+    "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+    "runStartedAt": "2026-04-29T22:00:00Z",
+    "caseId": "icao4444_aerodrome_traffic_family",
+    "models": {
+      "structure": "manual_rr17_coverage_review",
+      "extraction": "manual_rr17_coverage_review",
+      "challenge": "manual_rr17_coverage_review",
+      "defense": "manual_rr17_coverage_review",
+      "bundleGate": "manual_rr17_coverage_review",
+      "judge": "manual_rr17_coverage_review"
+    },
+    "promptVersion": "manual_rr17_coverage_review",
+    "promptVersionSha": "manual_rr17_coverage_review",
+    "originalCandidateId": "manual_rr17_pos5_apron_clearance_normal_position"
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_add_accept",
+      "reasoning": "Adds the source-supported Position 5 fact with corrected descriptive wording after the original shall-strength candidate was rejected.",
+      "confidence": "high",
+      "curatedAt": "2026-04-29T22:00:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-29T22:00:00Z",
+    "promotedFrom": "manual RR-17 coverage ledger repair",
+    "curatedAt": "2026-04-29T22:00:00Z"
+  }
+}

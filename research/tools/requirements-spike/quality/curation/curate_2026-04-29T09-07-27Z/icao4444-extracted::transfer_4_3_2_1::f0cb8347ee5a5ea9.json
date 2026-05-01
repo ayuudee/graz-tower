@@ -1,0 +1,25 @@
+{
+  "canonicalId": "icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "transfer_4_3_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 55.08,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim, self-contained, and not redundant with the accepted sibling; it is correctly treated as non-normative background from a Note rather than an authoritative requirement. The only evident metadata issue is that it is not a definition but an operational exception/background note about a possible direct transfer arrangement.",
+    "corrections": {
+      "requirementKind": "operational_exception"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9.json",
+    "toPath": "candidates/icao4444-extracted/transfer_4_3_2_1/icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9.json",
+    "correctionsApplied": {
+      "requirementKind": "operational_exception"
+    }
+  },
+  "curatedAt": "2026-04-29T09:20:20Z"
+}

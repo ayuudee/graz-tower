@@ -1,0 +1,17 @@
+pdf_path,category,requirements_source_scope,notes
+data/charts/LJMB/LJMB.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Approach_ILS CAT II-III or LOC 34C_04092025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Approach_RNP RWY16C_04092025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Approach_RNP RWY34C_04092025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Approach_VOR16C_04092025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Approach_VOR34C_04092025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Arrival_RNAV transition 16C & 34C_05092024.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Arrival_STAR_05092024.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Departure_SID16C_07092023.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Departure_SID34C_07092023.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_Ground_Aerodrome Overview_30102025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/charts/LOWG/LOWG_VFR_VFR Chart_02102025.pdf,airport_chart,false,Airport chart/source-data support PDF outside requirements-spike law/phraseology ingestion scope.
+data/ofm/austria/ofmx_extracted/ofmx_lo/amendments.pdf,ofm_package_metadata,false,OFM package readme/amendments PDF outside requirements-spike law/phraseology ingestion scope.
+data/ofm/austria/ofmx_extracted/ofmx_lo/readme.pdf,ofm_package_metadata,false,OFM package readme/amendments PDF outside requirements-spike law/phraseology ingestion scope.
+data/ofm/slovenia/ofmx_extracted/ofmx_lj/amendments.pdf,ofm_package_metadata,false,OFM package readme/amendments PDF outside requirements-spike law/phraseology ingestion scope.
+data/ofm/slovenia/ofmx_extracted/ofmx_lj/readme.pdf,ofm_package_metadata,false,OFM package readme/amendments PDF outside requirements-spike law/phraseology ingestion scope.

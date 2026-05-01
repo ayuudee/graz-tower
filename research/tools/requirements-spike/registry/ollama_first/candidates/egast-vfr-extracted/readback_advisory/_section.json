@@ -1,0 +1,11 @@
+{
+  "documentId": "egast-vfr-extracted",
+  "sectionId": "readback_advisory",
+  "familyId": "egast_vfr_readback_family",
+  "sourcePath": "research/txt/egast-vfr-extracted.txt",
+  "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+  "startLine": 539,
+  "endLine": 608,
+  "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
+  "lastPromotedAt": "2026-04-28T19:43:49Z"
+}

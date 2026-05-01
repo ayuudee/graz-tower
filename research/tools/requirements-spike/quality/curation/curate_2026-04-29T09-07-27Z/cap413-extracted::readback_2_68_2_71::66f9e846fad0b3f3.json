@@ -1,0 +1,20 @@
+{
+  "canonicalId": "cap413-extracted::readback_2_68_2_71::66f9e846fad0b3f3",
+  "documentId": "cap413-extracted",
+  "sectionId": "readback_2_68_2_71",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.72,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by a verbatim source quote, and the candidate\u2019s advisory/operational-guidance framing matches CAP 413\u2019s wording of \u201cexpected to.\u201d It is not redundant with the accepted sibling candidates, which address readback requirements and controller corrections rather than the pilot/driver expectation to request repetition or clarification.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/readback_2_68_2_71/cap413-extracted::readback_2_68_2_71::66f9e846fad0b3f3.json",
+    "toPath": "candidates/cap413-extracted/readback_2_68_2_71/cap413-extracted::readback_2_68_2_71::66f9e846fad0b3f3.json"
+  },
+  "curatedAt": "2026-04-29T09:08:06Z"
+}

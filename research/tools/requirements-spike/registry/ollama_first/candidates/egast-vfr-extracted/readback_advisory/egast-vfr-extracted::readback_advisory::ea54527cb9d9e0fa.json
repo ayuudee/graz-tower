@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "egast-vfr-extracted::readback_advisory::ea54527cb9d9e0fa",
+  "documentId": "egast-vfr-extracted",
+  "sectionId": "readback_advisory",
+  "familyId": "egast_vfr_readback_family",
+  "claimText": "If a transmission contains information that does not need to be read back, you should acknowledge by transmitting your callsign.",
+  "rationale": "Consistent advisory requirement for acknowledging non-readback transmissions.",
+  "modality": "should",
+  "authorityClass": "best_practice",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "If a transmission contains information that does not need to be read back, you should acknowledge by transmitting your callsign."
+  ],
+  "sourceItemIds": [
+    "clause_ack_callsign"
+  ],
+  "claimSha256": "17e23ea6b1c1d205f14a45d3cdbda90dea3c1ddf11964c8d18fb0ccc4ade5983",
+  "provenance": {
+    "sourcePath": "research/txt/egast-vfr-extracted.txt",
+    "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+    "startLine": 539,
+    "endLine": 608
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-04-28T19-35-19Z_5786",
+    "caseId": "egast_vfr_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "req_ack_callsign",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "best_practice",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-04-28T19:35:19Z",
+    "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_5_8::e0fd9fa3eda729ad",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_5_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.27,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the parent clause and item 5.8.3.1 d), but the exactSourceQuote is not a verbatim substring of the source; it splices the parent text directly to item d) while omitting intervening list items. Because quote identity fields cannot be corrected in this pass, this must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_5_8/icao4444-extracted::wake_turbulence_5_8::e0fd9fa3eda729ad.json",
+    "toPath": "rejected/icao4444-extracted/wake_turbulence_5_8/icao4444-extracted::wake_turbulence_5_8::e0fd9fa3eda729ad.json"
+  },
+  "curatedAt": "2026-04-29T09:21:25Z"
+}

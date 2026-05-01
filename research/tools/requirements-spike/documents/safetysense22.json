@@ -1,0 +1,15 @@
+{
+  "documentId": "safetysense22-extracted",
+  "documentTitle": "UK CAA SafetySense Leaflet 02 — Radiotelephony",
+  "sourcePath": "research/txt/safetysense22-extracted.txt",
+  "defaultAuthorityCeiling": "best_practice",
+  "sections": [
+    {
+      "sectionId": "readbacks",
+      "familyId": "safetysense22_readback_family",
+      "startLine": 485,
+      "endLine": 552,
+      "notes": "Readbacks section. Best-practice prose with a numbered list (1-15) of items requiring readback, each item laid out across two lines (number on its own line, item text following) due to two-column extraction."
+    }
+  ]
+}
