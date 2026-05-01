@@ -123,7 +123,14 @@ fun requiredReadbackAtoms(instruction: AtcInstruction): Set<AtomicReadback> = wh
     is CommenceApproachAt -> emptySet()
 
     // ── Taxi / ground movement ───────────────────────────────────────────
-    is TaxiTo -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
+    // Pass 6 (D-PF.6 closure): runway-bound taxi reads back the runway too;
+    // stand-bound taxi has no runway atom (the runway field is forbidden
+    // for stand taxi by construction — see TaxiToStand's KDoc).
+    is TaxiToHoldingPoint -> setOf(
+        RunwayReadback(instruction.runway),
+        TaxiRouteReadback(instruction.destination, instruction.via),
+    )
+    is TaxiToStand -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
     is AirTaxiTo -> setOf(TaxiRouteReadback(instruction.destination, instruction.via))
     is TaxiViaRunway -> setOf(TaxiViaRunwayReadback(instruction.runway, instruction.destination))
     // Non-routed taxi ops — no structural atom to compare.

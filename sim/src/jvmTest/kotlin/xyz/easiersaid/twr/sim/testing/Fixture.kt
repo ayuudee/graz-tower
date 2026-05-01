@@ -7,8 +7,6 @@ import java.nio.file.Path
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.WeatherObservation
-import xyz.easiersaid.twr.core.world.AerodromeRole
-import xyz.easiersaid.twr.core.world.AuthorityGrant
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.core.world.buildWorldIndex
@@ -16,8 +14,6 @@ import xyz.easiersaid.twr.migration.world.WorldCandidateDocument
 import xyz.easiersaid.twr.migration.world.WorldCandidateLoader
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
-import xyz.easiersaid.twr.protocol.AuthorityEntityType
-import xyz.easiersaid.twr.protocol.AuthorityOperation
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.PointId
@@ -69,21 +65,40 @@ sealed interface FixtureViolation {
     data class StandPointMissing(val pointId: PointId) : FixtureViolation
     data class AerodromeMissing(val id: AerodromeId) : FixtureViolation
     data class NoRunways(val id: AerodromeId) : FixtureViolation
-    data class RoleFrequencyMismatch(
+
+    /**
+     * The fixture asks for a role the world-candidate doesn't publish.
+     * Pass 6 (D-AUDIT.12 closure) replaces the silent fixture patch:
+     * before, missing roles got injected; after, they fail loudly.
+     */
+    data class RoleNotPublished(val role: RoleName, val aerodrome: AerodromeId) : FixtureViolation
+
+    /**
+     * The fixture's expected frequency for a published role disagrees with
+     * what the world-candidate publishes. Pass 6 (D-AUDIT.12 closure)
+     * replaces the silent fixture overwrite with this typed mismatch.
+     */
+    data class FrequencyMismatch(
+        val aerodrome: AerodromeId,
         val role: RoleName,
-        val expected: Frequency,
-        val got: Frequency?,
+        val delta: FrequencyDelta,
     ) : FixtureViolation
 }
 
-private val json = Json { ignoreUnknownKeys = true }
+/**
+ * Named diff between expected and published frequencies. Pass 6 (FP review M.4):
+ * future-proofs for 8.33 kHz channelisation tolerance — the consumer can read
+ * [deltaKhz] without reaching into the pair.
+ */
+data class FrequencyDelta(val expected: Frequency, val published: Frequency) {
+    val deltaKhz: Int get() {
+        val expMhz = expected.mhz.toDoubleOrNull() ?: return Int.MAX_VALUE
+        val pubMhz = published.mhz.toDoubleOrNull() ?: return Int.MAX_VALUE
+        return ((expMhz - pubMhz) * 1000.0).toInt()
+    }
+}
 
-private val placeholderAuthorities = setOf(
-    AuthorityGrant(
-        entityType = AuthorityEntityType.RADIO_ROLE,
-        operations = setOf(AuthorityOperation.CONTACT),
-    ),
-)
+private val json = Json { ignoreUnknownKeys = true }
 
 /**
  * Load the fixture's world candidate, patch role/authority/weather, and build
@@ -94,7 +109,7 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
     val file = candidatePath.toFile()
     if (!file.exists()) return Either.Left(LoadError.FileMissing(candidatePath))
 
-    val rawWorld = try {
+    val world = try {
         val doc = json.decodeFromString<WorldCandidateDocument>(Files.readString(candidatePath))
         WorldCandidateLoader.toWorld(doc)
     } catch (e: SerializationException) {
@@ -103,18 +118,10 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
         return Either.Left(LoadError.MalformedJson(candidatePath, e.message ?: "unknown"))
     }
 
-    // Patch role/authority/frequency: the world-candidate doesn't carry roles
-    // yet (Pass 10's WorldCandidateLoader rewrite will read them from the
-    // manifest). Until then, every Fixture provides the role list and we
-    // inject placeholder authorities + the fixture's frequency.
-    val patchedRoles = controllerRoles.associateWith { role ->
-        AerodromeRole(role, placeholderAuthorities, frequency)
-    }
-    val world = rawWorld.copy(
-        aerodromes = rawWorld.aerodromes.mapValues { (id, ad) ->
-            if (id == aerodromeId) ad.copy(roles = patchedRoles) else ad
-        },
-    )
+    // Pass 6 (D-AUDIT.12 closure): roles come from the world-candidate. The
+    // previous post-load `ad.copy(roles = patchedRoles)` patch is gone — if
+    // the JSON doesn't publish a role the fixture asks for, validate() emits
+    // RoleNotPublished. If frequencies disagree, FrequencyMismatch.
 
     val worldIndex = world.buildWorldIndex()
 
@@ -150,9 +157,17 @@ fun LoadedFixture.validate(fixture: Fixture): List<FixtureViolation> = buildList
     }
     if (ad.runways.isEmpty()) add(FixtureViolation.NoRunways(fixture.aerodromeId))
     fixture.controllerRoles.forEach { role ->
-        val got = ad.roles[role]?.frequency
-        if (got != fixture.frequency) {
-            add(FixtureViolation.RoleFrequencyMismatch(role, fixture.frequency, got))
+        val published = ad.roles[role]
+        if (published == null) {
+            add(FixtureViolation.RoleNotPublished(role, fixture.aerodromeId))
+            return@forEach
+        }
+        if (published.frequency != fixture.frequency) {
+            add(FixtureViolation.FrequencyMismatch(
+                aerodrome = fixture.aerodromeId,
+                role = role,
+                delta = FrequencyDelta(expected = fixture.frequency, published = published.frequency),
+            ))
         }
     }
 }

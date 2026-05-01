@@ -30,7 +30,7 @@ import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.StartupApproved
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 import xyz.easiersaid.twr.protocol.TurnBase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -98,9 +98,11 @@ class ProcessInstructionMissionStateSpec {
     }
 
     @Test
-    fun `TaxiTo at REQUEST_TAXI completes the step`() {
+    fun `TaxiToHoldingPoint at REQUEST_TAXI completes the step`() {
         val m = missionAt(MissionStep.REQUEST_TAXI)
-        val instr = TaxiTo(target = aircraftId, destination = holdingPoint, via = emptyList())
+        val instr = TaxiToHoldingPoint(
+            target = aircraftId, destination = holdingPoint, runway = RunwayId("16C"), via = emptyList(),
+        )
         val updated = processInstruction(instr, m, SimTime.ZERO, worldIndex)
         assertTrue(
             updated.currentTask?.step != MissionStep.REQUEST_TAXI,

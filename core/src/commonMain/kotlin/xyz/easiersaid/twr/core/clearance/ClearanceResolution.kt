@@ -69,7 +69,7 @@ import xyz.easiersaid.twr.protocol.ProceedDirect
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RejoinSidAt
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiClearance
 import xyz.easiersaid.twr.protocol.Orbit
 import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnDirection
@@ -203,7 +203,7 @@ private fun AviationWorld.resolveStep(
     )
 
     return when (instruction) {
-        is TaxiTo -> resolveTaxiStep(context, stepContext, instruction, state)
+        is TaxiClearance -> resolveTaxiStep(context, stepContext, instruction, state)
         is HoldShortOf -> resolveHoldShortStep(context, stepContext, instruction, state)
         is CrossRunway -> resolveCrossingStep(context, stepContext, instruction, state)
         is BacktrackRunway -> resolveBacktrackStep(context, stepContext, instruction, state)
@@ -369,7 +369,7 @@ private fun AviationWorld.resolveVectorStep(
 private fun AviationWorld.resolveTaxiStep(
     context: ClearanceResolutionContext,
     stepContext: StepContext,
-    instruction: TaxiTo,
+    instruction: TaxiClearance,
     state: ResolutionCompilationState
 ): ResolutionResult<ResolvedStepWithState> {
     val currentPoint = state.currentPoint ?: return unresolved(

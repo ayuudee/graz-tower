@@ -16,41 +16,40 @@ import xyz.easiersaid.twr.protocol.RunwayAssignment
 import xyz.easiersaid.twr.protocol.RunwayAssignmentSource
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiViaRunway
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 /**
- * Spec test (E7) for the Phase C runway-from-radio derivation in
- * [processInstruction].
+ * Spec test (E7) for the runway-from-radio derivation in [processInstruction].
  *
- * Pure-function spec. The pilot's runway comes from radio alone — there
- * is no controller-state read. Five rows pin the contract so a future
- * regression names itself rather than failing G0 with "mission did not
- * complete in 30 minutes".
+ * Pure-function spec. The pilot's runway comes from radio alone — there is
+ * no controller-state read. Each row pins one (instruction → activeRunway)
+ * cell of the contract.
  *
- * The five rows correspond to:
- *  1. TaxiTo(holding-point-of-runway-X) → activeRunway = X
- *  2. LineUpAndWait(X) → activeRunway = X
- *  3. ClearedForTakeoff(X) → activeRunway = X
- *  4. Disregard → activeRunway unchanged
- *  5. fresh mission, no prior radio → activeRunway null
- *
- * Multi-runway holding-point ambiguity (D-PF.6) is NOT covered here — the
- * test airport has each holding point serving a single runway, matching
- * G0/LOWG. When D-PF.6 lands and TaxiTo carries an explicit runway field,
- * the test expands.
+ * Pass 6 (D-PF.6 closure): the multi-runway holding-point disambiguator is
+ * gone — the runway is now an explicit field on [TaxiToHoldingPoint] (and
+ * already was on [TaxiViaRunway]). The two earlier "multi-runway TaxiTo
+ * with prior activeRunway / sorted-first" rows pinned a fallback that no
+ * longer exists; they retire with the disambiguator. Replaced by a
+ * **twin-row** (Test review M.3) — the same destination, two different
+ * explicit runways — to pin "runway from field" rather than
+ * "runway from destination's first candidate."
  */
 class ProcessInstructionRunwayDerivationSpec {
 
     private val aircraftId = AircraftId("OE-ABC")
     private val rwy16C = RunwayId("16C")
-    private val holdingPoint = PointId("HOLD_16C")
+    private val rwy16L = RunwayId("16L")
+    private val holdingA4 = PointId("HOLD_A4")
+    private val holdingPoint16C = PointId("HOLD_16C")
 
-    /** Minimal world index: one runway, one holding point. */
     private val worldIndex = WorldIndex(
-        holdingPointsByRunway = mapOf(rwy16C to setOf(holdingPoint)),
+        holdingPointsByRunway = mapOf(
+            rwy16C to setOf(holdingPoint16C, holdingA4),
+            rwy16L to setOf(holdingA4),
+        ),
     )
 
     private val freshMission: PilotMission = createMission(
@@ -59,11 +58,58 @@ class ProcessInstructionRunwayDerivationSpec {
         time = SimTime.ZERO,
     )
 
+    /**
+     * Pass 6 contract row: TaxiToHoldingPoint sets activeRunway from the
+     * field. Single source-of-truth row pinning the field-flow path; the
+     * earlier per-runway "TaxiTo to a holding point of runway 16C sets
+     * activeRunway to 16C" rows pruned (Test review S.5) — they tested
+     * "did the pilot copy a field" once the disambiguator went away.
+     */
     @Test
-    fun `TaxiTo to a holding point of runway 16C sets activeRunway to 16C`() {
-        val instr = TaxiTo(target = aircraftId, destination = holdingPoint, via = emptyList())
+    fun `TaxiToHoldingPoint propagates the explicit runway to activeRunway`() {
+        val instr = TaxiToHoldingPoint(
+            target = aircraftId, destination = holdingPoint16C, runway = rwy16C, via = emptyList(),
+        )
         val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
+        assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
+    }
+
+    /**
+     * Twin-row (Test review M.3): same destination [holdingA4] (which serves
+     * both 16C and 16L), two different explicit runways. Without the twin,
+     * "runway from field" would be consistent with "runway from destination's
+     * first candidate" on a fixture where A4 sorts 16C-first.
+     */
+    @Test
+    fun `multi-runway holding point with explicit 16C in field sets activeRunway = 16C`() {
+        val instr = TaxiToHoldingPoint(
+            target = aircraftId, destination = holdingA4, runway = rwy16C, via = emptyList(),
+        )
+        val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
+        assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
+    }
+
+    @Test
+    fun `multi-runway holding point with explicit 16L in field sets activeRunway = 16L`() {
+        val instr = TaxiToHoldingPoint(
+            target = aircraftId, destination = holdingA4, runway = rwy16L, via = emptyList(),
+        )
+        val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
+        assertEquals(rwy16L, updated.activeRunway.getOrNull()?.runway)
+    }
+
+    /**
+     * Impact review M.1 / B.iii: TaxiViaRunway carries an explicit runway and
+     * propagates it to activeRunway with source TaxiClearance — symmetric
+     * with TaxiToHoldingPoint.
+     */
+    @Test
+    fun `TaxiViaRunway propagates the explicit runway to activeRunway with TaxiClearance source`() {
+        val instr = TaxiViaRunway(target = aircraftId, runway = rwy16C, destination = holdingPoint16C)
+        val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
+        assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
+        assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
     }
 
     @Test
@@ -90,7 +136,6 @@ class ProcessInstructionRunwayDerivationSpec {
 
     @Test
     fun `processInstruction on a fresh mission with no prior leaves activeRunway None`() {
-        // A non-runway-bearing instruction (Disregard) on a fresh mission.
         val instr = Disregard(target = aircraftId)
         val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
         assertEquals(None, updated.activeRunway)
@@ -114,7 +159,6 @@ class ProcessInstructionRunwayDerivationSpec {
     fun `AfterLandingVacateVia preserves the prior activeRunway (instruction has no runway field)`() {
         // AfterLandingVacateVia carries the exit point, not the runway — the
         // runway is implicit (the one just landed on, set by ClearedToLand).
-        // The pilot's `activeRunway` is preserved across the instruction.
         val priorMission = freshMission.copy(activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Land)))
         val instr = AfterLandingVacateVia(target = aircraftId, exit = PointId("EXIT_W2"))
         val updated = processInstruction(instr, priorMission, SimTime.ZERO, worldIndex)
@@ -126,52 +170,5 @@ class ProcessInstructionRunwayDerivationSpec {
         val instr = BacktrackRunway(target = aircraftId, runway = rwy16C)
         val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
-    }
-
-    // ── Multi-runway holding-point disambiguator ──────────────────────────────
-    //
-    // The reverse-lookup `runwaysForHoldingPoint` returns Set<RunwayId>; when
-    // a single holding point serves multiple runways (intersecting taxiways
-    // at parallel-runway airports), the disambiguator picks: (i) the prior
-    // `activeRunway` if it remains in the candidate set, (ii) otherwise the
-    // sorted-first by RunwayId.value. The clean fix (D-PF.6) is for TaxiTo
-    // to carry an explicit runway field and remove the inference entirely.
-
-    private val rwy16L = RunwayId("16L")
-    private val sharedHolding = PointId("HOLD_A4")
-    private val multiRunwayWorldIndex = WorldIndex(
-        holdingPointsByRunway = mapOf(
-            rwy16C to setOf(sharedHolding),
-            rwy16L to setOf(sharedHolding),
-        ),
-    )
-
-    @Test
-    fun `multi-runway TaxiTo with prior activeRunway in candidates keeps the prior`() {
-        val priorMission = freshMission.copy(
-            activeRunway = Some(RunwayAssignment(rwy16L, RunwayAssignmentSource.TaxiClearance)),
-        )
-        val instr = TaxiTo(target = aircraftId, destination = sharedHolding, via = emptyList())
-        val updated = processInstruction(instr, priorMission, SimTime.ZERO, multiRunwayWorldIndex)
-        assertEquals(rwy16L, updated.activeRunway.getOrNull()?.runway)
-    }
-
-    @Test
-    fun `multi-runway TaxiTo with no prior picks sorted-first deterministically`() {
-        val instr = TaxiTo(target = aircraftId, destination = sharedHolding, via = emptyList())
-        val updated = processInstruction(instr, freshMission, SimTime.ZERO, multiRunwayWorldIndex)
-        // 16C sorts before 16L lexicographically.
-        assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
-        // Re-run with 100 fresh passes; result must be invariant (no Set-iteration
-        // dependency). If the disambiguator regressed to `candidates.first()`
-        // without the .sortedBy, this would fail probabilistically across JVM
-        // versions or hash-perturbation seeds.
-        repeat(100) {
-            val r = processInstruction(instr, freshMission, SimTime.ZERO, multiRunwayWorldIndex)
-            assertTrue(
-                r.activeRunway.getOrNull()?.runway == rwy16C,
-                "Disambiguator must be deterministic; got ${r.activeRunway}",
-            )
-        }
     }
 }

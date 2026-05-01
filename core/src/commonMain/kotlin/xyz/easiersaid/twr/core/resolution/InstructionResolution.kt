@@ -48,7 +48,7 @@ import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiClearance
 import xyz.easiersaid.twr.protocol.TurnDirection
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 
@@ -421,7 +421,7 @@ fun AviationWorld.resolveRunwayOperation(
 
 fun AviationWorld.resolveTaxiTo(
     context: GroundResolutionContext,
-    instruction: TaxiTo
+    instruction: TaxiClearance
 ): ResolutionResult<ResolvedTaxiRoute> {
     val aerodrome = aerodrome(context.aerodromeId) ?: return unresolved(
         ResolutionFailureCode.UNKNOWN_AERODROME,

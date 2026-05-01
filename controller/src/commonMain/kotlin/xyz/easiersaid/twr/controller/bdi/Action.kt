@@ -31,7 +31,8 @@ import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.ReportWhen
 import xyz.easiersaid.twr.protocol.RoleName
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiToStand
 import xyz.easiersaid.twr.protocol.TrafficAction
 import xyz.easiersaid.twr.protocol.TrafficRef
 import xyz.easiersaid.twr.protocol.TurnBase
@@ -259,12 +260,30 @@ private fun inferContinueApproachReason(
     return ContinueApproachReason.RUNWAY_ACCESS_PENDING
 }
 
+/**
+ * Hand the aircraft off to another role at the same aerodrome.
+ *
+ * Pass 6 (D-AUDIT.12): gates on [ControllerView.staffedRoles] before
+ * emitting `ContactFrequency`. The aerodrome may *publish* a role (e.g.
+ * APPROACH 119.300 at LOWG) without that role being *staffed* in the
+ * current run; targeting an unstaffed role would crash the sim's
+ * `applyContactFrequency`. If the target role is published-but-unstaffed,
+ * the action defers (returns `ActionResolutionFailure`) and the rule keeps
+ * its commitment — a real controller in the same situation would either
+ * keep talking to the aircraft or transfer to whoever is actually online.
+ */
 data class HandoffAction(val toRole: RoleName) : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {
         val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId]
             ?: return ActionResolutionFailure("Aerodrome ${ctx.view.aerodromeId} not found").left()
         val role = aerodrome.roles[toRole]
             ?: return ActionResolutionFailure("No ${toRole.name} role at ${ctx.view.aerodromeId}").left()
+        if (toRole !in ctx.view.staffedRoles) {
+            return ActionResolutionFailure(
+                "${toRole.name} is published at ${ctx.view.aerodromeId} but unstaffed in this run; " +
+                    "deferring handoff to avoid a wedge.",
+            ).left()
+        }
         return ProposedAction(ac.id, ContactFrequency(ac.id, toRole, frequency = role.frequency)).right()
     }
 }
@@ -279,7 +298,10 @@ data object TaxiToHoldingAction : RuleAction {
             ?: return ActionResolutionFailure("Empty holding points set").left()
         val via = findRoute(ac.position, destination, ctx.worldIndex)
             ?: return ActionResolutionFailure("No taxi route from ${ac.position} to $destination").left()
-        return ProposedAction(ac.id, TaxiTo(ac.id, destination, via)).right()
+        return ProposedAction(
+            ac.id,
+            TaxiToHoldingPoint(target = ac.id, destination = destination, runway = runway, via = via),
+        ).right()
     }
 }
 
@@ -292,7 +314,10 @@ data object TaxiToStandAction : RuleAction {
             ?: return ActionResolutionFailure("No stands at aerodrome").left()
         val via = findRoute(ac.position, destination, ctx.worldIndex)
             ?: return ActionResolutionFailure("No taxi route from ${ac.position} to $destination").left()
-        return ProposedAction(ac.id, TaxiTo(ac.id, destination, via)).right()
+        return ProposedAction(
+            ac.id,
+            TaxiToStand(target = ac.id, destination = destination, via = via),
+        ).right()
     }
 }
 

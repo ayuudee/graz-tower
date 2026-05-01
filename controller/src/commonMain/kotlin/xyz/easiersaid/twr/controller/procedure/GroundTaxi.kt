@@ -24,7 +24,7 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_6
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_FREQUENCY_CHANGE
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_TAXI
 import xyz.easiersaid.twr.protocol.RoleName
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiClearance
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 /**
@@ -96,7 +96,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 // time GND takes the aircraft it is already clear of the runway, so the
                 // applicable authority is §7.6 (movement on the manoeuvring area).
                 regulations = listOf(ICAO4444_7_6, ICAO9432_TAXI),
-                guard = NoActiveInstruction(instructionOfType<TaxiTo>()),
+                guard = NoActiveInstruction(instructionOfType<TaxiClearance>()),
                 action = TaxiToStandAction,
                 nextStage = GroundArrivalStage.AwaitParked,
                 advancementPolicy = AdvancementPolicy.Immediate,
@@ -124,7 +124,7 @@ fun groundTaxiProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_6, ICAO9432_TAXI),
                 guard = AllOf(listOf(
                     Not(AtStand),
-                    NoPendingReadback(instructionOfType<TaxiTo>()),
+                    NoPendingReadback(instructionOfType<TaxiClearance>()),
                 )),
                 action = TaxiToStandAction,
                 advancementPolicy = AdvancementPolicy.Immediate,

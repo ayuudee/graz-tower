@@ -106,18 +106,16 @@ class DeferredContractsSpec {
     // The placeholder test is removed because the contract is enforced by the
     // tests above; an `@Ignore` test referencing a closed deferment is rot.
 
-    /**
-     * **D-PF.6** — `TaxiTo` carries an explicit `runway: RunwayId` field.
-     *
-     * Removes the holding-point-to-runway inference (and its multi-runway
-     * ambiguity disambiguator). The controller's choice of runway is on
-     * the wire, not derived.
-     */
-    @Ignore
-    @Test
-    fun `D-PF6 TaxiTo carries explicit runway and pilot reads it directly`() {
-        // TODO when D-PF.6 lands.
-    }
+    // D-PF.6 — CLOSED (Pass 6). The placeholder is removed because the
+    // contract is now enforced by:
+    //  - schema: `TaxiTo` is split into `TaxiToHoldingPoint(runway)` and
+    //    `TaxiToStand` in `protocol/Instruction.kt`;
+    //  - architectural: `TaxiToSplitFirewallTest` (E14) asserts both new
+    //    sealed leaves under `GroundInstruction` and that no `TaxiTo`
+    //    leaf reappears;
+    //  - spec: `ProcessInstructionRunwayDerivationSpec` pins the runway-
+    //    from-field path including the multi-runway twin-row;
+    //  - integration: G0's assertion (g) sealed-type match on `TaxiToStand`.
 
     /**
      * **D-AUDIT.3** — TIMED step durations are aircraft-type / airport-specific.

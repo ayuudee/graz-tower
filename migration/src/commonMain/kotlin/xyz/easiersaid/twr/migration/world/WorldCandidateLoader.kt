@@ -6,6 +6,7 @@ package xyz.easiersaid.twr.migration.world
 import kotlin.math.hypot
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AerodromeAip
+import xyz.easiersaid.twr.core.world.AerodromeRole
 import xyz.easiersaid.twr.core.world.AirspaceBoundary
 import xyz.easiersaid.twr.core.world.AirspaceClass
 import xyz.easiersaid.twr.core.world.AirspaceVolume
@@ -303,6 +304,31 @@ object WorldCandidateLoader {
             holdingPatterns = world.aerodrome.holdingPatterns.mapValues { (_, holdingPattern) ->
                 holdingPattern.toHoldingPattern(paths)
             }.mapKeys { (id, _) -> HoldingPatternId(id) },
+            // Pass 6 (D-AUDIT.12 closure): roles populated from the manifest
+            // (parse-time-typed RoleName + Frequency). Authorities bridged
+            // through LoaderDefaults — Pass 6 only recognises Placeholder;
+            // D-AUDIT.11 will extend the sealed dispatch.
+            roles = world.aerodrome.roles.mapValues { (_, role) ->
+                AerodromeRole(
+                    name = role.name,
+                    authorities = LoaderDefaults.toAuthorityGrants(
+                        role.authorities.map(LoaderAuthority::fromString),
+                    ),
+                    frequency = role.frequencyMhz,
+                )
+            },
+            // Aerodrome's modelled controllers — the published roles, each
+            // assigned to a synthetic 1-1 controller id. The validator at
+            // `validateRoleStaffing` (WorldValidation.kt) requires every
+            // published role to have a corresponding controller; this is
+            // the world-model alignment. The *sim runtime* separately
+            // decides which subset to staff in any given test (via
+            // ControllerView.staffedRoles populated from state.controllers).
+            controllers = world.aerodrome.roles.keys.associate { role ->
+                xyz.easiersaid.twr.protocol.ControllerId(
+                    "${world.aerodrome.icao}_${role.name}",
+                ) to setOf(role)
+            },
             // Reference point looked up from a hardcoded table for now
             // (G1-DEF-11). Until the migration pipeline propagates lat/lon
             // through world-candidate.json, the loader recognises the

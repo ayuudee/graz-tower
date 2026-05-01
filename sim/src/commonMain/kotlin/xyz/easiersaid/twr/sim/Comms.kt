@@ -17,7 +17,7 @@ import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiClearance
 
 /**
  * Slice 4d: communications layer.
@@ -160,7 +160,7 @@ private fun controllerUtteranceDuration(output: ControllerOutput): SimDuration =
 private fun instructionDuration(instruction: AtcInstruction): SimDuration = when (instruction) {
     is ClearedForTakeoff, is ClearedToLand, is ClearedTouchAndGo ->
         SimDuration.ofMillis(4500) // includes wind/traffic
-    is TaxiTo -> SimDuration.ofMillis(3500)
+    is TaxiClearance -> SimDuration.ofMillis(3500)
     is ContactFrequency -> SimDuration.ofMillis(2500)
     is LineUpAndWait -> SimDuration.ofMillis(2500)
     is HoldShortOf -> SimDuration.ofMillis(2000)

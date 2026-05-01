@@ -148,7 +148,6 @@ import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrVacateReadback
 import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrVacateRunway
 import xyz.easiersaid.twr.protocol.TaxiIntoHoldingBay
 import xyz.easiersaid.twr.protocol.TaxiRouteReadback
-import xyz.easiersaid.twr.protocol.TaxiTo
 import xyz.easiersaid.twr.protocol.TaxiViaRunway
 import xyz.easiersaid.twr.protocol.TaxiViaRunwayReadback
 import xyz.easiersaid.twr.protocol.TaxiWithCaution

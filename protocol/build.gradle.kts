@@ -16,5 +16,13 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+        jvmTest {
+            dependencies {
+                implementation(kotlin("test"))
+                // kotlin-reflect is required by TaxiToSplitFirewallTest to
+                // walk GroundInstruction.sealedSubclasses transitively. JVM-only.
+                implementation(kotlin("reflect"))
+            }
+        }
     }
 }

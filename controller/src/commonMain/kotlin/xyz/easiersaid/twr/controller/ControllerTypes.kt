@@ -62,6 +62,20 @@ data class ControllerView(
      * aircraft entering the frequency cold).
      */
     val flightStripIntents: Map<AircraftId, xyz.easiersaid.twr.controller.observe.AircraftIntent> = emptyMap(),
+    /**
+     * Roles staffed *at this aerodrome right now* — i.e. for which a
+     * controller is online and accepting handoffs.
+     *
+     * Pass 6: distinguishes "the aerodrome publishes role X" (authoritative
+     * fact, on `aerodrome.roles`) from "role X has a controller working
+     * today" (operational reality, depends on staffing). A handoff that
+     * targets an unstaffed role is invalid; [HandoffAction] gates on this
+     * set before emitting `ContactFrequency`.
+     *
+     * Empty when the controller has no peers (e.g. AFIS-only single-role
+     * aerodrome).
+     */
+    val staffedRoles: Set<RoleName> = emptySet(),
 )
 
 /**

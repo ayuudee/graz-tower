@@ -44,7 +44,7 @@ import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiClearance
 import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.ApproachId
@@ -79,7 +79,7 @@ sealed interface ResolvedStep {
 
     data class Taxi(
         override val index: Int,
-        override val instruction: TaxiTo,
+        override val instruction: TaxiClearance,
         override val timing: InstructionTiming?,
         override val domain: ClearanceDomain,
         override val completionCategory: CompletionCategory?,

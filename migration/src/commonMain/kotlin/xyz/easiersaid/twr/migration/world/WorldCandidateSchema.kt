@@ -1,6 +1,8 @@
 package xyz.easiersaid.twr.migration.world
 
 import kotlinx.serialization.Serializable
+import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.RoleName
 
 /**
  * Shared JSON schema for the projected current-core world candidate.
@@ -100,6 +102,38 @@ data class CandidateAerodrome(
     val stars: Map<String, CandidateStar> = emptyMap(),
     val approaches: Map<String, CandidateInstrumentApproach> = emptyMap(),
     val holdingPatterns: Map<String, CandidateHoldingPattern> = emptyMap(),
+    /**
+     * Controller roles published by this aerodrome (TOWER, GROUND, APPROACH,
+     * AREA_CONTROL, AFIS, CLEARANCE_DELIVERY, DEPARTURE).
+     *
+     * Pass 6 (D-AUDIT.12 closure): hand-authored from
+     * `structured-airport-package.json`'s frequency block. Defaults to
+     * `emptyMap()` so existing JSONs parse, but [LoaderRolesPopulatedTest]
+     * asserts every rendered aerodrome publishes ≥1 role.
+     */
+    val roles: Map<RoleName, CandidateAerodromeRole> = emptyMap(),
+)
+
+/**
+ * One controller role published by a [CandidateAerodrome].
+ *
+ * Per Pass 6 plan §A.iii, [name] and [frequencyMhz] are typed at parse time
+ * via [RoleNameSerializer] and [FrequencySerializer] — invalid role tokens or
+ * out-of-range frequencies fail with [kotlinx.serialization.SerializationException]
+ * at JSON decode, never reaching the loader.
+ */
+@Serializable
+data class CandidateAerodromeRole(
+    @Serializable(with = RoleNameSerializer::class) val name: RoleName,
+    @Serializable(with = FrequencySerializer::class) val frequencyMhz: Frequency,
+    /**
+     * Authority tokens. Pass 6 only recognises `"PLACEHOLDER"`
+     * (see [LoaderAuthority.PLACEHOLDER_TOKEN]); D-AUDIT.11 will add real
+     * authority strings. The field is added now (defaulted to
+     * `["PLACEHOLDER"]`) so D-AUDIT.11 is field POPULATION, not schema
+     * migration.
+     */
+    val authorities: List<String> = listOf(LoaderAuthority.PLACEHOLDER_TOKEN),
 )
 
 @Serializable

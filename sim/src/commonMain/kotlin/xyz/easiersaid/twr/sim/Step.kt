@@ -111,7 +111,9 @@ import xyz.easiersaid.twr.protocol.StopTurn
 import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrHoldShort
 import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrVacateRunway
 import xyz.easiersaid.twr.protocol.TaxiIntoHoldingBay
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiClearance
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiToStand
 import xyz.easiersaid.twr.protocol.TaxiViaRunway
 import xyz.easiersaid.twr.protocol.TaxiWithCaution
 import xyz.easiersaid.twr.protocol.TransitionLevelIssuance
@@ -690,7 +692,8 @@ private fun applyPilotHeardInstruction(
     instruction: AtcInstruction,
 ): SimState = when (instruction) {
     // Leaf types with sim-side effects.
-    is TaxiTo -> applyTaxiTo(state, ac, instruction)
+    is TaxiToHoldingPoint -> applyTaxiTo(state, ac, instruction)
+    is TaxiToStand -> applyTaxiTo(state, ac, instruction)
     is LineUpAndWait -> applyLineUpAndWait(state, ac, instruction)
     is ClearedForTakeoff -> applyClearedForTakeoff(state, ac, instruction)
     is AfterLandingVacateVia -> applyAfterLandingVacateVia(state, ac, instruction)
@@ -791,7 +794,7 @@ private fun applyPilotHeardInstruction(
     is WhenAbleProceedDirect -> state
 }
 
-private fun applyTaxiTo(state: SimState, ac: AircraftState, instruction: TaxiTo): SimState {
+private fun applyTaxiTo(state: SimState, ac: AircraftState, instruction: TaxiClearance): SimState {
     val path = instruction.via + instruction.destination
     val waypoints = NonEmptyList(path.first(), path.drop(1))
     val arrivalPhase = deriveArrivalPhase(state.worldIndex, instruction.destination)

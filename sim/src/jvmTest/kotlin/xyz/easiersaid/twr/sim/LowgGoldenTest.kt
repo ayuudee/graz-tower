@@ -21,7 +21,8 @@ import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiToStand
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.sim.testing.Fixtures
@@ -194,10 +195,10 @@ class LowgGoldenTest {
         // runway derivation unchanged) but cut ~10s off the time between TaxiTo apply and
         // Report(Ready). **Diagnostic:** if this fires, the TIMED short-circuit has reappeared
         // in PilotCognitive.kt:isStepComplete.
-        val taxiMs = records.firstControllerInstructionOf<TaxiTo>(aircraftId)
+        val taxiMs = records.firstControllerInstructionOf<TaxiToHoldingPoint>(aircraftId)
             .map { it.time.millis }
             .getOrElse {
-                fail("Expected at least one TaxiTo to $aircraftId in the transmission stream.\n$journey")
+                fail("Expected at least one TaxiToHoldingPoint to $aircraftId in the transmission stream.\n$journey")
             }
         val readyMs = records.firstPilotReportOf<ReportEvent.Ready>(aircraftId)
             .map { it.time.millis }
@@ -245,22 +246,29 @@ class LowgGoldenTest {
         // (departure-flow stuck) and only later corrected to a stand. Real
         // ATC observers would see that as a controller error; the test
         // names it.
+        // Pass 6 tightens this assertion (Test G.4): TaxiTo split into
+        // TaxiToHoldingPoint + TaxiToStand. The FIRST taxi Ground issues
+        // post-vacate must be a `TaxiToStand` (sealed-type match, not a
+        // `STAND` substring on a unified `TaxiTo` — the substring would
+        // have matched `STANDPIPE`/`STAND_BAR_07` etc.).
         val firstGroundTaxiPostVacate = records.firstOrNull { rec ->
             val output = (rec.utterance as? Utterance.FromController)?.output as? ControllerOutput.Instruct ?: return@firstOrNull false
-            val instr = (output.dispatch as? Dispatch.Direct)?.instruction as? TaxiTo ?: return@firstOrNull false
-            instr.target == aircraftId &&
+            val instr = (output.dispatch as? Dispatch.Direct)?.instruction
+            (instr is TaxiToHoldingPoint || instr is TaxiToStand) &&
+                instr.target == aircraftId &&
                 rec.speaker == SpeakerRef.Controller(ground.id) &&
                 rec.time.millis > vacatedMs
         } ?: fail(
-            "Expected ≥1 TaxiTo from GROUND for $aircraftId after Report(RunwayVacated). None found.\n" +
+            "Expected ≥1 TaxiToHoldingPoint or TaxiToStand from GROUND for $aircraftId after " +
+                "Report(RunwayVacated). None found.\n" +
                 "If this fires, the radio→event→belief→commitment→action chain has broken " +
                 "before any post-landing taxi was issued.\n$journey"
         )
         val firstInstr = ((firstGroundTaxiPostVacate.utterance as Utterance.FromController).output as ControllerOutput.Instruct)
-            .dispatch.let { (it as Dispatch.Direct).instruction as TaxiTo }
-        check(firstInstr.destination.value.contains("STAND")) {
-            "Expected the FIRST Ground TaxiTo after Report(RunwayVacated) to target a stand " +
-                "(post-landing taxi-in flow). Got destination=${firstInstr.destination}.\n" +
+            .dispatch.let { (it as Dispatch.Direct).instruction }
+        check(firstInstr is TaxiToStand) {
+            "Expected the FIRST Ground taxi after Report(RunwayVacated) to be a TaxiToStand " +
+                "(post-landing taxi-in flow). Got: $firstInstr.\n" +
                 "If this fires, the GND-TAXI rule fired before GND-TAXI-STAND — the radio→\n" +
                 "event→belief→commitment→action chain produced a departure-flow taxi for an\n" +
                 "aircraft that had just landed. Suspect: deriveFromReport(RunwayVacated) not\n" +

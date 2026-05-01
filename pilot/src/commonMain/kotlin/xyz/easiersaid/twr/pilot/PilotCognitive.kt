@@ -119,7 +119,8 @@ import xyz.easiersaid.twr.protocol.RequestStartup
 import xyz.easiersaid.twr.protocol.RequestTaxi
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.StartupApproved
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiToStand
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
@@ -525,7 +526,10 @@ fun processInstruction(
         is StartupApproved -> if (step == MissionStep.AWAIT_STARTUP_APPROVAL)
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now) else mission
 
-        is TaxiTo -> if (step in TAXI_TO_STEPS)
+        is TaxiToHoldingPoint -> if (step in TAXI_TO_STEPS)
+            mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now) else mission
+
+        is TaxiToStand -> if (step in TAXI_TO_STEPS)
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now) else mission
 
         is LineUpAndWait -> if (step == MissionStep.AWAIT_LINE_UP)
@@ -792,7 +796,10 @@ private fun runwayFromInstruction(
     priorRunway: Option<RunwayAssignment>,
     worldIndex: WorldIndex,
 ): Option<RunwayAssignment> = when (instruction) {
-    is TaxiTo -> taxiToRunway(instruction, priorRunway, worldIndex)
+    // Pass 6 (D-PF.6 closure): runway is now an explicit field on
+    // TaxiToHoldingPoint (no inference); TaxiToStand carries no runway.
+    is TaxiToHoldingPoint -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.TaxiClearance))
+    is TaxiToStand -> None
     is LineUpAndWait -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.LineUp))
     is ClearedForTakeoff -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Takeoff))
     is ClearedToLand -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Land))
@@ -888,7 +895,10 @@ private fun runwayFromInstruction(
     is TakeoffImmediatelyOrHoldShort -> None
     is TakeoffImmediatelyOrVacateRunway -> None
     is TaxiIntoHoldingBay -> None
-    is TaxiViaRunway -> None
+    // TaxiViaRunway carries an explicit runway: per Pass 6 D-PF.6 / Impact M.1,
+    // the controller's verbal runway statement propagates to activeRunway with
+    // source TaxiClearance — same shape as TaxiToHoldingPoint.
+    is TaxiViaRunway -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.TaxiClearance))
     is TaxiWithCaution -> None
     is TransitionLevelIssuance -> None
     is TurnBase -> None
@@ -898,32 +908,12 @@ private fun runwayFromInstruction(
     is WhenAbleProceedDirect -> None
 }
 
-/**
- * Resolve a [TaxiTo]'s destination to a runway, prefering the prior assignment
- * if it remains in the candidate set (deterministic sorted-first fallback).
- * The clean fix is D-PF.6: [TaxiTo] carries an explicit `runway: RunwayId`
- * field and this whole disambiguator goes away.
- */
-private fun taxiToRunway(
-    instruction: TaxiTo,
-    priorRunway: Option<RunwayAssignment>,
-    worldIndex: WorldIndex,
-): Option<RunwayAssignment> {
-    val candidates = worldIndex.runwaysForHoldingPoint(instruction.destination)
-    val resolved: Option<RunwayId> = when (candidates.size) {
-        0 -> None  // not a holding point; no runway change
-        1 -> Some(candidates.single())
-        else -> {
-            // Multi-runway holding point. Prefer the prior `activeRunway` if
-            // it's still in the candidate set; otherwise sorted-first
-            // deterministic fallback (no JVM-version drift via hash-set order).
-            val preferred = priorRunway.map { it.runway }.filter { it in candidates }
-            if (preferred is Some) preferred
-            else Some(candidates.sortedBy { it.value }.first())
-        }
-    }
-    return resolved.map { RunwayAssignment(it, RunwayAssignmentSource.TaxiClearance) }
-}
+// Pass 6 (D-PF.6 closure): the multi-runway holding-point disambiguator
+// `taxiToRunway(instruction, priorRunway, worldIndex)` deletes. The runway
+// is now an explicit field on [TaxiToHoldingPoint] — pilot reads it
+// directly, no inference, no precedence. Real ATC says
+// "taxi to A4 runway 16L"; the disambiguator was the model's apology for
+// omitting half the instruction.
 
 /**
  * For IFR missions, apply FPL amendments from ATC instructions.

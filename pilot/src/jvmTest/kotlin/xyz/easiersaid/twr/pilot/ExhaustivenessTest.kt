@@ -49,6 +49,11 @@ class ExhaustivenessTest {
         "VectorInstruction", "LevelInstruction", "SpeedInstruction", "ApproachInstruction",
         "ReportInstruction", "FrequencyInstruction", "SurveillanceInstruction",
         "SequencingInstruction", "AerodromeInstruction", "EmergencyInstruction",
+        // Pass 6 (D-PF.6): the new TaxiClearance sealed parent of
+        // TaxiToHoldingPoint and TaxiToStand. Pilot-side per-leaf coverage
+        // is preserved; an `is TaxiClearance` arm would absorb both leaves
+        // and silently regress the runway-vs-stand distinction.
+        "TaxiClearance",
     )
 
     @Test
@@ -58,7 +63,7 @@ class ExhaustivenessTest {
             functionName = "processInstruction",
             sealedRoot = AtcInstruction::class,
             categoryInterfaces = atcInstructionCategoryInterfaces,
-            minLeafCount = 90,
+            expectedLeafCount = ATC_INSTRUCTION_LEAF_COUNT,
         )
     }
 
@@ -73,7 +78,7 @@ class ExhaustivenessTest {
             functionName = "runwayFromInstruction",
             sealedRoot = AtcInstruction::class,
             categoryInterfaces = atcInstructionCategoryInterfaces,
-            minLeafCount = 90,
+            expectedLeafCount = ATC_INSTRUCTION_LEAF_COUNT,
         )
     }
 
@@ -84,7 +89,7 @@ class ExhaustivenessTest {
             functionName = "applyPilotHeardInstruction",
             sealedRoot = AtcInstruction::class,
             categoryInterfaces = atcInstructionCategoryInterfaces,
-            minLeafCount = 90,
+            expectedLeafCount = ATC_INSTRUCTION_LEAF_COUNT,
         )
     }
 
@@ -98,7 +103,7 @@ class ExhaustivenessTest {
             functionName = "processControllerResponse",
             sealedRoot = ControllerResponse::class,
             categoryInterfaces = emptySet(),
-            minLeafCount = 12,
+            expectedLeafCount = CONTROLLER_RESPONSE_LEAF_COUNT,
         )
     }
 
@@ -107,12 +112,18 @@ class ExhaustivenessTest {
         functionName: String,
         sealedRoot: KClass<out Any>,
         categoryInterfaces: Set<String>,
-        minLeafCount: Int,
+        expectedLeafCount: Int,
     ) {
         val leaves = sealedLeaves(sealedRoot)
-        check(leaves.size >= minLeafCount) {
-            "Sanity check: ${sealedRoot.simpleName} sealed traversal found only ${leaves.size} leaves; " +
-                "expected at least $minLeafCount. Reflection or sealedSubclasses traversal regressed."
+        // Pass 6 (FP review S.1): exact-equals leaf-count check (was a soft
+        // floor `>= minLeafCount`). Adding a leaf forces the test update to
+        // surface in PR review, rather than drifting silently under the
+        // floor.
+        check(leaves.size == expectedLeafCount) {
+            "${sealedRoot.simpleName} sealed traversal found ${leaves.size} leaves; " +
+                "expected exactly $expectedLeafCount. If a leaf was added, update the " +
+                "expected count in ExhaustivenessTest's companion. If a leaf was removed, " +
+                "update both the count and the call-sites."
         }
 
         val source = projectRoot().resolve(file).toFile().readText()
@@ -234,5 +245,21 @@ class ExhaustivenessTest {
         val cwd = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize()
         return if (Files.exists(cwd.resolve("settings.gradle.kts"))) cwd
             else cwd.parent ?: cwd
+    }
+
+    companion object {
+        /**
+         * Concrete-leaf count of [AtcInstruction]'s sealed hierarchy.
+         *
+         * Pass 5: 98. Pass 6 (D-PF.6): split `TaxiTo` (−1) into
+         * `TaxiToHoldingPoint` (+1) and `TaxiToStand` (+1) ⇒ 99.
+         *
+         * The exact-equals check (FP review S.1) means any future leaf
+         * addition fails this test — bump the constant in the same PR.
+         */
+        const val ATC_INSTRUCTION_LEAF_COUNT: Int = 99
+
+        /** Concrete-leaf count of [ControllerResponse]'s sealed hierarchy. */
+        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 12
     }
 }

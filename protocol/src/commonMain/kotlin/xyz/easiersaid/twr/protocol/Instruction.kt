@@ -457,11 +457,58 @@ data class PushbackFace(
     val heading: Heading
 ) : GroundInstruction
 
-data class TaxiTo(
+/**
+ * Common parent for the two taxi-with-route clearance leaves. Carries the
+ * fields shared between [TaxiToHoldingPoint] and [TaxiToStand]: the
+ * destination point and the optional via list. Consumers that don't care
+ * which kind of taxi this is (resolution path-finding, route validation,
+ * generic readback construction) dispatch on this parent and never need
+ * to look inside the runway field.
+ *
+ * The split (D-PF.6) is preserved: code that *does* care about runway-vs-
+ * stand semantics dispatches on the leaves directly. The parent is the
+ * shared *evidence*, not a fallback.
+ */
+sealed interface TaxiClearance : GroundInstruction {
+    val destination: PointId
+    val via: List<PointId>
+}
+
+/**
+ * Taxi to a holding point on a runway. Pass 6 (D-PF.6 closure) replaces
+ * the unified `TaxiTo` type, which had to *infer* the runway from the
+ * holding-point identity and broke when a holding point served more than
+ * one runway.
+ *
+ * Per ICAO Doc 9432 (Manual of Radiotelephony), the verbal phraseology is
+ * *"OE-ABC, taxi to holding point Alpha 4, runway 16L"* — the runway is
+ * part of the verbal instruction, not implicit in the destination point.
+ *
+ * Distinct from [TaxiToStand] in algebra: the runway field encodes a
+ * separate behavioural law (sets the pilot's `mission.activeRunway`,
+ * gates downstream `LineUpAndWait` / `ClearedForTakeoff`, forces `RUNWAY`
+ * into the readback atom set). A nullable `runway` on a unified type
+ * would type-check stand-bound taxis with runway fields that have no
+ * real referent — the split is a sum, not an option.
+ */
+data class TaxiToHoldingPoint(
     override val target: AircraftId,
-    val destination: PointId,
-    val via: List<PointId> = emptyList()
-) : GroundInstruction
+    override val destination: PointId,
+    val runway: RunwayId,
+    override val via: List<PointId> = emptyList(),
+) : TaxiClearance
+
+/**
+ * Taxi to a parking stand (post-landing taxi-in or origin-side movement).
+ * Distinct from [TaxiToHoldingPoint]: no runway field — the stand-bound
+ * taxi never crosses an active runway as a destination. `RUNWAY` is
+ * forbidden in this leaf's readback atom set.
+ */
+data class TaxiToStand(
+    override val target: AircraftId,
+    override val destination: PointId,
+    override val via: List<PointId> = emptyList(),
+) : TaxiClearance
 
 data class TaxiViaRunway(
     override val target: AircraftId,
