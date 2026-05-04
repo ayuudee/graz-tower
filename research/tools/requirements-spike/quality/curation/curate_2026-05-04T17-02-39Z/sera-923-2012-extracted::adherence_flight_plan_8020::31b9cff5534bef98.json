@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::31b9cff5534bef98",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "adherence_flight_plan_8020",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.43,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 failed because the provided exactSourceQuote was not found verbatim, and identity fields cannot be corrected in this pass. Although the claim may correspond to an atomic rule not already covered by siblings, promotion would require re-extraction with a verbatim quote.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/adherence_flight_plan_8020/sera-923-2012-extracted::adherence_flight_plan_8020::31b9cff5534bef98.json",
+    "toPath": "rejected/sera-923-2012-extracted/adherence_flight_plan_8020/sera-923-2012-extracted::adherence_flight_plan_8020::31b9cff5534bef98.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:20:49Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::freecall_change_intention_2_64::8e748c6a7d3bb9fd",
+  "documentId": "cap413-extracted",
+  "sectionId": "freecall_change_intention_2_64",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.43,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is present verbatim, the claim is supported by the source window, and the candidate is correctly framed as operational guidance with 'should' modality rather than an authoritative requirement. The accepted sibling is only illustrative phraseology and does not make this operative guidance redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/freecall_change_intention_2_64/cap413-extracted::freecall_change_intention_2_64::8e748c6a7d3bb9fd.json",
+    "toPath": "candidates/cap413-extracted/freecall_change_intention_2_64/cap413-extracted::freecall_change_intention_2_64::8e748c6a7d3bb9fd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:09:47Z"
+}

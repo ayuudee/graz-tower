@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::99ba72189e5e5175",
+  "documentId": "icao9432-extracted",
+  "sectionId": "transfer_communications_2_8_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.41,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the quoted examples are verbatim, the claim text is not supported by those quotes: the cited readback is \"118.9 FASTAIR 345\", not \"Monitoring Frequency Callsign\". Correcting this would require changing the identity claim text and/or quotes, which is not allowed in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::99ba72189e5e5175.json",
+    "toPath": "rejected/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::99ba72189e5e5175.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:20:21Z"
+}

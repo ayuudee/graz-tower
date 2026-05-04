@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::85846fa1a8b72599",
+  "documentId": "icao4444-extracted",
+  "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.71,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and the claim accurately captures a non-operative source Note that merely cross-references other sections. The only defect is the authority classification: a note cannot be an authoritative requirement, so it should be lowered while preserving the note modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::85846fa1a8b72599.json",
+    "toPath": "candidates/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::85846fa1a8b72599.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:15:49Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::fd8e5ed1bb806d67",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.81,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is an exact verbatim match to the source quote, the quote audit and schema/authority checks all pass, and the candidate is an atomic definition of \u2018now\u2019 not already covered by the accepted siblings. Its \u2018should\u2019 modality and operational_guidance authority are appropriate for CAP413 advisory/operational phraseology guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::fd8e5ed1bb806d67.json",
+    "toPath": "candidates/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::fd8e5ed1bb806d67.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:07:48Z"
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8",
+  "documentId": "icao9432-extracted",
+  "sectionId": "transfer_communications_2_8_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.68,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the note/background-support classification is floor-consistent, but the judge explicitly demoted it as support-only rather than accepting it. There is no permissible identity-preserving correction to resolve that; a human curator should decide whether standalone referential footnotes are retained in this section\u2019s candidate set.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:20:34Z"
+}

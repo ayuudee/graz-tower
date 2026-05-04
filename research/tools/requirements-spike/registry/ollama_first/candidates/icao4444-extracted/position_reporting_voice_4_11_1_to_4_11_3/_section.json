@@ -1,0 +1,11 @@
+{
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "familyId": "icao4444_clearance_comms_contract_family",
+  "sourcePath": "research/txt/icao4444-extracted.txt",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "startLine": 3723,
+  "endLine": 3808,
+  "lastPromotedRunId": "promote_2026-05-04T16-53-48Z_83dd",
+  "lastPromotedAt": "2026-05-04T16:53:48Z"
+}

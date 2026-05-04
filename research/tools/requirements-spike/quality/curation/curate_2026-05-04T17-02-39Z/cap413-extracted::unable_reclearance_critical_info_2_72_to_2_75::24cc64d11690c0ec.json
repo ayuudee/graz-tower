@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::24cc64d11690c0ec",
+  "documentId": "cap413-extracted",
+  "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.67,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is source-supported: clause 2.75 introduces the list as examples of critical information and the quoted list item appears verbatim. It is not redundant with the accepted siblings, but the source framing is specifically an example rather than a general note.",
+    "corrections": {
+      "modality": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::24cc64d11690c0ec.json",
+    "toPath": "candidates/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::24cc64d11690c0ec.json",
+    "correctionsApplied": {
+      "modality": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:13:33Z"
+}

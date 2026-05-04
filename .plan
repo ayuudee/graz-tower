@@ -505,12 +505,12 @@ RR-17 quality result for the declared 22 windows; downstream consumers must not 
 the current registry as a full-document extraction.
 Impact: H | Effort: L
 
-**RR-19 — Declared-slice scope contract and source-section disposition ledger** — DONE (2026-04-30; refreshed 2026-05-01)
+**RR-19 — Declared-slice scope contract and source-section disposition ledger** — DONE (2026-04-30; refreshed 2026-05-04)
 Froze the registry scope contract in
 `registry/ollama_first/DECLARED_SLICE.md` and linked that contract from the
-requirements-spike README, runbook, and registry status snapshot. As of the 2026-05-01
-refresh it declares 30 landed windows, 46 live manifest windows, 16 manifest-only windows,
-and 285 accepted / 26 pending / 16 rejected registry records. Built the
+requirements-spike README, runbook, and registry status snapshot. As of the 2026-05-04
+refresh it declares 46 landed windows, 46 live manifest windows, 0 manifest-only windows,
+and 423 accepted / 0 pending / 34 rejected registry records. Built the
 section-level control surface under
 `quality/source_section_ledger/source_section_ledger_2026-04-30/`: 481 ledger
 rows at TOC/major-section granularity plus exact rows for the 46 current
@@ -522,7 +522,7 @@ aerodrome excerpt files as `duplicate_subset` rather than independent ingestion
 targets.
 Impact: H | Effort: M
 
-**RR-20 — Clearance and communications contract seam widening**
+**RR-20 — Clearance and communications contract seam widening** — DONE (2026-05-04)
 One-page plan of record:
 `docs/design/requirements-registry-clearance-comms-seam-plan-2026-04-30.md`.
 Source-window hardening artifact:
@@ -547,16 +547,35 @@ failed with Ollama connection timeouts. Clean v3 promotion on 2026-05-01 landed
 the highest-value subset: SERA.8015(f), SERA.8020, SERA.8025, SERA.8030, and
 SERA.8035 (30 accepted, 6 pending), plus CAP 413 §§2.82-2.91 as three split
 windows (12 accepted, 20 pending). Registry reproducibility audit passed after
-promotion. The remaining ICAO Doc 4444 / ICAO Doc 9432 / CAP 413 §§2.54-2.75
-first-batch windows are exact-manifested but not landed. The current processing
-queue lives at
+promotion. The 2026-05-01 exact-window processing queue lives at
 `quality/source_processing_queue/source_processing_queue_2026-05-01/`: 16 exact
 windows ready for Ollama-backed ingestion (8 CAP 413, 7 ICAO Doc 4444, 1 ICAO
 Doc 9432), 26 existing pending records requiring curation, and 83 high-priority
 non-manifest rows that need future source-window hardening. Explicit deferrals
 remain for H01 §§3.3/3.9/3.10 and ICAO Doc 4444 position-reporting
-phraseology. Next: run the 16-window batch with `ingest_section_batch.py`, promote,
-audit, then curate remaining pending records.
+phraseology. The 16 exact windows were then run on the remote Ollama-backed
+processor, promoted on 2026-05-04 as
+`promote_2026-05-04T16-53-48Z_83dd`, curated in
+`curate_2026-05-04T17-02-39Z` and `curate_2026-05-04T17-24-57Z`, and left the
+live registry at 423 accepted / 0 pending / 34 rejected records. Post-promotion
+checks passed: reproducibility audit 457 records / 0 mismatches, quote audit
+534 quotes / 0 misses, regression check 0 hard and 0 soft warnings, plus 91
+quality-gate and 13 override-contract tests. Current snapshot:
+`quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`.
+Impact: H | Effort: M
+
+**RR-21 — Post-widening adequacy adjudication for the 46-window registry**
+The registry now covers every live manifest window and has no pending records,
+but this only proves ingestion, traceability, quote presence, deterministic
+promotion, and regression stability. It does not yet prove that the expanded
+46-window registry is a complete/honest semantic translation of the source
+windows. A fresh 80/20 review queue exists at
+`quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/` with 48 sampled
+records and 12 sampled sections. Next: adjudicate that pack against the source
+text, classify record defects and section omissions, repair material gaps
+directly in the structured output, and snapshot the post-repair result. Until
+then, downstream consumers can rely on the registry as the landed declared
+slice, but not as independently adequacy-accepted.
 Impact: H | Effort: M
 
 ---

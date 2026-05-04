@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::3eac35adf167c46e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "phraseology_transfer_frequency_12_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.77,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the note, but the candidate's exactSourceQuote does not exist verbatim as a contiguous quote in the provided source window, and identity fields cannot be corrected in this pass. Under the rules, a real G1 verbatim miss requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/phraseology_transfer_frequency_12_3_1_4/icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::3eac35adf167c46e.json",
+    "toPath": "rejected/icao4444-extracted/phraseology_transfer_frequency_12_3_1_4/icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::3eac35adf167c46e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:16:42Z"
+}

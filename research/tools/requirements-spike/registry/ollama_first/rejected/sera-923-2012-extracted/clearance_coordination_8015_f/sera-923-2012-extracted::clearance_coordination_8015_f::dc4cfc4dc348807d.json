@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::dc4cfc4dc348807d",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "clearance_coordination_8015_f",
+  "familyId": "sera_clearance_comms_contract_family",
+  "claimText": "An aircraft shall be cleared for the entire route to the aerodrome of first intended landing when there is reasonable assurance that prior coordination will be effected between those units under whose control the aircraft will subsequently come.",
+  "rationale": "Condition for full route clearance based on reasonable assurance of coordination.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "An aircraft shall be cleared for the entire route to the aerodrome of first intended landing: (ii) when there is reasonable assurance that prior coordination will be effected between those units under whose control the aircraft will subsequently come."
+  ],
+  "sourceItemIds": [
+    "sera_923_f_2_ii"
+  ],
+  "claimSha256": "f9f90863139b20a8ad3a8a2a41a1df61b9e93a65f810d704eec100f09f6b173a",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2038,
+    "endLine": 2071
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+    "caseId": "sera_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_923_f_2_ii_full_route_reasonable_assurance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "An aircraft shall be cleared for the entire route to the aerodrome of first intended landing: (ii) when there is reasonable assurance that prior coordination will be effected between those units under whose control the aircraft will subsequently come.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate\u2019s quoted support failed the verbatim quote audit, and the quote appears to be a non-contiguous splice of the common stem with subparagraph (ii) rather than text existing verbatim in the source. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:21:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-01T10:49:29Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/sera-923-2012-extracted/clearance_coordination_8015_f/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:21:45Z"
+  }
+}

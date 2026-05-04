@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::643a320d5f693ad9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.27,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote does not appear verbatim in the source window, including quotation-mark differences and omitted trailing wording, so the identity fields would require re-extraction and cannot be corrected in this pass. The candidate also has a may \u00d7 authoritative_requirement mismatch, but the G1 verbatim failure is sufficient to reject.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::643a320d5f693ad9.json",
+    "toPath": "rejected/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::643a320d5f693ad9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:15:31Z"
+}

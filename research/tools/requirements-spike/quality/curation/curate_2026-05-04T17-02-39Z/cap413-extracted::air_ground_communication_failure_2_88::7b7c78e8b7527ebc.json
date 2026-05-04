@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::7b7c78e8b7527ebc",
+  "documentId": "cap413-extracted",
+  "sectionId": "air_ground_communication_failure_2_88",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.34,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, schema and authority/modality checks pass, and the item is an atomic checklist point not already covered by the accepted siblings. CAP413 should remain treated as operational guidance/advisory material, which matches the candidate's note modality and operational_guidance authority class.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/air_ground_communication_failure_2_88/cap413-extracted::air_ground_communication_failure_2_88::7b7c78e8b7527ebc.json",
+    "toPath": "candidates/cap413-extracted/air_ground_communication_failure_2_88/cap413-extracted::air_ground_communication_failure_2_88::7b7c78e8b7527ebc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:04:17Z"
+}

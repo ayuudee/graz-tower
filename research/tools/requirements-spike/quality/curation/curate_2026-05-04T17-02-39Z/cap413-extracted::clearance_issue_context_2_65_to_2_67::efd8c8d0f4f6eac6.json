@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::efd8c8d0f4f6eac6",
+  "documentId": "cap413-extracted",
+  "sectionId": "clearance_issue_context_2_65_to_2_67",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.97,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the claim is atomic and not covered by accepted siblings, and the candidate correctly preserves the source\u2019s advisory \u201cshould\u201d modality as operational guidance. The pending status appears to stem from the judge treating advisory-only material as non-accepted despite the gates passing.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::efd8c8d0f4f6eac6.json",
+    "toPath": "candidates/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::efd8c8d0f4f6eac6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:05:51Z"
+}

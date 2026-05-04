@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::631ef8737aacff45",
+  "documentId": "cap413-extracted",
+  "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.76,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source list introduced as examples of critical information, and it is not redundant with the accepted sibling items because this specific example is not yet accepted. The source framing is illustrative rather than a note, so the modality should be corrected to `example` while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::631ef8737aacff45.json",
+    "toPath": "candidates/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::631ef8737aacff45.json",
+    "correctionsApplied": {
+      "modality": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:13:58Z"
+}

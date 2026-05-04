@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::c51324227b0a0f3b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.88,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate omits a material condition from the source Note: omission of element d) may be possible only when altitude is continuously available in labels and when adequate procedures have been developed to ensure safe and efficient use. Because the claimText and quote fragment make the first condition appear sufficient, the identity fields would need re-extraction rather than modality/authority correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::c51324227b0a0f3b.json",
+    "toPath": "rejected/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::c51324227b0a0f3b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:19:34Z"
+}

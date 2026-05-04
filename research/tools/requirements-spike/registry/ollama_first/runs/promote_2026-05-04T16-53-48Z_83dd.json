@@ -1,0 +1,845 @@
+{
+  "runId": "promote_2026-05-04T16-53-48Z_83dd",
+  "runStartedAt": "2026-05-04T16:53:48Z",
+  "documents": [
+    {
+      "documentId": "cap413-extracted",
+      "runId": "promote_2026-05-04T16-53-48Z_83dd",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 41,
+      "sectionResults": [
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "acknowledgement_receipt_2_56",
+          "status": "promoted",
+          "totalJudged": 2,
+          "landed": [],
+          "pending": [
+            "cap413-extracted::acknowledgement_receipt_2_56::ae0ed1317555b63f",
+            "cap413-extracted::acknowledgement_receipt_2_56::fca69d089a0b03d5"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::acknowledgement_receipt_2_56::ae0ed1317555b63f",
+              "originalCandidateId": "cap413_ack_callsign_or_roger",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::acknowledgement_receipt_2_56::fca69d089a0b03d5",
+              "originalCandidateId": "cap413_no_copy_phrases",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "clearance_issue_context_2_65_to_2_67",
+          "status": "promoted",
+          "totalJudged": 9,
+          "landed": [
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::b00f2e3c6db1dd01",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::2d421ecd498aa7ba",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::af7d16887af76c59",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::181d888eff8332ab"
+          ],
+          "pending": [
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::088f5e791bb97852",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::efd8c8d0f4f6eac6",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::fa08347c34840807",
+            "cap413-extracted::clearance_issue_context_2_65_to_2_67::130f07dba17f0938"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::088f5e791bb97852",
+              "originalCandidateId": "cap413_266_delivery_clarity",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::efd8c8d0f4f6eac6",
+              "originalCandidateId": "cap413_266_timing_pre_start",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b",
+              "originalCandidateId": "cap413_266_tactical_reiteration",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::fa08347c34840807",
+              "originalCandidateId": "cap413_266_timing_restrictions",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::130f07dba17f0938",
+              "originalCandidateId": "cap413_267_clearance_not_instruction",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "corrections_2_54_to_2_55",
+          "status": "promoted",
+          "totalJudged": 3,
+          "landed": [
+            "cap413-extracted::corrections_2_54_to_2_55::613ef3cd01d2cfa5",
+            "cap413-extracted::corrections_2_54_to_2_55::d9385635b7db344a"
+          ],
+          "pending": [
+            "cap413-extracted::corrections_2_54_to_2_55::69ca0abbf1802295"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::corrections_2_54_to_2_55::69ca0abbf1802295",
+              "originalCandidateId": "cap413_example_partial",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "freecall_change_intention_2_64",
+          "status": "promoted",
+          "totalJudged": 2,
+          "landed": [],
+          "pending": [
+            "cap413-extracted::freecall_change_intention_2_64::8e748c6a7d3bb9fd",
+            "cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::freecall_change_intention_2_64::8e748c6a7d3bb9fd",
+              "originalCandidateId": "cap413_freecall_request_or_notify",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1",
+              "originalCandidateId": "cap413_example_freecall_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "frequency_change_permission_2_60_to_2_61",
+          "status": "promoted",
+          "totalJudged": 5,
+          "landed": [
+            "cap413-extracted::frequency_change_permission_2_60_to_2_61::6bf5a08c28bfb7db",
+            "cap413-extracted::frequency_change_permission_2_60_to_2_61::0d3409d91f9d2b10"
+          ],
+          "pending": [
+            "cap413-extracted::frequency_change_permission_2_60_to_2_61::e87cb5ce96b795fd",
+            "cap413-extracted::frequency_change_permission_2_60_to_2_61::f3ee57c068d9104f",
+            "cap413-extracted::frequency_change_permission_2_60_to_2_61::54fee00e427e60a3"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::frequency_change_permission_2_60_to_2_61::e87cb5ce96b795fd",
+              "originalCandidateId": "cap413_freq_change_advised_normally",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::frequency_change_permission_2_60_to_2_61::f3ee57c068d9104f",
+              "originalCandidateId": "cap413_example_contact_phrase",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::frequency_change_permission_2_60_to_2_61::54fee00e427e60a3",
+              "originalCandidateId": "cap413_example_acknowledge_phrase",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "standby_monitor_conditional_contact_2_62_to_2_63",
+          "status": "promoted",
+          "totalJudged": 4,
+          "landed": [],
+          "pending": [
+            "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4598640cef9fe54",
+            "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4b2d466ee2099b1",
+            "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::75cef619e4ee4101",
+            "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::618df17876608786"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4598640cef9fe54",
+              "originalCandidateId": "cap413_standby_instruction",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4b2d466ee2099b1",
+              "originalCandidateId": "cap413_monitor_instruction",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::75cef619e4ee4101",
+              "originalCandidateId": "cap413_contact_at_point_or_level",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::618df17876608786",
+              "originalCandidateId": "cap413_radar_heading_report",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "transfer_content_2_57_to_2_59",
+          "status": "promoted",
+          "totalJudged": 5,
+          "landed": [
+            "cap413-extracted::transfer_content_2_57_to_2_59::0e57e065c5b5b950"
+          ],
+          "pending": [
+            "cap413-extracted::transfer_content_2_57_to_2_59::422e8e7a4e372b05",
+            "cap413-extracted::transfer_content_2_57_to_2_59::28c08ec2a7005ec7",
+            "cap413-extracted::transfer_content_2_57_to_2_59::8b62c110815dbe89",
+            "cap413-extracted::transfer_content_2_57_to_2_59::f21c2b31952f844e"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::422e8e7a4e372b05",
+              "originalCandidateId": "cap413_257_frequency",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::28c08ec2a7005ec7",
+              "originalCandidateId": "cap413_258_single_message",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::8b62c110815dbe89",
+              "originalCandidateId": "cap413_258_readback_separation",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::f21c2b31952f844e",
+              "originalCandidateId": "cap413_259_assumption",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "cap413-extracted",
+          "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+          "status": "promoted",
+          "totalJudged": 11,
+          "landed": [
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::635804df4bbb3fa2",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::dd9a883ff7cafd9c",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::430257c85c8a018e",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::5000915a8f23c5b3"
+          ],
+          "pending": [
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::ffde48bdf99e2372",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::24cc64d11690c0ec",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::6e7ad694d76c98e9",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::631ef8737aacff45",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::5864e51dffaa5854",
+            "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::edaf457e4ec53926"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::ffde48bdf99e2372",
+              "originalCandidateId": "cap413_2.72_unable_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89",
+              "originalCandidateId": "cap413_2.74_critical_info_definition",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::24cc64d11690c0ec",
+              "originalCandidateId": "cap413_2.75_lvp_example",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::6e7ad694d76c98e9",
+              "originalCandidateId": "cap413_2.75_windshear_example",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::631ef8737aacff45",
+              "originalCandidateId": "cap413_2.75_aerodrome_example",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::5864e51dffaa5854",
+              "originalCandidateId": "cap413_2.75_equipment_example",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::edaf457e4ec53926",
+              "originalCandidateId": "cap413_2.75_weather_example",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "runId": "promote_2026-05-04T16-53-48Z_83dd",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 83,
+      "sectionResults": [
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+          "status": "promoted",
+          "totalJudged": 33,
+          "landed": [
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b3add544ab5151e4",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::c0ba95bd584d367f",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b5be2150dda9ad96",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::17a6ecec963c37b9",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::38497488b58cc6ca",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::8740f67c3c20b38d",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::5c5e497984c471ba",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::f8e93d4c0e36224c",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::fca8eda961d90c6a",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::6acf57431f830f0c",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::ea54593dd6eaad10",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::d294a170dce5ad19",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::79c603c0fd56b37e",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::1c598cbe8c670758",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::da03618dd77c3a19",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::1b19e5f1d62cbc67",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::4f3312b8ac344a26",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::ee72f5d19a654420",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::43ab924c4684324e",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::f63465b41990decc",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::18c9b7a8f85afd03",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::d6a1fbad3d726e5a"
+          ],
+          "pending": [
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::1cee51d02cc41201",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::6f1c60d209d634eb",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::91a7fb0995e6a87c",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::fa055200dfc5b820",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::643a320d5f693ad9",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::3eb599f98d037d47",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::92b4097c410ac219",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::2058dc30009cd179",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::4b5f499da1f959ee",
+            "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::85846fa1a8b72599"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::1cee51d02cc41201",
+              "originalCandidateId": "4.5.1.2_amended_request",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::6f1c60d209d634eb",
+              "originalCandidateId": "4.5.3.3_intermediate_stops_coordination",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::91a7fb0995e6a87c",
+              "originalCandidateId": "4.5.6.1.1_transfer_clearance",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::fa055200dfc5b820",
+              "originalCandidateId": "4.5.6.2.2_supersonic_amendments",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::643a320d5f693ad9",
+              "originalCandidateId": "4.5.7.2.1_cleared_fpr_usage",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75",
+              "originalCandidateId": "4.5.7.2.1_standard_routes",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::3eb599f98d037d47",
+              "originalCandidateId": "4.5.7.2.2_reclearance_prohibition",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::92b4097c410ac219",
+              "originalCandidateId": "4.5.7.2.3_direct_routing",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::2058dc30009cd179",
+              "originalCandidateId": "4.5.7.4.2_unable_response",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::4b5f499da1f959ee",
+              "originalCandidateId": "4.5.7.4.2_alternative_offering",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::85846fa1a8b72599",
+              "originalCandidateId": "4.5.7.2.1_note_support",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "fail",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "control_responsibility_4_3_1",
+          "status": "promoted",
+          "totalJudged": 3,
+          "landed": [
+            "icao4444-extracted::control_responsibility_4_3_1::5fe2d032a7f1a3fb",
+            "icao4444-extracted::control_responsibility_4_3_1::51ff97f40ed21469",
+            "icao4444-extracted::control_responsibility_4_3_1::fa000306d3d97344"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "control_transfer_app_acc_sector_4_3_3_to_4_3_5",
+          "status": "promoted",
+          "totalJudged": 6,
+          "landed": [
+            "icao4444-extracted::control_transfer_app_acc_sector_4_3_3_to_4_3_5::346546a1cd9fc357",
+            "icao4444-extracted::control_transfer_app_acc_sector_4_3_3_to_4_3_5::b58c5e24eb4e9d85",
+            "icao4444-extracted::control_transfer_app_acc_sector_4_3_3_to_4_3_5::fb9b0fac767ed791",
+            "icao4444-extracted::control_transfer_app_acc_sector_4_3_3_to_4_3_5::f134cc77fa17a059",
+            "icao4444-extracted::control_transfer_app_acc_sector_4_3_3_to_4_3_5::5ba4420d0728373d",
+            "icao4444-extracted::control_transfer_app_acc_sector_4_3_3_to_4_3_5::550f92791cfbe271"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "phraseology_clearance_issuance_12_3_2_1",
+          "status": "promoted",
+          "totalJudged": 8,
+          "landed": [
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::bc122250c00c8636",
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::fa1011cbf90dfea9",
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::180ca61ddf3bad84",
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::c3bb865472b9f512",
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::bb268465618a9fbc",
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::2b919a9009e021e3",
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::654a32e168d53a26"
+          ],
+          "pending": [
+            "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::6d10b67dcbbc3f39"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::6d10b67dcbbc3f39",
+              "originalCandidateId": "phraseology_issuance_overview",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "phraseology_transfer_frequency_12_3_1_4",
+          "status": "promoted",
+          "totalJudged": 11,
+          "landed": [
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::58bf19646c7bd06a",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::158929702af0b5e5",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::7f28828969b75cb8",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::2fe5141abc3379de",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::4f39857b1d1bc82c",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::1ccb4f7232a0b32a",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::bbb480817743b127"
+          ],
+          "pending": [
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::50ac98b0cfa6d73b",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::3eac35adf167c46e",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::714ffa24e735c73d",
+            "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::cc526afba45df47e"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::50ac98b0cfa6d73b",
+              "originalCandidateId": "cand_contact_conditional",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_human_review"
+            },
+            {
+              "canonicalId": "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::3eac35adf167c46e",
+              "originalCandidateId": "cand_stand_by_definition",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::714ffa24e735c73d",
+              "originalCandidateId": "cand_monitor_definition",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::cc526afba45df47e",
+              "originalCandidateId": "cand_stand_by_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_human_review"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+          "status": "promoted",
+          "totalJudged": 21,
+          "landed": [
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::92d0457f8ae02220",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::657ebe4a7cbe1ddd",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::51a5435fb8af092d",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::ebe19687d6456f04",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::6d77e484c0c69d7f",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::8bb8dce4a7e32b6a",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::cd8f85818742e61d",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::1fe1bafef7d97414",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::b53f6fabb38b5e67",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::283c0124735ac65d",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::a46c09554d5ac106",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::b06a743d1f6766de",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::142c13c660fc2b54",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::49485c80d317fe83",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::75a7509674254374"
+          ],
+          "pending": [
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::3a874ea4e6538901",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::e7db6822d68514f3",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::336bf88cabfbd998",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::05811383a8f5ae6d",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::5d610f425247dd7a",
+            "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::c51324227b0a0f3b"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::3a874ea4e6538901",
+              "originalCandidateId": "pos_rpt_content_ident",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::e7db6822d68514f3",
+              "originalCandidateId": "pos_rpt_content_position",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::336bf88cabfbd998",
+              "originalCandidateId": "pos_rpt_content_time",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::05811383a8f5ae6d",
+              "originalCandidateId": "pos_rpt_content_significant_point",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "needs_bundle"
+            },
+            {
+              "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::5d610f425247dd7a",
+              "originalCandidateId": "pos_rpt_exemption_note",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::c51324227b0a0f3b",
+              "originalCandidateId": "pos_rpt_altitude_omission_note",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "documentId": "icao4444-extracted",
+          "sectionId": "systems_equipment_failure_4_14",
+          "status": "promoted",
+          "totalJudged": 1,
+          "landed": [
+            "icao4444-extracted::systems_equipment_failure_4_14::1f5a8413901a040e"
+          ],
+          "pending": [],
+          "gateMisses": [],
+          "conflicts": []
+        }
+      ]
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "runId": "promote_2026-05-04T16-53-48Z_83dd",
+      "parseFailuresRecorded": 0,
+      "csvRowsAppended": 6,
+      "sectionResults": [
+        {
+          "documentId": "icao9432-extracted",
+          "sectionId": "transfer_communications_2_8_2_en",
+          "status": "promoted",
+          "totalJudged": 6,
+          "landed": [
+            "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
+            "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538"
+          ],
+          "pending": [
+            "icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac",
+            "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
+            "icao9432-extracted::transfer_communications_2_8_2_en::99ba72189e5e5175",
+            "icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8"
+          ],
+          "gateMisses": [
+            {
+              "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac",
+              "originalCandidateId": "req_monitor_frequency",
+              "g1": "fail",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "accepted"
+            },
+            {
+              "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
+              "originalCandidateId": "ex_freq_change_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::99ba72189e5e5175",
+              "originalCandidateId": "ex_monitor_phraseology",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            },
+            {
+              "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8",
+              "originalCandidateId": "ref_radiotelephony_differences",
+              "g1": "pass",
+              "g2": "pass",
+              "g3": "pass",
+              "g4": "pass",
+              "judgeDecision": "advisory_only"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    }
+  ]
+}

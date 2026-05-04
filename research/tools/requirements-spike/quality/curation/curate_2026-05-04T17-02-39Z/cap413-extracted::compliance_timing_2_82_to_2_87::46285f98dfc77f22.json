@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::46285f98dfc77f22",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.46,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact example phraseology quotes are verbatim-supported, the schema and authority/modality checks pass, and the candidate is an atomic example not already covered by the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::46285f98dfc77f22.json",
+    "toPath": "candidates/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::46285f98dfc77f22.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:06:50Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::711e42eb82b28951",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.12,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim supported, schema and authority/modality audits pass, and the advisory CAP413 framing is appropriately represented as operational guidance with should-level modality. The accepted siblings cover related timing phrases and exceptions but do not make this general prompt-compliance expectation redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::711e42eb82b28951.json",
+    "toPath": "candidates/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::711e42eb82b28951.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:07:21Z"
+}

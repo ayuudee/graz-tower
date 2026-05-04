@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::edaf457e4ec53926",
+  "documentId": "cap413-extracted",
+  "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.84,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quote are source-grounded, and this is an atomic example not already covered by accepted siblings. The source frames the listed item as an example of critical information, so the modality should be corrected from note to example while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::edaf457e4ec53926.json",
+    "toPath": "candidates/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::edaf457e4ec53926.json",
+    "correctionsApplied": {
+      "modality": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:14:35Z"
+}

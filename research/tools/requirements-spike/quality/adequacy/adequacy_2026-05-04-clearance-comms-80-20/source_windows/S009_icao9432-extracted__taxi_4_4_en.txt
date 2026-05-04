@@ -1,0 +1,223 @@
+4917: 4.4 TAXI INSTRUCTIONS
+4918:
+4919: 4.4.1
+4920: Taxi instruction issued by a controller will always contain a clearance limit, which is the point
+4921: at which the aircraft must stop until further permission to proceed is given. For departing aircraft, the clearance
+4922: limit will normally be the taxi-holding point of the runway in use, but it may be any other position on the
+4923: aerodrome depending on the prevailing traffic circumstances.
+4924: 4.4.2
+4925: When a taxi clearance contains a taxi limit beyond a runway, it shall contain an explicit
+4926: clearance to cross, or an instruction to hold short of that runway.
+4927:
+4928: STEPHENVILLE TOWER G-ABCD
+4929: C172 AT THE SOUTH SIDE
+4930: HANGARS REQUEST TAXI FOR
+4931: LOCAL VFR FLIGHT
+4932: G-ABCD TAXI VIA TAXIWAY
+4933: CHARLIE TO HOLDING POINT
+4934: RUNWAY 24 WIND 250 DEGREES
+4935: 8 KNOTS QNH 1010
+4936: TIME TWO THREE
+4937: QNH 1010 REQUEST RUNWAY 14 G-ABCD
+4938:
+4939: Podręcznik radiotelefonicznej frazeologii lotniczej
+4940:
+4941: 4-3
+4942:
+4943: 
+4944: 4.3.2
+4945: Poniższa frazeologia powinna być stosowana przez pilota i obsługę naziemną podczas
+4946: koordynacji wypychania.
+4947:
+4948: POTWIERDŹ ZWOLNIENIE
+4949: HAMULCÓW
+4950:
+4951: GOTOWY DO WYPYCHANIA
+4952: HAMULCE ZWOLNIONE
+4953:
+4954: ZACZYNAM WYPYCHANIE
+4955: WYPYCHANIE ZAKOŃCZONE, POTWIERDŹ
+4956: WŁĄCZENIE HAMULCÓW
+4957: HAMULCE WŁĄCZONE: ROZŁĄCZ SIĘ
+4958: ROZŁĄCZAM: OCZEKUJ NA SYGNAŁ WZROKOWY Z
+4959: TWOJEJ LEWEJ
+4960: PRZYJĄŁEM
+4961:
+4962: 4.3.3
+4963: Po zakończeniu wypychania obsługa naziemna podaje pilotowi sygnał wzrokowy informujący, że nie
+4964: ma przeciwwskazań do rozpoczęcia kołowania. Jeżeli pilot zamierza przerwać manewr wypychania, powinien użyć
+4965: wyrażenia: „przerwij wypychanie”.
+4966:
+4967: 4.4
+4968:
+4969: INSTRUKCJE KOŁOWANIA
+4970:
+4971: 4.4.1 Instrukcja kołowania zawsze zawiera granicę zezwolenia, czyli miejsce, w którym samolot musi się
+4972: zatrzymać i zaczekać na kolejne instrukcje. W przypadku odlatujących statków powietrznych jest to zazwyczaj
+4973: punkt oczekiwania przed pasem w użyciu. Sytuacja ruchowa może jednak wymusić konieczność zatrzymania statku
+4974: powietrznego w dowolnym innym miejscu.
+4975: 4.4.2 Jeżeli kołowanie wymaga przecięcia drogi startowej w użyciu, zezwolenie musi zawierać wyraźne
+4976: zezwolenie na cięcie pasa lub instrukcję zatrzymania się przed nim.
+4977:
+4978: STEPHENVILLE WIEŻA
+4979: G-ABCD C172 PRZY HANGARACH
+4980: PO POŁUDNIOWEJ STRONIE
+4981: PROSZĘ O KOŁOWANIE, LOT VFR
+4982: W REJONIE
+4983: G-ABCD KOŁUJ DROGĄ CHARLIE
+4984: DO PUNKTU OCZEKIWANIA PRZED
+4985: PASEM 24 WIATR 250 STOPNI 8
+4986: WĘZŁÓW QNH 1010 CZAS DWA
+4987: TRZY
+4988: QNH 1010 PROSZĘ O PAS 14, G-ABCD
+4989:
+4990: 4-4
+4991:
+4992: Manual of Radiotelephony
+4993:
+4994: 
+4995: G-CD RECLEARED HOLDING POINT RUNWAY 14,
+4996: TAXI BEHIND SENECA COMING FROM YOUR LEFT
+4997: HOLDING POINT RUNWAY 14 TRAFFIC
+4998: IN SIGHT G-CD
+4999: ----------------STEPHENVILLE TOWER G-ABCD C172 AT THE FUEL
+5000: STATION VFR TO WALDEN REOUEST TAXI
+5001: G-ABCD RUNWAY 06 WIND 080 DEGREES
+5002: 10 KNOTS QNH 1012 VISIBILITY 8 KM TIME 04 TAXI TO
+5003: HOLDING POINT RUNWAY 06 VIA TAXIWAY ALPHA
+5004: RUNWAY 06 QNH 1012 REQUEST TAXIWAY BRAVO
+5005: AND BACKTRACK G-ABCD
+5006: G-CD APPROVED, TAXI VIA BRAVO ENTER RUNWAY
+5007: 24 BACKTRACK AND LINE UP 06
+5008: HOLD SHORT OF RUNWAY 14
+5009: BRAVO ENTER RUNWAY 24 BACKTRACK AND LINE UP 06,
+5010: HOLDING SHORT OF RUNWAY 14 G–CD
+5011: G-CD HOLDING SHORT OF RUNWAY 14
+5012: ----------------G-CD EXPEDITE TAXI TRAFFIC ON
+5013: FINAL RUNWAY 24, REPORT RUNWAY 24 VACATED
+5014: EXPEDITING G-CD
+5015: G-CD RUNWAY VACATED
+5016: ----------------STEPHENVILLE TOWER G-ABCD AT THE FUEL
+5017: STATION REQUEST TAXI TO FLYING CLUB
+5018: G-ABCD TAXI TO HOLDING POINT RUNWAY 24 VIA
+5019: TAXIWAY CHARLIE
+5020: VIA CHARLIE HOLDING POINT RUNWAY 24 G-ABCD
+5021: G-CD APPROACHING HOLDING POINT REQUEST CROSS
+5022: RUNWAY 24
+5023: G-CD HOLD SHORT OF RUNWAY 24
+5024: HOLDING SHORT G-CD
+5025:
+5026: Podręcznik radiotelefonicznej frazeologii lotniczej
+5027:
+5028: 4-4
+5029:
+5030: 
+5031: G-CD ZMIANA ZEZWOLENIA PUNKT
+5032: OCZEKIWANIA PRZED PASEM 14, KOŁUJ ZA
+5033: SENEKĄ Z TWOJEJ LEWEJ
+5034: PUNKT OCZEKIWANIA PRZED PASEM 14
+5035: WIDZĘ RUCH, G-CD
+5036: --------------STEPHENVILLE WIEŻA G-ABCD C172 PRZY STACJI
+5037: PALIW, VFR DO WALDEN, PROSZĘ O KOŁOWANIE
+5038:
+5039: G-ABCD PAS 06 WIATR 080 STOPNI
+5040: 10 WĘZŁÓW QNH 1012 WIDZIALNOŚĆ 8
+5041: KM CZAS 04 KOŁUJ DO PUNKTU
+5042: OCZEKIWANIA PRZED PASEM 06 DROGĄ
+5043: ALFA
+5044: PAS 06 QNH 1012 PROSZĘ O KOŁOWANIE DROGĄ BRAVO I
+5045: BACKTRACK G-ABCD
+5046: G-CD MOŻESZ KOŁOWAĆ DROGĄ BRAVO, KOŁUJ
+5047: PASEM 24 BACKTRACK DO ODLOTU PAS 06
+5048: OCZEKUJ PRZED PASEM 14
+5049: BRAVO, KOŁUJĘ PASEM 24 BACKTRACK DO ODLOTU PAS
+5050: 06, BĘDĘ OCZEKIWAĆ PRZED PASEM 14 G-CD
+5051: G-CD OCZEKUJĘ PRZED PASEM 14
+5052: ----------------G-CD PRZYSPIESZ KOŁOWANIE,
+5053: RUCH NA PROSTEJ PAS 24
+5054: PRZYSPIESZAM, G-CD
+5055: G-CD PAS ZWOLNIONY
+5056: ----------------STEPHENVILLE WIEŻA G-ABCD PRZY STACJI PALIW
+5057: PROSZĘ O KOŁOWANIE DO AEROKLUBU
+5058: G-ABCD KOŁUJ DO PUNKTU OCZEKIWANIA PRZED
+5059: PASEM 24 DROGĄ CHARLIE
+5060: DROGĄ CHARLIE DO PUNKTU OCZEKIWANIA
+5061: PRZED PASEM 24 G-ABCD
+5062: G-CD ZBLIŻAM SIĘ DO PUNKTU OCZEKIWANIA, PROSZĘ
+5063: O PRZECIĘCIE PASA 24
+5064: G-CD OCZEKUJ PRZED PASEM 24
+5065: BĘDĘ OCZEKIWAĆ PRZED PASEM, G-CD
+5066:
+5067: 4-5
+5068:
+5069: Manual of Radiotelephony
+5070:
+5071: 
+5072: G-CD CROSS RUNWAY 24 REPORT VACATED
+5073: CONTINUE TO FLYING CLUB
+5074: CROSSING, WILCO G-CD
+5075: G-CD RUNWAY VACATED
+5076: G-CD ROGER
+5077: ----------------G-HELI REQUEST AIR-TAXIING FROM FUEL STATION TO
+5078: APRON
+5079: G-HELI AIR TAXI DIRECT FROM FUEL STATION TO
+5080: APRON, AVOID B747 TAXIING FROM STAND 27 TO
+5081: HOLDING POINT RUNWAY 24
+5082: AIR TAXI DIRECT FROM FUEL STATION TO APRON, TRAFFIC
+5083: IN SIGHT, G-HELI
+5084:
+5085: Note. – The runway is vacated when the entire aircraft is beyond the relevant runway-holding position.
+5086: 4.4.3
+5087: Where an aircraft acknowledges receipt of the ATIS broadcast, the controller does not need to
+5088: pass departure information to the pilot when giving taxiing instructions.
+5089:
+5090: GEORGETOWN GROUND FASTAIR 345
+5091: HEAVY REQUEST TAXI
+5092: INFORMATION CHARLIE
+5093: FASTAIR 345 TAXI TO HOLDING
+5094: POINT RUNWAY 27 GIVE WAY
+5095: TO B747 PASSING LEFT TO RIGHT
+5096: QNH 1019
+5097: HOLDING POINT
+5098: RUNWAY 27 QNH 1019, GIVING WAY
+5099: TO B747 FASTAIR 345
+5100:
+5101: Podręcznik radiotelefonicznej frazeologii lotniczej
+5102:
+5103: 4-5
+5104:
+5105: 
+5106: G-CD PRZETNIJ PAS 24 ZGŁOŚ ZWOLNIENIE
+5107: KOŁUJ DO AEROKLUBU
+5108: PRZECINAM, ZGŁOSZĘ G-CD
+5109: G-CD PAS ZWOLNIONY
+5110: G-CD PRZYJĄŁEM
+5111: ----------------G-HELI PROSZĘ O PODLOT ZE STACJI PALIW NA PŁYTĘ
+5112: G-HELI WYKONAJ PODLOT ZE STACJI PALIW NA
+5113: PŁYTĘ, OMIŃ B747 KOŁUJĄCEGO ZE STANOWISKA 27
+5114: DO PUNKTU OCZEKIWANIA PRZED PASEM 24
+5115: PODLOT ZE STACJI PALIW NA PŁYTĘ, WIDZĘ RUCH, G-HELI
+5116:
+5117: Uwaga: Pas uważa się za zwolniony, gdy cały statek powietrzny znajduje się za punktem oczekiwania przed
+5118: drogą startową.
+5119: 4.4.3
+5120: Jeżeli pilot potwierdzi odsłuchanie komunikatu ATIS, nie ma potrzeby przekazywania mu
+5121: informacji do odlotu podczas wydawania instrukcji kołowania.
+5122:
+5123: GEORGETOWN GROUND FASTAIR 345
+5124: CIĘŻKI
+5125: PROSZĘ O KOŁOWANIE
+5126: INFORMACJA CHARLIE
+5127: FASTAIR 345 KOŁUJ DO PUNKTU
+5128: OCZEKIWANIA PRZED PASEM 27
+5129: PRZEPUŚĆ B747 KOŁUJĄCEGO Z
+5130: LEWEJ NA PRAWĄ QNH 1019
+5131: PUNKT OCZEKIWANIA PRZED PASEM 27
+5132: QNH 1019, PRZEPUSZCZĘ B747
+5133: FASTAIR 345
+5134:
+5135: 4-6
+5136:
+5137: Manual of Radiotelephony
+5138:
+5139: 
