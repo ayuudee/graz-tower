@@ -304,6 +304,8 @@ def main() -> int:
                     json.dumps(document_failures, indent=2) + "\n",
                     encoding="utf-8",
                 )
+            else:
+                (document_dir / "failures.json").unlink(missing_ok=True)
             aggregate = aggregate_document(document_dir, partial_manifest)
             aggregate["sectionsFailed"] = [failure["sectionId"] for failure in document_failures]
             (document_dir / "accepted_candidates.json").write_text(
