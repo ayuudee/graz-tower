@@ -72,7 +72,7 @@ object DefaultPilot : PilotAgent {
 
     private fun onAtStand(ac: AircraftState): PilotIntent = when (val r = ac.route) {
         is PilotRoute.Ground -> PilotIntent(
-            targetSpeedMps = PilotConstants.TAXI_TARGET_SPEED_MPS,
+            targetSpeedMps = ac.type.kinematics.taxiSpeedMps,
             phase = PilotPhase.Taxiing,
             route = r,
             targetAltitudeM = 0.0,
@@ -87,7 +87,7 @@ object DefaultPilot : PilotAgent {
      */
     private fun onHoldingShort(ac: AircraftState): PilotIntent = when (val r = ac.route) {
         is PilotRoute.Ground -> PilotIntent(
-            targetSpeedMps = PilotConstants.TAXI_TARGET_SPEED_MPS,
+            targetSpeedMps = ac.type.kinematics.taxiSpeedMps,
             phase = PilotPhase.Taxiing,
             route = r,
             targetAltitudeM = 0.0,
@@ -107,7 +107,7 @@ object DefaultPilot : PilotAgent {
         val dist = StrictMath.hypot(dx, dy)
         if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
             // Still en route — keep taxiing toward the same first waypoint.
-            return PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Taxiing, route).right()
+            return PilotIntent(ac.type.kinematics.taxiSpeedMps, PilotPhase.Taxiing, route).right()
         }
 
         // Waypoint reached — pop it.
@@ -120,7 +120,7 @@ object DefaultPilot : PilotAgent {
                 waypoints = NonEmptyList(remaining.first(), remaining.drop(1)),
                 arrivalPhase = route.arrivalPhase,
             )
-            PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Taxiing, nextRoute).right()
+            PilotIntent(ac.type.kinematics.taxiSpeedMps, PilotPhase.Taxiing, nextRoute).right()
         }
     }
 
@@ -140,10 +140,10 @@ object DefaultPilot : PilotAgent {
     private fun onTakeoffRoll(ac: AircraftState, worldIndex: WorldIndex): PilotIntent {
         val route = ac.route as? PilotRoute.Airborne
             ?: return PilotIntent(0.0, PilotPhase.AtStand, PilotRoute.None)
-        if (ac.speedMps >= PilotConstants.ROTATION_SPEED_MPS) {
+        if (ac.speedMps >= ac.type.kinematics.rotationSpeedMps) {
             val phase = phaseForAirborneLeg(route.waypoints.head, worldIndex, default = PilotPhase.Climbing)
             return PilotIntent(
-                targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+                targetSpeedMps = ac.type.kinematics.climbSpeedMps,
                 phase = phase,
                 route = route,
                 targetAltitudeM = route.targetAltitudeM,
@@ -151,7 +151,7 @@ object DefaultPilot : PilotAgent {
         }
         // Still accelerating along the runway centreline.
         return PilotIntent(
-            targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+            targetSpeedMps = ac.type.kinematics.climbSpeedMps,
             phase = PilotPhase.TakeoffRoll,
             route = route,
             targetAltitudeM = 0.0,
@@ -175,7 +175,7 @@ object DefaultPilot : PilotAgent {
         // Without this, the next tick would flip to AtStand because the sealed
         // `when` in decide() has no "airborne idle" branch of its own.
         val route = ac.route as? PilotRoute.Airborne ?: return PilotIntent(
-            targetSpeedMps = airborneCruiseSpeed(ac.phase),
+            targetSpeedMps = airborneCruiseSpeed(ac.phase, ac.type.kinematics),
             phase = ac.phase,
             route = PilotRoute.None,
             targetAltitudeM = ac.targetAltitudeM,
@@ -188,7 +188,7 @@ object DefaultPilot : PilotAgent {
         val dist = StrictMath.hypot(dx, dy)
         if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
             return PilotIntent(
-                targetSpeedMps = airborneCruiseSpeed(ac.phase),
+                targetSpeedMps = airborneCruiseSpeed(ac.phase, ac.type.kinematics),
                 phase = ac.phase,
                 route = route,
                 targetAltitudeM = route.targetAltitudeM,
@@ -207,14 +207,14 @@ object DefaultPilot : PilotAgent {
             val stillAirborne = ac.altitudeM > PilotConstants.GROUND_TOLERANCE_M
             if (terminalIsGround && stillAirborne) {
                 PilotIntent(
-                    targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(ac.phase),
+                    targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(ac.phase, ac.type.kinematics),
                     phase = ac.phase,
                     route = route,
                     targetAltitudeM = 0.0, // committed to ground: command descent
                 ).right()
             } else {
                 PilotIntent(
-                    targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(route.arrivalPhase),
+                    targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(route.arrivalPhase, ac.type.kinematics),
                     phase = route.arrivalPhase,
                     route = PilotRoute.None,
                     targetAltitudeM = if (terminalIsGround) 0.0 else constrainedAltitude,
@@ -230,7 +230,7 @@ object DefaultPilot : PilotAgent {
                 waypointConstraints = route.waypointConstraints,
             )
             PilotIntent(
-                targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(nextPhase),
+                targetSpeedMps = constrainedSpeed ?: airborneCruiseSpeed(nextPhase, ac.type.kinematics),
                 phase = nextPhase,
                 route = nextRoute,
                 targetAltitudeM = constrainedAltitude,
@@ -246,7 +246,7 @@ object DefaultPilot : PilotAgent {
      */
     private fun onLandingRoll(ac: AircraftState): PilotIntent = when (val r = ac.route) {
         is PilotRoute.Ground -> PilotIntent(
-            targetSpeedMps = PilotConstants.TAXI_TARGET_SPEED_MPS,
+            targetSpeedMps = ac.type.kinematics.taxiSpeedMps,
             phase = PilotPhase.Vacating,
             route = r,
             targetAltitudeM = 0.0,
@@ -278,7 +278,7 @@ object DefaultPilot : PilotAgent {
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
         if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
-            return PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Vacating, route).right()
+            return PilotIntent(ac.type.kinematics.taxiSpeedMps, PilotPhase.Vacating, route).right()
         }
         val remaining = route.waypoints.tail
         return if (remaining.isEmpty()) {
@@ -288,7 +288,7 @@ object DefaultPilot : PilotAgent {
                 waypoints = NonEmptyList(remaining.first(), remaining.drop(1)),
                 arrivalPhase = route.arrivalPhase,
             )
-            PilotIntent(PilotConstants.TAXI_TARGET_SPEED_MPS, PilotPhase.Vacating, nextRoute).right()
+            PilotIntent(ac.type.kinematics.taxiSpeedMps, PilotPhase.Vacating, nextRoute).right()
         }
     }
 
@@ -299,7 +299,7 @@ object DefaultPilot : PilotAgent {
      */
     private fun onClearOfRunway(ac: AircraftState): PilotIntent = when (val r = ac.route) {
         is PilotRoute.Ground -> PilotIntent(
-            targetSpeedMps = PilotConstants.TAXI_TARGET_SPEED_MPS,
+            targetSpeedMps = ac.type.kinematics.taxiSpeedMps,
             phase = PilotPhase.Taxiing,
             route = r,
             targetAltitudeM = 0.0,
@@ -338,10 +338,17 @@ private fun phaseForAirborneLeg(
     }
 }
 
-/** Approach speed on base/final; cruise climb-speed on upwind/crosswind/downwind. */
-private fun airborneCruiseSpeed(phase: PilotPhase): Double = when (phase) {
-    PilotPhase.Base, PilotPhase.Final -> PilotConstants.APPROACH_SPEED_MPS
-    else -> PilotConstants.CLIMB_SPEED_MPS
+/**
+ * Approach speed on base/final; cruise climb-speed on upwind/crosswind/downwind.
+ *
+ * Pass 10 (D-AUDIT.4): per-type speeds via [AircraftType.Kinematics].
+ */
+private fun airborneCruiseSpeed(
+    phase: PilotPhase,
+    kinematics: xyz.easiersaid.twr.protocol.AircraftType.Kinematics,
+): Double = when (phase) {
+    PilotPhase.Base, PilotPhase.Final -> kinematics.approachSpeedMps
+    else -> kinematics.climbSpeedMps
 }
 
 private fun isGroundArrivalPhase(phase: PilotPhase): Boolean = when (phase) {

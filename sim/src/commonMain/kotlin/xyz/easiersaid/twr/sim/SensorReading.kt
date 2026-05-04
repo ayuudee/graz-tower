@@ -6,6 +6,7 @@ import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.WakeCategory
 
 /**
  * Sim-side projection of an [AircraftState] into the fields a controller's
@@ -32,6 +33,15 @@ data class SensorReading(
     val altitude: Level.AltitudeFeet?,
     val groundSpeed: Knots?,
     val onGround: Boolean,
+    /**
+     * Wake turbulence category — the strip-board / Mode S derived facet
+     * of [xyz.easiersaid.twr.protocol.AircraftType]. Pass 10 (D-AUDIT.4):
+     * populated from `state.type.wakeCategory` for the first time.
+     * Stays nullable — `null` means "no surveillance-derived wake"
+     * (transponder failure or Mode-S not equipped, modelled in a future
+     * pass).
+     */
+    val wakeCategory: WakeCategory?,
 )
 
 /**
@@ -72,6 +82,10 @@ internal fun AircraftState.toSensorReading(@Suppress("UNUSED_PARAMETER") state: 
         altitude = toAltitudeFeet(altitudeM),
         groundSpeed = gsKt,
         onGround = isGroundFromPhysics(altitudeM),
+        // Pass 10 (D-AUDIT.4): wake category projected from the aircraft's
+        // type. The strip-board / Mode S surface is the radio/sensor
+        // analogue — not a pilot-internal field.
+        wakeCategory = type.wakeCategory,
     )
 }
 

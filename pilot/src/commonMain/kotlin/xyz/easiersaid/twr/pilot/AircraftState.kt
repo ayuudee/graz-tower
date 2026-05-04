@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.pilot
 
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.PointId
 
@@ -42,6 +43,17 @@ data class AircraftState(
     val targetAltitudeM: Double = 0.0,
     val phase: PilotPhase = PilotPhase.AtStand,
     val route: PilotRoute = PilotRoute.None,
+    /**
+     * Aircraft type — kinematic performance + ICAO designator + wake
+     * category + runway-length requirements + circuit pattern (Pass 10
+     * D-AUDIT.4). Default `C172` matches G0's GA fixture; multi-type
+     * scenarios populate explicitly.
+     *
+     * The pilot reads `type.kinematics.<field>` directly. The controller
+     * sees only the strip-projected `icaoDesignator` and sensor-projected
+     * `wakeCategory` — never the full type — per the firewall.
+     */
+    val type: AircraftType = AircraftType.Default,
     /**
      * Cognitive pilot mission plan. When non-null, the cognitive pilot
      * generates transmissions and advances through mission steps. When null,

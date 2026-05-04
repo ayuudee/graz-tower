@@ -53,6 +53,8 @@ class DetermineServiceKindSpec {
         altitude = null,
         groundSpeed = null,
         onGround = true,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = worldIndexWithEntities(setOf(EntityRef.StandRef(standId))),
     )
 
@@ -64,6 +66,8 @@ class DetermineServiceKindSpec {
         altitude = null,
         groundSpeed = null,
         onGround = true,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = worldIndexWithEntities(setOf(EntityRef.RunwayRef(rwy))),
     )
 
@@ -75,6 +79,8 @@ class DetermineServiceKindSpec {
         altitude = null,
         groundSpeed = null,
         onGround = true,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = worldIndexWithEntities(emptySet()),
     )
 
@@ -86,6 +92,8 @@ class DetermineServiceKindSpec {
         altitude = null,
         groundSpeed = null,
         onGround = false,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = worldIndexWithEntities(setOf(EntityRef.CircuitProcedureRef(CircuitProcedureId("CIRC")))),
     )
 
@@ -97,6 +105,8 @@ class DetermineServiceKindSpec {
         altitude = null,
         groundSpeed = null,
         onGround = false,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = worldIndexWithEntities(setOf(EntityRef.ApproachRef(ApproachId("APP")))),
     )
 
@@ -108,6 +118,8 @@ class DetermineServiceKindSpec {
         altitude = null,
         groundSpeed = null,
         onGround = false,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = worldIndexWithEntities(emptySet()),
     )
 

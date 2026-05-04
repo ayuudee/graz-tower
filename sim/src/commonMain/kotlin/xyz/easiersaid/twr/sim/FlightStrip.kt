@@ -5,6 +5,7 @@ import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
 
 /**
  * Pre-briefing data the controller has on scheduled traffic, modeling the
@@ -39,6 +40,13 @@ data class FlightStrip(
     val aircraft: AircraftId,
     val callsign: Callsign,
     val intent: AircraftIntent,
+    /**
+     * ICAO Doc 8643 type designator. Pass 10 (D-AUDIT.4): on the
+     * controller's strip; the controller sees the type without needing
+     * radio. Nullable so VFR flights without a filed plan can still
+     * produce a strip projection.
+     */
+    val icaoTypeDesignator: IcaoTypeDesignator?,
 )
 
 /**
@@ -56,6 +64,10 @@ internal fun AircraftState.toFlightStrip(): FlightStrip = FlightStrip(
     aircraft = id,
     callsign = callsign,
     intent = inferIntentFromGoal(pilotMission?.goal),
+    // Pass 10 (D-AUDIT.4): the controller's strip carries the ICAO type.
+    // Reading `state.type.icaoDesignator` is doctrine-shaped data, not
+    // pilot-internal — same channel as wakeCategory on SensorReading.
+    icaoTypeDesignator = type.icaoDesignator,
 )
 
 /**

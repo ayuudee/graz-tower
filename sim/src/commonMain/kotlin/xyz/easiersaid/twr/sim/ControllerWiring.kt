@@ -48,19 +48,21 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     // (incoming handoff) and `HandingOff` (outgoing) are sim-side state
     // only; rules don't see them yet (D-PF.8 owns the future projection).
     val ownedIds = spec.ownedAircraft
-    // Project each responsible aircraft through SensorReading — the typed
-    // boundary that enforces the firewall. AircraftState is never read by
-    // the controller side; toSensorReading is the only allowed projection.
+    // Project each responsible aircraft through SensorReading + FlightStrip —
+    // the two typed boundaries that enforce the firewall. AircraftState is
+    // never read by the controller side; toSensorReading and toFlightStrip
+    // are the only allowed projections. Pass 10 (D-AUDIT.4): the strip
+    // carries the ICAO type designator and the sensor carries wake
+    // category, both joined into the AircraftObservation.
+    val strips = ownedIds
+        .mapNotNull { id -> state.aircraft[id]?.toFlightStrip() }
+        .associateBy { it.aircraft }
     val readings = ownedIds
         .mapNotNull { id -> state.aircraft[id]?.toSensorReading(state) }
-    val observations = readings.associate { it.id to toObservation(it, state.worldIndex) }
-    // Pre-briefing back-channel: project flight strips to AircraftIntent
-    // values for aircraft on the controller's frequency. The strip is the
-    // sim-side analogue of "the controller already knew this aircraft was
-    // departing/arriving from the schedule" — operationally legitimate.
-    val flightStripIntents = ownedIds
-        .mapNotNull { id -> state.aircraft[id]?.toFlightStrip()?.let { it.aircraft to it.intent } }
-        .toMap()
+    val observations = readings.associate {
+        it.id to toObservation(it, strips[it.id], state.worldIndex)
+    }
+    val flightStripIntents = strips.mapValues { (_, strip) -> strip.intent }
     // Pass 6 (D-AUDIT.12 + post-impl Impact-M.1): the set of roles with a
     // staffed controller at this aerodrome right now. Distinct from
     // `aerodrome.roles` (the airport's *published* roles): a role can be
@@ -93,7 +95,11 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
  * index. Sim never copies pre-derived entities; the firewall is enforced
  * at the type level (the primary constructor is `internal` to `:controller`).
  */
-private fun toObservation(reading: SensorReading, worldIndex: WorldIndex): AircraftObservation =
+private fun toObservation(
+    reading: SensorReading,
+    strip: FlightStrip?,
+    worldIndex: WorldIndex,
+): AircraftObservation =
     AircraftObservation.from(
         id = reading.id,
         callsign = reading.callsign,
@@ -101,6 +107,8 @@ private fun toObservation(reading: SensorReading, worldIndex: WorldIndex): Aircr
         altitude = reading.altitude,
         groundSpeed = reading.groundSpeed,
         onGround = reading.onGround,
+        wakeCategory = reading.wakeCategory,
+        icaoTypeDesignator = strip?.icaoTypeDesignator,
         worldIndex = worldIndex,
     )
 

@@ -112,6 +112,13 @@ data class AircraftObservation internal constructor(
     val onGround: Boolean,
     /** ICAO wake turbulence category. Null = unknown; separation engine defaults to H (worst-case). */
     val wakeCategory: WakeCategory? = null,
+    /**
+     * ICAO Doc 8643 type designator (Pass 10 D-AUDIT.4). Populated from
+     * the controller's strip via
+     * [xyz.easiersaid.twr.sim.FlightStrip.icaoTypeDesignator]. Null when
+     * the strip carries no type (VFR without filed plan).
+     */
+    val icaoTypeDesignator: xyz.easiersaid.twr.protocol.IcaoTypeDesignator? = null,
 ) {
     companion object
 }

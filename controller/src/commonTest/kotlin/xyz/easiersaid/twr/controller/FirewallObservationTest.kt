@@ -42,6 +42,7 @@ class FirewallObservationTest {
             groundSpeed = null,
             onGround = false,
             wakeCategory = null,
+            icaoTypeDesignator = null,
         )
         // Touching the value to ensure the compiler doesn't elide it.
         @Suppress("UNUSED_VARIABLE")

@@ -184,8 +184,8 @@ private fun planRoute(
                 ifLeft = { PlanRouteOutcome.Failed(it) },
                 ifRight = { route ->
                     PlanRouteOutcome.Plan(PilotIntent(
-                        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
-                            else PilotConstants.APPROACH_SPEED_MPS,
+                        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+                            else aircraft.type.kinematics.approachSpeedMps,
                         phase = aircraft.phase,
                         route = route,
                         targetAltitudeM = route.targetAltitudeM,
@@ -249,7 +249,7 @@ private fun planVisualRoute(
                     val gaAlt = mission.altitudeRestrictionM.map { minOf(CIRCUIT_ALTITUDE_M, it) }
                         .getOrElse { CIRCUIT_ALTITUDE_M }
                     PlanRouteOutcome.Plan(PilotIntent(
-                        targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+                        targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
                         phase = PilotPhase.Climbing,
                         route = gaRoute.copy(targetAltitudeM = gaAlt),
                         targetAltitudeM = gaAlt,
@@ -283,8 +283,8 @@ private fun planVisualRoute(
     // ── Bootstrap completion (no prior kinematic route) ────────────────────────
     if (cur == null) {
         return PlanRouteOutcome.Plan(PilotIntent(
-            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
-                else PilotConstants.APPROACH_SPEED_MPS,
+            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+                else aircraft.type.kinematics.approachSpeedMps,
             phase = aircraft.phase,
             route = derivedRoute.copy(targetAltitudeM = targetAlt),
             targetAltitudeM = targetAlt,
@@ -314,8 +314,8 @@ private fun planVisualRoute(
             return PlanRouteOutcome.Skip
         }
         return PlanRouteOutcome.Plan(PilotIntent(
-            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
-                else PilotConstants.APPROACH_SPEED_MPS,
+            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+                else aircraft.type.kinematics.approachSpeedMps,
             phase = aircraft.phase,
             route = cur.copy(targetAltitudeM = targetAlt),
             targetAltitudeM = targetAlt,
@@ -323,8 +323,8 @@ private fun planVisualRoute(
     }
 
     return PlanRouteOutcome.Plan(PilotIntent(
-        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) PilotConstants.CLIMB_SPEED_MPS
-            else PilotConstants.APPROACH_SPEED_MPS,
+        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+            else aircraft.type.kinematics.approachSpeedMps,
         phase = aircraft.phase,
         route = derivedRoute.copy(targetAltitudeM = targetAlt),
         targetAltitudeM = targetAlt,
@@ -371,7 +371,7 @@ private fun planCircuitDeparture(
         ifLeft = { PlanRouteOutcome.Failed(it) },
         ifRight = { route ->
             PlanRouteOutcome.Plan(PilotIntent(
-                targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+                targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
                 phase = PilotPhase.TakeoffRoll,
                 route = route,
                 targetAltitudeM = CIRCUIT_ALTITUDE_M,
@@ -432,7 +432,7 @@ private fun checkSelfInitiatedGoAround(
 
     return GoAroundResult(
         intent = PilotIntent(
-            targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+            targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
             phase = PilotPhase.Climbing,
             route = aircraft.route, // keep current route until planner builds new one
             targetAltitudeM = CIRCUIT_ALTITUDE_M,

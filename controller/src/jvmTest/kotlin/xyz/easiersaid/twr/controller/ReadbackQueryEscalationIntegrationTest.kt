@@ -60,6 +60,8 @@ class ReadbackQueryEscalationIntegrationTest {
         altitude = null,
         groundSpeed = null,
         onGround = true,
+        wakeCategory = null,
+        icaoTypeDesignator = null,
         worldIndex = WorldIndex(),
     )
 

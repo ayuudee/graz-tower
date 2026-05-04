@@ -1059,7 +1059,7 @@ private fun applyClearedForTakeoff(
     val updated = ac.copy(
         phase = PilotPhase.TakeoffRoll,
         route = route,
-        targetSpeedMps = PilotConstants.CLIMB_SPEED_MPS,
+        targetSpeedMps = ac.type.kinematics.climbSpeedMps,
         targetAltitudeM = CIRCUIT_ALTITUDE_M,
     )
     val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, updated) }
@@ -1346,7 +1346,9 @@ private fun deriveArrivalPhase(worldIndex: WorldIndex, destination: PointId): Pi
  * Advance one aircraft by [dtSeconds] toward the first waypoint of its current
  * route. Speed is set to its target (instantaneous response — aerodynamic
  * acceleration lands with per-aircraft-type performance) and altitude is
- * integrated toward [AircraftState.targetAltitudeM] at [PilotConstants.CLIMB_RATE_MPS].
+ * integrated toward [AircraftState.targetAltitudeM] at the per-type
+ * [xyz.easiersaid.twr.protocol.AircraftType.Kinematics.climbRateMps]
+ * (Pass 10 D-AUDIT.4).
  *
  * Route-following is identical for [PilotRoute.Ground] and [PilotRoute.Airborne]:
  * both supply a [PointId] sequence; the pilot decides which phase goes with
@@ -1368,7 +1370,7 @@ private fun advanceKinematics(
         is PilotRoute.Airborne -> r.waypoints.head
         PilotRoute.None -> null
     }
-    val altitude = advanceAltitude(ac.altitudeM, ac.targetAltitudeM, dtSeconds)
+    val altitude = advanceAltitude(ac.altitudeM, ac.targetAltitudeM, dtSeconds, ac.type.kinematics.climbRateMps)
 
     if (speed <= 0.0 || headPoint == null) {
         return ac.copy(speedMps = speed, altitudeM = altitude)
@@ -1414,14 +1416,14 @@ private fun advanceKinematics(
 }
 
 /**
- * Integrate altitude toward [target] at [PilotConstants.CLIMB_RATE_MPS]. A
- * simple constant-rate tracker is enough for 4e-A — vertical performance
- * curves live in the aircraft-type slice later.
+ * Integrate altitude toward [target] at [climbRateMps]. Pass 10 (D-AUDIT.4):
+ * the climb rate now comes from the aircraft's [AircraftType.kinematics]
+ * rather than a global constant.
  */
-private fun advanceAltitude(current: Double, target: Double, dtSeconds: Double): Double {
+private fun advanceAltitude(current: Double, target: Double, dtSeconds: Double, climbRateMps: Double): Double {
     val delta = target - current
     if (delta == 0.0) return current
-    val maxStep = PilotConstants.CLIMB_RATE_MPS * dtSeconds
+    val maxStep = climbRateMps * dtSeconds
     val step = if (delta > 0.0) minOf(delta, maxStep) else maxOf(delta, -maxStep)
     return current + step
 }
