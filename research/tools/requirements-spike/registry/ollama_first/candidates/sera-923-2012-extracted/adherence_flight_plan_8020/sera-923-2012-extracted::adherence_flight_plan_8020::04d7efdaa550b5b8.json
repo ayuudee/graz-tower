@@ -1,0 +1,115 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::04d7efdaa550b5b8",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "adherence_flight_plan_8020",
+  "familyId": "sera_clearance_comms_contract_family",
+  "claimText": "Requests for flight plan changes involving a change of route with destination changed shall include aircraft identification, flight rules, description of revised route of flight to revised destination aerodrome including related flight plan data, beginning with the position from which requested change of route is to commence, revised time estimates, alternate aerodrome(s), and any other pertinent information.",
+  "rationale": "Specific data content requirement for flight plan change requests regarding route changes with changed destination.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "(c) Intended changes. Requests for flight plan changes shall include information as indicated hereunder:",
+    "(ii) Destination changed: aircraft identification; flight rules; description of revised route of flight to revised desti­\nnation aerodrome including related flight plan data, beginning with the position from which requested change\nof route is to commence; revised time estimates; alternate aerodrome(s); any other pertinent information."
+  ],
+  "sourceItemIds": [
+    "sera_8020_c_2_ii"
+  ],
+  "claimSha256": "48b4d683e2007c54e60ec36c81728e27c1754008dccf6d708a246ea79359cb1c",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2072,
+    "endLine": 2129
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-49-29Z_6dc4",
+    "caseId": "sera_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "sera_8020_c_2_ii_route_changed",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_corrected_replacement_accept",
+      "confidence": "high",
+      "reasoning": "Promoted SERA.8020(c)(2)(ii) destination-changed flight-plan-change content rule with the governing parent clause and the verbatim hyphenated source text.",
+      "model": "codex-same-agent",
+      "runId": "rr21_manual_adequacy_repair_2026-05-04",
+      "appliedAt": "2026-05-04T18:00:00Z"
+    },
+    "manualRepair": {
+      "runId": "rr21_manual_adequacy_repair_2026-05-04",
+      "reasoning": "Promoted SERA.8020(c)(2)(ii) destination-changed flight-plan-change content rule with the governing parent clause and the verbatim hyphenated source text.",
+      "appliedAt": "2026-05-04T18:00:00Z",
+      "previousCanonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::35da37ec7ec88084"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-04T18:00:00Z"
+  }
+}

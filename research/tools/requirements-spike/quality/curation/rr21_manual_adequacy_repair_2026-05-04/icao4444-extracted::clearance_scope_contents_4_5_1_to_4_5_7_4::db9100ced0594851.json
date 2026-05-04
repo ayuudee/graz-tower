@@ -1,0 +1,14 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::db9100ced0594851",
+  "previousCanonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::643a320d5f693ad9",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted ICAO 4444 4.5.7.2.1 'cleared flight planned route' usage permission with a complete verbatim quote and lowered authorityClass for may-modality consistency.",
+  "authorityClass": "operational_guidance",
+  "modality": "may",
+  "exactSourceQuotes": [
+    "The phrase “cleared flight planned route” may be used to describe any route or portion thereof, provided the route or portion thereof is identical to\nthat filed in the flight plan and sufficient routing details are given to definitely establish the aircraft on its route."
+  ]
+}

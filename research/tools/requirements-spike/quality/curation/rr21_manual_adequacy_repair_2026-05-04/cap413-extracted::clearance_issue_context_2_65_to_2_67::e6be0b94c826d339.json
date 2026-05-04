@@ -1,0 +1,15 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::e6be0b94c826d339",
+  "previousCanonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted source-supported CAP 413 2.66 tactical-restriction reiteration rule after replacing a page-break-spanning quote with two verbatim source fragments.",
+  "authorityClass": "operational_guidance",
+  "modality": "shall",
+  "exactSourceQuotes": [
+    "When a route clearance is passed subsequent to local\ndeparture instructions, or to an aircraft that is already airborne, tactical",
+    "restrictions that remain in place shall be reiterated to ensure that the\nimmediate profile to be flown by the pilot is unambiguous."
+  ]
+}

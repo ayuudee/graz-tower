@@ -2,35 +2,35 @@
   "schemaName": "ollama_first_registry_manifest",
   "formatVersion": "2026-04-28-v1",
   "createdAt": "2026-04-25T00:00:00Z",
-  "updatedAt": "2026-05-04T17:26:05Z",
+  "updatedAt": "2026-05-04T19:48:21Z",
   "counts": {
-    "candidates": 423,
+    "candidates": 431,
     "pending": 0,
     "rejected": 34,
     "byDocument": {
-      "cap413-extracted": 77,
+      "cap413-extracted": 79,
       "egast-vfr-extracted": 17,
       "h01-extracted": 24,
-      "icao4444-extracted": 182,
+      "icao4444-extracted": 186,
       "icao9432-extracted": 22,
       "safetysense22-extracted": 15,
-      "sera-923-2012-extracted": 71,
+      "sera-923-2012-extracted": 73,
       "slovenia-vfr-extracted": 15
     },
     "byAuthorityClass": {
-      "authoritative_requirement": 227,
+      "authoritative_requirement": 232,
       "background_support": 14,
       "best_practice": 48,
-      "operational_guidance": 134
+      "operational_guidance": 137
     },
     "byModality": {
       "example": 13,
-      "may": 26,
+      "may": 28,
       "mixed": 3,
-      "must": 25,
+      "must": 26,
       "none": 10,
       "note": 25,
-      "shall": 275,
+      "shall": 280,
       "should": 46
     }
   },

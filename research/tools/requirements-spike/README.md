@@ -17,8 +17,10 @@ for the source-file inventory behind that contract. Use
 `quality/source_section_ledger/source_section_ledger_2026-04-30/source_section_ledger.md`
 as the section-level disposition ledger before widening the slice.
 The 2026-05-01 16-window Ollama batch is landed. Its promoted/curated
-post-run snapshot is
+post-run snapshot was
 `quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`.
+After RR-21 adequacy adjudication and repair, the current snapshot is
+`quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`.
 
 Two lanes coexist:
 
@@ -178,9 +180,9 @@ Supporting artifacts:
   Historical ready-to-ingest queue for the now-landed 16 exact manifest
   windows.
 - `quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/`
-  Fresh 48-record / 12-section adequacy review pack for the 46-section frame.
-  Its CSVs must be adjudicated before it can be cited as semantic adequacy
-  evidence.
+  Completed RR-21 48-record / 12-section adequacy review pack for the
+  46-section frame, including direct repairs for eight source-supported
+  quote-shape/lifecycle defects.
 
 Current whole-document normalization status:
 

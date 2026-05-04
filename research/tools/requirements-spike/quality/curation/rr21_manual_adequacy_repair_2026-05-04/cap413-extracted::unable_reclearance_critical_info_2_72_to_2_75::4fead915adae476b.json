@@ -1,0 +1,15 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::4fead915adae476b",
+  "previousCanonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted source-supported CAP 413 2.74 critical-information definition after splitting a page-break-spanning quote at the source pagination boundary and aligning modality with the source's 'must'.",
+  "authorityClass": "authoritative_requirement",
+  "modality": "must",
+  "exactSourceQuotes": [
+    "Critical information is information, other than that required to enable routine",
+    "flight, which must be received by pilots to ensure the safety and\neffective operation of their aircraft."
+  ]
+}

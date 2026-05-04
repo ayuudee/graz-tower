@@ -1,0 +1,15 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::f09c370b7b90f3c2",
+  "previousCanonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::31b9cff5534bef98",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted SERA.8020(a)(1)(ii) non-ATS-route adherence rule after adding the governing unless-authorised/directed parent clause and the verbatim item text.",
+  "authorityClass": "authoritative_requirement",
+  "modality": "shall",
+  "exactSourceQuotes": [
+    "(1) Unless otherwise authorised by the competent authority, or directed by the appropriate air traffic control unit,\ncontrolled flights shall, in so far as practicable:",
+    "(ii) when on any other route, operate directly between the navigation facilities and/or points defining that route."
+  ]
+}

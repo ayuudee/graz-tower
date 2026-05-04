@@ -42,6 +42,9 @@ It contained 16 manifest windows for the Ollama-backed section processor:
 8 CAP 413 windows, 7 ICAO Doc 4444 windows, and 1 ICAO Doc 9432 window. Those
 windows produced 130 judged candidates, then promotion and curation moved the
 registry to 423 accepted candidates, 0 pending records, and 34 rejected records.
+RR-21 adequacy adjudication then added eight corrected accepted replacements,
+bringing the current registry to 431 accepted candidates, 0 pending records,
+and 34 rejected records.
 
 Before starting the live Ollama pass, validate the batch manifest against the
 current `documents/*.json` line ranges:
@@ -69,8 +72,10 @@ nix-shell -p python3 --run "python3 research/tools/requirements-spike/audit_regi
 ```
 
 After promotion, Phase G curation resolved all pending records. The current
-post-curation snapshot is
+post-curation snapshot was
 `quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`.
+The current post-RR-21 adequacy snapshot is
+`quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`.
 
 ## Phase E — Re-ingest the corpus through the gates
 
@@ -244,9 +249,12 @@ RR-17 adds the post-repair coverage pass:
 - `quality/snapshots/judgements-2026-04-29-post-rr17-coverage.csv` —
   current regression baseline.
 
-Use `quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`
-as the current registry regression baseline. The RR-17 snapshot remains the
-baseline for the older 22-window post-repair adequacy frame, and
+Use `quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`
+as the current registry regression baseline. The pre-RR-21
+`quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`
+snapshot remains the baseline for detecting regressions introduced by the
+adequacy repair pass. The RR-17 snapshot remains the baseline for the older
+22-window post-repair adequacy frame, and
 `quality/snapshots/judgements-2026-05-01-post-clearance-comms-partial.csv`
 is retained only as the partial-run baseline used to check the 2026-05-04
 promotion.

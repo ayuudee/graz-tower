@@ -510,7 +510,8 @@ Froze the registry scope contract in
 `registry/ollama_first/DECLARED_SLICE.md` and linked that contract from the
 requirements-spike README, runbook, and registry status snapshot. As of the 2026-05-04
 refresh it declares 46 landed windows, 46 live manifest windows, 0 manifest-only windows,
-and 423 accepted / 0 pending / 34 rejected registry records. Built the
+and 431 accepted / 0 pending / 34 rejected registry records after RR-21
+adequacy repair. Built the
 section-level control surface under
 `quality/source_section_ledger/source_section_ledger_2026-04-30/`: 481 ledger
 rows at TOC/major-section granularity plus exact rows for the 46 current
@@ -564,18 +565,21 @@ quality-gate and 13 override-contract tests. Current snapshot:
 `quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`.
 Impact: H | Effort: M
 
-**RR-21 — Post-widening adequacy adjudication for the 46-window registry**
-The registry now covers every live manifest window and has no pending records,
-but this only proves ingestion, traceability, quote presence, deterministic
-promotion, and regression stability. It does not yet prove that the expanded
-46-window registry is a complete/honest semantic translation of the source
-windows. A fresh 80/20 review queue exists at
-`quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/` with 48 sampled
-records and 12 sampled sections. Next: adjudicate that pack against the source
-text, classify record defects and section omissions, repair material gaps
-directly in the structured output, and snapshot the post-repair result. Until
-then, downstream consumers can rely on the registry as the landed declared
-slice, but not as independently adequacy-accepted.
+**RR-21 — Post-widening adequacy adjudication for the 46-window registry** — DONE (2026-05-04)
+The 80/20 adequacy pack at
+`quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/` has been
+adjudicated against the source text. It reviewed 48 sampled records and 12
+sampled sections. Four sampled rejected records were substantively supported
+but rejected because their `exactSourceQuotes` crossed page-layout breaks or
+used non-verbatim punctuation; a targeted sibling sweep found four additional
+same-pattern defects. All eight are repaired as new accepted content-addressed
+records, with the original rejected records retained for audit history. The
+post-repair registry is 431 accepted / 0 pending / 34 rejected records.
+Validation passed: reproducibility audit 465 records / 0 mismatches, accepted
+quote audit 546 quotes / 0 misses, regression check against the pre-RR-21
+snapshot 0 hard and 0 soft warnings, plus 91 quality-gate and 13
+override-contract tests. Current snapshot:
+`quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`.
 Impact: H | Effort: M
 
 ---

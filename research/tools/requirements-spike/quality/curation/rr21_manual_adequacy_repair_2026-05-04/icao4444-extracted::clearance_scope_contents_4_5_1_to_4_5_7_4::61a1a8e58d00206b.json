@@ -1,0 +1,14 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::61a1a8e58d00206b",
+  "previousCanonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::3eb599f98d037d47",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted ICAO 4444 4.5.7.2.2 re-clearance phraseology prohibition with verbatim source punctuation.",
+  "authorityClass": "authoritative_requirement",
+  "modality": "shall",
+  "exactSourceQuotes": [
+    "The phrase “cleared flight planned route” shall not be used when granting a re-clearance."
+  ]
+}

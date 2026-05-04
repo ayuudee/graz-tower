@@ -26,9 +26,9 @@ about those declared source windows.
 - Manifested text extracts: 8
 - Landed source-line records: 2,431
 - Live manifest source-line records: 2,431
-- Current registry records: 423 accepted candidates, 0 pending, 34 rejected
+- Current registry records: 431 accepted candidates, 0 pending, 34 rejected
 - Current regression snapshot:
-  `research/tools/requirements-spike/quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`
+  `research/tools/requirements-spike/quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`
 
 The source inventory that establishes this boundary is:
 
@@ -53,10 +53,12 @@ This registry does not claim coverage of:
   not listed in `documents/*.json`.
 
 The RR-17 adequacy result remains valid for the older landed 22-window frame
-only. A fresh 2026-05-04 adequacy pack exists for this 46-section frame at
-`quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/`, but its review
-CSVs still require adjudication before it can be cited as evidence of semantic
-adequacy.
+only. RR-21 adjudicated the 2026-05-04 adequacy pack for this 46-section frame
+at `quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/`. That pass
+reviewed 48 sampled records and 12 sampled source sections, repaired eight
+source-supported quote-shape/lifecycle defects, and found no material sampled
+section omissions after repair. This is completed 80/20 adequacy evidence for
+the declared slice, not a full-document extraction claim.
 
 ## How To Widen Scope
 
@@ -74,7 +76,7 @@ code changed.
 
 Test architecture: the load-bearing checks are the registry reproducibility
 audit, quote/schema/authority gates, regression snapshot, source inventory,
-and source-section ledger.
+source-section ledger, and RR-21 80/20 adequacy adjudication.
 
 Impact: consumers can depend on the registry without over-reading its scope.
 Future extraction work must widen the declared slice deliberately.
