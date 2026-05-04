@@ -45,6 +45,20 @@ data class SimState(
     val inFlightTransmissions: Map<TransmissionId, InFlightTransmission> = emptyMap(),
     val nextTransmissionId: Long = 0L,
     val controllerInbox: Map<ControllerId, List<ReceivedMessage>> = emptyMap(),
+    /**
+     * Pass 9 (D-AUDIT.2 / Phase 9.B): re-fire dampening for
+     * [sweepHandoffTimeouts]. Last `MissedHandoffDetected` emission time
+     * per [HandoffEscalationKey]. The sweep produces at most one event
+     * per key per `MISSED_HANDOFF_TIMEOUT` window.
+     *
+     * **Single writer**: `sweepHandoffTimeouts` (sets the entry on emit).
+     * **Clear sites** (both reachable):
+     *  - [applyTwoWayCommsEstablished] — Watching → Owned, sender's
+     *    HandingOff entry removed; clear the matching key.
+     *  - [applyBoundaryReleaseReadback] — HandingOff(Released) → entry
+     *    removed; clear the matching key.
+     */
+    val handoffEscalations: Map<HandoffEscalationKey, SimTime> = emptyMap(),
 ) {
     companion object {
         /**
@@ -194,3 +208,19 @@ data class SimState(
         }
     }
 }
+
+/**
+ * Pass 9 (D-AUDIT.2 / Phase 9.B): identity of a (sender, aircraft) handoff-
+ * escalation tracking pair. `sender` is the stable identity — the
+ * receiving controller (`Watching.target`) can shift between coordination
+ * cancellations; the sender's `HandingOff` persists until two-way comms
+ * resolves.
+ *
+ * Typed key (not `Pair<ControllerId, AircraftId>`) — Pass 7 review pushed
+ * back on untyped pair-as-domain-relationship for `responsibilities`;
+ * don't pay it again.
+ */
+data class HandoffEscalationKey(
+    val sender: ControllerId,
+    val aircraft: AircraftId,
+)

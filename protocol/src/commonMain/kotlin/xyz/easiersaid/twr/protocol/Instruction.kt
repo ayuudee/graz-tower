@@ -1199,6 +1199,23 @@ data class ReadBackCorrect(
 ) : ControllerResponse
 
 /**
+ * Controller-to-pilot phraseology: "[callsign], confirm [instruction]"
+ * (CAP 413 Glossary; Doc 4444 §12.3.1.2). Means "did you correctly receive
+ * my last instruction?" — invites a fresh readback.
+ *
+ * Distinct from `SayAgain` ("I missed *your* transmission"):
+ * `ConfirmInstruction` means "I think you heard me; confirm what you
+ * understood."
+ *
+ * Naming distinguishes from the existing pilot-side
+ * [PilotTransmission.Confirm] in the same package.
+ */
+data class ConfirmInstruction(
+    override val target: AircraftId,
+    val instruction: AtcInstruction,
+) : ControllerResponse
+
+/**
  * Controller correction of an incorrect or incomplete readback, per ICAO Doc 4444 §12.3.2
  * and CAP 413 §1.5.6. Phraseology: "NEGATIVE, I SAY AGAIN, …" followed by the correct
  * instruction. The [correct] field carries the instruction to be re-transmitted; [defects]

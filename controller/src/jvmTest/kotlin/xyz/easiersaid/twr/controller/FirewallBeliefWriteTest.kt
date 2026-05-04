@@ -9,20 +9,24 @@ import kotlin.test.Test
  * Architectural enforcement test — belief-write provenance.
  *
  * The protected slices on [xyz.easiersaid.twr.controller.observe.BeliefState]
- * must be written only by the typed fold extensions in `Observe.kt`:
- *  - `recentRadio` — fold over [ControllerEvent] via `withRecentRadio`
- *    (Pass 5 D-AUDIT.14 closure: replaces the deleted `aircraftIntent` slice;
- *    intent is derived on demand by `deriveCurrentIntent`).
- *  - `circuitIntent` — fold over CircuitIntentReported / GoAroundDetected
- *    via `withCircuitIntentEvents`.
+ * must be written only by typed fold/extension functions in their canonical
+ * homes. Pass 9 (D-AUDIT.2) extends the protection to the `coordinations`
+ * slice, which is the lifecycle ledger for issued instructions.
+ *
+ * Protected slices and their allowed write sites:
+ *  - `recentRadio` — `withRecentRadio` in `Observe.kt` (Pass 5).
+ *  - `circuitIntent` — `withCircuitIntentEvents` in `Observe.kt` (Pass 5).
+ *  - `coordinations` (Pass 9 D-AUDIT.2) — written by `recordCoordinations`
+ *    and `escalateOverdueCoordinations` in `Readback.kt`,
+ *    `markCoordinationEscalationsEmitted` in `CoordinationEscalation.kt`,
+ *    `applySupersessionCleanup` in `Supersession.kt`, the `acceptReadback`
+ *    fold in `Controller.kt`, and the structural-preserve in `Observe.kt`.
+ *
+ * The `coordinations` allowlist is broader than the other slices because
+ * the lifecycle has more legitimate write paths (issuance, escalation,
+ * confirmation, supersession). Each is named in source and bounded.
  *
  * Any other write site is a firewall regression.
- *
- * Detection: scan `controller/src/commonMain` for `recentRadio[` or
- * `circuitIntent[` (map-index assignment) and `recentRadio =` / `circuitIntent =`
- * (constructor / `copy` parameter assignment). The only file allowed to
- * contain these patterns is `Observe.kt`. Type declaration in `BeliefState.kt`
- * is also allowed (the field declaration itself).
  *
  * **No-suppression rule:** an architectural test failure is never resolved
  * by `@Disabled`, `@Suppress`, or test removal. Fix the violation or amend
@@ -31,52 +35,61 @@ import kotlin.test.Test
 class FirewallBeliefWriteTest {
 
     @Test
-    fun `recentRadio and circuitIntent are written only by typed event fold`() {
+    fun `protected belief slices are written only by allowlisted files`() {
         val controllerCommon = projectRoot()
             .resolve("controller/src/commonMain/kotlin")
         val violations = mutableListOf<String>()
-        // The forbidden pattern is mutation of the BeliefState slice — i.e.
-        // `.copy(... recentRadio = ...)` or `BeliefState(... recentRadio = ...)`
-        // — and map-index writes like `recentRadio[id] = value`.
-        // Reads (`ctx.beliefs.recentRadio[id]`) and parameter passing
-        // (`reconcileCommitments(recentRadio = b.recentRadio, ...)`) are fine;
-        // both are narrow consumer surfaces. The architectural rule is that
-        // BeliefState's slice values originate only from the typed fold.
+        // Per-slice allowlist (filename → allowed slices written from there).
+        // BeliefState.kt is implicitly allowlisted for all slices (declaration
+        // site + projection getters).
+        val sliceAllowlist: Map<String, Set<String>> = mapOf(
+            "Observe.kt" to setOf("recentRadio", "circuitIntent", "coordinations"),
+            "Readback.kt" to setOf("coordinations"),
+            "CoordinationEscalation.kt" to setOf("coordinations"),
+            "Supersession.kt" to setOf("coordinations"),
+            "Controller.kt" to setOf("coordinations"), // acceptReadback fold (Pass 9: bounded)
+        )
+        val sliceNames = listOf("recentRadio", "circuitIntent", "coordinations")
         val mutationPattern = Regex(
-            """\.copy\s*\([^)]*\b(recentRadio|circuitIntent)\s*=""",
+            """\.copy\s*\([^)]*\b(${sliceNames.joinToString("|")})\s*=""",
             RegexOption.DOT_MATCHES_ALL,
         )
-        // The trailing `[^=]` excludes `==` from matching; we want assignment,
-        // not equality comparison. Without this, `circuitIntent[ac.id] == intent`
-        // (used in guards) trips the regex.
-        val mapWritePattern = Regex("""\b(recentRadio|circuitIntent)\s*\[[^]]*]\s*=[^=]""")
+        // Trailing `[^=]` excludes `==` (used in guards/comparisons).
+        val mapWritePattern = Regex("""\b(${sliceNames.joinToString("|")})\s*\[[^]]*]\s*=[^=]""")
         Files.walk(controllerCommon).use { stream ->
             stream.filter { it.toString().endsWith(".kt") }.forEach { file ->
                 val name = file.fileName.toString()
-                // Allowlist: declaration site (BeliefState.kt) and the typed
-                // fold (Observe.kt) may write the slices.
-                if (name == "BeliefState.kt" || name == "Observe.kt") return@forEach
+                if (name == "BeliefState.kt") return@forEach // declaration / projections
                 val text = Files.readString(file)
                 val codeOnly = text.replace(Regex("""/\*\*[\s\S]*?\*/"""), "")
                     .replace(Regex("""//[^\n]*"""), "")
+                val allowed = sliceAllowlist[name].orEmpty()
                 mutationPattern.findAll(codeOnly).forEach { match ->
-                    violations.add("$name: copy() mutation: ${match.value.trim()}")
+                    val slice = match.groupValues[1]
+                    if (slice !in allowed) {
+                        violations.add("$name: copy() mutation: ${match.value.trim()}")
+                    }
                 }
                 mapWritePattern.findAll(codeOnly).forEach { match ->
-                    violations.add("$name: map-index write: ${match.value.trim()}")
+                    val slice = match.groupValues[1]
+                    if (slice !in allowed) {
+                        violations.add("$name: map-index write: ${match.value.trim()}")
+                    }
                 }
             }
         }
         check(violations.isEmpty()) {
             """
-            FIREWALL VIOLATION: recentRadio / circuitIntent mutated outside
-            BeliefState.kt and Observe.kt:
+            FIREWALL VIOLATION: protected belief slice mutated outside its
+            allowlisted files:
             $violations
 
-            These belief slices must be populated only by the typed event-fold
-            extensions in Observe.kt. Their values come from radio (typed
-            ControllerEvents) — never from anywhere else. Adding a new write
-            site is a firewall amendment that requires plan revision.
+            Allowlist (file → permitted slices):
+            ${sliceAllowlist.entries.joinToString("\n            ") { (f, s) -> "$f → ${s.joinToString(", ")}" }}
+
+            These belief slices must be populated only by the named typed
+            extensions. Adding a new write site is a firewall amendment that
+            requires plan revision.
             """.trimIndent()
         }
     }

@@ -30,7 +30,9 @@ import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.classifyReadback
-import xyz.easiersaid.twr.controller.observe.gcOldCoordinations
+import xyz.easiersaid.twr.controller.observe.coordinationEscalationOutputs
+import xyz.easiersaid.twr.controller.observe.escalateOverdueCoordinations
+import xyz.easiersaid.twr.controller.observe.markCoordinationEscalationsEmitted
 import xyz.easiersaid.twr.controller.observe.withRecentRadio
 import xyz.easiersaid.twr.controller.observe.withCircuitIntentEvents
 import xyz.easiersaid.twr.controller.observe.deriveEventsFromMessages
@@ -83,7 +85,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val contactedAircraft = events.contactedAircraft()
 
     val beliefs = updateBeliefs(previousBeliefs, view)
-        .gcOldCoordinations(view.time)
+        .escalateOverdueCoordinations(view.time)
         .withContactMarked(contactedAircraft)
         .withLocEstablished(events)
         .withActiveRunway(view)
@@ -150,12 +152,30 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val afterReactiveSupersession = applySupersessionCleanup(afterProceduralSupersession, reactiveInstructions)
 
     val (responses, afterValidation) = validatedReadbackResponses(view, afterReactiveSupersession)
+
+    // Pass 9 (D-AUDIT.2): emit escalation outputs (Confirm / re-issue) for
+    // coordinations that just-transitioned this cycle. The escalation
+    // states were advanced earlier in the pipeline by
+    // `escalateOverdueCoordinations`; here we read the just-transitioned
+    // entries (emittedAt == null), emit the operational output, then mark
+    // emittedAt so the next cycle does not re-fire until the next state
+    // advance.
+    //
+    // Escalation Instructs (re-emissions) are NOT passed to
+    // `recordCoordinations` — the original coordination already exists in
+    // the ledger and is now in Reissued state. Recording the re-emission
+    // would create a duplicate entry for the same instruction. The
+    // re-issue goes out on the wire; the *original* coordination ledger
+    // entry remains the lifecycle anchor.
+    val escalationOutputs = coordinationEscalationOutputs(afterValidation, view.time)
+    val afterEscalationMark = afterValidation.markCoordinationEscalationsEmitted(view.time)
+
     val allInstructs = outputs + reactiveInstructs
-    val finalBeliefs = afterValidation
+    val finalBeliefs = afterEscalationMark
         .recordCoordinations(allInstructs, view.time)
 
     return ControllerDecisionResult(
-        outputs = outputs + reactiveOutputs + companions + responses,
+        outputs = outputs + reactiveOutputs + companions + responses + escalationOutputs,
         updatedBeliefs = finalBeliefs,
         trace = OverallDecisionTrace(
             controllerId = view.controllerId, time = view.time,
@@ -527,7 +547,7 @@ private fun enrichInstruction(
  * Four-state [ReadbackVerdict] model, per ICAO Doc 4444 §12.3.2 / CAP 413 §1.5.6:
  *   • CORRECT  → emit `ReadBackCorrect`, pop the matched pending entry.
  *   • INCORRECT → emit `ReadbackCorrection`, keep pending (pilot owes correct readback).
- *   • MISSING  → pending ages out via GC ([gcOldPendingReadbacks]); after TTL, controller
+ *   • MISSING  → coordination escalates via [escalateOverdueCoordinations] (Pass 9 D-AUDIT.2):
  *                may re-issue or emit "say again" at discretion. Not produced here.
  *   • REFUSED  → pilot "unable"; pop pending, do NOT activate, route to re-sequencing.
  *                Produced by PilotRequest.Unable processing, not by readback classification.
@@ -567,7 +587,7 @@ private fun processReadback(
     // responsibilities set. The readback's receiver (ReceiverRef.Controller) already ensures
     // only the intended controller sees this message; the coordination check below is sufficient.
     val coords = state.beliefs.coordinations[msg.aircraft]?.filter {
-        it.state == CoordinationState.ISSUED
+        it.state is CoordinationState.Issued
     } ?: return state
     if (coords.isEmpty()) return state
 

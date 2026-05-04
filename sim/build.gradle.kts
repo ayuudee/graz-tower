@@ -29,6 +29,9 @@ kotlin {
             dependencies {
                 implementation(project(":migration"))
                 implementation(libs.kotlinx.serialization.json)
+                // Pass 9 (D-AUDIT.2): SimEventExhaustivenessTest walks
+                // SimEvent.sealedSubclasses transitively. JVM-only.
+                implementation(kotlin("reflect"))
             }
         }
     }

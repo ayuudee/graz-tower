@@ -166,6 +166,19 @@ val PHYSICS_TICK_INTERVAL: SimDuration = SimDuration.ofMillis(1000)
 val CONTROLLER_CYCLE_INTERVAL: SimDuration = SimDuration.ofMillis(500)
 
 /**
+ * Pass 9 (D-AUDIT.2 / Phase 9.B): missed-handoff chase threshold. After
+ * this elapses with the aircraft still in `HandingOff(Peer)` (no two-way
+ * comms with target), [sweepHandoffTimeouts] emits
+ * [SimEvent.MissedHandoffDetected]. Per ICAO Doc 4444 §10.1.2 the state
+ * does NOT roll back — responsibility persists with the transferring
+ * controller until two-way comms is established.
+ *
+ * **Doctrine**, not regulation: ~2 min from NATS MATS Part 1 §2.1 /
+ * Eurocontrol OPS manuals. Not codified by ICAO.
+ */
+val MISSED_HANDOFF_TIMEOUT: SimDuration = SimDuration.ofSeconds(120)
+
+/**
  * The engine's one and only state transition.
  *
  * Pure: given the same `(state, event)` pair, always returns the same
@@ -194,6 +207,12 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         is SimEvent.TransmissionStart -> handleTransmissionStart(atTime, event)
         is SimEvent.TransmissionEnd -> handleTransmissionEnd(atTime, event)
         is SimEvent.PilotProcessingComplete -> handlePilotProcessingComplete(atTime, event)
+        // Pass 9 (D-AUDIT.2 / Phase 9.B): MissedHandoffDetected has no
+        // handler-state-change effect — it is a system-emitted operational
+        // signal recorded by the integration test reading the event log.
+        // Same shape as Spawn for system-emitted events with no
+        // behavioural state change.
+        is SimEvent.MissedHandoffDetected -> atTime to emptyList()
     }
     // Pass 7 (D-AUDIT.5 + Impact-O.1 / FP-M.3): cross-controller `Owned`
     // invariant. After every step, no two controllers may simultaneously
@@ -314,7 +333,59 @@ private fun handlePhysicsTick(
         acc.apply { put(id, advanceKinematics(ac, state.worldIndex, dtSeconds)) }
     }
     val next = SimEvent.PhysicsTick(event.time + PHYSICS_TICK_INTERVAL)
-    return state.copy(aircraft = advanced).emit(listOf(next))
+    val (afterSweep, sweepEvents) = sweepHandoffTimeouts(state.copy(aircraft = advanced))
+    return afterSweep.emit(sweepEvents + next)
+}
+
+/**
+ * Pass 9 (D-AUDIT.2 / Phase 9.B): detect HandingOff(Peer) ↔ Watching pairs
+ * that have aged past [MISSED_HANDOFF_TIMEOUT] without resolution. Per
+ * ICAO §10.1.2 the state does NOT roll back — this function only emits
+ * [SimEvent.MissedHandoffDetected] for operational visibility.
+ *
+ * Re-fire policy: at most one event per [HandoffEscalationKey] per
+ * [MISSED_HANDOFF_TIMEOUT] window. The sim tracks `lastEscalatedAt` on
+ * [SimState.handoffEscalations]; subsequent firings use
+ * `max(handoffSince, lastEscalatedAt)` as the elapsed-from anchor.
+ *
+ * **Cadence** (call sites): invoked only from [handlePhysicsTick] and
+ * [handleControllerTick]. Comms-event handlers (transmission start/end,
+ * pilot processing) do not invoke the sweep — the 120 s timeout has no
+ * need for sub-second sampling, and an O(controllers × aircraft) walk on
+ * a hot path is wasteful.
+ *
+ * **Different effect class than `assertResponsibilityInvariant`**: that
+ * function is pure-assertion (called every step). The sweep is mutate +
+ * emit + observe; it gets a narrower call-site policy.
+ *
+ * **Single-producer enforcement** — `FirewallMissedHandoffSweepProducerTest`
+ * asserts exactly one site in `:sim/commonMain` produces a
+ * `MissedHandoffDetected` event.
+ */
+internal fun sweepHandoffTimeouts(state: SimState): Pair<SimState, List<SimEvent>> {
+    val now = state.now
+    val emitted = mutableListOf<SimEvent.MissedHandoffDetected>()
+    val updatedEscalations = state.handoffEscalations.toMutableMap()
+    for (sender in state.controllers.values) {
+        for ((acId, st) in sender.responsibilities) {
+            if (st !is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff) continue
+            val target = st.target
+            if (target !is xyz.easiersaid.twr.protocol.HandoffTarget.Peer) continue
+            val key = HandoffEscalationKey(sender = sender.id, aircraft = acId)
+            val anchor = updatedEscalations[key] ?: st.since
+            if ((now - anchor) <= MISSED_HANDOFF_TIMEOUT) continue
+            emitted += SimEvent.MissedHandoffDetected(
+                time = now,
+                aircraft = acId,
+                sender = sender.id,
+                target = target.controllerId,
+                handoffSince = st.since,
+            )
+            updatedEscalations[key] = now
+        }
+    }
+    if (emitted.isEmpty()) return state to emptyList()
+    return state.copy(handoffEscalations = updatedEscalations) to emitted
 }
 
 /** Earliest moment at or after [earliest] when [frequency] is clear of in-flight transmissions. */
@@ -466,7 +537,8 @@ private fun handleControllerTick(
         time = event.time + CONTROLLER_CYCLE_INTERVAL,
         controllerId = event.controllerId,
     )
-    return withBeliefs.emit(commEvents + next)
+    val (afterSweep, sweepEvents) = sweepHandoffTimeouts(withBeliefs)
+    return afterSweep.emit(commEvents + sweepEvents + next)
 }
 
 private fun handleSpawn(
@@ -1226,7 +1298,10 @@ internal fun applyTwoWayCommsEstablished(
     controllersMap[sender.id] = sender.copy(
         responsibilities = sender.responsibilities - ac.id,
     )
-    return state.copy(controllers = controllersMap)
+    // Pass 9 (D-AUDIT.2 / Phase 9.B): handoff resolved — clear any
+    // missed-handoff escalation tracking for the (sender, aircraft) pair.
+    val escalations = state.handoffEscalations - HandoffEscalationKey(sender = sender.id, aircraft = ac.id)
+    return state.copy(controllers = controllersMap, handoffEscalations = escalations)
 }
 
 /**
@@ -1245,7 +1320,12 @@ internal fun applyBoundaryReleaseReadback(
     } ?: return state
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[sender.id] = sender.copy(responsibilities = sender.responsibilities - ac.id)
-    return state.copy(controllers = controllersMap)
+    // Pass 9 (D-AUDIT.2 / Phase 9.B): boundary release — clear any
+    // missed-handoff escalation tracking for the (sender, aircraft) pair.
+    // (HandingOff(Released) doesn't trigger the sweep — the sweep filters
+    // for HandingOff(Peer) — but a defensive clear keeps the slice tight.)
+    val escalations = state.handoffEscalations - HandoffEscalationKey(sender = sender.id, aircraft = ac.id)
+    return state.copy(controllers = controllersMap, handoffEscalations = escalations)
 }
 
 private fun runwayThreshold(

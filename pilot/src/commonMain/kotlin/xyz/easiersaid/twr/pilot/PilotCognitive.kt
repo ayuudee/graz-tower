@@ -141,6 +141,7 @@ import xyz.easiersaid.twr.protocol.ExpectVectors
 import xyz.easiersaid.twr.protocol.Identified
 import xyz.easiersaid.twr.protocol.NotIdentified
 import xyz.easiersaid.twr.protocol.RadarContact
+import xyz.easiersaid.twr.protocol.ConfirmInstruction
 import xyz.easiersaid.twr.protocol.ReadBackCorrect
 import xyz.easiersaid.twr.protocol.ReadbackCorrection
 import xyz.easiersaid.twr.protocol.Standby
@@ -200,6 +201,12 @@ fun processControllerResponse(
 ): ResponseReaction = when (response) {
     is ReadBackCorrect -> ResponseReaction.silent(mission)
     is ReadbackCorrection -> handleReadbackCorrection(response, mission)
+    // Pass 9 (D-AUDIT.2): controller asks the pilot to confirm a prior
+    // instruction. The pilot's mission already encodes the instruction's
+    // intent (processed when first received); the response is a
+    // verification round-trip — re-emit the readback for the named
+    // instruction. Same shape as ReadbackCorrection's pattern.
+    is ConfirmInstruction -> ResponseReaction(mission = mission, transmission = buildReadback(response.instruction))
     is Standby -> ResponseReaction.silent(mission)
     is Identified -> ResponseReaction.silent(mission)
     is NotIdentified -> ResponseReaction.silent(mission)

@@ -120,6 +120,31 @@ sealed interface SimEvent {
     ) : SimEvent {
         override val source: AgentId get() = AgentId.Pilot(aircraftId)
     }
+
+    /**
+     * Pass 9 (D-AUDIT.2 / Phase 9.B): operational signal that a peer
+     * handoff has aged past [MISSED_HANDOFF_TIMEOUT] without two-way
+     * comms being established. Per ICAO Doc 4444 §10.1.2 the responsibility
+     * state does NOT roll back — the transferring controller still owns
+     * the aircraft. This event is purely diagnostic; controller-side
+     * reactive consumption (re-issuing `ContactFrequency`) is deferred to
+     * **D-PF.9**.
+     *
+     * No handler in `step()` — the event is emitted by
+     * [sweepHandoffTimeouts] for queue-stream observers (the integration
+     * test reads the event log). Same shape as [Spawn]: system-emitted,
+     * no behavioural state-change handler.
+     */
+    data class MissedHandoffDetected(
+        override val time: SimTime,
+        val aircraft: AircraftId,
+        val sender: ControllerId,
+        val target: ControllerId,
+        val handoffSince: SimTime,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId = AgentId.System
+    }
 }
 
 private fun SpeakerRef.toAgentId(): AgentId = when (this) {
@@ -139,4 +164,5 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.TransmissionStart -> copy(seq = s)
     is SimEvent.TransmissionEnd -> copy(seq = s)
     is SimEvent.PilotProcessingComplete -> copy(seq = s)
+    is SimEvent.MissedHandoffDetected -> copy(seq = s)
 }

@@ -36,7 +36,7 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
     // Coordinations are NOT pruned when an aircraft leaves tracked.
     // Responsibility transfer (e.g. ContactFrequency) happens before the readback arrives,
     // so the issuing controller must keep the coordination until processReadback confirms it
-    // or gcOldCoordinations expires it (30 s). Pruning here would destroy the pending
+    // or escalateOverdueCoordinations advances it through the lifecycle. Pruning here would destroy the pending
     // state before the readback can be confirmed, making handoff detectors unreachable.
 
     return current.copy(

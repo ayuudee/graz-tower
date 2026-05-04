@@ -138,18 +138,21 @@ data object ContactEstablished : RuleGuard {
 }
 
 /**
- * No pending (unacknowledged) readback for an instruction matching [matcher].
+ * No pending (still-Issued) readback for an instruction matching [matcher].
  *
  * The idempotency pair for fire-and-forget rules — handoffs, position-info,
  * QNH updates — whose effect lands several ticks after the controller speaks.
- * The pending-readback register is the already-authoritative "what's in flight"
- * store: every outgoing [ControllerOutput.Instruct] is appended there by
- * [recordPendingReadbacks] and either popped when the readback arrives or
- * GC'd after [MAX_READBACK_AGE].
+ * The coordination ledger is the already-authoritative "what's in flight"
+ * store: every outgoing [xyz.easiersaid.twr.controller.ControllerOutput.Instruct]
+ * is appended there by `recordCoordinations` and either popped when the
+ * readback arrives or escalated by `escalateOverdueCoordinations`.
  *
- * That GC horizon gives the retry behaviour for free: while a readback is in
- * flight the rule is blocked; if no readback arrives within 30 s the entry ages
- * out and the rule fires again — the "how copy?" retransmit (CAP 413 §2.7).
+ * Pass 9 (D-AUDIT.2): the guard reads the `pendingReadbacks` projection,
+ * which filters to entries still in [xyz.easiersaid.twr.controller.observe.CoordinationState.Issued].
+ * An escalated coordination (Querying/Reissued/LostCommsDeclared) is *not*
+ * blocking the rule — the escalation flow has taken over — so the rule
+ * fires again, providing the "how copy?" retransmit cadence (CAP 413 §2.7)
+ * via the lifecycle, not the silent GC.
  */
 data class NoPendingReadback(val matcher: InstructionMatcher) : RuleGuard {
     override val failureMessage = "An instruction matching this matcher is already pending readback"

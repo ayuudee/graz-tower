@@ -158,9 +158,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                     // Uses the separation engine's comfort gradient from beliefs
                     // (Phase 6b Phase A). Fires when concern is INTERVENTION or above.
                     SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION),
-                    // Retransmit via pending-readback horizon — ExtendDownwind has no
-                    // required-atom readback, so the pending entry ages out after 30 s
-                    // (MAX_READBACK_AGE), keeping re-issues to the CAP 413 §2.7 cadence.
+                    // Retransmit via the coordination lifecycle (Pass 9 D-AUDIT.2):
+                    // ExtendDownwind has no required-atom readback, so the entry
+                    // escalates Issued → Querying → Reissued, keeping re-issues to
+                    // the CAP 413 §2.7 cadence.
                     NoPendingReadback(instructionOfType<ExtendDownwind>()),
                 )),
                 action = ExtendDownwindAction,

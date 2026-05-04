@@ -201,8 +201,8 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Re-issue: if the ClearedForTakeoff transmission was stepped on,
-            // the coordination GCs after MAX_READBACK_AGE. Once there's no
-            // pending readback, re-issue the clearance.
+            // the coordination escalates through Querying → Reissued (Pass 9
+            // D-AUDIT.2). Once it's no longer in Issued state, the rule re-fires.
             AtcRule(
                 id = "DEP-TAKEOFF-REISSUE",
                 description = "Re-issue takeoff clearance after readback timeout",

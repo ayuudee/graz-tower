@@ -163,15 +163,15 @@ import xyz.easiersaid.twr.protocol.WhenAbleCondition
 import xyz.easiersaid.twr.protocol.WhenAbleProceedDirect
 
 /**
- * An instruction that has been issued and is awaiting readback from the pilot.
+ * Projection of a still-Issued [OutstandingCoordination] for consumers
+ * (notably [xyz.easiersaid.twr.controller.bdi.NoPendingReadback]) that
+ * only need the "blocking the rule from re-firing" fact, not the full
+ * lifecycle state.
  *
- * Controller records one entry per outgoing [ControllerOutput.Instruct]. Entries are
- * popped when a matching readback arrives, or GC'd after [MAX_READBACK_AGE].
- *
- * Time is load-bearing: it supports ordering resolution when multiple instructions
- * are outstanding, anchors future timeout behaviour ("[callsign], readback?"), and
- * scopes the interpretation layer's context snapshot to voice-time when that layer
- * is eventually built. See wiki/design-decisions/2026-04-16-transmission-reception-architecture.md.
+ * Pass 9 (D-AUDIT.2): only entries in [CoordinationState.Issued] surface
+ * here. Once a coordination escalates to Querying / Reissued /
+ * LostCommsDeclared, the escalation flow has taken over and the rule is
+ * free to fire again.
  */
 data class PendingReadback(
     val instruction: AtcInstruction,
@@ -179,12 +179,57 @@ data class PendingReadback(
 )
 
 /**
- * Maximum age of a pending readback before it is silently GC'd.
+ * Doctrine-anchored timeouts for the coordination ledger lifecycle.
  *
- * 30 seconds balances realistic RT lag (pilots may read back after a few seconds of
- * workload), future LLM parser latency, and preventing indefinite pending accumulation.
+ * Pass 9 (D-AUDIT.2): replaces the silent 30 s `MAX_READBACK_AGE` GC with
+ * an explicit Issued → Querying → Reissued → LostCommsDeclared escalation.
+ * Real controllers don't forget — they query, re-issue, declare lost-comms.
+ *
+ * Production reads [Default]. Spec tests construct short-window policies
+ * so they don't sit at real-time clock for minutes. Every constant in
+ * [Default] carries a citation to its doctrine source — deviation is a
+ * plan revision, not a free parameter.
  */
-val MAX_READBACK_AGE: SimDuration = SimDuration.ofSeconds(30)
+data class ReadbackTimeoutPolicy(
+    val queryAfter: SimDuration,
+    val reissueAfter: SimDuration,
+    val reissueInterval: SimDuration,
+    val lostCommsAfter: SimDuration,
+    val maxReissueAttempts: Int,
+) {
+    init {
+        require(maxReissueAttempts >= 1) { "maxReissueAttempts must be ≥ 1, got $maxReissueAttempts" }
+        require(reissueAfter > queryAfter) { "reissueAfter must exceed queryAfter (else Querying has no window)" }
+        // Consistency: the attempt-count branch must fire before lost-comms
+        // (the time-bound is doctrine-anchored belt-and-braces against a
+        // future constant edit that breaks the relationship).
+        val maxReissueWindow = reissueAfter + reissueInterval * (maxReissueAttempts - 1)
+        require(maxReissueWindow < lostCommsAfter) {
+            "lostCommsAfter ($lostCommsAfter) must exceed reissueAfter + (max-1) * reissueInterval ($maxReissueWindow)"
+        }
+    }
+
+    companion object {
+        /**
+         * Production policy.
+         *
+         * - `queryAfter = 10 s`: ICAO Doc 4444 §4.5.7.5.3 "immediate action";
+         *    operational ~10 s (NATS MATS Part 1 §1.3; Eurocontrol HUM.ET1.ST05).
+         * - `reissueAfter = 30 s`: ~30 s "I SAY AGAIN" doctrine.
+         * - `reissueInterval = 20 s`: between subsequent re-emits.
+         * - `lostCommsAfter = 5 min`: ~5 min on working freq before lost-comms
+         *    (operational; no ICAO codification).
+         * - `maxReissueAttempts = 3`: standard before lost-comms.
+         */
+        val Default = ReadbackTimeoutPolicy(
+            queryAfter = SimDuration.ofSeconds(10),
+            reissueAfter = SimDuration.ofSeconds(30),
+            reissueInterval = SimDuration.ofSeconds(20),
+            lostCommsAfter = SimDuration.ofSeconds(300),
+            maxReissueAttempts = 3,
+        )
+    }
+}
 
 /**
  * Validate a readback against a pending instruction by matching safety-critical atoms.
@@ -218,9 +263,10 @@ sealed interface ReadbackVerdict {
     data class Incorrect(val defects: NonEmptyList<AtomDefect>) : ReadbackVerdict
 
     /**
-     * No readback received within [MAX_READBACK_AGE]. Pending ages out via GC;
-     * after TTL, controller may emit "say again" or re-issue at discretion.
-     * No immediate pop — the pending entry remains until explicitly GC'd.
+     * No readback received yet. Pass 9 (D-AUDIT.2): the coordination
+     * ledger escalates Issued → Querying → Reissued → LostCommsDeclared
+     * via [escalateOverdueCoordinations]; this verdict marks "no readback
+     * matched" without erasing the pending entry.
      */
     data object Missing : ReadbackVerdict
 
@@ -436,12 +482,70 @@ internal fun BeliefState.recordCoordinations(
     return copy(coordinations = updated)
 }
 
-/** Drop coordinations older than [MAX_READBACK_AGE] that are still ISSUED. */
-/** Drop ISSUED coordinations older than [MAX_READBACK_AGE]. CONFIRMED/CANCELLED are never stored. */
-internal fun BeliefState.gcOldCoordinations(now: SimTime): BeliefState {
+/**
+ * Advance every outstanding coordination's [CoordinationState] per elapsed
+ * time. Pass 9 (D-AUDIT.2): replaces the pre-Pass-9 `gcOldCoordinations`
+ * which silently dropped stale entries — a firewall violation against the
+ * "real controllers don't forget" rule.
+ *
+ * Per-entry transitions (total partition; precedence is the order below):
+ *
+ *   Issued    + (now - issuedAt)    > queryAfter           → Querying(now, null)
+ *   Querying  + (now - queriedAt)   > (reissueAfter - queryAfter)
+ *                                                          → Reissued(now, 1, null)
+ *   Reissued  + attemptCount >= maxReissueAttempts         → LostCommsDeclared(now)
+ *   Reissued  + (now - issuedAt)    > lostCommsAfter       → LostCommsDeclared(now)
+ *                                                            [unreachable under
+ *                                                             [ReadbackTimeoutPolicy.Default]
+ *                                                             per init invariant; kept as
+ *                                                             consistency-check against
+ *                                                             future constant edits]
+ *   Reissued  + (now - reissuedAt)  > reissueInterval      → Reissued(now, attempt+1, null)
+ *   LostCommsDeclared                                      → unchanged (terminal)
+ *
+ * Returns the updated [BeliefState]. Escalation is purely a state advance;
+ * the controller's [coordinationEscalationOutputs] reads the just-
+ * transitioned states and emits the corresponding phraseology output.
+ */
+internal fun BeliefState.escalateOverdueCoordinations(
+    now: SimTime,
+    policy: ReadbackTimeoutPolicy = ReadbackTimeoutPolicy.Default,
+): BeliefState {
     if (coordinations.isEmpty()) return this
-    val kept = coordinations.mapValues { (_, coords) ->
-        coords.filter { (now - it.issuedAt) <= MAX_READBACK_AGE }
-    }.filterValues { it.isNotEmpty() }
-    return if (kept == coordinations) this else copy(coordinations = kept)
+    var changed = false
+    val advanced = coordinations.mapValues { (_, coords) ->
+        coords.map { c ->
+            val nextState = advanceState(c, now, policy)
+            if (nextState === c.state) c else { changed = true; c.copy(state = nextState) }
+        }
+    }
+    return if (!changed) this else copy(coordinations = advanced)
+}
+
+private fun advanceState(
+    c: OutstandingCoordination,
+    now: SimTime,
+    policy: ReadbackTimeoutPolicy,
+): CoordinationState = when (val s = c.state) {
+    is CoordinationState.Issued -> {
+        if ((now - c.issuedAt) > policy.queryAfter) CoordinationState.Querying(queriedAt = now, emittedAt = null)
+        else s
+    }
+    is CoordinationState.Querying -> {
+        // Querying → Reissued(1) when (now - queriedAt) exceeds the gap
+        // between reissueAfter and queryAfter — i.e., when total elapsed
+        // (now - issuedAt) crosses reissueAfter.
+        val querySpent = now - s.queriedAt
+        val reissueGap = policy.reissueAfter - policy.queryAfter
+        if (querySpent > reissueGap) CoordinationState.Reissued(reissuedAt = now, attemptCount = 1, emittedAt = null)
+        else s
+    }
+    is CoordinationState.Reissued -> when {
+        s.attemptCount >= policy.maxReissueAttempts -> CoordinationState.LostCommsDeclared(declaredAt = now)
+        (now - c.issuedAt) > policy.lostCommsAfter -> CoordinationState.LostCommsDeclared(declaredAt = now)
+        (now - s.reissuedAt) > policy.reissueInterval ->
+            CoordinationState.Reissued(reissuedAt = now, attemptCount = s.attemptCount + 1, emittedAt = null)
+        else -> s
+    }
+    is CoordinationState.LostCommsDeclared -> s
 }

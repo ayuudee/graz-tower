@@ -260,6 +260,6 @@ class ExhaustivenessTest {
         const val ATC_INSTRUCTION_LEAF_COUNT: Int = 100
 
         /** Concrete-leaf count of [ControllerResponse]'s sealed hierarchy. */
-        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 11
+        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 12
     }
 }
