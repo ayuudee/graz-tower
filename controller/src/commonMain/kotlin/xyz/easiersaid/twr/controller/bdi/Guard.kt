@@ -157,8 +157,8 @@ data object ContactEstablished : RuleGuard {
 data class NoPendingReadback(val matcher: InstructionMatcher) : RuleGuard {
     override val failureMessage = "An instruction matching this matcher is already pending readback"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ctx.beliefs.pendingReadbacks[ac.id].orEmpty()
-            .none { matcher.matches(it.instruction) }
+        ctx.beliefs.coordinations[ac.id].orEmpty()
+            .none { it.state is xyz.easiersaid.twr.controller.observe.CoordinationState.Issued && matcher.matches(it.instruction) }
 }
 
 // ── Pilot events ─────────────────────────────────────────────────────

@@ -132,4 +132,47 @@ class ReadbackQueryEscalationIntegrationTest {
             .filterIsInstance<ConfirmInstruction>()
         assertEquals(0, confirms.size, "Confirm must NOT re-emit while coordination is still in Querying with emittedAt set")
     }
+
+    @Test
+    fun `subsequent cycle past reissue gap advances to Reissued and re-emits Instruct`() {
+        // Pass 9 post-impl test-review Add-3: pin the Querying → Reissued
+        // emission through controllerDecide. Without this row, no test
+        // exercises the Reissued-side of the escalation pipeline at the
+        // controller-decide boundary.
+
+        // Cycle 1: Issued → Querying, ConfirmInstruction emitted.
+        val beliefs0 = beliefsWithIssuedCoordination()
+        val r0 = controllerDecide(viewWith(now), beliefs0, AviationWorld())
+        // Cycle 2: still Querying, no new emissions (dampening).
+        val cycle2At = now + SimDuration.ofSeconds(1)
+        val r1 = controllerDecide(viewWith(cycle2At), r0.updatedBeliefs, AviationWorld())
+        // Cycle 3: past `reissueAfter` from issuedAt → Reissued(1) + Instruct.
+        // Default policy: reissueAfter = 30s, queryAfter = 10s. The fold
+        // advances Querying → Reissued when `now - queriedAt` > the gap
+        // (reissueAfter - queryAfter) = 20s. queriedAt was set at `now`
+        // (= 11s after issuedAt), so we need cycle 3 strictly after
+        // queriedAt + 20s = 31s. issuedAt was SimTime.ZERO.
+        val pastReissue = issuedAt + SimDuration.ofSeconds(32)
+        val r2 = controllerDecide(viewWith(pastReissue), r1.updatedBeliefs, AviationWorld())
+
+        // Assertion 1: a ControllerOutput.Instruct re-emits the original instruction.
+        val reissues = r2.outputs.filterIsInstance<ControllerOutput.Instruct>()
+            .filter { it.instruction == instruction }
+        assertEquals(
+            1,
+            reissues.size,
+            "expected exactly one re-emission of the original instruction; got ${r2.outputs}",
+        )
+        assertTrue(
+            reissues.single().trace.ruleId == "COORD-REISSUE",
+            "re-emitted Instruct must carry the COORD-REISSUE rule id",
+        )
+
+        // Assertion 2: the coordination state is now Reissued(1) with emittedAt set.
+        val coord = r2.updatedBeliefs.coordinations.getValue(ac).single()
+        val state = coord.state
+        assertTrue(state is CoordinationState.Reissued, "expected Reissued, got $state")
+        assertEquals(1, state.attemptCount, "expected attemptCount=1 on first reissue, got ${state.attemptCount}")
+        assertEquals(pastReissue, state.emittedAt, "emittedAt must be set after re-emission to dampen next cycle")
+    }
 }

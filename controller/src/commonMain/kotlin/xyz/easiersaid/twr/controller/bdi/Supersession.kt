@@ -1,7 +1,6 @@
 package xyz.easiersaid.twr.controller.bdi
 
 import xyz.easiersaid.twr.controller.observe.BeliefState
-import xyz.easiersaid.twr.controller.observe.PendingReadback
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ClearedToLand
@@ -20,7 +19,9 @@ import kotlin.reflect.KClass
  * it supersedes is cleaned up. Acts on two stores:
  *
  *   1. [BeliefState.issuedClearances] — superseded clearance terminates.
- *   2. [BeliefState.pendingReadbacks] — superseded pending is disposed per [PendingReadbackPolicy].
+ *   2. [BeliefState.coordinations] — superseded entries disposed per [PendingReadbackPolicy]
+ *      (Pass 9: now reads the coordination ledger directly; the `pendingReadbacks`
+ *      projection was removed in favour of typed predicates on `CoordinationState`).
  *
  * Supersession is transparent to rule selection — guards continue to use [NoActiveInstruction]
  * and [NoPendingReadback]. The cleanup fires *after* arbitration commits the superseding

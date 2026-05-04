@@ -140,6 +140,29 @@ class LowgGoldenTest {
                 "controller should not have offered T&G.\n$journey"
         }
 
+        // (b') Pass 9 post-impl test-review Add-2 (revised): no
+        // coordination should reach LostCommsDeclared on the G0 happy path.
+        //
+        // Some Pass 9 escalation activity (ConfirmInstruction emissions,
+        // COORD-REISSUE outputs) is *design-intentional* for instructions
+        // with no required-atom readback (e.g., ExtendDownwind — see
+        // TowerArrival.kt KDoc). Asserting zero escalation outputs would
+        // collide with that design. The truly-bad terminal is
+        // `LostCommsDeclared`: it means the controller exhausted the
+        // escalation ladder without ever receiving acknowledgement —
+        // which on a happy-path single-aircraft circuit must not happen.
+        val anyLostComms = finalState.beliefs.values.any { b ->
+            b.coordinations.values.any { coords ->
+                coords.any { it.state is xyz.easiersaid.twr.controller.observe.CoordinationState.LostCommsDeclared }
+            }
+        }
+        check(!anyLostComms) {
+            "G0 happy path reached LostCommsDeclared on at least one coordination — " +
+                "the escalation ladder ran to terminal without successful readback. " +
+                "Either the lifecycle thresholds drifted below natural pilot latency or " +
+                "readback delivery is broken.\n$journey"
+        }
+
         // (c) A vacate instruction was issued (AfterLandingVacateVia OR BacktrackRunway).
         check(
             records.firstControllerInstructionOf<AfterLandingVacateVia>(aircraftId).isSome() ||

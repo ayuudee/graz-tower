@@ -112,20 +112,6 @@ data class BeliefState(
      */
     val circuitIntent: Map<AircraftId, CircuitIntent> = emptyMap(),
 ) {
-    /**
-     * Projection: pending (still-Issued) coordinations as [PendingReadback].
-     *
-     * Read by the [xyz.easiersaid.twr.controller.bdi.NoPendingReadback]
-     * guard for fire-and-forget rule idempotency. Coordinations that have
-     * escalated to Querying/Reissued/LostCommsDeclared are excluded from
-     * this projection — they're no longer in the "blocking the rule from
-     * re-firing" sense, the escalation has taken over.
-     */
-    val pendingReadbacks: Map<AircraftId, List<PendingReadback>> get() =
-        coordinations.mapValues { (_, coords) ->
-            coords.filter { it.state is CoordinationState.Issued }
-                .map { PendingReadback(it.instruction, it.issuedAt) }
-        }.filterValues { it.isNotEmpty() }
     companion object {
         val EMPTY = BeliefState()
         const val MAX_OBSERVATION_HISTORY = 5

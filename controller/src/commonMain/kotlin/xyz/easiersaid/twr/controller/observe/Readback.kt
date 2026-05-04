@@ -163,22 +163,6 @@ import xyz.easiersaid.twr.protocol.WhenAbleCondition
 import xyz.easiersaid.twr.protocol.WhenAbleProceedDirect
 
 /**
- * Projection of a still-Issued [OutstandingCoordination] for consumers
- * (notably [xyz.easiersaid.twr.controller.bdi.NoPendingReadback]) that
- * only need the "blocking the rule from re-firing" fact, not the full
- * lifecycle state.
- *
- * Pass 9 (D-AUDIT.2): only entries in [CoordinationState.Issued] surface
- * here. Once a coordination escalates to Querying / Reissued /
- * LostCommsDeclared, the escalation flow has taken over and the rule is
- * free to fire again.
- */
-data class PendingReadback(
-    val instruction: AtcInstruction,
-    val issuedAt: SimTime,
-)
-
-/**
  * Doctrine-anchored timeouts for the coordination ledger lifecycle.
  *
  * Pass 9 (D-AUDIT.2): replaces the silent 30 s `MAX_READBACK_AGE` GC with

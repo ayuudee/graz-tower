@@ -107,60 +107,16 @@ class CoordinationLifecycleSpec {
         check(s.declaredAt == declaredAt) { "expected declaredAt unchanged, got ${s.declaredAt}" }
     }
 
-    @Test
-    fun `acceptReadback removes Issued entry`() {
-        // The actual `acceptReadback` is in Controller.kt and operates on
-        // `ReadbackFoldState`. The contract this test pins: a coordination
-        // in Issued state, when its instruction is read back correctly, is
-        // *absent* from `coordinations` afterwards. We approximate by
-        // exercising the public projection — `pendingReadbacks` filters to
-        // Issued, and removal is tested at the integration level
-        // (LowgGoldenTest, LowgReadbackTimeoutTest). The spec row pins the
-        // *observable* removal: a coordinations map filtered down by an
-        // entry-removal preserves the rest.
-        val coordA = OutstandingCoordination(
-            aircraft = ac,
-            instruction = instruction,
-            expectedReadback = emptySet(),
-            issuedAt = t0,
-            state = CoordinationState.Issued,
-        )
-        val acB = AircraftId("OE-XYZ")
-        val coordB = coordA.copy(aircraft = acB)
-        val b = BeliefState.EMPTY.copy(coordinations = mapOf(ac to listOf(coordA), acB to listOf(coordB)))
-        // Simulate the removal that acceptReadback performs.
-        val after = b.copy(coordinations = b.coordinations - ac)
-        check(ac !in after.coordinations) { "ac entry should be absent after readback accepted" }
-        check(acB in after.coordinations) { "other-aircraft entry must remain" }
-    }
-
-    @Test
-    fun `acceptReadback removes Reissued entry — load-bearing post-escalation path`() {
-        // Pilot answers after the controller already escalated. The Reissued
-        // entry must be removed by readback acceptance, not stuck.
-        val reissuedAt = t0 + policy.reissueAfter
-        val b = beliefsWith(
-            CoordinationState.Reissued(reissuedAt = reissuedAt, attemptCount = 1, emittedAt = reissuedAt),
-        )
-        val after = b.copy(coordinations = b.coordinations - ac)
-        check(ac !in after.coordinations) {
-            "ac Reissued entry should be absent after readback accepted — late readback must clear escalation"
-        }
-    }
-
-    @Test
-    fun `supersession removes any-state entry`() {
-        // Same shape as readback removal: any state can be superseded.
-        val states = listOf(
-            CoordinationState.Issued,
-            CoordinationState.Querying(queriedAt = t0, emittedAt = null),
-            CoordinationState.Reissued(reissuedAt = t0, attemptCount = 1, emittedAt = null),
-            CoordinationState.LostCommsDeclared(declaredAt = t0),
-        )
-        for (s in states) {
-            val b = beliefsWith(s)
-            val after = b.copy(coordinations = b.coordinations - ac)
-            check(ac !in after.coordinations) { "supersession must clear $s entry" }
-        }
-    }
+    // Three "removes ..." rows cut per Pass 9 post-impl test-review M.3:
+    // they tested `Map.minus` (Kotlin stdlib), not production code. Real
+    // removal lives in `Controller.kt`'s acceptReadback (filters
+    // `is Issued` only) and `Supersession.kt`'s applySupersessionCleanup;
+    // both are exercised by integration tests, not by simulating
+    // `b.copy(coordinations - ac)` here.
+    //
+    // The "removes Reissued" row also asserted behaviour acceptReadback
+    // does not exhibit (only Issued entries are accepted), exposing a
+    // real coverage gap for "late readback after escalation" — filed as
+    // **D-AUDIT.2.E-FOLLOWUP** (production semantics for late-readback
+    // resolution of an escalated coordination).
 }

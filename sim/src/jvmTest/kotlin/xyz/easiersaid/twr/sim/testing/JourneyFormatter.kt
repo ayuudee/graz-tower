@@ -44,7 +44,7 @@ fun SimState.formatJourney(
         for ((acId, c) in b.commitments) {
             appendLine("    commitment[$acId] = kind=${c.kind} stage=${c.stage} contacted=${c.contacted} runway=${c.runway}")
         }
-        appendLine("    pendingReadbacks: ${b.pendingReadbacks}")
+        appendLine("    coordinations: ${b.coordinations}")
     }
     if (records.isNotEmpty()) {
         appendLine()

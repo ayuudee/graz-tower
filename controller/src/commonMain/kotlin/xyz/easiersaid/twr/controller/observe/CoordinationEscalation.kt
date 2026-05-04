@@ -20,6 +20,18 @@ import xyz.easiersaid.twr.protocol.Urgency
  *        via [ControllerOutput.Instruct] so it goes through the standard
  *        transmission pipeline. The phraseology "I SAY AGAIN" prefix is
  *        a future formatter concern, not encoded on the data class.
+ *
+ *        **Replay-as-original policy** (post-impl review M.2): the
+ *        re-emission carries the *original* `AtcInstruction` verbatim,
+ *        not a freshly-enriched version. Per Doc 4444 §12.3.1.2 "I SAY
+ *        AGAIN" replays the original transmission — the controller is
+ *        verifying the original was received, not issuing a fresh
+ *        instruction whose terms have shifted. So the re-emit
+ *        intentionally bypasses `enrichInstruction`. If the wind has
+ *        changed since `issuedAt`, that is a *new* instruction, not a
+ *        re-issue — the controller's procedure rules would emit a fresh
+ *        clearance instead, which goes through enrichment via the
+ *        normal path.
  *  - [CoordinationState.LostCommsDeclared]
  *      → no on-frequency phraseology (Doc 4444 §15.1.4 — controller
  *        transmits blind, never declares on the working frequency).
@@ -34,6 +46,10 @@ import xyz.easiersaid.twr.protocol.Urgency
  * [markCoordinationEscalationsEmitted] (which bumps `emittedAt` to dampen
  * cycle re-emission).
  *
+ * The [now] parameter is threaded into trace descriptions for diagnostic
+ * post-mortem ("queried at T+10.5 s"); without it, escalation traces lose
+ * their temporal anchor.
+ *
  * **Conditional-clearance recursion policy**: when the wrapped instruction
  * is `ConditionalClearance(condition, inner)`, the controller confirms /
  * re-emits the *wrapper*, not the inner. The pilot heard the conditional
@@ -41,7 +57,7 @@ import xyz.easiersaid.twr.protocol.Urgency
  */
 internal fun coordinationEscalationOutputs(
     beliefs: BeliefState,
-    @Suppress("UNUSED_PARAMETER") now: SimTime,
+    now: SimTime,
 ): List<ControllerOutput> {
     if (beliefs.coordinations.isEmpty()) return emptyList()
     val out = mutableListOf<ControllerOutput>()
@@ -50,12 +66,14 @@ internal fun coordinationEscalationOutputs(
             when (val s = c.state) {
                 is CoordinationState.Querying -> {
                     if (s.emittedAt == null) {
+                        val ageSec = (now - c.issuedAt).millis / 1000.0
                         out += ControllerOutput.Respond(
                             target = aircraft,
                             response = ConfirmInstruction(target = aircraft, instruction = c.instruction),
                             trace = DecisionTrace(
                                 ruleId = "COORD-QUERY",
-                                description = "Readback overdue — confirm prior instruction (CAP 413 / Doc 4444 §12.3.1.2)",
+                                description = "Readback overdue (issued ${"%.1f".format(ageSec)} s ago) — confirm prior " +
+                                    "instruction (CAP 413 / Doc 4444 §12.3.1.2)",
                                 regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
                             ),
                         )
@@ -63,13 +81,18 @@ internal fun coordinationEscalationOutputs(
                 }
                 is CoordinationState.Reissued -> {
                     if (s.emittedAt == null) {
+                        val ageSec = (now - c.issuedAt).millis / 1000.0
                         out += ControllerOutput.Instruct(
                             target = aircraft,
+                            // Replay-as-original (M.2): re-emit the original
+                            // instruction verbatim, NOT enrichInstruction(c.instruction, weather).
+                            // §12.3.1.2 "I SAY AGAIN" replays the original transmission.
                             dispatch = Dispatch.Direct(c.instruction),
                             urgency = Urgency.TIME_SENSITIVE,
                             trace = DecisionTrace(
                                 ruleId = "COORD-REISSUE",
-                                description = "Re-issue instruction after query unanswered (attempt ${s.attemptCount}; Doc 4444 §12.3.1.2)",
+                                description = "Re-issue instruction after query unanswered (attempt ${s.attemptCount}, " +
+                                    "issued ${"%.1f".format(ageSec)} s ago; Doc 4444 §12.3.1.2)",
                                 regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
                             ),
                             // Reissues do NOT advance stage — that gate fires once when the
