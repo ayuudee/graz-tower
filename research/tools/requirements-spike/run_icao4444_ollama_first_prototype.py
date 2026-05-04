@@ -366,7 +366,7 @@ def require_fields(payload: dict[str, Any], fields: list[str], *, stage: str) ->
             payload.update(nested_matches[0])
             return
     if missing:
-        raise SystemExit(f"{stage} missing required fields: {missing}")
+        raise ValueError(f"{stage} missing required fields: {missing}")
 
 
 def normalize_judge_payload(payload: dict[str, Any], *, window: dict[str, Any], candidate: dict[str, Any]) -> None:
@@ -374,6 +374,8 @@ def normalize_judge_payload(payload: dict[str, Any], *, window: dict[str, Any], 
         payload["caseId"] = window["caseId"]
     if "candidateId" not in payload:
         payload["candidateId"] = candidate["candidateId"]
+    if "notes" not in payload:
+        payload["notes"] = []
     if "rationale" not in payload and isinstance(payload.get("challenge"), str):
         payload["rationale"] = payload["challenge"]
 
