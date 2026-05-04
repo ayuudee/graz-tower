@@ -51,7 +51,7 @@ class FirewallAircraftStateTest {
             targetAltitudeM = 0.0,
             phase = PilotPhase.AtStand,
             route = PilotRoute.None,
-            type = xyz.easiersaid.twr.protocol.AircraftType.Default,
+            type = xyz.easiersaid.twr.protocol.AircraftType.C172,
             pilotMission = null,
         )
         @Suppress("UNUSED_VARIABLE")

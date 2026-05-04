@@ -6,9 +6,7 @@ import xyz.easiersaid.twr.protocol.WakeCategory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 /**
  * Pass 10 (D-AUDIT.4) — `AircraftType` doctrine pin and invariant
@@ -35,9 +33,6 @@ class AircraftTypeSpec {
         // FAA TCDS 3A12 SL/MTOW.
         assertEquals(305, t.runwayLengthM.takeoffMinM, "TCDS takeoff 305 m")
         assertEquals(407, t.runwayLengthM.landingMinM, "TCDS landing 407 m")
-        // FAA AC 90-66 standard pattern.
-        assertEquals(305.0, t.circuitPattern.altitudeAglM, "AC 90-66 1000 ft AGL pattern")
-        assertEquals(925.0, t.circuitPattern.downwindOffsetM, "AC 90-66 0.5 NM downwind offset")
     }
 
     @Test
@@ -46,7 +41,7 @@ class AircraftTypeSpec {
         assertEquals(IcaoTypeDesignator.unsafe("B738"), t.icaoDesignator, "ICAO Doc 8643 designator")
         assertEquals(WakeCategory.M, t.wakeCategory, "ICAO Doc 4444 §5.8 wake category")
         // Boeing 737-800 FCOM (2014).
-        assertEquals(10.0, t.kinematics.taxiSpeedMps)
+        assertEquals(10.0, t.kinematics.taxiSpeedMps, "FCOM taxi (operationally similar to GA)")
         assertEquals(75.0, t.kinematics.rotationSpeedMps, "FCOM V_R 145 KIAS")
         assertEquals(130.0, t.kinematics.climbSpeedMps, "FCOM 250 KIAS below FL100")
         assertEquals(75.0, t.kinematics.approachSpeedMps, "FCOM V_app 145 KIAS")
@@ -54,16 +49,6 @@ class AircraftTypeSpec {
         // Boeing 737 AFM SL/MTOW–MLW.
         assertEquals(2280, t.runwayLengthM.takeoffMinM, "AFM TODA 2280 m")
         assertEquals(1700, t.runwayLengthM.landingMinM, "AFM LDA 1700 m")
-        // Jet pattern doctrine.
-        assertEquals(457.0, t.circuitPattern.altitudeAglM, "FCTM 1500 ft AGL")
-        assertEquals(1850.0, t.circuitPattern.downwindOffsetM, "FCTM 1 NM downwind offset")
-    }
-
-    @Test
-    fun `Default is C172 by reference identity`() {
-        // Reference equality (assertSame) rejects a regression that sets
-        // `Default = C172.copy()` — structurally equal but not the same value.
-        assertSame(AircraftType.C172, AircraftType.Default, "Default must be C172 (not a copy)")
     }
 
     @Test
@@ -110,29 +95,19 @@ class AircraftTypeSpec {
     }
 
     @Test
-    fun `CircuitPattern init rejects non-positive altitudes and offsets`() {
-        assertFails("altitudeAglM must be > 0") {
-            AircraftType.CircuitPattern(altitudeAglM = 0.0, downwindOffsetM = 925.0)
-        }
-        assertFails("downwindOffsetM must be > 0") {
-            AircraftType.CircuitPattern(altitudeAglM = 305.0, downwindOffsetM = 0.0)
-        }
-    }
-
-    @Test
     fun `IcaoTypeDesignator of accepts valid Doc 8643 codes and rejects malformed`() {
         // Valid: 2-4 alphanumeric uppercase.
-        assertNotNull(IcaoTypeDesignator.of("C172"))
-        assertNotNull(IcaoTypeDesignator.of("B738"))
-        assertNotNull(IcaoTypeDesignator.of("A320"))
-        assertNotNull(IcaoTypeDesignator.of("E2")) // 2-char minimum
-        assertNotNull(IcaoTypeDesignator.of("C25A")) // 4-char maximum
-        // Invalid.
-        assertNull(IcaoTypeDesignator.of(""), "empty string")
-        assertNull(IcaoTypeDesignator.of("A"), "1 char too short")
-        assertNull(IcaoTypeDesignator.of("ABCDE"), "5 chars too long")
-        assertNull(IcaoTypeDesignator.of("c172"), "lowercase rejected")
-        assertNull(IcaoTypeDesignator.of("C-172"), "hyphen rejected")
-        assertNull(IcaoTypeDesignator.of("C 17"), "space rejected")
+        assertTrue(IcaoTypeDesignator.of("C172").isRight(), "C172 valid")
+        assertTrue(IcaoTypeDesignator.of("B738").isRight(), "B738 valid")
+        assertTrue(IcaoTypeDesignator.of("A320").isRight(), "A320 valid")
+        assertTrue(IcaoTypeDesignator.of("E2").isRight(), "2-char minimum")
+        assertTrue(IcaoTypeDesignator.of("C25A").isRight(), "4-char maximum")
+        // Invalid — Either.Left carries the offending raw value.
+        assertTrue(IcaoTypeDesignator.of("").isLeft(), "empty string")
+        assertTrue(IcaoTypeDesignator.of("A").isLeft(), "1 char too short")
+        assertTrue(IcaoTypeDesignator.of("ABCDE").isLeft(), "5 chars too long")
+        assertTrue(IcaoTypeDesignator.of("c172").isLeft(), "lowercase rejected")
+        assertTrue(IcaoTypeDesignator.of("C-172").isLeft(), "hyphen rejected")
+        assertTrue(IcaoTypeDesignator.of("C 17").isLeft(), "space rejected")
     }
 }

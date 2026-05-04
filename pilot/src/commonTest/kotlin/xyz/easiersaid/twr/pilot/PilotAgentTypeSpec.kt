@@ -82,4 +82,32 @@ class PilotAgentTypeSpec {
             "B738 climb speed = FCOM 250 KIAS below FL100 = 130 m/s — proves per-type wiring (not hardcoded C172)",
         )
     }
+
+    @Test
+    fun `B738 at stand with ground route commands taxi target speed from B738 kinematics`() {
+        // Pass 10 post-impl test-review Test-Add-1: pin the taxi read site
+        // (PilotAgent.kt onAtStand). C172 and B738 share taxiSpeedMps=10.0
+        // today, so a typo `aircraft.type.kinematics.climbSpeedMps` instead
+        // of `taxiSpeedMps` at this read site would return 130 (B738 climb)
+        // instead of 10, failing this row.
+        val ac = spawn(
+            AircraftType.B738,
+            PilotPhase.AtStand,
+            speedMps = 0.0,
+        ).copy(
+            route = PilotRoute.Ground(
+                waypoints = NonEmptyList(PointId("WP1"), emptyList()),
+                arrivalPhase = PilotPhase.HoldingShort,
+            ),
+        )
+        val intent = DefaultPilot.decide(
+            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld(), now = SimTime.ZERO),
+        ).fold({ fail("pilotDecide failed: $it") }, { it })
+        assertEquals(
+            10.0,
+            intent.targetSpeedMps,
+            "B738 taxi target speed = 10 m/s (FCOM operationally similar to GA on taxiways)",
+        )
+        assertEquals(PilotPhase.Taxiing, intent.phase, "AtStand + Ground route → start taxiing")
+    }
 }

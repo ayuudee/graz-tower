@@ -53,7 +53,7 @@ data class AircraftState(
      * sees only the strip-projected `icaoDesignator` and sensor-projected
      * `wakeCategory` — never the full type — per the firewall.
      */
-    val type: AircraftType = AircraftType.Default,
+    val type: AircraftType = AircraftType.C172,
     /**
      * Cognitive pilot mission plan. When non-null, the cognitive pilot
      * generates transmissions and advances through mission steps. When null,

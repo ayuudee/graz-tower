@@ -120,6 +120,31 @@ class LowgGoldenTest {
             "Aircraft still has an airborne route at end of run.\n$journey"
         }
 
+        // Pass 10 post-impl review M.1: doctrine-shaped mission-time band.
+        // The wall (30 min) is too loose to detect climb-rate doctrine
+        // drift — a regression that quartered the climb rate (3.7 → 0.9
+        // m/s ≈ 180 fpm) would still ship green. Pin the mission-completion
+        // time within a band aligned to one C172 circuit at LOWG: typical
+        // end-to-end is ~10-20 sim minutes (taxi out + run-up + takeoff
+        // + circuit + landing + taxi back). The band is wide enough to
+        // tolerate small per-pass timing shifts but narrow enough to
+        // catch a doctrine regression that materially alters climb cadence.
+        val completionEvent = stateTrace.firstOrNull { (_, st) ->
+            st.aircraft[aircraftId]?.pilotMission?.isComplete == true
+        }
+        checkNotNull(completionEvent) {
+            "Mission never reached isComplete during the trace.\n$journey"
+        }
+        val completionMs = completionEvent.first.time.millis
+        val minMs = 10 * 60 * 1000L
+        val maxMs = 22 * 60 * 1000L
+        check(completionMs in minMs..maxMs) {
+            "Mission completion time ${completionMs / 1000} s is outside the doctrine-shaped band " +
+                "[${minMs / 1000} s, ${maxMs / 1000} s]. A C172 single circuit at LOWG should land " +
+                "within this window; drift indicates a kinematic doctrine regression " +
+                "(climb rate / speeds) or a procedural change.\n$journey"
+        }
+
         // ── Firewall + circuit-intent path verification ─────────────────────
         // These are not scaffold assertions: they prove the *single* G0 run
         // exercised the firewall path the way the plan claims. A silent
