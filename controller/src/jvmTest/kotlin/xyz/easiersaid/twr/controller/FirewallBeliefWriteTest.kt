@@ -47,9 +47,11 @@ class FirewallBeliefWriteTest {
             "Readback.kt" to setOf("coordinations"),
             "CoordinationEscalation.kt" to setOf("coordinations"),
             "Supersession.kt" to setOf("coordinations"),
-            "Controller.kt" to setOf("coordinations"), // acceptReadback fold (Pass 9: bounded)
+            // Pass 12 (D-PF.9): missedHandoffReissueOutputs writes
+            // handoffReissuedAt; acceptReadback (Pass 9) writes coordinations.
+            "Controller.kt" to setOf("coordinations", "handoffReissuedAt"),
         )
-        val sliceNames = listOf("recentRadio", "circuitIntent", "coordinations")
+        val sliceNames = listOf("recentRadio", "circuitIntent", "coordinations", "handoffReissuedAt")
         val mutationPattern = Regex(
             """\.copy\s*\([^)]*\b(${sliceNames.joinToString("|")})\s*=""",
             RegexOption.DOT_MATCHES_ALL,

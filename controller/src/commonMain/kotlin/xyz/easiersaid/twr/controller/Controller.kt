@@ -182,9 +182,19 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     // resolves via the sim's normal flow.
     val (handoffReissueOutputs, afterHandoffMark) = missedHandoffReissueOutputs(view, afterEscalationMark)
     val handoffReissueInstructs = handoffReissueOutputs.filterIsInstance<ControllerOutput.Instruct>()
+    // Pass 12 post-impl F.2: re-issued ContactFrequency supersedes the
+    // original (now-escalated) ContactFrequency coordination. Without
+    // this cleanup, the original keeps emitting TransmittingBlind from
+    // its LostCommsDeclared lifecycle WHILE the re-issue path is also
+    // active — double-bothering the pilot. The supersession relation
+    // (`SUPERSESSION_RELATIONS` ContactFrequency-vs-ContactFrequency
+    // ABANDON) handles the cleanup; we just need to invoke it on the
+    // freshly-emitted handoff re-issue instructions.
+    val handoffReissueInstructions = handoffReissueInstructs.map { it.target to it.instruction }
+    val afterHandoffSupersession = applySupersessionCleanup(afterHandoffMark, handoffReissueInstructions)
 
     val allInstructs = outputs + reactiveInstructs + handoffReissueInstructs
-    val finalBeliefs = afterHandoffMark
+    val finalBeliefs = afterHandoffSupersession
         .recordCoordinations(allInstructs, view.time)
 
     return ControllerDecisionResult(

@@ -68,6 +68,20 @@ val SUPERSESSION_RELATIONS: List<SupersessionRelation> = listOf(
     SupersessionRelation(IncreaseSpeedTo::class, MaintainSpeed::class, PendingReadbackPolicy.ABSORB),
     SupersessionRelation(IncreaseSpeedTo::class, ReduceSpeedTo::class, PendingReadbackPolicy.ABSORB),
 
+    // Pass 12 (D-PF.9 follow-on F.2): a re-issued ContactFrequency from
+    // missedHandoffReissueOutputs supersedes the original ContactFrequency
+    // coordination. Without this relation, two ContactFrequency coordinations
+    // accumulate on the controller's belief slice (the original escalating,
+    // the re-issue fresh) — the controller would emit both
+    // TransmittingBlind (from the original's LostCommsDeclared lifecycle)
+    // AND a fresh Instruct from the re-issue, double-bothering the pilot.
+    // ABANDON: the original is operationally dead once we re-issue.
+    SupersessionRelation(
+        xyz.easiersaid.twr.protocol.ContactFrequency::class,
+        xyz.easiersaid.twr.protocol.ContactFrequency::class,
+        PendingReadbackPolicy.ABANDON,
+    ),
+
     // Note: Disregard is handled as a universal superseder in applySupersessionCleanup,
     // not via explicit relations. See the Disregard special case in the cleanup function.
 )
