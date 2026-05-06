@@ -160,17 +160,19 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
 
     val worldIndex = world.buildWorldIndex()
 
-    // Pass 11 (D-AUDIT.6 / D-AUDIT.10): controllers start with EMPTY
+    // Pass 11 (D-AUDIT.6 / D-AUDIT.10): controllers start with empty
     // responsibilities. Aircraft enter via SimEvent.FlightPlanFiled at
     // sim-start (returned in LoadedFixture.initialEvents) — never via
-    // direct fixture injection.
+    // direct fixture injection. Calls the bare ControllerSpec ctor:
+    // `withOwned(ownedAircraft = emptySet())` would read as a wiring
+    // leftover from the pre-Pass-11 cheat shape (Pass 11 post-impl S.1).
     val controllers = controllerRoles.associateWith { role ->
-        ControllerSpec.withOwned(
+        ControllerSpec(
             id = ControllerId("${aerodromeId.value}_${role.name}"),
             role = role,
             aerodromeId = aerodromeId,
             frequency = frequency,
-            ownedAircraft = emptySet(),
+            responsibilities = emptyMap(),
         )
     }
 

@@ -13,28 +13,51 @@ import kotlin.test.Test
  * collapsing AFTN strip-arrival into test-setup. Pass 11 closes the cheat
  * by routing every initial responsibility through `SimEvent.FlightPlanFiled`.
  *
- * This test scans `Fixture.kt` and `Fixtures.kt` for the forbidden patterns.
- * `ControllerSpec.withOwned(...)` itself stays — spec tests
- * (`ResponsibilityStateMachineSpec` etc.) still need it for hand-built
- * state-machine rows. The firewall scopes to **fixture-load code**, not
- * all `withOwned` callers.
+ * **Scope (post-impl review M.1)**: scans every `.kt` file under
+ * `:sim/jvmTest` and `:sim/commonTest` — not just `Fixture.kt` /
+ * `Fixtures.kt`. A future test that constructs `SimState.initial(...)`
+ * inline with non-empty responsibilities (or calls
+ * `ControllerSpec.withOwned(... ownedAircraft = setOf(ac))` in the test
+ * body) bypasses the original narrow scan.
+ *
+ * **Allowlisted files** — spec tests of state-machine behaviour
+ * legitimately construct `Owned()` directly (Pass 7 / Pass 9):
+ *  - `ResponsibilityStateMachineSpec.kt`
+ *  - `ResponsibilityInvariantSpec.kt`
+ *  - `RadarServiceTerminatedSpec.kt`
+ *  - `MissedHandoffEventSpec.kt`
+ *  - `FlightPlanFilingSpec.kt` (Pass 11's own spec — exercises the
+ *    handler with hand-built states)
+ *  - `ReadbackCorrectionRoundTripTest.kt` (legacy spec, not migrated)
+ *  - `MultiAerodromeWorldTest.kt` (legacy spec, not migrated)
  *
  * **Allowlist shape** (negative lookahead): the only permitted assignment
- * to `responsibilities` in fixture code is `= emptyMap()`. Everything else
- * trips the regex with a D-AUDIT.10 diagnostic.
+ * to `responsibilities` in scanned code is `= emptyMap()`. Everything
+ * else trips the regex with a D-AUDIT.10 diagnostic.
  *
- * **No-suppression rule:** an architectural test failure is never resolved
- * by `@Disabled`, `@Suppress`, or test removal. Fix the violation by
- * filing the plan via `Fixture.flightPlans` + `SimEvent.FlightPlanFiled`,
- * or amend the firewall via plan revision.
+ * **No-suppression rule:** an architectural test failure is never
+ * resolved by `@Disabled`, `@Suppress`, or test removal. Fix the
+ * violation by filing the plan via `Fixture.flightPlans` +
+ * `SimEvent.FlightPlanFiled`, or amend the firewall via plan revision
+ * (e.g. add a new spec-test file to the allowlist with a named reason).
  */
 class FirewallFixtureNoDirectResponsibilitiesTest {
 
+    private val allowedSpecFiles = setOf(
+        "ResponsibilityStateMachineSpec.kt",
+        "ResponsibilityInvariantSpec.kt",
+        "RadarServiceTerminatedSpec.kt",
+        "MissedHandoffEventSpec.kt",
+        "FlightPlanFilingSpec.kt",
+        "ReadbackCorrectionRoundTripTest.kt",
+        "MultiAerodromeWorldTest.kt",
+    )
+
     @Test
-    fun `fixtures must file plans, not pre-populate responsibilities`() {
-        val files = listOf(
-            "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/Fixture.kt",
-            "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/Fixtures.kt",
+    fun `fixtures and integration tests must file plans, not pre-populate responsibilities`() {
+        val scanRoots = listOf(
+            "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim",
+            "sim/src/commonTest/kotlin/xyz/easiersaid/twr/sim",
         )
         // Negative-lookahead allowlist: `responsibilities = emptyMap()` only.
         // `responsibilities = mapOf(...)`, `LinkedHashMap()`, `expected.responsibilities`
@@ -58,21 +81,31 @@ class FirewallFixtureNoDirectResponsibilitiesTest {
         )
         val violations = mutableListOf<String>()
         val root = projectRoot()
-        for (rel in files) {
-            val path = root.resolve(rel)
-            check(Files.exists(path)) { "fixture file missing: $rel" }
-            val text = Files.readString(path)
-            // Strip KDoc, block comments, line comments, and string literals
-            // before scanning so prose mentions don't trip the test.
-            val codeOnly = text
-                .replace(Regex("""/\*\*[\s\S]*?\*/"""), "")
-                .replace(Regex("""/\*[\s\S]*?\*/"""), "")
-                .replace(Regex("""//[^\n]*"""), "")
-                .replace(Regex("\"\"\"[\\s\\S]*?\"\"\""), "")
-                .replace(Regex("\"(?:\\\\.|[^\"\\\\\\n])*\""), "")
-            for ((label, pat) in patterns) {
-                pat.findAll(codeOnly).forEach { match ->
-                    violations.add("$rel: [$label] ${match.value.trim()}")
+        for (rel in scanRoots) {
+            val rootPath = root.resolve(rel)
+            if (!Files.exists(rootPath)) continue
+            Files.walk(rootPath).use { stream ->
+                stream.filter { it.toString().endsWith(".kt") }.forEach { file ->
+                    val name = file.fileName.toString()
+                    // Skip the firewall test itself — it's allowed to mention
+                    // the patterns it forbids.
+                    if (name == "FirewallFixtureNoDirectResponsibilitiesTest.kt") return@forEach
+                    if (name in allowedSpecFiles) return@forEach
+                    val text = Files.readString(file)
+                    // Strip KDoc, block comments, line comments, raw strings,
+                    // regular strings — prose mentions don't trip the test.
+                    val codeOnly = text
+                        .replace(Regex("""/\*\*[\s\S]*?\*/"""), "")
+                        .replace(Regex("""/\*[\s\S]*?\*/"""), "")
+                        .replace(Regex("""//[^\n]*"""), "")
+                        .replace(Regex("\"\"\"[\\s\\S]*?\"\"\""), "")
+                        .replace(Regex("\"(?:\\\\.|[^\"\\\\\\n])*\""), "")
+                    for ((label, pat) in patterns) {
+                        pat.findAll(codeOnly).forEach { match ->
+                            val displayPath = root.relativize(file).toString()
+                            violations.add("$displayPath: [$label] ${match.value.trim()}")
+                        }
+                    }
                 }
             }
         }

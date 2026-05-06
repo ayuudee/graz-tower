@@ -10,7 +10,6 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.Frequency
-import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.Wind
@@ -48,7 +47,6 @@ object Fixtures {
             AircraftId("OE-ABC") to FiledPlanForFixture(
                 plan = FiledPlan.Vfr(
                     departureAerodrome = AerodromeId("LOWG"),
-                    aircraftType = IcaoTypeDesignator.unsafe("C172"),
                     destinationAerodrome = null, // local circuit training
                     intent = AircraftIntent.Departing,
                 ),

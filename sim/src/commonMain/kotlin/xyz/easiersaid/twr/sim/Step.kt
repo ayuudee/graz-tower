@@ -572,12 +572,19 @@ private fun handleFlightPlanFiled(
 ): Pair<SimState, List<SimEvent>> {
     val recipient = state.controllers.values
         .firstOrNull { it.aerodromeId == event.plan.departureAerodrome && it.role == event.recipient }
-        ?: error(
-            "handleFlightPlanFiled: no ${event.recipient} controller at " +
-                "${event.plan.departureAerodrome}; the plan can't be filed. " +
-                "Wiring defect — fixture or scenario emitted FlightPlanFiled targeting " +
-                "an unstaffed role.",
-        )
+        ?: run {
+            val staffedAtAerodrome = state.controllers.values
+                .filter { it.aerodromeId == event.plan.departureAerodrome }
+                .map { it.role }
+                .toSet()
+            error(
+                "handleFlightPlanFiled: no controller staffed at " +
+                    "${event.plan.departureAerodrome} for role ${event.recipient}. " +
+                    "Staffed roles at this aerodrome: $staffedAtAerodrome. " +
+                    "Wiring defect — fixture or scenario emitted FlightPlanFiled targeting " +
+                    "an unstaffed role.",
+            )
+        }
     val existing = recipient.responsibilities[event.aircraft]
     if (existing is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned) {
         if (existing.since == event.time) return state to emptyList()
@@ -588,9 +595,18 @@ private fun handleFlightPlanFiled(
         )
     }
     if (existing != null) {
+        // Per Pass 7 (D-AUDIT.5): HandingOff/Watching are mid-transfer
+        // states that filing must not silently overwrite — would roll
+        // back the cross-controller invariant.
+        val stateName = when (existing) {
+            is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff -> "HandingOff"
+            is xyz.easiersaid.twr.protocol.ResponsibilityState.Watching -> "Watching"
+            is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned -> "Owned" // unreachable
+        }
         error(
-            "handleFlightPlanFiled: aircraft ${event.aircraft} is in state $existing on " +
-                "${recipient.id}; refiling cannot silently roll back transfer state.",
+            "handleFlightPlanFiled: aircraft ${event.aircraft} is in $stateName on " +
+                "${recipient.id} ($existing); refiling cannot silently roll back transfer " +
+                "state — would violate the Pass-7 cross-controller invariant.",
         )
     }
     val updated = recipient.copy(

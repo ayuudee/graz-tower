@@ -10,7 +10,6 @@ import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.Frequency
-import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ResponsibilityState
 import xyz.easiersaid.twr.protocol.RoleName
@@ -64,7 +63,6 @@ class FlightPlanFilingSpec {
 
     private fun vfrPlan(): FiledPlan.Vfr = FiledPlan.Vfr(
         departureAerodrome = AerodromeId("LOWG"),
-        aircraftType = IcaoTypeDesignator.unsafe("C172"),
         destinationAerodrome = null,
         intent = AircraftIntent.Departing,
     )
@@ -116,7 +114,10 @@ class FlightPlanFilingSpec {
             step(state, event(recipient = RoleName.TOWER))
             fail("expected error: TOWER not staffed at LOWG")
         } catch (e: IllegalStateException) {
-            assertTrue(e.message!!.contains("no TOWER controller at"), "diagnostic must name the missing role: ${e.message}")
+            assertTrue(
+                e.message!!.contains("for role TOWER") && e.message!!.contains("Staffed roles at this aerodrome:"),
+                "diagnostic must name the missing role and the staffed-roles set: ${e.message}",
+            )
         }
     }
 
@@ -126,7 +127,6 @@ class FlightPlanFilingSpec {
         val state = stateWith(linkedMapOf(ctrlGndId to groundSpec()))
         val ljmbPlan = FiledPlan.Vfr(
             departureAerodrome = AerodromeId("LJMB"),
-            aircraftType = IcaoTypeDesignator.unsafe("C172"),
             destinationAerodrome = null,
             intent = AircraftIntent.Departing,
         )

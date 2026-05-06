@@ -24,17 +24,20 @@ package xyz.easiersaid.twr.protocol
 sealed interface FiledPlan {
     /** Aerodrome where the aircraft starts. Always known at filing. */
     val departureAerodrome: AerodromeId
-    /** Aircraft type — Doc 8643 designator. Doc 4444 §11 strip data. */
-    val aircraftType: IcaoTypeDesignator
 
     /**
      * VFR filed plan. Minimal: departure + intent. Destination is null
      * for circuit-training (depart and arrive same aerodrome — distinct
      * from "depart-to-self" routing by intent).
+     *
+     * Aircraft type lives on [AircraftState.type] — there is one ICAO
+     * designator per physical aircraft, and the strip-display layer
+     * looks it up at presentation time. Pass 11 post-impl review M.2:
+     * carrying `aircraftType` here would duplicate doctrine across two
+     * sources of truth.
      */
     data class Vfr(
         override val departureAerodrome: AerodromeId,
-        override val aircraftType: IcaoTypeDesignator,
         /** Where the aircraft is going. Null for local circuit / training. */
         val destinationAerodrome: AerodromeId?,
         /** Broad service intent (Departing/Arriving/Transit). */
@@ -50,7 +53,6 @@ sealed interface FiledPlan {
      * invariant to police them.
      */
     data class Ifr(
-        override val aircraftType: IcaoTypeDesignator,
         val flightPlan: FlightPlan,
     ) : FiledPlan {
         override val departureAerodrome: AerodromeId get() = flightPlan.departureAerodrome

@@ -22,7 +22,6 @@ class FiledPlanSpec {
     fun `Vfr accepts null destination for circuit training`() {
         val plan = FiledPlan.Vfr(
             departureAerodrome = AerodromeId("LOWG"),
-            aircraftType = IcaoTypeDesignator.unsafe("C172"),
             destinationAerodrome = null,
             intent = AircraftIntent.Departing,
         )
@@ -39,10 +38,7 @@ class FiledPlanSpec {
             requestedLevel = Level.AltitudeFeet.unsafe(8000),
             enRouteWaypoints = emptyList(),
         )
-        val filed = FiledPlan.Ifr(
-            aircraftType = IcaoTypeDesignator.unsafe("B738"),
-            flightPlan = flightPlan,
-        )
+        val filed = FiledPlan.Ifr(flightPlan = flightPlan)
         // Delegation: the field is computed from the wrapped FlightPlan,
         // not duplicated. Mutating `flightPlan.departureAerodrome` (impossible
         // here — data class) would propagate; setting it to a different

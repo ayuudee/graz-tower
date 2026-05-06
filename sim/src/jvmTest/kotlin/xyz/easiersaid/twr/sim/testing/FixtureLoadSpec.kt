@@ -5,7 +5,6 @@ import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.FiledPlan
-import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.sim.SimEvent
 import kotlin.test.Test
@@ -37,7 +36,6 @@ class FixtureLoadSpec {
         assertEquals(RoleName.GROUND, ev.recipient, "C172 circuit training files to GROUND")
         val plan = ev.plan as? FiledPlan.Vfr ?: fail("expected VFR plan, got ${ev.plan}")
         assertEquals(AerodromeId("LOWG"), plan.departureAerodrome)
-        assertEquals(IcaoTypeDesignator.unsafe("C172"), plan.aircraftType)
         assertEquals(null, plan.destinationAerodrome, "circuit training has no destination")
         assertEquals(AircraftIntent.Departing, plan.intent)
     }
