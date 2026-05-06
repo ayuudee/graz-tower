@@ -1304,3 +1304,19 @@ data class ExpectVectors(
     override val target: AircraftId,
     val reason: String? = null
 ) : ControllerResponse
+
+/**
+ * Pass 15 (D-AUDIT.8 closure): controller advisory issued when a pilot's
+ * `InitialContact.atisCode` differs from the controller's
+ * `expectedAtisLetter`. Per ICAO Annex 11 §4.3.6 this is an *advisory*
+ * transmission — no readback obligation; the pilot acknowledges
+ * silently and obtains the current ATIS on a separate frequency.
+ */
+data class CurrentInformationIs(
+    override val target: AircraftId,
+    val letter: Char,
+) : ControllerResponse {
+    init {
+        require(letter in 'A'..'Z') { "ATIS letter must be A..Z, got '$letter'" }
+    }
+}

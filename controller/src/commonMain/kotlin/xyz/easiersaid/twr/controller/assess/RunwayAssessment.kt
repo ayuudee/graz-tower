@@ -331,23 +331,90 @@ private fun arrivalCommittedToRunway(
  * Select runway closest to into-wind. Returns null when no decision is
  * possible — empty runway set, or no wind report has been received yet.
  *
+ * Pass 15 (D-AUDIT.7): thin projection over [selectRunwayConfiguration].
+ * Backwards-compatible nullable return preserves Pass 6 callers; the
+ * configuration-shape consumer (Pass 15+) reads the full Either-typed
+ * function.
+ *
  * The caller (typically `withActiveRunway` in the controller decide loop)
  * carries the null forward as "no active runway selected"; downstream
  * logic that needs an active runway must defer instruction issuance
  * rather than substituting an arbitrary fallback.
  */
-fun selectRunwayIntoWind(runways: Set<RunwayId>, wind: xyz.easiersaid.twr.controller.WindReport): RunwayId? {
-    if (runways.isEmpty()) return null
+fun selectRunwayIntoWind(runways: Set<RunwayId>, wind: xyz.easiersaid.twr.controller.WindReport): RunwayId? =
+    selectRunwayConfiguration(runways.toList(), wind).fold({ null }, { it.primary })
+
+/**
+ * Sealed routing-failure type for [selectRunwayConfiguration]. Pass 15
+ * (D-AUDIT.7 closure, FP review M2): replaces the partial-function
+ * nullable shape with typed Either-Left.
+ */
+sealed interface RunwayConfigurationFailure {
+    /** [WindReport.NotReported] — no decision possible. */
+    data object WindNotReported : RunwayConfigurationFailure
+
+    /** Wind report present, but no runway aligns within the into-wind bucket. */
+    data class NoRunwayInBucket(val wind: xyz.easiersaid.twr.protocol.Wind) : RunwayConfigurationFailure
+
+    /** Empty runway set — aerodrome publishes no runways. */
+    data object NoRunwaysPublished : RunwayConfigurationFailure
+}
+
+/**
+ * Pure: pick the active runway configuration for an aerodrome given current
+ * wind. Pass 15 (D-AUDIT.7 closure): replaces single-runway
+ * [selectRunwayIntoWind].
+ *
+ * **Selection** (deterministic):
+ *  1. Filter [runways] to those within ±90° of the wind direction
+ *     (the into-wind bucket; runways more crosswind than that are not
+ *     candidates). Within ±90°, runways are usable; the closer to
+ *     direct-into-wind, the more preferred.
+ *  2. Sort the bucket by ascending heading-difference, then by
+ *     [RunwayId.value] ascending (lex order — `16C < 16L < 16R`).
+ *  3. Return a [RunwayConfiguration] with the bucket as both arrivals
+ *     and departures (today's single-config model; mixed-mode is
+ *     **D-AUDIT.7.II-FOLLOWUP**).
+ *
+ * **Failure modes** (typed):
+ *  - [RunwayConfigurationFailure.WindNotReported] — wind is
+ *    [WindReport.NotReported].
+ *  - [RunwayConfigurationFailure.NoRunwayInBucket] — wind reported
+ *    but no runway aligns within ±90° (rare — typically only at
+ *    crosswind limits).
+ *  - [RunwayConfigurationFailure.NoRunwaysPublished] — empty set.
+ *
+ * **Doctrine**: ICAO Doc 4444 §7.2 (runway-in-use selection).
+ */
+fun selectRunwayConfiguration(
+    runways: List<RunwayId>,
+    wind: xyz.easiersaid.twr.controller.WindReport,
+): arrow.core.Either<RunwayConfigurationFailure, xyz.easiersaid.twr.protocol.RunwayConfiguration> {
+    if (runways.isEmpty()) return arrow.core.Either.Left(RunwayConfigurationFailure.NoRunwaysPublished)
     return when (wind) {
-        is xyz.easiersaid.twr.controller.WindReport.NotReported -> null
+        is xyz.easiersaid.twr.controller.WindReport.NotReported ->
+            arrow.core.Either.Left(RunwayConfigurationFailure.WindNotReported)
         is xyz.easiersaid.twr.controller.WindReport.Available -> {
-            // Parse runway heading from ID (e.g., "09" → 90°, "27" → 270°)
-            runways.minByOrNull { rwy ->
-                val rwyHeading = rwy.value.takeWhile { it.isDigit() }.toIntOrNull()?.times(10) ?: 0
-                val windDir = wind.wind.directionDegrees
-                val diff = kotlin.math.abs(rwyHeading - windDir)
-                minOf(diff, 360 - diff)
-            }
+            val windDir = wind.wind.directionDegrees
+            val bucket = runways
+                .map { rwy ->
+                    val rwyHeading = rwy.value.takeWhile { it.isDigit() }.toIntOrNull()?.times(10) ?: 0
+                    val rawDiff = kotlin.math.abs(rwyHeading - windDir)
+                    val diff = minOf(rawDiff, 360 - rawDiff)
+                    rwy to diff
+                }
+                .filter { (_, diff) -> diff <= 90 }
+                .sortedWith(compareBy({ it.second }, { it.first.value }))
+                .map { it.first }
+            if (bucket.isEmpty()) return arrow.core.Either.Left(
+                RunwayConfigurationFailure.NoRunwayInBucket(wind.wind),
+            )
+            arrow.core.Either.Right(
+                xyz.easiersaid.twr.protocol.RunwayConfiguration(
+                    arrivals = bucket,
+                    departures = bucket,
+                ),
+            )
         }
     }
 }

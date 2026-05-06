@@ -111,7 +111,25 @@ class LowgGoldenTest {
                 "event for the circuit-training fixture, got ${filings.size}: " +
                 "${filings.map { it.recipient }}"
         }
+        // Pass 15 (D-AUDIT.8 closure): publish LOWG ATIS at sim-init.
+        // The pilot reads it lazily at first contact; the controller's
+        // `expectedAtisLetter[LOWG]` folds from `view.atis` and gates
+        // the mismatch advisory.
+        val lowgAtis = xyz.easiersaid.twr.protocol.Atis(
+            letter = 'A',
+            aerodrome = lowg,
+            configuration = xyz.easiersaid.twr.protocol.RunwayConfiguration(
+                arrivals = listOf(xyz.easiersaid.twr.protocol.RunwayId("16C")),
+                departures = listOf(xyz.easiersaid.twr.protocol.RunwayId("16C")),
+            ),
+            wind = xyz.easiersaid.twr.protocol.Wind.unsafe(160, 8),
+            qnh = null,
+            visibility = null,
+            generatedAt = now,
+        )
+        val atisEvent = SimEvent.AtisIssued(time = now, aerodrome = lowg, atis = lowgAtis)
         val initialEvents = loaded.initialEvents + listOf(
+            atisEvent,
             SimEvent.PilotDecisionTick(time = now, aircraftId = aircraftId),
             SimEvent.PhysicsTick(time = now),
             SimEvent.ControllerCycle(time = now, controllerId = ground.id),
@@ -149,6 +167,34 @@ class LowgGoldenTest {
         // + circuit + landing + taxi back). The band is wide enough to
         // tolerate small per-pass timing shifts but narrow enough to
         // catch a doctrine regression that materially alters climb cadence.
+        // Pass 15 (D-AUDIT.7 / .8 fold-in) — derivation-match + ATIS-letter pins.
+        // Per post-impl test review M3 + Impact M1: assert active runway is
+        // ATIS-derived (not silently fallen back to wind-only), and the
+        // pilot's first InitialContact carries the published letter.
+        val firstControllerBeliefs = stateTrace
+            .map { (_, st) -> st.beliefs[tower.id] }
+            .firstOrNull { it != null && it.activeRunway != null }
+        check(firstControllerBeliefs?.activeRunway == xyz.easiersaid.twr.protocol.RunwayId("16C")) {
+            "Pass 15: tower's BeliefState.activeRunway must derive from ATIS configuration " +
+                "primary (16C), got ${firstControllerBeliefs?.activeRunway}.\n$journey"
+        }
+        // Pass 15 (D-AUDIT.8 closure): controller-side ATIS-letter
+        // propagation. The LOWG circuit-training mission's first
+        // transmission is `Request(RequestTaxi)` (no CALL_INBOUND step
+        // in the ground-departure task tree), so an InitialContact-
+        // embedded letter assertion is N/A here. The flow that IS
+        // exercised: AtisIssued → state.atisByAerodrome → ControllerView.atis
+        // → BeliefState.expectedAtisLetter via withExpectedAtisLetter.
+        // A regression where the fold is dropped would surface here.
+        val towerExpectedLetter = stateTrace
+            .map { (_, st) -> st.beliefs[tower.id]?.expectedAtisLetter?.get(lowg) }
+            .firstOrNull { it != null }
+        check(towerExpectedLetter == 'A') {
+            "Pass 15 (Annex 11 §4.3.6): tower's BeliefState.expectedAtisLetter[LOWG] must " +
+                "fold from view.atis (LOWG fixture publishes letter 'A'); " +
+                "got $towerExpectedLetter.\n$journey"
+        }
+
         val completionEvent = stateTrace.firstOrNull { (_, st) ->
             st.aircraft[aircraftId]?.pilotMission?.isComplete == true
         }

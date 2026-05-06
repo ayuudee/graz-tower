@@ -28,5 +28,10 @@ internal fun buildPilotInput(state: SimState, aircraftId: AircraftId): PilotInpu
         worldIndex = state.worldIndex,
         world = state.world,
         now = state.now,
+        // Pass 15 (D-AUDIT.8 closure): the pilot reads ATIS at the
+        // moment of first contact (lazy). The full per-aerodrome ATIS
+        // map crosses the boundary so multi-aerodrome scenarios can
+        // resolve via aerodrome lookup later (D-AUDIT.8.IV-FOLLOWUP).
+        atisByAerodrome = state.atisByAerodrome,
     )
 }

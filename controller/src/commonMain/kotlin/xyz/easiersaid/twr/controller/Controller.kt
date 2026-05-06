@@ -88,6 +88,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
         .escalateOverdueCoordinations(view.time)
         .withContactMarked(contactedAircraft)
         .withLocEstablished(events)
+        .withExpectedAtisLetter(view)
         .withActiveRunway(view)
         .withRecentRadio(events, view.time)
         .withCircuitIntentEvents(events)
@@ -153,6 +154,16 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
 
     val (responses, afterValidation) = validatedReadbackResponses(view, afterReactiveSupersession)
 
+    // Pass 15 (D-AUDIT.8 closure): scan received `InitialContact`
+    // messages for ATIS-letter mismatches against `expectedAtisLetter`
+    // for the controller's aerodrome. Emit `CurrentInformationIs`
+    // advisory directly (no procedure rule — same shape as readback
+    // validation: deterministic response in the radio-receive flow).
+    // Per ICAO Annex 11 §4.3.6: advisory transmission, no readback
+    // obligation; pilot acknowledges silently and obtains the current
+    // ATIS on a separate frequency.
+    val atisAdvisories = atisLetterMismatchAdvisories(view, beliefs)
+
     // Pass 9 (D-AUDIT.2): emit escalation outputs (Confirm / re-issue) for
     // coordinations that just-transitioned this cycle. The escalation
     // states were advanced earlier in the pipeline by
@@ -198,7 +209,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
         .recordCoordinations(allInstructs, view.time)
 
     return ControllerDecisionResult(
-        outputs = outputs + reactiveOutputs + companions + responses + escalationOutputs + handoffReissueOutputs,
+        outputs = outputs + reactiveOutputs + companions + responses + atisAdvisories + escalationOutputs + handoffReissueOutputs,
         updatedBeliefs = finalBeliefs,
         trace = OverallDecisionTrace(
             controllerId = view.controllerId, time = view.time,
@@ -277,15 +288,72 @@ private fun BeliefState.withLocEstablished(events: List<ControllerEvent>): Belie
 private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState {
     val isRunwayCommandingRole = view.role == RoleName.TOWER || view.role == RoleName.GROUND
     val needsRunwaySelection = activeRunway == null || activeRunway !in view.runways
-    return if (isRunwayCommandingRole && needsRunwaySelection)
-        copy(activeRunway = selectRunwayIntoWind(
+    if (!isRunwayCommandingRole || !needsRunwaySelection) return this
+    // Pass 15 (D-AUDIT.7 / .8 fold-in): prefer the published ATIS
+    // configuration's primary runway (supervisor-set source of truth).
+    // Fall back to wind-derived selection when no ATIS has been
+    // published — preserves Pass 6 semantics for tests that don't
+    // publish an ATIS event.
+    val atisPrimary = view.atis[view.aerodromeId]?.configuration?.primary
+    val activeRunwaySelection = atisPrimary
+        ?: selectRunwayIntoWind(
             view.runways.keys,
             // Controller has no weather observation at all → treat as
             // "no report yet"; selectRunwayIntoWind returns null and
             // active runway stays unset.
             view.weather?.wind ?: WindReport.NotReported,
-        ))
-    else this
+        )
+    return copy(activeRunway = activeRunwaySelection)
+}
+
+/**
+ * Pass 15 (D-AUDIT.8 closure): fold `expectedAtisLetter` from
+ * `view.atis`. The controller's expected letter for each aerodrome
+ * tracks the latest published ATIS. Single-write site enforced by
+ * `FirewallBeliefWriteTest`.
+ */
+private fun BeliefState.withExpectedAtisLetter(view: ControllerView): BeliefState {
+    if (view.atis.isEmpty() && expectedAtisLetter.isEmpty()) return this
+    val next = view.atis.mapValues { (_, atis) -> atis.letter }
+    return if (next == expectedAtisLetter) this else copy(expectedAtisLetter = next)
+}
+
+/**
+ * Pass 15 (D-AUDIT.8 closure): scan received `InitialContact`
+ * messages for ATIS-letter mismatches against the controller's
+ * expected letter. Emit `CurrentInformationIs` advisory per ICAO
+ * Annex 11 §4.3.6 (advisory transmission; no readback obligation).
+ *
+ * Mismatch criteria: pilot's `InitialContact.atisCode` is non-null
+ * AND differs from `beliefs.expectedAtisLetter[view.aerodromeId]`.
+ * A null `atisCode` is the legacy shape (pre-ATIS-availability) —
+ * not a mismatch. A null expected letter (no ATIS published) — not
+ * a mismatch (the controller can't compare).
+ */
+private fun atisLetterMismatchAdvisories(
+    view: ControllerView,
+    beliefs: BeliefState,
+): List<ControllerOutput> {
+    val expected = beliefs.expectedAtisLetter[view.aerodromeId] ?: return emptyList()
+    return view.receivedMessages.mapNotNull { msg ->
+        val ic = msg.transmission as? xyz.easiersaid.twr.protocol.InitialContact ?: return@mapNotNull null
+        val received = ic.atisCode ?: return@mapNotNull null
+        if (received == expected) return@mapNotNull null
+        ControllerOutput.Respond(
+            target = msg.aircraft,
+            response = xyz.easiersaid.twr.protocol.CurrentInformationIs(
+                target = msg.aircraft,
+                letter = expected,
+            ),
+            trace = DecisionTrace(
+                ruleId = "ATIS-LETTER-MISMATCH",
+                description = "Pilot acknowledged information $received; current is $expected",
+                regulations = listOf(
+                    xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO_ANNEX_11_4_3,
+                ),
+            ),
+        )
+    }
 }
 
 /**

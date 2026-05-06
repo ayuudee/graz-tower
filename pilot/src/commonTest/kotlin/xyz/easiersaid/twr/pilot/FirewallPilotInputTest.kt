@@ -43,6 +43,11 @@ class FirewallPilotInputTest {
             worldIndex = WorldIndex(),
             world = AviationWorld(),
             now = SimTime.ZERO,
+            // Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS — a real-world
+            // cockpit input (the pilot tunes the ATIS frequency before first
+            // contact and reads the letter into the cockpit). Adding non-
+            // cockpit data to this map is a firewall regression.
+            atisByAerodrome = emptyMap(),
         )
         @Suppress("UNUSED_VARIABLE")
         val _check = canonical.aircraft

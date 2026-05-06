@@ -65,6 +65,19 @@ object RegulationDatabase {
         category = RegulationCategory.PROCEDURE,
     )
 
+    /**
+     * Pass 15 (D-AUDIT.8 closure): ATIS service. Pilots receive ATIS
+     * before first contact and acknowledge the letter on first
+     * transmission; controllers issue advisory `CurrentInformationIs`
+     * on letter mismatch (no readback obligation per §4.3.6).
+     */
+    val ICAO_ANNEX_11_4_3 = RegulationRef(
+        document = "ICAO_ANNEX_11", edition = "14th ed. (2018)", section = "§4.3",
+        title = "ATIS broadcast service",
+        principle = "Aerodrome control service provides ATIS broadcast; pilots acknowledge the current letter on first contact",
+        category = RegulationCategory.PROCEDURE,
+    )
+
     // ── ICAO Doc 4444 ────────────────────────────────────────────────
 
     val ICAO4444_4_5 = RegulationRef(

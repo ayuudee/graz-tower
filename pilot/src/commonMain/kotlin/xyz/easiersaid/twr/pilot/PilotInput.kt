@@ -37,6 +37,23 @@ data class PilotInput(
     val worldIndex: WorldIndex,
     val world: AviationWorld,
     val now: SimTime,
+    /**
+     * Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS broadcast as
+     * heard by the pilot. Real pilots tune the ATIS frequency before
+     * first contact and read the letter into the cockpit; the
+     * `InitialContact` transmission embeds the letter so the
+     * controller can verify currency.
+     *
+     * Lazy-read shape (post-impl review M2): the pilot reads the
+     * letter at the moment of `MissionStep.CALL_INBOUND` transmission,
+     * not at spawn. This eliminates Spawn-vs-AtisIssued ordering
+     * concerns — whatever ATIS is published at the moment of first
+     * contact is what the pilot acknowledges.
+     *
+     * **Doctrine**: ICAO Annex 11 §4.3 (ATIS service); Doc 4444 §4.5.5
+     * (broadcast content).
+     */
+    val atisByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, xyz.easiersaid.twr.protocol.Atis> = emptyMap(),
 )
 
 /**

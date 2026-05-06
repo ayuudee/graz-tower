@@ -90,6 +90,18 @@ data class ControllerView(
      * decide pass). Acceptable for the 120 s timeout.
      */
     val outgoingMissedHandoffs: Map<AircraftId, MissedHandoffNotice> = emptyMap(),
+    /**
+     * Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS broadcast view.
+     * Projected from `state.atisByAerodrome`. The controller's view
+     * carries every aerodrome's ATIS — relevant for advisories
+     * involving inbound traffic from peer aerodromes (e.g. "current
+     * information at LJMB is Charlie"). The single-aerodrome
+     * controller most often reads `atis[aerodromeId]` for own-airport
+     * weather and runway-in-use.
+     *
+     * **Doctrine**: ICAO Annex 11 §4.3 (ATIS service).
+     */
+    val atis: Map<AerodromeId, xyz.easiersaid.twr.protocol.Atis> = emptyMap(),
 )
 
 /**

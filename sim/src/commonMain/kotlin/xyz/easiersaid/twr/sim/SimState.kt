@@ -59,6 +59,18 @@ data class SimState(
      *    removed; clear the matching key.
      */
     val handoffEscalations: Map<HandoffEscalationKey, SimTime> = emptyMap(),
+    /**
+     * Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS broadcast. Set
+     * by [SimEvent.AtisIssued] handler; read by [ControllerWiring]
+     * for [ControllerView.atis] projection and by [PilotInput] for
+     * lazy ATIS letter read at first contact.
+     *
+     * **Single writer**: `Step.handleAtisIssued`.
+     * **Multi-reader**: projection layer only — rule layer in
+     * `:controller/commonMain` reads the projected `view.atis`, not
+     * this field directly.
+     */
+    val atisByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, xyz.easiersaid.twr.protocol.Atis> = emptyMap(),
 ) {
     companion object {
         /**

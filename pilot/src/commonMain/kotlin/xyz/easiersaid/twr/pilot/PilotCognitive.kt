@@ -136,6 +136,7 @@ import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 import xyz.easiersaid.twr.protocol.AcknowledgeEmergency
 import xyz.easiersaid.twr.protocol.CautionWakeTurbulence
 import xyz.easiersaid.twr.protocol.ControllerResponse
+import xyz.easiersaid.twr.protocol.CurrentInformationIs
 import xyz.easiersaid.twr.protocol.ExpectApproach
 import xyz.easiersaid.twr.protocol.ExpectVectors
 import xyz.easiersaid.twr.protocol.Identified
@@ -221,6 +222,13 @@ fun processControllerResponse(
     is CautionWakeTurbulence -> ResponseReaction.silent(mission)
     is ExpectApproach -> ResponseReaction.silent(mission)
     is ExpectVectors -> ResponseReaction.silent(mission)
+    // Pass 15 (D-AUDIT.8): controller advisory that the pilot's
+    // acknowledged ATIS letter is stale. Per ICAO Annex 11 §4.3.6 the
+    // pilot acknowledges silently and obtains the current ATIS on a
+    // separate frequency — no readback obligation, no mission-state
+    // change. The cognitive layer's situational awareness updates
+    // ambiently (the pilot now knows their information is stale).
+    is CurrentInformationIs -> ResponseReaction.silent(mission)
 }
 
 private fun handleReadbackCorrection(
@@ -249,6 +257,7 @@ fun pilotCognitiveDecide(
     mission: PilotMission,
     worldIndex: WorldIndex,
     now: SimTime,
+    atisByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, xyz.easiersaid.twr.protocol.Atis> = emptyMap(),
 ): CognitiveDecision {
     if (mission.isComplete) return CognitiveDecision(emptyList(), mission)
     if (mission.currentTask == null) return CognitiveDecision(emptyList(), mission)
@@ -268,7 +277,7 @@ fun pilotCognitiveDecide(
     // Generate transmission for current step.
     val currentAfterAdvance = updated.currentTask
     if (currentAfterAdvance != null) {
-        val tx = stepTransmission(aircraft, updated, currentAfterAdvance.step, now)
+        val tx = stepTransmission(aircraft, updated, currentAfterAdvance.step, now, atisByAerodrome)
         if (tx != null) transmissions.add(tx)
     }
 
@@ -418,6 +427,7 @@ private fun stepTransmission(
     mission: PilotMission,
     step: MissionStep,
     now: SimTime,
+    atisByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, xyz.easiersaid.twr.protocol.Atis> = emptyMap(),
 ): PilotTransmission? {
     // Fire the per-step "first-tick" transmission exactly once per step
     // entry, regardless of pilot tick timing. Tracked via
@@ -449,6 +459,13 @@ private fun stepTransmission(
         // tasks that omit it (e.g. groundArrivalTask) flip correctly when
         // the pilot's first frequency-side transmission arrives.
         stationCalled = mission.pendingInitialContactRole.getOrElse { xyz.easiersaid.twr.protocol.RoleName.TOWER },
+        // Pass 15 (D-AUDIT.8 closure): the pilot reads the current
+        // ATIS letter at the moment of first contact and embeds it in
+        // the transmission per ICAO Annex 11 §4.3.6. Single-aerodrome
+        // simplification: when exactly one ATIS is published the
+        // pilot acknowledges it. Multi-aerodrome ATIS-to-aerodrome
+        // resolution (filed: D-AUDIT.8.IV-FOLLOWUP) lands with G2.
+        atisCode = atisByAerodrome.values.singleOrNull()?.letter,
     ) else null
     MissionStep.REPORT_DOWNWIND ->
         if (mission.lastReportedLeg != Some(LegName.DOWNWIND)) {

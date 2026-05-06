@@ -134,6 +134,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         flightStripIntents = flightStripIntents,
         staffedRoles = staffingPanel.roles,
         outgoingMissedHandoffs = outgoingMissedHandoffs,
+        atis = state.atisByAerodrome,
     )
 }
 

@@ -123,6 +123,19 @@ data class BeliefState(
      * extends to enforce.
      */
     val handoffReissuedAt: Map<AircraftId, SimTime> = emptyMap(),
+    /**
+     * Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS letter the
+     * controller currently expects pilots to acknowledge on first
+     * contact. Mismatch with `InitialContact.atisCode` triggers a
+     * `CurrentInformationIs` advisory.
+     *
+     * **Single-write site**: `Observe.withExpectedAtisLetter`, folding
+     * from `view.atis`. `FirewallBeliefWriteTest` enforces.
+     *
+     * **Doctrine**: ICAO Annex 11 §4.3.6 (ATIS letter acknowledgement
+     * on first contact).
+     */
+    val expectedAtisLetter: Map<xyz.easiersaid.twr.protocol.AerodromeId, Char> = emptyMap(),
 ) {
     companion object {
         val EMPTY = BeliefState()

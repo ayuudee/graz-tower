@@ -180,6 +180,24 @@ sealed interface SimEvent {
     ) : SimEvent {
         override val source: AgentId = AgentId.System
     }
+
+    /**
+     * Pass 15 (D-AUDIT.8 closure): an ATIS broadcast was published for
+     * [aerodrome]. Handler stores under [SimState.atisByAerodrome];
+     * idempotent on byte-equal re-issue. **No letter-rotation
+     * invariant** — real ATIS rotation has wraps and skips that a
+     * strict A→B→C check would falsely reject.
+     *
+     * **Doctrine**: ICAO Annex 11 §4.3 (ATIS service); Doc 4444 §4.5.5.
+     */
+    data class AtisIssued(
+        override val time: SimTime,
+        val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId,
+        val atis: xyz.easiersaid.twr.protocol.Atis,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId = AgentId.System
+    }
 }
 
 private fun SpeakerRef.toAgentId(): AgentId = when (this) {
@@ -201,4 +219,5 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.PilotProcessingComplete -> copy(seq = s)
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
     is SimEvent.FlightPlanFiled -> copy(seq = s)
+    is SimEvent.AtisIssued -> copy(seq = s)
 }

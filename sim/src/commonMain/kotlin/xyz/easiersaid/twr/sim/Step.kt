@@ -215,6 +215,12 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         // Pass 11 (D-AUDIT.6): FlightPlanFiled distributes responsibility
         // to the recipient controller as the strip arrives at the board.
         is SimEvent.FlightPlanFiled -> handleFlightPlanFiled(atTime, event)
+        // Pass 15 (D-AUDIT.8): ATIS broadcast publication. Handler
+        // stores under state.atisByAerodrome with idempotence on
+        // byte-equal re-issue and unconditional update otherwise
+        // (no letter-rotation invariant — real ATIS rotation has
+        // wraps/skips).
+        is SimEvent.AtisIssued -> handleAtisIssued(atTime, event)
     }
     // Pass 7 (D-AUDIT.5 + Impact-O.1 / FP-M.3): cross-controller `Owned`
     // invariant. After every step, no two controllers may simultaneously
@@ -696,6 +702,38 @@ private fun applyArrivalFiling(
     val updated = recipient.copy(knownStrips = recipient.knownStrips + (event.aircraft to event.plan))
     val controllers = LinkedHashMap(state.controllers).apply { put(updated.id, updated) }
     return state.copy(controllers = controllers) to emptyList()
+}
+
+/**
+ * Pass 15 (D-AUDIT.8 closure) — ATIS broadcast handler.
+ *
+ * Stores the latest ATIS for [event.aerodrome] in
+ * [SimState.atisByAerodrome]. Idempotent on byte-equal re-issue
+ * (data-class equality on the [Atis]); unconditional update
+ * otherwise.
+ *
+ * **No letter-rotation invariant**: real ATIS rotation includes
+ * supervisor-driven skips (regenerate a fresh report on weather/
+ * runway change without strict A→B→C ordering) and the canonical
+ * Z→A wrap. A strict next-letter check would falsely reject real
+ * fixtures. The pure helper [xyz.easiersaid.twr.protocol.nextAtisLetter]
+ * is available for callers that want to advance canonically.
+ *
+ * **Doctrine**: ICAO Annex 11 §4.3 (ATIS service); Doc 4444 §4.5.5
+ * (broadcast content).
+ */
+private fun handleAtisIssued(
+    state: SimState,
+    event: SimEvent.AtisIssued,
+): Pair<SimState, List<SimEvent>> {
+    require(event.atis.aerodrome == event.aerodrome) {
+        "AtisIssued: event.aerodrome (${event.aerodrome}) must match " +
+            "event.atis.aerodrome (${event.atis.aerodrome})"
+    }
+    val existing = state.atisByAerodrome[event.aerodrome]
+    if (existing == event.atis) return state to emptyList()
+    val next = state.atisByAerodrome + (event.aerodrome to event.atis)
+    return state.copy(atisByAerodrome = next) to emptyList()
 }
 
 private fun handleSpawn(

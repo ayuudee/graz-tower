@@ -70,7 +70,7 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     }
 
     // Cognitive layer: advance mission, generate transmissions.
-    val cognitive = pilotCognitiveDecide(aircraft, mission, input.worldIndex, input.now)
+    val cognitive = pilotCognitiveDecide(aircraft, mission, input.worldIndex, input.now, input.atisByAerodrome)
 
     // Self-initiated go-around: if the pilot is at decision altitude without
     // clearance, trigger a full go-around (mission update + transmission + climb).

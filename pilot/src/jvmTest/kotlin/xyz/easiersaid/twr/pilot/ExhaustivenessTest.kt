@@ -260,6 +260,7 @@ class ExhaustivenessTest {
         const val ATC_INSTRUCTION_LEAF_COUNT: Int = 100
 
         /** Concrete-leaf count of [ControllerResponse]'s sealed hierarchy. */
-        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 13
+        // Pass 15 (D-AUDIT.8): added CurrentInformationIs (ATIS letter advisory).
+        const val CONTROLLER_RESPONSE_LEAF_COUNT: Int = 14
     }
 }
