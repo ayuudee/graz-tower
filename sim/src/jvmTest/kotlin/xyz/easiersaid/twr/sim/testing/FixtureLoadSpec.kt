@@ -33,7 +33,11 @@ class FixtureLoadSpec {
         assertEquals(1, filings.size, "LOWG fixture has one filed plan; loader must emit one event")
         val ev = filings.single()
         assertEquals(AircraftId("OE-ABC"), ev.aircraft)
-        assertEquals(RoleName.GROUND, ev.recipient, "C172 circuit training files to GROUND")
+        assertEquals(
+            xyz.easiersaid.twr.protocol.AftnAddress(AerodromeId("LOWG"), RoleName.GROUND),
+            ev.recipient,
+            "C172 circuit training files to LOWG GROUND",
+        )
         val plan = ev.plan as? FiledPlan.Vfr ?: fail("expected VFR plan, got ${ev.plan}")
         assertEquals(AerodromeId("LOWG"), plan.departureAerodrome)
         assertEquals(null, plan.destinationAerodrome, "circuit training has no destination")

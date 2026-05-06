@@ -74,7 +74,7 @@ class FlightPlanFilingSpec {
         time = time,
         aircraft = ac,
         plan = vfrPlan(),
-        recipient = recipient,
+        recipient = xyz.easiersaid.twr.protocol.AftnAddress(AerodromeId("LOWG"), recipient),
     )
 
     @Test
@@ -134,7 +134,7 @@ class FlightPlanFilingSpec {
             time = now0,
             aircraft = ac,
             plan = ljmbPlan,
-            recipient = RoleName.GROUND,
+            recipient = xyz.easiersaid.twr.protocol.AftnAddress(AerodromeId("LJMB"), RoleName.GROUND),
         )
         try {
             step(state, ev)

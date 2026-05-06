@@ -26,6 +26,20 @@ sealed interface FiledPlan {
     val departureAerodrome: AerodromeId
 
     /**
+     * Aerodrome where the aircraft is going. **Null only for VFR
+     * local-circuit / training flights** — IFR plans always have a
+     * filed arrival aerodrome.
+     *
+     * Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): hoisted
+     * onto the sealed interface so AFTN routing (`AftnRouting`) and
+     * destination classification (`AftnDestination.classify`) can
+     * read a single field uniformly across `Vfr` and `Ifr`. Pre-Pass-14
+     * `destinationOf(plan)` was duplicated in two modules; the property
+     * deduplicates structurally.
+     */
+    val destinationAerodrome: AerodromeId?
+
+    /**
      * VFR filed plan. Minimal: departure + intent. Destination is null
      * for circuit-training (depart and arrive same aerodrome — distinct
      * from "depart-to-self" routing by intent).
@@ -39,7 +53,7 @@ sealed interface FiledPlan {
     data class Vfr(
         override val departureAerodrome: AerodromeId,
         /** Where the aircraft is going. Null for local circuit / training. */
-        val destinationAerodrome: AerodromeId?,
+        override val destinationAerodrome: AerodromeId?,
         /** Broad service intent (Departing/Arriving/Transit). */
         val intent: AircraftIntent,
     ) : FiledPlan
@@ -48,13 +62,16 @@ sealed interface FiledPlan {
      * IFR filed plan, wrapping the existing [FlightPlan] (which has the
      * route + clearance state machine pre-Pass-11).
      *
-     * `departureAerodrome` is **delegated**, not duplicated — making
-     * illegal states unrepresentable rather than relying on an `init`
-     * invariant to police them.
+     * `departureAerodrome` and `destinationAerodrome` are **delegated**,
+     * not duplicated — making illegal states unrepresentable rather
+     * than relying on an `init` invariant to police them. IFR's
+     * `destinationAerodrome` is non-null because [FlightPlan.arrivalAerodrome]
+     * is non-null.
      */
     data class Ifr(
         val flightPlan: FlightPlan,
     ) : FiledPlan {
         override val departureAerodrome: AerodromeId get() = flightPlan.departureAerodrome
+        override val destinationAerodrome: AerodromeId get() = flightPlan.arrivalAerodrome
     }
 }

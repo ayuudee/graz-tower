@@ -44,13 +44,10 @@ object Fixtures {
         // direct-injection cheat; the strip now arrives via
         // `SimEvent.FlightPlanFiled` at sim-start.
         flightPlans = mapOf(
-            AircraftId("OE-ABC") to FiledPlanForFixture(
-                plan = FiledPlan.Vfr(
-                    departureAerodrome = AerodromeId("LOWG"),
-                    destinationAerodrome = null, // local circuit training
-                    intent = AircraftIntent.Departing,
-                ),
-                recipient = RoleName.GROUND,
+            AircraftId("OE-ABC") to FiledPlan.Vfr(
+                departureAerodrome = AerodromeId("LOWG"),
+                destinationAerodrome = null, // local circuit training
+                intent = AircraftIntent.Departing,
             ),
         ),
     )

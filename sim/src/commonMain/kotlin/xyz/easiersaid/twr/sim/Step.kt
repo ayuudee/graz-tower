@@ -570,20 +570,58 @@ private fun handleFlightPlanFiled(
     event: SimEvent.FlightPlanFiled,
 ): Pair<SimState, List<SimEvent>> {
     val recipient = state.controllers.values
-        .firstOrNull { it.aerodromeId == event.plan.departureAerodrome && it.role == event.recipient }
+        .firstOrNull {
+            it.aerodromeId == event.recipient.aerodromeId && it.role == event.recipient.role
+        }
         ?: run {
             val staffedAtAerodrome = state.controllers.values
-                .filter { it.aerodromeId == event.plan.departureAerodrome }
+                .filter { it.aerodromeId == event.recipient.aerodromeId }
                 .map { it.role }
                 .toSet()
             error(
                 "handleFlightPlanFiled: no controller staffed at " +
-                    "${event.plan.departureAerodrome} for role ${event.recipient}. " +
+                    "${event.recipient.aerodromeId} for role ${event.recipient.role}. " +
                     "Staffed roles at this aerodrome: $staffedAtAerodrome. " +
                     "Wiring defect — fixture or scenario emitted FlightPlanFiled targeting " +
                     "an unstaffed role.",
             )
         }
+
+    // Pass 14: dispatch via sealed AftnDestination (Departure | Arrival).
+    // The classifier surfaces routing-table defects (Left) as wiring errors;
+    // Right-side flow continues via sealed when below.
+    val destination = xyz.easiersaid.twr.protocol.AftnDestination
+        .classify(event.recipient, event.plan)
+        .fold(
+            ifLeft = { unreachable ->
+                error(
+                    "handleFlightPlanFiled: AFTN address ${unreachable.recipient} matches " +
+                        "neither departure (${event.plan.departureAerodrome}) nor destination " +
+                        "of plan ${unreachable.plan}. Routing-table defect — emitter computed " +
+                        "a recipient that the aircraft will never reach via this filed plan.",
+                )
+            },
+            ifRight = { it },
+        )
+
+    return when (destination) {
+        xyz.easiersaid.twr.protocol.AftnDestination.Departure ->
+            applyDepartureFiling(state, event, recipient)
+        xyz.easiersaid.twr.protocol.AftnDestination.Arrival ->
+            applyArrivalFiling(state, event, recipient)
+    }
+}
+
+/**
+ * Pass 14 departure-side filing: aircraft becomes `Owned` by the
+ * recipient at the plan's departure aerodrome (Pass 11 semantics
+ * preserved verbatim).
+ */
+private fun applyDepartureFiling(
+    state: SimState,
+    event: SimEvent.FlightPlanFiled,
+    recipient: ControllerSpec,
+): Pair<SimState, List<SimEvent>> {
     val existing = recipient.responsibilities[event.aircraft]
     if (existing is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned) {
         if (existing.since == event.time) return state to emptyList()
@@ -612,6 +650,50 @@ private fun handleFlightPlanFiled(
         responsibilities = recipient.responsibilities +
             (event.aircraft to xyz.easiersaid.twr.protocol.ResponsibilityState.Owned(event.time)),
     )
+    val controllers = LinkedHashMap(state.controllers).apply { put(updated.id, updated) }
+    return state.copy(controllers = controllers) to emptyList()
+}
+
+/**
+ * Pass 14 arrival-side filing: a destination tower receives the strip
+ * via AFTN before the aircraft physically appears. Stored in
+ * `knownStrips` (no responsibility — strip ≠ responsibility).
+ *
+ * Errors loudly on:
+ *  - existing `responsibilities` entry (would violate the disjointness
+ *    invariant on `ControllerSpec.init`);
+ *  - existing `knownStrips` entry with a *different* `FiledPlan`
+ *    (refile-with-amended-plan is a defect — strip-update-on-amendment
+ *    is **D-AUDIT.6.C-FOLLOWUP**).
+ *
+ * Idempotent on byte-identical refile (same time, same plan).
+ */
+private fun applyArrivalFiling(
+    state: SimState,
+    event: SimEvent.FlightPlanFiled,
+    recipient: ControllerSpec,
+): Pair<SimState, List<SimEvent>> {
+    if (event.aircraft in recipient.responsibilities) {
+        error(
+            "handleFlightPlanFiled (arrival side): aircraft ${event.aircraft} is in " +
+                "${recipient.id}.responsibilities; cross-aerodrome filing must not " +
+                "overlap responsibility (the disjointness invariant).",
+        )
+    }
+    val existingStrip = recipient.knownStrips[event.aircraft]
+    if (existingStrip != null) {
+        if (existingStrip == event.plan) return state to emptyList() // idempotent
+        error(
+            "handleFlightPlanFiled (arrival side): aircraft ${event.aircraft} already " +
+                "has a knownStrip on ${recipient.id} with a different plan. " +
+                "Per ICAO Doc 4444 §11.4 (FPL amendment via CHG message), a real ATC " +
+                "system propagates strip updates to the destination via a separate " +
+                "amendment flow. TWR2 deferment D-AUDIT.6.C-FOLLOWUP tracks this; " +
+                "today refile must be byte-identical or fail loudly. " +
+                "Existing: $existingStrip; new: ${event.plan}.",
+        )
+    }
+    val updated = recipient.copy(knownStrips = recipient.knownStrips + (event.aircraft to event.plan))
     val controllers = LinkedHashMap(state.controllers).apply { put(updated.id, updated) }
     return state.copy(controllers = controllers) to emptyList()
 }
@@ -1259,11 +1341,34 @@ internal fun applyContactFrequency(
             since = now,
         )),
     )
+    // Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): if the target
+    // had a prior strip in knownStrips (e.g. a destination tower that
+    // received the AFTN strip for this aircraft hours before the handoff),
+    // the entry moves out of knownStrips as the responsibility state
+    // machine first reaches Watching. The disjointness invariant on
+    // ControllerSpec.init enforces that an aircraft is never in both at
+    // once — without this cleanup, the require would fail.
+    //
+    // **Strengthening over Pass 7's silent overwrite** (post-impl impact
+    // S1): pre-Pass-14 the `target.responsibilities + (ac to Watching)`
+    // would silently overwrite any pre-existing entry on `target` for the
+    // same aircraft. With the disjointness invariant, a latent
+    // pre-existing `knownStrips[ac]` now surfaces as a require() failure
+    // rather than a silent state-machine roll-back. This is an
+    // improvement, not a regression — the invariant catches what Pass 7
+    // would have hidden.
+    //
+    // Pass 14 single-recipient-per-side contract: destination side is at
+    // most one recipient (TOWER, falling back to APPROACH). When multi-
+    // destination-recipient routing lands (a future pass adding APPROACH
+    // alongside TOWER), this cleanup invariant must be revisited because
+    // multiple destination controllers could each hold a copy.
     controllersMap[target.id] = target.copy(
         responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Watching(
             from = current.id,
             since = now,
         )),
+        knownStrips = target.knownStrips - ac.id,
     )
     return state.copy(controllers = controllersMap)
 }

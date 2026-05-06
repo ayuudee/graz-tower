@@ -127,22 +127,30 @@ sealed interface SimEvent {
      * moment; the aircraft may or may not be physically present yet
      * (Spawn event fires separately, at engine start time).
      *
-     * Handler distributes responsibility: the [aircraft] becomes `Owned`
-     * by the controller staffing [recipient] at the plan's departure
-     * aerodrome. Multi-recipient AFTN distribution is **D-AUDIT.6.A-FOLLOWUP**;
-     * today every emitter specifies one recipient explicitly.
+     * Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): [recipient]
+     * carries an explicit aerodrome via [AftnAddress] so cross-aerodrome
+     * destination strips can route correctly. Routing fan-out (one
+     * filed plan → N events) is the producer's job via
+     * [xyz.easiersaid.twr.sim.AftnRouting.routeFiledPlan]; the handler
+     * processes one recipient per event.
+     *
+     * Handler dispatches via [AftnDestination.classify]:
+     *  - **Departure side** (`recipient.aerodromeId == plan.departureAerodrome`):
+     *    aircraft becomes `Owned` by the recipient.
+     *  - **Arrival side** (`recipient.aerodromeId == plan.destinationAerodrome`):
+     *    plan is added to the recipient's `knownStrips` (no responsibility).
      */
     data class FlightPlanFiled(
         override val time: SimTime,
         val aircraft: AircraftId,
         val plan: xyz.easiersaid.twr.protocol.FiledPlan,
         /**
-         * Which staffed role at `plan.departureAerodrome` receives the strip.
-         * **No default** — defaulting to GROUND would silently route to a
-         * non-existent role at TOWER-only aerodromes (e.g. LJMB AFIS).
-         * Every emitter specifies.
+         * AFTN address of the controller bay receiving this strip copy.
+         * Pass 14: `AftnAddress(aerodromeId, role)` makes cross-aerodrome
+         * destination strips representable. **No default** — every
+         * emitter specifies.
          */
-        val recipient: xyz.easiersaid.twr.protocol.RoleName,
+        val recipient: xyz.easiersaid.twr.protocol.AftnAddress,
         override val seq: Long = 0,
     ) : SimEvent {
         override val source: AgentId = AgentId.System

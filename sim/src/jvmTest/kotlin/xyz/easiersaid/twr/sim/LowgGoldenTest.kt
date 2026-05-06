@@ -96,6 +96,21 @@ class LowgGoldenTest {
         // fixture's `flightPlans`. Enqueue them ahead of the standard
         // ticks; the EventQueue's deterministic ordering processes them
         // first at the same time (System source orders before Controller).
+        // Pass 14 (D-AUDIT.6.A-FOLLOWUP): G0 routing-cardinality pin.
+        // The LOWG fixture files a single VFR circuit-training plan
+        // (departureAerodrome == null destinationAerodrome). Per
+        // `routeFiledPlan`'s single-aerodrome branch, this fans out to
+        // exactly 1 recipient — the departure-side GROUND. A regression
+        // that emitted 2 events for a circuit-training plan (e.g. a
+        // routing predicate that misread `destination == null` as
+        // "still cross-aerodrome") would not break G0's outcome
+        // assertions, but would surface here.
+        val filings = loaded.initialEvents.filterIsInstance<SimEvent.FlightPlanFiled>()
+        check(filings.size == 1) {
+            "G0 routing-cardinality regression: expected exactly 1 FlightPlanFiled " +
+                "event for the circuit-training fixture, got ${filings.size}: " +
+                "${filings.map { it.recipient }}"
+        }
         val initialEvents = loaded.initialEvents + listOf(
             SimEvent.PilotDecisionTick(time = now, aircraftId = aircraftId),
             SimEvent.PhysicsTick(time = now),

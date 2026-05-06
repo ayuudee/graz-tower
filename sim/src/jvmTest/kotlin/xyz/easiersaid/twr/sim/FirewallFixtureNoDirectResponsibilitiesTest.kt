@@ -50,7 +50,11 @@ class FirewallFixtureNoDirectResponsibilitiesTest {
         "MissedHandoffEventSpec.kt",
         "FlightPlanFilingSpec.kt",
         "ReadbackCorrectionRoundTripTest.kt",
-        "MultiAerodromeWorldTest.kt",
+        // Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): spec tests
+        // exercising handoff and cross-aerodrome filing semantics — they
+        // construct ResponsibilityState shapes hand to validate state
+        // transitions, not as a fixture cheat.
+        "KnownStripsHandoffTransitionSpec.kt",
     )
 
     @Test
@@ -119,9 +123,12 @@ class FirewallFixtureNoDirectResponsibilitiesTest {
             ${violations.joinToString("\n            ")}
 
             Fix: declare the aircraft in `Fixture.flightPlans = mapOf(...)`
-            with a `FiledPlanForFixture(plan, recipient)`. The loader emits
-            a `SimEvent.FlightPlanFiled` per entry in `LoadedFixture.initialEvents`,
-            and the test driver enqueues those alongside its own ticks.
+            with a `FiledPlan` value. Pass 14 (D-AUDIT.6.A-FOLLOWUP /
+            .6.B-FOLLOWUP / .13): `AftnRouting.routeFiledPlan` computes
+            the recipient list from the plan + world; the loader emits
+            N `SimEvent.FlightPlanFiled` events per entry in
+            `LoadedFixture.initialEvents`, and the test driver enqueues
+            those alongside its own ticks.
             """.trimIndent()
         }
     }

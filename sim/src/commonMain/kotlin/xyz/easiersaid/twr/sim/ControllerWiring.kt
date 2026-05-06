@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.controller.RunwayStatus
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
@@ -62,7 +63,28 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     val observations = readings.associate {
         it.id to toObservation(it, strips[it.id], state.worldIndex)
     }
-    val flightStripIntents = strips.mapValues { (_, strip) -> strip.intent }
+    // Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): flight-strip
+    // intents compose two sources:
+    //  1. Responsibility-side strips — derived from each owned aircraft's
+    //     [AircraftState.toFlightStrip] (Pass 11 semantics).
+    //  2. KnownStrips — strips received via AFTN where this controller
+    //     has prior knowledge but no responsibility yet (typically a
+    //     destination tower informed of an inbound flight). Intent is
+    //     derived from the filed plan: VFR carries explicit intent;
+    //     IFR-cross-aerodrome destination strip is always Arriving.
+    //
+    // The aircraft observation map (ControllerView.aircraft) stays
+    // responsibility-scoped — knownStrips entries are NOT visible there
+    // (no sensor contact yet). Only the strip board surfaces them.
+    // Pass 14 single-recipient-per-side contract: knownStrips entries
+    // arrive only on the destination side of cross-aerodrome filing
+    // (per `AftnRouting.routeFiledPlan`'s topology). The receiving
+    // controller therefore sees the aircraft as Arriving, regardless
+    // of the filed VFR `intent` field (which describes the *aircraft's*
+    // operational mode at *departure*). When en-route ACC routing
+    // lands, dispatch widens.
+    val knownStripIntents = spec.knownStrips.mapValues { (_, _) -> AircraftIntent.Arriving }
+    val flightStripIntents = strips.mapValues { (_, strip) -> strip.intent } + knownStripIntents
     // Pass 6 (D-AUDIT.12 + post-impl Impact-M.1): the set of roles with a
     // staffed controller at this aerodrome right now. Distinct from
     // `aerodrome.roles` (the airport's *published* roles): a role can be

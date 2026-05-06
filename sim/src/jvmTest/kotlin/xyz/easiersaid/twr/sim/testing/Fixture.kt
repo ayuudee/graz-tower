@@ -43,25 +43,20 @@ data class Fixture(
     val controllerRoles: Set<RoleName>,
     /**
      * Pass 11 (D-AUDIT.6 / D-AUDIT.10): filed plans per aircraft. Each
-     * entry produces a `SimEvent.FlightPlanFiled` at sim-init via [load],
-     * sorted by aircraft id for deterministic seq-assignment downstream.
-     * Replaces the pre-Pass-11 `groundResponsibilities` direct-injection
-     * cheat (the fixture pre-populated `responsibilities` instead of
-     * modelling strip arrival).
+     * entry produces N `SimEvent.FlightPlanFiled` events at sim-init via
+     * [load], sorted by aircraft id for deterministic seq-assignment
+     * downstream. Replaces the pre-Pass-11 `groundResponsibilities`
+     * direct-injection cheat.
+     *
+     * Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): the value type
+     * is `FiledPlan` (not `FiledPlanForFixture(plan, recipient)`). The
+     * recipient list is computed by
+     * [xyz.easiersaid.twr.sim.AftnRouting.routeFiledPlan] from the plan
+     * and the world's published roles — single-aerodrome plans get one
+     * recipient (departure-side); cross-aerodrome plans fan out to two
+     * (departure + destination).
      */
-    val flightPlans: Map<AircraftId, FiledPlanForFixture> = emptyMap(),
-)
-
-/**
- * Pass 11: fixture-side container pairing a filed plan with the role
- * that receives the strip. Modelled as a discrete type rather than two
- * fields on [Fixture] so a future fixture can file multiple plans for
- * one aircraft (fan-out, when multi-recipient AFTN distribution lands —
- * D-AUDIT.6.A-FOLLOWUP).
- */
-data class FiledPlanForFixture(
-    val plan: FiledPlan,
-    val recipient: RoleName,
+    val flightPlans: Map<AircraftId, FiledPlan> = emptyMap(),
 )
 
 /**
@@ -176,18 +171,38 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
         )
     }
 
-    // Pass 11 (D-AUDIT.6): emit one FlightPlanFiled per filed plan. Sort
-    // by AircraftId.value ascending so seq-assignment downstream is
+    // Pass 11 (D-AUDIT.6): emit FlightPlanFiled events per filed plan.
+    // Pass 14 (D-AUDIT.6.A-FOLLOWUP / .6.B-FOLLOWUP / .13): each plan
+    // fans out to N recipients via routeFiledPlan — single-aerodrome
+    // → 1 recipient (departure side); cross-aerodrome → 2 (departure +
+    // destination). Sort by AircraftId.value ascending, then iterate
+    // recipient list in order, so seq-assignment downstream is
     // deterministic across runs.
     val initialEvents: List<SimEvent> = flightPlans.entries
         .sortedBy { it.key.value }
-        .map { (aircraftId, filed) ->
-            SimEvent.FlightPlanFiled(
-                time = xyz.easiersaid.twr.protocol.SimTime.ZERO,
-                aircraft = aircraftId,
-                plan = filed.plan,
-                recipient = filed.recipient,
-            )
+        .flatMap { (aircraftId, plan) ->
+            val recipients = xyz.easiersaid.twr.sim.AftnRouting
+                .routeFiledPlan(plan) { aerodromeId ->
+                    world.aerodromes[aerodromeId]?.roles?.keys.orEmpty()
+                }
+                .fold(
+                    ifLeft = { failure ->
+                        error(
+                            "Fixture.load: routeFiledPlan failed for ${aircraftId.value} — " +
+                                "$failure. The fixture's filed plan cannot be routed to any " +
+                                "controller bay; check the world-candidate's published roles.",
+                        )
+                    },
+                    ifRight = { it.toList() },
+                )
+            recipients.map { recipient ->
+                SimEvent.FlightPlanFiled(
+                    time = xyz.easiersaid.twr.protocol.SimTime.ZERO,
+                    aircraft = aircraftId,
+                    plan = plan,
+                    recipient = recipient,
+                )
+            }
         }
 
     val loaded = LoadedFixture(world, worldIndex, controllers, initialEvents)
