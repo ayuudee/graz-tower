@@ -43,6 +43,14 @@ class AircraftTypeSpec {
         assertEquals(80.0, t.kinematics.waypointRadiusM, "engineering tuning, not doctrine")
         // Pass 13: POH §4 normal-procedures run-up sequence.
         assertEquals(60_000L, t.runUpDurationMs, "POH §4 typical 60 s run-up")
+        // Pass 17: engineering tuning, not POH/FCOM doctrine — sim
+        // default cruise altitude for IFR fallback when no published
+        // altitude resolves. Same framing as `waypointRadiusM`.
+        assertEquals(
+            1000.0,
+            t.cruiseAltitudeM,
+            "engineering tuning — typical VFR cruise (~3300 ft); sim default for IFR fallback",
+        )
     }
 
     @Test
@@ -66,6 +74,12 @@ class AircraftTypeSpec {
         assertEquals(250.0, t.kinematics.waypointRadiusM, "engineering tuning, not doctrine")
         // Pass 13: FCOM NP cold-start before-takeoff sequence.
         assertEquals(600_000L, t.runUpDurationMs, "FCOM NP 10 min cold-start sequence")
+        // Pass 17: engineering tuning — typical below-FL100 climb plateau.
+        assertEquals(
+            3000.0,
+            t.cruiseAltitudeM,
+            "engineering tuning — ~10000 ft below-FL100 plateau; sub-FL180 sim default",
+        )
     }
 
     @Test
@@ -104,6 +118,16 @@ class AircraftTypeSpec {
             )
         }
     }
+
+    // Pass 17 (D-PASS-13.2): cross-field invariant on `AircraftType.init`
+    // (cruiseAltitudeM > circuitPattern.altitudeAglM, < 5500m) cannot
+    // be tested via synthetic leaves because `AircraftType` is sealed
+    // (subtyping restricted to the same module). The C172 and B738
+    // doctrine pins above implicitly verify the invariant: each
+    // construction would fail at class-load time if the require()s
+    // didn't hold for the configured values. A direct invariant test
+    // would require moving the spec to `:protocol/commonTest` — filed
+    // as **D-PASS-17.3-FOLLOWUP** if a third type lands.
 
     @Test
     fun `RunwayLengthRequirements init rejects non-positive lengths`() {

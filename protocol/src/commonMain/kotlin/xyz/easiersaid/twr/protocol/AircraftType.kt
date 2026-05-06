@@ -53,6 +53,21 @@ sealed class AircraftType(
      */
     val circuitPattern: CircuitPattern,
     /**
+     * Engineering-tuning cruise-altitude default for IFR route-planner
+     * fallback. Pass 17 (D-PASS-13.2 closure): when an IFR procedure
+     * has no published altitude (e.g., a SID with no last-waypoint
+     * altitude constraint), the helper falls back to this value
+     * rather than the pre-Pass-17 wrong-units fallback to
+     * `circuitPattern.altitudeAglM` (terminal-area altitude).
+     *
+     * **Engineering tuning, not pilot doctrine** (per Pass 17 review
+     * fold-in — earlier draft cited AIM 4-3-3 incorrectly). Sim-default
+     * cruise target; values approximate typical en-route altitudes
+     * for the type's operational envelope. Same framing as
+     * [Kinematics.waypointRadiusM].
+     */
+    val cruiseAltitudeM: Double,
+    /**
      * Run-up / before-takeoff procedural duration. Read by
      * `PilotCognitive` for [xyz.easiersaid.twr.protocol] mission steps
      * with `CompletionMode.TIMED`. Procedural, not kinematic — lives at
@@ -63,6 +78,23 @@ sealed class AircraftType(
 
     init {
         require(runUpDurationMs > 0) { "runUpDurationMs must be > 0, got $runUpDurationMs" }
+        // Pass 17 (D-PASS-13.2): cruise altitude is en-route, terminal-
+        // area pattern altitude is by-construction below it. The strict
+        // `>` rejects degenerate equality (pattern == cruise would
+        // mean no climb between terminal and en-route phases). Fixed-
+        // wing C172/B738 catalogue today; rotorcraft / very-short-haul
+        // types adding to the catalogue would re-shape this invariant.
+        require(cruiseAltitudeM > circuitPattern.altitudeAglM) {
+            "cruiseAltitudeM ($cruiseAltitudeM) must be > circuitPattern.altitudeAglM " +
+                "(${circuitPattern.altitudeAglM}); en-route is above terminal-area"
+        }
+        // Sub-FL180 sim default. Class A floor at FL180 in most
+        // jurisdictions; FL180+ cruise needs typed `FlightLevel` (out
+        // of scope for Pass 17 — manifest type loading would touch it).
+        require(cruiseAltitudeM < 5500.0) {
+            "cruiseAltitudeM ($cruiseAltitudeM) must be < 5500m (FL180 floor); " +
+                "FL180+ cruise needs typed FlightLevel — out of scope"
+        }
     }
 
     /**
@@ -173,6 +205,7 @@ sealed class AircraftType(
         ),
         runwayLengthM = RunwayLengthRequirements(takeoffMinM = 305, landingMinM = 407),
         circuitPattern = CircuitPattern(altitudeAglM = 305.0, downwindOffsetM = 925.0),
+        cruiseAltitudeM = 1000.0, // engineering tuning — typical VFR cruise; sub-FL180.
         runUpDurationMs = 60_000L,
     )
 
@@ -206,6 +239,7 @@ sealed class AircraftType(
         ),
         runwayLengthM = RunwayLengthRequirements(takeoffMinM = 2280, landingMinM = 1700),
         circuitPattern = CircuitPattern(altitudeAglM = 457.0, downwindOffsetM = 1850.0),
+        cruiseAltitudeM = 3000.0, // engineering tuning — typical below-FL100 climb plateau.
         runUpDurationMs = 600_000L,
     )
 

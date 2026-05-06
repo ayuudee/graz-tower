@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.controller
 import xyz.easiersaid.twr.controller.bdi.Commitment
 import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.controller.bdi.OperatorContext
+import xyz.easiersaid.twr.controller.bdi.RunwayLengthFailure
 import xyz.easiersaid.twr.controller.bdi.RunwayLengthOperation
 import xyz.easiersaid.twr.controller.bdi.RunwayLengthSufficient
 import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
@@ -198,6 +199,140 @@ class RunwayLengthGatingSpec {
         val guard = RunwayLengthSufficient(RunwayLengthOperation.LANDING)
         check(!guard.evaluate(observation(IcaoTypeDesignator.unsafe("B738")), landingCommitment, ctx(world))) {
             "B738 landing on 1000m LDA should be rejected (AFM requires 1700m at SL/MLW)"
+        }
+    }
+
+    // ── Pass 17 (D-PASS-13.3 partial closure): typed classify surface ──
+
+    @Test
+    fun `classify returns RunwayTooShort with full payload (operation, designator, runway, requiredM, availableM)`() {
+        // Pass 17 (D-PASS-13.3 partial closure): typed payload
+        // disambiguates TODA-vs-LDA failures (Impact M1 / FP S1 fold).
+        // A regression carrying the wrong operation, swapping required
+        // and available, or losing the runway ID would surface here.
+        val world = worldWithRunway(toda = 800.0, lda = 800.0)
+        val guard = RunwayLengthSufficient(RunwayLengthOperation.TAKEOFF)
+        val failure = guard.classify(
+            observation(IcaoTypeDesignator.unsafe("B738")),
+            commitment,
+            ctx(world),
+        )
+        check(failure == RunwayLengthFailure.RunwayTooShort(
+            operation = RunwayLengthOperation.TAKEOFF,
+            designator = IcaoTypeDesignator.unsafe("B738"),
+            runway = RWY_ID,
+            requiredM = 2280, // 737 AFM TODA at SL/MTOW
+            availableM = 800.0,
+        )) {
+            "Pass 17 D-PASS-13.3 typed payload — got: $failure"
+        }
+    }
+
+    @Test
+    fun `classify returns null on the happy path (B738 long runway TAKEOFF)`() {
+        // Test review S5 fold: pin classify == null for the success
+        // case. A regression that returned a stray failure leaf for
+        // the happy path (e.g., NullDeclaredDistances when distances
+        // are present) would otherwise be invisible behind evaluate==true.
+        val world = worldWithRunway(toda = 3000.0, lda = 3000.0)
+        val guard = RunwayLengthSufficient(RunwayLengthOperation.TAKEOFF)
+        val failure = guard.classify(
+            observation(IcaoTypeDesignator.unsafe("B738")),
+            commitment,
+            ctx(world),
+        )
+        check(failure == null) { "Pass 17: happy path must classify == null; got $failure" }
+    }
+
+    @Test
+    fun `aerodrome-scoped lookup picks LOWG runway not LJMB on RunwayId collision`() {
+        // Pass 17 (D-PASS-13.1 closure): pre-Pass-17 lookup walked all
+        // aerodromes via firstNotNullOfOrNull. Today's worlds are
+        // single-aerodrome at controller scope so the bug was
+        // unreachable; this test pins the scoped lookup against silent
+        // cross-aerodrome match.
+        //
+        // Setup: two aerodromes both publish a runway named 16C.
+        // LOWG's 16C is long (3000m); LJMB's 16C is short (800m).
+        // Aircraft (B738) commitment names 16C; controller is at LOWG.
+        // Guard MUST read LOWG's 16C (long → pass), not LJMB's (short →
+        // would fail). A regression to the firstNotNullOfOrNull walk
+        // would silently match the first iteration order, which is
+        // unstable (depends on Map iteration).
+        val LOWG = AerodromeId("LOWG")
+        val LJMB = AerodromeId("LJMB")
+        val rwy = RunwayId("16C")
+        val lowgRunway = Runway(
+            id = rwy,
+            path = Path(listOf(THRESHOLD, DEP_END)),
+            threshold = THRESHOLD,
+            declaredDistances = DeclaredDistances(
+                tora = Meters(3000.0), toda = Meters(3000.0),
+                asda = Meters(3000.0), lda = Meters(3000.0),
+            ),
+        )
+        val ljmbRunway = Runway(
+            id = rwy, // SAME RunwayId — collision
+            path = Path(listOf(THRESHOLD, DEP_END)),
+            threshold = THRESHOLD,
+            declaredDistances = DeclaredDistances(
+                tora = Meters(800.0), toda = Meters(800.0),
+                asda = Meters(800.0), lda = Meters(800.0),
+            ),
+        )
+        val multiAerodromeWorld = AviationWorld(
+            aerodromes = mapOf(
+                LOWG to Aerodrome(
+                    icao = LOWG, elevation = Feet(0), magneticVariation = Degrees(0.0),
+                    transitionAltitude = Level.AltitudeFeet.unsafe(5000),
+                    runways = mapOf(rwy to lowgRunway),
+                ),
+                LJMB to Aerodrome(
+                    icao = LJMB, elevation = Feet(0), magneticVariation = Degrees(0.0),
+                    transitionAltitude = Level.AltitudeFeet.unsafe(5000),
+                    runways = mapOf(rwy to ljmbRunway),
+                ),
+            ),
+        )
+        val guard = RunwayLengthSufficient(RunwayLengthOperation.TAKEOFF)
+
+        // View at LOWG: must read LOWG's long 16C → classify == null.
+        val lowgCtx = OperatorContext(
+            view = ControllerView(
+                time = SimTime.ofMillis(0),
+                controllerId = ControllerId("TEST_TWR"),
+                role = RoleName.TOWER,
+                aerodromeId = LOWG,
+                responsibilities = setOf(aircraftId),
+                aircraft = mapOf(aircraftId to observation(IcaoTypeDesignator.unsafe("B738"))),
+                runways = emptyMap(),
+                activeClearances = emptyMap(),
+                receivedMessages = emptyList(),
+                weather = null,
+                worldIndex = WorldIndex(),
+            ),
+            beliefs = BeliefState.EMPTY,
+            events = emptyList(),
+            world = multiAerodromeWorld,
+        )
+        val lowgResult = guard.classify(
+            observation(IcaoTypeDesignator.unsafe("B738")), commitment, lowgCtx,
+        )
+        check(lowgResult == null) {
+            "LOWG-scoped lookup must read LOWG's 3000m 16C → null; got $lowgResult"
+        }
+
+        // View at LJMB: must read LJMB's short 16C → RunwayTooShort.
+        val ljmbCtx = lowgCtx.copy(view = lowgCtx.view.copy(aerodromeId = LJMB))
+        val ljmbResult = guard.classify(
+            observation(IcaoTypeDesignator.unsafe("B738")), commitment, ljmbCtx,
+        )
+        check(ljmbResult is RunwayLengthFailure.RunwayTooShort) {
+            "LJMB-scoped lookup must read LJMB's 800m 16C → RunwayTooShort; got $ljmbResult"
+        }
+        val tooShort = ljmbResult as RunwayLengthFailure.RunwayTooShort
+        check(tooShort.availableM == 800.0) {
+            "scoped lookup must read the LJMB runway's 800m, not LOWG's 3000m; got availableM=${tooShort.availableM}"
         }
     }
 

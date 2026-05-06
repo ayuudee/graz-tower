@@ -513,7 +513,9 @@ internal fun buildSidDepartureRoute(
         is xyz.easiersaid.twr.core.world.AltitudeConstraint.AtOrAbove -> levelToMeters(lastAltitude.minimum)
         is xyz.easiersaid.twr.core.world.AltitudeConstraint.AtOrBelow -> levelToMeters(lastAltitude.maximum)
         is xyz.easiersaid.twr.core.world.AltitudeConstraint.Between -> levelToMeters(lastAltitude.minimum)
-        null -> aircraftType.circuitPattern.altitudeAglM
+        // Pass 17 (D-PASS-13.2 closure): IFR fallback uses cruise
+        // altitude (en-route), not pattern altitude (terminal-area).
+        null -> aircraftType.cruiseAltitudeM
     }
 
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
@@ -579,9 +581,11 @@ internal fun buildStarApproachRoute(
 
     // S6: target altitude should be the first waypoint's constraint, not zero.
     // The kinematic layer refines altitude from per-waypoint constraints.
+    // Pass 17 (D-PASS-13.2): cruise-altitude fallback (en-route), not
+    // pattern-altitude (terminal-area).
     val firstAltitude = (star?.waypoints ?: approach.waypoints).firstOrNull()
         ?.altitudeConstraint?.let { resolveConstraintAltitude(it) }
-        ?: aircraftType.circuitPattern.altitudeAglM
+        ?: aircraftType.cruiseAltitudeM
 
     val waypoints = NonEmptyList(allPoints.first(), allPoints.drop(1))
     return PilotRoute.Airborne(
@@ -631,7 +635,10 @@ internal fun buildArrivalJoinRoute(
     val waypoints = NonEmptyList(targetPoint, emptyList())
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = aircraftType.circuitPattern.altitudeAglM, // initial descent target; refined by constraints
+        // Pass 17 (D-PASS-13.2): IFR arrival-join uses cruise altitude
+        // (en-route), refined down by per-waypoint constraints during
+        // descent. Pattern altitude was wrong-units pre-Pass-17.
+        targetAltitudeM = aircraftType.cruiseAltitudeM,
         arrivalPhase = PilotPhase.Climbing, // en-route to STAR/IAF, not yet on approach
     ).right()
 }
@@ -675,11 +682,12 @@ internal fun buildMissedApproachRoute(
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        // Target altitude from the last missed approach waypoint's constraint, or
-        // the holding pattern altitude. Falls back to circuit altitude.
+        // Target altitude from the last missed approach waypoint's constraint,
+        // or the holding pattern altitude. Pass 17 (D-PASS-13.2): falls back
+        // to cruise altitude (en-route hold typical), not pattern altitude.
         targetAltitudeM = approach.missedApproach.waypoints.lastOrNull()
             ?.altitudeConstraint?.let { resolveConstraintAltitude(it) }
-            ?: aircraftType.circuitPattern.altitudeAglM,
+            ?: aircraftType.cruiseAltitudeM,
         arrivalPhase = PilotPhase.Climbing, // pilot is climbing on missed approach
         waypointConstraints = constraints,
     ).right()

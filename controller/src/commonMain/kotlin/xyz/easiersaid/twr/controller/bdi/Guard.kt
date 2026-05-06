@@ -536,20 +536,93 @@ data class RunwayLengthSufficient(
     override val failureMessage: String =
         "Runway too short or runway-length data unavailable for $operation"
 
-    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
-        val designator = ac.icaoTypeDesignator ?: return false
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean =
+        classify(ac, commitment, ctx) == null
+
+    /**
+     * Pass 17 (D-PASS-13.3 partial closure): typed diagnostic surface.
+     * Returns null on pass; one of the [RunwayLengthFailure] leaves on
+     * fail. Test-visible for typed assertions; rule-trace integration
+     * is the narrowed remaining work (D-PASS-13.3-II-FOLLOWUP).
+     *
+     * Pass 17 (D-PASS-13.1 closure): aerodrome-scoped runway lookup.
+     * Pre-Pass-17 walked all aerodromes via `firstNotNullOfOrNull`,
+     * which would silently match the wrong runway when a multi-aerodrome
+     * `RunwayId` collision (e.g. `16C` at LOWG and at LJMB) lands.
+     * Now scoped to `ctx.view.aerodromeId` — matches `OutsideAerodromeRadius`
+     * (Pass 7) precedent.
+     */
+    internal fun classify(
+        ac: AircraftObservation,
+        commitment: Commitment,
+        ctx: OperatorContext,
+    ): RunwayLengthFailure? {
+        val designator = ac.icaoTypeDesignator
+            ?: return RunwayLengthFailure.NullAircraftTypeDesignator
         val requirements = xyz.easiersaid.twr.protocol.AircraftType
             .runwayRequirementsFor(designator)
-            .getOrNull() ?: return false
-        val runwayId = commitment.runway ?: return false
-        val runway = ctx.world.aerodromes.values
-            .firstNotNullOfOrNull { it.runways[runwayId] } ?: return false
-        val distances = runway.declaredDistances ?: return false
-        return when (operation) {
-            RunwayLengthOperation.TAKEOFF -> distances.toda.value >= requirements.takeoffMinM
-            RunwayLengthOperation.LANDING -> distances.lda.value >= requirements.landingMinM
+            .getOrNull()
+            ?: return RunwayLengthFailure.UnknownDesignator(designator)
+        val runwayId = commitment.runway
+            ?: return RunwayLengthFailure.NullCommitmentRunway
+        // Aerodrome-scoped lookup (Pass 17 D-PASS-13.1).
+        val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId]
+            ?: return RunwayLengthFailure.RunwayNotInWorld(runwayId)
+        val runway = aerodrome.runways[runwayId]
+            ?: return RunwayLengthFailure.RunwayNotInWorld(runwayId)
+        val distances = runway.declaredDistances
+            ?: return RunwayLengthFailure.NullDeclaredDistances(runwayId)
+        val (availableM, requiredM) = when (operation) {
+            RunwayLengthOperation.TAKEOFF -> distances.toda.value to requirements.takeoffMinM
+            RunwayLengthOperation.LANDING -> distances.lda.value to requirements.landingMinM
         }
+        return if (availableM >= requiredM) null else RunwayLengthFailure.RunwayTooShort(
+            operation = operation,
+            designator = designator,
+            runway = runwayId,
+            requiredM = requiredM,
+            availableM = availableM,
+        )
     }
+}
+
+/**
+ * Sealed typed-failure surface for [RunwayLengthSufficient.classify].
+ * Pass 17 (D-PASS-13.3 partial closure): replaces the static-text
+ * failure message with structured information. Trace-render
+ * integration (surface in `DecisionTrace.skippedActions`) is the
+ * narrowed remaining work (D-PASS-13.3-II-FOLLOWUP).
+ *
+ * **`RunwayTooShort` carries `operation`** (Pass 17 review fold-in
+ * Impact M1 / FP S1) so a reader can disambiguate TODA-fail (TAKEOFF)
+ * from LDA-fail (LANDING) at the type level.
+ */
+sealed interface RunwayLengthFailure {
+    /** Pilot's strip carries no [IcaoTypeDesignator] — VFR without filed type. */
+    data object NullAircraftTypeDesignator : RunwayLengthFailure
+
+    /** ICAO designator does not match any [AircraftType] in the catalogue. */
+    data class UnknownDesignator(
+        val designator: xyz.easiersaid.twr.protocol.IcaoTypeDesignator,
+    ) : RunwayLengthFailure
+
+    /** Commitment carries no runway — upstream wiring defect. */
+    data object NullCommitmentRunway : RunwayLengthFailure
+
+    /** Runway named on commitment is not in the controller's aerodrome. */
+    data class RunwayNotInWorld(val runway: xyz.easiersaid.twr.protocol.RunwayId) : RunwayLengthFailure
+
+    /** Runway has no declared distances (in-memory test fixture path). */
+    data class NullDeclaredDistances(val runway: xyz.easiersaid.twr.protocol.RunwayId) : RunwayLengthFailure
+
+    /** Runway is published but length insufficient for the type's [operation]. */
+    data class RunwayTooShort(
+        val operation: RunwayLengthOperation,
+        val designator: xyz.easiersaid.twr.protocol.IcaoTypeDesignator,
+        val runway: xyz.easiersaid.twr.protocol.RunwayId,
+        val requiredM: Int,
+        val availableM: Double,
+    ) : RunwayLengthFailure
 }
 
 /**
