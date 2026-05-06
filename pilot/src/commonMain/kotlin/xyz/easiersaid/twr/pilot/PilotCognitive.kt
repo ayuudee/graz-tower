@@ -144,6 +144,7 @@ import xyz.easiersaid.twr.protocol.RadarContact
 import xyz.easiersaid.twr.protocol.ConfirmInstruction
 import xyz.easiersaid.twr.protocol.ReadBackCorrect
 import xyz.easiersaid.twr.protocol.ReadbackCorrection
+import xyz.easiersaid.twr.protocol.TransmittingBlind
 import xyz.easiersaid.twr.protocol.Standby
 import xyz.easiersaid.twr.protocol.TrafficInformation
 
@@ -207,6 +208,10 @@ fun processControllerResponse(
     // verification round-trip — re-emit the readback for the named
     // instruction. Same shape as ReadbackCorrection's pattern.
     is ConfirmInstruction -> ResponseReaction(mission = mission, transmission = buildReadback(response.instruction))
+    // Pass 12 (D-AUDIT.2.A): controller has declared lost-comms internally.
+    // "TRANSMITTING BLIND" is one-way; the pilot doesn't read back. If the
+    // pilot can hear, they comply silently with the embedded instruction.
+    is TransmittingBlind -> ResponseReaction.silent(mission)
     is Standby -> ResponseReaction.silent(mission)
     is Identified -> ResponseReaction.silent(mission)
     is NotIdentified -> ResponseReaction.silent(mission)

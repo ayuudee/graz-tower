@@ -75,6 +75,37 @@ data class ControllerView(
      * aerodrome).
      */
     val staffedRoles: Set<RoleName> = emptySet(),
+    /**
+     * Pass 12 (D-PF.9): aircraft for whom this controller has issued a
+     * peer handoff that has been missed (no two-way comms with the target
+     * within `MISSED_HANDOFF_TIMEOUT`). Single-producer projection from
+     * sim's `handoffEscalations` filtered by `sender == this controller`.
+     *
+     * Empty when no missed handoffs are pending. Each value carries the
+     * `since` timestamp of the most recent escalation event so the
+     * controller's reactive rule can dampen re-emission per cycle.
+     *
+     * **Cycle latency**: a fresh sim escalation in cycle N is visible to
+     * the controller in cycle N+1 (the sweep writes after the cycle's
+     * decide pass). Acceptable for the 120 s timeout.
+     */
+    val outgoingMissedHandoffs: Map<AircraftId, MissedHandoffNotice> = emptyMap(),
+)
+
+/**
+ * Pass 12 (D-PF.9): strip-shaped notice that an outgoing peer handoff
+ * has been missed. Single-source projection from sim's
+ * `handoffEscalations`; the `FirewallOutgoingMissedHandoffsProjectionTest`
+ * pins both single-producer and field-shape contracts.
+ *
+ * Carries the minimum the controller's reactive rule needs to re-issue
+ * `ContactFrequency`: the target role + frequency the original handoff
+ * named, plus the `since` timestamp the dampening uses.
+ */
+data class MissedHandoffNotice(
+    val targetRole: RoleName,
+    val targetFrequency: xyz.easiersaid.twr.protocol.Frequency,
+    val since: SimTime,
 )
 
 /**

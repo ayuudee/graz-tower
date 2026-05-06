@@ -31,7 +31,7 @@ class LostCommsTerminalSpec {
             instruction = HoldShortOf(target = ac, runway = rwy),
             expectedReadback = emptySet(),
             issuedAt = SimTime.ZERO,
-            state = CoordinationState.LostCommsDeclared(declaredAt = declaredAt),
+            state = CoordinationState.LostCommsDeclared(declaredAt = declaredAt, emittedBlindAt = null),
         )
         val b = BeliefState.EMPTY.copy(coordinations = mapOf(ac to listOf(coord)))
         // Advance an arbitrary time and assert the terminal state is preserved.

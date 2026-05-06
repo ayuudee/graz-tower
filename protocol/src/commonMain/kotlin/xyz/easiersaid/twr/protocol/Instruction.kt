@@ -1216,6 +1216,22 @@ data class ConfirmInstruction(
 ) : ControllerResponse
 
 /**
+ * Pass 12 (D-AUDIT.2.A): controller's lost-comms blind-transmission
+ * marker per Doc 4444 §12.3.1.4 / §15.1.4. Phraseology:
+ * "[callsign], TRANSMITTING BLIND, [instruction]".
+ *
+ * The controller's posture: "I'll keep transmitting; if you hear me,
+ * comply silently". Pilot doesn't read back — the blind transmission is
+ * one-way intent, not a query. Emitted once at the entry to
+ * [xyz.easiersaid.twr.controller.observe.CoordinationState.LostCommsDeclared]
+ * (`emittedBlindAt` field gates re-emission).
+ */
+data class TransmittingBlind(
+    override val target: AircraftId,
+    val instruction: AtcInstruction,
+) : ControllerResponse
+
+/**
  * Controller correction of an incorrect or incomplete readback, per ICAO Doc 4444 §12.3.2
  * and CAP 413 §1.5.6. Phraseology: "NEGATIVE, I SAY AGAIN, …" followed by the correct
  * instruction. The [correct] field carries the instruction to be re-transmitted; [defects]

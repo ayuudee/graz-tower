@@ -71,6 +71,32 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     // an architectural test asserts `StaffingPanel.kt` reads only role-shaped
     // data, never controller identity / workload / session state.
     val staffingPanel = state.toStaffingPanel(spec.aerodromeId)
+    // Pass 12 (D-PF.9): project sim's handoffEscalations filtered to this
+    // controller as sender. The MissedHandoffDetected event has already
+    // fired at the sim level; this is the strip-shaped consumer surface.
+    //
+    // **Cycle latency**: the sweep writes handoffEscalations AFTER the
+    // controller's decide pass in the same tick (handlePhysicsTick /
+    // handleControllerTick at the bottom). A fresh escalation in cycle N
+    // is visible to the controller in cycle N+1. Acceptable for the
+    // 120 s timeout.
+    val outgoingMissedHandoffs = state.handoffEscalations.entries
+        .filter { (key, _) -> key.sender == controllerId }
+        .mapNotNull { (key, since) ->
+            val sender = state.controllers[key.sender] ?: return@mapNotNull null
+            val handingOff = sender.responsibilities[key.aircraft]
+                as? xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff
+                ?: return@mapNotNull null
+            val target = handingOff.target as? xyz.easiersaid.twr.protocol.HandoffTarget.Peer
+                ?: return@mapNotNull null
+            val targetSpec = state.controllers[target.controllerId] ?: return@mapNotNull null
+            key.aircraft to xyz.easiersaid.twr.controller.MissedHandoffNotice(
+                targetRole = targetSpec.role,
+                targetFrequency = targetSpec.frequency,
+                since = since,
+            )
+        }
+        .toMap()
     return ControllerView(
         time = state.now,
         controllerId = controllerId,
@@ -85,6 +111,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         worldIndex = state.worldIndex,
         flightStripIntents = flightStripIntents,
         staffedRoles = staffingPanel.roles,
+        outgoingMissedHandoffs = outgoingMissedHandoffs,
     )
 }
 

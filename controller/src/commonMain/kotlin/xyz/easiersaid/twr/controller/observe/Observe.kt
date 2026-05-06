@@ -34,11 +34,21 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
     // Prune per-aircraft maps for aircraft no longer tracked.
     val prunedConcerns = current.recentConcerns.filterKeys { it in tracked }
     val prunedReports = current.outstandingReports.filterKeys { it in tracked }
-    // Coordinations are NOT pruned when an aircraft leaves tracked.
-    // Responsibility transfer (e.g. ContactFrequency) happens before the readback arrives,
-    // so the issuing controller must keep the coordination until processReadback confirms it
-    // or escalateOverdueCoordinations advances it through the lifecycle. Pruning here would destroy the pending
-    // state before the readback can be confirmed, making handoff detectors unreachable.
+    // Pass 12 (D-AUDIT.2.B): narrow prune for LostCommsDeclared only.
+    // Pre-Pass-12 the comment said "never prune" because pruning at
+    // tracked-loss would destroy in-flight handoff readbacks (the aircraft
+    // IS HandingOff during the readback cycle, NOT in view.responsibilities
+    // after Pass 7's Owned-only projection). That reasoning still holds for
+    // Issued/Querying/Reissued — they may resolve via late readback (Pass 12
+    // D-AUDIT.2.E).
+    //
+    // LostCommsDeclared IS terminal post-mortem; once the aircraft has
+    // fully left the controller's world (not in view.responsibilities, not
+    // observed) the entry is dead state. Prune.
+    val prunedCoordinations = current.coordinations.mapValues { (acId, coords) ->
+        if (acId in observed.keys || acId in view.responsibilities) coords
+        else coords.filter { it.state !is CoordinationState.LostCommsDeclared }
+    }.filterValues { it.isNotEmpty() }
 
     return current.copy(
         trackedAircraft = tracked,
@@ -49,7 +59,7 @@ fun updateBeliefs(current: BeliefState, view: ControllerView): BeliefState {
         previousPositions = history,
         recentConcerns = prunedConcerns,
         outstandingReports = prunedReports,
-        coordinations = current.coordinations,
+        coordinations = prunedCoordinations,
     )
 }
 

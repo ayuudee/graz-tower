@@ -6,6 +6,7 @@ import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.protocol.ConfirmInstruction
 import xyz.easiersaid.twr.protocol.RegulationDatabase
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.TransmittingBlind
 import xyz.easiersaid.twr.protocol.Urgency
 
 /**
@@ -101,7 +102,26 @@ internal fun coordinationEscalationOutputs(
                         )
                     }
                 }
-                is CoordinationState.Issued, is CoordinationState.LostCommsDeclared -> Unit
+                is CoordinationState.LostCommsDeclared -> {
+                    // Pass 12 (D-AUDIT.2.A): emit one TransmittingBlind on
+                    // entry to the LostCommsDeclared state. Doc 4444 §12.3.1.4
+                    // / §15.1.4 — controller transitions to "transmit blind"
+                    // posture (one-way; pilot doesn't read back).
+                    if (s.emittedBlindAt == null) {
+                        val ageSec = (now - c.issuedAt).millis / 1000.0
+                        out += ControllerOutput.Respond(
+                            target = aircraft,
+                            response = TransmittingBlind(target = aircraft, instruction = c.instruction),
+                            trace = DecisionTrace(
+                                ruleId = "COORD-BLIND",
+                                description = "Lost-comms posture — transmit blind (issued ${"%.1f".format(ageSec)} s ago; " +
+                                    "Doc 4444 §12.3.1.4 / §15.1.4)",
+                                regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
+                            ),
+                        )
+                    }
+                }
+                is CoordinationState.Issued -> Unit
             }
         }
     }
@@ -109,10 +129,14 @@ internal fun coordinationEscalationOutputs(
 }
 
 /**
- * Bump `emittedAt` on every just-emitted [CoordinationState.Querying] /
- * [CoordinationState.Reissued] entry to [now]. Companion to
+ * Bump emission timestamps on every just-emitted entry. Companion to
  * [coordinationEscalationOutputs]; the two are paired and called together.
  * Splitting them keeps each one pure.
+ *
+ * - `Querying.emittedAt`: bumped from null to [now] (Pass 9).
+ * - `Reissued.emittedAt`: bumped from null to [now] (Pass 9).
+ * - `LostCommsDeclared.emittedBlindAt`: bumped from null to [now]
+ *   (Pass 12 D-AUDIT.2.A).
  */
 internal fun BeliefState.markCoordinationEscalationsEmitted(now: SimTime): BeliefState {
     if (coordinations.isEmpty()) return this
@@ -124,7 +148,9 @@ internal fun BeliefState.markCoordinationEscalationsEmitted(now: SimTime): Belie
                     if (s.emittedAt == null) { changed = true; s.copy(emittedAt = now) } else s
                 is CoordinationState.Reissued ->
                     if (s.emittedAt == null) { changed = true; s.copy(emittedAt = now) } else s
-                is CoordinationState.Issued, is CoordinationState.LostCommsDeclared -> s
+                is CoordinationState.LostCommsDeclared ->
+                    if (s.emittedBlindAt == null) { changed = true; s.copy(emittedBlindAt = now) } else s
+                is CoordinationState.Issued -> s
             }
             if (nextState === c.state) c else c.copy(state = nextState)
         }

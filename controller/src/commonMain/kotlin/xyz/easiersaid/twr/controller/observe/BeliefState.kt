@@ -111,6 +111,18 @@ data class BeliefState(
      * touch-and-go for circuit traffic that hasn't declared.
      */
     val circuitIntent: Map<AircraftId, CircuitIntent> = emptyMap(),
+    /**
+     * Pass 12 (D-PF.9): per-aircraft last-time we re-issued
+     * `ContactFrequency` after a missed-handoff notice. Cycle-level
+     * dampening: a notice with `since == handoffReissuedAt[ac]` doesn't
+     * re-emit (we already responded to *this* escalation); a notice with
+     * `since > handoffReissuedAt[ac]` (a new escalation window) does.
+     *
+     * **Single-write site**: `missedHandoffReissueOutputs` in
+     * `Controller.kt`'s outputs path. `FirewallBeliefWriteTest`
+     * extends to enforce.
+     */
+    val handoffReissuedAt: Map<AircraftId, SimTime> = emptyMap(),
 ) {
     companion object {
         val EMPTY = BeliefState()

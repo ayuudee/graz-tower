@@ -525,8 +525,8 @@ private fun advanceState(
         else s
     }
     is CoordinationState.Reissued -> when {
-        s.attemptCount >= policy.maxReissueAttempts -> CoordinationState.LostCommsDeclared(declaredAt = now)
-        (now - c.issuedAt) > policy.lostCommsAfter -> CoordinationState.LostCommsDeclared(declaredAt = now)
+        s.attemptCount >= policy.maxReissueAttempts -> CoordinationState.LostCommsDeclared(declaredAt = now, emittedBlindAt = null)
+        (now - c.issuedAt) > policy.lostCommsAfter -> CoordinationState.LostCommsDeclared(declaredAt = now, emittedBlindAt = null)
         (now - s.reissuedAt) > policy.reissueInterval ->
             CoordinationState.Reissued(reissuedAt = now, attemptCount = s.attemptCount + 1, emittedAt = null)
         else -> s

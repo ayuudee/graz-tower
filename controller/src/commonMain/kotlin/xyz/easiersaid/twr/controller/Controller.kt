@@ -170,12 +170,25 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val escalationOutputs = coordinationEscalationOutputs(afterValidation, view.time)
     val afterEscalationMark = afterValidation.markCoordinationEscalationsEmitted(view.time)
 
-    val allInstructs = outputs + reactiveInstructs
-    val finalBeliefs = afterEscalationMark
+    // Pass 12 (D-PF.9): re-issue ContactFrequency for missed handoffs.
+    // Sim's sweep wrote the escalation; the projection on view surfaces
+    // it; this function emits a fresh ContactFrequency and bumps
+    // `handoffReissuedAt` to dampen per-cycle re-emission.
+    //
+    // Re-issued ContactFrequency goes through `recordCoordinations`
+    // below — it IS a fresh issuance (the original was confirmed via the
+    // pilot's readback; what's missing is the comms transition to the
+    // new freq, not the readback). The handoff escalation continues or
+    // resolves via the sim's normal flow.
+    val (handoffReissueOutputs, afterHandoffMark) = missedHandoffReissueOutputs(view, afterEscalationMark)
+    val handoffReissueInstructs = handoffReissueOutputs.filterIsInstance<ControllerOutput.Instruct>()
+
+    val allInstructs = outputs + reactiveInstructs + handoffReissueInstructs
+    val finalBeliefs = afterHandoffMark
         .recordCoordinations(allInstructs, view.time)
 
     return ControllerDecisionResult(
-        outputs = outputs + reactiveOutputs + companions + responses + escalationOutputs,
+        outputs = outputs + reactiveOutputs + companions + responses + escalationOutputs + handoffReissueOutputs,
         updatedBeliefs = finalBeliefs,
         trace = OverallDecisionTrace(
             controllerId = view.controllerId, time = view.time,
@@ -586,9 +599,15 @@ private fun processReadback(
     // off) can still be confirmed here — the coordination is the authoritative gate, not the
     // responsibilities set. The readback's receiver (ReceiverRef.Controller) already ensures
     // only the intended controller sees this message; the coordination check below is sufficient.
-    val coords = state.beliefs.coordinations[msg.aircraft]?.filter {
-        it.state is CoordinationState.Issued
-    } ?: return state
+    // Pass 12 (D-AUDIT.2.E): pilot's correct readback at ANY pre-supersession
+    // state clears the coordination — Querying / Reissued / LostCommsDeclared
+    // were the controller's internal escalation postures, not a lockout.
+    // Pre-Pass-12 the filter was `is Issued`, which silently dropped late
+    // readbacks after escalation AND had a latent bug: acceptReadback writes
+    // `remaining = coords.filterIndexed` (the filtered list), which DESTROYED
+    // unfiltered entries. Removing the filter both fixes the bug and lets
+    // late readbacks resolve escalated entries.
+    val coords = state.beliefs.coordinations[msg.aircraft] ?: return state
     if (coords.isEmpty()) return state
 
     // Prefer a CORRECT match (most recent wins). Otherwise find the most recent
@@ -623,7 +642,14 @@ private fun acceptReadback(
         ),
     )
     // Mark the coordination CONFIRMED and remove it from the active list.
-    val remaining = coords.filterIndexed { i, _ -> i != correctIdx }
+    // Pass 12 (D-AUDIT.2.E follow-on): remove by *identity* against the
+    // ORIGINAL coordinations list, not by index in `coords`. Pre-Pass-12
+    // `coords` was the filter-narrowed list (Issued-only); writing back
+    // `coords.filterIndexed` would silently destroy unfiltered entries
+    // (e.g. Querying/Reissued) — a real bug masked by Pass 12's widened
+    // filter.
+    val originalCoords = state.beliefs.coordinations[aircraft] ?: emptyList()
+    val remaining = originalCoords.filter { it !== confirmed }
     val allCoords = state.beliefs.coordinations.toMutableMap()
     if (remaining.isEmpty()) allCoords.remove(aircraft)
     else allCoords[aircraft] = remaining
@@ -667,4 +693,49 @@ private fun correctReadback(
     )
     // Pending stays — the pilot still owes a correct readback.
     return state.copy(responses = state.responses + response)
+}
+
+/**
+ * Pass 12 (D-PF.9): re-issue [ContactFrequency] for any missed handoff
+ * the sim has just escalated. Reads the strip-shaped projection on
+ * [ControllerView.outgoingMissedHandoffs] and emits a fresh handoff
+ * instruction per just-escalated entry. Per-cycle dampening uses the
+ * `since` timestamp on the notice + the new
+ * [BeliefState.handoffReissuedAt] slice.
+ */
+internal fun missedHandoffReissueOutputs(
+    view: ControllerView,
+    beliefs: BeliefState,
+): Pair<List<ControllerOutput>, BeliefState> {
+    if (view.outgoingMissedHandoffs.isEmpty()) {
+        return emptyList<ControllerOutput>() to beliefs
+    }
+    val outputs = mutableListOf<ControllerOutput>()
+    val updatedReissues = beliefs.handoffReissuedAt.toMutableMap()
+    for ((aircraft, notice) in view.outgoingMissedHandoffs) {
+        val lastReissued = updatedReissues[aircraft]
+        if (lastReissued != null && lastReissued >= notice.since) continue
+        outputs += ControllerOutput.Instruct(
+            target = aircraft,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(
+                xyz.easiersaid.twr.protocol.ContactFrequency(
+                    target = aircraft,
+                    role = notice.targetRole,
+                    frequency = notice.targetFrequency,
+                ),
+            ),
+            urgency = xyz.easiersaid.twr.protocol.Urgency.TIME_SENSITIVE,
+            trace = DecisionTrace(
+                ruleId = "HANDOFF-REISSUE",
+                description = "Re-issue ContactFrequency after missed handoff (Doc 4444 §10.1; ~2 min sim doctrine)",
+                regulations = listOf(
+                    RegulationDatabase.ICAO4444_10_1,
+                    RegulationDatabase.ICAO9432_FREQUENCY_CHANGE,
+                ),
+            ),
+        )
+        updatedReissues[aircraft] = notice.since
+    }
+    val newBeliefs = beliefs.copy(handoffReissuedAt = updatedReissues)
+    return outputs to newBeliefs
 }

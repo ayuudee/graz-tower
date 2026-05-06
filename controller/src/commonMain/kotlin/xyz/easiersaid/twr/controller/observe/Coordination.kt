@@ -72,19 +72,32 @@ sealed interface CoordinationState {
     }
 
     /**
-     * Re-issue attempts exhausted. Per Doc 4444 §15.1.4 there is no
-     * on-frequency phraseology; the controller transmits blind, never
-     * declaring on the working frequency. Terminal: the entry persists
-     * for diagnostics until the aircraft leaves responsibility or is
-     * actively superseded.
+     * Re-issue attempts exhausted. Per Doc 4444 §15.1.4 the controller
+     * transitions to "transmit blind" posture — they keep transmitting
+     * on the assumption the pilot can hear; if they can, comply silently.
+     * No on-frequency phraseology declares lost-comms.
      *
-     * Carries only [declaredAt]. The original `issuedAt` lives on the
-     * parent [OutstandingCoordination]; **doc-pin: do not duplicate it
-     * here.** Diagnostic post-mortem joins through the parent.
+     * Pass 12 (D-AUDIT.2.A): on entry to this state,
+     * `coordinationEscalationOutputs` emits one `TransmittingBlind`
+     * `ControllerResponse` carrying the original instruction.
+     * [emittedBlindAt] dampens cycle re-emission (matches the
+     * `emittedAt` pattern on [Querying] / [Reissued] — not the original
+     * `declaredAt == now` equality, which is fragile to sub-cycle clocks).
      *
-     * Cleanup on aircraft departure is filed as **D-AUDIT.2.B-FOLLOWUP**.
+     * Pass 12 (D-AUDIT.2.B): cleanup. The entry IS pruned when the
+     * aircraft has fully left the controller's world (not in
+     * `view.responsibilities`, not in `view.aircraft`). Other states
+     * (Issued/Querying/Reissued) persist through tracked-loss because
+     * a late readback could still resolve them; LostCommsDeclared is
+     * terminal post-mortem and only departure clears it.
+     *
+     * `declaredAt` is the original transition timestamp; the parent
+     * [OutstandingCoordination] carries `issuedAt` (do not duplicate).
      */
-    data class LostCommsDeclared(val declaredAt: SimTime) : CoordinationState
+    data class LostCommsDeclared(
+        val declaredAt: SimTime,
+        val emittedBlindAt: SimTime?,
+    ) : CoordinationState
 }
 
 /**
