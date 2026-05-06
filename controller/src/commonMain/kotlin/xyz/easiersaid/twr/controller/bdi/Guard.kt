@@ -487,6 +487,79 @@ data class SeparationConcernAbove(
     }
 }
 
+/**
+ * The runway named on [Commitment.runway] has declared distances long
+ * enough for the aircraft's type to perform [operation].
+ *
+ * Pass 13 (D-AUDIT.4.A-FOLLOWUP closure): consumes
+ * [xyz.easiersaid.twr.protocol.AircraftType.RunwayLengthRequirements]
+ * data Pass 10 carried but did not yet gate on. Reads through the
+ * firewall-narrow lookup
+ * [xyz.easiersaid.twr.protocol.AircraftType.runwayRequirementsFor] —
+ * the controller never sees the full [AircraftType] (no kinematics or
+ * circuit data); only the runway-relevant slice.
+ *
+ * **Fail-closed semantics** (no-corners rule):
+ *  - Unknown ICAO type designator → guard rejects. The pilot's strip
+ *    must carry a [xyz.easiersaid.twr.protocol.IcaoTypeDesignator] for
+ *    which `runwayRequirementsFor` returns a Right; absent the strip
+ *    or unknown type, the rule cannot guarantee runway adequacy and
+ *    refuses to fire.
+ *  - Null `declaredDistances` → guard rejects. The migration schema
+ *    (`CandidateDeclaredDistances` is non-nullable in
+ *    `WorldCandidateSchema.kt`) ensures all loaded worlds carry
+ *    distances; a null path is reachable only from in-memory test
+ *    fixtures, where fail-closed is still correct (test must populate).
+ *  - Unknown runway → guard rejects. The commitment carries the runway
+ *    selected by upstream rules; absence indicates an upstream defect.
+ *
+ * **Diagnostic surface** (Pass 13 post-impl FP review S.2):
+ * `runwayRequirementsFor` returns
+ * `Either<UnknownDesignator, RunwayLengthRequirements>`, but this
+ * `evaluate` function collapses the `Left` to `null` via `getOrNull()`
+ * because [RuleGuard.failureMessage] is statically typed (not a
+ * function of the failing observation). The Either is therefore
+ * load-bearing only for the *contract*, not the runtime trace today —
+ * a future caller (e.g., a `RunwayLengthDiagnosticAction` that emits
+ * a controller response naming the unknown designator) would
+ * pattern-match on the Either rather than collapsing. **D-PASS-13.3**
+ * tracks the diagnostic-enrichment work (rule-trace surface for the
+ * specific fail-closed cause: unknown type / null distances / runway
+ * absent / runway too short).
+ *
+ * Runway-condition adjustments (wet, contaminated, displaced threshold)
+ * are filed as **D-AUDIT.4.A.II-FOLLOWUP**; Pass 13 uses dry/MTOW.
+ */
+data class RunwayLengthSufficient(
+    val operation: RunwayLengthOperation,
+) : RuleGuard {
+    override val failureMessage: String =
+        "Runway too short or runway-length data unavailable for $operation"
+
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val designator = ac.icaoTypeDesignator ?: return false
+        val requirements = xyz.easiersaid.twr.protocol.AircraftType
+            .runwayRequirementsFor(designator)
+            .getOrNull() ?: return false
+        val runwayId = commitment.runway ?: return false
+        val runway = ctx.world.aerodromes.values
+            .firstNotNullOfOrNull { it.runways[runwayId] } ?: return false
+        val distances = runway.declaredDistances ?: return false
+        return when (operation) {
+            RunwayLengthOperation.TAKEOFF -> distances.toda.value >= requirements.takeoffMinM
+            RunwayLengthOperation.LANDING -> distances.lda.value >= requirements.landingMinM
+        }
+    }
+}
+
+/**
+ * Which declared-distance applies to a [RunwayLengthSufficient] check.
+ * TAKEOFF reads TODA (takeoff distance available); LANDING reads LDA
+ * (landing distance available). ASDA / TORA gating belong to abort and
+ * one-engine-inoperative cases that are out of scope for Pass 13.
+ */
+enum class RunwayLengthOperation { TAKEOFF, LANDING }
+
 /** No active runway clearance for this aircraft. */
 data object NoRunwayClearanceIssued : RuleGuard {
     override val failureMessage = "A runway clearance has already been issued for this aircraft"

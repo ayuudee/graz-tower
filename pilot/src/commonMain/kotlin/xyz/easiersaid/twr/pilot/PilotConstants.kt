@@ -7,18 +7,17 @@ import xyz.easiersaid.twr.protocol.SimDuration
  *
  * Pass 10 (D-AUDIT.4): per-type kinematic fields (climb speed, approach
  * speed, etc.) moved to
- * [xyz.easiersaid.twr.protocol.AircraftType.Kinematics]. Surviving
- * constants here are the ones genuinely uniform across aircraft types
- * (geometric capture radius, sensor-threshold altitudes, pilot decision
- * cadence — none of which a B738 needs to differ from a C172).
+ * [xyz.easiersaid.twr.protocol.AircraftType.Kinematics].
+ *
+ * Pass 13 (D-AUDIT.4.D-FOLLOWUP): waypoint capture radius moved to
+ * [xyz.easiersaid.twr.protocol.AircraftType.Kinematics.waypointRadiusM]
+ * — a jet at 130 m/s × 1 s tick traverses a 130 m physics step, so the
+ * capture radius needs to scale with cruise speed. Surviving constants
+ * here are the ones genuinely uniform across aircraft types
+ * (sensor-threshold altitudes, pilot decision cadence — none of which a
+ * B738 needs to differ from a C172).
  */
 object PilotConstants {
-    /**
-     * How close the aircraft must be to a waypoint before the pilot pops it.
-     * Geometric, not aircraft-specific.
-     */
-    const val WAYPOINT_RADIUS_M: Double = 5.0
-
     /** Altitude at which the aircraft is considered airborne for phase transitions. */
     const val AIRBORNE_ALTITUDE_THRESHOLD_M: Double = 1.0
 

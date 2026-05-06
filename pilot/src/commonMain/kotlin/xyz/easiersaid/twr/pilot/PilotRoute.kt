@@ -25,7 +25,7 @@ sealed interface PilotRoute {
     /**
      * A taxi path over the world's path-graph. [waypoints] are the remaining
      * nodes to reach, in order. The pilot pops the head once the aircraft is
-     * within [PilotConstants.WAYPOINT_RADIUS_M] of it.
+     * within [xyz.easiersaid.twr.protocol.AircraftType.Kinematics.waypointRadiusM] of it.
      *
      * [arrivalPhase] is the phase to transition to when the last waypoint is
      * reached — e.g. [PilotPhase.HoldingShort] for a departure taxi to a

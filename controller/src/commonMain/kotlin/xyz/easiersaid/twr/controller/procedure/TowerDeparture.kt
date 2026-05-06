@@ -31,6 +31,8 @@ import xyz.easiersaid.twr.controller.bdi.OtherTrafficOnShortFinal
 import xyz.easiersaid.twr.controller.bdi.PilotReady
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
 import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
+import xyz.easiersaid.twr.controller.bdi.RunwayLengthOperation
+import xyz.easiersaid.twr.controller.bdi.RunwayLengthSufficient
 import xyz.easiersaid.twr.controller.bdi.RunwayPhysicallyClear
 import xyz.easiersaid.twr.controller.bdi.StageExpectation
 import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
@@ -107,6 +109,10 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     WeatherPermitsVfr,
                     RunwayAccessGranted,
                     RunwayPhysicallyClear,
+                    // Pass 13 (D-AUDIT.4.A-FOLLOWUP closure): runway must be
+                    // long enough for the type's takeoff TODA. Fails closed
+                    // for unknown designator or absent declared distances.
+                    RunwayLengthSufficient(RunwayLengthOperation.TAKEOFF),
                     // Never line up in front of an arrival on short final — even with
                     // runway access the approach buffer would be eroded below ICAO minima.
                     Not(OtherTrafficOnShortFinal),
@@ -126,6 +132,10 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     ContactEstablished,
                     WeatherPermitsVfr,
                     RunwayAccessGranted,
+                    // Pass 13 (D-AUDIT.4.A-FOLLOWUP): conditional line-up
+                    // still requires the runway is long enough for the
+                    // aircraft's takeoff TODA.
+                    RunwayLengthSufficient(RunwayLengthOperation.TAKEOFF),
                     // Also blocked: conditional line-up in front of landing traffic
                     // would still put the departure on the runway ahead of the arrival.
                     Not(OtherTrafficOnShortFinal),

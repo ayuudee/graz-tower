@@ -6,7 +6,6 @@ import arrow.core.NonEmptyList
 import arrow.core.Some
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.pilot.AircraftState
-import xyz.easiersaid.twr.pilot.CIRCUIT_ALTITUDE_M
 import xyz.easiersaid.twr.pilot.PilotConstants
 import xyz.easiersaid.twr.pilot.buildReadback
 import xyz.easiersaid.twr.pilot.processControllerResponse
@@ -1119,7 +1118,8 @@ private fun applyLineUpAndWait(
 internal fun buildDepartureRoute(
     world: xyz.easiersaid.twr.core.world.AviationWorld,
     runwayId: RunwayId,
-): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world).getOrNull()
+    aircraftType: xyz.easiersaid.twr.protocol.AircraftType,
+): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world, aircraftType).getOrNull()
 
 /**
  * "Cleared for takeoff" at the threshold: switch to a departure route and
@@ -1130,13 +1130,13 @@ private fun applyClearedForTakeoff(
     ac: AircraftState,
     instruction: ClearedForTakeoff,
 ): SimState {
-    val route = buildDepartureRoute(state.world, instruction.runway)
+    val route = buildDepartureRoute(state.world, instruction.runway, ac.type)
         ?: return state
     val updated = ac.copy(
         phase = PilotPhase.TakeoffRoll,
         route = route,
         targetSpeedMps = ac.type.kinematics.climbSpeedMps,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        targetAltitudeM = ac.type.circuitPattern.altitudeAglM,
     )
     val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, updated) }
     return state.copy(aircraft = aircraft)
@@ -1470,19 +1470,19 @@ private fun advanceKinematics(
             ac.position.yMeters + dy * ratio,
         )
     }
-    // Advance graph-level position whenever the aircraft is within
-    // [PilotConstants.WAYPOINT_RADIUS_M] of the head waypoint — the same radius
-    // the pilot uses to pop waypoints. Aligning the two guarantees
-    // `positionPoint` never skips a waypoint the pilot visits, so the
-    // controller's point-indexed guards (AtHoldingPoint, AtStand, OnRunway,
-    // OnCircuitLeg) see every leg. Without this, a pilot popping at dist ≤ 5 m
-    // while physics hasn't yet snapped (dist ≤ step, typically 33 m) leaves
-    // positionPoint pinned to the previous waypoint forever.
+    // Advance graph-level position whenever the aircraft is within the
+    // pilot's [AircraftType.Kinematics.waypointRadiusM] of the head
+    // waypoint — the same radius the pilot uses to pop waypoints.
+    // Aligning the two guarantees `positionPoint` never skips a waypoint
+    // the pilot visits, so the controller's point-indexed guards
+    // (AtHoldingPoint, AtStand, OnRunway, OnCircuitLeg) see every leg.
+    // Pass 13 (D-AUDIT.4.D-FOLLOWUP): per-type radius scales with cruise
+    // speed (jet ticks 130 m/step at climb).
     val ddx = headPos.xMeters - newPos.xMeters
     val ddy = headPos.yMeters - newPos.yMeters
     val distanceAfter = StrictMath.hypot(ddx, ddy)
     val newPositionPoint =
-        if (distanceAfter <= PilotConstants.WAYPOINT_RADIUS_M) headPoint else ac.positionPoint
+        if (distanceAfter <= ac.type.kinematics.waypointRadiusM) headPoint else ac.positionPoint
     return ac.copy(
         position = newPos,
         positionPoint = newPositionPoint,

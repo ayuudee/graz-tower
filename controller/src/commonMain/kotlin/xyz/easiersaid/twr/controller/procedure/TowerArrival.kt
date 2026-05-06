@@ -30,6 +30,8 @@ import xyz.easiersaid.twr.controller.bdi.ProcedureInterrupt
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
 import xyz.easiersaid.twr.controller.bdi.ReportFinalAction
 import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
+import xyz.easiersaid.twr.controller.bdi.RunwayLengthOperation
+import xyz.easiersaid.twr.controller.bdi.RunwayLengthSufficient
 import xyz.easiersaid.twr.controller.bdi.RunwayPhysicallyClear
 import xyz.easiersaid.twr.controller.bdi.SeparationConcernAbove
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
@@ -79,6 +81,11 @@ private val LandingConditions = AllOf(listOf(
     WeatherPermitsVfr,
     RunwayAccessGranted,
     RunwayPhysicallyClear,
+    // Pass 13 (D-AUDIT.4.A-FOLLOWUP closure): runway must be long enough
+    // for the aircraft's landing LDA. Shared by ARR-LAND, ARR-LAND-TNG,
+    // and their re-issue rules. Fails closed for unknown designator or
+    // absent declared distances.
+    RunwayLengthSufficient(RunwayLengthOperation.LANDING),
 ))
 
 @Suppress("LongMethod") // procedure spec is a flat list of rules — splitting into smaller

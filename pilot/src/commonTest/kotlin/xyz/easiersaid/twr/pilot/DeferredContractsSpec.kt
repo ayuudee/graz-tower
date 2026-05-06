@@ -117,24 +117,15 @@ class DeferredContractsSpec {
     //    from-field path including the multi-runway twin-row;
     //  - integration: G0's assertion (g) sealed-type match on `TaxiToStand`.
 
-    /**
-     * **D-AUDIT.3** — TIMED step durations are aircraft-type / airport-specific.
-     *
-     * Today `TIMED_STEP_DURATION_MS = 10_000L` for every aircraft, every
-     * airport. Real run-up at GA-class is ~60-90 s; jet pre-flight is
-     * several minutes. The duration is a placeholder, not a model.
-     *
-     * When implemented:
-     *  - `(aircraftType, airport, step) → Duration` lookup from a
-     *    procedure-times manifest.
-     *  - PilotConstants becomes per-type lookups (composes with D-AUDIT.4).
-     *  - G0's 30-min budget revisited if jet pre-flight exceeds.
-     */
-    @Ignore
-    @Test
-    fun `D-AUDIT3 RUN_UP_CHECKS duration is aircraft-type-specific`() {
-        // TODO when D-AUDIT.3 lands. Today the duration is a flat 10_000 ms.
-    }
+    // D-AUDIT.3 — CLOSED (Pass 13). The placeholder is removed because the
+    // contract is now enforced by:
+    //  - data: `AircraftType.runUpDurationMs` per leaf, with POH/FCOM cites
+    //    in `protocol/AircraftType.kt` KDoc;
+    //  - consumer: `PilotCognitive.isStepComplete` reads
+    //    `aircraft.type.runUpDurationMs` for `CompletionMode.TIMED`;
+    //  - spec: `AircraftTypeSpec` pins C172 = 60 s, B738 = 600 s.
+    // Per-step lookup beyond RUN_UP_CHECKS is filed as
+    // **D-AUDIT.3.II-FOLLOWUP** if other steps adopt TIMED.
 
     /**
      * **D-AUDIT.5** — Responsibility transfer has an overlap window.

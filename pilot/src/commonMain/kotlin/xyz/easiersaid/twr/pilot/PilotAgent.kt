@@ -105,7 +105,7 @@ object DefaultPilot : PilotAgent {
         val dx = headPos.xMeters - ac.position.xMeters
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
-        if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
+        if (dist > ac.type.kinematics.waypointRadiusM) {
             // Still en route — keep taxiing toward the same first waypoint.
             return PilotIntent(ac.type.kinematics.taxiSpeedMps, PilotPhase.Taxiing, route).right()
         }
@@ -186,7 +186,7 @@ object DefaultPilot : PilotAgent {
         val dx = headPos.xMeters - ac.position.xMeters
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
-        if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
+        if (dist > ac.type.kinematics.waypointRadiusM) {
             return PilotIntent(
                 targetSpeedMps = airborneCruiseSpeed(ac.phase, ac.type.kinematics),
                 phase = ac.phase,
@@ -277,7 +277,7 @@ object DefaultPilot : PilotAgent {
         val dx = headPos.xMeters - ac.position.xMeters
         val dy = headPos.yMeters - ac.position.yMeters
         val dist = StrictMath.hypot(dx, dy)
-        if (dist > PilotConstants.WAYPOINT_RADIUS_M) {
+        if (dist > ac.type.kinematics.waypointRadiusM) {
             return PilotIntent(ac.type.kinematics.taxiSpeedMps, PilotPhase.Vacating, route).right()
         }
         val remaining = route.waypoints.tail

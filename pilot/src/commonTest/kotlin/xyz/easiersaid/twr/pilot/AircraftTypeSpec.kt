@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.pilot
 
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
+import xyz.easiersaid.twr.protocol.UnknownDesignator
 import xyz.easiersaid.twr.protocol.WakeCategory
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -10,7 +11,9 @@ import kotlin.test.assertTrue
 
 /**
  * Pass 10 (D-AUDIT.4) — `AircraftType` doctrine pin and invariant
- * enforcement.
+ * enforcement. Pass 13 extends with circuit pattern, waypoint radius,
+ * run-up duration, and the firewall-narrow `runwayRequirementsFor`
+ * companion lookup.
  *
  * Each `@Test` carries multiple assertions per the
  * `LostCommsTerminalSpec` precedent. A regression that swaps two field
@@ -33,6 +36,13 @@ class AircraftTypeSpec {
         // FAA TCDS 3A12 SL/MTOW.
         assertEquals(305, t.runwayLengthM.takeoffMinM, "TCDS takeoff 305 m")
         assertEquals(407, t.runwayLengthM.landingMinM, "TCDS landing 407 m")
+        // Pass 13: POH §4 / FAA AIM 4-3-3 — pattern altitude / downwind offset.
+        assertEquals(305.0, t.circuitPattern.altitudeAglM, "POH §4 1000 ft pattern altitude")
+        assertEquals(925.0, t.circuitPattern.downwindOffsetM, "FAA AIM 4-3-3 downwind ~0.5 nm")
+        // Pass 13: engineering tuning — 4× half-tick at Vy 40 m/s.
+        assertEquals(80.0, t.kinematics.waypointRadiusM, "engineering tuning, not doctrine")
+        // Pass 13: POH §4 normal-procedures run-up sequence.
+        assertEquals(60_000L, t.runUpDurationMs, "POH §4 typical 60 s run-up")
     }
 
     @Test
@@ -49,24 +59,34 @@ class AircraftTypeSpec {
         // Boeing 737 AFM SL/MTOW–MLW.
         assertEquals(2280, t.runwayLengthM.takeoffMinM, "AFM TODA 2280 m")
         assertEquals(1700, t.runwayLengthM.landingMinM, "AFM LDA 1700 m")
+        // Pass 13: FCOM Supplementary Procedures (jet visual circuit).
+        assertEquals(457.0, t.circuitPattern.altitudeAglM, "FCOM 1500 ft jet pattern altitude")
+        assertEquals(1850.0, t.circuitPattern.downwindOffsetM, "FCOM ~1.0 nm jet downwind offset")
+        // Pass 13: engineering tuning — 4× half-tick at climb 130 m/s.
+        assertEquals(250.0, t.kinematics.waypointRadiusM, "engineering tuning, not doctrine")
+        // Pass 13: FCOM NP cold-start before-takeoff sequence.
+        assertEquals(600_000L, t.runUpDurationMs, "FCOM NP 10 min cold-start sequence")
     }
 
     @Test
-    fun `Kinematics init rejects non-positive speeds and rates`() {
+    fun `Kinematics init rejects non-positive speeds rates and waypoint radius`() {
         assertFails("taxiSpeedMps must be > 0") {
-            AircraftType.Kinematics(0.0, 28.0, 40.0, 33.0, 3.7)
+            AircraftType.Kinematics(0.0, 28.0, 40.0, 33.0, 3.7, 80.0)
         }
         assertFails("rotationSpeedMps must be > 0") {
-            AircraftType.Kinematics(10.0, 0.0, 40.0, 33.0, 3.7)
+            AircraftType.Kinematics(10.0, 0.0, 40.0, 33.0, 3.7, 80.0)
         }
         assertFails("climbSpeedMps must be > 0") {
-            AircraftType.Kinematics(10.0, 28.0, 0.0, 33.0, 3.7)
+            AircraftType.Kinematics(10.0, 28.0, 0.0, 33.0, 3.7, 80.0)
         }
         assertFails("approachSpeedMps must be > 0") {
-            AircraftType.Kinematics(10.0, 28.0, 40.0, 0.0, 3.7)
+            AircraftType.Kinematics(10.0, 28.0, 40.0, 0.0, 3.7, 80.0)
         }
         assertFails("climbRateMps must be > 0") {
-            AircraftType.Kinematics(10.0, 28.0, 40.0, 33.0, 0.0)
+            AircraftType.Kinematics(10.0, 28.0, 40.0, 33.0, 0.0, 80.0)
+        }
+        assertFails("waypointRadiusM must be > 0") {
+            AircraftType.Kinematics(10.0, 28.0, 40.0, 33.0, 3.7, 0.0)
         }
     }
 
@@ -80,6 +100,7 @@ class AircraftTypeSpec {
                 climbSpeedMps = 40.0,
                 approachSpeedMps = 33.0,
                 climbRateMps = 3.7,
+                waypointRadiusM = 80.0,
             )
         }
     }
@@ -91,6 +112,16 @@ class AircraftTypeSpec {
         }
         assertFails("landingMinM must be > 0") {
             AircraftType.RunwayLengthRequirements(takeoffMinM = 305, landingMinM = 0)
+        }
+    }
+
+    @Test
+    fun `CircuitPattern init rejects non-positive altitude or downwind offset`() {
+        assertFails("altitudeAglM must be > 0") {
+            AircraftType.CircuitPattern(altitudeAglM = 0.0, downwindOffsetM = 925.0)
+        }
+        assertFails("downwindOffsetM must be > 0") {
+            AircraftType.CircuitPattern(altitudeAglM = 305.0, downwindOffsetM = 0.0)
         }
     }
 
@@ -109,5 +140,34 @@ class AircraftTypeSpec {
         assertTrue(IcaoTypeDesignator.of("c172").isLeft(), "lowercase rejected")
         assertTrue(IcaoTypeDesignator.of("C-172").isLeft(), "hyphen rejected")
         assertTrue(IcaoTypeDesignator.of("C 17").isLeft(), "space rejected")
+    }
+
+    @Test
+    fun `runwayRequirementsFor returns runway slice for known and Left for unknown`() {
+        // Pass 13: firewall-narrow lookup. Returns ONLY the runway slice
+        // — controller cannot reach kinematics or circuit data via this path.
+        val c172Result = AircraftType.runwayRequirementsFor(IcaoTypeDesignator.unsafe("C172"))
+        assertEquals(
+            AircraftType.C172.runwayLengthM,
+            c172Result.getOrNull(),
+            "C172 designator → C172 runway requirements (TCDS 3A12)",
+        )
+        val b738Result = AircraftType.runwayRequirementsFor(IcaoTypeDesignator.unsafe("B738"))
+        assertEquals(
+            AircraftType.B738.runwayLengthM,
+            b738Result.getOrNull(),
+            "B738 designator → B738 runway requirements (737 AFM)",
+        )
+        // Unknown designator → Left(UnknownDesignator(...)). The Either is the
+        // shape: a future controller-side caller pattern-matches and emits a
+        // diagnostic naming the offender.
+        val unknown = IcaoTypeDesignator.unsafe("XXXX")
+        val unknownResult = AircraftType.runwayRequirementsFor(unknown)
+        assertTrue(unknownResult.isLeft(), "unknown designator returns Left")
+        assertEquals(
+            UnknownDesignator(unknown),
+            unknownResult.swap().getOrNull(),
+            "Left carries the offending designator for diagnostics",
+        )
     }
 }

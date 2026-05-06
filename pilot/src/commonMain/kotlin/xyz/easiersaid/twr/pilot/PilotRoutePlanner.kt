@@ -15,6 +15,7 @@ import xyz.easiersaid.twr.core.world.InstrumentApproach
 import xyz.easiersaid.twr.core.world.Sid
 import xyz.easiersaid.twr.core.world.Star
 import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.ClearanceState
 import xyz.easiersaid.twr.protocol.FlightPlan
@@ -114,15 +115,21 @@ sealed interface RoutingError {
  * Ground tasks (GroundDeparture, GroundArrival) and structural tasks
  * (CircuitTraining) are always [InvalidCombination] — they don't produce
  * airborne routes.
+ *
+ * Pass 13 (D-AUDIT.4.D-FOLLOWUP): [aircraftType] threads through every
+ * helper so route `targetAltitudeM` is per-type. Pilot internals are
+ * entitled to read the whole [AircraftType] (it's pilot-side state);
+ * the firewall lives at the controller boundary, not within pilot code.
  */
 fun buildAirborneRoute(
     mode: NavigationMode,
     taskName: TaskName,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> = when (mode) {
-    is NavigationMode.Circuit -> buildCircuitModeRoute(mode, taskName, world)
-    is NavigationMode.Visual -> buildVisualModeRoute(mode, taskName, world)
-    is NavigationMode.Instrument -> buildInstrumentModeRoute(mode, taskName, world)
+    is NavigationMode.Circuit -> buildCircuitModeRoute(mode, taskName, world, aircraftType)
+    is NavigationMode.Visual -> buildVisualModeRoute(mode, taskName, world, aircraftType)
+    is NavigationMode.Instrument -> buildInstrumentModeRoute(mode, taskName, world, aircraftType)
     is NavigationMode.Emergency -> buildEmergencyModeRoute(mode, taskName)
 }
 
@@ -132,14 +139,15 @@ private fun buildCircuitModeRoute(
     mode: NavigationMode.Circuit,
     taskName: TaskName,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // Circuit pattern: full loop dep end → upwind → ... → threshold.
     is TaskName.Circuit,
     is TaskName.CircuitAfterGoAround,
-    is TaskName.TouchAndGo -> buildCircuitPatternRoute(mode.runway, world, CircuitLookup.ById(mode.procedure))
+    is TaskName.TouchAndGo -> buildCircuitPatternRoute(mode.runway, world, aircraftType, CircuitLookup.ById(mode.procedure))
 
     // Go-around: published go-around path → rejoin circuit.
-    is TaskName.GoAround -> buildGoAroundRoute(mode.runway, world, CircuitLookup.ById(mode.procedure))
+    is TaskName.GoAround -> buildGoAroundRoute(mode.runway, world, aircraftType, CircuitLookup.ById(mode.procedure))
 
     // Ground tasks — no airborne route.
     is TaskName.GroundDeparture,
@@ -169,20 +177,21 @@ internal fun buildVisualModeRoute(
     mode: NavigationMode.Visual,
     taskName: TaskName,
     world: AviationWorld,
+    aircraftType: AircraftType,
     joinLeg: Option<LegName> = None,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // Departure climb-out: short circuit climb-out ending at crosswind.
-    is TaskName.Depart -> buildVisualDepartureRoute(mode.runway, world)
+    is TaskName.Depart -> buildVisualDepartureRoute(mode.runway, world, aircraftType)
 
     // Visual transit: zone-exit pattern.
-    is TaskName.Transit -> buildVisualDepartureRoute(mode.runway, world)
+    is TaskName.Transit -> buildVisualDepartureRoute(mode.runway, world, aircraftType)
 
     // Circuit pattern. Join leg comes from the JoinCircuit instruction stored
     // on the mission (A12); defaults to DOWNWIND if not yet instructed.
     is TaskName.Circuit,
     is TaskName.CircuitAfterGoAround,
     is TaskName.TouchAndGo -> buildCircuitFromLeg(
-        mode.runway, joinLeg.getOrElse { LegName.DOWNWIND }, world,
+        mode.runway, joinLeg.getOrElse { LegName.DOWNWIND }, world, aircraftType,
     )
 
     // Single-aerodrome VFR arrivals spawn already on the circuit pattern; the
@@ -196,7 +205,7 @@ internal fun buildVisualModeRoute(
     is TaskName.Arrive -> RoutingError.InvalidCombination(mode, taskName).left()
 
     // Go-around: rejoin circuit from go-around path.
-    is TaskName.GoAround -> buildGoAroundRoute(mode.runway, world)
+    is TaskName.GoAround -> buildGoAroundRoute(mode.runway, world, aircraftType)
 
     // Ground tasks — no airborne route.
     is TaskName.GroundDeparture,
@@ -212,19 +221,20 @@ private fun buildInstrumentModeRoute(
     mode: NavigationMode.Instrument,
     taskName: TaskName,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // SID departure: follow published SID waypoints with constraints.
     is TaskName.Depart,
-    is TaskName.Transit -> buildSidDepartureRoute(mode.fpl, world)
+    is TaskName.Transit -> buildSidDepartureRoute(mode.fpl, world, aircraftType)
 
     // STAR + approach: follow published STAR then instrument approach.
-    is TaskName.Arrive -> buildStarApproachRoute(mode.fpl, world)
+    is TaskName.Arrive -> buildStarApproachRoute(mode.fpl, world, aircraftType)
 
     // Arrival join: route to the first STAR waypoint (or IAF if no STAR).
-    is TaskName.ArrivalJoin -> buildArrivalJoinRoute(mode.fpl, world)
+    is TaskName.ArrivalJoin -> buildArrivalJoinRoute(mode.fpl, world, aircraftType)
 
     // Missed approach: follow published missed approach procedure.
-    is TaskName.GoAround -> buildMissedApproachRoute(mode.fpl, world)
+    is TaskName.GoAround -> buildMissedApproachRoute(mode.fpl, world, aircraftType)
 
     // IFR does not fly VFR circuits.
     is TaskName.Circuit,
@@ -271,6 +281,7 @@ private fun buildEmergencyModeRoute(
 internal fun buildCircuitPatternRoute(
     runwayId: RunwayId,
     world: AviationWorld,
+    aircraftType: AircraftType,
     lookup: CircuitLookup = CircuitLookup.ByRunway(runwayId),
 ): Either<RoutingError, PilotRoute.Airborne> {
     val (runway, circuit) = findRunwayAndCircuit(world, lookup)
@@ -293,7 +304,7 @@ internal fun buildCircuitPatternRoute(
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        targetAltitudeM = aircraftType.circuitPattern.altitudeAglM,
         arrivalPhase = PilotPhase.LandingRoll,
     ).right()
 }
@@ -311,6 +322,7 @@ internal fun buildCircuitPatternRoute(
 fun buildVisualDepartureRoute(
     runwayId: RunwayId,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
         .fold({ return it.left() }, { it })
@@ -334,7 +346,7 @@ fun buildVisualDepartureRoute(
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        targetAltitudeM = aircraftType.circuitPattern.altitudeAglM,
         arrivalPhase = PilotPhase.Crosswind,
     ).right()
 }
@@ -352,6 +364,7 @@ internal fun buildCircuitFromLeg(
     runwayId: RunwayId,
     startLeg: LegName,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
         .fold({ return it.left() }, { it })
@@ -384,7 +397,7 @@ internal fun buildCircuitFromLeg(
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        targetAltitudeM = aircraftType.circuitPattern.altitudeAglM,
         arrivalPhase = PilotPhase.LandingRoll,
     ).right()
 }
@@ -402,6 +415,7 @@ internal fun buildCircuitFromLeg(
 internal fun buildGoAroundRoute(
     runwayId: RunwayId,
     world: AviationWorld,
+    aircraftType: AircraftType,
     lookup: CircuitLookup = CircuitLookup.ByRunway(runwayId),
 ): Either<RoutingError, PilotRoute.Airborne> {
     val (runway, circuit) = findRunwayAndCircuit(world, lookup)
@@ -425,7 +439,7 @@ internal fun buildGoAroundRoute(
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M,
+        targetAltitudeM = aircraftType.circuitPattern.altitudeAglM,
         arrivalPhase = PilotPhase.LandingRoll,
     ).right()
 }
@@ -446,6 +460,7 @@ internal fun buildGoAroundRoute(
 internal fun buildSidDepartureRoute(
     fpl: FlightPlan,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance
     val depRunway = when (clearance) {
@@ -460,7 +475,7 @@ internal fun buildSidDepartureRoute(
     }
 
     // No SID assigned — fall back to visual departure.
-    if (sidId == null) return buildVisualDepartureRoute(depRunway, world)
+    if (sidId == null) return buildVisualDepartureRoute(depRunway, world, aircraftType)
 
     // Look up the SID procedure.
     val sid = world.aerodromes.values
@@ -498,7 +513,7 @@ internal fun buildSidDepartureRoute(
         is xyz.easiersaid.twr.core.world.AltitudeConstraint.AtOrAbove -> levelToMeters(lastAltitude.minimum)
         is xyz.easiersaid.twr.core.world.AltitudeConstraint.AtOrBelow -> levelToMeters(lastAltitude.maximum)
         is xyz.easiersaid.twr.core.world.AltitudeConstraint.Between -> levelToMeters(lastAltitude.minimum)
-        null -> CIRCUIT_ALTITUDE_M
+        null -> aircraftType.circuitPattern.altitudeAglM
     }
 
     val waypoints = NonEmptyList(segments.first(), segments.drop(1))
@@ -524,6 +539,7 @@ internal fun buildSidDepartureRoute(
 internal fun buildStarApproachRoute(
     fpl: FlightPlan,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance as? ClearanceState.ApproachClearance
         ?: return RoutingError.InsufficientGeometry("No approach clearance — cannot build STAR+approach route").left()
@@ -565,7 +581,7 @@ internal fun buildStarApproachRoute(
     // The kinematic layer refines altitude from per-waypoint constraints.
     val firstAltitude = (star?.waypoints ?: approach.waypoints).firstOrNull()
         ?.altitudeConstraint?.let { resolveConstraintAltitude(it) }
-        ?: CIRCUIT_ALTITUDE_M
+        ?: aircraftType.circuitPattern.altitudeAglM
 
     val waypoints = NonEmptyList(allPoints.first(), allPoints.drop(1))
     return PilotRoute.Airborne(
@@ -586,6 +602,7 @@ internal fun buildStarApproachRoute(
 internal fun buildArrivalJoinRoute(
     fpl: FlightPlan,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance
     val starId = when (clearance) {
@@ -614,7 +631,7 @@ internal fun buildArrivalJoinRoute(
     val waypoints = NonEmptyList(targetPoint, emptyList())
     return PilotRoute.Airborne(
         waypoints = waypoints,
-        targetAltitudeM = CIRCUIT_ALTITUDE_M, // initial descent target; refined by constraints
+        targetAltitudeM = aircraftType.circuitPattern.altitudeAglM, // initial descent target; refined by constraints
         arrivalPhase = PilotPhase.Climbing, // en-route to STAR/IAF, not yet on approach
     ).right()
 }
@@ -633,6 +650,7 @@ internal fun buildArrivalJoinRoute(
 internal fun buildMissedApproachRoute(
     fpl: FlightPlan,
     world: AviationWorld,
+    aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance as? ClearanceState.ApproachClearance
         ?: return RoutingError.InsufficientGeometry("No approach clearance — cannot build missed approach route").left()
@@ -661,7 +679,7 @@ internal fun buildMissedApproachRoute(
         // the holding pattern altitude. Falls back to circuit altitude.
         targetAltitudeM = approach.missedApproach.waypoints.lastOrNull()
             ?.altitudeConstraint?.let { resolveConstraintAltitude(it) }
-            ?: CIRCUIT_ALTITUDE_M,
+            ?: aircraftType.circuitPattern.altitudeAglM,
         arrivalPhase = PilotPhase.Climbing, // pilot is climbing on missed approach
         waypointConstraints = constraints,
     ).right()
@@ -710,9 +728,6 @@ fun deriveNavigationMode(
 }
 
 // ── Shared helpers ──────────────────────────────────────────────────
-
-/** Circuit altitude — ~1000 ft. Per-aircraft-type values land later. */
-const val CIRCUIT_ALTITUDE_M: Double = 300.0
 
 /** Canonical circuit leg order. */
 private val CIRCUIT_LEG_ORDER = listOf(LegName.UPWIND, LegName.CROSSWIND, LegName.DOWNWIND, LegName.BASE, LegName.FINAL)

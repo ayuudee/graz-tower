@@ -287,22 +287,15 @@ private fun isStepComplete(
 ): Boolean = when (task.completionMode) {
     CompletionMode.INSTANT -> true
     // TIMED steps complete on time elapsed for everyone — same treatment for AI
-    // and human pilots. The 10 s value is a placeholder (real run-up at GA-class
-    // aircraft is ~60-90 s); recorded as deferment **D-AUDIT.3**. The previous
-    // `!aircraft.humanPiloted ||` short-circuit that let AI complete TIMED
-    // steps instantly is gone.
-    CompletionMode.TIMED -> (now.millis - mission.stepEnteredAt.millis) > TIMED_STEP_DURATION_MS
+    // and human pilots. Pass 13 (D-AUDIT.3 closure): per-type duration on
+    // [AircraftType.runUpDurationMs]. C172 = 60 s (POH §4); B738 = 600 s
+    // (FCOM NP cold-start sequence). RUN_UP_CHECKS is the only TIMED step
+    // today; per-step lookup if more land is filed as D-AUDIT.3.II-FOLLOWUP.
+    CompletionMode.TIMED -> (now.millis - mission.stepEnteredAt.millis) > aircraft.type.runUpDurationMs
     CompletionMode.INSTRUCTION_GATED -> false // only completed by processInstruction
     CompletionMode.REPORTED -> isReportComplete(mission, task.step)
     CompletionMode.PHYSICAL -> isPhysicallyComplete(aircraft, mission, task.step, worldIndex)
 }
-
-/**
- * Duration of a [CompletionMode.TIMED] step. Currently a single global value
- * (deferment D-AUDIT.3); the long-term shape is per-aircraft-type /
- * per-airport durations from a procedure-times manifest.
- */
-private const val TIMED_STEP_DURATION_MS: Long = 10_000L
 
 private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean = when (step) {
     MissionStep.REPORT_DOWNWIND -> mission.lastReportedLeg == Some(LegName.DOWNWIND)

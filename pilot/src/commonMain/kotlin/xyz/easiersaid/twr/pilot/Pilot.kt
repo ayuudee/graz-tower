@@ -180,7 +180,7 @@ private fun planRoute(
         // IFR continuous planning is deferred until IFR missions land.
         else -> {
             if (aircraft.route !is PilotRoute.None) return PlanRouteOutcome.Skip
-            buildAirborneRoute(mode, taskName, w).fold(
+            buildAirborneRoute(mode, taskName, w, aircraft.type).fold(
                 ifLeft = { PlanRouteOutcome.Failed(it) },
                 ifRight = { route ->
                     PlanRouteOutcome.Plan(PilotIntent(
@@ -243,11 +243,12 @@ private fun planVisualRoute(
     if (cur == null && aircraft.phase is PilotPhase.Final) {
         if (step == MissionStep.LAND) return PlanRouteOutcome.Skip
         if (step == MissionStep.FLY_DEPARTURE) {
-            return buildGoAroundRoute(mode.runway, world).fold(
+            return buildGoAroundRoute(mode.runway, world, aircraft.type).fold(
                 ifLeft = { PlanRouteOutcome.Failed(it) },
                 ifRight = { gaRoute ->
-                    val gaAlt = mission.altitudeRestrictionM.map { minOf(CIRCUIT_ALTITUDE_M, it) }
-                        .getOrElse { CIRCUIT_ALTITUDE_M }
+                    val patternAlt = aircraft.type.circuitPattern.altitudeAglM
+                    val gaAlt = mission.altitudeRestrictionM.map { minOf(patternAlt, it) }
+                        .getOrElse { patternAlt }
                     PlanRouteOutcome.Plan(PilotIntent(
                         targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
                         phase = PilotPhase.Climbing,
@@ -271,7 +272,7 @@ private fun planVisualRoute(
         is None -> derivedLeg
     }
 
-    val derivedRoute = buildVisualModeRoute(mode, taskName, world, joinLeg)
+    val derivedRoute = buildVisualModeRoute(mode, taskName, world, aircraft.type, joinLeg)
         .getOrElse { err -> return PlanRouteOutcome.Failed(err) }
 
     // Apply ATC altitude restriction (E3): StopClimbAt caps targetAltitudeM so the
@@ -367,14 +368,14 @@ private fun planCircuitDeparture(
     }
 
     val taskName = mission.root.activeCompound()?.name ?: return PlanRouteOutcome.Skip
-    return buildAirborneRoute(mode, taskName, world).fold(
+    return buildAirborneRoute(mode, taskName, world, aircraft.type).fold(
         ifLeft = { PlanRouteOutcome.Failed(it) },
         ifRight = { route ->
             PlanRouteOutcome.Plan(PilotIntent(
                 targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
                 phase = PilotPhase.TakeoffRoll,
                 route = route,
-                targetAltitudeM = CIRCUIT_ALTITUDE_M,
+                targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
             ))
         },
     )
@@ -435,7 +436,7 @@ private fun checkSelfInitiatedGoAround(
             targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
             phase = PilotPhase.Climbing,
             route = aircraft.route, // keep current route until planner builds new one
-            targetAltitudeM = CIRCUIT_ALTITUDE_M,
+            targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
         ),
         mission = updatedMission,
         transmissions = listOf(Report(listOf(ReportEvent.GoingAround))),
