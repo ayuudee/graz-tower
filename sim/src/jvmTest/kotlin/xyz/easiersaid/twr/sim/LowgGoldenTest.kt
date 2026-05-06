@@ -178,6 +178,27 @@ class LowgGoldenTest {
             "Pass 15: tower's BeliefState.activeRunway must derive from ATIS configuration " +
                 "primary (16C), got ${firstControllerBeliefs?.activeRunway}.\n$journey"
         }
+        // Pass 15 post-impl Impact S4: witness that the active runway
+        // actually came from the ATIS path, not from a silent wind-
+        // derived fallback. Both yield 16C at LOWG with wind 160/8 — so
+        // the equality above doesn't distinguish the two derivation paths.
+        // Couple `activeRunway` to `atis.configuration.primary` to surface
+        // a regression where the ATIS-derivation branch breaks and the
+        // fallback silently takes over.
+        val firstStateWithBeliefs = stateTrace
+            .firstOrNull { (_, st) -> st.beliefs[tower.id]?.activeRunway != null }
+            ?.second
+        val atisAtFirstBelief = firstStateWithBeliefs?.atisByAerodrome?.get(lowg)
+        check(
+            atisAtFirstBelief != null &&
+                firstStateWithBeliefs.beliefs[tower.id]?.activeRunway == atisAtFirstBelief.configuration.primary,
+        ) {
+            "Pass 15 (D-AUDIT.7 + .8 coupling): tower's activeRunway must match " +
+                "atisByAerodrome[LOWG].configuration.primary at the first belief tick. " +
+                "If they diverge, the ATIS-derivation branch silently fell through to " +
+                "wind-derived fallback. atis=$atisAtFirstBelief, " +
+                "activeRunway=${firstStateWithBeliefs?.beliefs?.get(tower.id)?.activeRunway}.\n$journey"
+        }
         // Pass 15 (D-AUDIT.8 closure): controller-side ATIS-letter
         // propagation. The LOWG circuit-training mission's first
         // transmission is `Request(RequestTaxi)` (no CALL_INBOUND step

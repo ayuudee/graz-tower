@@ -376,13 +376,17 @@ sealed interface RunwayConfigurationFailure {
  *     and departures (today's single-config model; mixed-mode is
  *     **D-AUDIT.7.II-FOLLOWUP**).
  *
- * **Failure modes** (typed):
- *  - [RunwayConfigurationFailure.WindNotReported] — wind is
- *    [WindReport.NotReported].
- *  - [RunwayConfigurationFailure.NoRunwayInBucket] — wind reported
- *    but no runway aligns within ±90° (rare — typically only at
- *    crosswind limits).
- *  - [RunwayConfigurationFailure.NoRunwaysPublished] — empty set.
+ * **Failure modes** (typed, dispatched in order of severity — the
+ * deeper config defect wins when both apply):
+ *  1. [RunwayConfigurationFailure.NoRunwaysPublished] — empty set.
+ *     Tested first because no-runways is a structural aerodrome-config
+ *     defect; "we can't pick from nothing" is a deeper problem than
+ *     "the wind sensor is offline."
+ *  2. [RunwayConfigurationFailure.WindNotReported] — wind is
+ *     [WindReport.NotReported]. Operational sensor-state issue.
+ *  3. [RunwayConfigurationFailure.NoRunwayInBucket] — wind reported
+ *     but no runway aligns within ±90° (rare — typically only at
+ *     crosswind limits or non-into-wind authored runways).
  *
  * **Doctrine**: ICAO Doc 4444 §7.2 (runway-in-use selection).
  */

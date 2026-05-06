@@ -49,9 +49,16 @@ class FirewallBeliefWriteTest {
             "Supersession.kt" to setOf("coordinations"),
             // Pass 12 (D-PF.9): missedHandoffReissueOutputs writes
             // handoffReissuedAt; acceptReadback (Pass 9) writes coordinations.
-            "Controller.kt" to setOf("coordinations", "handoffReissuedAt"),
+            // Pass 15 (D-AUDIT.8): withExpectedAtisLetter folds the
+            // per-aerodrome ATIS letter from view.atis. Single writer.
+            "Controller.kt" to setOf("coordinations", "handoffReissuedAt", "expectedAtisLetter"),
         )
-        val sliceNames = listOf("recentRadio", "circuitIntent", "coordinations", "handoffReissuedAt")
+        val sliceNames = listOf(
+            "recentRadio", "circuitIntent", "coordinations", "handoffReissuedAt",
+            // Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS letter
+            // belief slice. Single-write site `Controller.withExpectedAtisLetter`.
+            "expectedAtisLetter",
+        )
         val mutationPattern = Regex(
             """\.copy\s*\([^)]*\b(${sliceNames.joinToString("|")})\s*=""",
             RegexOption.DOT_MATCHES_ALL,

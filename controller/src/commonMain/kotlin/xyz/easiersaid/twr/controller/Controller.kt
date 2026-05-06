@@ -289,11 +289,13 @@ private fun BeliefState.withActiveRunway(view: ControllerView): BeliefState {
     val isRunwayCommandingRole = view.role == RoleName.TOWER || view.role == RoleName.GROUND
     val needsRunwaySelection = activeRunway == null || activeRunway !in view.runways
     if (!isRunwayCommandingRole || !needsRunwaySelection) return this
-    // Pass 15 (D-AUDIT.7 / .8 fold-in): prefer the published ATIS
-    // configuration's primary runway (supervisor-set source of truth).
-    // Fall back to wind-derived selection when no ATIS has been
-    // published — preserves Pass 6 semantics for tests that don't
-    // publish an ATIS event.
+    // Pass 15 (D-AUDIT.7 / .8 fold-in): operational priority — the
+    // supervisor's published ATIS is the authoritative source for
+    // runway-in-use; the wind-derived selection is the *recommendation*
+    // a controller would compute when no supervisor decision exists
+    // (Doc 4444 §7.2). The fallback chain mirrors that semantic, with
+    // the side benefit that tests pre-Pass-15 (no AtisIssued event in
+    // the fixture) continue to derive the same active runway via wind.
     val atisPrimary = view.atis[view.aerodromeId]?.configuration?.primary
     val activeRunwaySelection = atisPrimary
         ?: selectRunwayIntoWind(

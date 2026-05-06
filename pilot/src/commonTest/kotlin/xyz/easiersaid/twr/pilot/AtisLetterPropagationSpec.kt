@@ -101,6 +101,92 @@ class AtisLetterPropagationSpec {
     }
 
     @Test
+    fun `pilot does NOT embed atisCode outside CALL_INBOUND step (per Annex 11 sec4dot3dot6 — letter only on first contact)`() {
+        // Post-impl test review S3: regression-shaped negative row. A
+        // change that added the ATIS read to REPORT_DOWNWIND or another
+        // step would silently embed the letter in the wrong transmission.
+        // Assert: with REPORT_DOWNWIND active and ATIS published, no
+        // emitted transmission carries `atisCode`.
+        val mission = PilotMission(
+            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            root = CompoundTask(
+                name = TaskName.Circuit,
+                children = listOf(
+                    PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
+                ),
+            ),
+            stepEnteredAt = now0,
+        )
+        val decision = pilotCognitiveDecide(
+            aircraft = aircraft().copy(pilotMission = mission),
+            mission = mission,
+            worldIndex = WorldIndex(),
+            now = now0,
+            atisByAerodrome = mapOf(LOWG to atis('A')),
+        )
+        // Whatever transmissions fire (Report(Downwind) or none), none
+        // should be an InitialContact carrying atisCode.
+        val initialContacts = decision.transmissions.filterIsInstance<InitialContact>()
+        assertEquals(
+            emptyList(),
+            initialContacts,
+            "Annex 11 §4.3.6: ATIS letter is acknowledged at first contact, not on every step",
+        )
+    }
+
+    @Test
+    fun `multi-aerodrome ATIS map drops letter — D-AUDIT-8-IV-FOLLOWUP pins this current behaviour`() {
+        // Post-impl test review S4 / Impact S1: the current pilot ATIS
+        // resolution `atisByAerodrome.values.singleOrNull()?.letter`
+        // returns null when the map has 2+ entries. This row pins the
+        // current behaviour as a regression contract: a fold that
+        // accidentally fixes this without keying by mission's destination
+        // aerodrome would change the contract. The proper fix
+        // (key-by-aerodrome via mission.destinationAerodrome) is filed
+        // as **D-AUDIT.8.IV-FOLLOWUP** — when that lands, this row's
+        // expectation flips to a positive assertion.
+        val mission = PilotMission(
+            goal = HighLevelGoal.Arrival(),
+            root = CompoundTask(
+                name = TaskName.ArrivalJoin,
+                children = listOf(PrimitiveTask(MissionStep.CALL_INBOUND, CompletionMode.REPORTED)),
+            ),
+            stepEnteredAt = now0,
+            pendingInitialContactRole = arrow.core.Some(RoleName.TOWER),
+        )
+        val LJMB = AerodromeId("LJMB")
+        val multiAtis = mapOf(
+            LOWG to atis('A'),
+            LJMB to Atis(
+                letter = 'B',
+                aerodrome = LJMB,
+                configuration = RunwayConfiguration(
+                    arrivals = listOf(RunwayId("16")),
+                    departures = listOf(RunwayId("16")),
+                ),
+                wind = Wind.unsafe(160, 5),
+                qnh = null,
+                visibility = null,
+                generatedAt = now0,
+            ),
+        )
+        val decision = pilotCognitiveDecide(
+            aircraft = aircraft().copy(pilotMission = mission),
+            mission = mission,
+            worldIndex = WorldIndex(),
+            now = now0,
+            atisByAerodrome = multiAtis,
+        )
+        val initialContact = decision.transmissions.filterIsInstance<InitialContact>().firstOrNull()
+        assertEquals(
+            null,
+            initialContact?.atisCode,
+            "D-AUDIT.8.IV-FOLLOWUP: multi-aerodrome ATIS map currently drops letter via " +
+                "singleOrNull(). Proper fix keys by mission.destinationAerodrome.",
+        )
+    }
+
+    @Test
     fun `pilot processControllerResponse(CurrentInformationIs) is silent acknowledgement per Annex 11 sec4dot3dot6`() {
         // Annex 11 §4.3.6: advisory transmission, no readback obligation.
         val mission = missionAtCallInbound()
