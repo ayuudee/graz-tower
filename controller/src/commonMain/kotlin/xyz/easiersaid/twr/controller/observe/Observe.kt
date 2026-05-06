@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.controller.observe
 
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.RequestApproach
 import xyz.easiersaid.twr.protocol.SimTime

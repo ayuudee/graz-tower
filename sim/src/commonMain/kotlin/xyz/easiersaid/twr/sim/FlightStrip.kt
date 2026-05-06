@@ -1,6 +1,6 @@
 package xyz.easiersaid.twr.sim
 
-import xyz.easiersaid.twr.controller.observe.AircraftIntent
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.protocol.AircraftId

@@ -2,7 +2,7 @@ package xyz.easiersaid.twr.controller
 
 import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.controller.bdi.determineServiceKind
-import xyz.easiersaid.twr.controller.observe.AircraftIntent
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ApproachId

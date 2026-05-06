@@ -60,7 +60,7 @@ data class ControllerView(
      * Empty when the controller has no pre-briefing (e.g. an unscheduled
      * aircraft entering the frequency cold).
      */
-    val flightStripIntents: Map<AircraftId, xyz.easiersaid.twr.controller.observe.AircraftIntent> = emptyMap(),
+    val flightStripIntents: Map<AircraftId, xyz.easiersaid.twr.protocol.AircraftIntent> = emptyMap(),
     /**
      * Roles staffed *at this aerodrome right now* — i.e. for which a
      * controller is online and accepting handoffs.

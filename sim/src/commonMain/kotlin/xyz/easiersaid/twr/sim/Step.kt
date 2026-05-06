@@ -213,6 +213,9 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         // Same shape as Spawn for system-emitted events with no
         // behavioural state change.
         is SimEvent.MissedHandoffDetected -> atTime to emptyList()
+        // Pass 11 (D-AUDIT.6): FlightPlanFiled distributes responsibility
+        // to the recipient controller as the strip arrives at the board.
+        is SimEvent.FlightPlanFiled -> handleFlightPlanFiled(atTime, event)
     }
     // Pass 7 (D-AUDIT.5 + Impact-O.1 / FP-M.3): cross-controller `Owned`
     // invariant. After every step, no two controllers may simultaneously
@@ -539,6 +542,63 @@ private fun handleControllerTick(
     )
     val (afterSweep, sweepEvents) = sweepHandoffTimeouts(withBeliefs)
     return afterSweep.emit(commEvents + sweepEvents + next)
+}
+
+/**
+ * Pass 11 (D-AUDIT.6): distribute responsibility when a filed plan
+ * reaches the strip board.
+ *
+ * Locates the controller staffing `event.recipient` at
+ * `event.plan.departureAerodrome` and adds the aircraft as
+ * [ResponsibilityState.Owned] since `event.time`.
+ *
+ * Errors loudly on:
+ *  - no controller at the aerodrome staffing the recipient role (wiring
+ *    defect — the fixture or scenario emitted FlightPlanFiled targeting
+ *    an unstaffed role);
+ *  - existing `Owned` state at a different time (refiling would silently
+ *    re-anchor the timestamp — `since` is doctrine-load-bearing per
+ *    Pass 7);
+ *  - existing non-`Owned` state (refiling cannot silently roll back
+ *    transfer state — Pass-9 invariant precedent).
+ *
+ * Idempotent at same-time-same-state: re-firing the same event in the
+ * same cycle is a no-op (matches `MissedHandoffEventSpec`'s byte-equal
+ * idempotency pattern).
+ */
+private fun handleFlightPlanFiled(
+    state: SimState,
+    event: SimEvent.FlightPlanFiled,
+): Pair<SimState, List<SimEvent>> {
+    val recipient = state.controllers.values
+        .firstOrNull { it.aerodromeId == event.plan.departureAerodrome && it.role == event.recipient }
+        ?: error(
+            "handleFlightPlanFiled: no ${event.recipient} controller at " +
+                "${event.plan.departureAerodrome}; the plan can't be filed. " +
+                "Wiring defect — fixture or scenario emitted FlightPlanFiled targeting " +
+                "an unstaffed role.",
+        )
+    val existing = recipient.responsibilities[event.aircraft]
+    if (existing is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned) {
+        if (existing.since == event.time) return state to emptyList()
+        error(
+            "handleFlightPlanFiled: aircraft ${event.aircraft} is already Owned by " +
+                "${recipient.id} since ${existing.since} (≠ ${event.time}); refiling at a " +
+                "different time would silently re-anchor the Owned timestamp.",
+        )
+    }
+    if (existing != null) {
+        error(
+            "handleFlightPlanFiled: aircraft ${event.aircraft} is in state $existing on " +
+                "${recipient.id}; refiling cannot silently roll back transfer state.",
+        )
+    }
+    val updated = recipient.copy(
+        responsibilities = recipient.responsibilities +
+            (event.aircraft to xyz.easiersaid.twr.protocol.ResponsibilityState.Owned(event.time)),
+    )
+    val controllers = LinkedHashMap(state.controllers).apply { put(updated.id, updated) }
+    return state.copy(controllers = controllers) to emptyList()
 }
 
 private fun handleSpawn(

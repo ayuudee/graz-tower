@@ -2,7 +2,7 @@ package xyz.easiersaid.twr.controller
 
 import arrow.core.None
 import arrow.core.Some
-import xyz.easiersaid.twr.controller.observe.AircraftIntent
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.ControllerEvent
 import xyz.easiersaid.twr.controller.observe.RecentRadio

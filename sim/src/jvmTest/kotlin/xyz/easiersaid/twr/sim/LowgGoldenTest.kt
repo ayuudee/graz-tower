@@ -91,7 +91,12 @@ class LowgGoldenTest {
         // 30 sim minutes. A full-stop circuit at typical VFR cadence should land
         // in well under that. If we hit the wall the run wedged.
         val until = SimTime.ZERO + SimDuration.ofMillis(30 * 60 * 1000L)
-        val initialEvents = listOf(
+        // Pass 11 (D-AUDIT.6 / D-AUDIT.10): the loader emits
+        // `SimEvent.FlightPlanFiled` events for every entry in the
+        // fixture's `flightPlans`. Enqueue them ahead of the standard
+        // ticks; the EventQueue's deterministic ordering processes them
+        // first at the same time (System source orders before Controller).
+        val initialEvents = loaded.initialEvents + listOf(
             SimEvent.PilotDecisionTick(time = now, aircraftId = aircraftId),
             SimEvent.PhysicsTick(time = now),
             SimEvent.ControllerCycle(time = now, controllerId = ground.id),

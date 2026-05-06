@@ -39,7 +39,7 @@ data class OperatorContext(
      * through the single `deriveIntent` accessor so absent-key semantics
      * are consistent across all consumers.
      */
-    fun intentOf(aircraft: xyz.easiersaid.twr.protocol.AircraftId): xyz.easiersaid.twr.controller.observe.AircraftIntent =
+    fun intentOf(aircraft: xyz.easiersaid.twr.protocol.AircraftId): xyz.easiersaid.twr.protocol.AircraftIntent =
         xyz.easiersaid.twr.controller.observe.deriveIntent(view.flightStripIntents, beliefs.recentRadio, aircraft)
 }
 
@@ -204,7 +204,7 @@ data object TaxiRequested : RuleGuard {
  * derivation; behaviour is unchanged.
  */
 data class AircraftIntentIs(
-    val intent: xyz.easiersaid.twr.controller.observe.AircraftIntent,
+    val intent: xyz.easiersaid.twr.protocol.AircraftIntent,
 ) : RuleGuard {
     override val failureMessage = "Aircraft service intent is not $intent"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =

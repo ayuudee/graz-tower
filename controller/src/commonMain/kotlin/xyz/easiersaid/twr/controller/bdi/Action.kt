@@ -141,7 +141,7 @@ data object ConditionalLineUpAction : RuleAction {
         // conditional clearance. Defaults to DEPARTING when intent is unknown.
         val occupantIntent = ctx.intentOf(occupant)
         val occupantIsCircuit = occupant in ctx.beliefs.circuitIntent
-        val action = if (occupantIntent == xyz.easiersaid.twr.controller.observe.AircraftIntent.Arriving ||
+        val action = if (occupantIntent == xyz.easiersaid.twr.protocol.AircraftIntent.Arriving ||
             occupantIsCircuit)
             TrafficAction.LANDING else TrafficAction.DEPARTING
         return ProposedAction(
@@ -463,7 +463,7 @@ private fun describeMovement(
     val legs = ctx.worldIndex.circuitLegsByPoint[other.position] ?: emptySet()
     val legPhrase = legs.firstOrNull()?.name?.lowercase()
     val intent = ctx.intentOf(other.id)
-    val isDeparting = intent == xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing
+    val isDeparting = intent == xyz.easiersaid.twr.protocol.AircraftIntent.Departing
     return when {
         onRunway && other.onGround && isDeparting -> "rolling"
         onRunway && other.onGround -> "on the runway"

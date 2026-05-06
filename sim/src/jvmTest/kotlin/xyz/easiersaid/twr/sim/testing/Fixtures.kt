@@ -7,7 +7,10 @@ import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.WindReport
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftIntent
+import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.Wind
@@ -37,7 +40,21 @@ object Fixtures {
         // LOWG (per manifest): tower handles ground duties on the same RT;
         // we model the operational reality with both roles on the same freq.
         controllerRoles = setOf(RoleName.GROUND, RoleName.TOWER),
-        groundResponsibilities = setOf(AircraftId("OE-ABC")),
+        // Pass 11 (D-AUDIT.6 / D-AUDIT.10): file the plan via AFTN-style
+        // event distribution. Pre-Pass-11 this was a `groundResponsibilities`
+        // direct-injection cheat; the strip now arrives via
+        // `SimEvent.FlightPlanFiled` at sim-start.
+        flightPlans = mapOf(
+            AircraftId("OE-ABC") to FiledPlanForFixture(
+                plan = FiledPlan.Vfr(
+                    departureAerodrome = AerodromeId("LOWG"),
+                    aircraftType = IcaoTypeDesignator.unsafe("C172"),
+                    destinationAerodrome = null, // local circuit training
+                    intent = AircraftIntent.Departing,
+                ),
+                recipient = RoleName.GROUND,
+            ),
+        ),
     )
 
     val LJMB: Fixture = Fixture(

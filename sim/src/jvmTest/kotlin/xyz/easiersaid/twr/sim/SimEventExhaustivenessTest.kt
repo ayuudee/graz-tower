@@ -40,7 +40,7 @@ class SimEventExhaustivenessTest {
         )
     }
 
-    private fun verifyCallSite(file: String, functionName: String, minLeafCount: Int = 8) {
+    private fun verifyCallSite(file: String, functionName: String, minLeafCount: Int = 9) {
         val leaves = sealedLeaves(SimEvent::class)
         check(leaves.size >= minLeafCount) {
             "Sanity check: SimEvent sealed traversal found only ${leaves.size} leaves; " +

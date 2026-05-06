@@ -269,7 +269,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     Airborne,
                     AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
                     Not(IsCircuitTraffic),
-                    AircraftIntentIs(xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing),
+                    AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ContactFrequency>()),
                     IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
                 )),
@@ -291,7 +291,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     Airborne,
                     AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
                     Not(IsCircuitTraffic),
-                    AircraftIntentIs(xyz.easiersaid.twr.controller.observe.AircraftIntent.Departing),
+                    AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH)),
                     OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM — D-AUDIT.7
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),

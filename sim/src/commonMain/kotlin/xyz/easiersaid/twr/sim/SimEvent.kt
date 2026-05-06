@@ -122,6 +122,33 @@ sealed interface SimEvent {
     }
 
     /**
+     * Pass 11 (D-AUDIT.6): an aircraft's filed plan reached the strip
+     * board. Closes the "spawn is filing" gap — the strip exists at this
+     * moment; the aircraft may or may not be physically present yet
+     * (Spawn event fires separately, at engine start time).
+     *
+     * Handler distributes responsibility: the [aircraft] becomes `Owned`
+     * by the controller staffing [recipient] at the plan's departure
+     * aerodrome. Multi-recipient AFTN distribution is **D-AUDIT.6.A-FOLLOWUP**;
+     * today every emitter specifies one recipient explicitly.
+     */
+    data class FlightPlanFiled(
+        override val time: SimTime,
+        val aircraft: AircraftId,
+        val plan: xyz.easiersaid.twr.protocol.FiledPlan,
+        /**
+         * Which staffed role at `plan.departureAerodrome` receives the strip.
+         * **No default** — defaulting to GROUND would silently route to a
+         * non-existent role at TOWER-only aerodromes (e.g. LJMB AFIS).
+         * Every emitter specifies.
+         */
+        val recipient: xyz.easiersaid.twr.protocol.RoleName,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId = AgentId.System
+    }
+
+    /**
      * Pass 9 (D-AUDIT.2 / Phase 9.B): operational signal that a peer
      * handoff has aged past [MISSED_HANDOFF_TIMEOUT] without two-way
      * comms being established. Per ICAO Doc 4444 §10.1.2 the responsibility
@@ -165,4 +192,5 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.TransmissionEnd -> copy(seq = s)
     is SimEvent.PilotProcessingComplete -> copy(seq = s)
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
+    is SimEvent.FlightPlanFiled -> copy(seq = s)
 }

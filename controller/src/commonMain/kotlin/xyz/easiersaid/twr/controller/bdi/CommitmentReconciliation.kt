@@ -1,7 +1,7 @@
 package xyz.easiersaid.twr.controller.bdi
 
 import xyz.easiersaid.twr.controller.AircraftObservation
-import xyz.easiersaid.twr.controller.observe.AircraftIntent
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AircraftId
