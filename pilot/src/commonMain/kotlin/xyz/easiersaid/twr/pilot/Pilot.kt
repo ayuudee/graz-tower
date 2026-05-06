@@ -48,8 +48,8 @@ private sealed interface PlanRouteOutcome {
     data class Failed(val error: RoutingError) : PlanRouteOutcome
 }
 
-/** Decision altitude threshold — below this without clearance → go around. */
-private const val DECISION_ALTITUDE_M = 100.0
+// Pass 16 (D-AUDIT.9 partial closure): DECISION_ALTITUDE_M relocated to
+// `:pilot/observe/PilotEvent.kt` alongside the typed event channel.
 
 /**
  * One pilot, one brain, one decision.
@@ -72,10 +72,17 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     // Cognitive layer: advance mission, generate transmissions.
     val cognitive = pilotCognitiveDecide(aircraft, mission, input.worldIndex, input.now, input.atisByAerodrome)
 
-    // Self-initiated go-around: if the pilot is at decision altitude without
-    // clearance, trigger a full go-around (mission update + transmission + climb).
-    // This must run BEFORE route planning and kinematic overrides.
-    val goAround = checkSelfInitiatedGoAround(cognitive.updatedMission, aircraft, input.now)
+    // Pass 16 (D-AUDIT.9 partial closure): typed PilotEvent channel.
+    // Recognition (event derivation) is pure and lives in
+    // `:pilot/observe`; response (mission update + intent override)
+    // lives here as `applySelfInitiatedGoAround`.
+    //
+    // Today the channel has one leaf — `as? Cast` resolves it. When
+    // the second leaf lands (D-AUDIT.9.II–V-FOLLOWUP), this shifts to
+    // a sealed `when`-fold and `derivePilotEvent` returns `List<PilotEvent>`.
+    val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(aircraft, cognitive.updatedMission)
+    val goAround = (pilotEvent as? xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance)
+        ?.let { applySelfInitiatedGoAround(it, cognitive.updatedMission, aircraft, input.now) }
     val effectiveMission = goAround?.mission ?: cognitive.updatedMission
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
@@ -381,42 +388,40 @@ private fun planCircuitDeparture(
     )
 }
 
-/** Result of a self-initiated go-around check. */
-private data class GoAroundResult(
+/**
+ * Result of a self-initiated go-around. Pass 16 (D-AUDIT.9 partial)
+ * exposes as `internal` for direct testing of `applySelfInitiatedGoAround`.
+ */
+internal data class GoAroundResult(
     val intent: PilotIntent,
     val mission: PilotMission,
     val transmissions: List<PilotTransmission>,
 )
 
 /**
- * Check if the pilot should self-initiate a go-around (decision altitude
- * without clearance). If so, returns the full go-around effect: mission
- * update (subtree replacement + resetForGoAround), GoingAround transmission,
- * and climbing intent. Returns null if no go-around is needed.
+ * Pass 16 (D-AUDIT.9 partial closure) — response stage for the
+ * pilot's self-initiated go-around. Consumes a typed
+ * [xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance]
+ * (recognition lives in `:pilot/observe/PilotEvent.kt`'s
+ * `derivePilotEvent`); produces the full go-around effect: mission
+ * update (subtree replacement + `resetForGoAround`), `Report(GoingAround)`
+ * transmission, and a `Climbing` intent.
  *
- * This is the pilot's DECISION to go around — distinct from an ATC-instructed
- * go-around (which arrives via processInstruction). Both produce the same
- * mission-level effect (subtree replacement + state reset).
+ * **Renamed from `checkSelfInitiatedGoAround`** (Pass 16): the trigger
+ * checks now live in `derivePilotEvent`; this function applies the
+ * already-recognized event.
+ *
+ * **Doctrine**: ICAO Doc 4444 §7.10.2 — the pilot's `Report(GoingAround)`
+ * triggers controller-side missed-approach handling.
  */
-private fun checkSelfInitiatedGoAround(
+@Suppress("UnusedParameter") // event field names available to future leaves; keeps the typed shape explicit.
+internal fun applySelfInitiatedGoAround(
+    event: xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance,
     mission: PilotMission,
     aircraft: AircraftState,
     now: SimTime,
-): GoAroundResult? {
-    val currentStep = mission.currentTask?.step ?: return null
-
-    // Only fire on approach steps without clearance, at or below decision altitude.
-    val onApproach = currentStep == MissionStep.AWAIT_LANDING_CLEARANCE ||
-        currentStep == MissionStep.REPORT_FINAL || currentStep == MissionStep.FLY_FINAL ||
-        currentStep == MissionStep.FLY_BASE || currentStep == MissionStep.REPORT_BASE
-    if (!onApproach || mission.hasClearance) return null
-    if (aircraft.altitudeM !in 0.01..DECISION_ALTITUDE_M) return null
-    if (aircraft.phase is PilotPhase.LandingRoll || aircraft.phase is PilotPhase.Vacating) return null
-    // Don't re-fire if already going around (step advanced to GOING_AROUND or beyond).
-    if (currentStep == MissionStep.GOING_AROUND || currentStep == MissionStep.AWAITING_ATC_INSTRUCTION) return null
-
-    // Full go-around: mission update + transmission + climbing intent.
-    // Self-initiated go-around: pilot reports going around and re-enters circuit
+): GoAroundResult {
+    // Self-initiated go-around: pilot reports going around and re-enters circuit.
     // VFR go-arounds are autonomous — pilot re-enters circuit after GOING_AROUND.
     // IFR uses a separate task that includes FLY_MISSED_APPROACH + AWAITING_ATC_INSTRUCTION.
     val gaTask = if (mission.navigationMode.getOrNull() is NavigationMode.Instrument) ifrGoAroundTask()
