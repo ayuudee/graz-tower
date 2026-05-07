@@ -507,10 +507,36 @@ fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when 
         CompoundTask(TaskName.CircuitTraining,
             listOf(groundDepartureTask()) + circuitTasks + listOf(groundArrivalTask()))
     }
-    is HighLevelGoal.Transit -> if (!ifr) CompoundTask(TaskName.Transit, listOf(
-        PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
-        PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
-    )) else CompoundTask(TaskName.Transit, listOf(
+    is HighLevelGoal.Transit -> if (!ifr) {
+        // G2: static composition representing "this is my plan right now".
+        // Real AI pilot behaviour is fluid (D-G2.4): goal stays fixed, plan
+        // re-derives on meaningful state change. The shape below is what
+        // `planMission` returns for the snapshot {at-stand, transit-to-X};
+        // a future scenario forcing mid-mission re-planning will refactor
+        // this into a `(goal, snapshot) → tree` contract.
+        //
+        // Transit = depart from origin + cruise + arrive at destination.
+        // VFR cruise is a single FLY_DEPARTURE (visual climb-out toward
+        // destination); arrival starts when the geographic trigger fires
+        // EnteringDestinationAirspace and the pilot self-contacts the
+        // destination tower (Phase C). Circuit pattern follows the same
+        // shape as a normal arrival mission.
+        CompoundTask(TaskName.Transit, listOf(
+            groundDepartureTask(),
+            PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+            arrivalJoinTask(),
+            PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
+            PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
+            PrimitiveTask(MissionStep.AWAIT_SEQUENCING, CompletionMode.PHYSICAL),
+            PrimitiveTask(MissionStep.FLY_BASE, CompletionMode.PHYSICAL),
+            PrimitiveTask(MissionStep.REPORT_BASE, CompletionMode.REPORTED),
+            PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL),
+            PrimitiveTask(MissionStep.REPORT_FINAL, CompletionMode.REPORTED),
+            PrimitiveTask(MissionStep.AWAIT_LANDING_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+            PrimitiveTask(MissionStep.LAND, CompletionMode.PHYSICAL),
+            groundArrivalTask(),
+        ))
+    } else CompoundTask(TaskName.Transit, listOf(
         PrimitiveTask(MissionStep.FLY_SID, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),

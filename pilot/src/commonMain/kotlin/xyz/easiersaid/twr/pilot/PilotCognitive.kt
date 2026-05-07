@@ -421,6 +421,35 @@ private fun deriveCircuitIntent(mission: PilotMission): CircuitIntent? {
     }
 }
 
+/**
+ * G2 (D-AUDIT.8.IV-FOLLOWUP closure): derive "which aerodrome am I calling
+ * at first contact?" from mission goal.
+ *
+ * Approach: read the destination aerodrome from the mission's [HighLevelGoal].
+ * For [HighLevelGoal.Transit], the call at CALL_INBOUND is to the destination
+ * aerodrome. For other goals (Departure, Arrival, CircuitTraining) the call
+ * target is single-aerodrome — fall back to the singleton ATIS lookup that
+ * worked pre-G2.
+ *
+ * Falling back to `singleOrNull` for the non-Transit cases preserves G0's
+ * behaviour: LOWG circuit training publishes one ATIS, the pilot reads
+ * letter `'A'`. Adding a second aerodrome's ATIS to the map would, pre-G2,
+ * make the singleton lookup return null; the explicit goal-derived lookup
+ * for Transit fixes that for the cross-aerodrome case.
+ */
+private fun atisLetterForCallInbound(
+    mission: PilotMission,
+    atisByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, xyz.easiersaid.twr.protocol.Atis>,
+): Char? {
+    val targetAerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = when (val g = mission.goal) {
+        is HighLevelGoal.Transit -> g.destination
+        is HighLevelGoal.Departure -> g.destination
+        is HighLevelGoal.Arrival, is HighLevelGoal.CircuitTraining -> null
+    }
+    return targetAerodrome?.let { atisByAerodrome[it]?.letter }
+        ?: atisByAerodrome.values.singleOrNull()?.letter
+}
+
 @Suppress("CyclomaticComplexMethod")
 private fun stepTransmission(
     aircraft: AircraftState,
@@ -461,11 +490,16 @@ private fun stepTransmission(
         stationCalled = mission.pendingInitialContactRole.getOrElse { xyz.easiersaid.twr.protocol.RoleName.TOWER },
         // Pass 15 (D-AUDIT.8 closure): the pilot reads the current
         // ATIS letter at the moment of first contact and embeds it in
-        // the transmission per ICAO Annex 11 §4.3.6. Single-aerodrome
-        // simplification: when exactly one ATIS is published the
-        // pilot acknowledges it. Multi-aerodrome ATIS-to-aerodrome
-        // resolution (filed: D-AUDIT.8.IV-FOLLOWUP) lands with G2.
-        atisCode = atisByAerodrome.values.singleOrNull()?.letter,
+        // the transmission per ICAO Annex 11 §4.3.6.
+        //
+        // G2 (D-AUDIT.8.IV-FOLLOWUP closure): multi-aerodrome ATIS
+        // resolution. The pilot derives "which aerodrome am I calling
+        // for the first time?" from mission goal — for a `Transit`
+        // mission, the destination aerodrome is the call target at
+        // CALL_INBOUND. For circuit / single-aerodrome missions the
+        // destination is null and the lookup falls back to the
+        // single published ATIS, preserving Pass 15 behaviour.
+        atisCode = atisLetterForCallInbound(mission, atisByAerodrome),
     ) else null
     MissionStep.REPORT_DOWNWIND ->
         if (mission.lastReportedLeg != Some(LegName.DOWNWIND)) {

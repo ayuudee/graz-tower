@@ -886,20 +886,29 @@ private fun handleTransmissionEnd(
                 } else withoutTx
                 // Look up the receiving controller this transmission was
                 // routed to (whose Watching state should flip to Owned).
-                val watchingControllerId = withMission.controllers.values
+                // G2 (Phase E): the receiver candidate is a controller
+                // EITHER Watching the aircraft (intra-aerodrome handoff,
+                // Pass 7) OR holding the filed strip in knownStrips (cross-
+                // aerodrome arrival, Pass 14 + this pass). The two states
+                // are mutually exclusive in practice — an aircraft has at
+                // most one Watching entry across all controllers and at
+                // most one knownStrips entry on the destination side.
+                val receivingControllerId = withMission.controllers.values
                     .firstOrNull { spec ->
-                        spec.responsibilities[acId] is ResponsibilityState.Watching
+                        spec.responsibilities[acId] is ResponsibilityState.Watching ||
+                            acId in spec.knownStrips
                     }?.id
-                if (watchingControllerId != null) {
-                    val watchingRole = withMission.controllers[watchingControllerId]?.role
+                if (receivingControllerId != null) {
+                    val receivingRole = withMission.controllers[receivingControllerId]?.role
                     val acAfter = withMission.aircraft[acId]
-                    if (watchingRole != null && acAfter != null) {
-                        applyTwoWayCommsEstablished(withMission, acAfter, watchingRole)
+                    if (receivingRole != null && acAfter != null) {
+                        applyTwoWayCommsEstablished(withMission, acAfter, receivingRole)
                     } else withMission
                 } else {
-                    // No controller is currently Watching this aircraft —
-                    // a normal in-frequency transmission (Report, Readback,
-                    // etc.). No transition needed.
+                    // No controller is currently Watching this aircraft and
+                    // no controller has it in knownStrips — a normal in-
+                    // frequency transmission (Report, Readback, etc.). No
+                    // transition needed.
                     withMission
                 }
             } else withoutTx
@@ -1477,50 +1486,72 @@ internal fun applyTwoWayCommsEstablished(
     ac: AircraftState,
     stationCalled: RoleName,
 ): SimState {
-    // Find the controller this aircraft is being handed off TO — the one
-    // whose role matches the called station and who is Watching this aircraft.
+    // Find the controller this aircraft is establishing two-way comms with.
+    // Two distinct cases:
     //
-    // Pass 7 post-impl Impact-O.1: silent-ignore on missing Watching is the
-    // correct semantic for "stray pilot transmission with no pending handoff"
-    // — a pilot calling on a frequency where no one was expecting them.
-    // Real ATC: the call goes nowhere; the controller may or may not respond
-    // depending on whether they have time. The future D-PF.8 watching-
-    // projection work + D-AUDIT.2 coordination ledger will surface a
-    // diagnostic emit here ("controller heard a call but didn't expect it").
-    // Pass 7 keeps it silent.
+    // 1. Intra-aerodrome handoff (Pass 7): a controller is `Watching` the
+    //    aircraft, having been transitioned by a prior `applyContactFrequency`.
+    //    The receiver flips Watching → Owned; the sender's HandingOff entry
+    //    is dropped.
+    // 2. Cross-aerodrome arrival (G2 Phase E): a controller has the aircraft
+    //    in `knownStrips` from a Pass 14 filing, but no `Watching` state
+    //    exists because no peer-handoff was issued (LOWG can't hand off to
+    //    LJMB; the pilot self-contacts on entering destination airspace).
+    //    The receiver moves the strip from knownStrips into responsibilities
+    //    as Owned; no sender update.
+    //
+    // Receiver lookup matches stationCalled with both states. The two are
+    // mutually exclusive in practice: an aircraft is Watching by at most one
+    // controller and is in knownStrips of at most one controller.
     val target = state.controllers.values.firstOrNull { spec ->
         spec.role == stationCalled &&
-            spec.responsibilities[ac.id] is ResponsibilityState.Watching
-    } ?: return state
-    // Find the sender (the HandingOff controller). Pass 7 post-impl FP-P-new.1:
-    // a missing sender at this point is a paired-state violation — the
-    // receiver Watching state references a non-existent HandingOff(Peer).
-    // The post-step assertResponsibilityInvariant would fire on this, but
-    // catching it loudly here gives a more direct stack trace. Asymmetric
-    // totality (one branch silent, one loud) is the design — distinct
-    // failure modes (phraseology mismatch vs wiring defect) deserve
-    // distinct treatments.
-    val sender = state.controllers.values.firstOrNull { spec ->
-        val r = spec.responsibilities[ac.id]
-        r is ResponsibilityState.HandingOff &&
-            r.target is HandoffTarget.Peer &&
-            (r.target as HandoffTarget.Peer).controllerId == target.id
+            (spec.responsibilities[ac.id] is ResponsibilityState.Watching ||
+                ac.id in spec.knownStrips)
     } ?: error(
-        "applyTwoWayCommsEstablished: receiver ${target.id} is Watching $ac.id but no controller " +
-            "has HandingOff(Peer(${target.id})) for that aircraft. Paired-state violation — " +
-            "applyContactFrequency must transition both sides atomically.",
+        "applyTwoWayCommsEstablished: pilot transmission to role $stationCalled for aircraft ${ac.id} " +
+            "found no receiver. The aircraft is in neither responsibilities (Watching expected) nor " +
+            "knownStrips (filing-distributed expected) of any $stationCalled controller. Either the " +
+            "filing did not route through, a prior handoff did not establish Watching, or the dispatch " +
+            "in handleTransmissionEnd's receiver-search disagreed with this lookup."
     )
+    val isWatchingPath = target.responsibilities[ac.id] is ResponsibilityState.Watching
     val controllersMap = LinkedHashMap(state.controllers)
-    controllersMap[target.id] = target.copy(
-        responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Owned(state.now)),
-    )
-    controllersMap[sender.id] = sender.copy(
-        responsibilities = sender.responsibilities - ac.id,
-    )
-    // Pass 9 (D-AUDIT.2 / Phase 9.B): handoff resolved — clear any
-    // missed-handoff escalation tracking for the (sender, aircraft) pair.
-    val escalations = state.handoffEscalations - HandoffEscalationKey(sender = sender.id, aircraft = ac.id)
-    return state.copy(controllers = controllersMap, handoffEscalations = escalations)
+    if (isWatchingPath) {
+        // Pass 7 path. Receiver Watching → Owned; drop sender's HandingOff entry.
+        // Pass 7 post-impl FP-P-new.1: a missing sender is a paired-state
+        // violation — the receiver Watching state references a non-existent
+        // HandingOff(Peer). assertResponsibilityInvariant would fire on this,
+        // but catching it loudly here gives a more direct stack trace.
+        val sender = state.controllers.values.firstOrNull { spec ->
+            val r = spec.responsibilities[ac.id]
+            r is ResponsibilityState.HandingOff &&
+                r.target is HandoffTarget.Peer &&
+                (r.target as HandoffTarget.Peer).controllerId == target.id
+        } ?: error(
+            "applyTwoWayCommsEstablished: receiver ${target.id} is Watching ${ac.id} but no controller " +
+                "has HandingOff(Peer(${target.id})) for that aircraft. Paired-state violation — " +
+                "applyContactFrequency must transition both sides atomically.",
+        )
+        controllersMap[target.id] = target.copy(
+            responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Owned(state.now)),
+        )
+        controllersMap[sender.id] = sender.copy(
+            responsibilities = sender.responsibilities - ac.id,
+        )
+        // Pass 9 (D-AUDIT.2 / Phase 9.B): handoff resolved — clear any
+        // missed-handoff escalation tracking for the (sender, aircraft) pair.
+        val escalations = state.handoffEscalations - HandoffEscalationKey(sender = sender.id, aircraft = ac.id)
+        return state.copy(controllers = controllersMap, handoffEscalations = escalations)
+    } else {
+        // G2 Phase E: cross-aerodrome arrival path. Aircraft was in target's
+        // knownStrips from filing; flip into responsibilities as Owned and
+        // drop the strip. No sender to update — there was no peer-handoff.
+        controllersMap[target.id] = target.copy(
+            responsibilities = target.responsibilities + (ac.id to ResponsibilityState.Owned(state.now)),
+            knownStrips = target.knownStrips - ac.id,
+        )
+        return state.copy(controllers = controllersMap)
+    }
 }
 
 /**
