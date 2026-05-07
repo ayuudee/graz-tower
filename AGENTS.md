@@ -131,6 +131,35 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
+## Golden tests (G0, G2)
+
+Two integration tests serve as the runtime golden anchors for end-to-end ATC
+flow. Both follow the same shape: a single `@Test` method, a fixture-driven
+load, a deterministic event run, the run is the test, the assertions are
+what the run produced.
+
+- **G0 — `LowgGoldenTest` (`sim/jvmTest`)**: single-aerodrome circuit
+  training. C172 OE-ABC files at LOWG, taxis to RWY 16C, takes off,
+  flies the circuit pattern, lands, taxis back to a stand. Pins the
+  intra-aerodrome handoff chain (GROUND → TOWER → arrival → GROUND)
+  and the full clearance lifecycle. **Must remain green at all times.**
+
+- **G2 — `G2CrossAerodromeVfrTest` (`sim/jvmTest`)**: cross-aerodrome
+  VFR transit. C172 OE-XYZ files VFR LOWG → LJMB, taxis at LOWG, takes
+  off, follows the published transit route to LJMB's first contact REP
+  (OSMOT), autonomously contacts LJMB Tower, joins the LJMB pattern,
+  lands, taxis to a stand. Cross-aerodrome handoff is modelled as
+  **release + procedure-following + autonomous initial contact** — not
+  a peer handoff. The doctrine is enforced by
+  `FirewallNoCrossAerodromeHandoffTest` (HandoffTarget sealed leaves
+  pinned to `{Peer, Released}` via reflection) and the
+  cross-aerodrome staffing shape is pinned by
+  `FixtureAerodromeStaffingDoctrineSpec`.
+
+Both tests follow the no-corners-cut rule: a failing golden test is
+documented in its KDoc with the specific blocker and stays loudly
+failing. No `@Disabled`, skip-list, or exclusion set.
+
 # Project Structure
 
 ```
@@ -172,3 +201,65 @@ The `wiki/` directory is a shared knowledge base maintained by both human and AI
 - **Design decisions** (`wiki/design-decisions/`) are point-in-time records, dated, not updated retroactively. New decisions supersede old ones.
 - **Data source pages** (`wiki/data-sources/`) document what we have, what it contains, and known gaps.
 - When committing, include wiki updates as part of the commit if relevant content changed.
+
+<!-- BEGIN FLOW-NEXT -->
+## Codex Flow-Next
+
+Codex sessions in this project use Flow-Next for task tracking. Use `.flow/bin/flowctl` instead of ad hoc markdown task lists for Flow-Next epics and tasks.
+
+Project-specific note: `.plan` remains the canonical backlog for known issues and deferred work. `.flow/` is the execution state for planned Flow-Next work.
+
+**Quick commands:**
+```bash
+.flow/bin/flowctl list # List all epics + tasks
+.flow/bin/flowctl epics # List all epics
+.flow/bin/flowctl tasks --epic fn-N # List tasks for epic
+.flow/bin/flowctl ready --epic fn-N # What's ready
+.flow/bin/flowctl show fn-N.M # View task
+.flow/bin/flowctl start fn-N.M # Claim task
+.flow/bin/flowctl done fn-N.M --summary-file s.md --evidence-json e.json
+```
+
+**Creating a spec** ("create a spec", "spec out X", "write a spec for X"):
+
+A spec = an epic. Create one directly; planning commands then break the epic into executable tasks.
+
+```bash
+.flow/bin/flowctl epic create --title "Short title" --json
+.flow/bin/flowctl epic set-plan <epic-id> --file - --json <<'EOF'
+# Title
+
+## Goal & Context
+Why this exists, what problem it solves.
+
+## Architecture & Data Models
+System design, data flow, key components.
+
+## API Contracts
+Endpoints, interfaces, input/output shapes.
+
+## Edge Cases & Constraints
+Failure modes, limits, performance requirements.
+
+## Acceptance Criteria
+- [ ] Testable criterion 1
+- [ ] Testable criterion 2
+
+## Boundaries
+What's explicitly out of scope.
+
+## Decision Context
+Why this approach over alternatives.
+EOF
+```
+
+After creating a spec, choose the next step:
+- `$flow-next-plan <epic-id>` - research and break into tasks
+- `$flow-next-interview <epic-id>` - deep Q&A to refine the spec
+
+**Rules:**
+- Use `.flow/bin/flowctl` for all Flow-Next task tracking.
+- Re-anchor by reading the current spec and task status before each task.
+
+**More info:** `.flow/bin/flowctl --help` or read `.flow/usage.md`
+<!-- END FLOW-NEXT -->
