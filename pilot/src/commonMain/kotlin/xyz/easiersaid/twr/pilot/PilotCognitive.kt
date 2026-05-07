@@ -860,21 +860,21 @@ private fun updateActiveRunwayFromInstruction(
  * `ExhaustivenessTest` (pilot/jvmTest) is the proof obligation: every
  * concrete leaf appears as `is X -> ...`, no category-arm absorption.
  */
-@Suppress("CyclomaticComplexMethod", "LongMethod") // intrinsic to the 98-leaf AtcInstruction sealed hierarchy
+@Suppress("CyclomaticComplexMethod", "LongMethod", "UnusedParameter") // intrinsic to the 98-leaf AtcInstruction sealed hierarchy; priorRunway/worldIndex retained for signature stability per D-PF.6 close — the multi-runway disambiguator deletes used them
 private fun runwayFromInstruction(
     instruction: AtcInstruction,
-    priorRunway: Option<RunwayAssignment>,
+    priorRunway: Option<RunwayAssignment<RunwayAssignmentSource>>,
     worldIndex: WorldIndex,
-): Option<RunwayAssignment> = when (instruction) {
+): Option<RunwayAssignment<RunwayAssignmentSource.Radio>> = when (instruction) {
     // Pass 6 (D-PF.6 closure): runway is now an explicit field on
     // TaxiToHoldingPoint (no inference); TaxiToStand carries no runway.
-    is TaxiToHoldingPoint -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.TaxiClearance))
+    is TaxiToHoldingPoint -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.TaxiClearance))
     is TaxiToStand -> None
-    is LineUpAndWait -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.LineUp))
-    is ClearedForTakeoff -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Takeoff))
-    is ClearedToLand -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Land))
-    is ClearedTouchAndGo -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.TouchAndGo))
-    is BacktrackRunway -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Backtrack))
+    is LineUpAndWait -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.LineUp))
+    is ClearedForTakeoff -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.Takeoff))
+    is ClearedToLand -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.Land))
+    is ClearedTouchAndGo -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.TouchAndGo))
+    is BacktrackRunway -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.Backtrack))
     // AfterLandingVacateVia carries the *exit* point but not the runway —
     // the runway is implicit (the one the aircraft just landed on, already
     // set on `mission.activeRunway` from the prior ClearedToLand / T&G).
@@ -970,7 +970,7 @@ private fun runwayFromInstruction(
     // TaxiViaRunway carries an explicit runway: per Pass 6 D-PF.6 / Impact M.1,
     // the controller's verbal runway statement propagates to activeRunway with
     // source TaxiClearance — same shape as TaxiToHoldingPoint.
-    is TaxiViaRunway -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.TaxiClearance))
+    is TaxiViaRunway -> Some(RunwayAssignment(instruction.runway, RunwayAssignmentSource.Radio.TaxiClearance))
     is TaxiWithCaution -> None
     is TransitionLevelIssuance -> None
     is TurnBase -> None

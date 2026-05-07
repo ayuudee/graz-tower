@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.pilot
 
 import arrow.core.None
 import arrow.core.Option
+import arrow.core.Some
 import xyz.easiersaid.twr.protocol.SimTime
 
 /**
@@ -52,8 +53,15 @@ data class PilotMission(
      * orderings (e.g. a `Takeoff` clearance arriving while the prior
      * `Land` was for a different runway) are detected and surfaced rather
      * than silently overwritten.
+     *
+     * G2 (D-PF.3, Option B): the type widens to
+     * [xyz.easiersaid.twr.protocol.RunwayAssignment]<[xyz.easiersaid.twr.protocol.RunwayAssignmentSource]>
+     * so it can carry either a [RunwayAssignmentSource.Filing] (init-only,
+     * from `createMission(filedPlan = …)`) or a [RunwayAssignmentSource.Radio]
+     * (radio-derived). The parametric type lets [applyPrecedence] enforce
+     * "Filing-as-`new` is impossible" at compile time.
      */
-    val activeRunway: Option<xyz.easiersaid.twr.protocol.RunwayAssignment> = None,
+    val activeRunway: Option<xyz.easiersaid.twr.protocol.RunwayAssignment<xyz.easiersaid.twr.protocol.RunwayAssignmentSource>> = None,
 
     // ── Cross-cutting (set by ATC at any time, reset depends on context) ──
     /** Instructions received from ATC that modify current step behaviour. */
@@ -75,8 +83,41 @@ data class PilotMission(
      * Set by [processInstruction] on `ContactFrequency(role)`; cleared by
      * [updateAfterTransmission] when the matching `InitialContact` is
      * transmitted. [None] before the first ContactFrequency.
+     *
+     * G2 (Phase C): also written by `applyEnteringDestinationAirspace` for
+     * the cross-aerodrome autonomous-contact path. The two writers are
+     * mutually exclusive in time (re-fire prevention via [contactedAerodromes]).
      */
     val pendingInitialContactRole: Option<xyz.easiersaid.twr.protocol.RoleName> = None,
+
+    /**
+     * The frequency the pilot was last told to tune (paired with [pendingInitialContactRole]).
+     *
+     * Pre-G2 the pilot inferred frequency from the controller-spec on the
+     * `ContactFrequency` instruction's resolved target. G2 introduces the
+     * cross-aerodrome autonomous-contact path where the pilot self-selects
+     * the next frequency from filed-plan / world data; this field is the
+     * explicit carrier so the same emission path handles both.
+     *
+     * Cleared together with [pendingInitialContactRole] when the matching
+     * `InitialContact` is transmitted.
+     */
+    val pendingInitialContactFrequency: Option<xyz.easiersaid.twr.protocol.Frequency> = None,
+
+    /**
+     * The aerodromes the pilot has emitted [InitialContact] to during this mission.
+     *
+     * G2 (Phase C, D-PF.3-adjacent): mission-scoped re-fire prevention for
+     * the autonomous boundary-entry contact event. Distinct from
+     * [contactedOnFrequency] (cycle-scoped — resets on each new
+     * `ContactFrequency`). Once an aerodrome appears here it is permanent
+     * for this mission; a pilot does not "first-contact" the same destination
+     * twice on the same flight.
+     *
+     * Invariant pinned in spec test: contactedAerodromes ⊇ {a : mission has
+     * emitted InitialContact(c) where c is at a}.
+     */
+    val contactedAerodromes: Set<xyz.easiersaid.twr.protocol.AerodromeId> = emptySet(),
 
     // ── Phase-local (reset on go-around — see resetForGoAround) ────
     /** Timer for missing-clearance escalation (millis since step entered). */
@@ -521,15 +562,40 @@ fun CompoundTask.activeCompound(): CompoundTask? {
     return null
 }
 
-/** Create a fresh mission for an aircraft. */
+/**
+ * Create a fresh mission for an aircraft.
+ *
+ * G2 (D-PF.3 closure): when [filedPlan] carries a non-null
+ * [xyz.easiersaid.twr.protocol.FiledPlan.destinationRunway], [PilotMission.activeRunway]
+ * is initialised to `Some(RunwayAssignment(destinationRunway,
+ * RunwayAssignmentSource.Filing))`. Radio sources supersede via
+ * [xyz.easiersaid.twr.protocol.applyPrecedence] once any clearance lands.
+ *
+ * The `T?` → `Option` boundary lives here: [filedPlan] uses `T?` (matching
+ * the surrounding nullable style on FiledPlan), [PilotMission] uses
+ * `Option` (per-class quotient rule, D-PF.4).
+ */
 fun createMission(
     goal: HighLevelGoal,
     startPhase: PilotPhase,
     time: SimTime,
+    filedPlan: xyz.easiersaid.twr.protocol.FiledPlan? = null,
 ): PilotMission {
     var root = planMission(goal)
     root = skipCompletedSteps(root, startPhase)
-    return PilotMission(goal = goal, root = root, stepEnteredAt = time)
+    val initialActiveRunway: Option<xyz.easiersaid.twr.protocol.RunwayAssignment<xyz.easiersaid.twr.protocol.RunwayAssignmentSource>> =
+        filedPlan?.destinationRunway?.let {
+            Some(xyz.easiersaid.twr.protocol.RunwayAssignment(
+                runway = it,
+                source = xyz.easiersaid.twr.protocol.RunwayAssignmentSource.Filing,
+            ))
+        } ?: None
+    return PilotMission(
+        goal = goal,
+        root = root,
+        stepEnteredAt = time,
+        activeRunway = initialActiveRunway,
+    )
 }
 
 /** Mark steps as completed that the starting phase has already passed. */

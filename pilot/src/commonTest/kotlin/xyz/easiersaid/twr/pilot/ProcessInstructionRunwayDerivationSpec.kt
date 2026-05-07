@@ -72,7 +72,7 @@ class ProcessInstructionRunwayDerivationSpec {
         )
         val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
-        assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
+        assertEquals(RunwayAssignmentSource.Radio.TaxiClearance, updated.activeRunway.getOrNull()?.source)
     }
 
     /**
@@ -109,7 +109,7 @@ class ProcessInstructionRunwayDerivationSpec {
         val instr = TaxiViaRunway(target = aircraftId, runway = rwy16C, destination = holdingPoint16C)
         val updated = processInstruction(instr, freshMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
-        assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
+        assertEquals(RunwayAssignmentSource.Radio.TaxiClearance, updated.activeRunway.getOrNull()?.source)
     }
 
     /**
@@ -129,12 +129,12 @@ class ProcessInstructionRunwayDerivationSpec {
     @Test
     fun `Land then TaxiViaRunway accepts the TaxiClearance assignment (precedence cell)`() {
         val priorMission = freshMission.copy(
-            activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Land)),
+            activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Radio.Land)),
         )
         val instr = TaxiViaRunway(target = aircraftId, runway = rwy16C, destination = holdingPoint16C)
         val updated = processInstruction(instr, priorMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
-        assertEquals(RunwayAssignmentSource.TaxiClearance, updated.activeRunway.getOrNull()?.source)
+        assertEquals(RunwayAssignmentSource.Radio.TaxiClearance, updated.activeRunway.getOrNull()?.source)
         // No anomaly recorded — the cell is "controller's authoritative
         // restatement," not flagged.
         assertEquals(emptyList(), updated.recentAnomalies,
@@ -157,7 +157,7 @@ class ProcessInstructionRunwayDerivationSpec {
 
     @Test
     fun `Disregard does not change activeRunway`() {
-        val priorMission = freshMission.copy(activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Land)))
+        val priorMission = freshMission.copy(activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Radio.Land)))
         val instr = Disregard(target = aircraftId)
         val updated = processInstruction(instr, priorMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
@@ -188,7 +188,7 @@ class ProcessInstructionRunwayDerivationSpec {
     fun `AfterLandingVacateVia preserves the prior activeRunway (instruction has no runway field)`() {
         // AfterLandingVacateVia carries the exit point, not the runway — the
         // runway is implicit (the one just landed on, set by ClearedToLand).
-        val priorMission = freshMission.copy(activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Land)))
+        val priorMission = freshMission.copy(activeRunway = Some(RunwayAssignment(rwy16C, RunwayAssignmentSource.Radio.Land)))
         val instr = AfterLandingVacateVia(target = aircraftId, exit = PointId("EXIT_W2"))
         val updated = processInstruction(instr, priorMission, SimTime.ZERO, worldIndex)
         assertEquals(rwy16C, updated.activeRunway.getOrNull()?.runway)
