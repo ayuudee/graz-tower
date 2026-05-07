@@ -2,6 +2,8 @@ package xyz.easiersaid.twr.pilot
 
 import arrow.core.Either
 import arrow.core.None
+import arrow.core.NonEmptyList
+import arrow.core.Option
 import arrow.core.Some
 import arrow.core.getOrElse
 import arrow.core.left
@@ -42,9 +44,22 @@ import xyz.easiersaid.twr.protocol.SimTime
  *    bubbles this up as `Either.Left(error)`; the simulator boundary
  *    (`Step.handlePilotTick`) handles the freeze.
  */
-private sealed interface PlanRouteOutcome {
+internal sealed interface PlanRouteOutcome {
     data object Skip : PlanRouteOutcome
-    data class Plan(val intent: PilotIntent) : PlanRouteOutcome
+    data class Plan(
+        val intent: PilotIntent,
+        /**
+         * The mission state after this planning tick. Most arms pass the
+         * input mission through unchanged (`mission = mission`); the
+         * G2 Phase C Transit arm at `planRoute` writes its resolved
+         * `transitContactRep` into the mission via
+         * `mission = mission.copy(transitContactRep = Some(rep))`.
+         *
+         * The call site at `pilotDecide` uses this directly (no fold)
+         * as `PilotOutput.updatedMission`.
+         */
+        val mission: PilotMission,
+    ) : PlanRouteOutcome
     data class Failed(val error: RoutingError) : PlanRouteOutcome
 }
 
@@ -104,7 +119,7 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
         is PlanRouteOutcome.Plan -> PilotOutput(
             intent = planOutcome.intent,
             transmissions = cognitive.transmissions + goAroundTransmissions,
-            updatedMission = effectiveMission,
+            updatedMission = planOutcome.mission,
         ).right()
         is PlanRouteOutcome.Skip -> PilotOutput(
             intent = goAround?.intent
@@ -138,7 +153,7 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
  * `getOrElse { return null }` made non-Visual routing failures invisible.
  */
 @Suppress("ReturnCount") // multi-stage invariant validation; early-return is the FP-correct shape
-private fun planRoute(
+internal fun planRoute(
     mission: PilotMission,
     aircraft: AircraftState,
     kinematicRoute: PilotRoute,
@@ -146,6 +161,58 @@ private fun planRoute(
     worldIndex: WorldIndex,
 ): PlanRouteOutcome {
     val step = mission.currentTask?.step ?: return PlanRouteOutcome.Skip
+
+    // G2 Phase C: cross-aerodrome Transit cruise. The cruise route runs from
+    // current position to the destination's first published contact REP
+    // (resolved from world.aerodromes[destination].aip.publishedVfrProcedures).
+    // Fires BEFORE the activeRunway gate below — Transit cruise doesn't depend
+    // on a local runway assignment. Gated by `goal is HighLevelGoal.Transit`,
+    // so non-Transit goals fall through to the existing logic unchanged.
+    if (step == MissionStep.FLY_DEPARTURE && mission.goal is HighLevelGoal.Transit) {
+        val destination = mission.goal.destination ?: return PlanRouteOutcome.Skip
+        // Resolve once and cache on mission. The cached value is the
+        // canonical source on subsequent ticks (write-once per D-G2.4).
+        //
+        // D-G2.4 tripwire (set-once invariant): the cached REP is valid only
+        // for the goal-destination it was resolved for. Today
+        // `HighLevelGoal.Transit` is a data class with `val destination`, so
+        // a goal-destination change is unrepresentable in current code paths
+        // (every "change" produces a new PilotMission). Future fluid-replanning
+        // (D-G2.4 real-fix) MUST clear `mission.transitContactRep` whenever
+        // the destination changes — see the deferment register. The
+        // `mission.copy(transitContactRep = None)` clear-on-change is the
+        // contract that future code enforces; this code-site assumes it.
+        val cachedRep = mission.transitContactRep.getOrNull()
+        val rep: PointId
+        val updatedMission: PilotMission
+        if (cachedRep != null) {
+            rep = cachedRep
+            updatedMission = mission
+        } else {
+            when (val resolved = resolveTransitContactRep(world, destination)) {
+                is Either.Left -> return PlanRouteOutcome.Failed(resolved.value)
+                is Either.Right -> {
+                    rep = resolved.value
+                    updatedMission = mission.copy(transitContactRep = Some(rep))
+                }
+            }
+        }
+        val airborne = PilotRoute.Airborne(
+            waypoints = NonEmptyList(rep, emptyList()),
+            targetAltitudeM = aircraft.type.cruiseAltitudeM,
+            arrivalPhase = PilotPhase.Climbing,
+        )
+        return PlanRouteOutcome.Plan(
+            intent = PilotIntent(
+                targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+                phase = if (aircraft.phase is PilotPhase.AtStand) aircraft.phase else PilotPhase.Climbing,
+                route = airborne,
+                targetAltitudeM = aircraft.type.cruiseAltitudeM,
+            ),
+            mission = updatedMission,
+        )
+    }
+
     // The pilot's runway is on the mission, populated by `processInstruction`
     // from each radio-derived runway source (TaxiTo→holding-point lookup,
     // LineUpAndWait/ClearedForTakeoff/Land/Vacate explicit). No fallback to
@@ -190,13 +257,16 @@ private fun planRoute(
             buildAirborneRoute(mode, taskName, w, aircraft.type).fold(
                 ifLeft = { PlanRouteOutcome.Failed(it) },
                 ifRight = { route ->
-                    PlanRouteOutcome.Plan(PilotIntent(
-                        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
-                            else aircraft.type.kinematics.approachSpeedMps,
-                        phase = aircraft.phase,
-                        route = route,
-                        targetAltitudeM = route.targetAltitudeM,
-                    ))
+                    PlanRouteOutcome.Plan(
+                        intent = PilotIntent(
+                            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+                                else aircraft.type.kinematics.approachSpeedMps,
+                            phase = aircraft.phase,
+                            route = route,
+                            targetAltitudeM = route.targetAltitudeM,
+                        ),
+                        mission = mission,
+                    )
                 },
             )
         }
@@ -256,12 +326,15 @@ private fun planVisualRoute(
                     val patternAlt = aircraft.type.circuitPattern.altitudeAglM
                     val gaAlt = mission.altitudeRestrictionM.map { minOf(patternAlt, it) }
                         .getOrElse { patternAlt }
-                    PlanRouteOutcome.Plan(PilotIntent(
-                        targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
-                        phase = PilotPhase.Climbing,
-                        route = gaRoute.copy(targetAltitudeM = gaAlt),
-                        targetAltitudeM = gaAlt,
-                    ))
+                    PlanRouteOutcome.Plan(
+                        intent = PilotIntent(
+                            targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+                            phase = PilotPhase.Climbing,
+                            route = gaRoute.copy(targetAltitudeM = gaAlt),
+                            targetAltitudeM = gaAlt,
+                        ),
+                        mission = mission,
+                    )
                 },
             )
         }
@@ -290,13 +363,16 @@ private fun planVisualRoute(
 
     // ── Bootstrap completion (no prior kinematic route) ────────────────────────
     if (cur == null) {
-        return PlanRouteOutcome.Plan(PilotIntent(
-            targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
-                else aircraft.type.kinematics.approachSpeedMps,
-            phase = aircraft.phase,
-            route = derivedRoute.copy(targetAltitudeM = targetAlt),
-            targetAltitudeM = targetAlt,
-        ))
+        return PlanRouteOutcome.Plan(
+            intent = PilotIntent(
+                targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+                    else aircraft.type.kinematics.approachSpeedMps,
+                phase = aircraft.phase,
+                route = derivedRoute.copy(targetAltitudeM = targetAlt),
+                targetAltitudeM = targetAlt,
+            ),
+            mission = mission,
+        )
     }
 
     // ── Stability: compare against kinematic route (post-pop), not aircraft.route ──
@@ -321,22 +397,28 @@ private fun planVisualRoute(
         if (cur.targetAltitudeM == targetAlt && cur.arrivalPhase == derivedRoute.arrivalPhase) {
             return PlanRouteOutcome.Skip
         }
-        return PlanRouteOutcome.Plan(PilotIntent(
+        return PlanRouteOutcome.Plan(
+            intent = PilotIntent(
+                targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
+                    else aircraft.type.kinematics.approachSpeedMps,
+                phase = aircraft.phase,
+                route = cur.copy(targetAltitudeM = targetAlt),
+                targetAltitudeM = targetAlt,
+            ),
+            mission = mission,
+        )
+    }
+
+    return PlanRouteOutcome.Plan(
+        intent = PilotIntent(
             targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
                 else aircraft.type.kinematics.approachSpeedMps,
             phase = aircraft.phase,
-            route = cur.copy(targetAltitudeM = targetAlt),
+            route = derivedRoute.copy(targetAltitudeM = targetAlt),
             targetAltitudeM = targetAlt,
-        ))
-    }
-
-    return PlanRouteOutcome.Plan(PilotIntent(
-        targetSpeedMps = if (aircraft.phase is PilotPhase.Climbing) aircraft.type.kinematics.climbSpeedMps
-            else aircraft.type.kinematics.approachSpeedMps,
-        phase = aircraft.phase,
-        route = derivedRoute.copy(targetAltitudeM = targetAlt),
-        targetAltitudeM = targetAlt,
-    ))
+        ),
+        mission = mission,
+    )
 }
 
 /**
@@ -378,12 +460,15 @@ private fun planCircuitDeparture(
     return buildAirborneRoute(mode, taskName, world, aircraft.type).fold(
         ifLeft = { PlanRouteOutcome.Failed(it) },
         ifRight = { route ->
-            PlanRouteOutcome.Plan(PilotIntent(
-                targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
-                phase = PilotPhase.TakeoffRoll,
-                route = route,
-                targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
-            ))
+            PlanRouteOutcome.Plan(
+                intent = PilotIntent(
+                    targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+                    phase = PilotPhase.TakeoffRoll,
+                    route = route,
+                    targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
+                ),
+                mission = mission,
+            )
         },
     )
 }

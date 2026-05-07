@@ -338,7 +338,18 @@ private fun isPhysicallyComplete(
         MissionStep.TAXI_TO_HOLDING -> aircraft.phase is PilotPhase.HoldingShort
         MissionStep.FLY_DEPARTURE -> {
             val isDeparting = mission.goal is HighLevelGoal.Departure
-            LegName.DOWNWIND in legs || (isDeparting && aircraft.phase is PilotPhase.Climbing)
+            // G2 Phase C: cross-aerodrome Transit completes FLY_DEPARTURE when
+            // the aircraft has reached the destination's published contact REP
+            // (resolved by planRoute and stored on mission.transitContactRep).
+            // Structural Option equality matches the codebase pattern (cf.
+            // mission.lastReportedLeg == Some(LegName.X)). None == Some(_) is
+            // false, so a tick-1 mission with unresolved transitContactRep
+            // does NOT prematurely complete regardless of aircraft.positionPoint.
+            val transitAtRep = mission.goal is HighLevelGoal.Transit &&
+                mission.transitContactRep == Some(aircraft.positionPoint)
+            LegName.DOWNWIND in legs ||
+                (isDeparting && aircraft.phase is PilotPhase.Climbing) ||
+                transitAtRep
         }
         MissionStep.FLY_DOWNWIND -> LegName.DOWNWIND in legs
         MissionStep.AWAIT_SEQUENCING -> {
@@ -431,11 +442,16 @@ private fun deriveCircuitIntent(mission: PilotMission): CircuitIntent? {
  * target is single-aerodrome — fall back to the singleton ATIS lookup that
  * worked pre-G2.
  *
- * Falling back to `singleOrNull` for the non-Transit cases preserves G0's
- * behaviour: LOWG circuit training publishes one ATIS, the pilot reads
- * letter `'A'`. Adding a second aerodrome's ATIS to the map would, pre-G2,
- * make the singleton lookup return null; the explicit goal-derived lookup
- * for Transit fixes that for the cross-aerodrome case.
+ * G2 (Phase C tightening): when the goal-derived destination is null AND
+ * `atisByAerodrome.size > 1`, the singleton fallback would silently drop to
+ * null and the pilot's [InitialContact] would carry `atisCode = null` — a
+ * wiring-defect class. The multi-entry-non-Transit path now `error()`s
+ * loudly with a rich diagnostic. Single-entry maps still resolve via the
+ * `singleOrNull` semantics (preserves G0 behaviour: LOWG circuit training
+ * publishes one ATIS, the pilot reads letter `'A'`). Future scope filed
+ * as **D-G2.8** — typed split into `atisLetterForTransit` /
+ * `atisLetterForSingleAerodrome` helpers makes the multi-entry-non-Transit
+ * combination unrepresentable at the type level.
  */
 private fun atisLetterForCallInbound(
     mission: PilotMission,
@@ -446,8 +462,19 @@ private fun atisLetterForCallInbound(
         is HighLevelGoal.Departure -> g.destination
         is HighLevelGoal.Arrival, is HighLevelGoal.CircuitTraining -> null
     }
-    return targetAerodrome?.let { atisByAerodrome[it]?.letter }
-        ?: atisByAerodrome.values.singleOrNull()?.letter
+    if (targetAerodrome != null) return atisByAerodrome[targetAerodrome]?.letter
+    return when (atisByAerodrome.size) {
+        0 -> null
+        1 -> atisByAerodrome.values.single().letter
+        else -> error(
+            "atisLetterForCallInbound: cannot resolve ATIS for ${mission.goal::class.simpleName} " +
+                "with goal-derived destination = null and multiple aerodrome ATIS entries " +
+                "(${atisByAerodrome.keys}). The pilot's InitialContact would silently carry " +
+                "atisCode = null. Either widen [HighLevelGoal] to carry the call-target aerodrome " +
+                "for non-Transit goals, or restrict atisByAerodrome to the single relevant entry. " +
+                "D-G2.8 records the typed-split future scope."
+        )
+    }
 }
 
 @Suppress("CyclomaticComplexMethod")

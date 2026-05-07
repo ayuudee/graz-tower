@@ -14,12 +14,15 @@ import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.InstrumentApproach
 import xyz.easiersaid.twr.core.world.Sid
 import xyz.easiersaid.twr.core.world.Star
+import xyz.easiersaid.twr.core.world.PublishedPointReference
+import xyz.easiersaid.twr.core.world.PublishedVfrProcedureKind
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.CircuitProcedureId
 import xyz.easiersaid.twr.protocol.ClearanceState
 import xyz.easiersaid.twr.protocol.FlightPlan
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PublishedVfrProcedureId
 import xyz.easiersaid.twr.protocol.RunwayId
 
 // ── Navigation modes ────────────────────────────────────────────────
@@ -101,6 +104,43 @@ sealed interface RoutingError {
      * author must ensure every waypoint used in a route is present in the index.
      */
     data class WaypointNotInIndex(val point: xyz.easiersaid.twr.protocol.PointId) : RoutingError
+
+    /**
+     * Transit goal: destination aerodrome is absent from the merged
+     * [AviationWorld]. Fixture / loader defect — the destination was filed
+     * but the world does not contain it. Remediation: fix the world fixture
+     * (e.g. extend the multi-aerodrome loader) or the AFTN routing topology
+     * so every filed destination is present.
+     *
+     * G2 (Phase C) — one of three Transit-resolution failure leaves
+     * surfaced by [resolveTransitContactRep].
+     */
+    data class AerodromeNotInWorld(val destination: AerodromeId) : RoutingError
+
+    /**
+     * Transit goal: destination aerodrome publishes neither an `ARRIVAL`
+     * nor a `TRANSIT` VFR procedure. Real-world this is uncommon but
+     * legitimate (a destination with no published VFR entry — pilot would
+     * pick up VFR Flight Information instead). For the simulator this is
+     * an authoring decision: every aerodrome that may receive a Transit
+     * mission should publish at least one entry procedure.
+     *
+     * G2 (Phase C) — one of three Transit-resolution failure leaves
+     * surfaced by [resolveTransitContactRep].
+     */
+    data class NoArrivalProcedure(val destination: AerodromeId) : RoutingError
+
+    /**
+     * Transit goal: the destination's chosen procedure has no resolvable
+     * REP across either `publishedSequence` or `mapLabels` (every reference
+     * is a [PublishedPointReference.Literal] or otherwise unmappable).
+     * Procedure-authoring defect. Remediation: amend the procedure to
+     * carry at least one `Fix`/`NamedPoint`/`SectorAnchor` reference.
+     *
+     * G2 (Phase C) — one of three Transit-resolution failure leaves
+     * surfaced by [resolveTransitContactRep].
+     */
+    data class ProcedureRepsUnresolvable(val procedure: PublishedVfrProcedureId) : RoutingError
 }
 
 // ── Route builder ───────────────────────────────────────────────────
@@ -788,4 +828,64 @@ private fun legPoints(
     val circuitLeg = circuit.legs.firstOrNull { it.name == leg } ?: return emptyList()
     return if (excludeThreshold != null) circuitLeg.path.points.filter { it != excludeThreshold }
     else circuitLeg.path.points
+}
+
+// ── Cross-aerodrome (Transit) procedure resolution ──────────────────
+
+/**
+ * G2 (Phase C): resolve the destination's first published REP for a Transit
+ * mission. The pilot reads the destination aerodrome's published VFR
+ * procedures (chart-database-equivalent reference data) and picks the first
+ * REP from the highest-priority procedure.
+ *
+ * Procedure-kind priority: `ARRIVAL` > `TRANSIT`. Within a kind, sort by
+ * `procedure.id.value` lexicographically (D-G2.6 — picks deterministically
+ * until approach-direction selection lands).
+ *
+ * REP source within the chosen procedure: `publishedSequence` first (for
+ * sequenced procedures), falling back to `mapLabels` (for "general entry"
+ * procedures whose chart shows a labelled map but no fixed sequence —
+ * common at smaller fields like Maribor where the pilot picks a REP by
+ * approach direction). Both sources contain [PublishedPointReference]s;
+ * `Literal` references have no `PointId` and are skipped.
+ *
+ * Three failure modes, each typed as a distinct [RoutingError] leaf:
+ *  - [RoutingError.AerodromeNotInWorld]: destination absent (fixture defect).
+ *  - [RoutingError.NoArrivalProcedure]: no ARRIVAL or TRANSIT procedure.
+ *  - [RoutingError.ProcedureRepsUnresolvable]: chosen procedure has no
+ *    resolvable REP across publishedSequence or mapLabels.
+ */
+internal fun resolveTransitContactRep(
+    world: AviationWorld,
+    destination: AerodromeId,
+): Either<RoutingError, PointId> {
+    val aerodrome = world.aerodromes[destination]
+        ?: return RoutingError.AerodromeNotInWorld(destination).left()
+    val procedures = aerodrome.aip.publishedVfrProcedures.values
+    val procedure = procedures
+        .filter { it.kind == PublishedVfrProcedureKind.ARRIVAL }
+        .sortedBy { it.id.value }
+        .firstOrNull()
+        ?: procedures
+            .filter { it.kind == PublishedVfrProcedureKind.TRANSIT }
+            .sortedBy { it.id.value }
+            .firstOrNull()
+        ?: return RoutingError.NoArrivalProcedure(destination).left()
+    val rep = procedure.publishedSequence.firstNotNullOfOrNull { firstResolvedPoint(it) }
+        ?: procedure.mapLabels.firstNotNullOfOrNull { firstResolvedPoint(it.location) }
+        ?: return RoutingError.ProcedureRepsUnresolvable(procedure.id).left()
+    return rep.right()
+}
+
+/**
+ * Local dispatch over [PublishedPointReference]'s four leaves. Avoids
+ * bumping `:core/world`'s `internal pointOrNull()` helpers to public —
+ * the four-arm `when` is small enough that keeping it private to `:pilot`
+ * is cleaner than widening `:core`'s API surface for one consumer.
+ */
+private fun firstResolvedPoint(ref: PublishedPointReference): PointId? = when (ref) {
+    is PublishedPointReference.Fix -> ref.point
+    is PublishedPointReference.NamedPoint -> ref.point
+    is PublishedPointReference.SectorAnchor -> ref.point
+    is PublishedPointReference.Literal -> null
 }

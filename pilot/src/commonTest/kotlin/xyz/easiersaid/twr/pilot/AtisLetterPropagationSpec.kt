@@ -135,16 +135,17 @@ class AtisLetterPropagationSpec {
     }
 
     @Test
-    fun `multi-aerodrome ATIS map drops letter — D-AUDIT-8-IV-FOLLOWUP pins this current behaviour`() {
-        // Post-impl test review S4 / Impact S1: the current pilot ATIS
-        // resolution `atisByAerodrome.values.singleOrNull()?.letter`
-        // returns null when the map has 2+ entries. This row pins the
-        // current behaviour as a regression contract: a fold that
-        // accidentally fixes this without keying by mission's destination
-        // aerodrome would change the contract. The proper fix
-        // (key-by-aerodrome via mission.destinationAerodrome) is filed
-        // as **D-AUDIT.8.IV-FOLLOWUP** — when that lands, this row's
-        // expectation flips to a positive assertion.
+    fun `multi-aerodrome ATIS map for non-Transit goal errors loudly per G2 Phase C C5`() {
+        // G2 Phase C (C.5): tightened the multi-entry non-Transit fallback
+        // from a silent `singleOrNull() == null` drop to a loud `error()`.
+        // For an Arrival/CircuitTraining goal whose `goal-derived destination`
+        // is null, multi-entry atisByAerodrome is a wiring-defect class —
+        // the pilot's InitialContact would silently carry atisCode = null.
+        // Detailed coverage of the helper's branches lives in
+        // AtisLetterForCallInboundSpec; this row pins the integration
+        // contract via pilotCognitiveDecide.
+        // Future scope: D-G2.8 (typed split makes the combination
+        // unrepresentable at the type level).
         val mission = PilotMission(
             goal = HighLevelGoal.Arrival(),
             root = CompoundTask(
@@ -170,19 +171,22 @@ class AtisLetterPropagationSpec {
                 generatedAt = now0,
             ),
         )
-        val decision = pilotCognitiveDecide(
-            aircraft = aircraft().copy(pilotMission = mission),
-            mission = mission,
-            worldIndex = WorldIndex(),
-            now = now0,
-            atisByAerodrome = multiAtis,
+        val thrown = kotlin.test.assertFailsWith<IllegalStateException> {
+            pilotCognitiveDecide(
+                aircraft = aircraft().copy(pilotMission = mission),
+                mission = mission,
+                worldIndex = WorldIndex(),
+                now = now0,
+                atisByAerodrome = multiAtis,
+            )
+        }
+        kotlin.test.assertTrue(
+            thrown.message?.contains("Arrival") == true,
+            "Diagnostic must name the goal class: ${thrown.message}",
         )
-        val initialContact = decision.transmissions.filterIsInstance<InitialContact>().firstOrNull()
-        assertEquals(
-            null,
-            initialContact?.atisCode,
-            "D-AUDIT.8.IV-FOLLOWUP: multi-aerodrome ATIS map currently drops letter via " +
-                "singleOrNull(). Proper fix keys by mission.destinationAerodrome.",
+        kotlin.test.assertTrue(
+            thrown.message?.contains("LOWG") == true && thrown.message?.contains("LJMB") == true,
+            "Diagnostic must name the aerodrome key set: ${thrown.message}",
         )
     }
 

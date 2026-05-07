@@ -109,6 +109,30 @@ data class PilotMission(
      */
     val filedPlan: Option<xyz.easiersaid.twr.protocol.FiledPlan> = None,
 
+    /**
+     * G2 (Phase C): the destination's first published REP, resolved by the
+     * route planner on the first `Transit + FLY_DEPARTURE` planning tick.
+     * Read by `isPhysicallyComplete`'s FLY_DEPARTURE arm to detect cruise
+     * completion; read by `planRoute` itself to short-circuit re-resolution
+     * on subsequent ticks.
+     *
+     * **Order of operations on the first tick:** `pilotCognitiveDecide`
+     * (and therefore `isPhysicallyComplete`) runs BEFORE `planRoute` in
+     * `pilotDecide`. On tick 1 the slice is [None]; the cognitive layer's
+     * Transit-equality arm evaluates `mission.transitContactRep == Some(positionPoint)`
+     * which is `false` on `None`, so FLY_DEPARTURE does not complete
+     * prematurely. The planner then resolves the REP and writes it via
+     * `PlanRouteOutcome.Plan.mission`; tick 2's cognitive layer sees
+     * `Some(rep)` and the equality fires when (and only when) the aircraft
+     * has reached the REP.
+     *
+     * **Set once.** [None] for non-Transit missions, or before the planner
+     * has resolved on the first relevant tick. Once `Some`, stable for the
+     * mission's lifetime — D-G2.4 (fluid replanning) covers the future case
+     * where a goal-destination change must clear this slice.
+     */
+    val transitContactRep: Option<xyz.easiersaid.twr.protocol.PointId> = None,
+
     // ── Phase-local (reset on go-around — see resetForGoAround) ────
     /** Timer for missing-clearance escalation (millis since step entered). */
     val stepEnteredAt: SimTime = SimTime.ZERO,
@@ -506,11 +530,14 @@ fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when 
         // this into a `(goal, snapshot) → tree` contract.
         //
         // Transit = depart from origin + cruise + arrive at destination.
-        // VFR cruise is a single FLY_DEPARTURE (visual climb-out toward
-        // destination); arrival starts when the geographic trigger fires
-        // EnteringDestinationAirspace and the pilot self-contacts the
-        // destination tower (Phase C). Circuit pattern follows the same
-        // shape as a normal arrival mission.
+        // VFR cruise is a single FLY_DEPARTURE whose terminal waypoint is
+        // the destination's first published REP (resolved by the route
+        // planner from world.aerodromes[destination].aip.publishedVfrProcedures
+        // and stored on mission.transitContactRep). FLY_DEPARTURE physically
+        // completes when aircraft.positionPoint equals that REP — see the
+        // Transit arm of isPhysicallyComplete in PilotCognitive.kt.
+        // The pilot then self-contacts the destination tower at CALL_INBOUND;
+        // circuit pattern follows the same shape as a normal arrival mission.
         CompoundTask(TaskName.Transit, listOf(
             groundDepartureTask(),
             PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
