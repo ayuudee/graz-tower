@@ -550,6 +550,19 @@ def parse_dxf(path: Path) -> DxfDocument:
                     end=XY(float(attrs["11"][0]), float(attrs["21"][0])),
                 ),
             )
+        elif entity == "ARC":
+            cx = float(attrs["10"][0])
+            cy = float(attrs["20"][0])
+            r = float(attrs["40"][0])
+            start_angle = math.radians(float(attrs["50"][0]))
+            end_angle = math.radians(float(attrs["51"][0]))
+            lines.append(
+                DxfLine(
+                    layer=layer,
+                    start=XY(cx + r * math.cos(start_angle), cy + r * math.sin(start_angle)),
+                    end=XY(cx + r * math.cos(end_angle), cy + r * math.sin(end_angle)),
+                ),
+            )
         elif entity == "POINT":
             points.append(
                 DxfPoint(
@@ -2169,18 +2182,101 @@ def derive_cifp_approach_geometry(
     }
 
 
+@dataclass(frozen=True)
+class XPlaneFixEntry:
+    identifier: str
+    position: Geo
+    region: str
+    country: str
+
+
+@dataclass(frozen=True)
+class XPlaneNavaidEntry:
+    identifier: str
+    position: Geo
+    type_code: int
+    region: str
+    country: str
+    frequency: int | None
+    name: str | None
+
+
+def parse_xplane_fix_cache(path: Path) -> dict[str, XPlaneFixEntry]:
+    """Parse an X-Plane 12 earth_fix.dat-subset file into an identifier lookup.
+
+    Accepts both the full earth_fix.dat and the per-airport cache produced by
+    bin/extract_xplane_airport_cache.py. Lines starting with a letter or the
+    terminator "99" are skipped.
+    """
+    entries: dict[str, XPlaneFixEntry] = {}
+    for raw in path.read_text().splitlines():
+        parts = raw.split()
+        if len(parts) < 5:
+            continue
+        try:
+            lat = float(parts[0])
+            lon = float(parts[1])
+        except ValueError:
+            continue
+        entry = XPlaneFixEntry(
+            identifier=parts[2],
+            position=Geo(lat, lon),
+            region=parts[3],
+            country=parts[4],
+        )
+        # A given identifier may appear multiple times globally; keep the first.
+        entries.setdefault(entry.identifier, entry)
+    return entries
+
+
+def parse_xplane_navaid_cache(path: Path) -> dict[str, XPlaneNavaidEntry]:
+    """Parse an X-Plane 12 earth_nav.dat-subset file into an identifier lookup."""
+    entries: dict[str, XPlaneNavaidEntry] = {}
+    for raw in path.read_text().splitlines():
+        parts = raw.split()
+        if len(parts) < 11:
+            continue
+        try:
+            type_code = int(parts[0])
+            lat = float(parts[1])
+            lon = float(parts[2])
+        except ValueError:
+            continue
+        frequency_raw = parts[4] if len(parts) > 4 else ""
+        try:
+            frequency = int(frequency_raw)
+        except ValueError:
+            frequency = None
+        entry = XPlaneNavaidEntry(
+            identifier=parts[7],
+            position=Geo(lat, lon),
+            type_code=type_code,
+            region=parts[8],
+            country=parts[9],
+            frequency=frequency,
+            name=" ".join(parts[10:]) if len(parts) > 10 else None,
+        )
+        entries.setdefault(entry.identifier, entry)
+    return entries
+
+
 def cifp_fix_resolution(
     cifp_data: dict[str, Any],
     ofmx_data: dict[str, Any],
     chart_fix_data: dict[str, Any] | None = None,
+    xplane_fixes: dict[str, XPlaneFixEntry] | None = None,
+    xplane_navaids: dict[str, XPlaneNavaidEntry] | None = None,
 ) -> dict[str, Any]:
     designated_codes = set(ofmx_data["allDesignatedPoints"].keys())
     navaid_codes = set(ofmx_data.get("allNavaids", {}).keys())
     chart_codes = set((chart_fix_data or {}).get("resolvedFixes", {}).keys())
     derived_fix_data = derive_cifp_approach_geometry(cifp_data, ofmx_data, chart_fix_data)
     derived_codes = set(derived_fix_data["resolvedFixes"].keys())
+    xplane_fix_codes = set((xplane_fixes or {}).keys())
+    xplane_navaid_codes = set((xplane_navaids or {}).keys())
+    xplane_codes = xplane_fix_codes | xplane_navaid_codes
     ofmx_codes = designated_codes | navaid_codes
-    all_codes = ofmx_codes | chart_codes | derived_codes
+    all_codes = ofmx_codes | chart_codes | derived_codes | xplane_codes
     identifiers = sorted(cifp_data["fixRefs"].keys())
     present = [identifier for identifier in identifiers if identifier in all_codes]
     present_in_ofmx = [identifier for identifier in identifiers if identifier in ofmx_codes]
@@ -2188,6 +2284,8 @@ def cifp_fix_resolution(
     present_in_navaids = [identifier for identifier in identifiers if identifier in navaid_codes]
     present_in_chart_tables = [identifier for identifier in identifiers if identifier in chart_codes]
     present_in_derived_approach_geometry = [identifier for identifier in identifiers if identifier in derived_codes]
+    present_in_xplane_fixes = [identifier for identifier in identifiers if identifier in xplane_fix_codes]
+    present_in_xplane_navaids = [identifier for identifier in identifiers if identifier in xplane_navaid_codes]
     missing = [identifier for identifier in identifiers if identifier not in all_codes]
     return {
         "totalDistinctIdentifiers": len(identifiers),
@@ -2197,9 +2295,11 @@ def cifp_fix_resolution(
         "presentInOfmxNavaids": present_in_navaids,
         "presentInChartCodingTables": present_in_chart_tables,
         "presentInDerivedApproachGeometry": present_in_derived_approach_geometry,
+        "presentInXplaneFixes": present_in_xplane_fixes,
+        "presentInXplaneNavaids": present_in_xplane_navaids,
         "missingFromCheckedInSources": missing,
         "resolvedDerivedApproachGeometry": derived_fix_data["resolvedFixes"],
-        "note": "This scan checks checked-in OFMX designated points, parsed VOR/NDB/DME records, local IFR chart coding tables, and derived CIFP approach geometry. Some localizer/final-approach identifiers may still remain unresolved where no honest source or derivation is available.",
+        "note": "This scan checks checked-in OFMX designated points, parsed VOR/NDB/DME records, local IFR chart coding tables, derived CIFP approach geometry, and optional X-Plane 12 fix/navaid caches. Some localizer/final-approach identifiers may still remain unresolved where no honest source or derivation is available.",
     }
 
 

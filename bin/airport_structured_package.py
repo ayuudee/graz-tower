@@ -467,6 +467,8 @@ def resolve_supplemental_vfr_point(
     point_ref: str,
     ofmx_data: dict[str, Any],
     cup_data: dict[str, Any],
+    xplane_fixes: dict[str, Any] | None = None,
+    xplane_navaids: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     key = point_ref.strip().upper()
     designated_point = ofmx_data.get("allDesignatedPoints", {}).get(key)
@@ -492,6 +494,30 @@ def resolve_supplemental_vfr_point(
             "source": "cup",
             "reportingType": "VFR-MRP",
             "note": cup_waypoint.name,
+        }
+
+    xplane_fix = (xplane_fixes or {}).get(key)
+    if xplane_fix is not None:
+        return {
+            "identifier": key,
+            "label": key,
+            "position": xplane_fix.position,
+            "source": "xplane_fix",
+            "reportingType": "VFR-MRP",
+            "note": f"Resolved from X-Plane earth_fix.dat cache ({xplane_fix.region}/{xplane_fix.country}).",
+        }
+    xplane_navaid = (xplane_navaids or {}).get(key)
+    if xplane_navaid is not None:
+        return {
+            "identifier": key,
+            "label": xplane_navaid.name or key,
+            "position": xplane_navaid.position,
+            "source": "xplane_navaid",
+            "reportingType": "NAVAID",
+            "note": (
+                f"Resolved from X-Plane earth_nav.dat cache "
+                f"({xplane_navaid.region}/{xplane_navaid.country}, type {xplane_navaid.type_code})."
+            ),
         }
 
     return None
@@ -840,6 +866,21 @@ def projected_loop_specs(
     scene: authoring.SceneContext,
     threshold_points: dict[str, report.XY],
 ) -> list[dict[str, Any]]:
+    topology = (
+        scene.manifest.get("circuitProjection", {}).get("topology")
+        or "branched_main_plus_sides"
+    )
+    if topology == "branched_main_plus_sides":
+        return _loop_specs_branched_main_plus_sides(scene, threshold_points)
+    if topology == "independent_closed_loops":
+        return _loop_specs_independent_closed_loops(scene, threshold_points)
+    raise ValueError(f"Unknown circuitProjection topology: {topology!r}")
+
+
+def _loop_specs_branched_main_plus_sides(
+    scene: authoring.SceneContext,
+    threshold_points: dict[str, report.XY],
+) -> list[dict[str, Any]]:
     main_component = scene.circuit_components[0]
     component_points, adjacency = component_graph(main_component)
     branch_keys = [key for key, neighbours in adjacency.items() if len(neighbours) > 2]
@@ -972,6 +1013,294 @@ def projected_loop_specs(
     ]
 
 
+def _loop_specs_independent_closed_loops(
+    scene: authoring.SceneContext,
+    threshold_points: dict[str, report.XY],
+) -> list[dict[str, Any]]:
+    config = scene.manifest.get("circuitProjection", {})
+    tolerance_m = float(config.get("snapToleranceMeters", 15.0))
+    altitude_ft = int(config["altitudeFeet"])
+    axis_proximity_m = float(config.get("axisProximityMeters", 200.0))
+    stem_match_radius_m = float(config.get("stemMatchRadiusMeters", 200.0))
+    primary_axis_runways = config.get("primaryAxisRunways")
+    if not isinstance(primary_axis_runways, list) or len(primary_axis_runways) != 2:
+        raise ValueError(
+            "circuitProjection.primaryAxisRunways must list the two runway IDs that define the axis"
+        )
+    loop_decls = config.get("loops", [])
+    if not loop_decls:
+        raise ValueError("circuitProjection.loops must declare at least one loop")
+
+    axis_a = threshold_points[primary_axis_runways[0]]
+    axis_b = threshold_points[primary_axis_runways[1]]
+    axis_dx = axis_b.x - axis_a.x
+    axis_dy = axis_b.y - axis_a.y
+    axis_length = math.hypot(axis_dx, axis_dy)
+    if axis_length < 1e-6:
+        raise ValueError("primaryAxisRunways thresholds are coincident; cannot derive runway axis")
+    axis_ux = axis_dx / axis_length
+    axis_uy = axis_dy / axis_length
+    axis_nx = -axis_uy
+    axis_ny = axis_ux
+
+    def perp_distance(point: report.XY) -> float:
+        return (point.x - axis_a.x) * axis_nx + (point.y - axis_a.y) * axis_ny
+
+    all_lines: list[report.DxfLine] = [
+        line for component in scene.circuit_components for line in component
+    ]
+    graph = _build_stitched_graph(all_lines, tolerance_m)
+
+    loop_specs: list[dict[str, Any]] = []
+    for decl in loop_decls:
+        loop_id = decl["loopId"]
+        thr_n = threshold_points[decl["thresholdNorth"]]
+        thr_s = threshold_points[decl["thresholdSouth"]]
+
+        vert_n = _find_nearest_dangling_vertex(graph, thr_n, stem_match_radius_m)
+        vert_s = _find_nearest_dangling_vertex(graph, thr_s, stem_match_radius_m)
+        if vert_n is None or vert_s is None:
+            raise ValueError(
+                f"circuit loop {loop_id!r}: no dangling vertex within "
+                f"{stem_match_radius_m}m of thresholds {decl['thresholdNorth']}/{decl['thresholdSouth']}"
+            )
+
+        path_vertex_ids, path_edge_ids = _simple_path_between(graph, vert_n, vert_s)
+        if not path_edge_ids:
+            raise ValueError(
+                f"circuit loop {loop_id!r}: no simple path in stitched graph from "
+                f"{decl['thresholdNorth']} stem to {decl['thresholdSouth']} stem"
+            )
+
+        edge_classes: list[str] = []
+        for edge_id in path_edge_ids:
+            v_a, v_b, _line = graph["edges"][edge_id]
+            p_a = graph["vertices"][v_a]
+            p_b = graph["vertices"][v_b]
+            edge_classes.append(
+                _classify_circuit_edge(p_a, p_b, axis_ux, axis_uy, perp_distance, axis_proximity_m)
+            )
+
+        if "AXIS" not in edge_classes or "OUTER" not in edge_classes:
+            raise ValueError(
+                f"circuit loop {loop_id!r}: degenerate edge classification — {edge_classes}"
+            )
+        first_outer = edge_classes.index("OUTER")
+        last_outer = len(edge_classes) - 1 - list(reversed(edge_classes)).index("OUTER")
+        if any(c != "OUTER" for c in edge_classes[first_outer : last_outer + 1]):
+            raise ValueError(
+                f"circuit loop {loop_id!r}: outer run not contiguous — {edge_classes}"
+            )
+        if any(c != "AXIS" for c in edge_classes[:first_outer]):
+            raise ValueError(
+                f"circuit loop {loop_id!r}: head axis run contains non-axis edges — {edge_classes}"
+            )
+        if any(c != "AXIS" for c in edge_classes[last_outer + 1 :]):
+            raise ValueError(
+                f"circuit loop {loop_id!r}: tail axis run contains non-axis edges — {edge_classes}"
+            )
+
+        nw_stem_vertex_ids = path_vertex_ids[: first_outer + 1]
+        outer_vertex_ids = path_vertex_ids[first_outer : last_outer + 2]
+        se_stem_vertex_ids = path_vertex_ids[last_outer + 1 :]
+
+        nw_stem_pts = [graph["vertices"][v] for v in nw_stem_vertex_ids]
+        outer_pts = _collapse_collinear_points(
+            [graph["vertices"][v] for v in outer_vertex_ids]
+        )
+        se_stem_pts = [graph["vertices"][v] for v in se_stem_vertex_ids]
+
+        axis_points = (
+            list(reversed(nw_stem_pts))
+            + [thr_n, thr_s]
+            + list(reversed(se_stem_pts))
+        )
+
+        loop_specs.append(
+            {
+                "loopId": loop_id,
+                "axisPoints": axis_points,
+                "outerPoints": outer_pts,
+                "runwayNorth": decl["runwayNorth"],
+                "runwaySouth": decl["runwaySouth"],
+                "thresholdNorth": decl["thresholdNorth"],
+                "thresholdSouth": decl["thresholdSouth"],
+                "axisAnchorIds": decl.get("axisAnchorIds", []),
+                "outerAnchorIds": decl.get("outerAnchorIds", []),
+                "northDirection": decl["northDirection"],
+                "southDirection": decl["southDirection"],
+                "altitudeFeet": altitude_ft,
+            }
+        )
+
+    return loop_specs
+
+
+def _build_stitched_graph(
+    lines: list[report.DxfLine],
+    tolerance_m: float,
+) -> dict[str, Any]:
+    empty_adjacency: dict[int, list[tuple[int, int]]] = defaultdict(list)
+    if not lines:
+        return {"vertices": {}, "edges": {}, "adjacency": empty_adjacency}
+
+    endpoints: list[report.XY] = []
+    for line in lines:
+        endpoints.append(line.start)
+        endpoints.append(line.end)
+
+    n_ep = len(endpoints)
+    parent = list(range(n_ep))
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: int, b: int) -> None:
+        ra = find(a)
+        rb = find(b)
+        if ra != rb:
+            parent[rb] = ra
+
+    tol_sq = tolerance_m * tolerance_m
+    for i in range(n_ep):
+        p_i = endpoints[i]
+        for j in range(i + 1, n_ep):
+            p_j = endpoints[j]
+            dx = p_j.x - p_i.x
+            dy = p_j.y - p_i.y
+            if dx * dx + dy * dy <= tol_sq:
+                union(i, j)
+
+    cluster_members: dict[int, list[int]] = defaultdict(list)
+    for idx in range(n_ep):
+        cluster_members[find(idx)].append(idx)
+
+    vertex_of_endpoint: dict[int, int] = {}
+    vertices: dict[int, report.XY] = {}
+    for v_id, (_root, members) in enumerate(cluster_members.items()):
+        cx = sum(endpoints[m].x for m in members) / len(members)
+        cy = sum(endpoints[m].y for m in members) / len(members)
+        vertices[v_id] = report.XY(cx, cy)
+        for m in members:
+            vertex_of_endpoint[m] = v_id
+
+    edges: dict[int, tuple[int, int, report.DxfLine]] = {}
+    adjacency: dict[int, list[tuple[int, int]]] = defaultdict(list)
+    for line_idx, line in enumerate(lines):
+        v_a = vertex_of_endpoint[line_idx * 2]
+        v_b = vertex_of_endpoint[line_idx * 2 + 1]
+        if v_a == v_b:
+            continue
+        edges[line_idx] = (v_a, v_b, line)
+        adjacency[v_a].append((line_idx, v_b))
+        adjacency[v_b].append((line_idx, v_a))
+
+    return {"vertices": vertices, "edges": edges, "adjacency": adjacency}
+
+
+def _find_nearest_dangling_vertex(
+    graph: dict[str, Any],
+    target: report.XY,
+    max_distance_m: float,
+) -> int | None:
+    best: int | None = None
+    best_d = max_distance_m
+    for v_id, xy in graph["vertices"].items():
+        if len(graph["adjacency"][v_id]) != 1:
+            continue
+        d = math.hypot(xy.x - target.x, xy.y - target.y)
+        if d <= best_d:
+            best_d = d
+            best = v_id
+    return best
+
+
+def _simple_path_between(
+    graph: dict[str, Any],
+    start: int,
+    end: int,
+) -> tuple[list[int], list[int]]:
+    if start == end:
+        return [start], []
+    visited: set[int] = {start}
+    vertex_stack: list[int] = [start]
+    edge_stack: list[int] = []
+
+    def dfs(current: int) -> bool:
+        if current == end:
+            return True
+        for edge_id, neighbour in graph["adjacency"][current]:
+            if neighbour in visited:
+                continue
+            visited.add(neighbour)
+            vertex_stack.append(neighbour)
+            edge_stack.append(edge_id)
+            if dfs(neighbour):
+                return True
+            vertex_stack.pop()
+            edge_stack.pop()
+            visited.remove(neighbour)
+        return False
+
+    if dfs(start):
+        return list(vertex_stack), list(edge_stack)
+    return [], []
+
+
+def _collapse_collinear_points(
+    points: list[report.XY],
+    angular_tolerance_deg: float = 3.0,
+) -> list[report.XY]:
+    if len(points) <= 2:
+        return list(points)
+    out = [points[0]]
+    cos_threshold = math.cos(math.radians(angular_tolerance_deg))
+    for i in range(1, len(points) - 1):
+        prev = out[-1]
+        curr = points[i]
+        nxt = points[i + 1]
+        dx1 = curr.x - prev.x
+        dy1 = curr.y - prev.y
+        dx2 = nxt.x - curr.x
+        dy2 = nxt.y - curr.y
+        n1 = math.hypot(dx1, dy1)
+        n2 = math.hypot(dx2, dy2)
+        if n1 < 1e-9 or n2 < 1e-9:
+            continue
+        cos_angle = (dx1 * dx2 + dy1 * dy2) / (n1 * n2)
+        if cos_angle >= cos_threshold:
+            continue
+        out.append(curr)
+    out.append(points[-1])
+    return out
+
+
+def _classify_circuit_edge(
+    point_a: report.XY,
+    point_b: report.XY,
+    axis_ux: float,
+    axis_uy: float,
+    perp_distance_fn,
+    axis_proximity_m: float,
+) -> str:
+    dx = point_b.x - point_a.x
+    dy = point_b.y - point_a.y
+    length = math.hypot(dx, dy)
+    if length < 1e-6:
+        return "OUTER"
+    ex = dx / length
+    ey = dy / length
+    parallelism = abs(ex * axis_ux + ey * axis_uy)
+    mid = report.XY((point_a.x + point_b.x) / 2.0, (point_a.y + point_b.y) / 2.0)
+    mid_perp = abs(perp_distance_fn(mid))
+    if parallelism >= 0.95 and mid_perp <= axis_proximity_m:
+        return "AXIS"
+    return "OUTER"
+
+
 def projected_circuit_procedures(
     scene: authoring.SceneContext,
     registry: PointRegistry,
@@ -1000,12 +1329,28 @@ def projected_circuit_procedures(
     }
 
     circuits: dict[str, dict[str, Any]] = {}
-    published_circuit_ids_by_procedure: dict[str, list[str]] = {
-        "prc_4_west_traffic_circuit": [],
-        "prc_5_east_hold": [],
-    }
+    topology = (
+        scene.manifest.get("circuitProjection", {}).get("topology")
+        or "branched_main_plus_sides"
+    )
+    if topology == "branched_main_plus_sides":
+        published_circuit_ids_by_procedure: dict[str, list[str]] = {
+            "prc_4_west_traffic_circuit": [],
+            "prc_5_east_hold": [],
+        }
+    else:
+        published_circuit_ids_by_procedure = {}
 
-    for loop_spec in projected_loop_specs(scene, threshold_points):
+    try:
+        loop_specs = projected_loop_specs(scene, threshold_points)
+    except ValueError:
+        topology_explicit = bool(scene.manifest.get("circuitProjection", {}).get("topology"))
+        if topology_explicit:
+            raise
+        candidate_entities["publishedCircuitAssociations"] = {}
+        return {}
+
+    for loop_spec in loop_specs:
         axis_points, axis_unplaced = insert_points_into_polyline(
             loop_spec["axisPoints"],
             [
@@ -1091,7 +1436,7 @@ def projected_circuit_procedures(
                     width_m=SKY_WIDTH_METERS,
                     source="cad_circuit_projection",
                     projection_status="direct_runtime_circuit_entity",
-                    note=f"Projected LOWG circuit {runway_id} {loop_spec['loopId']} {leg_name.lower()} leg.",
+                    note=f"Projected {airport_code} circuit {runway_id} {loop_spec['loopId']} {leg_name.lower()} leg.",
                 )
                 legs.append(
                     {
@@ -1525,50 +1870,176 @@ def projected_segmented_route(
     )
 
 
-def lowg_vfr_route_projection(
+_AIRSPACE_CLASS_PRIORITY: dict[str, int] = {
+    "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6,
+}
+
+
+def _runtime_volume_altitude_sort_key(volume: dict[str, Any]) -> tuple[int, int]:
+    """Mirrors `airport_world_candidate._altitude_sort_key`. Lowest altitude wins.
+
+    Kept as a local copy to avoid a circular import; `airport_world_candidate`
+    consumes structured-package output, so we cannot import the other way."""
+    reference = volume.get("lowerReference")
+    unit = volume.get("lowerUnit")
+    value = volume.get("lowerValue")
+    numeric_value = int(value) if isinstance(value, (int, float)) else 999999
+    if reference == "HEI" and numeric_value == 0:
+        return (0, 0)
+    if unit == "FT" and reference in {"ALT", "HEI"}:
+        return (1, numeric_value)
+    if unit == "FL" and reference == "STD":
+        return (2, numeric_value)
+    return (3, numeric_value)
+
+
+def runtime_projected_volume_ids(candidate_airspace_volumes: dict[str, dict[str, Any]]) -> set[str]:
+    """Compute which candidate volume IDs will be projected into the world-candidate
+    runtime airspace volume set, mirroring `_low_level_runtime_airspace_volumes`.
+
+    Used by VFR route airspace projection so that route segments reference IDs that
+    will exist in the runtime AviationWorld, not all candidate class-layer variants."""
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for volume in candidate_airspace_volumes.values():
+        if not isinstance(volume, dict):
+            continue
+        if not isinstance(volume.get("volumeType"), str) or not isinstance(volume.get("airspaceClass"), str):
+            continue
+        base_code_id = str(volume.get("baseCodeId") or volume.get("codeId") or volume.get("id"))
+        grouped.setdefault(base_code_id, []).append(volume)
+    selected: set[str] = set()
+    for volumes in grouped.values():
+        lowest = min(volumes, key=_runtime_volume_altitude_sort_key)
+        if isinstance(lowest.get("id"), str):
+            selected.add(str(lowest["id"]))
+    return selected
+
+
+def _airspace_volume_priority(volume: dict[str, Any]) -> tuple[int, int, str]:
+    """Smaller is more specific. Tiebreak: tighter class first, then smaller
+    bounding-box area (CTR < TMA), then volume ID for determinism."""
+    cls = volume.get("airspaceClass")
+    cls_rank = _AIRSPACE_CLASS_PRIORITY.get(str(cls), 99)
+    area = volume.get("_bboxArea", 0.0)
+    return (cls_rank, int(area * 1e6), volume.get("id", ""))
+
+
+def _bbox_area(rings: list[list[report.XY]]) -> float:
+    if not rings:
+        return float("inf")
+    xs: list[float] = []
+    ys: list[float] = []
+    for ring in rings:
+        for pt in ring:
+            xs.append(pt.x)
+            ys.append(pt.y)
+    if not xs:
+        return float("inf")
+    return (max(xs) - min(xs)) * (max(ys) - min(ys))
+
+
+def _volume_containing(
+    point: report.XY,
+    volume_rings: dict[str, list[list[report.XY]]],
+    candidate_airspace_volumes: dict[str, dict[str, Any]],
+) -> str | None:
+    matches: list[str] = []
+    for vid, rings in volume_rings.items():
+        if any(report.point_in_polygon(point, ring) for ring in rings):
+            matches.append(vid)
+    if not matches:
+        return None
+    return min(
+        matches,
+        key=lambda vid: _airspace_volume_priority({
+            **candidate_airspace_volumes.get(vid, {}),
+            "id": vid,
+            "_bboxArea": _bbox_area(volume_rings.get(vid, [])),
+        }),
+    )
+
+
+def project_vfr_route_airspace_profile(
     route_id: str,
     point_ids: list[str],
     registry: PointRegistry,
     candidate_airspace_volumes: dict[str, dict[str, Any]],
     airport_code: str,
 ) -> tuple[list[str], dict[str, Any] | None, str]:
-    ctr_volume_id = "LO585" if "LO585" in candidate_airspace_volumes else None
+    """Airport-agnostic VFR route airspace-profile projection.
 
-    if route_id in {"vfr_southeast_entry_path", "vfr_southwest_entry_path"} and ctr_volume_id is not None:
+    Computes the airspace volume (if any) containing each route waypoint via 2D
+    point-in-polygon over the candidate airspace volumes. Adjacent waypoints in
+    the same volume produce an `IN_VOLUME` leg; differing volumes produce a
+    `TRANSITION` leg whose intersection point is computed by
+    `route_boundary_transition_point`. If every waypoint is in the same volume,
+    the route gets a single `IN_VOLUME` profile (no segmentation).
+
+    Routes whose waypoints fall entirely outside the airport's known airspace
+    volumes (e.g. cross-aerodrome corridor segments not yet covered by the
+    visible volume set) keep the `direct_geometry_airspace_profile_pending`
+    status so they can be filled in by a later cross-aerodrome merge step.
+
+    Tiebreaker for stacked volumes: prefer the more controlled airspace class
+    (A < B < C < D < E < F < G), then the smaller bounding-box area, then
+    volume ID alphabetically.
+    """
+    point_lookup = registry.point_lookup()
+    if len(point_ids) < 2:
+        return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+    points = [point_lookup.get(pid) for pid in point_ids]
+    if any(point is None for point in points):
+        return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+    runtime_volume_ids = runtime_projected_volume_ids(candidate_airspace_volumes)
+    volume_rings: dict[str, list[list[report.XY]]] = {
+        vid: candidate_airspace_boundary_rings(candidate_airspace_volumes, vid, point_lookup)
+        for vid in candidate_airspace_volumes
+        if vid in runtime_volume_ids
+    }
+    volume_rings = {vid: rings for vid, rings in volume_rings.items() if rings}
+
+    point_volumes: list[str | None] = [
+        _volume_containing(point, volume_rings, candidate_airspace_volumes)
+        for point in points
+        if point is not None
+    ]
+
+    if any(volume is None for volume in point_volumes):
+        return point_ids, None, "direct_geometry_airspace_profile_pending"
+
+    distinct = {volume for volume in point_volumes if isinstance(volume, str)}
+    if len(distinct) == 1:
         return (
             point_ids,
-            {
-                "kind": "IN_VOLUME",
-                "airspaceVolumeId": ctr_volume_id,
-            },
+            {"kind": "IN_VOLUME", "airspaceVolumeId": distinct.pop()},
             "direct",
         )
 
-    if route_id == "vfr_western_corridor_path" and ctr_volume_id is not None and "LO0EF_E" in candidate_airspace_volumes:
-        return projected_segmented_route(
-            route_id,
-            point_ids,
-            registry,
-            candidate_airspace_volumes,
-            airport_code,
-            [
-                {
-                    "kind": "IN_VOLUME",
-                    "airspaceVolumeId": ctr_volume_id,
-                },
-                {
-                    "kind": "IN_VOLUME",
-                    "airspaceVolumeId": ctr_volume_id,
-                },
-                {
-                    "kind": "TRANSITION",
-                    "fromAirspaceVolumeId": ctr_volume_id,
-                    "toAirspaceVolumeId": "LO0EF_E",
-                },
-            ],
-        )
+    leg_specs: list[dict[str, str]] = []
+    for index in range(len(point_ids) - 1):
+        from_volume = point_volumes[index]
+        to_volume = point_volumes[index + 1]
+        if from_volume == to_volume and isinstance(from_volume, str):
+            leg_specs.append({"kind": "IN_VOLUME", "airspaceVolumeId": from_volume})
+        elif isinstance(from_volume, str) and isinstance(to_volume, str):
+            leg_specs.append({
+                "kind": "TRANSITION",
+                "fromAirspaceVolumeId": from_volume,
+                "toAirspaceVolumeId": to_volume,
+            })
+        else:
+            return point_ids, None, "direct_geometry_airspace_profile_pending"
 
-    return point_ids, None, "direct_geometry_airspace_profile_pending"
+    return projected_segmented_route(
+        route_id,
+        point_ids,
+        registry,
+        candidate_airspace_volumes,
+        airport_code,
+        leg_specs,
+    )
 
 
 def published_reference_kind(resolution_type: str | None, point_id: str | None = None) -> str:
@@ -1649,8 +2120,16 @@ def cifp_fix_resolution_detail(
     cifp_data: dict[str, Any],
     ofmx_data: dict[str, Any],
     chart_fix_data: dict[str, Any],
+    xplane_fixes: dict[str, Any] | None = None,
+    xplane_navaids: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    resolution = report.cifp_fix_resolution(cifp_data, ofmx_data, chart_fix_data)
+    resolution = report.cifp_fix_resolution(
+        cifp_data,
+        ofmx_data,
+        chart_fix_data,
+        xplane_fixes,
+        xplane_navaids,
+    )
     resolved_designated_points = {
         identifier: {
             "codeId": point.code_id,
@@ -1681,6 +2160,29 @@ def cifp_fix_resolution_detail(
         for identifier, entry in sorted(chart_fix_data.get("resolvedFixes", {}).items())
         if identifier in resolution["presentInChartCodingTables"]
     }
+    resolved_xplane_fixes = {
+        identifier: {
+            "region": entry.region,
+            "country": entry.country,
+            "latitude": round(entry.position.lat, 8),
+            "longitude": round(entry.position.lon, 8),
+        }
+        for identifier, entry in sorted((xplane_fixes or {}).items())
+        if identifier in resolution["presentInXplaneFixes"]
+    }
+    resolved_xplane_navaids = {
+        identifier: {
+            "region": entry.region,
+            "country": entry.country,
+            "typeCode": entry.type_code,
+            "frequency": entry.frequency,
+            "name": entry.name,
+            "latitude": round(entry.position.lat, 8),
+            "longitude": round(entry.position.lon, 8),
+        }
+        for identifier, entry in sorted((xplane_navaids or {}).items())
+        if identifier in resolution["presentInXplaneNavaids"]
+    }
     references_by_identifier = {
         identifier: sorted(
             {
@@ -1695,6 +2197,8 @@ def cifp_fix_resolution_detail(
         "resolvedDesignatedPoints": resolved_designated_points,
         "resolvedNavaids": resolved_navaids,
         "resolvedChartPoints": resolved_chart_points,
+        "resolvedXplaneFixes": resolved_xplane_fixes,
+        "resolvedXplaneNavaids": resolved_xplane_navaids,
         "chartSourceFiles": chart_fix_data.get("filesScanned", []),
         "conflictingChartIdentifiers": chart_fix_data.get("conflictingIdentifiers", []),
         "referencesByIdentifier": references_by_identifier,
@@ -1726,6 +2230,8 @@ def ifr_fix_position_lookup(
         ("resolvedNavaids", "ofmx_navaid"),
         ("resolvedChartPoints", "chart_coding_table"),
         ("resolvedDerivedApproachGeometry", "derived_approach_geometry"),
+        ("resolvedXplaneFixes", "xplane_fix"),
+        ("resolvedXplaneNavaids", "xplane_navaid"),
     ):
         for identifier, entry in sorted(fix_resolution.get(key, {}).items()):
             if isinstance(entry, dict):
@@ -2014,7 +2520,9 @@ def hold_leg_time_minutes(record: report.CifpApproachRecord) -> float | None:
     return int(numeric) / 10.0
 
 
-LOWG_RUNTIME_IFR_MINIMA_POLICY: dict[str, dict[str, Any]] = {
+RUNTIME_IFR_MINIMA_POLICIES_BY_AIRPORT: dict[str, dict[str, dict[str, Any]]] = {}
+
+RUNTIME_IFR_MINIMA_POLICIES_BY_AIRPORT["LOWG"] = {
     "D16C": {
         "selectedApproachType": "VOR",
         "minimum": {
@@ -2082,67 +2590,98 @@ LOWG_RUNTIME_IFR_MINIMA_POLICY: dict[str, dict[str, Any]] = {
     },
 }
 
+RUNTIME_IFR_MINIMA_POLICIES_BY_AIRPORT["LJMB"] = {
+    "I32": {
+        "selectedApproachType": "ILS",
+        "minimum": {
+            "type": "DECISION_ALTITUDE",
+            "altitudeFeet": 1056,
+            "heightFeet": 200,
+        },
+        "sourceChart": "LJMB.pdf page 11 (Jepp 11-1 ILS Rwy 32, 27 AUG 21)",
+        "selectionNote": (
+            "Version 1 runtime projection uses ILS CAT I minima from the Jepp 11-1 chart. "
+            "The combined LOC alternate on the same procedure and the standalone Q32 LOC approach "
+            "remain publication-only."
+        ),
+    },
+}
+
 
 def tower_scope_ifr_holding_patterns(
     default_approaches: dict[str, list[report.CifpApproachRecord]],
     position_lookup: dict[str, dict[str, Any]],
     project,
+    airport_code: str,
 ) -> dict[str, Any]:
-    gbg_holds = [
-        record
-        for records in default_approaches.values()
-        for record in records
-        if record.fix_identifier == "GBG" and record.path_terminator == "HM"
-    ]
-    if not gbg_holds:
+    holds_by_fix: dict[str, list[report.CifpApproachRecord]] = defaultdict(list)
+    for records in default_approaches.values():
+        for record in records:
+            if record.path_terminator == "HM" and record.fix_identifier:
+                holds_by_fix[record.fix_identifier].append(record)
+
+    if not holds_by_fix:
         return {
             "status": "missing_default_missed_approach_hold_data",
             "byId": {},
         }
 
-    first = gbg_holds[0]
-    position_entry = position_lookup.get("GBG")
-    position_document = None
-    if position_entry is not None:
-        position_document = {
-            "latitude": round(position_entry["latitude"], 8),
-            "longitude": round(position_entry["longitude"], 8),
-            "localPosition": local_position_document(project, position_entry["latitude"], position_entry["longitude"]),
-            "sourceKind": position_entry["sourceKind"],
-        }
-
-    return {
-        "status": "candidate_shared_missed_approach_hold_without_runtime_loop",
-        "byId": {
-            "LOWG_GBG_MISSED_HOLD": {
-                "id": "LOWG_GBG_MISSED_HOLD",
-                "fixIdentifier": "GBG",
-                "position": position_document,
-                "turnDirection": (
-                    "LEFT"
-                    if first.turn_direction_code == "L"
-                    else "RIGHT" if first.turn_direction_code == "R" else None
-                ),
-                "inboundTrackMagneticDegrees": (
-                    first.secondary_course_tenths / 10.0
-                    if first.secondary_course_tenths is not None
-                    else None
-                ),
-                "legTimeMinutes": hold_leg_time_minutes(first),
-                "minimumAltitudeFeet": first.altitude_1,
-                "sourceProcedures": sorted(default_approaches.keys()),
-                "projectionStatus": "candidate_ifr_hold_without_runtime_loop",
-                "runtimeProjectionBlockers": [
-                    "holding_pattern_loop_geometry_unavailable",
-                ],
+    by_id: dict[str, dict[str, Any]] = {}
+    source_by_fix = {
+        fix: sorted({
+            name
+            for name, records in default_approaches.items()
+            for record in records
+            if record.fix_identifier == fix and record.path_terminator == "HM"
+        })
+        for fix in holds_by_fix
+    }
+    for fix_id in sorted(holds_by_fix):
+        records = holds_by_fix[fix_id]
+        first = records[0]
+        position_entry = position_lookup.get(fix_id)
+        position_document = None
+        if position_entry is not None:
+            position_document = {
+                "latitude": round(position_entry["latitude"], 8),
+                "longitude": round(position_entry["longitude"], 8),
+                "localPosition": local_position_document(project, position_entry["latitude"], position_entry["longitude"]),
+                "sourceKind": position_entry["sourceKind"],
             }
-        },
+        hold_id = f"{airport_code}_{fix_id}_MISSED_HOLD"
+        by_id[hold_id] = {
+            "id": hold_id,
+            "fixIdentifier": fix_id,
+            "position": position_document,
+            "turnDirection": (
+                "LEFT" if first.turn_direction_code == "L"
+                else "RIGHT" if first.turn_direction_code == "R"
+                else None
+            ),
+            "inboundTrackMagneticDegrees": (
+                first.secondary_course_tenths / 10.0
+                if first.secondary_course_tenths is not None
+                else None
+            ),
+            "legTimeMinutes": hold_leg_time_minutes(first),
+            "minimumAltitudeFeet": first.altitude_1,
+            "sourceProcedures": source_by_fix[fix_id],
+            "projectionStatus": "candidate_ifr_hold_without_runtime_loop",
+            "runtimeProjectionBlockers": [
+                "holding_pattern_loop_geometry_unavailable",
+            ],
+        }
+    return {
+        "status": "candidate_ifr_holds_without_runtime_loop",
+        "byId": by_id,
     }
 
 
 def approach_type_candidates(name: str) -> list[str]:
     if name.startswith("I"):
         return ["ILS", "LOC"]
+    if name.startswith("Q"):
+        return ["LOC"]
     if name.startswith("D"):
         return ["VOR"]
     if name.startswith("R"):
@@ -2150,8 +2689,9 @@ def approach_type_candidates(name: str) -> list[str]:
     return []
 
 
-def runtime_ifr_projection_policy(name: str) -> dict[str, Any] | None:
-    policy = LOWG_RUNTIME_IFR_MINIMA_POLICY.get(name)
+def runtime_ifr_projection_policy(airport_code: str, name: str) -> dict[str, Any] | None:
+    per_airport = RUNTIME_IFR_MINIMA_POLICIES_BY_AIRPORT.get(airport_code, {})
+    policy = per_airport.get(name)
     return dict(policy) if isinstance(policy, dict) else None
 
 
@@ -2160,6 +2700,7 @@ def tower_scope_ifr_approaches(
     fix_resolution: dict[str, Any],
     runway_thresholds: dict[str, dict[str, float]],
     project,
+    airport_code: str,
 ) -> dict[str, Any]:
     default_approaches: dict[str, list[report.CifpApproachRecord]] = defaultdict(list)
     feeder_transitions: dict[str, set[str]] = defaultdict(set)
@@ -2172,14 +2713,14 @@ def tower_scope_ifr_approaches(
         if record.transition != "(default)":
             transition_approaches[record.procedure_name][record.transition].append(record)
             continue
-        if record.route_type not in {"D", "I", "R"}:
+        if record.route_type not in {"D", "I", "Q", "R"}:
             continue
         if not record.procedure_name.startswith(record.route_type):
             continue
         default_approaches[record.procedure_name].append(record)
 
     position_lookup = ifr_fix_position_lookup(fix_resolution, runway_thresholds)
-    holding_patterns = tower_scope_ifr_holding_patterns(default_approaches, position_lookup, project)
+    holding_patterns = tower_scope_ifr_holding_patterns(default_approaches, position_lookup, project, airport_code)
     approaches_by_name: dict[str, Any] = {}
 
     for name, records in sorted(default_approaches.items()):
@@ -2230,7 +2771,7 @@ def tower_scope_ifr_approaches(
         if unresolved_fix_identifiers:
             runtime_projection_blockers.append("unresolved_fix_positions")
 
-        runtime_policy = runtime_ifr_projection_policy(name)
+        runtime_policy = runtime_ifr_projection_policy(airport_code, name)
         if runtime_policy is not None:
             runtime_projection_blockers = [
                 blocker
@@ -2272,10 +2813,13 @@ def tower_scope_ifr_approaches(
                 candidate_ifr_leg(record, position_lookup, project)
                 for record in missed_records
             ],
-            "missedApproachHoldCandidateId": (
-                "LOWG_GBG_MISSED_HOLD"
-                if any(record.fix_identifier == "GBG" for record in missed_records)
-                else None
+            "missedApproachHoldCandidateId": next(
+                (
+                    f"{airport_code}_{record.fix_identifier}_MISSED_HOLD"
+                    for record in missed_records
+                    if record.path_terminator == "HM" and record.fix_identifier
+                ),
+                None,
             ),
             "runtimeProjectionPolicy": runtime_policy,
             "runtimeProjectionBlockers": runtime_projection_blockers,
@@ -2305,11 +2849,19 @@ def build_ifr_inventory(
     ofmx_data: dict[str, Any],
     chart_fix_data: dict[str, Any],
     project,
+    xplane_fixes: dict[str, Any] | None = None,
+    xplane_navaids: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     procedures = cifp_data["procedures"]
     procedure_refs = cifp_data["procedureRefs"]
     runway_thresholds = cifp_runway_thresholds(cifp_data)
-    fix_resolution = cifp_fix_resolution_detail(cifp_data, ofmx_data, chart_fix_data)
+    fix_resolution = cifp_fix_resolution_detail(
+        cifp_data,
+        ofmx_data,
+        chart_fix_data,
+        xplane_fixes,
+        xplane_navaids,
+    )
     airport_code = ofmx_data["airport"].code_id if ofmx_data.get("airport") is not None else "AIRPORT"
     total_procedure_names = sum(
         int(procedures[section].get("nameCount", 0))
@@ -2395,6 +2947,7 @@ def build_ifr_inventory(
             fix_resolution,
             runway_thresholds,
             project,
+            airport_code,
         ),
         "runwayThresholds": runway_thresholds,
         "fixResolution": fix_resolution,
@@ -3237,6 +3790,22 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
     }
     charts_directory = report.resolve_path(root, manifest["sources"].get("chartsDirectory"))
     chart_fix_data = report.extract_chart_coding_table_fixes(charts_directory)
+    xplane_fixes_source = manifest["sources"].get("xplaneFixes")
+    xplane_navaids_source = manifest["sources"].get("xplaneNavaids")
+    if (xplane_fixes_source is None) != (xplane_navaids_source is None):
+        raise ValueError(
+            "xplaneFixes and xplaneNavaids must be declared together in the manifest sources block",
+        )
+    xplane_fixes = (
+        report.parse_xplane_fix_cache(report.resolve_path(root, xplane_fixes_source))
+        if isinstance(xplane_fixes_source, str)
+        else None
+    )
+    xplane_navaids = (
+        report.parse_xplane_navaid_cache(report.resolve_path(root, xplane_navaids_source))
+        if isinstance(xplane_navaids_source, str)
+        else None
+    )
     airport = ofmx_data["airport"]
     origin = report.Geo(float(apt_metadata["datum_lat"]), float(apt_metadata["datum_lon"]))
     project = report.projector(origin)
@@ -3851,7 +4420,13 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
     for point_ref in supplemental_vfr_point_refs(manifest):
         if point_ref in core_entities["fixes"]:
             continue
-        supplemental_point = resolve_supplemental_vfr_point(point_ref, ofmx_data, cup_data)
+        supplemental_point = resolve_supplemental_vfr_point(
+            point_ref,
+            ofmx_data,
+            cup_data,
+            xplane_fixes=xplane_fixes,
+            xplane_navaids=xplane_navaids,
+        )
         if supplemental_point is None:
             unresolved_supplemental_vfr_points.append(point_ref)
             continue
@@ -4018,7 +4593,7 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
             for point_id in route.get("pointIds", [])
             if isinstance(point_id, str)
         ]
-        projected_point_ids, airspace_profile, route_projection_status = lowg_vfr_route_projection(
+        projected_point_ids, airspace_profile, route_projection_status = project_vfr_route_airspace_profile(
             route_id,
             point_ids,
             registry,
@@ -4226,7 +4801,14 @@ def build_structured_airport_package(manifest_path: Path) -> dict[str, Any]:
         "operationalSectors": sector_shapes(scene),
     }
 
-    candidate_entities["ifrProcedures"] = build_ifr_inventory(cifp_data, ofmx_data, chart_fix_data, project)
+    candidate_entities["ifrProcedures"] = build_ifr_inventory(
+        cifp_data,
+        ofmx_data,
+        chart_fix_data,
+        project,
+        xplane_fixes=xplane_fixes,
+        xplane_navaids=xplane_navaids,
+    )
 
     unresolved_published_vfr_point_refs = sorted(
         {

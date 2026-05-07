@@ -136,46 +136,7 @@
     }
   ],
   "namedMappings": {
-    "operationalSectors": [
-      {
-        "sectorId": "ljmb_approach_sector",
-        "label": "MARIBOR APPROACH",
-        "status": "scaffolded_from_jepp_19_1_and_19_2",
-        "kind": "vfr_operational_sector",
-        "anchorPointRef": "OSMOT",
-        "anchorRole": "ctr_boundary_reporting_point",
-        "entryExitPointRefs": ["GOLVA", "MUREG", "PETOV", "OBUTI", "NIDLO", "TISKO", "DIMLO", "MS2", "MS3", "ME3", "ME4", "MW1"],
-        "associatedProcedureIds": ["ljmb_tma_entry_general"],
-        "contactRequirement": {
-          "role": "APPROACH",
-          "beforeEntry": true
-        },
-        "altitudeLimits": {
-          "upperFeetMsl": 12500
-        },
-        "relationToCtr": "adjacent_to_ctr_operational_sector",
-        "behaviourNote": "Aggregate VFR operational sector covering the TMA Maribor 1 & 2 entry portion of Maribor Approach's airspace. Boundary geometry comes from the worked OpenAir-backed TMA volumes in the structured package rather than from a working sector DXF."
-      },
-      {
-        "sectorId": "ljmb_tower_sector",
-        "label": "MARIBOR TOWER",
-        "status": "scaffolded_from_jepp_19_1_and_19_2",
-        "kind": "vfr_operational_sector",
-        "anchorPointRef": "OSMOT",
-        "anchorRole": "ctr_boundary_reporting_point",
-        "entryExitPointRefs": ["OSMOT", "LAPNA", "MN1", "MN2", "ME2", "MS1", "IRLIX", "ME1", "MIRSO"],
-        "associatedProcedureIds": ["ljmb_ctr_entry_general"],
-        "contactRequirement": {
-          "role": "TOWER",
-          "beforeEntry": true
-        },
-        "altitudeLimits": {
-          "upperFeetMsl": 3500
-        },
-        "relationToCtr": "within_ctr_operational_sector",
-        "behaviourNote": "Maribor Tower VFR operational sector covering the CTR Maribor reporting points. Boundary geometry comes from the OpenAir-backed CTR MARIBOR volume in the structured package rather than from a working sector DXF."
-      }
-    ],
+    "operationalSectors": [],
     "vfrRoutes": [
       {
         "routeId": "ljmb_mn_corridor_inbound",

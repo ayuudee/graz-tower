@@ -18,6 +18,30 @@ import airport_entity_projection as projection
 import render_airport_authoring as authoring
 
 
+def _aip_without_boundaryless_sectors(aip: dict[str, Any]) -> dict[str, Any]:
+    """Drop operational sectors that have no boundary geometry from the
+    world-candidate AIP projection. The runtime `AirspaceBoundary` requires
+    at least one ring, and a boundaryless sector would crash the Kotlin loader.
+
+    Sectors without geometry still live in the structured-airport-package's
+    candidate section so their authoring intent is not lost; they just don't
+    propagate into the runtime-ready world candidate yet.
+    """
+    if not isinstance(aip, dict):
+        return aip
+    sectors = aip.get("operationalSectors")
+    if not isinstance(sectors, dict):
+        return aip
+    kept = {
+        sector_id: sector
+        for sector_id, sector in sectors.items()
+        if isinstance(sector, dict) and sector.get("boundaryPathIds")
+    }
+    if kept == sectors:
+        return aip
+    return {**aip, "operationalSectors": kept}
+
+
 def _copy_point(point: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": point["id"],
@@ -1315,7 +1339,7 @@ def build_world_candidate(manifest_path: Path) -> dict[str, Any]:
                 "elevationFeet": aerodrome["elevationFeet"],
                 "magneticVariationDegrees": aerodrome["magneticVariationDegrees"] or 0,
                 "transitionAltitudeFeet": transition_altitude_feet,
-                "aip": aerodrome.get("aip", {}),
+                "aip": _aip_without_boundaryless_sectors(aerodrome.get("aip", {})),
                 "runways": dict(sorted(aerodrome["runways"].items())),
                 "circuits": dict(sorted(aerodrome.get("circuits", {}).items())),
                 "taxiways": world_taxiways,

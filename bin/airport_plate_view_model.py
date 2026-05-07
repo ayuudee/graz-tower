@@ -20,6 +20,13 @@ class RunwayRow:
     note: str
 
 
+DEFAULT_PLATE_IDS: list[str] = [
+    "AD-1", "AD-6", "AD-3", "AD-4", "AD-5",
+    "PRC-1", "PRC-2", "PRC-3", "PRC-4", "PRC-5",
+    "ENR-1", "AD-2", "ARR-1",
+]
+
+
 @dataclass(frozen=True)
 class PlateViewModel:
     root: Path
@@ -50,6 +57,7 @@ class PlateViewModel:
     current_core_assumptions: list[str]
     projection_gaps: list[str]
     omitted_features: list[str]
+    plate_ids: list[str]
 
 
 def path_lines(points: list[report.XY]) -> list[report.DxfLine]:
@@ -369,4 +377,17 @@ def build_plate_view_model(manifest_path: Path) -> PlateViewModel:
             for item in structured_package_data.get("projectionDiagnostics", {}).get("projectionGaps", [])
         ],
         omitted_features=[str(item) for item in world_candidate.get("omittedFeatures", [])],
+        plate_ids=_resolve_plate_ids(manifest),
     )
+
+
+def _resolve_plate_ids(manifest: dict[str, Any]) -> list[str]:
+    declared = manifest.get("plates")
+    if isinstance(declared, list) and declared:
+        out: list[str] = []
+        for entry in declared:
+            if isinstance(entry, str) and entry.strip():
+                out.append(entry.strip())
+        if out:
+            return out
+    return list(DEFAULT_PLATE_IDS)

@@ -2059,8 +2059,27 @@ def build_context(manifest_path: Path) -> SceneContext:
             ]
         else:
             circuit_attachments = []
+    elif working_dxf is not None:
+        authored_circuit_lines = filter_document_lines(
+            working_document,
+            working_dxf.get("layers", {}).get("authoredCircuitGraph"),
+        )
+        if authored_circuit_lines:
+            raw_circuit_components = sorted(
+                report.connected_components(authored_circuit_lines),
+                key=lambda component: len(component),
+                reverse=True,
+            )
+            circuit_components = raw_circuit_components
+            circuit_lines = authored_circuit_lines
+            circuit_points = []
+            circuit_attachments = []
+        else:
+            circuit_components = []
+            circuit_lines = []
+            circuit_points = []
+            circuit_attachments = []
     else:
-        circuit_transform = identity_transform()
         circuit_components = []
         circuit_lines = []
         circuit_points = []

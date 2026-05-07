@@ -1370,7 +1370,7 @@ def page_chrome_html(title: str, plate_id: str, body_html: str, data: PlateData)
         f'<div class="plate-meta"><div>{html.escape(header_meta_text(data))}</div><div>{html.escape(fuel_text())}</div></div>'
         '<div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div>'
         f'<div class="plate-body">{body_html}</div>'
-        f'<div class="plate-footer"><span>Generated LOWG entity-only draft.</span><span>{html.escape(plate_id)}</span><span>{html.escape(data.airport_code)}</span></div>'
+        f'<div class="plate-footer"><span>Generated {html.escape(data.airport_code)} entity-only draft.</span><span>{html.escape(plate_id)}</span><span>{html.escape(data.airport_code)}</span></div>'
         "</section>"
     )
 
@@ -1567,48 +1567,54 @@ def arr1_page_html(data: PlateData, map_file: str) -> str:
     return page_chrome_html("VFR ARRIVAL ONLY", "ARR-1", "".join(blocks), data)
 
 
+def _build_page_html(data: PlateData, plate_id: str, page_map_files: dict[str, str]) -> str:
+    if plate_id == "AD-1":
+        return ad1_page_html(data, page_map_files["AD-1"])
+    if plate_id == "AD-6":
+        return ad6_page_html(data, page_map_files["AD-6"])
+    if plate_id == "AD-3":
+        return gap_page_html(
+            data,
+            "AD-3",
+            "BRIEFING",
+            ["No entity-projected briefing or local-regulations content exists for this page yet."],
+        )
+    if plate_id == "AD-4":
+        return gap_page_html(
+            data,
+            "AD-4",
+            "BRIEFING",
+            projection_gap_items(data, "published vfr procedures", "sector", "vfrroute")
+            or ["No entity-projected approach / departure / COM FAILURE briefing content exists for this page yet."],
+        )
+    if plate_id == "AD-5":
+        return gap_page_html(
+            data,
+            "AD-5",
+            "BRIEFING",
+            ["No entity-projected miscellaneous briefing content exists for this page yet."],
+        )
+    if plate_id in {"PRC-1", "PRC-2", "PRC-3"}:
+        return prc_arrival_departure_page_html(data, plate_id, "VFR APP/DEP", page_map_files[plate_id])
+    if plate_id == "PRC-4":
+        return prc4_page_html(data, page_map_files["PRC-4"])
+    if plate_id == "PRC-5":
+        return prc5_page_html(data, page_map_files["PRC-5"])
+    if plate_id == "ENR-1":
+        return enr1_page_html(data, page_map_files["ENR-1"])
+    if plate_id == "AD-2":
+        return ad2_page_html(data, page_map_files["AD-2"])
+    if plate_id == "ARR-1":
+        return arr1_page_html(data, page_map_files["ARR-1"])
+    raise ValueError(f"Unknown plate id: {plate_id}")
+
+
 def render_html_document(data: PlateData, output_dir: Path, page_map_files: dict[str, str]) -> str:
     issue_count = data.current_core_issue_count
 
     pages = [
-        ("AD-1", ad1_page_html(data, page_map_files["AD-1"])),
-        ("AD-6", ad6_page_html(data, page_map_files["AD-6"])),
-        (
-            "AD-3",
-            gap_page_html(
-                data,
-                "AD-3",
-                "BRIEFING",
-                ["No entity-projected briefing or local-regulations content exists for this page yet."],
-            ),
-        ),
-        (
-            "AD-4",
-            gap_page_html(
-                data,
-                "AD-4",
-                "BRIEFING",
-                projection_gap_items(data, "published vfr procedures", "sector", "vfrroute")
-                or ["No entity-projected approach / departure / COM FAILURE briefing content exists for this page yet."],
-            ),
-        ),
-        (
-            "AD-5",
-            gap_page_html(
-                data,
-                "AD-5",
-                "BRIEFING",
-                ["No entity-projected miscellaneous briefing content exists for this page yet."],
-            ),
-        ),
-        ("PRC-1", prc_arrival_departure_page_html(data, "PRC-1", "VFR APP/DEP", page_map_files["PRC-1"])),
-        ("PRC-2", prc_arrival_departure_page_html(data, "PRC-2", "VFR APP/DEP", page_map_files["PRC-2"])),
-        ("PRC-3", prc_arrival_departure_page_html(data, "PRC-3", "VFR APP/DEP", page_map_files["PRC-3"])),
-        ("PRC-4", prc4_page_html(data, page_map_files["PRC-4"])),
-        ("PRC-5", prc5_page_html(data, page_map_files["PRC-5"])),
-        ("ENR-1", enr1_page_html(data, page_map_files["ENR-1"])),
-        ("AD-2", ad2_page_html(data, page_map_files["AD-2"])),
-        ("ARR-1", arr1_page_html(data, page_map_files["ARR-1"])),
+        (plate_id, _build_page_html(data, plate_id, page_map_files))
+        for plate_id in data.plate_ids
     ]
 
     nav_items = "".join(
@@ -1621,7 +1627,7 @@ def render_html_document(data: PlateData, output_dir: Path, page_map_files: dict
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>LOWG generated plate pack</title>
+    <title>{html.escape(data.airport_code)} generated plate pack</title>
     <style>
       :root {{
         color-scheme: light;
@@ -1879,21 +1885,28 @@ def render_html_document(data: PlateData, output_dir: Path, page_map_files: dict
 """
 
 
+_PAGE_MAP_BUILDERS: dict[str, Any] = {
+    "AD-1": "render_ad1_map",
+    "AD-6": "render_ad6_map",
+    "PRC-1": "render_prc1_map",
+    "PRC-2": "render_prc2_map",
+    "PRC-3": "render_prc3_map",
+    "PRC-4": "render_prc4_map",
+    "PRC-5": "render_prc5_map",
+    "ENR-1": "render_enr1_map",
+    "AD-2": "render_ad2_map",
+    "ARR-1": "render_arr1_map",
+}
+
+
 def render_page_maps(data: PlateData, output_dir: Path) -> dict[str, str]:
-    page_map_builders = {
-        "AD-1": render_ad1_map,
-        "AD-6": render_ad6_map,
-        "PRC-1": render_prc1_map,
-        "PRC-2": render_prc2_map,
-        "PRC-3": render_prc3_map,
-        "PRC-4": render_prc4_map,
-        "PRC-5": render_prc5_map,
-        "ENR-1": render_enr1_map,
-        "AD-2": render_ad2_map,
-        "ARR-1": render_arr1_map,
-    }
+    builders = {name: globals()[name] for name in _PAGE_MAP_BUILDERS.values()}
     page_map_files: dict[str, str] = {}
-    for plate_id, builder in page_map_builders.items():
+    for plate_id in data.plate_ids:
+        builder_name = _PAGE_MAP_BUILDERS.get(plate_id)
+        if not builder_name:
+            continue
+        builder = builders[builder_name]
         filename = f"{slugify(plate_id)}-map.svg"
         output_path = output_dir / filename
         output_path.write_text(builder(data))

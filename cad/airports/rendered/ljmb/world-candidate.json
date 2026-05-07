@@ -6,21 +6,14 @@
     "Apron and stand access now use the authored working-DXF ground graph and authored stand points.",
     "Current-core holding points are attached to whichever taxiway paths already contain the authored holding-point geometry. This remains a path-level assignment, not a richer runway-entry area model.",
     "5 projected LJMB point(s) still fall outside the worked low-level CTR/TMA slice and are temporarily assigned to an explicit open-FIR Class G fallback volume.",
-    "LJMB_SID_DIML1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
-    "LJMB_SID_GOLV1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
     "LJMB_SID_GOLV2G_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
-    "LJMB_SID_MURE1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
-    "LJMB_SID_PETO1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
     "LJMB_SID_PETO2B_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
-    "LJMB_SID_PETO5D_32: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+    "LJMB_SID_PETO5D_32: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
     "LJMB_SID_VALU1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
-    "LJMB_SID_VALU4L_32: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
-    "LJMB_STAR_DIML1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_ERROW is not yet shared with any projected approach entry point or holding fix.",
+    "LJMB_SID_VALU4L_32: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
     "LJMB_STAR_DIML3C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
-    "LJMB_STAR_GOLV1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_ERROW is not yet shared with any projected approach entry point or holding fix.",
     "LJMB_STAR_GOLV3C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
     "LJMB_STAR_MURE1C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
-    "LJMB_STAR_PETO1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MIHIQ is not yet shared with any projected approach entry point or holding fix.",
     "LJMB_STAR_PETO3A: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
     "LJMB_STAR_VALU1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_VAJAH is not yet shared with any projected approach entry point or holding fix.",
     "LJMB_STAR_VALU4C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
@@ -32,6 +25,7 @@
     "LJMB richer IFR publication variants remain outside the current-core subset where the runtime model still collapses them to a single selected minima/profile path."
   ],
   "projectionGaps": [
+    "LJMB operational sectors are not yet structured, even though a first candidate working-airspace set is now available.",
     "Authored ground graph imported from working-DXF layer NEW_Taxi.",
     "Reference runway routing graph from REF_ROUTE_RUNWAYS was imported as authored runway-access support geometry.",
     "Manoeuvring-area perimeter from New_Mano retained as apron-style candidate geometry.",
@@ -502,13 +496,6 @@
       "icao": "LJMB",
       "magneticVariationDegrees": 4,
       "name": "Maribor Airport",
-      "roles": {
-        "TOWER": {
-          "name": "TOWER",
-          "frequencyMhz": "119.205",
-          "authorities": ["PLACEHOLDER"]
-        }
-      },
       "runways": {
         "14": {
           "declaredDistances": {
@@ -564,72 +551,6 @@
         }
       },
       "sids": {
-        "LJMB_SID_DIML1S_14": {
-          "id": "LJMB_SID_DIML1S_14",
-          "name": "DIML1S",
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "runwayId": "14",
-          "transitions": {},
-          "waypoints": [
-            {
-              "altitudeConstraint": null,
-              "name": "RW14",
-              "pointId": "LJMB_RWY_14_THR",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB141",
-              "pointId": "LJMB_IFR_FIX_MB141",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB142",
-              "pointId": "LJMB_IFR_FIX_MB142",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "DIMLO",
-              "pointId": "LJMB_FIX_DIMLO",
-              "speedConstraint": null
-            }
-          ]
-        },
-        "LJMB_SID_GOLV1S_14": {
-          "id": "LJMB_SID_GOLV1S_14",
-          "name": "GOLV1S",
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "runwayId": "14",
-          "transitions": {},
-          "waypoints": [
-            {
-              "altitudeConstraint": null,
-              "name": "RW14",
-              "pointId": "LJMB_RWY_14_THR",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB141",
-              "pointId": "LJMB_IFR_FIX_MB141",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB142",
-              "pointId": "LJMB_IFR_FIX_MB142",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "GOLVA",
-              "pointId": "LJMB_FIX_GOLVA",
-              "speedConstraint": null
-            }
-          ]
-        },
         "LJMB_SID_GOLV2G_14": {
           "id": "LJMB_SID_GOLV2G_14",
           "name": "GOLV2G",
@@ -653,66 +574,6 @@
               "altitudeConstraint": null,
               "name": "GOLVA",
               "pointId": "LJMB_FIX_GOLVA",
-              "speedConstraint": null
-            }
-          ]
-        },
-        "LJMB_SID_MURE1S_14": {
-          "id": "LJMB_SID_MURE1S_14",
-          "name": "MURE1S",
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "runwayId": "14",
-          "transitions": {},
-          "waypoints": [
-            {
-              "altitudeConstraint": null,
-              "name": "RW14",
-              "pointId": "LJMB_RWY_14_THR",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB141",
-              "pointId": "LJMB_IFR_FIX_MB141",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB142",
-              "pointId": "LJMB_IFR_FIX_MB142",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MUREG",
-              "pointId": "LJMB_FIX_MUREG",
-              "speedConstraint": null
-            }
-          ]
-        },
-        "LJMB_SID_PETO1S_14": {
-          "id": "LJMB_SID_PETO1S_14",
-          "name": "PETO1S",
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "runwayId": "14",
-          "transitions": {},
-          "waypoints": [
-            {
-              "altitudeConstraint": null,
-              "name": "RW14",
-              "pointId": "LJMB_RWY_14_THR",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "MB141",
-              "pointId": "LJMB_IFR_FIX_MB141",
-              "speedConstraint": null
-            },
-            {
-              "altitudeConstraint": null,
-              "name": "PETOV",
-              "pointId": "LJMB_FIX_PETOV",
               "speedConstraint": null
             }
           ]
@@ -755,12 +616,18 @@
           "transitions": {},
           "waypoints": [
             {
+              "altitudeConstraint": null,
+              "name": "RW32",
+              "pointId": "LJMB_RWY_32_THR",
+              "speedConstraint": null
+            },
+            {
               "altitudeConstraint": {
                 "kind": "AT_OR_ABOVE",
                 "minimumFeet": 1700
               },
-              "name": "RW32",
-              "pointId": "LJMB_RWY_32_THR",
+              "name": "D321C",
+              "pointId": "LJMB_IFR_FIX_D321C",
               "speedConstraint": null
             },
             {
@@ -821,12 +688,18 @@
           "transitions": {},
           "waypoints": [
             {
+              "altitudeConstraint": null,
+              "name": "RW32",
+              "pointId": "LJMB_RWY_32_THR",
+              "speedConstraint": null
+            },
+            {
               "altitudeConstraint": {
                 "kind": "AT_OR_ABOVE",
                 "minimumFeet": 1700
               },
-              "name": "RW32",
-              "pointId": "LJMB_RWY_32_THR",
+              "name": "D321C",
+              "pointId": "LJMB_IFR_FIX_D321C",
               "speedConstraint": null
             },
             {
@@ -1415,10 +1288,10 @@
           "LJMB_FIX_IRLIX",
           "LJMB_FIX_MIRSO",
           "LJMB_FIX_MS1",
-          "LJMB_IFR_FIX_D102H",
-          "LJMB_IFR_FIX_D345O",
+          "LJMB_IFR_FIX_D101H",
+          "LJMB_IFR_FIX_D321C",
+          "LJMB_IFR_FIX_D344O",
           "LJMB_IFR_FIX_D355G",
-          "LJMB_IFR_FIX_ERROW",
           "LJMB_IFR_FIX_MB145",
           "LJMB_IFR_FIX_MR",
           "LJMB_IFR_FIX_VAJAH",
@@ -1809,11 +1682,10 @@
           "LJMB_AIRSPACE_LJMB_OPENAIR_TMA_MURA_01_05",
           "LJMB_FIX_MS1",
           "LJMB_FIX_MW1",
-          "LJMB_IFR_FIX_D212J",
+          "LJMB_IFR_FIX_D211J",
           "LJMB_IFR_FIX_MB143",
           "LJMB_IFR_FIX_MB144",
           "LJMB_IFR_FIX_MB145",
-          "LJMB_IFR_FIX_MIHIQ",
           "LJMB_IFR_FIX_VAJAH"
         ],
         "name": "TMA DOLSKO 1",
@@ -1865,9 +1737,7 @@
           "LJMB_FIX_ME1",
           "LJMB_FIX_PETOV",
           "LJMB_IFR_FIX_MB141",
-          "LJMB_IFR_FIX_MB142",
-          "LJMB_IFR_FIX_MB143",
-          "LJMB_IFR_FIX_MIHIQ"
+          "LJMB_IFR_FIX_MB143"
         ],
         "name": "TMA MARIBOR 1",
         "note": "Runtime-usable airspace volume projected from OpenAir boundary geometry (openair_lj/isolated/ljla.seeyou.openair.txt).",
@@ -2086,14 +1956,13 @@
           "LJMB_FIX_MUREG",
           "LJMB_FIX_MW1",
           "LJMB_IFR_FIX_D073S",
-          "LJMB_IFR_FIX_D102H",
-          "LJMB_IFR_FIX_D212J",
-          "LJMB_IFR_FIX_D345O",
+          "LJMB_IFR_FIX_D101H",
+          "LJMB_IFR_FIX_D211J",
+          "LJMB_IFR_FIX_D321C",
+          "LJMB_IFR_FIX_D344O",
           "LJMB_IFR_FIX_D355G",
-          "LJMB_IFR_FIX_ERROW",
           "LJMB_IFR_FIX_MB144",
           "LJMB_IFR_FIX_MB145",
-          "LJMB_IFR_FIX_MB146",
           "LJMB_IFR_FIX_MR",
           "LJMB_IFR_FIX_VAJAH",
           "LJMB_IFR_FIX_ZAG37",
@@ -2598,13 +2467,11 @@
           "LJMB_FIX_NIDLO",
           "LJMB_FIX_PETOV",
           "LJMB_IFR_FIX_D073S",
-          "LJMB_IFR_FIX_D102H",
-          "LJMB_IFR_FIX_D345O",
+          "LJMB_IFR_FIX_D101H",
+          "LJMB_IFR_FIX_D321C",
+          "LJMB_IFR_FIX_D344O",
           "LJMB_IFR_FIX_D355G",
-          "LJMB_IFR_FIX_ERROW",
           "LJMB_IFR_FIX_MB141",
-          "LJMB_IFR_FIX_MB142",
-          "LJMB_IFR_FIX_MB146",
           "LJMB_IFR_FIX_MR",
           "LJMB_IFR_FIX_ZAG37",
           "LJMB_IFR_FIX_ZAG38",
@@ -2684,22 +2551,28 @@
         "pointId": "LJMB_IFR_FIX_D073S",
         "type": "WAYPOINT"
       },
-      "D102H": {
-        "id": "D102H",
-        "name": "D102H",
-        "pointId": "LJMB_IFR_FIX_D102H",
+      "D101H": {
+        "id": "D101H",
+        "name": "D101H",
+        "pointId": "LJMB_IFR_FIX_D101H",
         "type": "WAYPOINT"
       },
-      "D212J": {
-        "id": "D212J",
-        "name": "D212J",
-        "pointId": "LJMB_IFR_FIX_D212J",
+      "D211J": {
+        "id": "D211J",
+        "name": "D211J",
+        "pointId": "LJMB_IFR_FIX_D211J",
         "type": "WAYPOINT"
       },
-      "D345O": {
-        "id": "D345O",
-        "name": "D345O",
-        "pointId": "LJMB_IFR_FIX_D345O",
+      "D321C": {
+        "id": "D321C",
+        "name": "D321C",
+        "pointId": "LJMB_IFR_FIX_D321C",
+        "type": "WAYPOINT"
+      },
+      "D344O": {
+        "id": "D344O",
+        "name": "D344O",
+        "pointId": "LJMB_IFR_FIX_D344O",
         "type": "WAYPOINT"
       },
       "D355G": {
@@ -2715,12 +2588,6 @@
         "pointId": "LJMB_FIX_DIMLO",
         "projectionStatus": "direct",
         "reportingType": "VFR-MRP",
-        "type": "WAYPOINT"
-      },
-      "ERROW": {
-        "id": "ERROW",
-        "name": "ERROW",
-        "pointId": "LJMB_IFR_FIX_ERROW",
         "type": "WAYPOINT"
       },
       "GOLVA": {
@@ -2772,12 +2639,6 @@
         "pointId": "LJMB_IFR_FIX_MB141",
         "type": "WAYPOINT"
       },
-      "MB142": {
-        "id": "MB142",
-        "name": "MB142",
-        "pointId": "LJMB_IFR_FIX_MB142",
-        "type": "WAYPOINT"
-      },
       "MB143": {
         "id": "MB143",
         "name": "MB143",
@@ -2794,12 +2655,6 @@
         "id": "MB145",
         "name": "MB145",
         "pointId": "LJMB_IFR_FIX_MB145",
-        "type": "WAYPOINT"
-      },
-      "MB146": {
-        "id": "MB146",
-        "name": "MB146",
-        "pointId": "LJMB_IFR_FIX_MB146",
         "type": "WAYPOINT"
       },
       "ME1": {
@@ -2833,12 +2688,6 @@
         "pointId": "LJMB_FIX_ME4",
         "projectionStatus": "direct",
         "reportingType": "VFR-RP",
-        "type": "WAYPOINT"
-      },
-      "MIHIQ": {
-        "id": "MIHIQ",
-        "name": "MIHIQ",
-        "pointId": "LJMB_IFR_FIX_MIHIQ",
         "type": "WAYPOINT"
       },
       "MIRSO": {
@@ -4278,34 +4127,6 @@
           "surface": "RUNWAY",
           "widthMeters": 60.05
         },
-        "LJMB_SID_DIML1S_14_PATH": {
-          "id": "LJMB_SID_DIML1S_14_PATH",
-          "note": "Compiled SID geometry chain for LJMB_SID_DIML1S_14.",
-          "pointIds": [
-            "LJMB_RWY_14_THR",
-            "LJMB_IFR_FIX_MB141",
-            "LJMB_IFR_FIX_MB142",
-            "LJMB_FIX_DIMLO"
-          ],
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "source": "compiled_runtime_ifr_sid_chain",
-          "surface": "SKY",
-          "widthMeters": 1200.0
-        },
-        "LJMB_SID_GOLV1S_14_PATH": {
-          "id": "LJMB_SID_GOLV1S_14_PATH",
-          "note": "Compiled SID geometry chain for LJMB_SID_GOLV1S_14.",
-          "pointIds": [
-            "LJMB_RWY_14_THR",
-            "LJMB_IFR_FIX_MB141",
-            "LJMB_IFR_FIX_MB142",
-            "LJMB_FIX_GOLVA"
-          ],
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "source": "compiled_runtime_ifr_sid_chain",
-          "surface": "SKY",
-          "widthMeters": 1200.0
-        },
         "LJMB_SID_GOLV2G_14_PATH": {
           "id": "LJMB_SID_GOLV2G_14_PATH",
           "note": "Compiled SID geometry chain for LJMB_SID_GOLV2G_14.",
@@ -4313,33 +4134,6 @@
             "LJMB_RWY_14_THR",
             "LJMB_IFR_FIX_MR",
             "LJMB_FIX_GOLVA"
-          ],
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "source": "compiled_runtime_ifr_sid_chain",
-          "surface": "SKY",
-          "widthMeters": 1200.0
-        },
-        "LJMB_SID_MURE1S_14_PATH": {
-          "id": "LJMB_SID_MURE1S_14_PATH",
-          "note": "Compiled SID geometry chain for LJMB_SID_MURE1S_14.",
-          "pointIds": [
-            "LJMB_RWY_14_THR",
-            "LJMB_IFR_FIX_MB141",
-            "LJMB_IFR_FIX_MB142",
-            "LJMB_FIX_MUREG"
-          ],
-          "projectionStatus": "current_core_runtime_ifr_subset",
-          "source": "compiled_runtime_ifr_sid_chain",
-          "surface": "SKY",
-          "widthMeters": 1200.0
-        },
-        "LJMB_SID_PETO1S_14_PATH": {
-          "id": "LJMB_SID_PETO1S_14_PATH",
-          "note": "Compiled SID geometry chain for LJMB_SID_PETO1S_14.",
-          "pointIds": [
-            "LJMB_RWY_14_THR",
-            "LJMB_IFR_FIX_MB141",
-            "LJMB_FIX_PETOV"
           ],
           "projectionStatus": "current_core_runtime_ifr_subset",
           "source": "compiled_runtime_ifr_sid_chain",
@@ -4364,6 +4158,7 @@
           "note": "Compiled SID geometry chain for LJMB_SID_PETO5D_32.",
           "pointIds": [
             "LJMB_RWY_32_THR",
+            "LJMB_IFR_FIX_D321C",
             "LJMB_IFR_FIX_D355G",
             "LJMB_FIX_PETOV"
           ],
@@ -4391,6 +4186,7 @@
           "note": "Compiled SID geometry chain for LJMB_SID_VALU4L_32.",
           "pointIds": [
             "LJMB_RWY_32_THR",
+            "LJMB_IFR_FIX_D321C",
             "LJMB_IFR_FIX_D355G",
             "LJMB_IFR_FIX_ZAG37",
             "LJMB_IFR_FIX_VALLU"
@@ -11794,21 +11590,21 @@
           "xMeters": 34616.313146,
           "yMeters": 7043.272349
         },
-        "LJMB_IFR_FIX_D102H": {
-          "id": "LJMB_IFR_FIX_D102H",
-          "label": "D102H",
+        "LJMB_IFR_FIX_D101H": {
+          "id": "LJMB_IFR_FIX_D101H",
+          "label": "D101H",
           "sources": [
             "xplane_fix"
           ],
           "tags": [
             "ifr"
           ],
-          "xMeters": 16210.874676,
+          "xMeters": 16211.08754,
           "yMeters": -6246.684126
         },
-        "LJMB_IFR_FIX_D212J": {
-          "id": "LJMB_IFR_FIX_D212J",
-          "label": "D212J",
+        "LJMB_IFR_FIX_D211J": {
+          "id": "LJMB_IFR_FIX_D211J",
+          "label": "D211J",
           "sources": [
             "xplane_fix"
           ],
@@ -11818,17 +11614,29 @@
           "xMeters": -9212.175591,
           "yMeters": -16458.084519
         },
-        "LJMB_IFR_FIX_D345O": {
-          "id": "LJMB_IFR_FIX_D345O",
-          "label": "D345O",
+        "LJMB_IFR_FIX_D321C": {
+          "id": "LJMB_IFR_FIX_D321C",
+          "label": "D321C",
           "sources": [
             "xplane_fix"
           ],
           "tags": [
             "ifr"
           ],
-          "xMeters": 2859.035536,
-          "yMeters": 15471.538667
+          "xMeters": -2871.992659,
+          "yMeters": 4248.572452
+        },
+        "LJMB_IFR_FIX_D344O": {
+          "id": "LJMB_IFR_FIX_D344O",
+          "label": "D344O",
+          "sources": [
+            "xplane_fix"
+          ],
+          "tags": [
+            "ifr"
+          ],
+          "xMeters": 2964.318856,
+          "yMeters": 15577.482969
         },
         "LJMB_IFR_FIX_D355G": {
           "id": "LJMB_IFR_FIX_D355G",
@@ -11839,20 +11647,8 @@
           "tags": [
             "ifr"
           ],
-          "xMeters": 246.732799,
-          "yMeters": 12809.037306
-        },
-        "LJMB_IFR_FIX_ERROW": {
-          "id": "LJMB_IFR_FIX_ERROW",
-          "label": "ERROW",
-          "sources": [
-            "xplane_fix"
-          ],
-          "tags": [
-            "ifr"
-          ],
-          "xMeters": 15222.48789,
-          "yMeters": -4256.294939
+          "xMeters": 504.517666,
+          "yMeters": 12809.655549
         },
         "LJMB_IFR_FIX_MB141": {
           "id": "LJMB_IFR_FIX_MB141",
@@ -11865,18 +11661,6 @@
           ],
           "xMeters": 10139.111375,
           "yMeters": -15202.817224
-        },
-        "LJMB_IFR_FIX_MB142": {
-          "id": "LJMB_IFR_FIX_MB142",
-          "label": "MB142",
-          "sources": [
-            "xplane_fix"
-          ],
-          "tags": [
-            "ifr"
-          ],
-          "xMeters": 21445.901285,
-          "yMeters": -7619.94147
         },
         "LJMB_IFR_FIX_MB143": {
           "id": "LJMB_IFR_FIX_MB143",
@@ -11913,30 +11697,6 @@
           ],
           "xMeters": -7327.284879,
           "yMeters": -8843.085663
-        },
-        "LJMB_IFR_FIX_MB146": {
-          "id": "LJMB_IFR_FIX_MB146",
-          "label": "MB146",
-          "sources": [
-            "xplane_fix"
-          ],
-          "tags": [
-            "ifr"
-          ],
-          "xMeters": 35468.788737,
-          "yMeters": 8781.31021
-        },
-        "LJMB_IFR_FIX_MIHIQ": {
-          "id": "LJMB_IFR_FIX_MIHIQ",
-          "label": "MIHIQ",
-          "sources": [
-            "xplane_fix"
-          ],
-          "tags": [
-            "ifr"
-          ],
-          "xMeters": 11598.18887,
-          "yMeters": -17395.82803
         },
         "LJMB_IFR_FIX_MR": {
           "id": "LJMB_IFR_FIX_MR",
@@ -11983,8 +11743,8 @@
           "tags": [
             "ifr"
           ],
-          "xMeters": 14239.843066,
-          "yMeters": -4799.605582
+          "xMeters": 13200.409567,
+          "yMeters": -5397.587435
         },
         "LJMB_IFR_FIX_ZAG38": {
           "id": "LJMB_IFR_FIX_ZAG38",
@@ -11995,8 +11755,8 @@
           "tags": [
             "ifr"
           ],
-          "xMeters": 19881.54047,
-          "yMeters": 266.867824
+          "xMeters": 19998.522106,
+          "yMeters": 317.214663
         },
         "LJMB_MANOEUVRING_01_01_02": {
           "id": "LJMB_MANOEUVRING_01_01_02",

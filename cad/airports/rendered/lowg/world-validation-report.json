@@ -5,10 +5,10 @@
     "sourceManifest": "cad/airports/lowg.manifest.json",
     "sourceEntityBundle": "cad/airports/rendered/lowg/entity-bundle.json",
     "forcedAssumptions": [
-        "LOWG current-core airspace membership is now projected from the worked CTR/TMA boundary geometry as an explicit low-level point-to-volume assignment. This remains a 2D plan-view approximation, not altitude-aware polygon reasoning.",
-        "OFMX class-layer volumes reuse their parent CTR/TMA boundary geometry where the class records carry no separate boundary of their own.",
-        "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
+        "LOWG current-core airspace membership is projected from explicit low-level point-to-volume assignment over worked boundary geometry. This remains a 2D plan-view approximation, not altitude-aware polygon reasoning.",
         "Apron access now uses the authored NEW_Parking graph and NEW_Parking_Points stand set, with direct authored attachments onto taxiway A from the working DXF.",
+        "Class-layer airspace volumes reuse their parent CTR/TMA boundary geometry where the class records carry no separate boundary of their own.",
+        "Taxiway A remains a mixed D->A cluster in the projected world candidate because the current core model has no partial-taxiway naming.",
         "Current-core runway-protection holding points are projected only onto the connected taxiway-A spine because the present validator requires every holding point to reach every stand through the ground graph.",
         "The current-core holding-point projection uses the snapped D marker for runway 16C, the G1/G2 sign for 16L/34R, the X sign for 16R/34L, and the Y sign for 34C, all snapped to existing A-path vertices rather than importing the disconnected side-runway hold positions directly.",
         "LOWG GBG missed-approach hold loop geometry is a nominal compiled racetrack from the published inbound track and one-minute hold timing, because the current runtime model requires explicit loop geometry.",
@@ -40,9 +40,8 @@
         "LOWG runtime STAR projection currently uses the published STAR trunks only, and relies on explicitly selected feeder transitions on the projected approach subset so STAR terminal fixes are shared with the approach entry-point set."
     ],
     "omittedFeatures": [
-        "Only the worked LOWG low-level CTR/TMA slice is projected into the current runtime candidate; broader surrounding airspace and altitude-aware membership still remain outside the current-core subset.",
-        "LOWG mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the new InVolume / InClass / Segmented model.",
-        "LOWG IFR runtime projection currently includes the LOWG SID set, the LOWG STAR set, VOR RWY 16C, VOR RWY 34C, RNP RWY 16C, RNP RWY 34C, ILS RWY 34C, and the shared GBG missed-approach hold. LOC 34C and richer minima variants remain outside the current-core subset.",
+        "Only runtime-usable classed low-level airspace volumes are projected into the current candidate; boundary-only/special-use geometry and altitude-aware membership still remain outside the current-core subset.",
+        "LOWG richer IFR publication variants remain outside the current-core subset where the runtime model still collapses them to a single selected minima/profile path.",
         "The east non-standard hold remains deferred to version 2.",
         "The disconnected B/C/Y/Z holding candidates remain in the richer entity bundle but are not imported directly into the current-core subset because they would violate the present stand-reachability validator rule."
     ],

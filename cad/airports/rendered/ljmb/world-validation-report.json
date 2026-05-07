@@ -1,0 +1,48 @@
+{
+    "airportCode": "LJMB",
+    "airportName": "Maribor Airport",
+    "projectionStatus": "v1_current_core_fit_subset",
+    "sourceManifest": "cad/airports/ljmb.manifest.json",
+    "sourceEntityBundle": "cad/airports/rendered/ljmb/entity-bundle.json",
+    "forcedAssumptions": [
+        "LJMB current-core airspace membership is projected from explicit low-level point-to-volume assignment over worked boundary geometry. This remains a 2D plan-view approximation, not altitude-aware polygon reasoning.",
+        "Apron and stand access now use the authored working-DXF ground graph and authored stand points.",
+        "Current-core holding points are attached to whichever taxiway paths already contain the authored holding-point geometry. This remains a path-level assignment, not a richer runway-entry area model.",
+        "5 projected LJMB point(s) still fall outside the worked low-level CTR/TMA slice and are temporarily assigned to an explicit open-FIR Class G fallback volume.",
+        "LJMB_SID_DIML1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_GOLV1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_GOLV2G_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_MURE1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_PETO1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_PETO2B_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_PETO5D_32: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+        "LJMB_SID_VALU1S_14: Runtime SID projection prepends the runway threshold as the first waypoint when CIFP starts at the first post-departure fix.",
+        "LJMB_SID_VALU4L_32: Leading fixless departure leg compiled as a threshold-anchored waypoint because the current route model is waypoint-based.",
+        "LJMB_STAR_DIML1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_ERROW is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_DIML3C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_GOLV1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_ERROW is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_GOLV3C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_MURE1C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_PETO1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MIHIQ is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_PETO3A: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_VALU1R: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_VAJAH is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB_STAR_VALU4C: Runtime STAR projection skipped because terminal point LJMB_IFR_FIX_MR is not yet shared with any projected approach entry point or holding fix.",
+        "LJMB runtime SID projection compiles leading fixless climb legs as runway-threshold waypoints where necessary, because the current SID model is waypoint-based rather than path-terminator based."
+    ],
+    "omittedFeatures": [
+        "Only runtime-usable classed low-level airspace volumes are projected into the current candidate; boundary-only/special-use geometry and altitude-aware membership still remain outside the current-core subset.",
+        "LJMB mixed boundary-crossing VFR routes still omit route airspace profiles unless they can be assigned honestly under the InVolume / InClass / Segmented model.",
+        "LJMB richer IFR publication variants remain outside the current-core subset where the runtime model still collapses them to a single selected minima/profile path."
+    ],
+    "projectionGaps": [
+        "Authored ground graph imported from working-DXF layer NEW_Taxi.",
+        "Reference runway routing graph from REF_ROUTE_RUNWAYS was imported as authored runway-access support geometry.",
+        "Manoeuvring-area perimeter from New_Mano retained as apron-style candidate geometry.",
+        "Taxiway names are currently inferred from the nearest apt.dat route edges and should be confirmed explicitly later."
+    ],
+    "issueCount": 0,
+    "issueCountsByCode": {},
+    "structuralIssueCount": 0,
+    "structuralIssueCodes": [],
+    "issues": []
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>LJMB generated plate pack</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: #d8d6cf;
+        color: #111111;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid #bcb6aa;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
+      .topbar a {
+        color: #224466;
+        text-decoration: none;
+        padding: 6px 10px;
+        border: 1px solid #bcb6aa;
+        border-radius: 999px;
+        background: #f7f4ed;
+      }
+      .summary {
+        padding: 16px 20px 4px;
+        max-width: 1100px;
+        margin: 0 auto;
+        color: #2b2b2b;
+      }
+      .summary p {
+        margin: 0 0 12px;
+        line-height: 1.5;
+      }
+      .pages {
+        display: grid;
+        gap: 26px;
+        padding: 18px 16px 32px;
+        justify-content: center;
+      }
+      .plate-page {
+        position: relative;
+        width: 210mm;
+        min-height: 297mm;
+        background: #ffffff;
+        border: 1px solid #989289;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+        padding: 16px 16px 18px 48px;
+      }
+      .side-note {
+        position: absolute;
+        left: 6px;
+        top: 50%;
+        transform: rotate(-90deg) translateX(-50%);
+        transform-origin: left top;
+        font-size: 11px;
+        color: #505050;
+      }
+      .plate-header {
+        display: grid;
+        grid-template-columns: 1fr 90px 180px;
+        align-items: end;
+        gap: 8px;
+        border-bottom: 2px solid #1f1f1f;
+        padding-bottom: 6px;
+      }
+      .plate-title {
+        font-size: 28px;
+        line-height: 1;
+      }
+      .plate-id {
+        font-size: 24px;
+        text-align: center;
+        font-weight: 700;
+      }
+      .plate-airport {
+        text-align: right;
+        font-size: 20px;
+        line-height: 1.05;
+        font-weight: 700;
+      }
+      .plate-meta {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        font-size: 11px;
+        padding: 4px 0;
+        border-bottom: 1px solid #1f1f1f;
+      }
+      .plate-banner {
+        margin-top: 4px;
+        background: #f0e000;
+        border: 1px solid #111111;
+        font-weight: 700;
+        padding: 4px 8px;
+      }
+      .plate-body {
+        display: grid;
+        gap: 12px;
+        padding-top: 10px;
+      }
+      .map-shell {
+        position: relative;
+        background: #f7f7f4;
+        border: 1px solid #1f1f1f;
+        min-height: 640px;
+        overflow: hidden;
+      }
+      .map-image {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .freq-box {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        min-width: 280px;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid #111111;
+      }
+      .freq-box div {
+        padding: 7px 10px;
+        border-top: 1px solid #111111;
+      }
+      .freq-box div:first-child {
+        border-top: none;
+      }
+      .map-note {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        max-width: 420px;
+        padding: 8px 10px;
+        background: rgba(255, 245, 245, 0.95);
+        border: 1px solid #c54b4b;
+        color: #7e1d1d;
+        line-height: 1.45;
+      }
+      .procedure-grid,
+      .briefing-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .briefing-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .info-block {
+        border: 1px solid #111111;
+        padding: 10px 12px;
+        background: #faf8f2;
+      }
+      .info-block h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+      }
+      .info-block p,
+      .info-block li {
+        line-height: 1.45;
+      }
+      .info-block p {
+        margin: 0;
+      }
+      .info-block ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .runway-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .runway-table th,
+      .runway-table td {
+        border: 1px solid #111111;
+        padding: 5px 7px;
+        text-align: left;
+      }
+      .runway-table thead {
+        background: #efede8;
+      }
+      .plate-footer {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: end;
+        font-size: 12px;
+        padding-top: 10px;
+        color: #3d3d3d;
+      }
+      @media print {
+        body {
+          background: #ffffff;
+        }
+        .topbar,
+        .summary {
+          display: none;
+        }
+        .pages {
+          gap: 0;
+          padding: 0;
+        }
+        .plate-page {
+          box-shadow: none;
+          border: none;
+          break-after: page;
+          page-break-after: always;
+          width: 210mm;
+          min-height: 297mm;
+          margin: 0;
+        }
+      }
+      @media (max-width: 980px) {
+        .plate-page {
+          width: min(100%, 210mm);
+          min-height: auto;
+        }
+        .plate-header {
+          grid-template-columns: 1fr 90px 130px;
+        }
+        .procedure-grid,
+        .briefing-grid {
+          grid-template-columns: 1fr;
+        }
+        .freq-box {
+          position: static;
+          margin: 8px;
+        }
+        .map-note {
+          position: static;
+          margin: 8px;
+        }
+      }
+    </style>
+  </head>
+    <body>
+    <nav class="topbar"><a href="#ad-1">AD-1</a><a href="#ad-2">AD-2</a><a href="#ad-6">AD-6</a><a href="#prc-4">PRC-4</a><a href="#prc-5">PRC-5</a><a href="#enr-1">ENR-1</a></nav>
+    <section class="summary">
+      <p>This is an entity-only LOWG draft pack. The renderer intentionally excludes publication-semantic supplement content and uses only the structured airport package via the strict plate view model, the validated current-core subset, and the generated validation/projection-gap reports.</p>
+      <p>Current Kotlin validator status for the validated subset: <code>0</code> issues. Sparse or gap-heavy pages are deliberate: they show what the entity projection can actually support today.</p>
+    </section>
+    <main class="pages"><section class="plate-page" id="ad-1"><div class="side-note">Not to be used as primary source of navigation</div><div class="plate-header"><div class="plate-title">TAXI LAYOUT</div><div class="plate-id">AD-1</div><div class="plate-airport"><div>Maribor Airport</div><div>LJMB/GRZ</div></div></div><div class="plate-meta"><div>elev: 876 FT | var: 4° E | permitted: aircraft copter glider ultralight</div><div>ENTITY-ONLY PROJECTION</div></div><div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div><div class="plate-body"><div class="map-shell"><img class="map-image" src="ad-1-map.svg" alt="ad-1-map.svg" /><div class="freq-box"><div>119.205 MARIBOR TOWER</div></div></div><table class="runway-table"><thead><tr><th>RWY</th><th>DIM</th><th>TORA</th><th>LDA</th><th>NOTE</th></tr></thead><tbody><tr><td>14</td><td>2486 x 45 M</td><td>2486 M</td><td>2486 M</td><td>direct</td></tr><tr><td>14L</td><td>1201 x 60 M</td><td>1201 M</td><td>1201 M</td><td>direct</td></tr><tr><td>32</td><td>2486 x 45 M</td><td>2486 M</td><td>2486 M</td><td>direct</td></tr><tr><td>32R</td><td>1201 x 60 M</td><td>1201 M</td><td>1201 M</td><td>direct</td></tr></tbody></table></div><div class="plate-footer"><span>Generated LJMB entity-only draft.</span><span>AD-1</span><span>LJMB</span></div></section><section class="plate-page" id="ad-2"><div class="side-note">Not to be used as primary source of navigation</div><div class="plate-header"><div class="plate-title">APRON / PARKING</div><div class="plate-id">AD-2</div><div class="plate-airport"><div>Maribor Airport</div><div>LJMB/GRZ</div></div></div><div class="plate-meta"><div>elev: 876 FT | var: 4° E | permitted: aircraft copter glider ultralight</div><div>ENTITY-ONLY PROJECTION</div></div><div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div><div class="plate-body"><div class="map-shell"><img class="map-image" src="ad-2-map.svg" alt="ad-2-map.svg" /><div class="freq-box"><div>119.205 MARIBOR TOWER</div></div></div><section class="info-block"><h3>Projected Apron / Parking Inventory</h3><ul><li>Authored Ground: 7 visible stand(s) attached in the current projected v1 pass.</li><li>Manoeuvring Area 1: 0 visible stand(s) attached in the current projected v1 pass.</li><li>Manoeuvring Area 2: 0 visible stand(s) attached in the current projected v1 pass.</li><li>projected airline gates: 0</li><li>projected general-aviation stands: 7</li></ul></section><section class="info-block"><h3>Visible Stands</h3><ul><li>Airline / terminal side: </li><li>General aviation: Flying Club start 1, Flying Club start 1_2, Flying Club start 2, GA-1 start 1, GA-1 start 2, Position 4, Position B1</li></ul></section></div><div class="plate-footer"><span>Generated LJMB entity-only draft.</span><span>AD-2</span><span>LJMB</span></div></section><section class="plate-page" id="ad-6"><div class="side-note">Not to be used as primary source of navigation</div><div class="plate-header"><div class="plate-title">TAXI LAYOUT GLIDER OPS</div><div class="plate-id">AD-6</div><div class="plate-airport"><div>Maribor Airport</div><div>LJMB/GRZ</div></div></div><div class="plate-meta"><div>elev: 876 FT | var: 4° E | permitted: aircraft copter glider ultralight</div><div>ENTITY-ONLY PROJECTION</div></div><div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div><div class="plate-body"><div class="map-shell"><img class="map-image" src="ad-6-map.svg" alt="ad-6-map.svg" /><div class="freq-box"><div>119.205 MARIBOR TOWER</div></div></div><table class="runway-table"><thead><tr><th>RWY</th><th>DIM</th><th>TORA</th><th>LDA</th><th>NOTE</th></tr></thead><tbody><tr><td>14</td><td>2486 x 45 M</td><td>2486 M</td><td>2486 M</td><td>direct</td></tr><tr><td>14L</td><td>1201 x 60 M</td><td>1201 M</td><td>1201 M</td><td>direct</td></tr><tr><td>32</td><td>2486 x 45 M</td><td>2486 M</td><td>2486 M</td><td>direct</td></tr><tr><td>32R</td><td>1201 x 60 M</td><td>1201 M</td><td>1201 M</td><td>direct</td></tr></tbody></table></div><div class="plate-footer"><span>Generated LJMB entity-only draft.</span><span>AD-6</span><span>LJMB</span></div></section><section class="plate-page" id="prc-4"><div class="side-note">Not to be used as primary source of navigation</div><div class="plate-header"><div class="plate-title">VFR APP/DEP TFC 16R/34L</div><div class="plate-id">PRC-4</div><div class="plate-airport"><div>Maribor Airport</div><div>LJMB/GRZ</div></div></div><div class="plate-meta"><div>elev: 876 FT | var: 4° E | permitted: aircraft copter glider ultralight</div><div>ENTITY-ONLY PROJECTION</div></div><div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div><div class="plate-body"><div class="map-shell"><img class="map-image" src="prc-4-map.svg" alt="prc-4-map.svg" /><div class="freq-box"><div>119.205 MARIBOR TOWER</div></div></div><div class="procedure-grid"><section class="info-block"><h3>prc_4_west_traffic_circuit</h3><ul><li>prc_4_west_traffic_circuit: not projected.</li></ul></section><section class="info-block"><h3>main_shared_graph</h3><ul><li>path id: LJMB_CIRCUIT_MAIN_SHARED_GRAPH</li><li>closed: False</li><li>projection status: candidate_shared_circuit_graph</li></ul></section><section class="info-block"><h3>west_side_component</h3><ul><li>path id: LJMB_CIRCUIT_WEST_SIDE_COMPONENT</li><li>closed: False</li><li>projection status: candidate_shared_circuit_graph</li></ul></section></div><table class="runway-table"><thead><tr><th>RWY</th><th>DIM</th><th>TORA</th><th>LDA</th><th>NOTE</th></tr></thead><tbody><tr><td>14</td><td>2486 x 45 M</td><td>2486 M</td><td>2486 M</td><td>direct</td></tr><tr><td>14L</td><td>1201 x 60 M</td><td>1201 M</td><td>1201 M</td><td>direct</td></tr><tr><td>32</td><td>2486 x 45 M</td><td>2486 M</td><td>2486 M</td><td>direct</td></tr><tr><td>32R</td><td>1201 x 60 M</td><td>1201 M</td><td>1201 M</td><td>direct</td></tr></tbody></table></div><div class="plate-footer"><span>Generated LJMB entity-only draft.</span><span>PRC-4</span><span>LJMB</span></div></section><section class="plate-page" id="prc-5"><div class="side-note">Not to be used as primary source of navigation</div><div class="plate-header"><div class="plate-title">VFR APP/DEP</div><div class="plate-id">PRC-5</div><div class="plate-airport"><div>Maribor Airport</div><div>LJMB/GRZ</div></div></div><div class="plate-meta"><div>elev: 876 FT | var: 4° E | permitted: aircraft copter glider ultralight</div><div>ENTITY-ONLY PROJECTION</div></div><div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div><div class="plate-body"><div class="map-shell"><img class="map-image" src="prc-5-map.svg" alt="prc-5-map.svg" /><div class="freq-box"><div>119.205 MARIBOR TOWER</div></div></div><div class="procedure-grid"><section class="info-block"><h3>prc_5_east_hold</h3><ul><li>prc_5_east_hold: not projected.</li></ul></section><section class="info-block"><h3>main_shared_graph</h3><ul><li>path id: LJMB_CIRCUIT_MAIN_SHARED_GRAPH</li><li>closed: False</li><li>projection status: candidate_shared_circuit_graph</li></ul></section><section class="info-block"><h3>east_side_component</h3><ul><li>path id: LJMB_CIRCUIT_EAST_SIDE_COMPONENT</li><li>closed: False</li><li>projection status: candidate_shared_circuit_graph</li></ul></section><section class="info-block"><h3>Projection Gap</h3><ul><li>No projected entity content is available for this section.</li></ul></section></div></div><div class="plate-footer"><span>Generated LJMB entity-only draft.</span><span>PRC-5</span><span>LJMB</span></div></section><section class="plate-page" id="enr-1"><div class="side-note">Not to be used as primary source of navigation</div><div class="plate-header"><div class="plate-title">VFR TRANSIT</div><div class="plate-id">ENR-1</div><div class="plate-airport"><div>Maribor Airport</div><div>LJMB/GRZ</div></div></div><div class="plate-meta"><div>elev: 876 FT | var: 4° E | permitted: aircraft copter glider ultralight</div><div>ENTITY-ONLY PROJECTION</div></div><div class="plate-banner">THIS SPACE IS RESERVED FOR FURTHER AD INFORMATION</div><div class="plate-body"><div class="map-shell"><img class="map-image" src="enr-1-map.svg" alt="enr-1-map.svg" /><div class="freq-box"><div>119.205 MARIBOR TOWER</div></div></div><div class="procedure-grid"><section class="info-block"><h3>Entity Coverage</h3><ul><li>primary airspace volumes: 0</li><li>secondary airspace volumes: 0</li><li>projected operational sectors: 0</li><li>projected VFR routes: 2</li><li>projected fixes: 23</li></ul></section><section class="info-block"><h3>Projection Gap</h3><ul><li>No projected entity content is available for this section.</li></ul></section></div></div><div class="plate-footer"><span>Generated LJMB entity-only draft.</span><span>ENR-1</span><span>LJMB</span></div></section></main>
+  </body>
+</html>

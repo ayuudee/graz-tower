@@ -1,0 +1,27 @@
+{
+  "imagePath": "/home/andrew/dev/projects/twr2/cad/airports/ljmb_raster_underlay.png",
+  "sourceGeojson": "/home/andrew/dev/projects/twr2/cad/airports/ljmb_osm_underlay.geojson",
+  "boundsMeters": {
+    "minX": -4722.663938528079,
+    "minY": -5071.565492986302,
+    "maxX": 4693.279555512979,
+    "maxY": 5017.433578798102
+  },
+  "imageSizePx": {
+    "width": 4096,
+    "height": 4389
+  },
+  "recommendedPlacement": {
+    "lowerLeft": {
+      "x": -4722.663938528079,
+      "y": -5071.565492986302
+    },
+    "widthMeters": 9415.943494041057,
+    "heightMeters": 10088.999071784405
+  },
+  "cropMarginMeters": 4000.0,
+  "metersPerPixel": {
+    "x": 2.2988143295998675,
+    "y": 2.298701087214492
+  }
+}

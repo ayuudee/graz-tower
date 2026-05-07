@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1361" viewBox="0 0 1600 1361">
+  <rect x="0" y="0" width="1600" height="1361" fill="#0b0f14" />
+  <text x="32" y="36" fill="#f0f6fc" font-size="22" font-family="monospace">LOWG VFR circuit overlay</text>
+<line x1="585.43" y1="709.33" x2="628.91" y2="774.27" stroke="#4f5b68" stroke-width="4.00" stroke-opacity="0.280" stroke-linecap="round" />
+<text x="607.17" y="741.80" dx="8.00" dy="-10.00" fill="#a8b6c5" font-size="16.0" font-family="monospace" text-anchor="start">14/32</text>
+<line x1="596.13" y1="720.78" x2="617.16" y2="752.12" stroke="#4f5b68" stroke-width="4.00" stroke-opacity="0.280" stroke-linecap="round" />
+<text x="606.65" y="736.45" dx="8.00" dy="-10.00" fill="#a8b6c5" font-size="16.0" font-family="monospace" text-anchor="start">14L/32R</text>
+<line x1="588.09" y1="737.20" x2="606.09" y2="755.20" stroke="#ffffff" stroke-width="2.20" />
+<line x1="588.09" y1="755.20" x2="606.09" y2="737.20" stroke="#ffffff" stroke-width="2.20" />
+<text x="597.09" y="746.20" dx="8.00" dy="-8.00" fill="#ffffff" font-size="16.0" font-family="monospace" text-anchor="start">TWR</text>
+<circle cx="653.26" cy="574.32" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="653.26" y="574.32" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">HOLDING E</text>
+<circle cx="575.04" cy="892.76" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="575.04" y="892.76" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">HOLDING W</text>
+<circle cx="1147.97" cy="1001.50" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="1147.97" y="1001.50" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">ME1</text>
+<circle cx="969.47" cy="397.63" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="969.47" y="397.63" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">ME2</text>
+<circle cx="544.28" cy="54.92" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="544.28" y="54.92" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">MN1</text>
+<circle cx="331.69" cy="1038.39" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="331.69" y="1038.39" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">MS1</text>
+<circle cx="1545.08" cy="134.53" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="1545.08" y="134.53" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">ME3</text>
+<circle cx="592.42" cy="281.12" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="592.42" y="281.12" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">MN2</text>
+<circle cx="54.92" cy="1306.35" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="54.92" y="1306.35" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">MS2</text>
+<circle cx="159.21" cy="518.98" r="5.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.00" />
+<text x="159.21" y="518.98" dx="10.00" dy="-10.00" fill="#9ff3e6" font-size="14.0" font-family="monospace" text-anchor="start">MW1</text>
+<rect x="18.00" y="50.00" width="380" height="204.00" fill="#0f141a" fill-opacity="0.88" stroke="#3a4653" stroke-width="1.0" rx="8" />
+<text x="36.00" y="74.00" fill="#f0f6fc" font-size="17" font-family="monospace">Legend</text>
+<circle cx="44.00" cy="91.00" r="5" fill="#ffb347" />
+<text x="60.00" y="96.00" fill="#d0d7de" font-size="15" font-family="monospace">VFR circuit graph</text>
+<circle cx="44.00" cy="113.00" r="5" fill="#6ee7b7" />
+<text x="60.00" y="118.00" fill="#d0d7de" font-size="15" font-family="monospace">VFR route paths</text>
+<circle cx="44.00" cy="135.00" r="5" fill="#ff6b6b" />
+<text x="60.00" y="140.00" fill="#d0d7de" font-size="15" font-family="monospace">working VFR operational sectors</text>
+<circle cx="44.00" cy="157.00" r="5" fill="#ff5ae0" />
+<text x="60.00" y="162.00" fill="#d0d7de" font-size="15" font-family="monospace">endpoint-on-segment attachment</text>
+<circle cx="44.00" cy="179.00" r="5" fill="#7ee787" />
+<text x="60.00" y="184.00" fill="#d0d7de" font-size="15" font-family="monospace">circuit join anchors</text>
+<circle cx="44.00" cy="201.00" r="5" fill="#2dd4bf" />
+<text x="60.00" y="206.00" fill="#d0d7de" font-size="15" font-family="monospace">OFMX VFR reporting point</text>
+<circle cx="44.00" cy="223.00" r="5" fill="#4f5b68" />
+<text x="60.00" y="228.00" fill="#d0d7de" font-size="15" font-family="monospace">apt.dat runways</text>
+<circle cx="44.00" cy="245.00" r="5" fill="#243241" />
+<text x="60.00" y="250.00" fill="#d0d7de" font-size="15" font-family="monospace">ground DXF context</text>
+</svg>

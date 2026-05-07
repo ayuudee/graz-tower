@@ -4,7 +4,7 @@ build/
 .kotlin/
 local.properties
 *.iml
-.idea/
+.idea
 .DS_Store
 spec/*.bin
 spec/states/
@@ -26,4 +26,7 @@ __pycache__/
 *.pyc
 cad/airports/#*
 cad/airports/*~
+data/charts/
+data/ofm/
+data/navdata/
 research/fm/r1-smoke/

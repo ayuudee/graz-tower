@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2233" viewBox="0 0 1600 2233">
+  <rect x="0" y="0" width="1600" height="2233" fill="#0b0f14" />
+  <text x="32" y="36" fill="#f0f6fc" font-size="22" font-family="monospace">LJMB ground candidate</text>
+<line x1="159.18" y1="159.18" x2="1440.82" y2="2073.35" stroke="#525d6b" stroke-width="41.79" stroke-opacity="0.330" stroke-linecap="round" />
+<text x="800.00" y="1116.26" dx="8.00" dy="-12.00" fill="#9fb0c0" font-size="16.0" font-family="monospace" text-anchor="start">14/32</text>
+<line x1="474.76" y1="496.68" x2="1094.69" y2="1420.46" stroke="#525d6b" stroke-width="55.63" stroke-opacity="0.330" stroke-linecap="round" />
+<text x="784.72" y="958.57" dx="8.00" dy="-12.00" fill="#9fb0c0" font-size="16.0" font-family="monospace" text-anchor="start">14L/32R</text>
+<line x1="580.53" y1="1106.45" x2="572.48" y2="1135.42" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="572.48" y1="1135.42" x2="543.15" y2="1131.45" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="572.48" y1="1135.42" x2="689.06" y2="1308.96" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="689.06" y1="1308.96" x2="681.47" y2="1353.21" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="689.06" y1="1308.96" x2="726.46" y2="1325.61" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="726.46" y1="1325.61" x2="851.36" y2="1241.74" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="851.36" y1="1241.74" x2="885.79" y2="1244.88" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="851.36" y1="1241.74" x2="863.12" y2="1211.04" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="634.38" y1="1227.83" x2="581.98" y2="1265.87" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="725.90" y1="1325.75" x2="649.84" y2="1372.76" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="664.64" y1="914.80" x2="880.64" y2="756.47" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="880.64" y1="756.47" x2="876.72" y2="751.63" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="880.64" y1="756.47" x2="885.08" y2="761.99" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="872.39" y1="755.77" x2="879.97" y2="765.48" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="705.92" y1="1022.48" x2="717.23" y2="993.17" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="705.92" y1="1022.48" x2="511.02" y2="1152.95" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="705.92" y1="1022.48" x2="737.25" y2="1023.05" stroke="#42b6ff" stroke-width="3.00" stroke-opacity="0.950" stroke-linecap="round" />
+<line x1="497.19" y1="529.73" x2="476.89" y2="499.76" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="476.89" y1="499.76" x2="493.17" y2="488.64" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="493.17" y1="488.64" x2="507.96" y2="510.02" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="507.96" y1="510.02" x2="497.19" y2="529.73" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="1074.13" y1="1389.60" x2="1098.69" y2="1387.60" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="1098.69" y1="1387.60" x2="1110.15" y2="1405.29" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="1110.15" y1="1405.29" x2="1092.28" y2="1416.62" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<line x1="1092.28" y1="1416.62" x2="1074.13" y2="1389.60" stroke="#8ecae6" stroke-width="2.20" stroke-opacity="0.900" stroke-linecap="round" />
+<circle cx="511.02" cy="1152.95" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="581.98" cy="1265.87" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="649.84" cy="1372.76" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="872.39" cy="755.77" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="879.97" cy="765.48" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="876.72" cy="751.63" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="885.08" cy="761.99" r="6.00" fill="#2dd4bf" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="649.08" cy="1060.53" r="6.50" fill="#ffb347" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="797.01" cy="1278.24" r="6.50" fill="#ffb347" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<circle cx="775.36" cy="833.64" r="6.50" fill="#ffb347" fill-opacity="1.000" stroke="#0b0f14" stroke-width="1.50" />
+<line x1="494.89" y1="1237.82" x2="510.89" y2="1253.82" stroke="#ffffff" stroke-width="2.20" />
+<line x1="494.89" y1="1253.82" x2="510.89" y2="1237.82" stroke="#ffffff" stroke-width="2.20" />
+<text x="502.89" y="1245.82" dx="8.00" dy="-8.00" fill="#ffffff" font-size="16.0" font-family="monospace" text-anchor="start">TWR</text>
+<rect x="18.00" y="50.00" width="380" height="138.00" fill="#0f141a" fill-opacity="0.88" stroke="#3a4653" stroke-width="1.0" rx="8" />
+<text x="36.00" y="74.00" fill="#f0f6fc" font-size="17" font-family="monospace">Legend</text>
+<circle cx="44.00" cy="91.00" r="5" fill="#42b6ff" />
+<text x="60.00" y="96.00" fill="#d0d7de" font-size="15" font-family="monospace">authored taxi / apron graph</text>
+<circle cx="44.00" cy="113.00" r="5" fill="#8ecae6" />
+<text x="60.00" y="118.00" fill="#d0d7de" font-size="15" font-family="monospace">authored manoeuvring areas</text>
+<circle cx="44.00" cy="135.00" r="5" fill="#2dd4bf" />
+<text x="60.00" y="140.00" fill="#d0d7de" font-size="15" font-family="monospace">authored stands</text>
+<circle cx="44.00" cy="157.00" r="5" fill="#ffb347" />
+<text x="60.00" y="162.00" fill="#d0d7de" font-size="15" font-family="monospace">authored holding points</text>
+<circle cx="44.00" cy="179.00" r="5" fill="#525d6b" />
+<text x="60.00" y="184.00" fill="#d0d7de" font-size="15" font-family="monospace">runways</text>
+</svg>
