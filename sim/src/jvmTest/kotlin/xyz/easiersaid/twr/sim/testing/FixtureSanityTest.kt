@@ -56,9 +56,14 @@ class FixtureSanityTest {
 
     @Test
     fun `fixture asking for a role the world-candidate does not publish triggers RoleNotPublished`() {
-        // LJMB publishes only TOWER. Construct a fixture asking for GROUND
-        // (not published at LJMB) — load()'s inline validate() must surface
-        // RoleNotPublished as a ValidationFailed Left.
+        // LJMB publishes only TOWER (G2 Phase A authoring). Construct a fixture
+        // asking for both TOWER and GROUND — TOWER passes, GROUND triggers
+        // RoleNotPublished. load()'s inline validate() surfaces the violation
+        // list as a ValidationFailed Left.
+        //
+        // Pre-Phase-A this test passed for the wrong reason: LJMB published NO
+        // roles, so BOTH TOWER and GROUND violated. The post-Phase-A semantics
+        // are tighter: exactly one violation, and it's specifically GROUND.
         val drifted = Fixtures.LJMB.copy(
             controllerRoles = setOf(RoleName.TOWER, RoleName.GROUND),
         )
@@ -72,8 +77,10 @@ class FixtureSanityTest {
             { fail("Expected the drifted fixture to fail validation; got $it") },
         )
         val notPublished = violations.filterIsInstance<FixtureViolation.RoleNotPublished>()
-        assertTrue(notPublished.any { it.role == RoleName.GROUND },
-            "Expected RoleNotPublished(GROUND) for an LJMB fixture asking for GROUND; got $violations")
+        assertEquals(1, notPublished.size,
+            "Expected exactly one RoleNotPublished (GROUND); TOWER is now published. Got $notPublished")
+        assertEquals(RoleName.GROUND, notPublished.single().role,
+            "Expected RoleNotPublished(GROUND) specifically; got $notPublished")
     }
 
     // ── FrequencyMismatch — positive non-trigger ────────────────────────────

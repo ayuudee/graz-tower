@@ -496,6 +496,13 @@
       "icao": "LJMB",
       "magneticVariationDegrees": 4,
       "name": "Maribor Airport",
+      "roles": {
+        "TOWER": {
+          "name": "TOWER",
+          "frequencyMhz": "119.205",
+          "authorities": ["PLACEHOLDER"]
+        }
+      },
       "runways": {
         "14": {
           "declaredDistances": {

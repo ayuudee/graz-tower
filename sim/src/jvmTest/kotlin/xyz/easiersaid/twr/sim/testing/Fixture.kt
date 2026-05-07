@@ -61,12 +61,23 @@ data class Fixture(
 
 /**
  * Result of loading a [Fixture]. Immutable; callers consume and discard.
+ *
+ * G2 Phase A (D-AUDIT.12 follow-up): [controllers] is keyed by [ControllerId]
+ * (not [RoleName]) so multi-aerodrome fixtures can stage controllers that
+ * share a [RoleName] across aerodromes (e.g. `LOWG_TOWER` and `LJMB_TOWER`).
+ * Single-aerodrome consumers use [controllerByRole] for the same lookup
+ * ergonomics as the previous shape.
  */
 data class LoadedFixture(
     val world: AviationWorld,
     val worldIndex: WorldIndex,
-    /** Keyed by role for clean lookup; `Map` over `List` per FP-review S4. */
-    val controllers: Map<RoleName, ControllerSpec>,
+    /**
+     * Keyed by [ControllerId] (e.g. `LOWG_TOWER`, `LJMB_TOWER`). Use
+     * [controllerByRole] for single-aerodrome role-keyed lookup, or
+     * [controllerAt] for explicit `(aerodromeId, role)` lookup in
+     * multi-aerodrome contexts.
+     */
+    val controllers: Map<ControllerId, ControllerSpec>,
     /**
      * Pass 11 (D-AUDIT.6): events the test driver should enqueue at
      * sim-start. One [SimEvent.FlightPlanFiled] per aircraft in
@@ -76,11 +87,61 @@ data class LoadedFixture(
     val initialEvents: List<SimEvent> = emptyList(),
 )
 
+/**
+ * Single-aerodrome convenience: find the unique controller staffing the given
+ * role. **Programming error** if more than one controller has the same role
+ * (multi-aerodrome case) — the type system allows it, but the precondition
+ * is "single-aerodrome `LoadedFixture`". Use [controllerAt] in multi-aerodrome
+ * code paths.
+ *
+ * Returns [null] when no controller has the role; throws
+ * [IllegalStateException] with a rich diagnostic when multiple do.
+ *
+ * **Future scope (deferred):** splitting [LoadedFixture] into
+ * `SingleAerodromeLoadedFixture` and `MultiAerodromeLoadedFixture` variants
+ * would make the precondition unrepresentable at the type level. Out of
+ * scope for G2 Phase A; the function's runtime check is the floor.
+ */
+fun LoadedFixture.controllerByRole(role: RoleName): ControllerSpec? {
+    val matches = controllers.values.filter { it.role == role }
+    return when (matches.size) {
+        0 -> null
+        1 -> matches.single()
+        else -> error(
+            "controllerByRole($role) is ambiguous in a multi-aerodrome fixture: " +
+                "${matches.map { it.id.value }}. Use controllerAt(aerodromeId, role) instead.",
+        )
+    }
+}
+
+/** Multi-aerodrome explicit lookup: returns the controller at `(aerodromeId, role)` or null. */
+fun LoadedFixture.controllerAt(aerodromeId: AerodromeId, role: RoleName): ControllerSpec? =
+    controllers[ControllerId("${aerodromeId.value}_${role.name}")]
+
 /** Sealed error hierarchy for fixture loading. */
 sealed interface LoadError {
     data class FileMissing(val path: Path) : LoadError
     data class MalformedJson(val path: Path, val reason: String) : LoadError
     data class ValidationFailed(val violations: List<FixtureViolation>) : LoadError
+
+    /**
+     * G2 Phase A: [xyz.easiersaid.twr.sim.AftnRouting.routeFiledPlan] failed for
+     * a filed plan in the fixture. Replaces the previous `error()` throw at
+     * `Fixture.load()` so the whole load pipeline returns `Either.Left`
+     * uniformly. Single-aerodrome and multi-aerodrome fixtures share this leaf.
+     */
+    data class RoutingFailed(
+        val aircraft: AircraftId,
+        val failure: xyz.easiersaid.twr.sim.RoutingFailure,
+    ) : LoadError
+
+    /**
+     * G2 Phase A: [xyz.easiersaid.twr.migration.world.WorldCandidateLoader.mergeAviationWorlds]
+     * rejected the merge (e.g. an aerodrome lacks a hardcoded `referencePoint`
+     * in `WorldCandidateLoader.kt`'s `REFERENCE_POINTS` table). Multi-aerodrome
+     * fixtures only.
+     */
+    data class MergeFailed(val reason: String) : LoadError
 }
 
 /** Sealed sanity-check violations. */
@@ -161,9 +222,14 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
     // direct fixture injection. Calls the bare ControllerSpec ctor:
     // `withOwned(ownedAircraft = emptySet())` would read as a wiring
     // leftover from the pre-Pass-11 cheat shape (Pass 11 post-impl S.1).
-    val controllers = controllerRoles.associateWith { role ->
-        ControllerSpec(
-            id = ControllerId("${aerodromeId.value}_${role.name}"),
+    // G2 Phase A: rekey by ControllerId so multi-aerodrome fixtures can stage
+    // controllers that share a RoleName across aerodromes (e.g. LOWG_TOWER and
+    // LJMB_TOWER). Single-aerodrome consumers use controllerByRole(role) for
+    // the same lookup ergonomics.
+    val controllers: Map<ControllerId, ControllerSpec> = controllerRoles.associate { role ->
+        val id = ControllerId("${aerodromeId.value}_${role.name}")
+        id to ControllerSpec(
+            id = id,
             role = role,
             aerodromeId = aerodromeId,
             frequency = frequency,
@@ -178,34 +244,34 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
     // destination). Sort by AircraftId.value ascending, then iterate
     // recipient list in order, so seq-assignment downstream is
     // deterministic across runs.
-    val initialEvents: List<SimEvent> = flightPlans.entries
-        .sortedBy { it.key.value }
-        .flatMap { (aircraftId, plan) ->
-            val recipients = xyz.easiersaid.twr.sim.AftnRouting
-                .routeFiledPlan(plan) { aerodromeId ->
-                    world.aerodromes[aerodromeId]?.roles?.keys.orEmpty()
-                }
-                .fold(
-                    ifLeft = { failure ->
-                        error(
-                            "Fixture.load: routeFiledPlan failed for ${aircraftId.value} — " +
-                                "$failure. The fixture's filed plan cannot be routed to any " +
-                                "controller bay; check the world-candidate's published roles.",
-                        )
-                    },
-                    ifRight = { it.toList() },
-                )
-            recipients.map { recipient ->
-                SimEvent.FlightPlanFiled(
-                    time = xyz.easiersaid.twr.protocol.SimTime.ZERO,
-                    aircraft = aircraftId,
-                    plan = plan,
-                    recipient = recipient,
-                )
+    // G2 Phase A: routing failure now surfaces as Either.Left(RoutingFailed)
+    // for uniformity with the rest of LoadError. Previously this was an
+    // error() throw which broke the Either contract.
+    //
+    // routeFiledPlan returns NonEmptyList<AftnAddress>; iterate it directly
+    // rather than .toList() to preserve the cardinality invariant — empty
+    // recipients would mean the loader silently emitted zero filings.
+    val initialEvents = mutableListOf<SimEvent>()
+    for ((aircraftId, plan) in flightPlans.entries.sortedBy { it.key.value }) {
+        val routingResult = xyz.easiersaid.twr.sim.AftnRouting
+            .routeFiledPlan(plan) { aerodromeId ->
+                world.aerodromes[aerodromeId]?.roles?.keys.orEmpty()
             }
+        val recipients = when (routingResult) {
+            is Either.Left -> return Either.Left(LoadError.RoutingFailed(aircraftId, routingResult.value))
+            is Either.Right -> routingResult.value
         }
+        for (recipient in recipients) {
+            initialEvents.add(SimEvent.FlightPlanFiled(
+                time = xyz.easiersaid.twr.protocol.SimTime.ZERO,
+                aircraft = aircraftId,
+                plan = plan,
+                recipient = recipient,
+            ))
+        }
+    }
 
-    val loaded = LoadedFixture(world, worldIndex, controllers, initialEvents)
+    val loaded = LoadedFixture(world, worldIndex, controllers, initialEvents.toList())
     val violations = loaded.validate(this)
     if (violations.isNotEmpty()) return Either.Left(LoadError.ValidationFailed(violations))
     return Either.Right(loaded)
@@ -238,6 +304,223 @@ fun LoadedFixture.validate(fixture: Fixture): List<FixtureViolation> = buildList
                 role = role,
                 delta = FrequencyDelta(expected = fixture.frequency, published = published.frequency),
             ))
+        }
+    }
+}
+
+// ── Multi-aerodrome fixture (G2 Phase A) ────────────────────────────────────
+
+/**
+ * Per-aerodrome staffing for a multi-aerodrome fixture. Each entry stages one
+ * aerodrome's world candidate + the roles staffed at it + per-role frequencies.
+ *
+ * **Why per-role frequencies (not a single field).** LOWG_GROUND/LOWG_TOWER
+ * share 118.200 but LOWG_APPROACH is on 119.300; LJMB_TOWER is on 119.205.
+ * Single-aerodrome [Fixture] gets away with one `frequency` field because its
+ * staffed roles share a freq (see [Fixtures.LOWG] today, which staffs only
+ * GROUND + TOWER). Cross-aerodrome forces per-(aerodrome, role) frequency.
+ *
+ * G2 Phase A introduced this for `Fixtures.LOWG_LJMB_VFR`. The Option C
+ * unification (single [Fixture] carrying `NonEmptyMap<AerodromeId,
+ * AerodromeStaffing>`) is filed as a follow-up cleanup pass — keeping the
+ * single-aerodrome [Fixture] shape unchanged here lets G0 (`LowgGoldenTest`)
+ * stay green without a wider migration.
+ */
+data class AerodromeStaffing(
+    val aerodromeId: AerodromeId,
+    val candidatePath: Path,
+    /**
+     * Roles to staff at this aerodrome, with per-role frequency. Validation
+     * compares these against `world.aerodromes[aerodromeId].roles[role].frequency`
+     * and emits [FixtureViolation.FrequencyMismatch] on disagreement.
+     *
+     * Non-empty by construction — an aerodrome with no staffed roles is a
+     * wiring defect.
+     */
+    val frequencyByRole: Map<RoleName, Frequency>,
+    val weather: WeatherObservation,
+) {
+    init {
+        require(frequencyByRole.isNotEmpty()) {
+            "AerodromeStaffing for ${aerodromeId.value} requires at least one staffed role"
+        }
+    }
+}
+
+/**
+ * Multi-aerodrome test fixture for cross-aerodrome scenarios (G2 LOWG → LJMB
+ * transit). Loads each aerodrome's world candidate, merges them via
+ * [WorldCandidateLoader.mergeAviationWorlds], staffs the requested controllers
+ * with per-(aerodrome, role) frequencies, and routes filed plans through
+ * [xyz.easiersaid.twr.sim.AftnRouting.routeFiledPlan] producing one
+ * [SimEvent.FlightPlanFiled] per recipient (cross-aerodrome plans fan out to
+ * 2 recipients automatically per Pass 14 routing topology).
+ *
+ * The single-aerodrome [Fixture] remains the right shape for G0 (single ATIS,
+ * single frequency, one staffed-side); this sibling is for G2-shape scenarios
+ * where the test exercises a flow across two airports.
+ */
+data class MultiAerodromeFixture(
+    /**
+     * Non-empty by type — an empty staffing list would mean a fixture with
+     * no aerodromes, which is meaningless. `NonEmptyList` from Arrow encodes
+     * this invariant in the type rather than a runtime require.
+     */
+    val staffing: arrow.core.NonEmptyList<AerodromeStaffing>,
+    /**
+     * The "ego" aircraft's starting point — usually a stand at the departure
+     * aerodrome. Phase F's outcome assertion (`positionPoint ∈ LJMB stand
+     * points`) reads [destinationStandPointId] for the equality check.
+     */
+    val standPointId: PointId,
+    /** Where Phase F's outcome assertion expects the aircraft to end up. */
+    val destinationStandPointId: PointId,
+    /**
+     * Per-aerodrome weather observations.
+     *
+     * **Currently unused** — staged for Phase F's `SimState.initial` which
+     * accepts `weatherByAerodrome: Map<AerodromeId, WeatherObservation>`
+     * directly (see `LowgGoldenTest.kt:91` for the single-aerodrome
+     * precedent). G2 Phase A populates this for forward-compat; Phase F
+     * will read it.
+     */
+    val weatherByAerodrome: Map<AerodromeId, WeatherObservation>,
+    val flightPlans: Map<AircraftId, FiledPlan> = emptyMap(),
+) {
+    init {
+        // Distinct aerodromes — same aerodromeId staged twice is a wiring
+        // defect. (NonEmptyList already encodes non-empty.)
+        val ids = staffing.map { it.aerodromeId }
+        require(ids.distinct().size == ids.size) {
+            "MultiAerodromeFixture has duplicate aerodromeIds: $ids"
+        }
+    }
+}
+
+/**
+ * Load each aerodrome's world candidate, merge into one [AviationWorld],
+ * staff controllers per (aerodromeId, role), validate per-aerodrome, and
+ * route filed plans. Total: never throws — every failure surfaces as
+ * [Either.Left] with a typed [LoadError] leaf.
+ */
+fun MultiAerodromeFixture.load(): Either<LoadError, LoadedFixture> {
+    // Step 1: load each aerodrome's world candidate.
+    val perAerodromeWorlds = mutableListOf<AviationWorld>()
+    for (entry in staffing) {
+        val file = entry.candidatePath.toFile()
+        if (!file.exists()) return Either.Left(LoadError.FileMissing(entry.candidatePath))
+        val world = try {
+            val doc = json.decodeFromString<WorldCandidateDocument>(Files.readString(entry.candidatePath))
+            WorldCandidateLoader.toWorld(doc)
+        } catch (e: SerializationException) {
+            return Either.Left(LoadError.MalformedJson(entry.candidatePath, e.message ?: "unknown"))
+        } catch (e: IllegalArgumentException) {
+            return Either.Left(LoadError.MalformedJson(entry.candidatePath, e.message ?: "unknown"))
+        }
+        perAerodromeWorlds.add(world)
+    }
+
+    // Step 2: merge. mergeAviationWorlds requires every aerodrome to have a
+    // hardcoded referencePoint in WorldCandidateLoader's REFERENCE_POINTS table.
+    // LOWG and LJMB both qualify as of G1-DEF-11; future aerodromes need to be
+    // added there before the merge can succeed.
+    //
+    // Catches both IllegalArgumentException (require failures inside
+    // reprojectToSharedFrame: missing referencePoint, ENU offset cap exceeded)
+    // and IllegalStateException (the empty-list error() path; unreachable
+    // because of init-block require, but caught for type-level totality).
+    val merged = try {
+        WorldCandidateLoader.mergeAviationWorlds(perAerodromeWorlds.toList())
+    } catch (e: IllegalArgumentException) {
+        return Either.Left(LoadError.MergeFailed(e.message ?: "unknown"))
+    } catch (e: IllegalStateException) {
+        return Either.Left(LoadError.MergeFailed(e.message ?: "unknown"))
+    }
+
+    val worldIndex = merged.buildWorldIndex()
+
+    // Step 3: stage one ControllerSpec per (aerodromeId, role) entry, keyed
+    // by ControllerId (e.g. `LOWG_TOWER`, `LJMB_TOWER`). Walk staffing as a
+    // plain List for the inner per-role flatMap; NonEmptyList.flatMap
+    // requires the inner result to also be NonEmpty, which is over-constraint
+    // here.
+    val controllers: Map<ControllerId, ControllerSpec> = staffing
+        .toList()
+        .flatMap { entry ->
+            entry.frequencyByRole.map { (role, freq) ->
+                val id = ControllerId("${entry.aerodromeId.value}_${role.name}")
+                id to ControllerSpec(
+                    id = id,
+                    role = role,
+                    aerodromeId = entry.aerodromeId,
+                    frequency = freq,
+                    responsibilities = emptyMap(),
+                )
+            }
+        }
+        .toMap()
+
+    // Step 4: route filed plans. Same surface as Fixture.load — single plan
+    // with destinationAerodrome != departure produces 2 recipients (Pass 14).
+    // Iterate routeFiledPlan's NonEmptyList directly to preserve cardinality.
+    val initialEvents = mutableListOf<SimEvent>()
+    for ((aircraftId, plan) in flightPlans.entries.sortedBy { it.key.value }) {
+        val routingResult = xyz.easiersaid.twr.sim.AftnRouting
+            .routeFiledPlan(plan) { aerodromeId ->
+                merged.aerodromes[aerodromeId]?.roles?.keys.orEmpty()
+            }
+        val recipients = when (routingResult) {
+            is Either.Left -> return Either.Left(LoadError.RoutingFailed(aircraftId, routingResult.value))
+            is Either.Right -> routingResult.value
+        }
+        for (recipient in recipients) {
+            initialEvents.add(SimEvent.FlightPlanFiled(
+                time = xyz.easiersaid.twr.protocol.SimTime.ZERO,
+                aircraft = aircraftId,
+                plan = plan,
+                recipient = recipient,
+            ))
+        }
+    }
+
+    val loaded = LoadedFixture(merged, worldIndex, controllers, initialEvents.toList())
+    val violations = loaded.validateMultiAerodrome(this)
+    if (violations.isNotEmpty()) return Either.Left(LoadError.ValidationFailed(violations))
+    return Either.Right(loaded)
+}
+
+/**
+ * Multi-aerodrome variant of [validate]. Walks each aerodrome's staffing and
+ * checks roles + frequencies against the merged world. Reports every
+ * violation — not the first — so failure messages name them all at once.
+ */
+fun LoadedFixture.validateMultiAerodrome(fixture: MultiAerodromeFixture): List<FixtureViolation> = buildList {
+    if (fixture.standPointId !in worldIndex.positions) {
+        add(FixtureViolation.StandPointMissing(fixture.standPointId))
+    }
+    if (fixture.destinationStandPointId !in worldIndex.positions) {
+        add(FixtureViolation.StandPointMissing(fixture.destinationStandPointId))
+    }
+    for (entry in fixture.staffing) {
+        val ad = world.aerodromes[entry.aerodromeId]
+        if (ad == null) {
+            add(FixtureViolation.AerodromeMissing(entry.aerodromeId))
+            continue
+        }
+        if (ad.runways.isEmpty()) add(FixtureViolation.NoRunways(entry.aerodromeId))
+        for ((role, expectedFreq) in entry.frequencyByRole) {
+            val published = ad.roles[role]
+            if (published == null) {
+                add(FixtureViolation.RoleNotPublished(role, entry.aerodromeId))
+                continue
+            }
+            if (published.frequency != expectedFreq) {
+                add(FixtureViolation.FrequencyMismatch(
+                    aerodrome = entry.aerodromeId,
+                    role = role,
+                    delta = FrequencyDelta(expected = expectedFreq, published = published.frequency),
+                ))
+            }
         }
     }
 }

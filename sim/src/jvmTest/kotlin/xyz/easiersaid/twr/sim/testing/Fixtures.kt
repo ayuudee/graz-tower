@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim.testing
 
+import arrow.core.nonEmptyListOf
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -65,9 +66,81 @@ object Fixtures {
             qnh = null,
             visibility = null,
         ),
-        // LJMB AFIS only — but until D-PF.1 lands we model TOWER for the
-        // simple G2-precursor sanity check.
+        // LJMB is controlled (TOWER + APP) during published hours per Slovenia
+        // AIP AD 2.LJMB. G2 Phase A landed the roles block in the LJMB world-
+        // candidate so this fixture loads cleanly.
         controllerRoles = setOf(RoleName.TOWER),
+    )
+
+    /**
+     * G2 Phase A: cross-aerodrome VFR transit fixture. Both LOWG and LJMB are
+     * staged; controllers staffed at LOWG_GROUND, LOWG_TOWER, LOWG_APPROACH,
+     * LJMB_TOWER. A single VFR FiledPlan distributes via Pass 14
+     * `AftnRouting.routeFiledPlan` to LOWG_GROUND (Owned) and LJMB_TOWER
+     * (knownStrips).
+     *
+     * Per-aerodrome frequencies (multi-aerodrome cannot use a single-frequency
+     * field): LOWG GND/TWR on 118.200, LOWG APP on 119.300, LJMB TOWER on 119.205.
+     *
+     * `standPointId` is the aircraft's start point at LOWG; `destinationStandPointId`
+     * is the expected end point at LJMB. Both are taxiway-stand points per
+     * the existing LOWG / LJMB authoring conventions.
+     */
+    // G2 Phase A scope note: `LjmbWorldCandidateValidationTest` (LJMB IFR SID
+    // inventory mismatch — expects 9 SIDs, world-candidate publishes 5) is
+    // pre-existing on master and explicitly out of G2 scope (G2 is VFR transit;
+    // SIDs are IFR procedures). A future LJMB IFR pass closes that test.
+    val LOWG_LJMB_VFR: MultiAerodromeFixture = MultiAerodromeFixture(
+        staffing = nonEmptyListOf(
+            AerodromeStaffing(
+                aerodromeId = AerodromeId("LOWG"),
+                candidatePath = projectRoot().resolve("cad/airports/rendered/lowg/world-candidate.json"),
+                frequencyByRole = mapOf(
+                    RoleName.GROUND to Frequency.unsafe("118.200"),
+                    RoleName.TOWER to Frequency.unsafe("118.200"),
+                    RoleName.APPROACH to Frequency.unsafe("119.300"),
+                ),
+                weather = WeatherObservation(
+                    wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
+                    qnh = null,
+                    visibility = null,
+                ),
+            ),
+            AerodromeStaffing(
+                aerodromeId = AerodromeId("LJMB"),
+                candidatePath = projectRoot().resolve("cad/airports/rendered/ljmb/world-candidate.json"),
+                frequencyByRole = mapOf(
+                    RoleName.TOWER to Frequency.unsafe("119.205"),
+                ),
+                weather = WeatherObservation(
+                    wind = WindReport.Available(Wind.unsafe(directionDegrees = 140, speedKnots = 6)),
+                    qnh = null,
+                    visibility = null,
+                ),
+            ),
+        ),
+        standPointId = PointId("LOWG_STAND_1_POINT"),
+        destinationStandPointId = PointId("LJMB_TWY_A_17_02"),
+        weatherByAerodrome = mapOf(
+            AerodromeId("LOWG") to WeatherObservation(
+                wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
+                qnh = null,
+                visibility = null,
+            ),
+            AerodromeId("LJMB") to WeatherObservation(
+                wind = WindReport.Available(Wind.unsafe(directionDegrees = 140, speedKnots = 6)),
+                qnh = null,
+                visibility = null,
+            ),
+        ),
+        flightPlans = mapOf(
+            AircraftId("OE-XYZ") to FiledPlan.Vfr(
+                departureAerodrome = AerodromeId("LOWG"),
+                destinationAerodrome = AerodromeId("LJMB"),
+                destinationRunway = xyz.easiersaid.twr.protocol.RunwayId("14"),
+                intent = AircraftIntent.Transit,
+            ),
+        ),
     )
 
     private fun projectRoot(): Path {

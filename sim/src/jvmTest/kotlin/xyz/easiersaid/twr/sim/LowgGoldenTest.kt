@@ -28,6 +28,7 @@ import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.sim.ReceiverRef
 import xyz.easiersaid.twr.sim.testing.Fixtures
 import xyz.easiersaid.twr.sim.testing.LoadedFixture
+import xyz.easiersaid.twr.sim.testing.controllerByRole
 import xyz.easiersaid.twr.sim.testing.firstControllerInstructionOf
 import xyz.easiersaid.twr.sim.testing.firstPilotReportOf
 import xyz.easiersaid.twr.sim.testing.formatJourney
@@ -57,8 +58,11 @@ class LowgGoldenTest {
         val lowg = AerodromeId("LOWG")
         val groundId = ControllerId("LOWG_GROUND")
         val towerId = ControllerId("LOWG_TOWER")
-        val ground = checkNotNull(loaded.controllers[RoleName.GROUND]) { "GROUND missing from fixture" }
-        val tower = checkNotNull(loaded.controllers[RoleName.TOWER]) { "TOWER missing from fixture" }
+        // G2 Phase A: LoadedFixture.controllers is keyed by ControllerId so
+        // multi-aerodrome fixtures can stage controllers that share a RoleName.
+        // Single-aerodrome lookup goes through controllerByRole(role).
+        val ground = checkNotNull(loaded.controllerByRole(RoleName.GROUND)) { "GROUND missing from fixture" }
+        val tower = checkNotNull(loaded.controllerByRole(RoleName.TOWER)) { "TOWER missing from fixture" }
 
         // ── One AI aircraft at the stand, mission = one full-stop circuit ──
         val aircraftId = AircraftId("OE-ABC")
