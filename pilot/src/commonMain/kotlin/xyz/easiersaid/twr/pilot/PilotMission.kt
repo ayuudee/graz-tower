@@ -84,40 +84,30 @@ data class PilotMission(
      * [updateAfterTransmission] when the matching `InitialContact` is
      * transmitted. [None] before the first ContactFrequency.
      *
-     * G2 (Phase C): also written by `applyEnteringDestinationAirspace` for
-     * the cross-aerodrome autonomous-contact path. The two writers are
-     * mutually exclusive in time (re-fire prevention via [contactedAerodromes]).
+     * G2 cross-aerodrome path: this field stays [None] for the autonomous
+     * arrival; CALL_INBOUND falls back to `RoleName.TOWER` (D-G2.7 — destination
+     * tower-role lookup is hardcoded; future scope reads it from the procedure's
+     * `contactRequirement`).
      */
     val pendingInitialContactRole: Option<xyz.easiersaid.twr.protocol.RoleName> = None,
 
     /**
-     * The frequency the pilot was last told to tune (paired with [pendingInitialContactRole]).
+     * Filed flight plan — the pilot's pre-flight briefing material.
      *
-     * Pre-G2 the pilot inferred frequency from the controller-spec on the
-     * `ContactFrequency` instruction's resolved target. G2 introduces the
-     * cross-aerodrome autonomous-contact path where the pilot self-selects
-     * the next frequency from filed-plan / world data; this field is the
-     * explicit carrier so the same emission path handles both.
+     * G2 (Phase C): the route planner reads this to know the destination
+     * aerodrome and, by way of the destination's published procedures, the
+     * route's terminal waypoint. Real pilots have this as a paper or digital
+     * document; in the model it is supplied to [createMission] at sim-init.
      *
-     * Cleared together with [pendingInitialContactRole] when the matching
-     * `InitialContact` is transmitted.
+     * Stored on the mission rather than only consumed by `createMission`
+     * because Phase C's route planner needs cross-tick access (re-planning
+     * on FPL amendment, deferred per D-G2.4, will read this).
+     *
+     * Per the per-class quotient rule (D-PF.4), [PilotMission] uses [Option]
+     * for nullable fields; [createMission]'s `T?` parameter crosses the
+     * boundary to `Option` here.
      */
-    val pendingInitialContactFrequency: Option<xyz.easiersaid.twr.protocol.Frequency> = None,
-
-    /**
-     * The aerodromes the pilot has emitted [InitialContact] to during this mission.
-     *
-     * G2 (Phase C, D-PF.3-adjacent): mission-scoped re-fire prevention for
-     * the autonomous boundary-entry contact event. Distinct from
-     * [contactedOnFrequency] (cycle-scoped — resets on each new
-     * `ContactFrequency`). Once an aerodrome appears here it is permanent
-     * for this mission; a pilot does not "first-contact" the same destination
-     * twice on the same flight.
-     *
-     * Invariant pinned in spec test: contactedAerodromes ⊇ {a : mission has
-     * emitted InitialContact(c) where c is at a}.
-     */
-    val contactedAerodromes: Set<xyz.easiersaid.twr.protocol.AerodromeId> = emptySet(),
+    val filedPlan: Option<xyz.easiersaid.twr.protocol.FiledPlan> = None,
 
     // ── Phase-local (reset on go-around — see resetForGoAround) ────
     /** Timer for missing-clearance escalation (millis since step entered). */
@@ -621,6 +611,7 @@ fun createMission(
         root = root,
         stepEnteredAt = time,
         activeRunway = initialActiveRunway,
+        filedPlan = filedPlan?.let { Some(it) } ?: None,
     )
 }
 
