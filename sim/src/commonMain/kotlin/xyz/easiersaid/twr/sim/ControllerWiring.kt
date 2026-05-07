@@ -56,7 +56,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     // carries the ICAO type designator and the sensor carries wake
     // category, both joined into the AircraftObservation.
     val strips = ownedIds
-        .mapNotNull { id -> state.aircraft[id]?.toFlightStrip() }
+        .mapNotNull { id -> state.aircraft[id]?.toFlightStrip(spec.aerodromeId) }
         .associateBy { it.aircraft }
     val readings = ownedIds
         .mapNotNull { id -> state.aircraft[id]?.toSensorReading(state) }

@@ -5,6 +5,8 @@ import arrow.core.toOption
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.SimTime
@@ -57,6 +59,25 @@ inline fun <reified E : ReportEvent> List<TransmissionRecord>.firstPilotReportOf
     record.speaker is SpeakerRef.Pilot
         && (record.speaker as SpeakerRef.Pilot).aircraftId == aircraft
         && report.events.any { it is E }
+}.toOption()
+
+/**
+ * G2 Phase F: first pilot transmission of type [T] addressed to [controllerId].
+ *
+ * Mirrors the parametric shape of [firstControllerInstructionOf] — scales to
+ * any concrete `PilotTransmission` leaf (`InitialContact`, `Request`,
+ * `Readback`, …). Multi-aerodrome integration tests use the `<InitialContact>`
+ * specialisation to filter first-contacts by destination controller; future
+ * tests can filter other leaves through the same surface.
+ *
+ * Returns [Option.None] when no such transmission was made.
+ */
+inline fun <reified T : xyz.easiersaid.twr.protocol.PilotTransmission> List<TransmissionRecord>.firstPilotTransmissionTo(
+    controllerId: ControllerId,
+): Option<TransmissionRecord> = firstOrNull { record ->
+    record.utterance is Utterance.FromPilot &&
+        (record.utterance as Utterance.FromPilot).transmission is T &&
+        record.receiver == ReceiverRef.Controller(controllerId)
 }.toOption()
 
 /** [SimTime] of the first record matching [predicate]. */

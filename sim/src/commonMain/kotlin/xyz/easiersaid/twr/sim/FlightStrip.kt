@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim
 
+import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.HighLevelGoal
@@ -59,11 +60,22 @@ data class FlightStrip(
  * controller a one-line summary. Reading `pilotMission.goal` here is the
  * sim equivalent of reading the filed flight plan, not the pilot's
  * cockpit decisions.
+ *
+ * G2 Phase F: [observerAerodrome] disambiguates the local service kind for
+ * cross-aerodrome Transit flights. A `HighLevelGoal.Transit(destination=B)`
+ * flight at aerodrome A is locally Departing; at aerodrome B it is
+ * Arriving. Without this context, both controllers see an ambiguous
+ * `Transit` intent and the dispatch in `serviceKindForGround` /
+ * `serviceKindForTower` falls into the wrong arm (treats the cross-
+ * aerodrome flight as already-arrived at the departure aerodrome). The
+ * AerodromeId is doctrine-shaped data — the same kind of context the
+ * controller's strip board carries about which station the flight is
+ * filed to/from.
  */
-internal fun AircraftState.toFlightStrip(): FlightStrip = FlightStrip(
+internal fun AircraftState.toFlightStrip(observerAerodrome: AerodromeId): FlightStrip = FlightStrip(
     aircraft = id,
     callsign = callsign,
-    intent = inferIntentFromGoal(pilotMission?.goal),
+    intent = inferIntentFromGoal(pilotMission?.goal, observerAerodrome),
     // Pass 10 (D-AUDIT.4): the controller's strip carries the ICAO type.
     // Reading `state.type.icaoDesignator` is doctrine-shaped data, not
     // pilot-internal — same channel as wakeCategory on SensorReading.
@@ -72,22 +84,36 @@ internal fun AircraftState.toFlightStrip(): FlightStrip = FlightStrip(
 
 /**
  * Project a [HighLevelGoal] (the filed plan's nature) into the broad
- * service intent the controller's strip carries. Pure function over the
- * goal alone — never reads mission tree, active compound, or any other
- * runtime state.
+ * service intent the controller's strip carries, relative to the
+ * controller's aerodrome ([observerAerodrome]). Pure function over the
+ * goal and observer alone — never reads mission tree, active compound,
+ * or any other runtime state.
  *
- * Mapping reflects the filed plan:
+ * Mapping reflects the filed plan, observed locally:
  *  - `Departure` / `CircuitTraining` → `Departing` (the flight starts as
  *    a departure; circuit training is "departure with full-stop later" —
  *    filed as departure-flow until landing observed by radio).
  *  - `Arrival` → `Arriving`.
- *  - `Transit` → `Transit`.
- *  - null (no mission) → `Transit` as a safe default for unscheduled traffic.
+ *  - `Transit(destination = obs)` → `Arriving` (this controller's
+ *    aerodrome is the destination of the transit leg; the post-landing
+ *    radio fold will replace strip intent via `AircraftArrivalCommitted`,
+ *    but the strip itself reads the filed plan as if the aircraft is
+ *    arriving here).
+ *  - `Transit(destination ≠ obs, or null)` → `Departing` (this
+ *    controller's aerodrome is the *origin* of the transit leg, so
+ *    operationally the aircraft is departing from here).
+ *  - null (no mission) → `Transit` as a safe default for unscheduled
+ *    traffic.
  */
-private fun inferIntentFromGoal(goal: HighLevelGoal?): AircraftIntent = when (goal) {
+private fun inferIntentFromGoal(
+    goal: HighLevelGoal?,
+    observerAerodrome: AerodromeId,
+): AircraftIntent = when (goal) {
     null -> AircraftIntent.Transit
     is HighLevelGoal.Arrival -> AircraftIntent.Arriving
     is HighLevelGoal.Departure -> AircraftIntent.Departing
     is HighLevelGoal.CircuitTraining -> AircraftIntent.Departing
-    is HighLevelGoal.Transit -> AircraftIntent.Transit
+    is HighLevelGoal.Transit ->
+        if (goal.destination == observerAerodrome) AircraftIntent.Arriving
+        else AircraftIntent.Departing
 }

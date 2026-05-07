@@ -479,7 +479,21 @@ private fun handlePilotTick(
     var resultState = state
     val commEvents = mutableListOf<SimEvent>()
     if (decision.transmissions.isNotEmpty()) {
+        // G2 Phase F (cross-aerodrome wire layer): fall back to `knownStrips`
+        // when no controller has the aircraft in `responsibilities`. This is
+        // exactly the cross-aerodrome autonomous-contact case: between LOWG's
+        // boundary release and LJMB_TWR's `applyTwoWayCommsEstablished` flip,
+        // no controller has the aircraft in responsibilities — but LJMB_TWR
+        // has it in knownStrips from Pass 14 filing distribution. Without
+        // this fallback, the pilot's autonomous InitialContact at the
+        // procedure REP would be silently dropped.
+        //
+        // Single-aerodrome flows (G0) are unaffected: some controller always
+        // has the aircraft in responsibilities after the first taxi clearance,
+        // so the responsibilities-search wins and the knownStrips fallback
+        // never fires.
         val ctrl = resultState.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
+            ?: resultState.controllers.values.firstOrNull { event.aircraftId in it.knownStrips }
         if (ctrl != null) {
             var txState = resultState
             var nextFreeAt = state.now
@@ -871,9 +885,9 @@ private fun handleTransmissionEnd(
                 val acId = pilotTransmission
                 val ac = withoutTx.aircraft[acId]
                 val mission = ac?.pilotMission
-                val tx = (msg as? ReceivedMessage.Clear)?.transmission
+                val inboundTransmission = (msg as? ReceivedMessage.Clear)?.transmission
                 val withMission = if (
-                    ac != null && mission != null && !mission.contactedOnFrequency && tx is InitialContact
+                    ac != null && mission != null && !mission.contactedOnFrequency && inboundTransmission is InitialContact
                 ) {
                     val updatedAc = ac.copy(
                         pilotMission = mission.copy(contactedOnFrequency = true),
@@ -889,14 +903,27 @@ private fun handleTransmissionEnd(
                 // G2 (Phase E): the receiver candidate is a controller
                 // EITHER Watching the aircraft (intra-aerodrome handoff,
                 // Pass 7) OR holding the filed strip in knownStrips (cross-
-                // aerodrome arrival, Pass 14 + this pass). The two states
-                // are mutually exclusive in practice — an aircraft has at
-                // most one Watching entry across all controllers and at
-                // most one knownStrips entry on the destination side.
+                // aerodrome arrival, Pass 14 + this pass).
+                //
+                // G2 Phase F bugfix: the lookup is FREQUENCY-SCOPED to the
+                // transmission's frequency. Pre-fix, the broad walk across
+                // all controllers caught LJMB_TWR's `knownStrips` even when
+                // the pilot was transmitting on LOWG_GROUND's frequency
+                // (118.200) — yielding a premature flip and a "two
+                // simultaneous Owners" invariant violation.
+                //
+                // For G0 single-aerodrome handoff (GND→TWR on 118.200), the
+                // frequency scope keeps both candidates in view and the
+                // Watching/knownStrips filter selects the right one (the
+                // newly-Watching TWR controller). For G2 cross-aerodrome,
+                // pilot transmissions on LOWG's frequency don't reach
+                // LJMB_TWR's strip; only when the pilot autonomously tunes
+                // to LJMB_TWR's frequency does the flip fire.
                 val receivingControllerId = withMission.controllers.values
                     .firstOrNull { spec ->
-                        spec.responsibilities[acId] is ResponsibilityState.Watching ||
-                            acId in spec.knownStrips
+                        spec.frequency == tx.frequency &&
+                            (spec.responsibilities[acId] is ResponsibilityState.Watching ||
+                                acId in spec.knownStrips)
                     }?.id
                 if (receivingControllerId != null) {
                     val receivingRole = withMission.controllers[receivingControllerId]?.role
@@ -905,10 +932,12 @@ private fun handleTransmissionEnd(
                         applyTwoWayCommsEstablished(withMission, acAfter, receivingRole)
                     } else withMission
                 } else {
-                    // No controller is currently Watching this aircraft and
-                    // no controller has it in knownStrips — a normal in-
-                    // frequency transmission (Report, Readback, etc.). No
-                    // transition needed.
+                    // The receiver of this transmission is not in Watching
+                    // and does not hold the strip in knownStrips for this
+                    // aircraft — a normal in-frequency transmission to an
+                    // already-Owning controller (Report, Readback, Request)
+                    // or a transmission to a controller that has no claim
+                    // on this aircraft. No transition needed.
                     withMission
                 }
             } else withoutTx
