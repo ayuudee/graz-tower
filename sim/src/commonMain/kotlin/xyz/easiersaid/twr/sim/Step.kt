@@ -1555,35 +1555,34 @@ internal fun applyRadarServiceTerminated(
     ac: AircraftState,
     @Suppress("UNUSED_PARAMETER") instruction: RadarServiceTerminated,
 ): SimState {
-    // G2 Phase I (closure): idempotency. If some controller is already
-    // in `HandingOff(Released)` for this aircraft, the original RST has
-    // already applied — this delivery is a stale re-issue (typical
-    // pattern: COORD-REISSUE fires after the original sender has lost
-    // ownership; the pilot processes the re-issued RST much later when
-    // a DIFFERENT controller has taken over). Without this idempotency
-    // gate, `requireOwner` finds the *current* owner (which may be the
-    // cross-aerodrome destination tower that took over via knownStrips)
-    // and wrongly transitions THEM to HandingOff(Released), collapsing
-    // the destination's commitment and stranding the pilot at
-    // AWAIT_LANDING_CLEARANCE.
+    // G2 closure: drop the sending controller's responsibility outright. A
+    // boundary release is unilateral — when the controller says "radar
+    // service terminated," they are *done* with the aircraft. The pilot's
+    // squawk-readback is an acknowledgment, not a precondition. Pre-G2
+    // closure this transitioned to `HandingOff(Released)` and waited for
+    // [applyBoundaryReleaseReadback] (called from `handleTransmissionEnd`'s
+    // pilot-tx-end branch) to flip to absent, but that left a 2-3 s window
+    // (cognitive delay + readback travel) during which the pilot might
+    // already have switched frequency and made first contact at the
+    // destination — violating the R5 pre-contact snapshot pin: at the
+    // moment before the destination contact, no LOWG controller may hold
+    // *any* responsibility entry (Owned, HandingOff, or Watching).
     //
-    // Safe semantics: an aircraft can only be "released" by ONE
-    // controller at a time. Once that release lands, subsequent RST
-    // deliveries for the same aircraft are stale and no-op.
-    val alreadyReleased = state.controllers.values.any { spec ->
-        val r = spec.responsibilities[ac.id]
-        r is ResponsibilityState.HandingOff && r.target is HandoffTarget.Released
-    }
-    if (alreadyReleased) return state
-
-    val current = requireOwner(state, ac, "applyRadarServiceTerminated")
+    // Idempotency: if no controller currently owns the aircraft, the
+    // release has already applied — typical when COORD-REISSUE fires after
+    // the original sender has lost ownership and the pilot processes the
+    // re-issued RST much later. Without the gate, `requireOwner` would
+    // find the *current* owner (e.g. the cross-aerodrome destination
+    // tower) and wrongly drop THEM, collapsing the destination's
+    // commitment and stranding the pilot at AWAIT_LANDING_CLEARANCE.
+    //
+    // Safe semantics: an aircraft can only be released once per
+    // responsibility lifecycle; subsequent RST deliveries are stale.
+    val owner = state.controllers.values.firstOrNull { spec ->
+        spec.responsibilities[ac.id] is ResponsibilityState.Owned
+    } ?: return state
     val controllersMap = LinkedHashMap(state.controllers)
-    controllersMap[current.id] = current.copy(
-        responsibilities = current.responsibilities + (ac.id to ResponsibilityState.HandingOff(
-            target = HandoffTarget.Released,
-            since = state.now,
-        )),
-    )
+    controllersMap[owner.id] = owner.copy(responsibilities = owner.responsibilities - ac.id)
     return state.copy(controllers = controllersMap)
 }
 
@@ -1609,9 +1608,13 @@ internal fun applyRadarServiceTerminated(
  * different concerns — the sim flips the responsibility map; the
  * controller updates its beliefs. Firewall pattern preserved.
  *
- * Boundary release (`HandingOff(Released)`) does NOT come through this
- * path — the pilot's readback to `RadarServiceTerminated` is what
- * completes that flow. See [applyBoundaryReleaseReadback].
+ * Boundary release does NOT come through this path — [applyRadarServiceTerminated]
+ * drops the sending controller's responsibility unilaterally on the pilot's
+ * RST processing tick (G2 closure: previously transitioned to
+ * `HandingOff(Released)` and waited for the readback, but the resulting
+ * 2-3 s window let the pilot already make destination contact while the
+ * sender still held a responsibility entry — violating the R5
+ * pre-contact snapshot).
  */
 internal fun applyTwoWayCommsEstablished(
     state: SimState,
@@ -1684,30 +1687,6 @@ internal fun applyTwoWayCommsEstablished(
         )
         return state.copy(controllers = controllersMap)
     }
-}
-
-/**
- * Pass 7 (D-PF.7 closure): the pilot's readback to `RadarServiceTerminated`
- * drops the aircraft from the sending controller's responsibilities — no
- * peer state to flip.
- */
-internal fun applyBoundaryReleaseReadback(
-    state: SimState,
-    ac: AircraftState,
-): SimState {
-    val sender = state.controllers.values.firstOrNull { spec ->
-        val r = spec.responsibilities[ac.id]
-        r is ResponsibilityState.HandingOff &&
-            r.target is HandoffTarget.Released
-    } ?: return state
-    val controllersMap = LinkedHashMap(state.controllers)
-    controllersMap[sender.id] = sender.copy(responsibilities = sender.responsibilities - ac.id)
-    // Pass 9 (D-AUDIT.2 / Phase 9.B): boundary release — clear any
-    // missed-handoff escalation tracking for the (sender, aircraft) pair.
-    // (HandingOff(Released) doesn't trigger the sweep — the sweep filters
-    // for HandingOff(Peer) — but a defensive clear keeps the slice tight.)
-    val escalations = state.handoffEscalations - HandoffEscalationKey(sender = sender.id, aircraft = ac.id)
-    return state.copy(controllers = controllersMap, handoffEscalations = escalations)
 }
 
 private fun runwayThreshold(

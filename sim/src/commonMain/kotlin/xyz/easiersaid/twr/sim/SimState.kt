@@ -52,11 +52,9 @@ data class SimState(
      * per key per `MISSED_HANDOFF_TIMEOUT` window.
      *
      * **Single writer**: `sweepHandoffTimeouts` (sets the entry on emit).
-     * **Clear sites** (both reachable):
+     * **Clear sites**:
      *  - [applyTwoWayCommsEstablished] — Watching → Owned, sender's
      *    HandingOff entry removed; clear the matching key.
-     *  - [applyBoundaryReleaseReadback] — HandingOff(Released) → entry
-     *    removed; clear the matching key.
      */
     val handoffEscalations: Map<HandoffEscalationKey, SimTime> = emptyMap(),
     /**

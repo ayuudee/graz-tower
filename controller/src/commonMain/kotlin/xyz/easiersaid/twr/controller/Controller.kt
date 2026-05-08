@@ -690,11 +690,27 @@ private fun processReadback(
     val coords = state.beliefs.coordinations[msg.aircraft] ?: return state
     if (coords.isEmpty()) return state
 
-    // Prefer a CORRECT match (most recent wins). Otherwise find the most recent
-    // Incorrect so we correct against the instruction the pilot likely intended.
+    // Prefer CORRECT matches. Otherwise find the most recent Incorrect so we
+    // correct against the instruction the pilot likely intended.
+    //
+    // G2 closure: close *every* coordination whose verdict is Correct, not
+    // only the most recent. A `NoPendingReadback`-gated fire-and-forget rule
+    // (e.g. `DEP-CROSS-AERODROME-RELEASE`) deliberately re-fires on
+    // escalation (Issued → Querying), creating duplicate identical
+    // coordinations — same target, same instruction shape. The pilot's
+    // single readback satisfies all of them; closing only the latest leaves
+    // earlier identical coords orphaned, where they then chain through
+    // COORD-QUERY → COORD-REISSUE → COORD-BLIND for nothing (the pilot is
+    // already on the destination's frequency by then). Closing every
+    // CORRECT match collapses the orphan chain.
+    //
+    // Safety: matchReadback returns Correct only when the readback is
+    // structurally consistent with the instruction; if a future rule pair
+    // issues two different RST instructions whose readbacks differ, only
+    // the matching coord(s) close — the non-matching one stays open.
     val classified = coords.mapIndexed { i, c -> i to classifyReadback(c.instruction, readback) }
-    val correctIdx = classified.lastOrNull { it.second is ReadbackVerdict.Correct }?.first
-    if (correctIdx != null) return acceptReadback(msg.aircraft, coords, correctIdx, state)
+    val correctIdxs = classified.filter { it.second is ReadbackVerdict.Correct }.map { it.first }
+    if (correctIdxs.isNotEmpty()) return acceptReadback(msg.aircraft, coords, correctIdxs, state)
 
     val correctionTarget = classified.lastOrNull { it.second is ReadbackVerdict.Incorrect }
         ?: return state
@@ -702,16 +718,28 @@ private fun processReadback(
 }
 
 /**
- * Accept a correct readback: mark the coordination CONFIRMED, advance the
- * commitment stage if the coordination carries an advanceToStage.
+ * Accept correct readback(s): mark the coordination(s) CONFIRMED, advance the
+ * commitment stage if any confirmed coord carries an `advanceToStage`.
+ *
+ * Closes every coord in [correctIdxs] (a single readback can satisfy multiple
+ * duplicate coords — see callsite rationale). Emits a single `READBACK-CORRECT`
+ * response (the controller acknowledges the readback once; multiple internal
+ * coords being closed is a bookkeeping detail, not on-air phraseology).
+ *
+ * Stage advancement uses the most-recent (last-by-index) coord's
+ * `advanceToStage` if any is non-null. Multiple coords with conflicting
+ * advanceToStage values are unrepresentable in current code paths
+ * (duplicates from `NoPendingReadback` re-fire are identical, including
+ * `advanceToStage`); if a future doctrine introduces conflicting
+ * advancements we'll need to disambiguate explicitly.
  */
 private fun acceptReadback(
     aircraft: AircraftId,
     coords: List<OutstandingCoordination>,
-    correctIdx: Int,
+    correctIdxs: List<Int>,
     state: ReadbackFoldState,
 ): ReadbackFoldState {
-    val confirmed = coords[correctIdx]
+    val confirmed = correctIdxs.map { coords[it] }
     val response = ControllerOutput.Respond(
         target = aircraft,
         response = ReadBackCorrect(aircraft),
@@ -721,26 +749,29 @@ private fun acceptReadback(
             regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
         ),
     )
-    // Mark the coordination CONFIRMED and remove it from the active list.
+    // Mark the coordinations CONFIRMED and remove them from the active list.
     // Pass 12 (D-AUDIT.2.E follow-on): remove by *identity* against the
     // ORIGINAL coordinations list, not by index in `coords`. Pre-Pass-12
     // `coords` was the filter-narrowed list (Issued-only); writing back
     // `coords.filterIndexed` would silently destroy unfiltered entries
     // (e.g. Querying/Reissued) — a real bug masked by Pass 12's widened
     // filter.
+    val confirmedSet = confirmed.toSet()
     val originalCoords = state.beliefs.coordinations[aircraft] ?: emptyList()
-    val remaining = originalCoords.filter { it !== confirmed }
+    val remaining = originalCoords.filter { it !in confirmedSet }
     val allCoords = state.beliefs.coordinations.toMutableMap()
     if (remaining.isEmpty()) allCoords.remove(aircraft)
     else allCoords[aircraft] = remaining
     var beliefs = state.beliefs.copy(coordinations = allCoords)
 
-    // If the coordination carries a stage advancement, apply it now.
-    if (confirmed.advanceToStage != null) {
+    // If any confirmed coord carries a stage advancement, apply the most
+    // recent one. (Duplicate coords share the same advanceToStage today.)
+    val advanceToStage = confirmed.lastOrNull { it.advanceToStage != null }?.advanceToStage
+    if (advanceToStage != null) {
         val commitment = beliefs.commitments[aircraft]
         if (commitment != null) {
             beliefs = beliefs.copy(
-                commitments = beliefs.commitments + (aircraft to commitment.copy(stage = confirmed.advanceToStage)),
+                commitments = beliefs.commitments + (aircraft to commitment.copy(stage = advanceToStage)),
             )
         }
     }

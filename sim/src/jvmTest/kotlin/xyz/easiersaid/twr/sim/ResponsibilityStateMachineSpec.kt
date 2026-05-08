@@ -155,27 +155,20 @@ class ResponsibilityStateMachineSpec {
     }
 
     @Test
-    fun `Owned plus RadarServiceTerminated_issued = HandingOff(Released)`() {
+    fun `Owned plus RadarServiceTerminated_processed = entry dropped (G2 closure - unilateral release)`() {
+        // G2 closure: applyRadarServiceTerminated drops the responsibility
+        // entry outright on the pilot's RST processing tick. Pre-G2 this
+        // transitioned to `HandingOff(Released)` and waited for an explicit
+        // readback step (`applyBoundaryReleaseReadback`) to drop the entry,
+        // but the resulting 2-3 s window let the pilot make destination
+        // contact while the sender still held a responsibility — failing
+        // the cross-aerodrome R5 pre-contact snapshot.
         val twr = towerSpec(mapOf(ac to ResponsibilityState.Owned(now0)))
         val gnd = groundSpec()
         val state = stateWith(now1, twr, gnd, aircraft())
 
         val instruction = RadarServiceTerminated(target = ac, suggestedFrequency = None, squawk = None)
         val next = applyRadarServiceTerminated(state, state.aircraft.getValue(ac), instruction)
-
-        assertEquals(
-            ResponsibilityState.HandingOff(target = HandoffTarget.Released, since = now1),
-            next.controllers.getValue(ctrlAId).responsibilities[ac],
-        )
-    }
-
-    @Test
-    fun `HandingOff(Released) plus Readback(RST) = entry removed`() {
-        val twr = towerSpec(mapOf(ac to ResponsibilityState.HandingOff(target = HandoffTarget.Released, since = now0)))
-        val gnd = groundSpec()
-        val state = stateWith(now1, twr, gnd, aircraft())
-
-        val next = applyBoundaryReleaseReadback(state, state.aircraft.getValue(ac))
 
         assertTrue(ac !in next.controllers.getValue(ctrlAId).responsibilities)
     }

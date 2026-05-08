@@ -22,23 +22,20 @@ import kotlin.test.Test
  * `RadarServiceTerminated` per ICAO Doc 4444 §10.1.4.
  *
  * **Scope (Test-4b post-impl fold-in)**: this test pins the sim-side
- * apply path ([applyRadarServiceTerminated], [applyBoundaryReleaseReadback])
- * end-to-end. The rule firing itself is covered architecturally by
- * `BoundaryReleaseFirewallTest`. This test exercises:
+ * apply path ([applyRadarServiceTerminated]) end-to-end. The rule firing
+ * itself is covered architecturally by `BoundaryReleaseFirewallTest`.
  *
- *  1. The sim-side `applyRadarServiceTerminated` transitions current
- *     controller `Owned → HandingOff(Released)`.
- *  2. The sim-side `applyBoundaryReleaseReadback` drops the aircraft
- *     entry from the controller's responsibilities.
- *  3. The cross-controller invariant (no two-Owned, no orphan Watching)
- *     holds across the full apply sequence.
- *
- * The full G0-scale "fly a Departure mission to 12 NM and watch the rule
- * fire" integration test is deferred — its preconditions are met but its
- * runtime cost (multi-minute sim) without commensurate diagnostic value
- * over this focused spec is poor trade. When G2 or a multi-aerodrome
- * test exercises the path naturally, the integration coverage emerges
- * for free.
+ * G2 closure: the previous two-phase
+ * (`Owned → HandingOff(Released) → absent`) flow has been collapsed.
+ * `applyRadarServiceTerminated` now drops the sending controller's
+ * responsibility entry outright on the pilot's RST processing tick. The
+ * pilot's squawk readback is still emitted as on-air acknowledgment, but
+ * the sim-side state transition is unilateral: the previous design left a
+ * 2–3 s window during which the pilot could already make destination
+ * contact while the sender still held a `HandingOff(Released)` entry,
+ * violating G2's R5 pre-contact snapshot ("no LOWG controller may hold
+ * any responsibility for the aircraft when the pilot first contacts
+ * LJMB"). The `applyBoundaryReleaseReadback` companion was removed.
  */
 class RadarServiceTerminatedSpec {
 
@@ -79,7 +76,7 @@ class RadarServiceTerminatedSpec {
     )
 
     @Test
-    fun `applyRadarServiceTerminated transitions Owned to HandingOff(Released)`() {
+    fun `applyRadarServiceTerminated drops the aircraft entry from the sending controller`() {
         val twr = towerSpec(mapOf(ac to ResponsibilityState.Owned(now0)))
         val state = stateWith(now1, twr)
 
@@ -89,45 +86,36 @@ class RadarServiceTerminatedSpec {
         )
         val next = applyRadarServiceTerminated(state, state.aircraft.getValue(ac), instruction)
 
-        val st = next.controllers.getValue(twrId).responsibilities[ac]
-        check(st is ResponsibilityState.HandingOff) {
-            "Expected HandingOff after RadarServiceTerminated; got $st"
-        }
-        check(st.target is HandoffTarget.Released) {
-            "Expected HandingOff.target = Released; got ${st.target}"
-        }
-        check(st.since == now1) {
-            "Expected since=$now1; got ${st.since}"
+        check(ac !in next.controllers.getValue(twrId).responsibilities) {
+            "Expected aircraft entry dropped after RadarServiceTerminated; got " +
+                "${next.controllers.getValue(twrId).responsibilities}"
         }
     }
 
     @Test
-    fun `applyBoundaryReleaseReadback drops the aircraft entry`() {
-        val twr = towerSpec(mapOf(ac to ResponsibilityState.HandingOff(target = HandoffTarget.Released, since = now1)))
+    fun `applyRadarServiceTerminated is idempotent — second call on absent entry is a no-op`() {
+        val twr = towerSpec(emptyMap())  // aircraft already released, no entry
         val state = stateWith(now2, twr)
 
-        val next = applyBoundaryReleaseReadback(state, state.aircraft.getValue(ac))
+        val instruction = RadarServiceTerminated(target = ac)
+        val next = applyRadarServiceTerminated(state, state.aircraft.getValue(ac), instruction)
 
-        check(ac !in next.controllers.getValue(twrId).responsibilities) {
-            "Expected aircraft entry to be dropped; got ${next.controllers.getValue(twrId).responsibilities}"
+        // No state change; the absent entry stays absent.
+        check(next.controllers == state.controllers) {
+            "Expected no-op when no controller currently owns the aircraft; got mutation"
         }
     }
 
     @Test
-    fun `full release sequence preserves the cross-controller invariant`() {
-        // Owned → HandingOff(Released) → entry removed.
+    fun `release preserves the cross-controller invariant`() {
+        // Owned → entry removed (single-phase).
         val twr = towerSpec(mapOf(ac to ResponsibilityState.Owned(now0)))
         val state0 = stateWith(now0, twr)
 
         val instruction = RadarServiceTerminated(target = ac)
         val state1 = applyRadarServiceTerminated(state0, state0.aircraft.getValue(ac), instruction)
-        // Invariant holds at intermediate state.
         assertResponsibilityInvariant(state1)
-
-        val state2 = applyBoundaryReleaseReadback(state1, state1.aircraft.getValue(ac))
-        // Invariant holds at terminal state.
-        assertResponsibilityInvariant(state2)
-        check(ac !in state2.controllers.getValue(twrId).responsibilities) {
+        check(ac !in state1.controllers.getValue(twrId).responsibilities) {
             "Expected aircraft to be released by terminal state"
         }
     }

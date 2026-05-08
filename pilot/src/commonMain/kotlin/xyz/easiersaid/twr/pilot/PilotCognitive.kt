@@ -982,7 +982,15 @@ private fun runwayFromInstruction(
     is IncreaseSpeedTo -> None
     is InterceptLocaliser -> None
     is JoinAirway -> None
-    is JoinCircuit -> None
+    // G2 closure: a JoinCircuit's runway field (when present — it's nullable
+    // for backwards compatibility with rule sites that don't set it) is the
+    // canonical radio source for the destination-aerodrome runway during
+    // cross-aerodrome arrival. Without this propagation, mission.activeRunway
+    // remains stuck at the LOWG departure runway across the cruise and the
+    // pilot's pattern routing fixes onto the wrong aerodrome's circuit.
+    is JoinCircuit -> instruction.runway?.let {
+        Some(RunwayAssignment(it, RunwayAssignmentSource.Radio.JoinCircuit))
+    } ?: None
     is LeaveHoldProceedDirect -> None
     is MaintainAltitudeUntilEstablished -> None
     is MaintainAtOrAbove -> None

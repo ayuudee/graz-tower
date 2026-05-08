@@ -52,6 +52,17 @@ sealed interface RunwayAssignmentSource {
         data object TouchAndGo : Radio
         /** Runway assigned via BacktrackRunway clearance. */
         data object Backtrack : Radio
+        /**
+         * Runway assigned via [xyz.easiersaid.twr.protocol.JoinCircuit] clearance.
+         *
+         * G2 closure: a `JoinCircuit` from the destination tower is the
+         * canonical radio source for switching the pilot's `activeRunway`
+         * from a departure-side runway (Takeoff) to the destination-side
+         * runway during a cross-aerodrome arrival. Without this source,
+         * `mission.activeRunway` stays at the LOWG departure runway across
+         * the cruise and the pattern-routing fixes onto the wrong aerodrome.
+         */
+        data object JoinCircuit : Radio
     }
 }
 
@@ -123,6 +134,10 @@ sealed interface AnomalousAssignment {
  * `(Filing, *)` cell returns `Either.Right(new)`. There is no anomaly leaf
  * for Filing — the filed expectation is informational, not a clearance.
  */
+@Suppress("CyclomaticComplexMethod") // intrinsic to the 8×7 source cross-product (Filing
+// + 7 Radio variants on `prior`, 7 Radio variants on `new`); per FP review M3 every cell is
+// named (no default branch) so adding a new source is a compile-time decision over every
+// existing interaction. Splitting would scatter the precedence table.
 fun applyPrecedence(
     prior: Option<RunwayAssignment<RunwayAssignmentSource>>,
     new: RunwayAssignment<RunwayAssignmentSource.Radio>,
@@ -153,6 +168,11 @@ fun applyPrecedence(
             RunwayAssignmentSource.Radio.TouchAndGo -> Either.Right(new)
             // Stage progression: taxi → backtrack (unusual but legitimate at small fields).
             RunwayAssignmentSource.Radio.Backtrack -> Either.Right(new)
+            // taxi → JoinCircuit: rare on the same aerodrome (an aircraft on
+            // taxi receives a circuit-join clearance), but legitimate for an
+            // operator changing intent from depart-immediate to a circuit
+            // pattern. Right(new).
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
         }
         // ── Prior = LineUp ────────────────────────────────────────────────
         // Aircraft is holding short or lined up on the runway awaiting takeoff.
@@ -171,6 +191,9 @@ fun applyPrecedence(
             // Pass-7 candidate: lineup → backtrack means controller wants a runway-length
             // increase (long takeoff). Real but worth flagging because it cancels the lineup.
             RunwayAssignmentSource.Radio.Backtrack -> Either.Right(new)
+            // lineup → JoinCircuit: very unusual (aircraft on the runway
+            // suddenly cleared to a circuit join). Pass-7 candidate. Right(new).
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
         }
         // ── Prior = Takeoff ───────────────────────────────────────────────
         // Aircraft has been cleared for takeoff (and is rolling, or about to).
@@ -186,6 +209,12 @@ fun applyPrecedence(
             RunwayAssignmentSource.Radio.Land -> Either.Right(new)
             RunwayAssignmentSource.Radio.TouchAndGo -> Either.Right(new)
             RunwayAssignmentSource.Radio.Backtrack -> Either.Right(new)
+            // **G2 closure cell.** Takeoff → JoinCircuit is the canonical
+            // cross-aerodrome transition: aircraft departed runway X at the
+            // origin aerodrome (Takeoff), then later receives a JoinCircuit
+            // for runway Y at the destination aerodrome. Right(new) — the
+            // departure runway is no longer in scope.
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
         }
         // ── Prior = Land ──────────────────────────────────────────────────
         // Aircraft has been cleared to land (and is on approach, or has touched down).
@@ -208,6 +237,9 @@ fun applyPrecedence(
             RunwayAssignmentSource.Radio.TaxiClearance -> Either.Right(new)
             RunwayAssignmentSource.Radio.LineUp -> Either.Right(new)
             RunwayAssignmentSource.Radio.Backtrack -> Either.Right(new)
+            // Land → JoinCircuit: a missed approach / go-around followed by a
+            // re-issue of the join. Right(new).
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
         }
         // ── Prior = TouchAndGo ────────────────────────────────────────────
         // Aircraft has been cleared for touch-and-go (will land, then take off again).
@@ -221,6 +253,10 @@ fun applyPrecedence(
             RunwayAssignmentSource.Radio.LineUp -> Either.Right(new)
             RunwayAssignmentSource.Radio.Takeoff -> Either.Right(new)
             RunwayAssignmentSource.Radio.Backtrack -> Either.Right(new)
+            // TouchAndGo → JoinCircuit: post-T&G the aircraft is back airborne
+            // and could legitimately receive a fresh circuit join (e.g. if the
+            // controller reroutes to a different runway). Right(new).
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
         }
         // ── Prior = Backtrack ─────────────────────────────────────────────
         // Aircraft is backtracking the runway (taxi against the in-use direction).
@@ -235,6 +271,28 @@ fun applyPrecedence(
             // Pass-7 candidates: backtrack → land/T&G is unusual at small fields.
             RunwayAssignmentSource.Radio.Land -> Either.Right(new)
             RunwayAssignmentSource.Radio.TouchAndGo -> Either.Right(new)
+            // Backtrack → JoinCircuit: very unusual. Right(new).
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
+        }
+        // ── Prior = JoinCircuit (G2) ──────────────────────────────────────
+        // Aircraft has joined a circuit pattern at the destination. Subsequent
+        // clearances are normal pattern progressions (Land/T&G typically) or
+        // re-issues of the join.
+        RunwayAssignmentSource.Radio.JoinCircuit -> when (newSrc) {
+            // Same source: re-issue or restatement (different leg, different runway).
+            RunwayAssignmentSource.Radio.JoinCircuit -> Either.Right(new)
+            // Canonical pattern progression: join → land.
+            RunwayAssignmentSource.Radio.Land -> Either.Right(new)
+            // Canonical pattern progression: join → T&G (circuit traffic).
+            RunwayAssignmentSource.Radio.TouchAndGo -> Either.Right(new)
+            // Post-landing taxi clearance follows naturally.
+            RunwayAssignmentSource.Radio.TaxiClearance -> Either.Right(new)
+            // Pass-7 candidates: lineup / takeoff / backtrack from a circuit
+            // join would mean the controller is cancelling the join and
+            // sending the aircraft to ground ops. Unusual but legitimate.
+            RunwayAssignmentSource.Radio.LineUp -> Either.Right(new)
+            RunwayAssignmentSource.Radio.Takeoff -> Either.Right(new)
+            RunwayAssignmentSource.Radio.Backtrack -> Either.Right(new)
         }
     }
 }
