@@ -20,7 +20,7 @@ import xyz.easiersaid.twr.protocol.HoldShortOf
 import xyz.easiersaid.twr.protocol.HoldSpec
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.RoleName
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 
 class InstructionResolutionTest {
 
@@ -31,9 +31,10 @@ class InstructionResolutionTest {
                 aerodromeId = FixtureIds.aerodrome,
                 currentPoint = FixtureIds.standPoint
             ),
-            instruction = TaxiTo(
+            instruction = TaxiToHoldingPoint(
                 target = AircraftId("TEST123"),
                 destination = FixtureIds.holdShort09,
+                runway = FixtureIds.runway09,
                 via = listOf(FixtureIds.apronJunction)
             )
         )

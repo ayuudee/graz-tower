@@ -39,7 +39,7 @@ import xyz.easiersaid.twr.protocol.JoinAirway
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 import xyz.easiersaid.twr.protocol.TrafficAction
 import xyz.easiersaid.twr.protocol.TrafficRef
 import xyz.easiersaid.twr.protocol.TickNumber
@@ -91,9 +91,10 @@ class ResolvedClearanceTest {
                 ConditionalClearance(
                     target = AircraftId("TEST123"),
                     condition = condition,
-                    instruction = TaxiTo(
+                    instruction = TaxiToHoldingPoint(
                         target = AircraftId("TEST123"),
                         destination = FixtureIds.holdShort09,
+                        runway = FixtureIds.runway09,
                         via = listOf(FixtureIds.apronJunction)
                     )
                 )
@@ -113,7 +114,7 @@ class ResolvedClearanceTest {
         ).requireResolved()
 
         assertEquals(condition, resolved.source.condition)
-        assertIs<TaxiTo>((resolved.source.content as ClearanceContent.Single).instruction)
+        assertIs<TaxiToHoldingPoint>((resolved.source.content as ClearanceContent.Single).instruction)
         assertIs<ResolvedStep.Taxi>(resolved.steps.single())
     }
 
@@ -203,9 +204,10 @@ class ResolvedClearanceTest {
             aircraft = AircraftId("TEST123"),
             content = ClearanceContent.Compound(
                 steps = arrow.core.nonEmptyListOf(
-                    TaxiTo(
+                    TaxiToHoldingPoint(
                         target = AircraftId("TEST123"),
                         destination = FixtureIds.holdShort27,
+                        runway = FixtureIds.runway27,
                         via = listOf(FixtureIds.apronJunction)
                     ),
                     CrossRunway(
@@ -458,9 +460,10 @@ class ResolvedClearanceTest {
             id = ClearanceId("CLR-MISSING-POINT"),
             aircraft = AircraftId("TEST123"),
             content = ClearanceContent.Single(
-                TaxiTo(
+                TaxiToHoldingPoint(
                     target = AircraftId("TEST123"),
-                    destination = FixtureIds.holdShort09
+                    destination = FixtureIds.holdShort09,
+                    runway = FixtureIds.runway09
                 )
             ),
             domain = ClearanceDomain.GROUND,

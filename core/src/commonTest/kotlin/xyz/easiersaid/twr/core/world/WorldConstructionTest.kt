@@ -160,6 +160,16 @@ class WorldConstructionTest {
     }
 
     @Test
+    fun validationMaterializesImplicitAirspaceBoundaryClosingEdge() {
+        val report = sampleWorldWithMissingAirspaceBoundaryClosingEdge().validate()
+
+        assertContains(
+            report.issues.map { issue -> issue.code },
+            WorldValidationCode.UNKNOWN_GEOMETRY_SEGMENT_REFERENCE
+        )
+    }
+
+    @Test
     fun validationDetectsControlledClassRouteWithoutVolume() {
         val report = sampleWorldWithControlledClassRouteWithoutVolume().validate()
 
@@ -738,6 +748,29 @@ internal fun sampleWorldWithBoundaryVertexOutsideMembership(): AviationWorld {
         airspace = world.airspace + (
             FixtureIds.airspace to airspace.copy(
                 memberPoints = airspace.memberPoints - FixtureIds.sidExit
+            )
+        )
+    )
+}
+
+internal fun sampleWorldWithMissingAirspaceBoundaryClosingEdge(): AviationWorld {
+    val world = sampleWorld()
+    val airspace = world.airspace.getValue(FixtureIds.airspace)
+
+    return world.copy(
+        airspace = world.airspace + (
+            FixtureIds.airspace to airspace.copy(
+                boundary = AirspaceBoundary(
+                    listOf(
+                        BoundaryRing(
+                            listOf(
+                                FixtureIds.runway09Threshold,
+                                FixtureIds.sidExit,
+                                FixtureIds.holdFixPoint
+                            )
+                        )
+                    )
+                )
             )
         )
     )

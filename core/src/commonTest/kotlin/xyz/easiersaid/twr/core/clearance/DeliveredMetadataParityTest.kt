@@ -60,7 +60,8 @@ import xyz.easiersaid.twr.protocol.SquawkNormal
 import xyz.easiersaid.twr.protocol.SquawkStandby
 import xyz.easiersaid.twr.protocol.StopSquawk
 import xyz.easiersaid.twr.protocol.StopTurn
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiToStand
 import xyz.easiersaid.twr.protocol.TurnDirection
 import xyz.easiersaid.twr.protocol.TurnByDegrees
 import xyz.easiersaid.twr.protocol.TurnHeading
@@ -75,7 +76,15 @@ class DeliveredMetadataParityTest {
     @Test
     fun groundAndGroundAdjacentMetadataMatchesFrozenParity() {
         assertMetadata(
-            TaxiTo(target, PointId("DEST"), emptyList()),
+            TaxiToHoldingPoint(target, PointId("DEST"), RunwayId("09"), emptyList()),
+            timing = InstructionTiming.SEQUENTIAL,
+            domain = ClearanceDomain.GROUND,
+            completion = CompletionCategory.SELF_COMPLETING,
+            mayBeConditional = true,
+            supersedes = setOf(ClearanceDomain.GROUND)
+        )
+        assertMetadata(
+            TaxiToStand(target, PointId("DEST"), emptyList()),
             timing = InstructionTiming.SEQUENTIAL,
             domain = ClearanceDomain.GROUND,
             completion = CompletionCategory.SELF_COMPLETING,

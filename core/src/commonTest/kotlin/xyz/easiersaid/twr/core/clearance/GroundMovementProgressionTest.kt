@@ -16,7 +16,7 @@ import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.HoldPosition
 import xyz.easiersaid.twr.protocol.HoldShortOf
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 import xyz.easiersaid.twr.protocol.TickNumber
 
 class GroundMovementProgressionTest {
@@ -33,9 +33,10 @@ class GroundMovementProgressionTest {
                 id = "CLR-TAXI-PROGRESS",
                 domain = ClearanceDomain.GROUND,
                 content = ClearanceContent.Single(
-                    TaxiTo(
+                    TaxiToHoldingPoint(
                         target = TEST_AIRCRAFT,
                         destination = FixtureIds.holdShort27,
+                        runway = FixtureIds.runway27,
                         via = listOf(FixtureIds.apronJunction)
                     )
                 )
@@ -207,9 +208,10 @@ class GroundMovementProgressionTest {
                 domain = ClearanceDomain.GROUND,
                 content = ClearanceContent.Compound(
                     steps = arrow.core.nonEmptyListOf(
-                        TaxiTo(
+                        TaxiToHoldingPoint(
                             target = TEST_AIRCRAFT,
                             destination = FixtureIds.holdShort27,
+                            runway = FixtureIds.runway27,
                             via = listOf(FixtureIds.apronJunction)
                         ),
                         CrossRunway(

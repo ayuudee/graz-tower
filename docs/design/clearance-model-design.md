@@ -2,9 +2,15 @@
 
 ## What carries forward
 
-The existing clearance lifecycle is formally verified and correct. The following are retained without structural change:
+The existing clearance lifecycle remains the design baseline. The following are
+retained without structural change:
 
-- **State machine**: Issued, ReadbackPending, ConditionPending, Active, Completed, Superseded, Cancelled. Terminal states are absorbing. Verified in `ClearanceLifecycle.tla` and `ClearanceActivation.tla`. Future formalisation in Lean.
+- **State machine**: Issued, ReadbackPending, ConditionPending, Active,
+  Completed, Superseded, Cancelled. Terminal states are absorbing. Earlier
+  design notes referred to `ClearanceLifecycle.tla` and
+  `ClearanceActivation.tla`, but no checked TLA+ artifacts are currently
+  present in the repository. Treat these invariants as design requirements
+  until they are re-established in checked Lean or restored TLA+ specs.
 - **Transition function**: `transition(current, event, hasCondition)` — pure, deterministic, no world dependencies.
 - **ClearanceEvent**: Deliver, PilotReadback, ConditionMet, Complete, Supersede, Cancel.
 - **ClearanceCondition**: Subject aircraft + condition predicate. Polling-based evaluation each tick. Conditions reference specific traffic and actions (AfterTraffic, BehindTraffic) as defined in `ConditionalPredicate` in Instruction.kt.
@@ -359,7 +365,11 @@ The lifecycle logic (state machine, events, transitions) is unchanged. What chan
 
 ### Lean formalisation targets
 
-The existing TLA+ specs (`ClearanceLifecycle.tla`, `ClearanceActivation.tla`) verify the state machine and activation boundary. The new model introduces properties that need formal verification:
+Earlier design notes referred to TLA+ specs (`ClearanceLifecycle.tla`,
+`ClearanceActivation.tla`) for the state machine and activation boundary, but
+no `.tla` or `.cfg` artifacts are currently tracked. Treat those specs as
+unavailable historical references, not current verification evidence. The new
+model introduces properties that need checked formalisation:
 
 1. **Compound clearance monotonicity**: `completedSteps` only grows, never shrinks. Sequential steps complete in order (assertion).
 

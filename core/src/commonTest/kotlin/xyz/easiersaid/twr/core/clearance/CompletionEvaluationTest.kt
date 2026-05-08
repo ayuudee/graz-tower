@@ -44,7 +44,7 @@ import xyz.easiersaid.twr.protocol.SquawkIdent
 import xyz.easiersaid.twr.protocol.SquawkNormal
 import xyz.easiersaid.twr.protocol.SquawkStandby
 import xyz.easiersaid.twr.protocol.StopSquawk
-import xyz.easiersaid.twr.protocol.TaxiTo
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 import xyz.easiersaid.twr.protocol.TickNumber
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.TransponderMode
@@ -65,9 +65,10 @@ class CompletionEvaluationTest {
                 domain = ClearanceDomain.GROUND,
                 content = ClearanceContent.Compound(
                     steps = arrow.core.nonEmptyListOf(
-                        TaxiTo(
+                        TaxiToHoldingPoint(
                             target = TEST_AIRCRAFT,
                             destination = FixtureIds.holdShort27,
+                            runway = FixtureIds.runway27,
                             via = listOf(FixtureIds.apronJunction)
                         ),
                         CrossRunway(
@@ -312,6 +313,36 @@ class CompletionEvaluationTest {
         assertEquals(ClearanceStatus.ACTIVE, outsideEvaluation.updated.source.status)
         assertEquals(CompletionResult.NOT_COMPLETE, insideEvaluation.stepResults.single().result)
         assertEquals(ClearanceStatus.ACTIVE, insideEvaluation.updated.source.status)
+    }
+
+    @Test
+    fun remainOutsideControlledAirspaceUsesExplicitMemberPointWithoutEntityRef() {
+        val world = sampleWorld()
+        val resolved = world.resolveClearance(
+            context = ClearanceResolutionContext(FixtureIds.aerodrome),
+            clearance = structuredClearance(
+                id = "CLR-ROCA-MEMBER-POINT",
+                domain = ClearanceDomain.ROUTE,
+                content = ClearanceContent.Single(
+                    RemainOutsideControlledAirspace(
+                        target = TEST_AIRCRAFT,
+                        airspace = FixtureIds.airspace
+                    )
+                )
+            )
+        ).requireResolved()
+
+        val evaluation = evaluateCompletion(
+            clearance = resolved,
+            view = CompletionView(
+                position = FixtureIds.runway09Threshold,
+                entities = emptySet(),
+                onGround = false
+            )
+        )
+
+        assertEquals(CompletionResult.NOT_COMPLETE, evaluation.stepResults.single().result)
+        assertEquals(ClearanceStatus.ACTIVE, evaluation.updated.source.status)
     }
 
     @Test
