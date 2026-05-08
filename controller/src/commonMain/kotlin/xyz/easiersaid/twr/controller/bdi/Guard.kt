@@ -412,21 +412,28 @@ data class WithinDistanceOfThreshold(val maxMetres: Meters) : RuleGuard {
  * Aircraft is more than [thresholdMetres] from the aerodrome reference point —
  * a **radial-distance approximation** of "outside the CTR boundary."
  *
- * Pass 7 (D-PF.7 closure): used by the boundary-release rules to gate
- * `TerminateRadarServiceAction`. The conservative 12 NM (~22.2 km) default
- * fails closed: aircraft past the actual CTR but inside 12 NM stay with
- * the controller until they reach the threshold (under-fires the release
- * rather than over-firing inside controlled airspace, which would be
- * regulatorily wrong).
+ * Reads the aircraft's kinematic position ([AircraftObservation.coords], set
+ * by `AircraftObservationFactory.from` from sim-side
+ * `AircraftState.position` via [SensorReading.coords]); the radius gate fires
+ * when the aircraft physically crosses the configured ring. The earlier
+ * snap-point read (`worldIndex.positions[ac.position]`) was off by half-snap
+ * -distance in the worst case, leaving cross-aerodrome release events
+ * bunched against the destination's first published REP — fn-5's R4 gap pin
+ * had to be relaxed from `>= 30s` to `> 0` to accommodate that bunching.
+ * fn-6 restores the doctrinal physical-ring semantics; fn-6.3 tightens the
+ * gap pin back.
  *
- * Real CTR boundaries are typed polygons — `OutsideAerodromeRadius` flags
- * the approximation in its name so a future polygon guard
- * `OutsideAirspaceVolume(AirspaceVolume)` reads as a sibling, not a
- * rename. **D-AUDIT.7** owns the polygon-membership upgrade.
+ * Real CTR boundaries are typed polygons (FM/Lean campaign territory, fn-4
+ * lineage); the circular-radius approximation is intentional pending that
+ * work. **D-AUDIT.7** owns the polygon-membership upgrade. The conservative
+ * 12 NM (~22.2 km) default fails closed: aircraft past the actual CTR but
+ * inside 12 NM stay with the controller until they reach the threshold
+ * (under-fires the release rather than over-firing inside controlled
+ * airspace, which would be regulatorily wrong).
  *
- * Reads the aerodrome's reference point or threshold; conservatively
- * returns false when the position cannot be resolved (unknown position =
- * do not release).
+ * The defensive `return false` paths preserve the "do not release on
+ * unresolvable ARP" semantics — the aerodrome lookup or its proxy ARP
+ * point may be missing in malformed worlds.
  */
 data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
     override val failureMessage = "Aircraft within ${thresholdMetres.value}m radial of aerodrome (still in CTR scope)"
@@ -449,10 +456,13 @@ data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
         val arpPointId = aerodrome.runways.entries
             .sortedBy { it.key.value }
             .firstOrNull()?.value?.threshold ?: return false
-        val acPos = ctx.worldIndex.positions[ac.position] ?: return false
         val arpPos = ctx.worldIndex.positions[arpPointId] ?: return false
-        val dx = acPos.xMeters - arpPos.xMeters
-        val dy = acPos.yMeters - arpPos.yMeters
+        // fn-6.2 (R3): kinematic read. ac.coords is the primary-surveillance
+        // projection of AircraftState.position (continuous Cartesian), not
+        // the snap-derived `positionPoint`. Compare against the ARP proxy
+        // in the same metric space.
+        val dx = ac.coords.xMeters - arpPos.xMeters
+        val dy = ac.coords.yMeters - arpPos.yMeters
         val limit = thresholdMetres.value
         return (dx * dx + dy * dy) > limit * limit
     }

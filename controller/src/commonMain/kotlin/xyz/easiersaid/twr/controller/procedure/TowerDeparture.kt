@@ -319,7 +319,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH)),
                     Not(DestinationDifferentAerodrome),
-                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM — D-AUDIT.7
+                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters.fromNauticalMiles(12)),  // D-AUDIT.7
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(
@@ -367,7 +367,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     Not(IsCircuitTraffic),
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     DestinationDifferentAerodrome,
-                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM
+                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters.fromNauticalMiles(12)),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(

@@ -195,5 +195,8 @@ more sites than estimated)
       baseline.
 
 ## Done summary
-
+Threaded coords:Position through both firewall projections — SensorReading (sim-side, populated from AircraftState.position kinematic field) and AircraftObservation (controller-side, threaded via AircraftObservationFactory.from) — with a fromTestPoint helper that derives test-fixture coords from the world index, plus a Position(-999_999.0, -999_999.0) firewall-test sentinel. All 13 enumerated construction sites updated; LongParameterList resolved via @Suppress at the factory function (down 1 detekt violation overall); R7 acceptance suites green.
 ## Evidence
+- Commits: 2ea32283ccfe330202eca4db6b42c9ff1050f268
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest, ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest --tests xyz.easiersaid.twr.sim.LowgGoldenTest, ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.FirewallSensorReadingTest, ./gradlew :controller:jvmTest --tests xyz.easiersaid.twr.controller.FirewallObservationTest, ./gradlew detekt (10 issues, all pre-existing on master; LongParameterList from AircraftObservationFactory.from now suppressed at the function with FirewallObservationTest doctrine comment — count down from 11)
+- PRs:

@@ -29,6 +29,15 @@ data class Meters(val value: Double) {
     init {
         require(value >= 0.0) { "Meters must be >= 0" }
     }
+
+    companion object {
+        /**
+         * Convert nautical miles to metres using the international NM
+         * (1 NM = 1852 m exactly). Self-documents doctrine numbers like
+         * `Meters.fromNauticalMiles(12)` (= 22 224 m) at the call site.
+         */
+        fun fromNauticalMiles(nm: Int): Meters = Meters(nm * 1852.0)
+    }
 }
 
 data class Feet(val value: Int) {
