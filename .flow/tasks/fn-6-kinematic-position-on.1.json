@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-08T15:26:46.881574Z",
+  "depends_on": [],
+  "epic": "fn-6-kinematic-position-on",
+  "id": "fn-6-kinematic-position-on.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-6-kinematic-position-on.1.md",
+  "status": "todo",
+  "title": "Add coords:Position to SensorReading + AircraftObservation, thread via factory",
+  "updated_at": "2026-05-08T18:32:07.493402Z"
+}
