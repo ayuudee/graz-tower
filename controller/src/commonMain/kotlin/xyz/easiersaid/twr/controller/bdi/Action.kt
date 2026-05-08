@@ -25,6 +25,8 @@ import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.HoldPosition
 import xyz.easiersaid.twr.protocol.HoldPositionCancelTakeoff
+import xyz.easiersaid.twr.protocol.JoinCircuit
+import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.PointId
@@ -233,6 +235,62 @@ data object ExtendDownwindAction : RuleAction {
 data object ContinueApproachAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         ProposedAction(ac.id, ContinueApproach(ac.id, inferContinueApproachReason(ac, ctx))).right()
+}
+
+/**
+ * G2 Phase I: tower issues join-circuit instructions for off-pattern arriving
+ * traffic (cross-aerodrome arrivals from a published REP, or unsequenced
+ * inbounds outside the local pattern).
+ *
+ * The [joinType] is supplied explicitly at the rule site — there is no
+ * doctrine-defaulted ICAO/EU "default join position" (per atc-law review:
+ * Doc 9432 Ch.4 / SERA.3225 leave the position to controller discretion;
+ * CAP 413's OVERHEAD JOIN default is UK-specific). Phase I rule sites
+ * pass `JoinType.DOWNWIND` for the LJMB scenario; future variations
+ * (STRAIGHT_IN, BASE, OVERHEAD) require new rule sites with their own
+ * doctrine commentary.
+ *
+ * The action reads the destination's published circuit data
+ * (`world.aerodromes[ctx.view.aerodromeId].circuits`) and selects the
+ * circuit matching the commitment's runway. The circuit's
+ * `direction` (LEFT_HAND / RIGHT_HAND) is propagated to the issued
+ * `JoinCircuit` instruction so the pilot navigates the correct pattern
+ * geometry. Two failure paths are surfaced as
+ * `Either.Left(ActionResolutionFailure)`:
+ *  - no runway derivable from commitment + beliefs (defensive — every
+ *    AwaitDownwind commitment is constructed with a runway today);
+ *  - no published circuit for the runway (a world-data defect — the
+ *    aerodrome publishes the runway but lacks circuit geometry).
+ */
+data class JoinCircuitAction(val joinType: JoinType) : RuleAction {
+    override fun resolve(
+        ac: AircraftObservation,
+        commitment: Commitment,
+        ctx: OperatorContext,
+    ): Either<ActionResolutionFailure, ProposedAction> {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway
+            ?: return ActionResolutionFailure(
+                "JoinCircuitAction: no runway derivable for ${ac.id} (commitment=${commitment.runway}, " +
+                    "beliefs.activeRunway=${ctx.beliefs.activeRunway})",
+            ).left()
+        val circuit = ctx.world.aerodromes[ctx.view.aerodromeId]
+            ?.circuits
+            ?.values
+            ?.firstOrNull { it.runway == runway }
+            ?: return ActionResolutionFailure(
+                "JoinCircuitAction: no circuit published for runway $runway at ${ctx.view.aerodromeId}; " +
+                    "world-data defect — the aerodrome publishes the runway but no circuit geometry.",
+            ).left()
+        return ProposedAction(
+            ac.id,
+            JoinCircuit(
+                target = ac.id,
+                circuitDirection = circuit.direction,
+                joinType = joinType,
+                runway = runway,
+            ),
+        ).right()
+    }
 }
 
 /**

@@ -538,6 +538,12 @@ fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when 
         // Transit arm of isPhysicallyComplete in PilotCognitive.kt.
         // The pilot then self-contacts the destination tower at CALL_INBOUND;
         // circuit pattern follows the same shape as a normal arrival mission.
+        //
+        // G2 Phase I: the arrival-pattern primitives (FLY_DOWNWIND..LAND)
+        // remain direct primitive children of Transit. `Pilot.kt:planRoute`
+        // has a Transit-arrival arm that handles the off-pattern → pattern
+        // routing once `mission.joinLeg` is set by the controller's
+        // ARR-JOIN-CIRCUIT rule.
         CompoundTask(TaskName.Transit, listOf(
             groundDepartureTask(),
             PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),

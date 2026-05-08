@@ -244,6 +244,35 @@ internal fun planRoute(
     )
     if (step !in airborneSteps) return PlanRouteOutcome.Skip
 
+    // G2 Phase I: cross-aerodrome arrival-pattern routing. The Transit
+    // mission tree has FLY_DOWNWIND..LAND as direct primitive children of
+    // the Transit compound, so `mission.root.activeCompound()` returns null
+    // at those steps (no inner CompoundTask to return). For Transit-arrival
+    // airborne steps with a joinLeg set (post-ARR-JOIN-CIRCUIT), use
+    // `TaskName.Circuit` semantics directly — `buildCircuitFromLeg` produces
+    // the route from current position into the destination's pattern.
+    //
+    // Fires BEFORE the activeCompound check below — for non-Transit missions
+    // and for Transit missions still in cruise (FLY_DEPARTURE handled above
+    // by the Transit-cruise arm) this branch is inert.
+    val transitArrivalAirborneSteps = setOf(
+        MissionStep.FLY_DOWNWIND, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
+        MissionStep.REPORT_DOWNWIND, MissionStep.REPORT_BASE, MissionStep.REPORT_FINAL,
+        MissionStep.AWAIT_SEQUENCING, MissionStep.AWAIT_LANDING_CLEARANCE,
+        MissionStep.LAND,
+    )
+    if (mission.goal is HighLevelGoal.Transit && step in transitArrivalAirborneSteps) {
+        return planVisualRoute(
+            mode as NavigationMode.Visual,
+            TaskName.Circuit,
+            mission,
+            aircraft,
+            kinematicRoute,
+            w,
+            worldIndex,
+        )
+    }
+
     val taskName = mission.root.activeCompound()?.name ?: return PlanRouteOutcome.Skip
 
     return when (mode) {

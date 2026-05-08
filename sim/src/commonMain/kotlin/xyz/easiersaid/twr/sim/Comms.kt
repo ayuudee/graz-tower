@@ -183,6 +183,16 @@ private fun pilotUtteranceDuration(transmission: PilotTransmission): SimDuration
  * Resolve the controller that currently owns [aircraftId] — used to route
  * pilot-to-controller transmissions. Returns null if no controller claims
  * responsibility (responsibility-transfer gaps are a 4e concern).
+ *
+ * G2 Phase I: filter for `Owned` state specifically. `Watching` and
+ * `HandingOff(target)` are transitional states; for `HandingOff(Released)`
+ * the prior controller no longer wants the aircraft, and routing readbacks
+ * to it produces a wrong-receiver loop (e.g., LJMB-issued Backtrack →
+ * pilot reads back to LOWG_TOWER which is in HandingOff(Released)). The
+ * same shape as `Step.kt:handlePilotTick`'s ctrl-lookup — both must
+ * agree on "the current talking controller."
  */
 fun responsibleController(state: SimState, aircraftId: AircraftId): ControllerSpec? =
-    state.controllers.values.firstOrNull { aircraftId in it.responsibilities }
+    state.controllers.values.firstOrNull {
+        it.responsibilities[aircraftId] is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned
+    }

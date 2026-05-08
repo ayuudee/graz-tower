@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.controller.procedure
 
 import xyz.easiersaid.twr.controller.bdi.Airborne
+import xyz.easiersaid.twr.controller.bdi.AircraftIntentIs
 import xyz.easiersaid.twr.controller.bdi.instructionOfType
 import xyz.easiersaid.twr.controller.bdi.AllOf
 import xyz.easiersaid.twr.controller.bdi.AnyOf
@@ -15,10 +16,13 @@ import xyz.easiersaid.twr.controller.bdi.GoAroundAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
+import xyz.easiersaid.twr.controller.bdi.JoinCircuitAction
+import xyz.easiersaid.twr.controller.bdi.TaxiToStandAction
 import xyz.easiersaid.twr.controller.bdi.TerminateRadarServiceAction
 import xyz.easiersaid.twr.controller.bdi.InCircuit
 import xyz.easiersaid.twr.controller.bdi.InstructionMatcher
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
+import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
 import xyz.easiersaid.twr.controller.bdi.OnApproach
@@ -44,7 +48,13 @@ import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_55
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_5
+import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_CIRCUIT_JOIN
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_CIRCUIT_REPORTS
+import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_TAXI
+import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_6
+import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_3225
+import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_5005
+import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_8005_C
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_51
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_10_1
@@ -113,6 +123,66 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
     stageRules = mapOf(
         // ── AwaitDownwind: acknowledge position or wait ──────────────
         TowerArrivalStage.AwaitDownwind to listOf(
+            // G2 Phase I: cross-aerodrome / off-pattern arrival — issue
+            // join-downwind so the pilot navigates from the inbound REP into
+            // the local pattern. Existing AwaitDownwind rules (ARR-DOWNWIND-
+            // ACK, ARR-EXTEND, ARR-TURN-BASE, ARR-LAND) all gate on
+            // `OnCircuitLeg(...)` — they assume the aircraft is already in
+            // the pattern. None fires for an aircraft at OSMOT (LJMB's
+            // first VFR contact REP, ~25 NM out).
+            //
+            // Doctrine: ICAO/EU has no prescribed default join position
+            // (controller discretion per atc-law review). For the LJMB
+            // scenario (single VFR arrival from OSMOT, RWY 14 right-hand
+            // pattern), `JoinType.DOWNWIND` is the conservative minimum-
+            // intervention choice. STRAIGHT_IN, BASE, OVERHEAD variations
+            // require new rule sites with their own doctrine commentary.
+            //
+            // Re-fire prevention: `NoActiveInstruction` (not just
+            // `NoPendingReadback`) because after the readback resolves,
+            // the pending-readback gate would otherwise allow re-fire while
+            // the aircraft is still off-pattern flying toward downwind.
+            // `NoActiveInstruction` reads the issued-clearance ledger and
+            // gates on any non-terminal JoinCircuit clearance.
+            //
+            // Self-deactivation: once the aircraft enters the downwind leg,
+            // `OnCircuitLeg(DOWNWIND)` becomes true and the `Not(AnyOf(...))`
+            // guard turns false — rule sleeps and the existing pattern rules
+            // (ARR-EXTEND, ARR-TURN-BASE) take over.
+            AtcRule(
+                id = "ARR-JOIN-CIRCUIT",
+                description = "Issue join-downwind for off-pattern arriving traffic",
+                regulations = listOf(SERA_3225, SERA_5005, ICAO4444_7_10, ICAO9432_CIRCUIT_JOIN),
+                guard = AllOf(listOf(
+                    Airborne,
+                    Not(AnyOf(listOf(
+                        OnCircuitLeg(LegName.UPWIND),
+                        OnCircuitLeg(LegName.CROSSWIND),
+                        OnCircuitLeg(LegName.DOWNWIND),
+                        OnCircuitLeg(LegName.BASE),
+                        OnCircuitLeg(LegName.FINAL),
+                    ))),
+                    AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Arriving),
+                    RunwayLengthSufficient(RunwayLengthOperation.LANDING),
+                )),
+                action = JoinCircuitAction(joinType = xyz.easiersaid.twr.protocol.JoinType.DOWNWIND),
+                // Re-fire prevention via stage advancement: same pattern as
+                // `DEP-CROSS-AERODROME-RELEASE` (Phase H). JoinCircuit has no
+                // required readback atoms (PilotCognitive's
+                // `requiredReadbackAtoms` returns None for JoinCircuit), so
+                // `NoPendingReadback(JoinCircuit)` would always evaluate true
+                // and the rule would re-fire every cycle. `NoActiveInstruction`
+                // would help if the issued-clearances ledger were populated,
+                // but `ControllerView.activeClearances` is currently always
+                // empty (sim doesn't propagate it). Stage advancement is the
+                // load-bearing gate. Downstream rules at AwaitApproach all
+                // gate on `OnCircuitLeg(...)`, so they sleep while the
+                // aircraft is still off-pattern flying toward downwind; once
+                // the pattern is reached, `ARR-TURN-BASE` / `ARR-LAND` etc.
+                // take over.
+                nextStage = TowerArrivalStage.AwaitApproach,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
             AtcRule(
                 id = "ARR-DOWNWIND-ACK",
                 description = "Acknowledge downwind report and advance to approach sequencing",
@@ -391,11 +461,46 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 action = HandoffAction(xyz.easiersaid.twr.protocol.RoleName.GROUND),
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
+            // G2 Phase I: post-landing taxi at unstaffed-GROUND. Per Doc
+            // 4444 §7.6 and SERA.8005, ATC authorisation is required for
+            // movement on the manoeuvring area; the prior plan's
+            // "ARR-RADAR-SERVICE-TERMINATED + pilot self-taxis" violated
+            // this. Doc 4444 §7.11 + §7.6 give the TWR taxi authority in
+            // single-controller ops. The TWR issues TaxiToStand directly
+            // when GROUND is unstaffed; ARR-RADAR-SERVICE-TERMINATED then
+            // fires AFTER the taxi clearance lifecycle resolves
+            // (NoActiveInstruction(TaxiToStand) gates the RST).
+            AtcRule(
+                id = "ARR-TAXI-TO-STAND-AT-TOWER",
+                description = "Tower issues taxi-to-stand for arriving traffic when GROUND unstaffed (single-controller op)",
+                regulations = listOf(ICAO4444_7_11, ICAO4444_7_6, SERA_8005_C, ICAO9432_TAXI),
+                guard = AllOf(listOf(
+                    OnGround, Not(OnRunway),
+                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND)),
+                    NoActiveInstruction(instructionOfType<xyz.easiersaid.twr.protocol.TaxiToStand>()),
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TaxiToStand>()),
+                )),
+                action = TaxiToStandAction,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
             // Pass 7 (D-PF.7 closure): boundary-release sibling for the
             // unstaffed-GROUND case. If a tower has no peer ground (small
             // field, single-controller op), release the aircraft per
             // §10.1.4. The aircraft is already on the ground here so the
             // CTR-radius gate is moot — but kept for E17 sibling-pairing.
+            //
+            // G2 Phase I: this rule still fires for arrivals at unstaffed-
+            // GROUND aerodromes (e.g., LJMB cross-aerodrome arrival), but
+            // is now a sibling to `ARR-TAXI-TO-STAND-AT-TOWER` rather
+            // than a substitute. The TWR issues both: taxi-to-stand FIRST
+            // (per Doc 4444 §7.6 / SERA.8005, the manoeuvring-area taxi
+            // requires ATC authorisation), then radar service terminated.
+            // The pilot processes both: the TaxiToStand drives mission
+            // progression through TAXI_TO_STAND PHYSICAL completion; the
+            // RST releases the responsibility entry. Both can fire on the
+            // same controller cycle (Immediate advancement) without
+            // ordering hazard since they target different mission slices.
             AtcRule(
                 id = "ARR-RADAR-SERVICE-TERMINATED",
                 description = "Terminate radar service when GROUND unstaffed (small-field single-controller op)",
