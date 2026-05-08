@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.controller.bdi.AllOf
 import xyz.easiersaid.twr.controller.bdi.AnomalousTransition
 import xyz.easiersaid.twr.controller.bdi.AnyOf
 import xyz.easiersaid.twr.controller.bdi.AtcRule
+import xyz.easiersaid.twr.controller.bdi.DestinationDifferentAerodrome
 import xyz.easiersaid.twr.controller.bdi.CancelTakeoffAction
 import xyz.easiersaid.twr.controller.bdi.ClearTakeoffAction
 import xyz.easiersaid.twr.controller.bdi.CommitmentKind
@@ -264,7 +265,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             ),
             AtcRule(
                 id = "DEP-HANDOFF",
-                description = "Hand departing traffic to approach/area control after climb-out",
+                description = "Hand departing local traffic to approach/area control after climb-out",
                 // Transfer of *communications* (§10.1), not transfer of control
                 // (§6.3). Phraseology is the frequency-change instruction per Doc 9432.
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
@@ -275,11 +276,20 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 // once they reach downwind and have declared circuit intent). A
                 // straight-through departure has no circuit intent declared — it
                 // climbs out and gets handed to APPROACH.
+                //
+                // G2 Phase H: `Not(DestinationDifferentAerodrome)` gates this rule
+                // OFF for cross-aerodrome flights. Pre-fix, a transit aircraft
+                // briefly riding UPWIND/CROSSWIND geometry near the runway end would
+                // hit `Immediate`-advancement here and get peer-handed to LOWG_APPROACH
+                // — exactly the doctrine violation the cross-aerodrome design exists
+                // to prevent (release + procedure-following + autonomous initial
+                // contact, not peer handoff).
                 guard = AllOf(listOf(
                     Airborne,
                     AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
                     Not(IsCircuitTraffic),
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
+                    Not(DestinationDifferentAerodrome),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ContactFrequency>()),
                     IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH),
                 )),
@@ -295,15 +305,69 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             // pairs this with DEP-HANDOFF.
             AtcRule(
                 id = "DEP-RADAR-SERVICE-TERMINATED",
-                description = "Terminate radar service when APPROACH unstaffed and aircraft past CTR boundary",
+                description = "Terminate radar service when APPROACH unstaffed and local traffic past CTR boundary",
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
+                // G2 Phase H: `Not(DestinationDifferentAerodrome)` gates this OFF
+                // for cross-aerodrome flights. Cross-aerodrome flights take the
+                // dedicated `DEP-CROSS-AERODROME-RELEASE` path regardless of
+                // whether APPROACH is staffed; this local-traffic boundary
+                // release is for circuit-leg-completing one-shot departures only.
                 guard = AllOf(listOf(
                     Airborne,
                     AnyOf(listOf(OnCircuitLeg(LegName.UPWIND), OnCircuitLeg(LegName.CROSSWIND))),
                     Not(IsCircuitTraffic),
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH)),
+                    Not(DestinationDifferentAerodrome),
                     OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM — D-AUDIT.7
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
+                )),
+                action = TerminateRadarServiceAction(
+                    forRole = xyz.easiersaid.twr.protocol.RoleName.APPROACH,
+                    squawk = arrow.core.Some(xyz.easiersaid.twr.protocol.Squawk.unsafe(7000)),
+                ),
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // G2 Phase H — cross-aerodrome boundary release.
+            //
+            // Doctrine: cross-aerodrome handoff is **release + procedure-
+            // following + autonomous initial contact** at the destination's
+            // published REP, not peer handoff. LOWG_TOWER releases the aircraft
+            // when it crosses the CTR boundary; the pilot then navigates VFR
+            // to the destination (per the route planner) and autonomously calls
+            // the destination tower. `applyTwoWayCommsEstablished`'s knownStrips
+            // arm flips the destination to `Owned` on the pilot's first call.
+            //
+            // Distinct from `DEP-RADAR-SERVICE-TERMINATED`:
+            //  - This rule fires regardless of `IsTransferTargetStaffed(APPROACH)`
+            //    (cross-aerodrome flights skip APPROACH even when staffed —
+            //    APPROACH would have nothing useful to do for a flight leaving
+            //    the local controlled airspace).
+            //  - This rule does NOT gate on circuit-leg position (a transit
+            //    route off the runway end may not register on UPWIND/CROSSWIND
+            //    points at all; the radius gate is the load-bearing geometric
+            //    check).
+            //
+            // Geometry note: 12 NM = 22 224 m (D-AUDIT.7 conservative). Verified
+            // reachable for the G2 LOWG → LJMB fixture: OSMOT (LJMB's first
+            // VFR contact REP) is ~25 NM from LOWG ARP; the 12 NM ring is
+            // crossed well before the aircraft reaches the destination's REP.
+            // A future "per-aerodrome CTR boundary from world data" pass
+            // tightens this to LOWG's actual ~7 NM CTR.
+            //
+            // Squawk 7000 (VFR conspicuity) per ICAO Doc 4444 §10.1.4 boundary
+            // release. `forRole = APPROACH` mirrors the unstaffed-APPROACH
+            // sibling for `TerminateRadarServiceAction`'s phraseology shape.
+            AtcRule(
+                id = "DEP-CROSS-AERODROME-RELEASE",
+                description = "Release cross-aerodrome flight at CTR boundary — pilot autonomously contacts destination at REP",
+                regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
+                guard = AllOf(listOf(
+                    Airborne,
+                    Not(IsCircuitTraffic),
+                    AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
+                    DestinationDifferentAerodrome,
+                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(

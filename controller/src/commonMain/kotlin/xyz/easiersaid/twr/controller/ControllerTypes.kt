@@ -62,6 +62,23 @@ data class ControllerView(
      */
     val flightStripIntents: Map<AircraftId, xyz.easiersaid.twr.protocol.AircraftIntent> = emptyMap(),
     /**
+     * G2 Phase H: per-aircraft *filed onward destination*. Sourced from
+     * the strip's `destinationAerodrome` field, filtered to non-null
+     * entries (aircraft with no onward leg are absent from the map).
+     *
+     * The doctrine: cross-aerodrome handoff is **release + procedure-
+     * following + autonomous initial contact**, not peer handoff.
+     * `DestinationDifferentAerodrome` reads this map to gate
+     * `DEP-CROSS-AERODROME-RELEASE` (and to `Not(...)`-gate the local-
+     * traffic siblings `DEP-HANDOFF` / `DEP-RADAR-SERVICE-TERMINATED` so
+     * they don't fire for cross-aerodrome flights).
+     *
+     * Filter-on-write follows the established `flightStripIntents` /
+     * `circuitIntent` precedent — guards check key presence + value, not
+     * key presence + nullable value.
+     */
+    val flightStripDestinations: Map<AircraftId, AerodromeId> = emptyMap(),
+    /**
      * Roles staffed *at this aerodrome right now* — i.e. for which a
      * controller is online and accepting handoffs.
      *

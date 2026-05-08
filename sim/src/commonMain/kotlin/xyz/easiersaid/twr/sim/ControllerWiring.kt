@@ -85,6 +85,23 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
     // lands, dispatch widens.
     val knownStripIntents = spec.knownStrips.mapValues { (_, _) -> AircraftIntent.Arriving }
     val flightStripIntents = strips.mapValues { (_, strip) -> strip.intent } + knownStripIntents
+    // G2 Phase H: per-aircraft filed onward destination, sourced from the
+    // strip projection. Filter null entries (aircraft with no onward leg
+    // — Arrival/CircuitTraining/no-goal) so guards reading the map check
+    // key-presence + value, matching the `flightStripIntents` precedent.
+    // Note: `knownStrips` entries are deliberately NOT included here.
+    // A destination-side controller (e.g. LJMB_TWR holding the inbound
+    // OE-XYZ strip) has the FILED PLAN with destination=LJMB. Including
+    // those entries in `flightStripDestinations` would mean
+    // `DestinationDifferentAerodrome` returns false at LJMB (correct
+    // — the aircraft IS arriving at LJMB, not transiting onward), so
+    // adding them is technically harmless. But the doctrine says
+    // `knownStrips` exposes the strip board, not the responsibilities-
+    // gated destination map; keeping the projection responsibility-
+    // scoped (matching `strips`) preserves that boundary cleanly.
+    val flightStripDestinations: Map<xyz.easiersaid.twr.protocol.AircraftId, xyz.easiersaid.twr.protocol.AerodromeId> =
+        strips.mapNotNull { (id, strip) -> strip.destinationAerodrome?.let { id to it } }
+            .toMap()
     // Pass 6 (D-AUDIT.12 + post-impl Impact-M.1): the set of roles with a
     // staffed controller at this aerodrome right now. Distinct from
     // `aerodrome.roles` (the airport's *published* roles): a role can be
@@ -132,6 +149,7 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         weather = state.weatherByAerodrome[spec.aerodromeId],
         worldIndex = state.worldIndex,
         flightStripIntents = flightStripIntents,
+        flightStripDestinations = flightStripDestinations,
         staffedRoles = staffingPanel.roles,
         outgoingMissedHandoffs = outgoingMissedHandoffs,
         atis = state.atisByAerodrome,

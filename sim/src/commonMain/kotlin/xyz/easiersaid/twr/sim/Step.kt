@@ -492,8 +492,32 @@ private fun handlePilotTick(
         // has the aircraft in responsibilities after the first taxi clearance,
         // so the responsibilities-search wins and the knownStrips fallback
         // never fires.
+        //
+        // G2 Phase H (knownStrips disambiguation, closes F-impact M1):
+        // when multiple controllers hold the strip, filter by the aircraft's
+        // filed onward destination so the pilot's transmission goes to the
+        // *destination's* tower. The filter uses the same
+        // `filedDestinationAerodrome()` projection the FlightStrip layer
+        // uses, ensuring strip board and wire layer agree on what "the
+        // destination of this flight" means. `check(size <= 1)` is the
+        // failure-loud invariant per `feedback_no_corners` — silent
+        // first-wins on a Map walk would be a corner-cut shape.
         val ctrl = resultState.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
-            ?: resultState.controllers.values.firstOrNull { event.aircraftId in it.knownStrips }
+            ?: run {
+                val destinationAerodrome = resultState.aircraft[event.aircraftId]
+                    ?.pilotMission?.goal.filedDestinationAerodrome()
+                val knownStripCandidates = resultState.controllers.values
+                    .filter { event.aircraftId in it.knownStrips }
+                    .let { all ->
+                        if (destinationAerodrome != null) all.filter { it.aerodromeId == destinationAerodrome }
+                        else all
+                    }
+                check(knownStripCandidates.size <= 1) {
+                    "Ambiguous knownStrip controllers for ${event.aircraftId} after destination filter " +
+                        "(destination=$destinationAerodrome): ${knownStripCandidates.map { it.id }}"
+                }
+                knownStripCandidates.firstOrNull()
+            }
         if (ctrl != null) {
             var txState = resultState
             var nextFreeAt = state.now

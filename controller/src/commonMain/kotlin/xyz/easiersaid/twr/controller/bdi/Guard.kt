@@ -276,6 +276,40 @@ data class IsTransferTargetStaffed(val toRole: xyz.easiersaid.twr.protocol.RoleN
         toRole in ctx.view.staffedRoles
 }
 
+/**
+ * G2 Phase H: aircraft's filed onward destination is a *different*
+ * aerodrome than this controller's. Reads
+ * [ControllerView.flightStripDestinations].
+ *
+ * Returns false (rule sleeps) when:
+ *  - the aircraft has no filed onward destination on its strip
+ *    (Arrival / CircuitTraining / no goal); OR
+ *  - the filed destination equals this controller's aerodrome
+ *    (degenerate case — local Arrival flow doesn't reach this guard).
+ *
+ * Used positively to gate `DEP-CROSS-AERODROME-RELEASE` (the rule
+ * fires only for cross-aerodrome flights). Used negatively (via
+ * `Not(...)`) on `DEP-HANDOFF` and `DEP-RADAR-SERVICE-TERMINATED` to
+ * prevent local-traffic release rules from firing for cross-aerodrome
+ * flights — closes the rule-ordering hazard where a transit aircraft
+ * transiently riding the UPWIND/CROSSWIND geometry would otherwise
+ * be peer-handed to APPROACH (impact M1 from plan-stage review).
+ *
+ * The doctrine: cross-aerodrome handoff is **release + procedure-
+ * following + autonomous initial contact**, not peer handoff
+ * (project memory `transmission_architecture`).
+ */
+data object DestinationDifferentAerodrome : RuleGuard {
+    override val failureMessage =
+        "Aircraft's filed onward destination is the same aerodrome as this controller, " +
+            "or no destination on strip — rule applies only to cross-aerodrome traffic."
+
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val destination = ctx.view.flightStripDestinations[ac.id] ?: return false
+        return destination != ctx.view.aerodromeId
+    }
+}
+
 // ── Runway state ─────────────────────────────────────────────────────
 
 /** This aircraft has been granted runway access. */
