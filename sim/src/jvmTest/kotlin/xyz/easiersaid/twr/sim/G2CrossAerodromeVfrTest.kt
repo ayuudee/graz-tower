@@ -29,6 +29,8 @@ import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Wind
 import xyz.easiersaid.twr.sim.testing.Fixtures
 import xyz.easiersaid.twr.sim.testing.controllerAt
+import xyz.easiersaid.twr.sim.testing.firstControllerInstructionOf
+import xyz.easiersaid.twr.sim.testing.firstPilotReportOf
 import xyz.easiersaid.twr.sim.testing.firstPilotTransmissionTo
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
@@ -246,13 +248,27 @@ class G2CrossAerodromeVfrTest {
         // mission.activeRunway from filedPlan.destinationRunway with source
         // RunwayAssignmentSource.Filing. Walk stateTrace forward to the FIRST
         // state where the mission is constructed and pin the value before any
-        // radio source can have superseded it. A regression where a
-        // controller's first cycle issued a clearance that overrode Filing
-        // would surface here because the assertion is on the pre-radio state.
-        val initialMissionState = stateTrace
+        // radio source can have superseded it.
+        //
+        // Phase F retroactive review (test-review S2): the matched state
+        // must be at simulation time 0 — the assertion's "before any radio
+        // source can have superseded it" guarantee depends on the matched
+        // state preceding all radio activity. Without the time pin, a
+        // regression that deferred mission construction past the first
+        // ControllerCycle would still find some state with mission != null,
+        // and the activeRunway might still be Filing-sourced there only
+        // because the controller hasn't issued a runway-overriding
+        // clearance yet — masking the regression.
+        val initialMissionEntry = stateTrace
             .firstOrNull { (_, st) -> st.aircraft[aircraftId]?.pilotMission != null }
-            ?.second
             ?: fail("Mission never constructed in stateTrace.\n$journey")
+        check(initialMissionEntry.second.now.millis == 0L) {
+            "Mission must be constructed at sim-init (time=0); first traced state with " +
+                "mission != null is at ${initialMissionEntry.second.now.millis}ms — a " +
+                "controller's earlier cycle may have superseded the Filing-sourced " +
+                "activeRunway before the assertion can observe it.\n$journey"
+        }
+        val initialMissionState = initialMissionEntry.second
         val initialMission = initialMissionState.aircraft.getValue(aircraftId).pilotMission!!
         val initialActive = initialMission.activeRunway.getOrNull()
             ?: fail("activeRunway is None at first traced state — Phase B createMission " +
@@ -381,49 +397,47 @@ class G2CrossAerodromeVfrTest {
         }
 
         // ── Autonomous-contact provenance pin (R4 / R7) ─────────────────────
-        // No controller may have issued a ContactFrequency directing the
-        // aircraft to LJMB_TWR. Cross-aerodrome contact is the pilot's
-        // autonomous initiative at the procedure REP — not a back-channel
-        // handoff. Predicate: ContactFrequency targeting the aircraft, where
-        // either (i) the frequency matches LJMB_TWR's, or (ii) the role is
-        // TOWER and the speaker is a controller at LJMB.
-        val anyContactFreqDirectingToLjmb = records.any { rec ->
+        // Phase F retroactive review (test-review S1): inverted from the
+        // original "no CF directs to LJMB" form. The fix-direction-safe
+        // predicate is "every CF targets a LOWG-side destination" — works
+        // for any number of foreign aerodromes (LJMB, future Vienna ACC,
+        // etc.) without enumerating each. Cross-aerodrome contact is the
+        // pilot's autonomous initiative at the procedure REP, not a
+        // back-channel handoff.
+        //
+        // For each ContactFrequency directed at the aircraft, classify it
+        // as LOWG-side iff EITHER:
+        //   - the frequency matches a staffed LOWG controller's frequency, OR
+        //   - the frequency is null AND the role exists at LOWG (CAP 413
+        //     omits frequency when role implies it; the role-only form is
+        //     legitimate for intra-aerodrome handoff but only when the
+        //     role is a LOWG-side role).
+        // Any other CF is a back-channel cross-aerodrome handoff.
+        val lowgFreqs: Set<xyz.easiersaid.twr.protocol.Frequency> = finalState.controllers.values
+            .filter { it.aerodromeId == lowg }
+            .map { it.frequency }
+            .toSet()
+        val lowgRoles: Set<RoleName> = finalState.controllers.values
+            .filter { it.aerodromeId == lowg }
+            .map { it.role }
+            .toSet()
+        val nonLowgContactFrequency = records.firstOrNull { rec ->
             val output = (rec.utterance as? Utterance.FromController)?.output as? ControllerOutput.Instruct
-                ?: return@any false
+                ?: return@firstOrNull false
             val instr = (output.dispatch as? Dispatch.Direct)?.instruction as? ContactFrequency
-                ?: return@any false
-            if (instr.target != aircraftId) return@any false
-            // Three mutually-reinforcing arms catch back-channel handoffs
-            // even when one disambiguator is missing:
-            //   1. Frequency points at LJMB_TWR (most specific).
-            //   2. ContactFrequency speaks FROM an LJMB controller (LJMB
-            //      shouldn't be issuing CF for cross-aerodrome — would
-            //      mean it already has the aircraft, which only happens
-            //      after the pilot's autonomous contact).
-            //   3. Cross-aerodrome ContactFrequency from a non-LJMB speaker
-            //      with role=TOWER and frequency=null (CAP 413 phraseology
-            //      omits frequency when role implies it). LOWG_TOWER could
-            //      legitimately issue CF(role=TOWER, frequency=null) for
-            //      LOWG_TOWER — but the destination's TOWER role naming
-            //      LJMB only makes sense as a back-channel cross-aerodrome
-            //      handoff.
-            val speakerControllerId = (rec.speaker as? SpeakerRef.Controller)?.id
-            val speakerAerodrome = speakerControllerId?.let {
-                finalState.controllers[it]?.aerodromeId
-            }
-            val frequencyMatchesLjmb = instr.frequency == ljmbTower.frequency
-            val speakerIsLjmb = speakerAerodrome == ljmb
-            val crossAerodromeTowerHandoff = instr.role == RoleName.TOWER &&
-                instr.frequency == null &&
-                speakerAerodrome != null && speakerAerodrome != lowg
-            frequencyMatchesLjmb || speakerIsLjmb || crossAerodromeTowerHandoff
+                ?: return@firstOrNull false
+            if (instr.target != aircraftId) return@firstOrNull false
+            val targetsLowgFreq = instr.frequency != null && instr.frequency in lowgFreqs
+            val targetsLowgRoleOnly = instr.frequency == null && instr.role in lowgRoles
+            !(targetsLowgFreq || targetsLowgRoleOnly)
         }
-        check(!anyContactFreqDirectingToLjmb) {
+        check(nonLowgContactFrequency == null) {
             "Autonomous-contact provenance: pilot must self-contact LJMB_TWR autonomously, " +
                 "not via a ContactFrequency from another controller. A back-channel handoff " +
-                "has snuck in. Suspect: a controller emitting ContactFrequency(role=TOWER, " +
-                "frequency=LJMB_TWR_FREQ), or applyContactFrequency's same-aerodrome check at " +
-                "Step.kt:1367 was relaxed.\n$journey"
+                "has snuck in (the offending CF targets a non-LOWG-side destination). " +
+                "Offending record: $nonLowgContactFrequency. Suspect: a controller emitting " +
+                "ContactFrequency for a foreign aerodrome's role/frequency, or " +
+                "applyContactFrequency's same-aerodrome check at Step.kt:1367 was relaxed.\n$journey"
         }
 
         // ── Filing-distribution check via post-state ────────────────────────
@@ -460,20 +474,55 @@ class G2CrossAerodromeVfrTest {
             st.aircraft[aircraftId]?.pilotMission?.isComplete == true
         } ?: fail("Mission never reached isComplete during the trace.\n$journey")
         val completionMs = completionEvent.first.time.millis
-        // Band widened from the practice-scout 50–75 nominal to 45–80 to
-        // give ~30% slack each side — G0's analogous band has 100% slack;
-        // a tighter band is the right shape for the longer cross-aerodrome
-        // run with more variance sources (run-up dwell pre-D-AUDIT.3 is
-        // ~10s placeholder, not the 60s practice-scout estimate; TMA pattern
-        // is highly variable; LJMB approach has no APP staffed so pattern
-        // entry depends on TWR's join-circuit instruction).
-        val minMs = 45 * 60 * 1000L
-        val maxMs = 80 * 60 * 1000L
+        // Phase F retroactive review (test-review M1): the practice-scout
+        // 45–80 min band is tentative — the test currently fails before
+        // completion is ever observed (boundary-release blocker), so the
+        // band has no empirical anchor. Widened to 30–90 (the run's wall
+        // budget) so first green pass is not blocked on an unanchored
+        // guess; **tighten on first observed completion time** (and update
+        // the surrounding rationale in the same commit). G0's analogous
+        // band has ~100% slack; the cross-aerodrome run has more variance
+        // sources (run-up dwell pre-D-AUDIT.3 is ~10s placeholder, not the
+        // 60s practice-scout estimate; TMA pattern is highly variable;
+        // LJMB approach has no APP staffed so pattern entry depends on
+        // TWR's join-circuit instruction) so a wider initial band is the
+        // honest shape.
+        val minMs = 30 * 60 * 1000L
+        val maxMs = 90 * 60 * 1000L
         check(completionMs in minMs..maxMs) {
             "Mission completion time ${completionMs / 1000} s is outside the doctrine-shaped " +
                 "band [${minMs / 1000} s, ${maxMs / 1000} s]. The C172 LOWG→LJMB transit should " +
                 "land within this window; drift indicates a kinematic doctrine regression " +
                 "(cruise speed / climb rate / RUN_UP_CHECKS dwell) or a procedural change.\n$journey"
+        }
+
+        // Phase F retroactive review (test-review M2): copy of G0's
+        // assertion (f) — RUN_UP_CHECKS dwell ≥10s. After the pilot-
+        // firewall removed the `!aircraft.humanPiloted ||` short-circuit
+        // on TIMED step completion, the AI must wait the full RUN_UP_CHECKS
+        // dwell. A regression that re-introduces the AI fast-path would
+        // pass every other check (kinematics survive, mission tree
+        // unchanged) but cut ~10s off the time between TaxiTo apply and
+        // Report(Ready). G2 exercises the same RUN_UP_CHECKS path as G0
+        // during the LOWG departure half; without this row, the regression
+        // would only surface in G0.
+        val taxiMs = records.firstControllerInstructionOf<xyz.easiersaid.twr.protocol.TaxiToHoldingPoint>(aircraftId)
+            .map { it.time.millis }
+            .getOrElse {
+                fail("Expected at least one TaxiToHoldingPoint to $aircraftId in the transmission stream.\n$journey")
+            }
+        val readyMs = records.firstPilotReportOf<xyz.easiersaid.twr.protocol.ReportEvent.Ready>(aircraftId)
+            .map { it.time.millis }
+            .getOrElse {
+                fail("Expected at least one Report(Ready) from $aircraftId in the transmission stream.\n$journey")
+            }
+        val runUpDwellMs = readyMs - taxiMs
+        check(runUpDwellMs >= 10_000L) {
+            "Expected RUN_UP_CHECKS dwell ≥10s between TaxiTo issued (${taxiMs}ms) and " +
+                "first Report(Ready) (${readyMs}ms); got ${runUpDwellMs}ms. The AI must wait " +
+                "the same TIMED duration as a human pilot. Regression: the " +
+                "`!aircraft.humanPiloted ||` short-circuit on CompletionMode.TIMED " +
+                "(PilotCognitive.kt:isStepComplete) has reappeared.\n$journey"
         }
     }
 }

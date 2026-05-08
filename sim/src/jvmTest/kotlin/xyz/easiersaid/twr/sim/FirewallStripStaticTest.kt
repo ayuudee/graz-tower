@@ -4,6 +4,18 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.HighLevelGoal
+import xyz.easiersaid.twr.pilot.PilotPhase
+import xyz.easiersaid.twr.pilot.createMission
+import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftIntent
+import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.core.world.Position
 
 /**
  * Architectural enforcement test (D-PF.5 closure) — `FlightStrip.kt` reads only
@@ -76,6 +88,60 @@ class FirewallStripStaticTest {
             and the closure in /home/andrew/.claude/plans/fragility-and-strip-dynamism.md.
             """.trimIndent()
         }
+    }
+
+    /**
+     * G2 Phase F retroactive review (impact S1): purity check on the
+     * `(AircraftState, AerodromeId)` projection. The strip's KDoc says "set
+     * once at filing", but Phase F's `observerAerodrome` parameter means the
+     * same `AircraftState` produces different `FlightStrip.intent` values
+     * per controller. That's not a firewall leak (both inputs are filed-plan
+     * / doctrine data), but the purity contract — same input → same output —
+     * needs to be machine-pinned so a future change can't sneak in a
+     * runtime-state read gated on `observerAerodrome` (e.g.,
+     * `if (observerAerodrome == ...) mission.root.activeCompound() else …`).
+     *
+     * Also pins the aerodrome-relative correctness: `Transit(LJMB)` projects
+     * to `Departing` when observed from LOWG and `Arriving` when observed
+     * from LJMB. That doctrine is currently only exercised by the failing G2
+     * integration test; this row makes it a unit-level regression target.
+     */
+    @Test
+    fun `toFlightStrip is pure over (AircraftState, observerAerodrome) and aerodrome-relative for Transit`() {
+        val lowg = AerodromeId("LOWG")
+        val ljmb = AerodromeId("LJMB")
+        val now = SimTime.ZERO
+        val transitMission = createMission(
+            goal = HighLevelGoal.Transit(destination = ljmb),
+            startPhase = PilotPhase.AtStand,
+            time = now,
+        )
+        val ac = AircraftState(
+            id = AircraftId("OE-XYZ"),
+            callsign = Callsign("OE-XYZ"),
+            position = Position(0.0, 0.0),
+            positionPoint = PointId("LOWG_STAND_1_POINT"),
+            phase = PilotPhase.AtStand,
+            pilotMission = transitMission,
+        )
+
+        // Purity: two consecutive calls with identical inputs return equal strips.
+        val s1 = ac.toFlightStrip(lowg)
+        val s2 = ac.toFlightStrip(lowg)
+        assertEquals(s1, s2, "toFlightStrip must be pure: same (AircraftState, observerAerodrome) input → same FlightStrip output")
+
+        // Aerodrome-relative correctness for HighLevelGoal.Transit:
+        // observer == destination → Arriving; observer != destination → Departing.
+        assertEquals(
+            AircraftIntent.Departing,
+            ac.toFlightStrip(lowg).intent,
+            "Transit(destination=LJMB) observed from LOWG must project to Departing",
+        )
+        assertEquals(
+            AircraftIntent.Arriving,
+            ac.toFlightStrip(ljmb).intent,
+            "Transit(destination=LJMB) observed from LJMB must project to Arriving",
+        )
     }
 
     private fun projectRoot(): Path {

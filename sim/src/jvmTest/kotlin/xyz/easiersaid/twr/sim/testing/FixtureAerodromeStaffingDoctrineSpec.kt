@@ -5,6 +5,7 @@ import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.RoleName
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -145,6 +146,14 @@ class FixtureAerodromeStaffingDoctrineSpec {
         // representation can drift from doctrine if naming conventions
         // change. The (role, aerodrome) tuple is the doctrine-shaped
         // primary key.
+        //
+        // Friction note (Phase G retroactive review, impact-S2): a
+        // legitimate scope expansion (LOWG_DELIVERY for IFR, LJMB_GROUND
+        // when modeling LJMB's actual ground-controlled hours) will trip
+        // this test. That is the intent of a cardinal pin — but the
+        // failure message explicitly distinguishes "regression" from
+        // "doctrine change in lockstep" so a future agent doesn't
+        // misread the mismatch as the fixture being wrong.
         val loaded = Fixtures.LOWG_LJMB_VFR.load()
             .getOrElse { fail("LOWG_LJMB_VFR fixture failed to load: $it") }
         val lowg = AerodromeId("LOWG")
@@ -158,16 +167,73 @@ class FixtureAerodromeStaffingDoctrineSpec {
             RoleName.APPROACH to lowg,
             RoleName.TOWER to ljmb,
         )
+        assertEquals(
+            expected,
+            staffed,
+            """
+            LOWG_LJMB_VFR cardinal staffing claim mismatch.
+
+              Extra:   ${staffed - expected}
+              Missing: ${expected - staffed}
+
+            Per the epic spec (R6 in fn-5-…), LOWG staffs all three
+            controlled-airspace roles; LJMB staffs only TOWER
+            (LJMB_APPROACH is explicitly out of scope for G2).
+
+            HOW TO RESOLVE:
+            - If this is a REGRESSION (the fixture was edited and the
+              edit dropped or duplicated a staffing tuple by accident),
+              fix the fixture in `sim/src/jvmTest/.../testing/Fixtures.kt`.
+            - If this is a DOCTRINE CHANGE (a legitimate scope
+              expansion such as adding LOWG_DELIVERY for IFR or LJMB_GROUND
+              for LJMB controlled-hours modeling), update this test's
+              `expected` set IN LOCKSTEP with the epic-spec change and
+              `.plan` (per `feedback_pass_scope` — fold the doctrine retune
+              into the closing pass, don't file as a follow-up).
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun `LOWG_LJMB_VFR within-aerodrome frequencies follow GND_TWR-share doctrine`() {
+        // Phase G retroactive review (impact-S3): the cross-aerodrome
+        // separation pin doesn't catch intra-aerodrome frequency hazards.
+        // ICAO Doc 9432 §3 explicitly endorses GND/TWR sharing a single
+        // frequency at smaller aerodromes (a cost-saving + workload-balancing
+        // doctrine). LOWG follows this — both GND and TWR are on 118.200.
+        // APPROACH gets its own (119.300). LJMB has only TOWER (single
+        // role).
+        //
+        // The hazard this row catches: a fixture extension that puts
+        // APPROACH on 118.200 (collapsing the GND/TWR/APP party-line
+        // together — separation-by-frequency dispatch breaks). Or putting
+        // a future LJMB_GROUND on a frequency that collides with LJMB_TOWER
+        // (the wire-layer would broadcast to both, doctrine-incorrect for
+        // a non-Doc-9432-shared role pair).
+        //
+        // Allow-list: GND/TWR may share at the same aerodrome. All other
+        // role pairs at the same aerodrome must be on distinct frequencies.
+        val loaded = Fixtures.LOWG_LJMB_VFR.load()
+            .getOrElse { fail("LOWG_LJMB_VFR fixture failed to load: $it") }
+        val byAerodrome: Map<AerodromeId, List<Pair<RoleName, Frequency>>> = loaded.controllers.values
+            .groupBy { it.aerodromeId }
+            .mapValues { (_, ctrls) -> ctrls.map { it.role to it.frequency } }
+        val groundTowerSharePair = setOf(RoleName.GROUND, RoleName.TOWER)
+        val violations: List<String> = byAerodrome.flatMap { (aerodrome, roleFreqs) ->
+            val byFreq: Map<Frequency, List<RoleName>> = roleFreqs
+                .groupBy({ it.second }, { it.first })
+            byFreq.entries
+                .filter { it.value.size > 1 }
+                .filter { it.value.toSet() != groundTowerSharePair }
+                .map { (freq, roles) ->
+                    "$aerodrome: roles $roles share frequency $freq " +
+                        "(only GROUND+TOWER may share per ICAO Doc 9432 §3)"
+                }
+        }
         assertTrue(
-            staffed == expected,
-            "LOWG_LJMB_VFR cardinal staffing claim broken.\n" +
-                "  Found:    $staffed\n" +
-                "  Expected: $expected\n" +
-                "  Extra:    ${staffed - expected}\n" +
-                "  Missing:  ${expected - staffed}\n" +
-                "Per the epic spec (R6 in fn-5-…), LOWG staffs all three " +
-                "controlled-airspace roles; LJMB staffs only TOWER " +
-                "(LJMB_APPROACH is explicitly out of scope for G2).",
+            violations.isEmpty(),
+            "Within-aerodrome frequency-share doctrine violated:\n" +
+                violations.joinToString("\n") { "  - $it" },
         )
     }
 }

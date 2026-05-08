@@ -919,12 +919,36 @@ private fun handleTransmissionEnd(
                 // pilot transmissions on LOWG's frequency don't reach
                 // LJMB_TWR's strip; only when the pilot autonomously tunes
                 // to LJMB_TWR's frequency does the flip fire.
-                val receivingControllerId = withMission.controllers.values
-                    .firstOrNull { spec ->
-                        spec.frequency == tx.frequency &&
-                            (spec.responsibilities[acId] is ResponsibilityState.Watching ||
-                                acId in spec.knownStrips)
-                    }?.id
+                // Phase F retroactive review (impact M2): the lookup must
+                // prefer `Watching` over `knownStrips` and fail loud on
+                // ambiguity. Pre-fix, `firstOrNull` over `controllers.values`
+                // returned the first map-iteration candidate — fine for
+                // the current G0/G2 fixtures (Watching is set up by an
+                // explicit handoff, knownStrips by AFTN distribution; they
+                // don't collide today), but a future fixture with both
+                // (e.g., a re-filed plan during an in-progress handoff)
+                // would silently pick whichever the LinkedHashMap iterated
+                // first. Two-stage lookup expresses the priority; the
+                // `count == 1` invariants throw rather than first-wins.
+                val candidates = withMission.controllers.values
+                    .filter { it.frequency == tx.frequency }
+                val watchingCandidates = candidates
+                    .filter { it.responsibilities[acId] is ResponsibilityState.Watching }
+                val knownStripCandidates = candidates
+                    .filter { acId in it.knownStrips }
+                check(watchingCandidates.size <= 1) {
+                    "Ambiguous Watching candidates on frequency ${tx.frequency} for $acId: " +
+                        "${watchingCandidates.map { it.id }} — at most one controller may be " +
+                        "Watching an aircraft on a given frequency."
+                }
+                check(knownStripCandidates.size <= 1) {
+                    "Ambiguous knownStrip candidates on frequency ${tx.frequency} for $acId: " +
+                        "${knownStripCandidates.map { it.id }} — at most one controller per " +
+                        "frequency may hold the filed strip for an aircraft."
+                }
+                val receivingControllerId =
+                    watchingCandidates.firstOrNull()?.id
+                        ?: knownStripCandidates.firstOrNull()?.id
                 if (receivingControllerId != null) {
                     val receivingRole = withMission.controllers[receivingControllerId]?.role
                     val acAfter = withMission.aircraft[acId]
