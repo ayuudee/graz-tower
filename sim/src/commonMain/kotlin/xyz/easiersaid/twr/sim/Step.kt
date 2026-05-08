@@ -502,7 +502,16 @@ private fun handlePilotTick(
         // destination of this flight" means. `check(size <= 1)` is the
         // failure-loud invariant per `feedback_no_corners` — silent
         // first-wins on a Map walk would be a corner-cut shape.
-        val ctrl = resultState.controllers.values.firstOrNull { event.aircraftId in it.responsibilities }
+        // Wire-layer route preference: the controller that currently OWNS
+        // the aircraft. `Watching` and `HandingOff(target)` are transitional
+        // states; for `HandingOff(Released)` specifically (cross-aerodrome
+        // boundary release), the prior controller no longer wants the
+        // aircraft, and the wire layer must fall through to `knownStrips`
+        // so the pilot's next transmission reaches the destination tower
+        // rather than going back to the released controller.
+        val ctrl = resultState.controllers.values.firstOrNull {
+            it.responsibilities[event.aircraftId] is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned
+        }
             ?: run {
                 val destinationAerodrome = resultState.aircraft[event.aircraftId]
                     ?.pilotMission?.goal.filedDestinationAerodrome()
@@ -899,10 +908,28 @@ private fun handleTransmissionEnd(
             // contact and report into one transmission ("Tower, OE-ABC,
             // holding short 16C, ready"); we accept any pilot utterance as
             // implicit initial contact for the responsibility-transition
-            // purpose. The pilot's `contactedOnFrequency` flag is also
-            // set on InitialContact specifically (its semantics are
-            // "the pilot has uttered the dedicated InitialContact phrase
-            // at least once" — a separate concern from sim-side responsibility).
+            // purpose.
+            //
+            // G2 Phase H post-impl impact-M1: the pilot's
+            // `contactedOnFrequency` flip is gated on the SAME predicate
+            // as `applyTwoWayCommsEstablished` — i.e., it fires only when
+            // the InitialContact actually lands on a controller who was
+            // Watching the aircraft (peer handoff) or holding the strip
+            // in `knownStrips` (cross-aerodrome arrival). Pre-fix, the
+            // flip fired on ANY InitialContact arriving at any controller
+            // on the transmission's frequency, regardless of receiver
+            // state. That created a non-monotonic mission-progression
+            // bug for the cross-aerodrome race: at the destination's REP,
+            // the pilot's autonomous InitialContact was routed to the
+            // departure tower (still Owning), the flip fired despite no
+            // Watching/knownStrips match, the mission advanced past
+            // CALL_INBOUND to AWAIT_JOINING_INSTRUCTIONS — and once the
+            // boundary release fired and reset `contactedOnFrequency =
+            // false`, there was no way to rewind the mission. Tying the
+            // flip to the receiver-found predicate keeps mission
+            // progression monotonic: the pilot's "I have made initial
+            // contact" notion advances only when the contact actually
+            // landed on a controller waiting for it.
             val pilotTransmission: AircraftId? =
                 (msg as? ReceivedMessage.Clear)?.aircraft
             val withMissionAcked = if (pilotTransmission != null) {
@@ -910,18 +937,6 @@ private fun handleTransmissionEnd(
                 val ac = withoutTx.aircraft[acId]
                 val mission = ac?.pilotMission
                 val inboundTransmission = (msg as? ReceivedMessage.Clear)?.transmission
-                val withMission = if (
-                    ac != null && mission != null && !mission.contactedOnFrequency && inboundTransmission is InitialContact
-                ) {
-                    val updatedAc = ac.copy(
-                        pilotMission = mission.copy(contactedOnFrequency = true),
-                    )
-                    withoutTx.copy(
-                        aircraft = LinkedHashMap(withoutTx.aircraft).apply {
-                            put(acId, updatedAc)
-                        },
-                    )
-                } else withoutTx
                 // Look up the receiving controller this transmission was
                 // routed to (whose Watching state should flip to Owned).
                 // G2 (Phase E): the receiver candidate is a controller
@@ -954,7 +969,7 @@ private fun handleTransmissionEnd(
                 // would silently pick whichever the LinkedHashMap iterated
                 // first. Two-stage lookup expresses the priority; the
                 // `count == 1` invariants throw rather than first-wins.
-                val candidates = withMission.controllers.values
+                val candidates = withoutTx.controllers.values
                     .filter { it.frequency == tx.frequency }
                 val watchingCandidates = candidates
                     .filter { it.responsibilities[acId] is ResponsibilityState.Watching }
@@ -974,19 +989,38 @@ private fun handleTransmissionEnd(
                     watchingCandidates.firstOrNull()?.id
                         ?: knownStripCandidates.firstOrNull()?.id
                 if (receivingControllerId != null) {
-                    val receivingRole = withMission.controllers[receivingControllerId]?.role
-                    val acAfter = withMission.aircraft[acId]
+                    // Receiver is in the right state — flip the pilot's
+                    // mission AND apply the responsibility transition in
+                    // lockstep. Both updates are "the InitialContact
+                    // actually landed."
+                    val withFlippedMission = if (
+                        ac != null && mission != null
+                        && !mission.contactedOnFrequency
+                        && inboundTransmission is InitialContact
+                    ) {
+                        val updatedAc = ac.copy(
+                            pilotMission = mission.copy(contactedOnFrequency = true),
+                        )
+                        withoutTx.copy(
+                            aircraft = LinkedHashMap(withoutTx.aircraft).apply {
+                                put(acId, updatedAc)
+                            },
+                        )
+                    } else withoutTx
+                    val receivingRole = withFlippedMission.controllers[receivingControllerId]?.role
+                    val acAfter = withFlippedMission.aircraft[acId]
                     if (receivingRole != null && acAfter != null) {
-                        applyTwoWayCommsEstablished(withMission, acAfter, receivingRole)
-                    } else withMission
+                        applyTwoWayCommsEstablished(withFlippedMission, acAfter, receivingRole)
+                    } else withFlippedMission
                 } else {
                     // The receiver of this transmission is not in Watching
                     // and does not hold the strip in knownStrips for this
                     // aircraft — a normal in-frequency transmission to an
                     // already-Owning controller (Report, Readback, Request)
                     // or a transmission to a controller that has no claim
-                    // on this aircraft. No transition needed.
-                    withMission
+                    // on this aircraft. No transition needed; mission
+                    // unchanged.
+                    withoutTx
                 }
             } else withoutTx
             withMissionAcked.copy(controllerInbox = nextInbox) to emptyList()

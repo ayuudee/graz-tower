@@ -1071,7 +1071,24 @@ private fun applyFplAmendment(
 fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): PilotMission = when (tx) {
     is Report -> tx.events.fold(mission) { m, evt -> updateAfterReport(m, evt) }
     is InitialContact -> mission.copy(
-        contactedOnFrequency = true,
+        // G2 Phase H post-impl impact-M1 (extended): the pilot's
+        // `contactedOnFrequency` flip does NOT happen here on
+        // transmit. Per ICAO Doc 4444 §10.1.1, two-way communication
+        // is established when the receiving station ACKNOWLEDGES
+        // receipt — not when the pilot speaks. The flip happens on
+        // the receive-side path (`Step.kt:handleTransmissionEnd`)
+        // and is gated on the receiving controller actually being
+        // in `Watching` or `knownStrips` state for this aircraft.
+        // Pre-fix, the pilot side flipped unconditionally on
+        // transmit, which advanced the mission past CALL_INBOUND
+        // even when the InitialContact landed on the wrong
+        // controller (e.g., the cross-aerodrome race at the
+        // destination's REP where the autonomous contact reached
+        // the still-Owning departure tower instead of the
+        // destination tower). With this gate, mission progression
+        // becomes monotonic: CALL_INBOUND advances only when the
+        // contact actually landed on a controller waiting for it.
+        //
         // Pass 7 (D-AUDIT.5): clear the pending-role so a future
         // CALL_INBOUND step (e.g. a re-handoff later) reads None and
         // either falls back to TOWER or — better — reads a freshly-set

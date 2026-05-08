@@ -374,6 +374,19 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     forRole = xyz.easiersaid.twr.protocol.RoleName.APPROACH,
                     squawk = arrow.core.Some(xyz.easiersaid.twr.protocol.Squawk.unsafe(7000)),
                 ),
+                // Advance to Complete on issuance so the rule doesn't re-fire
+                // on subsequent cycles. Without this, the radius gate stays
+                // satisfied indefinitely (cross-aerodrome flight cruises away
+                // from LOWG); after the 10s NoPendingReadback timeout
+                // (Issued → Querying), the rule would otherwise re-fire and
+                // hit `applyRadarServiceTerminated`'s requireOwner check
+                // (controller is now HandingOff(Released), not Owned).
+                // The existing `DEP-RADAR-SERVICE-TERMINATED` doesn't need
+                // this because its `OnCircuitLeg(UPWIND/CROSSWIND)` geometry
+                // gate self-deactivates after the aircraft moves off those
+                // legs; cross-aerodrome flights don't have that
+                // self-deactivation property.
+                nextStage = TowerDepartureStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
         ),

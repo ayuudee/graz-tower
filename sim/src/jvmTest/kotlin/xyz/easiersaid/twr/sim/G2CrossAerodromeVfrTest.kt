@@ -66,73 +66,83 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  * setup; no pilot reads of destination runway-in-use via simulator state
  * (pilot reads runway only via filing or ATIS broadcast).
  *
- * ## CURRENTLY FAILING — DOCUMENTED BLOCKER (G2 Phase H partial)
+ * ## CURRENTLY FAILING — DOCUMENTED BLOCKER (G2 Phase H — arrival-side)
  *
- * Phase H added the controller-side `DEP-CROSS-AERODROME-RELEASE` rule
- * (LOWG_TOWER fires `RadarServiceTerminated` when a Transit aircraft
- * crosses the 12 NM ring; `Not(DestinationDifferentAerodrome)` was added
- * to `DEP-HANDOFF` and `DEP-RADAR-SERVICE-TERMINATED` to prevent local-
- * traffic release rules from firing on cross-aerodrome flights). The
- * release fires correctly — visible in the journey log as a
- * `DEP-CROSS-AERODROME-RELEASE` instruction at the moment the aircraft's
- * `position` snaps to `LJMB_FIX_OSMOT` (the destination's first VFR
- * contact REP).
+ * Phase H landed the controller-side release + the pilot-side
+ * monotonic-progression fix + the wire-layer routing. The journey log
+ * at the failure now shows the complete cross-aerodrome **handoff**
+ * working end-to-end:
+ *  - LOWG departure: taxi clearance, line-up, takeoff, climb-out (same
+ *    as G0).
+ *  - At OSMOT: pilot's autonomous InitialContact → LOWG_TOWER (still
+ *    Owning); receiver-lookup finds neither Watching nor knownStrips
+ *    on LOWG, so `contactedOnFrequency` stays false (mission stays at
+ *    CALL_INBOUND — monotonic).
+ *  - Cycle later: LOWG_TOWER fires `DEP-CROSS-AERODROME-RELEASE` →
+ *    `RadarServiceTerminated` → LOWG → `HandingOff(Released)`.
+ *  - Pilot processes RST: `contactedOnFrequency=false`,
+ *    `lastTransmittedStep=None`. Mission still at CALL_INBOUND.
+ *  - Next pilot tick: `isFirstTick=true` (because
+ *    `lastTransmittedStep != Some(CALL_INBOUND)`). Pilot re-emits
+ *    InitialContact. Wire-layer's responsibilities-search now filters
+ *    by `Owned` only — LOWG is HandingOff, no match — fallback to
+ *    `knownStrips` with destination filter picks **LJMB_TOWER**.
+ *    Transmission goes out on **119.205**.
+ *  - LJMB_TOWER receives. `applyTwoWayCommsEstablished` fires the
+ *    cross-aerodrome path: `knownStrips → Owned`.
+ *  - Final state: LJMB_TOWER has `Owned(since=1132000)` for OE-XYZ;
+ *    `commitment[OE-XYZ] = TOWER_ARRIVAL stage=AwaitDownwind
+ *    contacted=true runway=14`.
  *
- * What's still missing — **pilot-side rewind on RadarServiceTerminated**:
- *  1. The aircraft reaches OSMOT at sim-time T₀ (~18.5 sim min).
- *  2. The pilot's CALL_INBOUND step (autonomous-contact-at-REP) emits
- *     `InitialContact` at T₀.
- *  3. The wire layer routes that transmission to whichever controller
- *     currently `Owns` the aircraft — LOWG_TOWER, on 118.200 — because
- *     the controller's `OutsideAerodromeRadius` guard reads the
- *     aircraft's named-waypoint position (PointId), which only updates
- *     to OSMOT at the same moment as the pilot's autonomous contact.
- *     LOWG_TOWER hasn't released yet.
- *  4. `Step.kt:891` flips `pilotMission.contactedOnFrequency = true` on
- *     the InitialContact arriving at LOWG_TOWER, even though
- *     `applyTwoWayCommsEstablished` doesn't fire (LOWG_TOWER is already
- *     Owning, not Watching).
- *  5. The pilot's mission completes the CALL_INBOUND step and advances
- *     to AWAIT_JOINING_INSTRUCTIONS.
- *  6. ~440 ms later, LOWG_TOWER's next cycle observes the aircraft at
- *     OSMOT and fires `DEP-CROSS-AERODROME-RELEASE` →
- *     `RadarServiceTerminated`.
- *  7. The pilot processes RST: sets `contactedOnFrequency = false`
- *     (per `PilotCognitive.kt:697-706`) — but the mission's current task
- *     pointer stays at AWAIT_JOINING_INSTRUCTIONS. There is no rewind to
- *     CALL_INBOUND, so the pilot never re-emits InitialContact on
- *     LJMB_TOWER's 119.205 frequency.
- *  8. Mission wedges in AWAIT_JOINING_INSTRUCTIONS forever; LJMB_TOWER's
- *     `responsibilities` stays empty.
+ * What's still missing — **TowerArrival rule for cross-aerodrome
+ * arrivals**: LJMB_TOWER has the aircraft as Owned with a TOWER_ARRIVAL
+ * commitment at `AwaitDownwind`. But the aircraft is still at OSMOT,
+ * climbing, ~25 NM from the LJMB pattern. The existing TowerArrival
+ * rules at `AwaitDownwind` fire on aircraft AT downwind position —
+ * they don't issue an instruction to bring the aircraft INTO the
+ * pattern. The pilot's mission is at `AWAIT_JOINING_INSTRUCTIONS`
+ * (`INSTRUCTION_GATED`); it completes only when the controller issues
+ * a `JoinCircuit` instruction.
  *
- * Closing this requires pilot-side mission-state logic: on
- * `RadarServiceTerminated` for a `HighLevelGoal.Transit` mission whose
- * current task is past CALL_INBOUND, rewind the task pointer to
- * CALL_INBOUND so the pilot re-emits InitialContact on the destination's
- * frequency. (Alternative path: track a tuned-frequency field on
- * `PilotMission` so the wire layer respects pilot-driven frequency
- * changes rather than re-deriving from responsibility-controller. Larger
- * refactor.) Either path is a meaningful pilot-side change — out of
- * Phase H's controller-side release scope.
+ * Closing this requires a new rule on TowerArrival's `AwaitDownwind`
+ * stage that fires for a freshly-Owned cross-aerodrome aircraft at the
+ * REP and emits `JoinCircuit`. This is the symmetric LJMB-arrival
+ * counterpart to LOWG's `DEP-CROSS-AERODROME-RELEASE` and is genuinely
+ * a separate doctrine + types pass — out of Phase H's controller-side
+ * release scope. (No `JoinCircuit` *action* exists today — only the
+ * pilot-side readback handler. The action class itself is the
+ * remaining new surface.)
  *
- * Phase H's deliverables that DID land in this commit:
- *  - `FlightStrip.destinationAerodrome` field + `filedDestinationAerodrome()` total projection
- *  - `ControllerView.flightStripDestinations` projection
- *  - New guard `DestinationDifferentAerodrome`
- *  - New rule `DEP-CROSS-AERODROME-RELEASE` (fires correctly when the
- *    aircraft's `position` snaps to a point past 12 NM from the local ARP)
+ * Phase H's deliverables that DID land:
+ *  - `FlightStrip.destinationAerodrome` field +
+ *    `HighLevelGoal?.filedDestinationAerodrome()` total projection.
+ *  - `ControllerView.flightStripDestinations` projection.
+ *  - New guard `DestinationDifferentAerodrome`.
+ *  - New rule `DEP-CROSS-AERODROME-RELEASE` (with `nextStage = Complete`
+ *    so the rule self-deactivates after firing — prevents the COORD-
+ *    QUERY readback-timeout re-fire from hitting `applyRadarService`
+ *    `Terminated`'s requireOwner check).
  *  - `Not(DestinationDifferentAerodrome)` gate on `DEP-HANDOFF` and
  *    `DEP-RADAR-SERVICE-TERMINATED` (closes rule-ordering hazard from
- *    plan-stage impact-M1)
- *  - `Step.kt:handlePilotTick` knownStrips fallback now filters by the
- *    aircraft's filed destination + asserts `count <= 1` (closes
- *    F-impact-M1)
+ *    plan-stage impact-M1).
+ *  - `Step.kt:handlePilotTick`: responsibilities-search filters for
+ *    `Owned` only (HandingOff/Watching are transitional — wire layer
+ *    falls through to `knownStrips` after release). knownStrips
+ *    fallback filters by aircraft's filed destination +
+ *    `check(size <= 1)` invariant.
+ *  - `PilotCognitive.kt:updateAfterTransmission`: pilot's
+ *    `contactedOnFrequency` flip is GONE from the InitialContact
+ *    transmit handler. Per ICAO Doc 4444 §10.1.1, two-way comms is
+ *    established when the receiving station ACKNOWLEDGES — not when
+ *    the pilot speaks. The flip happens only on the receive-side path
+ *    (`Step.kt:handleTransmissionEnd`'s M1-gated branch).
  *
  * The failure is intentional and **loud** per project doctrine
- * (`feedback_no_corners`): no `@Disabled`, no skip-list, no exclusion set.
- * The journey log printed at failure is the closure receipt — when the
- * pilot-side rewind lands, this test starts passing without further
- * edits to the controller-side release rule.
+ * (`feedback_no_corners`): no `@Disabled`, no skip-list, no exclusion
+ * set. The journey log at failure shows the cross-aerodrome handoff
+ * completing cleanly; the wedge is now a missing TowerArrival
+ * cross-aerodrome rule. When that rule lands, this test starts passing
+ * without further edits to the controller-side release path.
  */
 class G2CrossAerodromeVfrTest {
 
