@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-08T20:22:03.653030Z",
+  "depends_on": [],
+  "epic": "fn-8-g1-two-aircraft-vfr-circuits-at-lowg",
+  "id": "fn-8-g1-two-aircraft-vfr-circuits-at-lowg.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-8-g1-two-aircraft-vfr-circuits-at-lowg.1.md",
+  "status": "todo",
+  "title": "Foundation: LOWG_TWO_AIRCRAFT fixture + SimRandom.derive + SeparationAssessment ADT + tick-ordering audit",
+  "updated_at": "2026-05-08T20:24:54.998180Z"
+}

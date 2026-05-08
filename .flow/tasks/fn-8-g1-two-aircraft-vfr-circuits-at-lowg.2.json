@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-08T20:22:03.786766Z",
+  "depends_on": [
+    "fn-8-g1-two-aircraft-vfr-circuits-at-lowg.1"
+  ],
+  "epic": "fn-8-g1-two-aircraft-vfr-circuits-at-lowg",
+  "id": "fn-8-g1-two-aircraft-vfr-circuits-at-lowg.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-8-g1-two-aircraft-vfr-circuits-at-lowg.2.md",
+  "status": "todo",
+  "title": "G1TwoAircraftCircuitsTest implementation + cross-ref doc updates",
+  "updated_at": "2026-05-08T20:24:55.130508Z"
+}
