@@ -1,0 +1,18 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-04-30T19:06:44.856844Z",
+  "depends_on": [
+    "fn-1-review-research-directory.2",
+    "fn-1-review-research-directory.3",
+    "fn-1-review-research-directory.4"
+  ],
+  "epic": "fn-1-review-research-directory",
+  "id": "fn-1-review-research-directory.5",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1-review-research-directory.5.md",
+  "status": "todo",
+  "title": "Synthesize findings and route follow-up",
+  "updated_at": "2026-04-30T19:17:33.574245Z"
+}

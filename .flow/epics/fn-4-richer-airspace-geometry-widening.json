@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-4-richer-airspace-geometry-widening",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-04T20:30:58.595215Z",
+  "created_at": "2026-05-01T11:59:43.419074Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-4-richer-airspace-geometry-widening",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-01T12:06:11.334637Z",
+  "spec_path": ".flow/specs/fn-4-richer-airspace-geometry-widening.md",
+  "status": "done",
+  "title": "Richer airspace geometry widening",
+  "updated_at": "2026-05-04T20:32:03.122196Z"
+}

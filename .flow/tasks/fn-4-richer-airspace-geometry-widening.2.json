@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-01T12:01:20.856288Z",
+  "depends_on": [
+    "fn-4-richer-airspace-geometry-widening.1"
+  ],
+  "epic": "fn-4-richer-airspace-geometry-widening",
+  "id": "fn-4-richer-airspace-geometry-widening.2",
+  "priority": 2,
+  "spec_path": ".flow/tasks/fn-4-richer-airspace-geometry-widening.2.md",
+  "status": "todo",
+  "title": "Audit runtime airspace geometry oracle and drift tests",
+  "updated_at": "2026-05-01T12:02:47.547318Z"
+}

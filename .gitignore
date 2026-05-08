@@ -30,3 +30,6 @@ data/charts/
 data/ofm/
 data/navdata/
 research/fm/r1-smoke/
+
+# flow-next session checkpoints (regenerable from epic state; not load-bearing)
+.flow/.checkpoint-*.json

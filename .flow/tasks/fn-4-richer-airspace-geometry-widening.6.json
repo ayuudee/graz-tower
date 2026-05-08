@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-01T12:01:21.687843Z",
+  "depends_on": [
+    "fn-4-richer-airspace-geometry-widening.5"
+  ],
+  "epic": "fn-4-richer-airspace-geometry-widening",
+  "id": "fn-4-richer-airspace-geometry-widening.6",
+  "priority": 6,
+  "spec_path": ".flow/tasks/fn-4-richer-airspace-geometry-widening.6.md",
+  "status": "todo",
+  "title": "Update delivered registry and FM inventories",
+  "updated_at": "2026-05-01T12:02:48.307466Z"
+}

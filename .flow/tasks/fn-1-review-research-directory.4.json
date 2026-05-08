@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-04-30T19:06:44.717773Z",
+  "depends_on": [
+    "fn-1-review-research-directory.1"
+  ],
+  "epic": "fn-1-review-research-directory",
+  "id": "fn-1-review-research-directory.4",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1-review-research-directory.4.md",
+  "status": "todo",
+  "title": "Audit research tooling boundaries",
+  "updated_at": "2026-04-30T19:15:45.994592Z"
+}
