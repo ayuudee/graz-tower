@@ -33,6 +33,7 @@ import xyz.easiersaid.twr.sim.testing.firstControllerInstructionOf
 import xyz.easiersaid.twr.sim.testing.firstPilotReportOf
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
+import xyz.easiersaid.twr.sim.testing.firstWhere
 import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
 
 /**
@@ -139,7 +140,7 @@ class LowgGoldenTest {
             SimEvent.ControllerCycle(time = now, controllerId = ground.id),
             SimEvent.ControllerCycle(time = now, controllerId = tower.id),
         )
-        val (finalState, records, stateTrace) = runUntilWithStateTrace(initialState, initialEvents, until)
+        val (finalState, records, trace) = runUntilWithStateTrace(initialState, initialEvents, until)
 
         // ── Diagnostic preamble ─────────────────────────────────────────────
         val journey = finalState.formatJourney(aircraftId, records)
@@ -175,9 +176,9 @@ class LowgGoldenTest {
         // Per post-impl test review M3 + Impact M1: assert active runway is
         // ATIS-derived (not silently fallen back to wind-only), and the
         // pilot's first InitialContact carries the published letter.
-        val firstControllerBeliefs = stateTrace
-            .map { (_, st) -> st.beliefs[tower.id] }
-            .firstOrNull { it != null && it.activeRunway != null }
+        val firstControllerBeliefs = trace.firstWhere { st ->
+            st.beliefs[tower.id]?.activeRunway != null
+        }.getOrNull()?.state?.beliefs?.get(tower.id)
         check(firstControllerBeliefs?.activeRunway == xyz.easiersaid.twr.protocol.RunwayId("16C")) {
             "Pass 15: tower's BeliefState.activeRunway must derive from ATIS configuration " +
                 "primary (16C), got ${firstControllerBeliefs?.activeRunway}.\n$journey"
@@ -189,9 +190,9 @@ class LowgGoldenTest {
         // Couple `activeRunway` to `atis.configuration.primary` to surface
         // a regression where the ATIS-derivation branch breaks and the
         // fallback silently takes over.
-        val firstStateWithBeliefs = stateTrace
-            .firstOrNull { (_, st) -> st.beliefs[tower.id]?.activeRunway != null }
-            ?.second
+        val firstStateWithBeliefs = trace.firstWhere { st ->
+            st.beliefs[tower.id]?.activeRunway != null
+        }.getOrNull()?.state
         val atisAtFirstBelief = firstStateWithBeliefs?.atisByAerodrome?.get(lowg)
         check(
             atisAtFirstBelief != null &&
@@ -211,22 +212,22 @@ class LowgGoldenTest {
         // exercised: AtisIssued → state.atisByAerodrome → ControllerView.atis
         // → BeliefState.expectedAtisLetter via withExpectedAtisLetter.
         // A regression where the fold is dropped would surface here.
-        val towerExpectedLetter = stateTrace
-            .map { (_, st) -> st.beliefs[tower.id]?.expectedAtisLetter?.get(lowg) }
-            .firstOrNull { it != null }
+        val towerExpectedLetter = trace.firstWhere { st ->
+            st.beliefs[tower.id]?.expectedAtisLetter?.get(lowg) != null
+        }.getOrNull()?.state?.beliefs?.get(tower.id)?.expectedAtisLetter?.get(lowg)
         check(towerExpectedLetter == 'A') {
             "Pass 15 (Annex 11 §4.3.6): tower's BeliefState.expectedAtisLetter[LOWG] must " +
                 "fold from view.atis (LOWG fixture publishes letter 'A'); " +
                 "got $towerExpectedLetter.\n$journey"
         }
 
-        val completionEvent = stateTrace.firstOrNull { (_, st) ->
+        val completionCursor = trace.firstWhere { st ->
             st.aircraft[aircraftId]?.pilotMission?.isComplete == true
-        }
-        checkNotNull(completionEvent) {
+        }.getOrNull()
+        checkNotNull(completionCursor) {
             "Mission never reached isComplete during the trace.\n$journey"
         }
-        val completionMs = completionEvent.first.time.millis
+        val completionMs = completionCursor.time.millis
         val minMs = 10 * 60 * 1000L
         val maxMs = 22 * 60 * 1000L
         check(completionMs in minMs..maxMs) {
@@ -468,21 +469,19 @@ class LowgGoldenTest {
                 "${firstTxToTwrMs}ms.\n$journey"
         }
         // Find a state snapshot in the window where both states co-occur.
-        val midHandoffStates = stateTrace.filter { (event, _) ->
-            event.time.millis in cfToTwrMs until firstTxToTwrMs
-        }
-        val anyMidHandoffOverlap = midHandoffStates.any { (_, simState) ->
+        val midHandoffMatch = trace.firstWhere { simState ->
+            val tMs = simState.now.millis
+            if (tMs !in cfToTwrMs until firstTxToTwrMs) return@firstWhere false
             val gndState = simState.controllers[ground.id]?.responsibilities?.get(aircraftId)
             val twrState = simState.controllers[tower.id]?.responsibilities?.get(aircraftId)
             gndState is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff &&
                 (gndState.target as? xyz.easiersaid.twr.protocol.HandoffTarget.Peer)?.controllerId == tower.id &&
                 twrState is xyz.easiersaid.twr.protocol.ResponsibilityState.Watching &&
                 twrState.from == ground.id
-        }
-        check(anyMidHandoffOverlap) {
+        }.getOrNull()
+        check(midHandoffMatch != null) {
             "Pass 7 assertion (h): expected at least one cycle in [$cfToTwrMs, $firstTxToTwrMs) " +
-                "where GND holds HandingOff(Peer(TWR)) AND TWR holds Watching(from=GND). " +
-                "Inspected ${midHandoffStates.size} state snapshots.\n" +
+                "where GND holds HandingOff(Peer(TWR)) AND TWR holds Watching(from=GND).\n" +
                 "If this fires, the typed responsibility state machine is broken: either " +
                 "applyContactFrequency didn't transition both controllers atomically, " +
                 "or the two-way-comms-driven completion fired too eagerly (before the " +

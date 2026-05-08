@@ -34,6 +34,8 @@ import xyz.easiersaid.twr.sim.testing.firstPilotReportOf
 import xyz.easiersaid.twr.sim.testing.firstPilotTransmissionTo
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
+import xyz.easiersaid.twr.sim.testing.firstWhere
+import xyz.easiersaid.twr.sim.testing.lastWhere
 import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
 
 /**
@@ -255,7 +257,7 @@ class G2CrossAerodromeVfrTest {
             SimEvent.ControllerCycle(time = now, controllerId = lowgApproach.id),
             SimEvent.ControllerCycle(time = now, controllerId = ljmbTower.id),
         )
-        val (finalState, records, stateTrace) = runUntilWithStateTrace(initialState, initialEvents, until)
+        val (finalState, records, trace) = runUntilWithStateTrace(initialState, initialEvents, until)
 
         // ── Diagnostic preamble ─────────────────────────────────────────────
         val journey = finalState.formatJourney(aircraftId, records)
@@ -296,16 +298,17 @@ class G2CrossAerodromeVfrTest {
         // and the activeRunway might still be Filing-sourced there only
         // because the controller hasn't issued a runway-overriding
         // clearance yet — masking the regression.
-        val initialMissionEntry = stateTrace
-            .firstOrNull { (_, st) -> st.aircraft[aircraftId]?.pilotMission != null }
-            ?: fail("Mission never constructed in stateTrace.\n$journey")
-        check(initialMissionEntry.second.now.millis == 0L) {
+        val initialMissionCursor = trace
+            .firstWhere { st -> st.aircraft[aircraftId]?.pilotMission != null }
+            .getOrNull()
+            ?: fail("Mission never constructed in trace.\n$journey")
+        check(initialMissionCursor.time.millis == 0L) {
             "Mission must be constructed at sim-init (time=0); first traced state with " +
-                "mission != null is at ${initialMissionEntry.second.now.millis}ms — a " +
+                "mission != null is at ${initialMissionCursor.time.millis}ms — a " +
                 "controller's earlier cycle may have superseded the Filing-sourced " +
                 "activeRunway before the assertion can observe it.\n$journey"
         }
-        val initialMissionState = initialMissionEntry.second
+        val initialMissionState = initialMissionCursor.state
         val initialMission = initialMissionState.aircraft.getValue(aircraftId).pilotMission!!
         val initialActive = initialMission.activeRunway.getOrNull()
             ?: fail("activeRunway is None at first traced state — Phase B createMission " +
@@ -367,9 +370,10 @@ class G2CrossAerodromeVfrTest {
         // have released cleanly. A regression that left LOWG_APPROACH in
         // `HandingOff(Peer(LJMB_TWR))` (a `HandoffTarget.Foreign` smuggling
         // attempt — exactly what R5 prevents) would fail this check.
-        val preContactState = stateTrace
-            .lastOrNull { (event, _) -> event.time.millis < firstTxToLjmbMs }
-            ?.second
+        val preContactState = trace
+            .lastWhere { st -> st.now.millis < firstTxToLjmbMs }
+            .getOrNull()
+            ?.state
             ?: fail("No state snapshot before firstTxToLjmbMs.\n$journey")
         val lowgStillResponsible = preContactState.controllers.values.filter { c ->
             c.aerodromeId == lowg && c.responsibilities.containsKey(aircraftId)
@@ -396,9 +400,10 @@ class G2CrossAerodromeVfrTest {
         }
 
         // ── Post-contact snapshot (R4) ──────────────────────────────────────
-        val postContactState = stateTrace
-            .firstOrNull { (event, _) -> event.time.millis >= firstTxToLjmbMs }
-            ?.second
+        val postContactState = trace
+            .firstWhere { st -> st.now.millis >= firstTxToLjmbMs }
+            .getOrNull()
+            ?.state
             ?: fail("No state snapshot at-or-after firstTxToLjmbMs.\n$journey")
         check(postContactState.controllers[ljmbTower.id]?.responsibilities?.get(aircraftId) is ResponsibilityState.Owned) {
             "After pilot's InitialContact, LJMB_TWR must have aircraft as Owned. " +
@@ -507,10 +512,10 @@ class G2CrossAerodromeVfrTest {
         // A regression that doubled cruise speed lands at ~25 min — fails low.
         // A regression that quartered cruise speed lands at ~95 min — would
         // have hit the 90-min wall above.
-        val completionEvent = stateTrace.firstOrNull { (_, st) ->
+        val completionCursor = trace.firstWhere { st ->
             st.aircraft[aircraftId]?.pilotMission?.isComplete == true
-        } ?: fail("Mission never reached isComplete during the trace.\n$journey")
-        val completionMs = completionEvent.first.time.millis
+        }.getOrNull() ?: fail("Mission never reached isComplete during the trace.\n$journey")
+        val completionMs = completionCursor.time.millis
         // Phase F retroactive review (test-review M1): the practice-scout
         // 45–80 min band is tentative — the test currently fails before
         // completion is ever observed (boundary-release blocker), so the
