@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::618df17876608786",
+  "documentId": "cap413-extracted",
+  "sectionId": "standby_monitor_conditional_contact_2_62_to_2_63",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 33.71,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is present verbatim and supports the claim, with no sibling redundancy. However, the source wording uses \u201cwill,\u201d not shall/must, and CAP 413 should be treated conservatively as operational guidance rather than a strict authoritative requirement; the modal force should therefore not be recorded as shall.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/standby_monitor_conditional_contact_2_62_to_2_63/cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::618df17876608786.json",
+    "toPath": "candidates/cap413-extracted/standby_monitor_conditional_contact_2_62_to_2_63/cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::618df17876608786.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:11:42Z"
+}

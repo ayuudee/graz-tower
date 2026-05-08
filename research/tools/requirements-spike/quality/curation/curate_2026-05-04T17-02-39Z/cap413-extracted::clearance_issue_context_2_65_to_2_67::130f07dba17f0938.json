@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::130f07dba17f0938",
+  "documentId": "cap413-extracted",
+  "sectionId": "clearance_issue_context_2_65_to_2_67",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.58,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is verbatim supported by the source and is not redundant with the accepted sibling candidates. However, the quoted sentence is an unlabelled definitional clarification with no normative marker, so the modality should be `none` rather than `note`, while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::130f07dba17f0938.json",
+    "toPath": "candidates/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::130f07dba17f0938.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:05:25Z"
+}

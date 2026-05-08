@@ -1,7 +1,7 @@
 {
   "mode": "dry_run",
-  "registryRoot": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/registry/ollama_first",
-  "totalRecordsAudited": 327,
+  "registryRoot": "/tmp/twr2-rr21-adequacy/research/tools/requirements-spike/registry/ollama_first",
+  "totalRecordsAudited": 465,
   "totalUnexpectedFiles": 0,
   "totalMismatches": 0,
   "mismatches": [],

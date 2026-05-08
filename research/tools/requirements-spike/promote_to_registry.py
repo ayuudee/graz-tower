@@ -194,7 +194,24 @@ def _relative_to_repo(path: Path | str) -> str:
     try:
         return str(p.resolve().relative_to(REPO_ROOT))
     except ValueError:
-        return str(p)
+        pass
+    parts = p.parts
+    for marker in ("research", "docs", "wiki"):
+        if marker not in parts:
+            continue
+        candidate = Path(*parts[parts.index(marker):])
+        if (REPO_ROOT / candidate).exists():
+            return str(candidate)
+    return str(p)
+
+
+def _local_path_for_source(path: Path | str) -> Path | None:
+    p = Path(path)
+    if p.exists():
+        return p
+    repo_relative = Path(_relative_to_repo(path))
+    candidate = REPO_ROOT / repo_relative
+    return candidate if candidate.exists() else None
 
 
 def _strip_line_prefix(window_text: str) -> str:
@@ -546,7 +563,7 @@ def promote_section(
     except ValueError:
         start_line, end_line = -1, -1
 
-    source_path_obj = Path(source_path_raw) if source_path_raw else None
+    source_path_obj = _local_path_for_source(source_path_raw) if source_path_raw else None
     source_sha256 = _sha256_of_path(source_path_obj) if source_path_obj and source_path_obj.exists() else None
 
     section_source_text = _section_source_text(window)

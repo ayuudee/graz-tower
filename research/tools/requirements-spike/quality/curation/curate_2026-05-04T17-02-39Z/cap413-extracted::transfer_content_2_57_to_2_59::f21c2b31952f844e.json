@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::f21c2b31952f844e",
+  "documentId": "cap413-extracted",
+  "sectionId": "transfer_content_2_57_to_2_59",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.24,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the candidate is scope-complete, and the source wording supports a permissive \u201cmay\u201d operational-guidance rule. The accepted siblings cover separate clauses and do not make this clause redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/transfer_content_2_57_to_2_59/cap413-extracted::transfer_content_2_57_to_2_59::f21c2b31952f844e.json",
+    "toPath": "candidates/cap413-extracted/transfer_content_2_57_to_2_59/cap413-extracted::transfer_content_2_57_to_2_59::f21c2b31952f844e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:13:09Z"
+}

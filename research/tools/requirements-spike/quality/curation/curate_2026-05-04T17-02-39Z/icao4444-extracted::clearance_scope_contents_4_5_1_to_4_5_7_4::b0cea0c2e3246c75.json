@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75",
+  "documentId": "icao4444-extracted",
+  "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.77,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the provided exactSourceQuote is not verbatim because the source uses different quotation marks and the quote does not match the windowed text exactly. Since claimText and exactSourceQuotes are identity fields that cannot be corrected in this pass, this cannot be promoted; the may-authoritative mismatch would also require lowering authorityClass on re-extraction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75.json",
+    "toPath": "rejected/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:16:11Z"
+}

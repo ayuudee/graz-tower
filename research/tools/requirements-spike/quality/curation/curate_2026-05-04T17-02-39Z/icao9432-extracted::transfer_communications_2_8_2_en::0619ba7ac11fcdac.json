@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac",
+  "documentId": "icao9432-extracted",
+  "sectionId": "transfer_communications_2_8_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.65,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate's sole exactSourceQuote is not verbatim in the source because the source includes the footnote marker \"15\" after the parenthetical before the comma. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac.json",
+    "toPath": "rejected/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:19:54Z"
+}

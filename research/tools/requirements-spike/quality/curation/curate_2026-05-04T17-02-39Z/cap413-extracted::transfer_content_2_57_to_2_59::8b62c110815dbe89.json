@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::8b62c110815dbe89",
+  "documentId": "cap413-extracted",
+  "sectionId": "transfer_content_2_57_to_2_59",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.67,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is verbatim, the claim is directly supported by CAP413 clause 2.58, and the modality/authority pairing correctly treats \u201cshould normally\u201d as operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling covering the separate \u201csingle message\u201d sentence.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/transfer_content_2_57_to_2_59/cap413-extracted::transfer_content_2_57_to_2_59::8b62c110815dbe89.json",
+    "toPath": "candidates/cap413-extracted/transfer_content_2_57_to_2_59/cap413-extracted::transfer_content_2_57_to_2_59::8b62c110815dbe89.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:12:55Z"
+}

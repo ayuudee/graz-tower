@@ -1,0 +1,80 @@
+9031: 7.9 CONTROL OF DEPARTING AIRCRAFT
+9032: 7.9.1 Departure sequence
+9033: Departures shall normally be cleared in the order in which they are ready for take-off, except that deviations may be made
+9034: from this order of priority to facilitate the maximum number of departures with the least average delay. Factors which
+9035: should be considered in relation to the departure sequence include, inter alia:
+9036: a)
+9037:
+9038: types of aircraft and their relative performance;
+9039:
+9040: b) routes to be followed after take-off;
+9041: c)
+9042:
+9043: any specified minimum departure interval between take-offs;
+9044:
+9045: d) need to apply wake turbulence separation minima;
+9046: e)
+9047:
+9048: aircraft which should be afforded priority; and
+9049:
+9050: f)
+9051:
+9052: aircraft subject to ATFM requirements.
+9053:
+9054: Note 1.— See also Chapter 6, 6.3.3.
+9055: Note 2.— For aircraft subject to ATFM requirements, it is the responsibility of the pilot and the operator to ensure
+9056: that the aircraft is ready to taxi in time to meet any required departure time, bearing in mind that once a departure
+9057: sequence is established on the taxiway system, it can be difficult, and sometimes impossible, to change the order.
+9058:
+9059: 7.9.2
+9060:
+9061: Separation of departing aircraft
+9062:
+9063: Except as provided in 7.11 and Chapter 5, Section 5.8, a departing aircraft will not normally be permitted to commence
+9064: take-off until the preceding departing aircraft has crossed the end of the runway-in-use or has started a turn or until all
+9065: preceding landing aircraft are clear of the runway-in-use.
+9066: Note 1.— See Figure 7-2.
+9067: Note 2.— Wake turbulence categories and time-based wake turbulence longitudinal separation minima are
+9068: contained in Chapter 4, Section 4.9 and Chapter 5, Section 5.8, respectively. Distance-based wake turbulence separation
+9069: minima are contained in Chapter 8, Section 8.7.
+9070: Note 3.— See 7.6.3.1.2.2.
+9071:
+9072: 8/11/18
+9073: 10/11/16
+9074: No. 8
+9075:
+9076: 7-14
+9077:
+9078: Air Traffic Management (PANS-ATM)
+9079:
+9080: Position limits to be reached by a landed aircraft (A) or a departing aircraft (B or C) before an arriving aircraft may be
+9081: cleared to cross the threshold of the runway-in-use or a departing aircraft may be cleared to take off, unless otherwise
+9082: prescribed by the appropriate ATS authority in accordance with 7.9.2 and 7.10.1.
+9083:
+9084: B
+9085: C
+9086: Runway-in-use
+9087:
+9088: A
+9089:
+9090: Figure 7-2. Separation between departing and arriving aircraft (see 7.9.2 and 7.10.1)
+9091:
+9092: 7.9.3
+9093:
+9094: Take-off clearance
+9095:
+9096: 7.9.3.1 Take-off clearance may be issued to an aircraft when there is reasonable assurance that the separation in
+9097: 7.9.2, or prescribed in accordance with 7.11, will exist when the aircraft commences take-off.
+9098: 7.9.3.2 When an ATC clearance is required prior to take-off, the take-off clearance shall not be issued until the
+9099: ATC clearance has been transmitted to and acknowledged by the aircraft concerned. The ATC clearance shall be
+9100: forwarded to the aerodrome control tower with the least possible delay after receipt of a request made by the tower or
+9101: prior to such request if practicable.
+9102: 7.9.3.3 The expression TAKE-OFF shall only be used in radiotelephony when an aircraft is cleared for take-off or
+9103: when cancelling a take-off clearance.
+9104: Note.— The expression TORA, pronounced TOR-AH, may be used to indicate take-off run available.
+9105: 7.9.3.4 Subject to 7.9.3.2, the take-off clearance shall be issued when the aircraft is ready for take-off and at or
+9106: approaching the departure runway, and the traffic situation permits. To reduce the potential for misunderstanding, the
+9107: take-off clearance shall include the designator of the departure runway.
+9108: 7.9.3.5 In the interest of expediting traffic, a clearance for immediate take-off may be issued to an aircraft before it
+9109: enters the runway. On acceptance of such clearance the aircraft shall taxi out to the runway and take off in one continuous
+9110: movement.

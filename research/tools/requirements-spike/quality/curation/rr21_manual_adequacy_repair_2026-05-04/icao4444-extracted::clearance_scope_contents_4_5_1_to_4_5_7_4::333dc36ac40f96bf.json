@@ -1,0 +1,14 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::333dc36ac40f96bf",
+  "previousCanonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::2058dc30009cd179",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted ICAO 4444 4.5.7.4.2 UNABLE phraseology rule with the source's verbatim curly-quoted phrase.",
+  "authorityClass": "authoritative_requirement",
+  "modality": "shall",
+  "exactSourceQuotes": [
+    "When traffic conditions will not permit clearance of a requested change, the word “UNABLE” shall be\nused."
+  ]
+}

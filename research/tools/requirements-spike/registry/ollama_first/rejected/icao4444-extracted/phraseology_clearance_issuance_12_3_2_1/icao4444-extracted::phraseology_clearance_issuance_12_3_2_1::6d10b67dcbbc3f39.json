@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::6d10b67dcbbc3f39",
+  "documentId": "icao4444-extracted",
+  "sectionId": "phraseology_clearance_issuance_12_3_2_1",
+  "familyId": "icao4444_clearance_comms_phraseology_family",
+  "claimText": "Phraseologies for the issuance of a clearance shall follow the standardized formats defined in section 12.3.2.1.",
+  "rationale": "Only attempt 3 included this umbrella candidate. It is supported by the source structure but is redundant with the specific items. Marked as advisory_only.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "12.3.2.1 ISSUANCE OF A CLEARANCE",
+    "Phraseologies"
+  ],
+  "sourceItemIds": [
+    "sec_12_3_2_1",
+    "phraseologies_header"
+  ],
+  "claimSha256": "f1395fada9a65b97bb214c5f8555e78c223a8288f6673ba0a2c821fe0a06d97a",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 14257,
+    "endLine": 14293
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "icao4444_clearance_comms_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "phraseology_issuance_overview",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate is an umbrella statement supported only by the section/header quotes and omits the operative phraseology formats in items a\u2013g. Those atomic formats are already present in the accepted sibling candidates, so this umbrella is redundant and incomplete.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:16:32Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao4444-extracted/phraseology_clearance_issuance_12_3_2_1/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:16:32Z"
+  }
+}

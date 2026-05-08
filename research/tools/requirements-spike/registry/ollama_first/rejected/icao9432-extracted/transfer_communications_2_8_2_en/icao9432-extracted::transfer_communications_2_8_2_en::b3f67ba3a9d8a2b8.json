@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8",
+  "documentId": "icao9432-extracted",
+  "sectionId": "transfer_communications_2_8_2_en",
+  "familyId": "icao9432_clearance_comms_phraseology_family",
+  "claimText": "See APPENDIX 1 for differences from ICAO Radiotelephony Procedures.",
+  "rationale": "Referential footnote linking to external documentation, not a standalone operational rule.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "15 See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES"
+  ],
+  "sourceItemIds": [
+    "footnote_15"
+  ],
+  "claimSha256": "e9e02d284b9639916a98fbe9034460e10a5e6eb92e85f812fb334b6a9908760a",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3830,
+    "endLine": 3855
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "icao9432_clearance_comms_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "ref_radiotelephony_differences",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quote is verbatim and the classification as a non-normative note/background reference is accurate, but the source unit is only a referential footnote to an appendix and not a standalone operational rule or guidance item. With no permissible identity-preserving correction needed and the judge explicitly treating it as support-only/advisory-only, it should not be promoted as an accepted candidate.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:25:48Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao9432-extracted/transfer_communications_2_8_2_en/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:25:48Z"
+  }
+}

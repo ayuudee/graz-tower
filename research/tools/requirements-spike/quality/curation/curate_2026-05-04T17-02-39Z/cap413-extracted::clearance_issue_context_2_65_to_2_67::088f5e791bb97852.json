@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::088f5e791bb97852",
+  "documentId": "cap413-extracted",
+  "sectionId": "clearance_issue_context_2_65_to_2_67",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.69,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim, and the candidate is already classified as operational guidance rather than an authoritative requirement. Although CAP413 is advisory/operational guidance, the source\u2019s procedural 'will' statement can be retained under the existing non-authoritative classification without changing identity fields.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::088f5e791bb97852.json",
+    "toPath": "candidates/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::088f5e791bb97852.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:05:15Z"
+}

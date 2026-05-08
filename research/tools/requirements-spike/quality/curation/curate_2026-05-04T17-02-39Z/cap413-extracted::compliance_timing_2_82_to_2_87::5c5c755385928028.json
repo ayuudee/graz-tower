@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::5c5c755385928028",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.6,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The example phraseology is supported by verbatim quote matches, uses the correct example modality, and is appropriately classified as operational guidance for CAP413 material. It is an atomic example not already covered by the accepted sibling for the general 'when ready' rule.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::5c5c755385928028.json",
+    "toPath": "candidates/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::5c5c755385928028.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:07:08Z"
+}

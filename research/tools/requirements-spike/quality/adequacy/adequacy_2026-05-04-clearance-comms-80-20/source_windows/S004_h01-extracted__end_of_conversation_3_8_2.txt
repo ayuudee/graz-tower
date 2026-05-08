@@ -1,0 +1,10 @@
+4339: 3.8.2. GESPRÄCHSBEENDIGUNG
+4340:
+4341: 3.8.2. END OF CONVERSATION
+4342:
+4343: Ein Gespräch im Sprechfunkverkehr ist von der
+4344: empfangenden Flugverkehrsdienststelle oder dem
+4345: Luftfahrzeug mit dem eigenen Rufzeichen zu beenden.
+4346:
+4347: A radiotelephone conversation shall be terminated by the
+4348: receiving ATS unit or the aircraft using its own call sign.

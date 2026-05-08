@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1",
+  "documentId": "cap413-extracted",
+  "sectionId": "freecall_change_intention_2_64",
+  "familyId": "cap413_clearance_comms_guidance_family",
+  "claimText": "Examples of phraseology for requesting a change to another agency include 'request change to [Agency] [Frequency]' and '[Agency], [Callsign], changing to [Agency] [Frequency]'.",
+  "rationale": "Attempts 1 and 3 group these examples together as supporting phraseology. Attempt 2 splits them but agrees they are illustrative examples. Grouping is preferred to avoid redundancy while maintaining the 'support_only' classification.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_example",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Westbury, G-ABCD, request change to Wrayton Information 125.750",
+    "Wrayton Information, G-ABCD, changing to Wrayton Centre 121.5 for Practice Pan"
+  ],
+  "sourceItemIds": [
+    "example_westbury",
+    "example_wrayton"
+  ],
+  "claimSha256": "77b01402b4c2ec6b38934f6c9cc1163d5bee10d9dcdf4b3b842590d040991893",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6381,
+    "endLine": 6390
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "cap413_clearance_comms_guidance_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "cap413_example_freecall_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The exact quotes are present and support the claim as illustrative phraseology examples, not as a binding phraseology rule. The modality and authority class are already appropriately advisory, but the requirement kind should be corrected to reflect example status.",
+      "corrections": {
+        "requirementKind": "phraseology_example"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:09:32Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/cap413-extracted/freecall_change_intention_2_64/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:09:32Z"
+  }
+}

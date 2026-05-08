@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::acknowledgement_receipt_2_56::ae0ed1317555b63f",
+  "documentId": "cap413-extracted",
+  "sectionId": "acknowledgement_receipt_2_56",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.45,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source, the claim is directly supported, and the modality/authority pairing of should with operational_guidance is floor-consistent. There are no accepted sibling candidates making this redundant; the judge\u2019s advisory-only rationale reflects the non-authoritative nature of CAP 413 guidance rather than a defect in the candidate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/acknowledgement_receipt_2_56/cap413-extracted::acknowledgement_receipt_2_56::ae0ed1317555b63f.json",
+    "toPath": "candidates/cap413-extracted/acknowledgement_receipt_2_56/cap413-extracted::acknowledgement_receipt_2_56::ae0ed1317555b63f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:02:53Z"
+}

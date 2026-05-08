@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::974226ef57772042",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.51,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim source sentence, G1\u2013G4 all pass, and the modality/authority pairing is consistent for CAP413 operational guidance. It is not redundant with the accepted sibling atomic items because it states the section\u2019s general applicability beyond level instructions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::974226ef57772042.json",
+    "toPath": "candidates/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::974226ef57772042.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:07:35Z"
+}

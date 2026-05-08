@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::336bf88cabfbd998",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.97,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is an atomic element of clause 4.11.2.1: position reports required by 4.11.1.1 and 4.11.1.2 shall contain listed elements, including c) \u201ctime\u201d. The quote is verbatim, the shall-strength modality and authoritative class are consistent, and it is not a redundant umbrella over already accepted sibling items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::336bf88cabfbd998.json",
+    "toPath": "candidates/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::336bf88cabfbd998.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:18:38Z"
+}

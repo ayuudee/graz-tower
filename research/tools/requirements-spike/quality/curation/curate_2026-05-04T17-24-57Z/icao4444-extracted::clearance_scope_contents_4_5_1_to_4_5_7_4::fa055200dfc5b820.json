@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::fa055200dfc5b820",
+  "documentId": "icao4444-extracted",
+  "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.7,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text exists verbatim and supports the claim, but the candidate\u2019s modality is incomplete because the provision contains both \u201cshould\u201d and \u201cmust.\u201d Reclassifying the modality as mixed resolves the authority/modality mismatch without changing any identity fields.",
+    "corrections": {
+      "modality": "mixed"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::fa055200dfc5b820.json",
+    "toPath": "candidates/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::fa055200dfc5b820.json",
+    "correctionsApplied": {
+      "modality": "mixed"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:25:36Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::3a874ea4e6538901",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.33,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is an atomic extraction of element a) under the parent clause stating that required position reports \u201cshall contain the following elements of information,\u201d and the quoted phrase exists verbatim. It is not a redundant umbrella, and accepted siblings already treat the other list elements as separate shall-strength atomic requirements, so the bundle objection appears to be a symmetry/prompt artefact.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::3a874ea4e6538901.json",
+    "toPath": "candidates/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::3a874ea4e6538901.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:19:01Z"
+}

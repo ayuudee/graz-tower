@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::eb1f18882f5b3ab6",
+  "documentId": "cap413-extracted",
+  "sectionId": "air_ground_communication_failure_2_88",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.0,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the schema and authority/modality checks passed, and the item is an atomic CAP413 advisory checklist point rather than a redundant umbrella. Its note modality and operational_guidance authority are appropriate for this source and wording.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/air_ground_communication_failure_2_88/cap413-extracted::air_ground_communication_failure_2_88::eb1f18882f5b3ab6.json",
+    "toPath": "candidates/cap413-extracted/air_ground_communication_failure_2_88/cap413-extracted::air_ground_communication_failure_2_88::eb1f18882f5b3ab6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:04:53Z"
+}

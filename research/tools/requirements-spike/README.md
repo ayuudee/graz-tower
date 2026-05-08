@@ -2,23 +2,25 @@
 
 Small prototypes for the requirement-first ATC source-ingestion pipeline.
 
-## Current direction (2026-05-01)
+## Current direction (2026-05-04)
 
-The promoted registry is a **landed 30-window extraction slice**.
+The promoted registry is a **landed 46-window extraction slice**.
 The live manifests in `research/tools/requirements-spike/documents/*.json`
-now contain 46 sections: the landed 30 plus 16 clearance/communications
-windows selected for the next ingestion pass. The manifest-only additions are
-not accepted registry coverage until they pass ingest, promote, curate, audit,
-snapshot, and adequacy review. The registry is not a full-document or
-full-corpus extraction.
+contain the same 46 sections. The 16 clearance/communications windows selected
+on 2026-05-01 have now passed ingest, promote, curate, reproducibility audit,
+quote audit, regression check, and snapshotting. The registry is not a
+full-document or full-corpus extraction.
 
 Use `registry/ollama_first/DECLARED_SLICE.md` as the scope contract. Use
 `quality/source_inventory/source_inventory_2026-04-29/source_document_inventory.md`
 for the source-file inventory behind that contract. Use
 `quality/source_section_ledger/source_section_ledger_2026-04-30/source_section_ledger.md`
 as the section-level disposition ledger before widening the slice.
-The current 16-window Ollama batch is
-`quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json`.
+The 2026-05-01 16-window Ollama batch is landed. Its promoted/curated
+post-run snapshot was
+`quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`.
+After RR-21 adequacy adjudication and repair, the current snapshot is
+`quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`.
 
 Two lanes coexist:
 
@@ -166,8 +168,7 @@ Supporting artifacts:
   Advisory review or suspicion-seed consumer artifacts for best-practice
   sources.
 - `registry/ollama_first/DECLARED_SLICE.md`
-  Scope contract for the landed 30-window extraction slice and the live
-  46-section manifest.
+  Scope contract for the landed 46-window extraction slice.
 - `quality/source_inventory/source_inventory_2026-04-29/`
   Repo-local source/PDF inventory proving that the 46-window frame is not a
   full-corpus extraction.
@@ -176,12 +177,12 @@ Supporting artifacts:
   `research/txt/` extracts, plus exact rows for the 46 current manifest
   sections.
 - `quality/source_processing_queue/source_processing_queue_2026-05-01/`
-  Current ready-to-ingest queue: 16 exact manifest windows and 26 already
-  produced pending records for curation.
-- `quality/coverage/coverage_2026-04-29-rr17-80-20/`
-  22-section coverage ledger and concept crosswalk for the RR-17 frame. Treat
-  this as adequacy evidence for that older frame only, not for the newer
-  clearance/communications widening or for full-document coverage.
+  Historical ready-to-ingest queue for the now-landed 16 exact manifest
+  windows.
+- `quality/adequacy/adequacy_2026-05-04-clearance-comms-80-20/`
+  Completed RR-21 48-record / 12-section adequacy review pack for the
+  46-section frame, including direct repairs for eight source-supported
+  quote-shape/lifecycle defects.
 
 Current whole-document normalization status:
 

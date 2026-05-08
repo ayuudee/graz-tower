@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::2058dc30009cd179",
+  "documentId": "icao4444-extracted",
+  "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.38,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The requirement is substantively supported by the source, but the exactSourceQuote does not exist verbatim because the source uses \u201cUNABLE\u201d rather than 'UNABLE'. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim failure requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::2058dc30009cd179.json",
+    "toPath": "rejected/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::2058dc30009cd179.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:15:02Z"
+}

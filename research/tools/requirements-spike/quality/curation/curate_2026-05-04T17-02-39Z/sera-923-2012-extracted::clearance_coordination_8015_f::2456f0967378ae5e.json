@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::2456f0967378ae5e",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "clearance_coordination_8015_f",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.22,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is a verbatim match and states a shall-strength obligation in an authoritative SERA provision. The claim is an atomic downstream-clearance coordination requirement and is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/clearance_coordination_8015_f/sera-923-2012-extracted::clearance_coordination_8015_f::2456f0967378ae5e.json",
+    "toPath": "candidates/sera-923-2012-extracted/clearance_coordination_8015_f/sera-923-2012-extracted::clearance_coordination_8015_f::2456f0967378ae5e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:21:35Z"
+}

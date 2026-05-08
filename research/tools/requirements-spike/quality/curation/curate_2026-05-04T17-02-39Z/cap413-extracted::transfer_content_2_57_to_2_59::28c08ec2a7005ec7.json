@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::transfer_content_2_57_to_2_59::28c08ec2a7005ec7",
+  "documentId": "cap413-extracted",
+  "sectionId": "transfer_content_2_57_to_2_59",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.99,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the schema and authority/modality audits pass, and the claim accurately captures the standalone CAP413 guidance using 'should'. It is not redundant with the accepted sibling, which covers the separate 'shall' requirement in 2.57.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/transfer_content_2_57_to_2_59/cap413-extracted::transfer_content_2_57_to_2_59::28c08ec2a7005ec7.json",
+    "toPath": "candidates/cap413-extracted/transfer_content_2_57_to_2_59/cap413-extracted::transfer_content_2_57_to_2_59::28c08ec2a7005ec7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:12:36Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4b2d466ee2099b1",
+  "documentId": "cap413-extracted",
+  "sectionId": "standby_monitor_conditional_contact_2_62_to_2_63",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.48,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by CAP 413 \u00a72.62, the quoted text is verbatim, and the modality/authority pairing of may with operational_guidance is appropriate for this advisory CAP 413 material. It is an atomic item not already covered by the accepted siblings, which cover standby, contact, and radar-heading transfer instructions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/standby_monitor_conditional_contact_2_62_to_2_63/cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4b2d466ee2099b1.json",
+    "toPath": "candidates/cap413-extracted/standby_monitor_conditional_contact_2_62_to_2_63/cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::f4b2d466ee2099b1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:12:23Z"
+}

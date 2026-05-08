@@ -1,0 +1,132 @@
+{
+  "schemaName": "registry_adequacy_review_pack",
+  "createdAt": "2026-05-04T17:29:18Z",
+  "seed": "clearance-comms-2026-05-04",
+  "registryRoot": "/tmp/twr2-promote-res-v2/research/tools/requirements-spike/registry/ollama_first",
+  "recordSampleSize": 48,
+  "sectionSampleSize": 12,
+  "population": {
+    "records": 457,
+    "sections": 46,
+    "recordsByBucket": {
+      "candidates": 423,
+      "rejected": 34
+    },
+    "recordsByDocument": {
+      "cap413-extracted": 81,
+      "egast-vfr-extracted": 17,
+      "h01-extracted": 25,
+      "icao4444-extracted": 201,
+      "icao9432-extracted": 28,
+      "safetysense22-extracted": 16,
+      "sera-923-2012-extracted": 74,
+      "slovenia-vfr-extracted": 15
+    }
+  },
+  "outputs": {
+    "recordReviewCsv": "record_review.csv",
+    "sectionOmissionReviewCsv": "section_omission_review.csv",
+    "reviewPackMarkdown": "review_pack.md",
+    "sourceWindowsDir": "source_windows/"
+  },
+  "sampledRecordIds": [
+    "cap413-extracted::air_ground_communication_failure_2_88::8d2caa3a520ede11",
+    "cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b",
+    "cap413-extracted::clearance_issue_context_2_65_to_2_67::fa08347c34840807",
+    "cap413-extracted::compliance_timing_2_82_to_2_87::4cb8628d976ff868",
+    "cap413-extracted::corrections_2_54_to_2_55::69ca0abbf1802295",
+    "cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1",
+    "cap413-extracted::frequency_change_permission_2_60_to_2_61::e87cb5ce96b795fd",
+    "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::d18240dcecab405d",
+    "cap413-extracted::readback_2_68_2_71::5be7cfa8ac79626b",
+    "cap413-extracted::transfer_content_2_57_to_2_59::28c08ec2a7005ec7",
+    "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89",
+    "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::edaf457e4ec53926",
+    "egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f",
+    "h01-extracted::acknowledgement_3_8_1::1ba408f68e9b501d",
+    "h01-extracted::acknowledgement_3_8_1::647df1446645072b",
+    "h01-extracted::acknowledgement_3_8_1::d19604b475643777",
+    "h01-extracted::corrections_3_8_3::16272622eb9270ac",
+    "h01-extracted::end_of_conversation_3_8_2::1d66565b4872e6a0",
+    "icao4444-extracted::aerodrome_traffic_7_6::1ebd71be057d48f1",
+    "icao4444-extracted::aerodrome_traffic_7_6::ea64ad7c56d8e4ef",
+    "icao4444-extracted::arriving_aircraft_7_10::dcc6bc5c93d748ec",
+    "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75",
+    "icao4444-extracted::departing_aircraft_7_9::ace9c0a1a5794eee",
+    "icao4444-extracted::phraseology_clearance_issuance_12_3_2_1::bb268465618a9fbc",
+    "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::50ac98b0cfa6d73b",
+    "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::e7db6822d68514f3",
+    "icao4444-extracted::readback_4_5_7_5::1cc502e99b33ace6",
+    "icao4444-extracted::readback_4_5_7_5::80a171af98372544",
+    "icao4444-extracted::reduced_runway_7_11::ab9c766811a8897c",
+    "icao4444-extracted::speed_control_4_6_1::8357e703f52d70a6",
+    "icao4444-extracted::transfer_4_3_2_1::6524e899c0a46912",
+    "icao4444-extracted::transfer_4_3_2_1::e87aa82016b9b93b",
+    "icao4444-extracted::transfer_4_3_2_1::f0cb8347ee5a5ea9",
+    "icao4444-extracted::wake_turbulence_5_8::3cebabb5ef5a6558",
+    "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
+    "icao9432-extracted::taxi_4_4_en::453f27d271407f98",
+    "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
+    "icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8",
+    "safetysense22-extracted::readbacks::90320bb2ed9a12a0",
+    "safetysense22-extracted::readbacks::9b6c62502e773767",
+    "sera-923-2012-extracted::adherence_flight_plan_8020::35da37ec7ec88084",
+    "sera-923-2012-extracted::atc_service_8005::2f46ccb194a81cff",
+    "sera-923-2012-extracted::clearance_coordination_8015_f::2456f0967378ae5e",
+    "sera-923-2012-extracted::clearances_8015_a_d::9285a92b423c68d6",
+    "sera-923-2012-extracted::communications_8035::d87a9dd92c5ecbeb",
+    "sera-923-2012-extracted::readback_8015_e::73a06821c9400fa6",
+    "sera-923-2012-extracted::separation_minima_8010::e254c674f789e45e",
+    "slovenia-vfr-extracted::readback::a9ad75de93e0b18a"
+  ],
+  "sampledSections": [
+    {
+      "documentId": "cap413-extracted",
+      "sectionId": "readback_2_68_2_71"
+    },
+    {
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory"
+    },
+    {
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1"
+    },
+    {
+      "documentId": "h01-extracted",
+      "sectionId": "end_of_conversation_3_8_2"
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "departing_aircraft_7_9"
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "readback_4_5_7_5"
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "reduced_runway_7_11"
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sectionId": "transfer_4_3_2_1"
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en"
+    },
+    {
+      "documentId": "safetysense22-extracted",
+      "sectionId": "readbacks"
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sectionId": "clearances_8015_a_d"
+    },
+    {
+      "documentId": "slovenia-vfr-extracted",
+      "sectionId": "readback"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::04d7efdaa550b5b8",
+  "previousCanonicalId": "sera-923-2012-extracted::adherence_flight_plan_8020::35da37ec7ec88084",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted SERA.8020(c)(2)(ii) destination-changed flight-plan-change content rule with the governing parent clause and the verbatim hyphenated source text.",
+  "authorityClass": "authoritative_requirement",
+  "modality": "shall",
+  "exactSourceQuotes": [
+    "(c) Intended changes. Requests for flight plan changes shall include information as indicated hereunder:",
+    "(ii) Destination changed: aircraft identification; flight rules; description of revised route of flight to revised desti­\nnation aerodrome including related flight plan data, beginning with the position from which requested change\nof route is to commence; revised time estimates; alternate aerodrome(s); any other pertinent information."
+  ]
+}

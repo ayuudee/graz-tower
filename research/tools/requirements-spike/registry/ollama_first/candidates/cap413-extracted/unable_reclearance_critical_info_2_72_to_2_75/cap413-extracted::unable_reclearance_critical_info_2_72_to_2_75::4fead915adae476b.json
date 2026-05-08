@@ -1,0 +1,115 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::4fead915adae476b",
+  "documentId": "cap413-extracted",
+  "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+  "familyId": "cap413_clearance_comms_guidance_family",
+  "claimText": "Critical information is information, other than that required to enable routine flight, which must be received by pilots to ensure the safety and effective operation of their aircraft.",
+  "rationale": "Attempts 2 and 3 explicitly extract the definition. Attempt 1 implies it but focuses on the repetition rule. The definition is structurally part of clause 2.74.",
+  "modality": "must",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Critical information is information, other than that required to enable routine",
+    "flight, which must be received by pilots to ensure the safety and\neffective operation of their aircraft."
+  ],
+  "sourceItemIds": [
+    "clause_2.74"
+  ],
+  "claimSha256": "740647436535fbe4785d11dd7d62b9bebe3064d22c2928cef5323288a74d3f57",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6556,
+    "endLine": 6604
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "cap413_clearance_comms_guidance_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_2.74_critical_info_definition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "must",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "manual_corrected_replacement_accept",
+      "confidence": "high",
+      "reasoning": "Promoted source-supported CAP 413 2.74 critical-information definition after splitting a page-break-spanning quote at the source pagination boundary and aligning modality with the source's 'must'.",
+      "model": "codex-same-agent",
+      "runId": "rr21_manual_adequacy_repair_2026-05-04",
+      "appliedAt": "2026-05-04T18:00:00Z"
+    },
+    "manualRepair": {
+      "runId": "rr21_manual_adequacy_repair_2026-05-04",
+      "reasoning": "Promoted source-supported CAP 413 2.74 critical-information definition after splitting a page-break-spanning quote at the source pagination boundary and aligning modality with the source's 'must'.",
+      "appliedAt": "2026-05-04T18:00:00Z",
+      "previousCanonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "human"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-04T18:00:00Z"
+  }
+}

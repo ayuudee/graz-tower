@@ -1,0 +1,68 @@
+485: RADIOTELEPHONY
+486:
+487: Readbacks
+488: The following items must be read back in their entirety if addressed to you in a transmission
+489: from an ATSU:
+490: 1.
+491:
+492: Taxi/towing instructions
+493:
+494: 2.
+495:
+496: Level instructions
+497:
+498: 3.
+499:
+500: Heading instructions
+501:
+502: 4.
+503:
+504: Speed instructions
+505:
+506: 5.
+507:
+508: Airway or enroute clearances
+509:
+510: 6.
+511:
+512: Approach clearances
+513:
+514: 7.
+515:
+516: Runway-in-use
+517:
+518: 8.
+519:
+520: Clearance to take off or land
+521:
+522: 9.
+523:
+524: Clearance to enter, backtrack, cross,
+525: or hold short of an active runway
+526:
+527: 10.
+528:
+529: Transponder instructions
+530: (squawk codes and Ident)
+531:
+532: 11.
+533:
+534: Altimeter settings (including units when
+535: the setting is below 1000 hectopascals)
+536:
+537: 12.
+538:
+539: VDF information
+540:
+541: 13.
+542:
+543: Frequency changes
+544:
+545: 14.
+546:
+547: Type of ATS service
+548:
+549: 15.
+550:
+551: Transition Levels
+552:

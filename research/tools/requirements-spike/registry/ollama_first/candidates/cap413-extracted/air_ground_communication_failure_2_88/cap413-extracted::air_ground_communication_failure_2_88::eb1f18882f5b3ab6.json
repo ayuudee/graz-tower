@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::eb1f18882f5b3ab6",
+  "documentId": "cap413-extracted",
+  "sectionId": "air_ground_communication_failure_2_88",
+  "familyId": "cap413_clearance_comms_guidance_family",
+  "claimText": "The Aeronautical Station being called is open for watch.",
+  "rationale": "Checklist item verifying station status; advisory guidance.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The Aeronautical Station being called is open for watch."
+  ],
+  "sourceItemIds": [
+    "item_2"
+  ],
+  "claimSha256": "a3adaf3d540168c652467b495545cdfe180236980de9a501ef3a97925e83410b",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6784,
+    "endLine": 6832
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-20-45Z_e8df",
+    "caseId": "cap413_clearance_comms_guidance_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "cap413_check_station_open",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim-supported, the schema and authority/modality checks passed, and the item is an atomic CAP413 advisory checklist point rather than a redundant umbrella. Its note modality and operational_guidance authority are appropriate for this source and wording.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:04:53Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-01T10:20:45Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/cap413-extracted/air_ground_communication_failure_2_88/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:04:53Z"
+  }
+}

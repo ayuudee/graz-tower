@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::4572d506abfa0b2d",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.46,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is verbatim supported, schema and authority/modality gates pass, and the claim is an atomic item not covered by accepted siblings. The source wording uses \u201cshould,\u201d and operational_guidance is appropriate for CAP413 advisory material.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::4572d506abfa0b2d.json",
+    "toPath": "candidates/cap413-extracted/compliance_timing_2_82_to_2_87/cap413-extracted::compliance_timing_2_82_to_2_87::4572d506abfa0b2d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:06:42Z"
+}

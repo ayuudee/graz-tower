@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::acknowledgement_receipt_2_56::fca69d089a0b03d5",
+  "documentId": "cap413-extracted",
+  "sectionId": "acknowledgement_receipt_2_56",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.37,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is present in the source and directly supports the negative phraseology constraint. The candidate is already framed as operational guidance with should-level modality, and the accepted sibling covers the positive acknowledgement method rather than this distinct negative prohibition.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/acknowledgement_receipt_2_56/cap413-extracted::acknowledgement_receipt_2_56::fca69d089a0b03d5.json",
+    "toPath": "candidates/cap413-extracted/acknowledgement_receipt_2_56/cap413-extracted::acknowledgement_receipt_2_56::fca69d089a0b03d5.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:03:07Z"
+}

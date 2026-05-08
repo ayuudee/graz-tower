@@ -1,0 +1,38 @@
+1985: SERA.8015 Air traffic control clearances
+1986: (a) Air traffic control clearances shall be based solely on the requirements for providing air traffic control service.
+1987: (b) Operation subject to clearance
+1988: (1) An air traffic control clearance shall be obtained prior to operating a controlled flight, or a portion of a flight as a
+1989: controlled flight. Such clearance shall be requested through the submission of a flight plan to an air traffic control
+1990: unit.
+1991: (2) The pilot-in-command of an aircraft shall inform ATC if an air traffic control clearance is not satisfactory. In such
+1992: cases, ATC will issue an amended clearance, if practicable.
+1993: (3) Whenever an aircraft has requested a clearance involving priority, a report explaining the necessity for such
+1994: priority shall be submitted, if requested by the appropriate air traffic control unit.
+1995: (4) Potential reclearance in flight. If, prior to departure, it is anticipated that, depending on fuel endurance and subject to
+1996: reclearance in flight, a decision may be taken to proceed to a revised destination aerodrome, the appropriate air
+1997: traffic control units shall be so notified by the insertion in the flight plan of information concerning the revised
+1998: route (where known) and the revised destination.
+1999: (5) An aircraft operated on a controlled aerodrome shall not taxi on the manoeuvring area without clearance from
+2000: the aerodrome control tower and shall comply with any instructions given by that unit.
+2001: (c) Clearances for transonic flight
+2002: (1) The air traffic control clearance relating to the transonic acceleration phase of a supersonic flight shall extend at
+2003: least to the end of that phase.
+2004:
+2005: L 281/27
+2006:
+2007: L 281/28
+2008:
+2009: EN
+2010:
+2011: Official Journal of the European Union
+2012:
+2013: (2) The air traffic control clearance relating to the deceleration and descent of an aircraft from supersonic cruise to
+2014: subsonic flight shall seek to provide for uninterrupted descent at least during the transonic phase.
+2015: (d) Contents of clearances
+2016: An air traffic control clearance shall indicate:
+2017: (1) aircraft identification as shown in the flight plan;
+2018: (2) clearance limit;
+2019: (3) route of flight;
+2020: (4) level(s) of flight for the entire route or part thereof and changes of levels if required;
+2021: (5) any necessary instructions or information on other matters such as approach or departure manoeuvres, communi­
+2022: cations and the time of expiry of the clearance.

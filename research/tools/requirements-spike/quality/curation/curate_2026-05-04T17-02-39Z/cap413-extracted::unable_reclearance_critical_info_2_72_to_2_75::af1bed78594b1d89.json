@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89",
+  "documentId": "cap413-extracted",
+  "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.81,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote is not present verbatim in the provided source window because the sentence is interrupted by pagination/header text between \u201croutine\u201d and \u201cflight.\u201d Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, a real G1 verbatim miss requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89.json",
+    "toPath": "rejected/cap413-extracted/unable_reclearance_critical_info_2_72_to_2_75/cap413-extracted::unable_reclearance_critical_info_2_72_to_2_75::af1bed78594b1d89.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:14:22Z"
+}

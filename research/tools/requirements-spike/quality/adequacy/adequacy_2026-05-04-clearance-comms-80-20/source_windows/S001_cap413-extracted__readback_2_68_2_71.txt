@@ -1,0 +1,127 @@
+6429: 2.68
+6430:
+6431: The stringency of the read back requirement is directly related to the
+6432: possible seriousness of a misunderstanding in the transmission and
+6433: receipt of ATC clearance and instructions. ATC route clearances shall
+6434: always be read back unless otherwise authorised by the appropriate
+6435: ATS authority in which case they shall be acknowledged in a positive
+6436: manner. Read backs shall always include the aircraft callsign.
+6437: BIGJET 347, cleared to
+6438: Kennington via A1, at FL60,
+6439: squawk 5501
+6440:
+6441: Cleared to Kennington
+6442: via A1, at FL60, squawk
+6443: 5501, BIGJET 347
+6444:
+6445: BIGJET 347, correct
+6446:
+6447: BIGJET 347, cleared to
+6448: Kennington via A1, Wicken
+6449: 3 Delta departure, squawk
+6450: 5501
+6451:
+6452: Cleared to Kennington
+6453: via A1, Wicken 3 Delta
+6454: departure, squawk
+6455: 5501, BIGJET 347
+6456:
+6457: BIGJET 347, correct
+6458:
+6459: G-ABCD, after departure
+6460: cleared to zone boundary via
+6461: route Echo. Climb to altitude
+6462: 2000 feet QNH 1008,
+6463: squawk 6522
+6464:
+6465: May 2016
+6466:
+6467: After departure cleared
+6468: to zone boundary via
+6469: route Echo. Climb to
+6470: altitude 2000 feet QNH
+6471: 1008, squawk 6522,
+6472: G-ABCD
+6473:
+6474: Page 26
+6475:
+6476: CAP 413
+6477:
+6478: Chapter 2: Radiotelephony
+6479:
+6480: G-CD, correct
+6481: 2.69
+6482:
+6483: The ATS messages listed below are to be read back in full by the pilot/
+6484: driver. If a readback is not received the pilot/driver will be asked to do
+6485: so. Similarly, the pilot/ driver is expected to request that instructions are
+6486: repeated or clarified if any are not fully understood.
+6487:
+6488: 	Taxi/Towing Instructions
+6489: Level Instructions
+6490: Heading Instructions
+6491: Speed Instructions
+6492: Airways or Route Clearances
+6493: Approach Clearances
+6494: Runway-in-Use
+6495: Clearance to Enter, Land On, Take-Off On, Backtrack, Cross, or Hold
+6496: Short of any Active Runway
+6497: SSR Operating Instructions
+6498: Altimeter Settings, including units when value is below 1000
+6499: hectopascals
+6500: VDF Information
+6501: Frequency Changes
+6502: Type of ATS Service
+6503: Transition Levels
+6504:
+6505: May 2016
+6506:
+6507: G-ABCD, cleared to cross
+6508: A1 at Wicken, maintain
+6509: FL70 whilst in controlled
+6510: airspace. Report entering
+6511: the airway
+6512:
+6513: Cleared to cross A1 at
+6514: Wicken, maintain FL70
+6515: in controlled airspace,
+6516: Wilco, G-ABCD
+6517:
+6518: G-CD, hold position
+6519:
+6520: Holding, G-CD
+6521:
+6522: G-CD, contact Ground
+6523: 118.050
+6524:
+6525: Ground on 118.050,
+6526: G-CD
+6527:
+6528: Page 27
+6529:
+6530: CAP 413
+6531:
+6532: Chapter 2: Radiotelephony
+6533:
+6534: BIGJET 347, Squawk 6402
+6535:
+6536: 6402, BIGJET 347
+6537:
+6538: 2.70
+6539:
+6540: Items which do not appear in the above list may be acknowledged with
+6541: an abbreviated read back.
+6542:
+6543: 2.71
+6544:
+6545: If an aircraft read back of a clearance or instruction is incorrect, the
+6546: controller shall transmit the word ‘NEGATIVE’ followed by the correct
+6547: version.
+6548:
+6549: G-CD, QNH 1003
+6550:
+6551: QNH 1013, G-CD
+6552:
+6553: G-CD, Negative, QNH 1003
+6554:
+6555: QNH 1003, G-CD

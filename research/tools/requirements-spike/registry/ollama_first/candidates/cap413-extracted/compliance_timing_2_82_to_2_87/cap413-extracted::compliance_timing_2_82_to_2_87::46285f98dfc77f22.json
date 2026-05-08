@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::compliance_timing_2_82_to_2_87::46285f98dfc77f22",
+  "documentId": "cap413-extracted",
+  "sectionId": "compliance_timing_2_82_to_2_87",
+  "familyId": "cap413_clearance_comms_guidance_family",
+  "claimText": "Examples of using 'immediately' include: 'BIGJET 347, climb immediately FL35' and 'Climbing immediately FL35, BIGJET 347'.",
+  "rationale": "All attempts agree on the illustrative nature of this example.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "BIGJET 347, climb immediately FL35",
+    "Climbing immediately FL35, BIGJET 347"
+  ],
+  "sourceItemIds": [
+    "example_4"
+  ],
+  "claimSha256": "448baf31b47ab23c6ad075254ce6b3bf08df8929eeb8b82b042f62bc896cdf78",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6703,
+    "endLine": 6783
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-01T10-20-45Z_e8df",
+    "caseId": "cap413_clearance_comms_guidance_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "cap413_example_4",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact example phraseology quotes are verbatim-supported, the schema and authority/modality checks pass, and the candidate is an atomic example not already covered by the accepted siblings.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:06:50Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-01T10:20:45Z",
+    "promotedFrom": "/tmp/clearance-comms-2026-04-30-ingest-v3/cap413-extracted/compliance_timing_2_82_to_2_87/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:06:50Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::e7db6822d68514f3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.04,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is an atomic list-item requirement supported by the parent clause stating that required position reports shall contain specified elements, including \u201cposition.\u201d Analogous sibling atomic list items from the same clause have already been accepted, so the bundle concern appears to be a symmetry/prompt artifact rather than a substantive defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::e7db6822d68514f3.json",
+    "toPath": "candidates/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::e7db6822d68514f3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:19:47Z"
+}

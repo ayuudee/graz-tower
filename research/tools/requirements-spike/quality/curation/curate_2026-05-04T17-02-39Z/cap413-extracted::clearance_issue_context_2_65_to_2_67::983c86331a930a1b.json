@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b",
+  "documentId": "cap413-extracted",
+  "sectionId": "clearance_issue_context_2_65_to_2_67",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.46,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The operative claim is substantively supported, but the exactSourceQuote does not exist verbatim in the provided source window because the sentence is interrupted by page/header text between \u201ctactical\u201d and \u201crestrictions.\u201d Since identity fields cannot be corrected in this pass and G1 has a real verbatim-quote miss, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b.json",
+    "toPath": "rejected/cap413-extracted/clearance_issue_context_2_65_to_2_67/cap413-extracted::clearance_issue_context_2_65_to_2_67::983c86331a930a1b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:05:39Z"
+}

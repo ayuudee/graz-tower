@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::5d610f425247dd7a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "familyId": "icao4444_clearance_comms_contract_family",
+  "claimText": "Omission of routine reports from selected flights is intended to apply in cases where adequate flight progress data are available from other sources, e.g. radar or ADS-B, or ADS-C.",
+  "rationale": "Note provides context for exemptions, not a direct requirement.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "This is intended to apply in cases where adequate flight progress data are available from other sources, e.g. radar or ADS-B ... or ADS-C"
+  ],
+  "sourceItemIds": [
+    "4.11.1.3_note"
+  ],
+  "claimSha256": "9b22c1e50d4097fc216ebb03622cb2d508c563128d7ebe51d73e13dbd939f784",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3723,
+    "endLine": 3808
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "icao4444_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pos_rpt_exemption_note",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "This is intended to apply in cases where adequate flight progress data are available from other sources, e.g. radar or ADS-B ... or ADS-C",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate is substantively grounded in the Note and its advisory classification is appropriate, but the exactSourceQuotes field is not verbatim: the supplied quote uses an ellipsis where the source contains parenthetical cross-references and additional wording. Because identity fields cannot be edited in this pass and G1 is a real verbatim miss, the record must be rejected rather than corrected.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:19:09Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:19:09Z"
+  }
+}

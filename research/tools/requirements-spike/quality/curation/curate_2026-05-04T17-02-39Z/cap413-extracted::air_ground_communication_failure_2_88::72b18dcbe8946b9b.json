@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::air_ground_communication_failure_2_88::72b18dcbe8946b9b",
+  "documentId": "cap413-extracted",
+  "sectionId": "air_ground_communication_failure_2_88",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.8,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present verbatim and directly supports the claim. The candidate is already framed conservatively as operational guidance with should-level modality, and it is not redundant with the accepted sibling items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/air_ground_communication_failure_2_88/cap413-extracted::air_ground_communication_failure_2_88::72b18dcbe8946b9b.json",
+    "toPath": "candidates/cap413-extracted/air_ground_communication_failure_2_88/cap413-extracted::air_ground_communication_failure_2_88::72b18dcbe8946b9b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:03:50Z"
+}

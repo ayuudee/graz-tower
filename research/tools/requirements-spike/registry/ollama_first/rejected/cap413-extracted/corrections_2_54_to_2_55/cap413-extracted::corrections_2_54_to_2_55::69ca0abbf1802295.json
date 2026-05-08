@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::corrections_2_54_to_2_55::69ca0abbf1802295",
+  "documentId": "cap413-extracted",
+  "sectionId": "corrections_2_54_to_2_55",
+  "familyId": "cap413_clearance_comms_guidance_family",
+  "claimText": "Example of partial correction: 'BIGJET 347, Wicken 47 FL280 Marlow 07 correction Marlow 57'.",
+  "rationale": "Retained as support_only because it is an illustrative example subordinate to clause 2.54, present in the source but omitted in attempt_3. It provides context but is not a standalone normative requirement.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "BIGJET 347, Wicken 47 FL280 Marlow 07 correction Marlow 57"
+  ],
+  "sourceItemIds": [
+    "item_2.54_example"
+  ],
+  "claimSha256": "c124f7a7b25cc8b7978383b7d90a1aa0a64caa8ae4cd0b2db3d9e4d771abf3c7",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 6255,
+    "endLine": 6272
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "cap413_clearance_comms_guidance_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+    "originalCandidateId": "cap413_example_partial",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quote is verbatim and correctly classified as an example, but it is only an illustrative support item for the accepted correction rule rather than a standalone requirement or guidance unit. The operative content is already covered by the accepted sibling candidates, so retaining this example would be redundant.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:25:23Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/cap413-extracted/corrections_2_54_to_2_55/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:25:23Z"
+  }
+}

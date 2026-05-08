@@ -1,0 +1,14 @@
+{
+  "schemaName": "manual_adequacy_repair_audit",
+  "runId": "rr21_manual_adequacy_repair_2026-05-04",
+  "createdAt": "2026-05-04T18:00:00Z",
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::8e01c1f60f1cb79a",
+  "previousCanonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::b0cea0c2e3246c75",
+  "action": "manual_corrected_replacement_accept",
+  "reasoning": "Promoted ICAO 4444 4.5.7.2.1 standard departure/arrival route phrase permission with verbatim quote punctuation and lowered authorityClass for may-modality consistency.",
+  "authorityClass": "operational_guidance",
+  "modality": "may",
+  "exactSourceQuotes": [
+    "The phrases “cleared (designation) departure” or “cleared (designation) arrival” may be used when standard departure or\narrival routes have been established by the appropriate ATS authority and published in Aeronautical Information\nPublications (AIPs)."
+  ]
+}

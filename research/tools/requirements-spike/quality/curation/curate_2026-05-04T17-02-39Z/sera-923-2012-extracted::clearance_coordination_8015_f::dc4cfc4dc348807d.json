@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::clearance_coordination_8015_f::dc4cfc4dc348807d",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "clearance_coordination_8015_f",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.02,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s quoted support failed the verbatim quote audit, and the quote appears to be a non-contiguous splice of the common stem with subparagraph (ii) rather than text existing verbatim in the source. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/clearance_coordination_8015_f/sera-923-2012-extracted::clearance_coordination_8015_f::dc4cfc4dc348807d.json",
+    "toPath": "rejected/sera-923-2012-extracted/clearance_coordination_8015_f/sera-923-2012-extracted::clearance_coordination_8015_f::dc4cfc4dc348807d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:21:45Z"
+}

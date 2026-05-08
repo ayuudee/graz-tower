@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1",
+  "documentId": "cap413-extracted",
+  "sectionId": "freecall_change_intention_2_64",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 43.29,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The exact quotes are present and support the claim as illustrative phraseology examples, not as a binding phraseology rule. The modality and authority class are already appropriately advisory, but the requirement kind should be corrected to reflect example status.",
+    "corrections": {
+      "requirementKind": "phraseology_example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/freecall_change_intention_2_64/cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1.json",
+    "toPath": "candidates/cap413-extracted/freecall_change_intention_2_64/cap413-extracted::freecall_change_intention_2_64::14b857a7efd5c5a1.json",
+    "correctionsApplied": {
+      "requirementKind": "phraseology_example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:09:32Z"
+}

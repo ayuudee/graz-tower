@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac",
+  "documentId": "icao9432-extracted",
+  "sectionId": "transfer_communications_2_8_2_en",
+  "familyId": "icao9432_clearance_comms_phraseology_family",
+  "claimText": "An aircraft may be instructed to MONITOR a frequency \u2013 change a frequency as instructed and standby (another ATS unit will initiate communications), and MONITOR a frequency on which information is being broadcast.",
+  "rationale": "Operational guidance defining 'MONITOR' instructions and standby procedures in clause 2.8.2.2.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "An aircraft may be instructed to MONITOR a frequency \u2013 change a frequency as instructed and standby (another ATS unit will initiate communications), and MONITOR a frequency on which information is being broadcast."
+  ],
+  "sourceItemIds": [
+    "sec_2_8_2_2"
+  ],
+  "claimSha256": "e7a86d6a7e8399775af40ecd38ad9e122f47f532a6683430b96e4201bfd3a4e8",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 3830,
+    "endLine": 3855
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "icao9432_clearance_comms_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_monitor_frequency",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "An aircraft may be instructed to MONITOR a frequency \u2013 change a frequency as instructed and standby (another ATS unit will initiate communications), and MONITOR a frequency on which information is being broadcast.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate's sole exactSourceQuote is not verbatim in the source because the source includes the footnote marker \"15\" after the parenthetical before the comma. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:19:54Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao9432-extracted/transfer_communications_2_8_2_en/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:19:54Z"
+  }
+}

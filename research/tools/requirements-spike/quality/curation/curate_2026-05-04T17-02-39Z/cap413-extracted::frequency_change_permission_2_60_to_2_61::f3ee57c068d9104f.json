@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::frequency_change_permission_2_60_to_2_61::f3ee57c068d9104f",
+  "documentId": "cap413-extracted",
+  "sectionId": "frequency_change_permission_2_60_to_2_61",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.77,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited phraseology is source-grounded, atomic, and the quote audit/schema/authority checks all pass. It is correctly framed as an illustrative example with operational_guidance authority, not as an authoritative requirement, and it is not redundant with the already accepted acknowledgement example.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/frequency_change_permission_2_60_to_2_61/cap413-extracted::frequency_change_permission_2_60_to_2_61::f3ee57c068d9104f.json",
+    "toPath": "candidates/cap413-extracted/frequency_change_permission_2_60_to_2_61/cap413-extracted::frequency_change_permission_2_60_to_2_61::f3ee57c068d9104f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:10:44Z"
+}

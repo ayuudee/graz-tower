@@ -1,0 +1,5 @@
+{
+  "path": "/tmp/twr2-promote-res-v2/research/tools/requirements-spike/registry/ollama_first/pending/cap413-extracted/corrections_2_54_to_2_55/cap413-extracted::corrections_2_54_to_2_55::69ca0abbf1802295.json",
+  "error": "TimeoutError: The read operation timed out",
+  "curatedAt": "2026-05-04T17:08:49Z"
+}

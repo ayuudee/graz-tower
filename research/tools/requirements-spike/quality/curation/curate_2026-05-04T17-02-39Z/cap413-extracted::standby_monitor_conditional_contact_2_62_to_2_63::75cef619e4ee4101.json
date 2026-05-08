@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::75cef619e4ee4101",
+  "documentId": "cap413-extracted",
+  "sectionId": "standby_monitor_conditional_contact_2_62_to_2_63",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.25,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source, the claim is directly supported, and modality/authority are consistent as may-level operational guidance. The accepted sibling covers the distinct radar-heading instruction, so this candidate is not a redundant umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/standby_monitor_conditional_contact_2_62_to_2_63/cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::75cef619e4ee4101.json",
+    "toPath": "candidates/cap413-extracted/standby_monitor_conditional_contact_2_62_to_2_63/cap413-extracted::standby_monitor_conditional_contact_2_62_to_2_63::75cef619e4ee4101.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:11:56Z"
+}

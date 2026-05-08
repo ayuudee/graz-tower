@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::336bf88cabfbd998",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "familyId": "icao4444_clearance_comms_contract_family",
+  "claimText": "Position reports shall contain time.",
+  "rationale": "Consistent authoritative requirement for a specific element in position reports.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "time"
+  ],
+  "sourceItemIds": [
+    "4.11.2.1",
+    "4.11.2.1_c"
+  ],
+  "claimSha256": "64530dbc406a3450c84668cb8df457414f2d3175e708f1224169ae109a148b8f",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3723,
+    "endLine": 3808
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-04T16-53-48Z_83dd",
+    "caseId": "icao4444_clearance_comms_contract_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pos_rpt_content_time",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is an atomic element of clause 4.11.2.1: position reports required by 4.11.1.1 and 4.11.1.2 shall contain listed elements, including c) \u201ctime\u201d. The quote is verbatim, the shall-strength modality and authoritative class are consistent, and it is not a redundant umbrella over already accepted sibling items.",
+      "confidence": "high",
+      "curatedAt": "2026-05-04T17:18:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-04T16:53:48Z",
+    "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/judged_candidates.json",
+    "curatedAt": "2026-05-04T17:18:38Z"
+  }
+}

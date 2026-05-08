@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::05811383a8f5ae6d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "position_reporting_voice_4_11_1_to_4_11_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 26.27,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The source clause 4.11.2.1 states that required position reports shall contain listed elements, including item f) \u201censuing significant point,\u201d so the atomic claim is supported and uses the correct shall modality. It is not a redundant umbrella and is not already covered by the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::05811383a8f5ae6d.json",
+    "toPath": "candidates/icao4444-extracted/position_reporting_voice_4_11_1_to_4_11_3/icao4444-extracted::position_reporting_voice_4_11_1_to_4_11_3::05811383a8f5ae6d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:18:23Z"
+}

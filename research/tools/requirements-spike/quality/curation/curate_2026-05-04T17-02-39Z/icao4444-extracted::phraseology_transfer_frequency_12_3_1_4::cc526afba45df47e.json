@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::cc526afba45df47e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "phraseology_transfer_frequency_12_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.57,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact phraseology appears verbatim as item d and is an atomic phraseology entry not redundantly covered by the accepted siblings. Although the line itself has no explicit modal verb, it is consistent with the already accepted sibling phraseology entries in this ICAO 4444 phraseology table as operational guidance using shall-form claim wording.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/phraseology_transfer_frequency_12_3_1_4/icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::cc526afba45df47e.json",
+    "toPath": "candidates/icao4444-extracted/phraseology_transfer_frequency_12_3_1_4/icao4444-extracted::phraseology_transfer_frequency_12_3_1_4::cc526afba45df47e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:17:57Z"
+}

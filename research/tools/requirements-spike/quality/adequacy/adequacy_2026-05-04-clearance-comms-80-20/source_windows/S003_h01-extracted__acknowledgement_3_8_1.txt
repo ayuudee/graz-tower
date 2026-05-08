@@ -1,0 +1,141 @@
+4197: 3.8.1. ACKNOWLEDGEMENT OF RECEIPT
+4198:
+4199: a)
+4200:
+4201: Wenn von einem Luftfahrzeug die Bestätigung des
+4202: Empfangs einer Meldung übermittelt wird, muss die
+4203: Bestätigung das Rufzeichen dieses Luftfahrzeugs
+4204: umfassen.
+4205:
+4206: a)
+4207:
+4208: When transmitted by an aircraft, the acknowledgement
+4209: of receipt of a message shall comprise the call sign of
+4210: that aircraft.
+4211:
+4212: b)
+4213:
+4214: Wenn von einer Flugverkehrsdienststelle die
+4215: Bestätigung des Empfangs an ein Luftfahrzeug
+4216: übermittelt wird, muss die Bestätigung das Rufzeichen
+4217: des Luftfahrzeugs, falls erforderlich gefolgt vom
+4218: Rufzeichen dieser Flugverkehrsdienststelle, umfassen.
+4219:
+4220: b)
+4221:
+4222: When acknowledgement of receipt is transmitted by an
+4223: ATS unit to an aircraft, it shall comprise the call sign of
+4224: the aircraft, followed if considered necessary, by the call
+4225: sign of the ATS unit.
+4226:
+4227: c)
+4228:
+4229: Die Flugzeugbesatzung hat dem Fluglotsen die
+4230: sicherheitsrelevanten Teile von
+4231: Flugverkehrskontrollfreigaben und Anweisungen, die im
+4232: Sprechfunkverkehr übermittelt werden, zu wiederholen.
+4233: Die folgenden Punkte sind stets zu wiederholen:
+4234: 1. Streckenfreigaben der Flugverkehrskontrolle
+4235: 2. Freigaben und Anweisungen für das Aufrollen und
+4236: Landen auf, den Start von, das Anhalten vor, das
+4237: Kreuzen von, das Rollen auf und Zurückrollen auf
+4238: Pisten und
+4239: 3. Betriebspiste, Höhenmessereinstellungen, SSR
+4240: Codes, neu zugeteilte Funkkanäle, Anweisungen zur
+4241: Flughöhe, Kurs- und Geschwindigkeitsanweisungen
+4242: und
+4243: 4. Übergangsflächen, unabhängig davon, ob diese von
+4244: einem Lotsen übermittelt wurden oder in ATISAussendungen enthalten sind.
+4245:
+4246: c)
+4247:
+4248: The flight crew shall read back to the air traffic controller
+4249: safety-related parts of ATC clearances and instructions
+4250: which are transmitted by voice. The following items shall
+4251: always be read back:
+4252:
+4253: d)
+4254:
+4255: Andere Freigaben oder Anweisungen, einschließlich
+4256: konditioneller Freigaben und Rollanweisungen, sind zu
+4257: wiederholen oder auf eine Weise zu bestätigen, aus der
+4258: ersichtlich wird, dass sie verstanden wurden und
+4259: eingehalten werden.
+4260:
+4261: d)
+4262:
+4263: Other clearances or instructions, including conditional
+4264: clearances and taxi instructions, shall be read back
+4265: or acknowledged in a manner to clearly indicate that
+4266: they have been understood and will be complied with.
+4267:
+4268: e)
+4269:
+4270: Der Lotse muss sich durch Anhören der Wiederholung
+4271: e)
+4272: vergewissern, dass die Freigabe oder Anweisung von der
+4273: Flugbesatzung korrekt bestätigt wurde, und unverzüglich
+4274: Maßnahmen ergreifen, um bei der Wiederholung
+4275: gegebenenfalls festgestellte Unstimmigkeiten zu
+4276: berichtigen
+4277:
+4278: The controller shall listen to the read-back to ascertain
+4279: that the clearance or instruction has been correctly
+4280: acknowledged by the flight crew and shall take
+4281: immediate action to correct any discrepancies revealed
+4282: by the read-back.
+4283:
+4284: f)
+4285:
+4286: Die Wiederholung von CPDLC-Mitteilungen im
+4287: Sprechfunkverkehr ist nicht vorgeschrieben.
+4288:
+4289: Voice read-back of CPDLC messages shall not be
+4290: required.
+4291:
+4292: g)
+4293:
+4294: Zu Überprüfungszwecken kann jede erhaltene Meldung
+4295: g)
+4296: von der empfangenden Funkstelle wortwörtlich wiederholt
+4297: werden.
+4298:
+4299: It is permissible for verification for the receiving station
+4300: to read back the message as an additional
+4301: acknowledgement of receipt.
+4302:
+4303: h)
+4304:
+4305: Wenn Teile einer Meldung nicht zurückzulesen sind,
+4306: kann der Empfang dieser Teile zweckmäßig mit Worten
+4307: wie z.B. WETTER ERHALTEN bestätigt werden,
+4308: nachdem rücklesepflichtige Teile wiederholt wurden.
+4309:
+4310: If both instructions subject to read-back and other
+4311: information – such as weather reports – are received in
+4312: the same message, the information should be
+4313: acknowledged with the words such as WEATHER
+4314: RECEIVED after the instruction has been read back.
+4315:
+4316: f)
+4317:
+4318: h)
+4319:
+4320: 1.
+4321: 2.
+4322:
+4323: ATC route clearances
+4324: Clearances and instructions to enter, land on, take
+4325: off from, hold short of, cross, taxi and backtrack on
+4326: any runway, and
+4327:
+4328: 3.
+4329:
+4330: Runway-in-use, altimeter settings, SSR codes,
+4331: newly assigned communication channels, level
+4332: instructions, heading and speed instructions, and
+4333:
+4334: 4.
+4335:
+4336: Transition levels, whether issued by the controller
+4337: or contained in ATIS broadcasts.

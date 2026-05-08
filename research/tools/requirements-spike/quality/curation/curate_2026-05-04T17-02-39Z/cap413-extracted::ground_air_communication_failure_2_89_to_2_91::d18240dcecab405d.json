@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ground_air_communication_failure_2_89_to_2_91::d18240dcecab405d",
+  "documentId": "cap413-extracted",
+  "sectionId": "ground_air_communication_failure_2_89_to_2_91",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.88,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted list item is verbatim-supported and represents an atomic blind-transmission message content element, with the sibling accepted candidates covering other distinct items rather than duplicating this one. The modality and authorityClass are floor-consistent for CAP413 operational guidance, and the bundle gate indicates the surrounding bundle is complete.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ground_air_communication_failure_2_89_to_2_91/cap413-extracted::ground_air_communication_failure_2_89_to_2_91::d18240dcecab405d.json",
+    "toPath": "candidates/cap413-extracted/ground_air_communication_failure_2_89_to_2_91/cap413-extracted::ground_air_communication_failure_2_89_to_2_91::d18240dcecab405d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:11:09Z"
+}

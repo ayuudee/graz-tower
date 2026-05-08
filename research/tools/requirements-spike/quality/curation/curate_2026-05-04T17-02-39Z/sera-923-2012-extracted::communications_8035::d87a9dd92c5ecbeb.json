@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::communications_8035::d87a9dd92c5ecbeb",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "communications_8035",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.53,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text passes verbatim audit and supports a direct SERA shall-requirement for controlled flights to maintain voice communication watch and establish two-way communication as necessary. The accepted siblings address separate communication-failure/CPDLC provisions and do not make this core requirement redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/communications_8035/sera-923-2012-extracted::communications_8035::d87a9dd92c5ecbeb.json",
+    "toPath": "candidates/sera-923-2012-extracted/communications_8035/sera-923-2012-extracted::communications_8035::d87a9dd92c5ecbeb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:21:59Z"
+}

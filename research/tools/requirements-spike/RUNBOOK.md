@@ -11,10 +11,10 @@ The end-to-end flow when ingesting fresh content is:
 
 ## Scope rule before any ingestion
 
-The promoted registry is the landed 30-window slice described in
+The promoted registry is the landed 46-window slice described in
 `registry/ollama_first/DECLARED_SLICE.md`. The live document manifests now
-contain 46 sections; the 16 manifest-only additions are not accepted registry
-coverage until this flow lands them. The source-section disposition ledger is
+contain 46 sections, all of which have passed the standard ingest, promote,
+curate, audit, and snapshot flow. The source-section disposition ledger is
 `quality/source_section_ledger/source_section_ledger_2026-04-30/source_section_ledger.md`.
 Do not describe the registry as full-document or full-corpus coverage.
 
@@ -31,16 +31,20 @@ This keeps omissions visible: a source section is either extracted,
 support-only, duplicate/subset material, out of scope, or explicitly deferred
 with a reason.
 
-## Current remaining-source queue — 2026-05-01
+## Landed clearance/comms queue — 2026-05-04
 
-The current exact-window queue is:
+The exact-window queue that was current on 2026-05-01 is now landed:
 
 - `quality/source_processing_queue/source_processing_queue_2026-05-01/source_processing_queue.md`
 - `quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json`
 
-It contains 16 manifest windows ready for the Ollama-backed section processor:
-8 CAP 413 windows, 7 ICAO Doc 4444 windows, and 1 ICAO Doc 9432 window. It also
-records 26 existing `pending/` records that need curation, not re-ingestion.
+It contained 16 manifest windows for the Ollama-backed section processor:
+8 CAP 413 windows, 7 ICAO Doc 4444 windows, and 1 ICAO Doc 9432 window. Those
+windows produced 130 judged candidates, then promotion and curation moved the
+registry to 423 accepted candidates, 0 pending records, and 34 rejected records.
+RR-21 adequacy adjudication then added eight corrected accepted replacements,
+bringing the current registry to 431 accepted candidates, 0 pending records,
+and 34 rejected records.
 
 Before starting the live Ollama pass, validate the batch manifest against the
 current `documents/*.json` line ranges:
@@ -67,8 +71,11 @@ nix-shell -p python3 --run "python3 research/tools/requirements-spike/promote_to
 nix-shell -p python3 --run "python3 research/tools/requirements-spike/audit_registry_reproducibility.py"
 ```
 
-After promotion, run Phase G for any `pending/` records, refresh the manifest,
-and snapshot `quality/judgements.csv`.
+After promotion, Phase G curation resolved all pending records. The current
+post-curation snapshot was
+`quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`.
+The current post-RR-21 adequacy snapshot is
+`quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`.
 
 ## Phase E — Re-ingest the corpus through the gates
 
@@ -242,9 +249,15 @@ RR-17 adds the post-repair coverage pass:
 - `quality/snapshots/judgements-2026-04-29-post-rr17-coverage.csv` —
   current regression baseline.
 
-Use `quality/snapshots/judgements-2026-05-01-post-clearance-comms-partial.csv`
-as the current registry regression baseline. The RR-17 snapshot remains the
-baseline for the older 22-window post-repair adequacy frame.
+Use `quality/snapshots/judgements-2026-05-04-post-rr21-adequacy.csv`
+as the current registry regression baseline. The pre-RR-21
+`quality/snapshots/judgements-2026-05-04-post-clearance-comms.csv`
+snapshot remains the baseline for detecting regressions introduced by the
+adequacy repair pass. The RR-17 snapshot remains the baseline for the older
+22-window post-repair adequacy frame, and
+`quality/snapshots/judgements-2026-05-01-post-clearance-comms-partial.csv`
+is retained only as the partial-run baseline used to check the 2026-05-04
+promotion.
 
 ## Phase F — Periodic override-sunset audit
 

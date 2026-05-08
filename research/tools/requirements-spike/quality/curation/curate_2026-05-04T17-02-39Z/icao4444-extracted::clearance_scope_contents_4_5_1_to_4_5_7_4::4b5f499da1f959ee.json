@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::4b5f499da1f959ee",
+  "documentId": "icao4444-extracted",
+  "sectionId": "clearance_scope_contents_4_5_1_to_4_5_7_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.26,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim with a 'should' modality. Because 'should' cannot support an authoritative_requirement classification, the authorityClass should be lowered to operational_guidance while leaving the identity fields unchanged.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::4b5f499da1f959ee.json",
+    "toPath": "candidates/icao4444-extracted/clearance_scope_contents_4_5_1_to_4_5_7_4/icao4444-extracted::clearance_scope_contents_4_5_1_to_4_5_7_4::4b5f499da1f959ee.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-04T17:15:18Z"
+}
