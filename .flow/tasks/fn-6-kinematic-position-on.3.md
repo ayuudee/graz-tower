@@ -141,5 +141,8 @@ the OSMOT snap.
       R4 is no longer relaxed (one-line edit per §Approach 5).
 
 ## Done summary
-
+Tightened G2CrossAerodromeVfrTest's R4 gap-magnitude pin from the relaxed `> 0L` back to the doctrinal `>= 30_000L` with an updated failure message citing ICAO Doc 4444 §10.1 + SERA Section 6; replaced the inline "tentative band, retune on geometric upgrade" comment block (lines 455-478) with a one-paragraph doctrine reference recording the ~374.6 s observed gap; updated the class docstring's "R4 pin relaxed" subsection to "R4 pin restored to >= 30 s" with enumeration of the four production sites where fn-6's kinematic-coordinates lift landed (coords field, factory + fromTestPoint helper, OutsideAerodromeRadius read, typed Meters.fromNauticalMiles helper) and co-citation of OutsideAerodromeRadiusSpec; reworded two fn-6.x comment references in FirewallSensorReadingTest so the grep gate returns zero matches; updated the user's project_g2_status.md memory entry to reflect that R4 is no longer relaxed and that fn-6 has closed the geometric-routing upgrade. All R7 regression suites green; detekt baseline unchanged at 10.
 ## Evidence
+- Commits: cbd8f7c2d8a70338652b77ab25acee752cc715c2
+- Tests: ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest --tests xyz.easiersaid.twr.sim.LowgGoldenTest --tests xyz.easiersaid.twr.sim.FirewallSensorReadingTest, ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest, ./gradlew detekt
+- PRs:
