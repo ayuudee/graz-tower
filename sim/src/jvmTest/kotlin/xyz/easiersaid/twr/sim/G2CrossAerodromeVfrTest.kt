@@ -35,7 +35,10 @@ import xyz.easiersaid.twr.sim.testing.firstPilotTransmissionTo
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
 import xyz.easiersaid.twr.sim.testing.firstWhere
+import xyz.easiersaid.twr.sim.testing.formatRuleFirings
+import xyz.easiersaid.twr.sim.testing.isReleaseDrop
 import xyz.easiersaid.twr.sim.testing.lastWhere
+import xyz.easiersaid.twr.sim.testing.responsibilityTransitions
 import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
 
 /**
@@ -262,6 +265,50 @@ class G2CrossAerodromeVfrTest {
         // ── Diagnostic preamble ─────────────────────────────────────────────
         val journey = finalState.formatJourney(aircraftId, records)
         println(journey)
+
+        // ── G2 closure debug block (Phase I closure pass) ───────────────────
+        // Use the new SimTrace queries to surface every responsibility-state
+        // transition and rule firing, so root-causing the LJMB premature-
+        // release becomes a 5-line read instead of a 1500-line journey scan.
+        println()
+        println("─── G2 closure debug ───")
+        val respTransitions = trace.responsibilityTransitions(aircraftId)
+        println("Responsibility transitions for $aircraftId:")
+        for (t in respTransitions) {
+            val fromStr = t.from.fold({ "absent" }, { it::class.simpleName ?: "?" })
+            val toStr = t.to.fold({ "absent" }, { it::class.simpleName ?: "?" })
+            val fromExtra = t.from.fold({ "" }, { state ->
+                when (state) {
+                    is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff -> "(${state.target})"
+                    else -> ""
+                }
+            })
+            val toExtra = t.to.fold({ "" }, { state ->
+                when (state) {
+                    is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff -> "(${state.target})"
+                    else -> ""
+                }
+            })
+            println("  [${t.after.time.millis}ms] ${t.controller}: $fromStr$fromExtra → $toStr$toExtra")
+        }
+        // Find the LJMB Owned → HandingOff(Released) transition specifically.
+        val ljmbDrop = respTransitions.firstOrNull { t ->
+            t.controller == ljmbTower.id && t.transition.isReleaseDrop()
+        }
+        if (ljmbDrop != null) {
+            println()
+            println("LJMB premature-release found at ${ljmbDrop.after.time.millis}ms.")
+            println("Triggering event: ${ljmbDrop.after.event.fold({ "none" }, { it::class.simpleName ?: "?" })}")
+            println("Mission step at this moment: ${ljmbDrop.after.state.aircraft[aircraftId]?.pilotMission?.currentTask?.step}")
+            println("Aircraft phase: ${ljmbDrop.after.state.aircraft[aircraftId]?.phase}")
+            println("Aircraft positionPoint: ${ljmbDrop.after.state.aircraft[aircraftId]?.positionPoint}")
+            println("Aircraft altitude (m): ${ljmbDrop.after.state.aircraft[aircraftId]?.altitudeM}")
+            println()
+            println("Rule firings in window [${ljmbDrop.before.time.millis}, ${ljmbDrop.after.time.millis}]:")
+            println(trace.formatRuleFirings(ljmbDrop.before, ljmbDrop.after))
+        }
+        println("─── end G2 closure debug ───")
+        println()
 
         // ── Outcome (high-level): aircraft completed transit and reached LJMB stand ──
         val finalAircraft = finalState.aircraft.getValue(aircraftId)

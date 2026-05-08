@@ -1555,6 +1555,27 @@ internal fun applyRadarServiceTerminated(
     ac: AircraftState,
     @Suppress("UNUSED_PARAMETER") instruction: RadarServiceTerminated,
 ): SimState {
+    // G2 Phase I (closure): idempotency. If some controller is already
+    // in `HandingOff(Released)` for this aircraft, the original RST has
+    // already applied — this delivery is a stale re-issue (typical
+    // pattern: COORD-REISSUE fires after the original sender has lost
+    // ownership; the pilot processes the re-issued RST much later when
+    // a DIFFERENT controller has taken over). Without this idempotency
+    // gate, `requireOwner` finds the *current* owner (which may be the
+    // cross-aerodrome destination tower that took over via knownStrips)
+    // and wrongly transitions THEM to HandingOff(Released), collapsing
+    // the destination's commitment and stranding the pilot at
+    // AWAIT_LANDING_CLEARANCE.
+    //
+    // Safe semantics: an aircraft can only be "released" by ONE
+    // controller at a time. Once that release lands, subsequent RST
+    // deliveries for the same aircraft are stale and no-op.
+    val alreadyReleased = state.controllers.values.any { spec ->
+        val r = spec.responsibilities[ac.id]
+        r is ResponsibilityState.HandingOff && r.target is HandoffTarget.Released
+    }
+    if (alreadyReleased) return state
+
     val current = requireOwner(state, ac, "applyRadarServiceTerminated")
     val controllersMap = LinkedHashMap(state.controllers)
     controllersMap[current.id] = current.copy(
