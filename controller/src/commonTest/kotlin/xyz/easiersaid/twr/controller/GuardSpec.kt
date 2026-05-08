@@ -8,6 +8,7 @@ import xyz.easiersaid.twr.controller.bdi.OperatorContext
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -31,17 +32,20 @@ class GuardSpec {
 
     private val aircraft = AircraftId("OE-ABC")
 
-    private val ac = AircraftObservation(
+    // fn-6.1: seed WorldIndex with the test point so `fromTestPoint` derives
+    // coords non-divergently. Belief-slice guards under test don't read
+    // coords, but routing through the helper preserves the no-fixture-drift
+    // invariant.
+    private val testWorldIndex = WorldIndex(
+        positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
+    )
+
+    private val ac = AircraftObservation.fromTestPoint(
+        point = PointId("P"),
+        worldIndex = testWorldIndex,
         id = aircraft,
         callsign = Callsign("OEABC"),
-        position = PointId("P"),
-        entities = emptySet(),
-        altitude = null,
-        speed = null,
-        heading = null,
-        groundSpeed = null,
         onGround = true,
-        wakeCategory = null,
     )
 
     private val commitment = Commitment(

@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.controller
 
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -52,6 +53,14 @@ class AtisLetterMismatchAdvisorySpec {
         generatedAt = now0,
     )
 
+    // fn-6.1: seed WorldIndex with the test point so `fromTestPoint` derives
+    // coords non-divergently. ATIS-letter advisory logic reads no geometric
+    // field, so coords are not load-bearing here, but the helper enforces the
+    // no-fixture-drift invariant.
+    private val testWorldIndex = WorldIndex(
+        positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
+    )
+
     private fun viewWithReceivedInitialContact(
         atisOnView: Char?,
         pilotAtisCode: Char?,
@@ -68,13 +77,11 @@ class AtisLetterMismatchAdvisorySpec {
             aerodromeId = LOWG,
             responsibilities = setOf(ac),
             aircraft = mapOf(
-                ac to AircraftObservation(
+                ac to AircraftObservation.fromTestPoint(
+                    point = PointId("P"),
+                    worldIndex = testWorldIndex,
                     id = ac,
                     callsign = Callsign("OEABC"),
-                    position = PointId("P"),
-                    entities = emptySet(),
-                    altitude = null,
-                    speed = null,
                     onGround = true,
                 ),
             ),
@@ -82,7 +89,7 @@ class AtisLetterMismatchAdvisorySpec {
             activeClearances = emptyMap(),
             receivedMessages = listOf(ReceivedMessage.Clear(ac, initialContact)),
             weather = null,
-            worldIndex = WorldIndex(),
+            worldIndex = testWorldIndex,
             atis = atisMap,
         )
     }

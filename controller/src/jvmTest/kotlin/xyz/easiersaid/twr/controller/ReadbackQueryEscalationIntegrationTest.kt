@@ -4,6 +4,7 @@ import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.CoordinationState
 import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -53,16 +54,25 @@ class ReadbackQueryEscalationIntegrationTest {
     // Past queryAfter (10 s in Default) — escalation should advance to Querying.
     private val now = issuedAt + SimDuration.ofSeconds(11)
 
+    // fn-6.1: seed positions on a local WorldIndex so from() can pass
+    // `coords = worldIndex.positions[<position>]!!` non-divergently. The
+    // readback escalation lifecycle reads no geometric field; coords are
+    // not load-bearing here.
+    private val testWorldIndex = WorldIndex(
+        positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
+    )
+
     private val acObservation = AircraftObservation.from(
         id = ac,
         callsign = Callsign("OEABC"),
         position = PointId("P"),
+        coords = testWorldIndex.positions.getValue(PointId("P")),
         altitude = null,
         groundSpeed = null,
         onGround = true,
         wakeCategory = null,
         icaoTypeDesignator = null,
-        worldIndex = WorldIndex(),
+        worldIndex = testWorldIndex,
     )
 
     private fun viewWith(time: SimTime): ControllerView = ControllerView(

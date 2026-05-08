@@ -15,6 +15,7 @@ import xyz.easiersaid.twr.core.world.Degrees
 import xyz.easiersaid.twr.core.world.Feet
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.core.world.Path
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
@@ -58,18 +59,21 @@ class RunwayLengthGatingSpec {
         runway = RWY_ID,
     )
 
+    // fn-6.1: seed WorldIndex with the test point so `fromTestPoint` derives
+    // coords non-divergently. Runway-length gating reads no geometric field,
+    // so coords are not load-bearing here, but the helper enforces the
+    // no-fixture-drift invariant.
+    private val testWorldIndex = WorldIndex(
+        positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
+    )
+
     private fun observation(designator: IcaoTypeDesignator?): AircraftObservation =
-        AircraftObservation(
+        AircraftObservation.fromTestPoint(
+            point = PointId("P"),
+            worldIndex = testWorldIndex,
             id = aircraftId,
             callsign = Callsign("OEB738"),
-            position = PointId("P"),
-            entities = emptySet(),
-            altitude = null,
-            speed = null,
-            heading = null,
-            groundSpeed = null,
             onGround = true,
-            wakeCategory = null,
             icaoTypeDesignator = designator,
         )
 
@@ -85,7 +89,7 @@ class RunwayLengthGatingSpec {
             activeClearances = emptyMap(),
             receivedMessages = emptyList(),
             weather = null,
-            worldIndex = WorldIndex(),
+            worldIndex = testWorldIndex,
         ),
         beliefs = BeliefState.EMPTY,
         events = emptyList(),

@@ -172,6 +172,7 @@ private fun toObservation(
         id = reading.id,
         callsign = reading.callsign,
         position = reading.position,
+        coords = reading.coords,
         altitude = reading.altitude,
         groundSpeed = reading.groundSpeed,
         onGround = reading.onGround,

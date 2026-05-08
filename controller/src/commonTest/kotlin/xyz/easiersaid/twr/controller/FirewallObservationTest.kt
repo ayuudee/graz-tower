@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.controller
 
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.PointId
@@ -35,6 +36,12 @@ class FirewallObservationTest {
             id = AircraftId("X"),
             callsign = Callsign("X"),
             position = PointId("P"),
+            // firewall sentinel: not a fixture default; tests should use
+            // AircraftObservation.fromTestPoint for derived coords. The
+            // -999_999.0 value is far enough from any real ARP that a
+            // geometric guard misreading the sentinel as a real position
+            // is structurally obvious.
+            coords = Position(xMeters = -999_999.0, yMeters = -999_999.0),
             entities = emptySet(),
             altitude = null,
             speed = null,
