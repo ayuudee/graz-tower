@@ -221,37 +221,8 @@ helper on `Meters.Companion` to replace the `Meters(22_224.0)` magic.
 - [ ] Full test suite stays green; `./gradlew detekt` baseline unchanged.
 
 ## Done summary
-Switched `OutsideAerodromeRadius.evaluate` from snap-point lookup
-(`worldIndex.positions[ac.position]`) to the kinematic `ac.coords` field
-introduced in fn-6.1; KDoc rewritten to reflect kinematic-vs-snap doctrine.
-Added `Meters.fromNauticalMiles(Int)` companion helper and replaced both
-`Meters(22_224.0)` magic-number call sites in `TowerDeparture.kt` (DEP-RADAR-
-SERVICE-TERMINATED + DEP-CROSS-AERODROME-RELEASE) with
-`Meters.fromNauticalMiles(12)`. Added focused unit spec
-`OutsideAerodromeRadiusSpec` (3 rows: 100 m inside ring → false, 100 m
-outside → true, ARP-not-found → false; uses `coordsOverride` to deliberately
-diverge from snap). Added new `@Test` `coords assigns from kinematic state-
-position only` to `FirewallSensorReadingTest` (positive: `coords = position`
-RHS captured; negative: no `val\s+position\b` shadow inside the function
-body). R7 acceptance suites green; detekt baseline unchanged at 10.
-
+Switched OutsideAerodromeRadius.evaluate to read the kinematic ac.coords field (instead of worldIndex.positions[ac.position] snap lookup), added Meters.fromNauticalMiles(Int) companion helper to replace both Meters(22_224.0) magic-number call sites in TowerDeparture.kt, landed OutsideAerodromeRadiusSpec (3 rows: inside-ring/outside-ring/ARP-not-found) and a new "coords assigns from kinematic state-position only" @Test in FirewallSensorReadingTest (positive coords=position regex + negative no-shadow scan). All R7 acceptance suites green; detekt baseline unchanged at 10.
 ## Evidence
-- Base commit (fn-6.1 head): 2ea32283ccfe330202eca4db6b42c9ff1050f268
-- R4 structural pin — `grep -rn 'ac\.coords' controller/src/commonMain`:
-  ```
-  controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Guard.kt:460:        // fn-6.2 (R3): kinematic read. ac.coords is the primary-surveillance
-  controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Guard.kt:464:        val dx = ac.coords.xMeters - arpPos.xMeters
-  controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Guard.kt:465:        val dy = ac.coords.yMeters - arpPos.yMeters
-  ```
-  Matches confined to `Guard.kt:OutsideAerodromeRadius`; positionPoint
-  semantics elsewhere unchanged.
-- Tests:
-  - `./gradlew :controller:jvmTest --tests xyz.easiersaid.twr.controller.bdi.OutsideAerodromeRadiusSpec` — green (3 rows)
-  - `./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.FirewallSensorReadingTest` — green (3 tests including new coords pin)
-  - `./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest` — green (relaxed `> 0` bound still holds; gap is now larger because rule fires earlier — fn-6.3 will tighten to `>= 30_000L`)
-  - `./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.LowgGoldenTest` — green
-  - `./gradlew :controller:jvmTest --tests xyz.easiersaid.twr.controller.FirewallObservationTest` — green
-  - `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest` — all green
-  - `./gradlew detekt` — 10 issues, all pre-existing; same count as fn-6.1 baseline (no new violations from fn-6.2)
-- Pre-existing flake (out of scope per task §Key context):
-  `:migration:jvmTest`'s `LjmbWorldCandidateValidationTest.writesLjmbCurrentCoreValidationReport` was already failing on master before fn-6 began; not retried.
+- Commits: 8d85e6be65c54bf73b520517606a411162c77a55
+- Tests: ./gradlew :controller:jvmTest --tests xyz.easiersaid.twr.controller.bdi.OutsideAerodromeRadiusSpec, ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.FirewallSensorReadingTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest --tests xyz.easiersaid.twr.sim.LowgGoldenTest, ./gradlew :controller:jvmTest --tests xyz.easiersaid.twr.controller.FirewallObservationTest, ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest, ./gradlew detekt
+- PRs:

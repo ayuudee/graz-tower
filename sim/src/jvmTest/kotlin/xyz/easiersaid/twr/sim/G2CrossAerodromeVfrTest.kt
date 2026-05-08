@@ -115,16 +115,22 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  *    the aircraft at the moment of first LJMB contact). The
  *    `applyBoundaryReleaseReadback` companion was removed.
  *
- *  - **R4 gap-magnitude pin relaxed** (this file): the doctrinal
- *    "≥ 30 s gap between LOWG release and LJMB autonomous contact" pin
- *    is **tentative** until the geometric upgrade lands — today the
- *    cruise route from RWY threshold to OSMOT has no intermediate
- *    fixes, so `positionPoint` snaps from `LOWG_RWY_16C_THR` straight
- *    to `LJMB_FIX_OSMOT` at the perpendicular bisector and that snap
- *    is also the trigger for the autonomous InitialContact, leaving
- *    only ~4 s of nominal gap. The pin has been narrowed to
- *    `gap > 0` (release strictly precedes contact) with the geometric
- *    follow-up filed inline (see comment at the assertion site).
+ *  - **R4 gap-magnitude pin restored to ≥ 30 s** (this file): the
+ *    kinematic-coordinates lift on the firewall lands at four
+ *    production sites — (a) `coords` field on `SensorReading` +
+ *    `AircraftObservation`, (b) the `AircraftObservationFactory.from`
+ *    factory plus its `fromTestPoint` test helper, (c)
+ *    `OutsideAerodromeRadius.evaluate` reads `ac.coords` directly,
+ *    (d) typed `Meters.fromNauticalMiles(Int)` helper at both
+ *    `TowerDeparture` call sites. The release ring now fires at the
+ *    physical 12 NM crossing (~9 min into the flight at C172 cruise),
+ *    not at the OSMOT snap; multi-minute Class-G transit is now
+ *    empirically reachable (~374.6 s observed at landing-time, well
+ *    above the 30 s floor). The unit-level sibling
+ *    pin is `OutsideAerodromeRadiusSpec` (3 rows: inside-ring /
+ *    outside-ring / ARP-not-found) — G2 verifies the gate fires in
+ *    the cross-aerodrome flow, the spec verifies the geometric
+ *    semantics in isolation.
  *
  * Phase H's pre-closure deliverables (still load-bearing):
  *  - `FlightStrip.destinationAerodrome` field +
@@ -452,34 +458,22 @@ class G2CrossAerodromeVfrTest {
                 "was at-or-after first pilot tx to LJMB_TWR (${firstTxToLjmbMs}ms). " +
                 "There must be a gap during which the aircraft is unattended in Class G.\n$journey"
         }
-        // Gap-magnitude pin (R4 — tentative band, retune on geometric upgrade):
-        // doctrine wants a multi-minute Class-G transit between LOWG release and
-        // pilot's LJMB contact. Today the controller's `OutsideAerodromeRadius`
-        // gate reads `AircraftObservation.position` (a snapped `PointId`), and
-        // the cruise route from RWY threshold to OSMOT has no intermediate
-        // published fixes between LOWG and LJMB. So `positionPoint` snaps
-        // straight from `LOWG_RWY_16C_THR` to `LJMB_FIX_OSMOT` at the
-        // perpendicular-bisector midpoint of the two fixes — and that snap
-        // is also the trigger for the pilot's autonomous `InitialContact`
-        // (`mission.transitContactRep == positionPoint` flips true). Both
-        // events fire within one controller cycle of each other, leaving
-        // only ~4 s of nominal gap. The doctrinally-correct window opens
-        // when the controller's gate fires geometrically (kinematic-position
-        // OR an intermediate ENR fix on the cruise route), not when the
-        // snap finally lands. Two roads to fix:
-        //   - **Geometry** (preferred): expose raw kinematic coords on the
-        //     observation and have `OutsideAerodromeRadius` use those, so the
-        //     gate fires when the aircraft physically crosses the 12 NM ring.
-        //   - **Routing**: author intermediate ENR fixes on the LOWG-LJMB
-        //     cruise (e.g. a `LOWG_CTR_BOUNDARY_E` point at ~7 NM out) so
-        //     `positionPoint` snaps mid-cruise.
-        // Either upgrade lets us tighten the bound back to the original
-        // ≥30 s. Until then, the load-bearing pin is `gap > 0` (above) +
-        // the pre-/post-contact responsibility-snapshot pins below.
-        check(firstTxToLjmbMs - lastLowgInstrMs > 0L) {
+        // R4: doctrine wants several minutes of Class-G transit between
+        // LOWG release and pilot's LJMB contact (ICAO Doc 4444 §10.1 +
+        // SERA Section 6). Restored to ≥ 30 s by the kinematic-coords
+        // change (OutsideAerodromeRadius now fires on physical 12 NM
+        // crossing, not on OSMOT snap); observed gap at landing-time
+        // was ~374.6 s (374_560 ms) — well above the 30 s floor. Bound
+        // is left at 30 s rather than pinning past empirical observation
+        // (over-tightening would couple the test to tick-cadence jitter
+        // for no doctrinal gain). OutsideAerodromeRadiusSpec is the
+        // unit-level sibling pin on the kinematic gate's geometric
+        // semantics.
+        check(firstTxToLjmbMs - lastLowgInstrMs >= 30_000L) {
             "Cross-aerodrome handoff window: gap between last LOWG instruction and " +
-                "first LJMB_TWR contact must be positive (the release must precede " +
-                "the destination's autonomous contact); got ${firstTxToLjmbMs - lastLowgInstrMs}ms.\n$journey"
+                "first LJMB_TWR contact must be ≥ 30 s (Class-G transit duration; " +
+                "ICAO Doc 4444 §10.1 release semantics + SERA Section 6 Class G airspace); " +
+                "got ${firstTxToLjmbMs - lastLowgInstrMs}ms.\n$journey"
         }
 
         // Pre-contact snapshot: by the moment immediately before the pilot's

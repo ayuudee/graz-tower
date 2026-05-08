@@ -86,8 +86,8 @@ class FirewallSensorReadingTest {
 
     @Test
     fun `coords assigns from kinematic state-position only`() {
-        // fn-6.2 (R6): pin that `toSensorReading` populates `coords` from
-        // the bare-identifier read of `state.position` (the kinematic
+        // Pin that `toSensorReading` populates `coords` from the
+        // bare-identifier read of `state.position` (the kinematic
         // Cartesian field on AircraftState) — not from a re-derived snap
         // value or a placeholder. The negative half rejects a local-var
         // shadow inside the function body that would silently bypass the
@@ -123,8 +123,8 @@ class FirewallSensorReadingTest {
             FIREWALL VIOLATION: SensorReading.kt assigns `coords = $rhs`, expected
             `coords = position` (bare identifier on the AircraftState receiver, the
             kinematic Cartesian field). Re-deriving coords from the snap field or
-            a recomputed value defeats the kinematic-radar doctrine — fn-6's whole
-            reason for existing.
+            a recomputed value defeats the kinematic-radar doctrine — the whole
+            reason this firewall pin exists.
             """.trimIndent()
         }
 
