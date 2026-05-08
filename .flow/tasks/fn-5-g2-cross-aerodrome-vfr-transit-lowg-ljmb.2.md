@@ -60,9 +60,8 @@ Adds a new test extension `firstPilotInitialContactTo(controllerId)` to `Transmi
 
 
 ## Done summary
-
-_Populated at task completion via `flowctl done <id> --summary-file ...`_
-
+G2CrossAerodromeVfrTest landed across multiple commits (75c9472 Phase F + 7b1fd55 follow-up + 3b964c3 Phase I + ab8c8de SimTrace + f273d53 round 1 + 5af3f24 round 2). Test exercises full LOWG taxi → cruise → LJMB landing → taxi-to-stand at ~37 sim minutes wall, with cross-aerodrome handoff window pin, multi-aerodrome ATIS pin, autonomous-contact provenance pin, time-band pin, RUN_UP_CHECKS dwell pin. R4 gap pin restored to >=30s by fn-6 (commit cbd8f7c). Test green.
 ## Evidence
-
-_Populated at task completion via `flowctl done <id> --evidence-json ...`_
+- Commits:
+- Tests:
+- PRs:

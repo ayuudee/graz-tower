@@ -1,13 +1,18 @@
 {
   "branch_name": "fn-5-g2-cross-aerodrome-vfr-transit-lowg-ljmb",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-08T20:01:05.332713Z",
   "created_at": "2026-05-07T20:13:01.602623Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [],
   "id": "fn-5-g2-cross-aerodrome-vfr-transit-lowg-ljmb",
   "next_task": 1,
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-5-g2-cross-aerodrome-vfr-transit-lowg-ljmb.md",
-  "status": "open",
+  "status": "done",
   "title": "G2 \u2014 Cross-aerodrome VFR transit (LOWG \u2192 LJMB)",
-  "updated_at": "2026-05-07T20:34:11.279120Z"
+  "updated_at": "2026-05-08T20:01:32.743520Z"
 }
