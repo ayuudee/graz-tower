@@ -205,6 +205,38 @@ data class NoPendingReadback(val matcher: InstructionMatcher) : RuleGuard {
             .none { it.state is xyz.easiersaid.twr.controller.observe.CoordinationState.Issued && matcher.matches(it.instruction) }
 }
 
+/**
+ * fn-8.3 Phase 3 round 1 (codex review fix): stronger sibling to
+ * [NoPendingReadback] that blocks on a matching coordination in **any**
+ * state — Issued, Querying, Reissued, *or* LostCommsDeclared.
+ *
+ * `NoPendingReadback` is intentionally narrow (Issued only) because the
+ * COORD-REISSUE escalation flow takes over for stepped-on transmissions
+ * and re-fires the same rule with the same instruction shape — the
+ * narrow gate is correct for *self-reissue* of an instruction.
+ *
+ * For *cross-type* conflict prevention (e.g. the controller has issued
+ * `ClearedToLand` to a circuit-traffic aircraft whose Downwind got
+ * stepped on, and the delayed Downwind later delivers
+ * `CircuitIntent=TOUCH_AND_GO` with the prior land coordination still
+ * in escalation states), the narrow gate is too narrow — it would let
+ * `ARR-LAND-TNG-REISSUE` fire on top of a `ClearedToLand` that has
+ * escalated past `Issued`. That's the conflicting-clearance shape we
+ * want to refuse.
+ *
+ * Use this guard when the rule's safety property requires "no open
+ * coordination of the opposite type", not just "no fresh-issued
+ * coordination of the opposite type." Pruning by `Pass 12 D-AUDIT.2.B`
+ * removes terminal entries when the aircraft leaves the controller's
+ * world, so this guard self-clears on departure.
+ */
+data class NoOpenCoordination(val matcher: InstructionMatcher) : RuleGuard {
+    override val failureMessage = "An open coordination for the matching instruction already exists"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.coordinations[ac.id].orEmpty()
+            .none { matcher.matches(it.instruction) }
+}
+
 // ── Pilot events ─────────────────────────────────────────────────────
 
 /** Pilot has reported ready for departure this cycle. */
