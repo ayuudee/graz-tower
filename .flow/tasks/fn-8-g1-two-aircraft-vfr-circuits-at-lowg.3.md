@@ -993,23 +993,65 @@ review-finding gap.
 
 **FP / type-safety (B5-α path — controller-side):**
 - New BDI guard (e.g. `HasReportedCircuitPosition(legs:
-  Set<LegName>?)`) sources from a typed observation surface — most
-  likely an extended `BeliefState.observedReports[aircraft]:
-  Set<ReportEvent>` or per-aircraft latest report tracking. Sealed
-  `ReportEvent` already lives in `:protocol`. The guard's failure
-  mode is total over the surface (present/absent typed; no
-  stringly).
+  Set<LegName>?)`). The witness MUST be **commitment-scoped**, not
+  a flat `Map<AircraftId, Set<ReportEvent>>` on `BeliefState`.
+  Earlier draft of this subsection sketched a flat surface; codex
+  review iteration 2 caught the stale-belief class — a flat map
+  would let A's first-circuit Downwind report unlock A's second-
+  circuit landing clearance, recreating the same stale-witness
+  failure mode that Phase 2's `circuitIntent` work surfaced. The
+  correct shape mirrors Phase 2's `Commitment.touchedDownDuring
+  Commitment` / `pilotReadyDuringCommitment` discipline:
+  - `Commitment.observedReportsDuringCommitment:
+    Set<ReportEvent>` (or `Set<LegName>` if only legs matter) —
+    sticky witness, default empty on commitment formation, set in
+    `reconcileObservedStages` for `TOWER_ARRIVAL` when an observed
+    `ReportEvent` matches the aircraft. Reset implicitly on
+    commitment lifecycle: a fresh commitment formation (e.g. fresh
+    `AwaitDownwind` after T&G `ARR-TNG-AIRBORNE` completes the
+    prior arrival) gets the default-empty value.
+  - The guard reads the field on the aircraft's CURRENT
+    commitment. Stale reports from prior commitments (e.g. first-
+    circuit Downwind for a now-active second-circuit commitment)
+    are structurally invisible.
+- Reset/reversal points to verify in the implementation pass:
+  - **Commitment formation** (fresh `AwaitDownwind` for
+    `TOWER_ARRIVAL`): default empty.
+  - **T&G commitment completion** (`ARR-TNG-AIRBORNE` fires →
+    next commitment forms): default empty.
+  - **Go-around** (commitment regresses to `AwaitDownwind` via
+    `ARR-GO-AROUND-CLEARANCE-ISSUED`): RESET to empty (the
+    pilot's pre-go-around reports don't satisfy the post-go-
+    around landing clearance gate).
+  - **Handoff / responsibility transitions**: per the existing
+    BeliefState commitment-on-aircraft scoping, a commitment
+    moves with its aircraft within a controller's purview;
+    cross-controller transfer doesn't preserve the witness
+    (typed: separate Commitment instance, separate field).
+  - **Circuit re-entry** (e.g. extended downwind / orbit): no
+    reset — the aircraft is still on the same commitment,
+    pre-existing reports remain valid.
+- Targeted regression test in the implementation pass: "first-
+  circuit Downwind report must NOT satisfy
+  `HasReportedCircuitPosition` for the second-circuit commitment"
+  — a `BeliefState` fixture with two sequential commitments and
+  the witness scoped to the active one only.
 - No new `ControllerDecisionResult` shape change. Pure-decide
   contract preserved (per `feedback_architecture.md`).
 - `BeliefState` already carries `circuitIntent: Map<AircraftId,
-  CircuitIntent>` (M2's mechanism path). The new
-  `observedReports` field complements it: intent (semantic) +
-  reported-leg (positional). They serve different gates, no
-  conflation.
-- Failure-closed default: if the guard's underlying observation
-  field is empty for an aircraft, the rule does NOT fire. A future
-  scenario where the field is mis-populated surfaces as "ARR-LAND
-  never fires" rather than "ARR-LAND fires too eagerly."
+  CircuitIntent>` (M2's mechanism path) AT THE TOP LEVEL — note
+  this is the PRE-Phase-2 shape that still has the stale-belief
+  class for circuitIntent itself. Phase 2 closed circuitIntent's
+  staleness via the `touchedDownDuringCommitment` witness sticky
+  on `Commitment`, not by re-scoping circuitIntent. The B5-α
+  guard MUST be on `Commitment`, not at `BeliefState` top level,
+  to avoid recreating a stale-belief class for reports that the
+  field itself was supposed to fix.
+- Failure-closed default: if the witness is empty for an
+  aircraft's current commitment, the rule does NOT fire. A future
+  scenario where the witness is mis-populated surfaces as
+  "ARR-LAND never fires" (live wedge — surfaces in tests) rather
+  than "ARR-LAND fires too eagerly" (dangerous silent regression).
 
 **FP / type-safety (B5-β path — pilot-side):**
 - Mission-tree replan is a `PilotMission → PilotMission` transform.
@@ -1018,19 +1060,50 @@ review-finding gap.
   `collapseToGroundArrival`) takes `(mission: PilotMission, now:
   SimTime): PilotMission` and is total — non-circuit-task missions
   flow through unchanged.
-- `PilotIntent` reset analogous to `applySelfInitiatedGoAround`'s
-  `phase = PilotPhase.Climbing` shape, but for ground-vacate:
-  `phase = PilotPhase.LandingRoll, route = vacateRoute,
-  targetSpeedMps = taxiSpeed`. Sealed `PilotPhase` discrimination
-  ensures the new state is representable without stringly cases.
-- The Phase 3 round 1 attempt's hidden bug: kinematic intent reset
-  was only on the cognitive override path; the kinematic layer
-  (`Pilot.kt:planRoute`) re-derived an airborne route on the next
-  tick because mission step was still `LAND` (CompletionMode.PHYSICAL
-  — incomplete because aircraft on runway). The fix needs to also
-  mark LAND complete + advance the step, OR have the kinematic
-  layer respect the cognitive override of phase even when the
-  step is mid-PHYSICAL-completion.
+- **Two-stage timing — load-bearing constraint** (codex review
+  iteration 2 finding): at `ClearedToLand` receipt the aircraft is
+  still AIRBORNE on final approach. Resetting kinematic intent to
+  `LandingRoll` + vacate route at that moment would force the
+  pilot into ground-vacate kinematics before they've physically
+  landed — breaks the kinematic chain. The fix splits into two
+  transitions:
+  1. **Stage 1 — on `ClearedToLand` receipt** (when active
+     circuit task is `TouchAndGo`): replan the mission tree only.
+     Collapse the active TouchAndGo + remaining circuit-pattern
+     siblings under `CircuitTraining` to a fall-through
+     `groundArrivalTask`. Mark `hasClearance = true` (existing
+     `handleLandingClearance` semantic). Do NOT touch
+     `PilotIntent.phase`. The pilot continues flying the final
+     approach kinematically — same as a plain `circuitTask()`
+     full-stop arrival. Mission step advances `LAND` next, then
+     the `groundArrivalTask`'s steps after touchdown.
+  2. **Stage 2 — on `BacktrackRunway` / `AfterLandingVacateVia`
+     receipt** (when aircraft is on the runway post-touchdown,
+     mission step is `LAND` complete or `REPORT_RUNWAY_VACATED`):
+     this is the kinematic ground-vacate transition. Update
+     `processInstruction` so BacktrackRunway / AfterLandingVacateVia
+     match at any step where the pilot is on the runway post-
+     touchdown (not only `AWAIT_VACATE_INSTRUCTION`), advancing
+     the step + setting the pilot's intent to taxi the
+     vacate/backtrack route. `PilotPhase.LandingRoll` is the
+     correct phase here (kinematically post-landing, decelerating
+     on the runway pre-vacate); `route = vacateRoute,
+     targetSpeedMps = taxiSpeed` only after the route is set up.
+- The Phase 3 round 1 attempt's hidden bug: it tried to do BOTH
+  stages on ClearedToLand receipt, which forced kinematic ground-
+  vacate while the aircraft was still airborne. Pilot's kinematic
+  layer (`Pilot.kt:planRoute`) re-derived an airborne route on
+  the next tick because the mission step was still `LAND`
+  (CompletionMode.PHYSICAL — incomplete because aircraft was
+  airborne) AND the existing kinematic logic correctly maintained
+  the airborne descent profile on final approach. The fix is to
+  defer kinematic ground-vacate to Stage 2 (post-touchdown),
+  which is when real pilots receive vacate instructions.
+- Sealed `PilotPhase` discrimination ensures both transitions
+  remain typed: Stage 1 leaves `phase` untouched (still
+  `Final` / `LandingRoll` per kinematic layer); Stage 2 sets
+  `phase = LandingRoll` explicitly (idempotent if already
+  `LandingRoll` post-touchdown).
 
 **Test architecture:**
 - B5-α tests: a controller-only spec exercising the new guard
