@@ -23,7 +23,6 @@ import xyz.easiersaid.twr.controller.bdi.InCircuit
 import xyz.easiersaid.twr.controller.bdi.InstructionMatcher
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
-import xyz.easiersaid.twr.controller.bdi.NoOpenCoordination
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
 import xyz.easiersaid.twr.controller.bdi.OnApproach
@@ -367,19 +366,25 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // Gate matches ARR-LAND: explicit FULL_STOP OR no circuit-intent
             // signal received (default-to-full-stop for unknown intent).
             //
-            // fn-8.3 Phase 3 round 1 (codex review iteration 2):
-            // self-type uses `NoPendingReadback(ClearedToLand)` — narrow
-            // gate so the COORD-REISSUE escalation flow can re-fire after
-            // the coordination escalates past `Issued`. Cross-type uses
-            // `NoOpenCoordination(ClearedTouchAndGo)` — wide gate that
-            // refuses to issue a fresh land clearance while a prior T&G
-            // coordination is still on the books in any state (Issued,
-            // Querying, Reissued, LostCommsDeclared). Pre-fix, a circuit-
-            // traffic aircraft whose pilot's intent flipped between
-            // FULL_STOP and TOUCH_AND_GO across delayed Downwind reports
-            // could see conflicting clearances stacked on the same
-            // approach. This is the symmetric counterpart of
-            // ARR-LAND-TNG-REISSUE's cross-type block on ClearedToLand.
+            // fn-8.3 Phase 3 round 1 (codex review iteration 3): the
+            // `NoPendingReadback` matcher widens to BOTH landing-clearance
+            // types so a fresh land-reissue cannot land on top of a pilot
+            // who is currently reading back a `ClearedTouchAndGo` (and
+            // vice versa for the T&G reissue). Limiting the cross-type
+            // block to the narrow `Issued` state preserves liveness — if
+            // the opposite-type coordination escalates past `Issued`
+            // (Querying / Reissued / LostCommsDeclared), the COORD-REISSUE
+            // / lost-comms flows have effectively superseded the prior
+            // clearance in the eyes of the lifecycle, and a fresh
+            // intent-aligned clearance is the doctrinally correct next
+            // step. Iteration-2's wider `NoOpenCoordination` gate caused
+            // a deadlock when intent flipped post-issuance and the prior
+            // coordination escalated — neither rule could fire.
+            //
+            // Net invariant: at most one *fresh-issued* (state=Issued)
+            // landing-class coordination at a time. Multiple coordinations
+            // in escalated states can coexist in the ledger; the
+            // escalation flow + supersession-by-readback handle resolution.
             AtcRule(
                 id = "ARR-LAND-REISSUE",
                 description = "Re-issue landing clearance after readback timeout",
@@ -390,8 +395,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                         CircuitIntentIs(CircuitIntent.FULL_STOP),
                         Not(IsCircuitTraffic),
                     )),
-                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
-                    NoOpenCoordination(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
+                    NoPendingReadback(InstructionMatcher.AnyOf(listOf(
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
+                    ))),
                 )),
                 action = ClearLandAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
@@ -400,22 +407,13 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             ),
             // Re-issue T&G variant — gate matches ARR-LAND-TNG (explicit T&G only).
             //
-            // fn-8.3 Phase 3 round 1 (codex review iteration 2):
-            // self-type uses `NoPendingReadback(ClearedTouchAndGo)` —
-            // narrow gate so the COORD-REISSUE escalation flow can
-            // re-fire after the coordination escalates past `Issued`.
-            // Cross-type uses `NoOpenCoordination(ClearedToLand)` — wide
-            // gate that refuses to issue a fresh T&G clearance while a
-            // prior land coordination is still on the books in any state.
-            // With the C4 default flip ("clear-to-land when intent
-            // unknown"), a circuit-traffic aircraft whose Downwind was
-            // stepped on first receives `ClearedToLand`; if the delayed
-            // Downwind later delivers TOUCH_AND_GO intent, this rule
-            // would otherwise fire on top of the unresolved land
-            // coordination. The wide cross-type gate refuses, so the
-            // controller waits for the prior land coordination to either
-            // resolve via readback or be pruned via Pass 12's terminal-
-            // state cleanup before issuing T&G.
+            // fn-8.3 Phase 3 round 1 (codex review iteration 3): symmetric
+            // to ARR-LAND-REISSUE. The `NoPendingReadback` matcher blocks
+            // on either landing-clearance type in `Issued` state only;
+            // escalated states allow the rule to fire and supersede the
+            // prior unresolved clearance via the standard escalation
+            // lifecycle. See ARR-LAND-REISSUE doc above for liveness vs
+            // safety reasoning.
             AtcRule(
                 id = "ARR-LAND-TNG-REISSUE",
                 description = "Re-issue touch-and-go clearance after readback timeout",
@@ -423,8 +421,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     LandingConditions,
                     CircuitIntentIs(CircuitIntent.TOUCH_AND_GO),
-                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
-                    NoOpenCoordination(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    NoPendingReadback(InstructionMatcher.AnyOf(listOf(
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
+                    ))),
                 )),
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
