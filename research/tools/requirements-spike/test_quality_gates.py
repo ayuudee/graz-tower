@@ -1410,7 +1410,7 @@ def test_adequacy_source_window_uses_newline_line_numbers() -> None:
 def test_prompt_version_shas_per_stage_are_distinct() -> None:
     """Each prompt-builder stage gets its own SHA. Editing one stage's
     prompt must change only that stage's SHA, leaving the others stable."""
-    sys.path.insert(0, "/home/andrew/dev/projects/twr2/research/tools/requirements-spike")
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
     import run_icao4444_ollama_first_prototype as proto  # noqa: PLC0415
     shas = proto.PROMPT_VERSION_SHAS_BY_STAGE
     expected_stages = {"structure", "extraction", "challenge", "defense", "bundleGate", "judge"}
@@ -1600,7 +1600,7 @@ def test_audit_full_imports_resolve() -> None:
     `promote_section`. Tests don't run the full Ollama path, so an
     import rename in a callee module would silently rot the wedge.
     Force the imports to resolve here so a rename surfaces in CI."""
-    sys.path.insert(0, "/home/andrew/dev/projects/twr2/research/tools/requirements-spike")
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
     from run_icao4444_ollama_first_prototype import (  # noqa: PLC0415,F401
         ROOT,
         build_arg_parser,

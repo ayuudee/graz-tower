@@ -73,7 +73,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.3.2.1.1",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3090-3103"
+                "sourceRef": "research/txt/icao4444-extracted.txt:3090-3103"
             }
         }
     },
@@ -120,7 +120,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.3.2.1.2",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3109",
+                "sourceRef": "research/txt/icao4444-extracted.txt:3104-3109",
             },
         },
     },
@@ -207,7 +207,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.3.2.1.3",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3130",
+                "sourceRef": "research/txt/icao4444-extracted.txt:3110-3130",
             },
         },
     },
@@ -320,7 +320,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.5.7.5.1",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3417",
+                "sourceRef": "research/txt/icao4444-extracted.txt:3405-3417",
             },
         },
     },
@@ -373,7 +373,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.5.7.5.1.1",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3422-3423"
+                "sourceRef": "research/txt/icao4444-extracted.txt:3422-3423"
             }
         }
     },
@@ -427,7 +427,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.5.7.5.2",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3424-3425"
+                "sourceRef": "research/txt/icao4444-extracted.txt:3424-3425"
             }
         }
     },
@@ -470,7 +470,7 @@ SEEDED_PROMOTION_SPECS = {
             "sourceTraceability": {
                 "document": "ICAO Doc 4444",
                 "section": "4.5.7.5.2.1",
-                "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3426-3429"
+                "sourceRef": "research/txt/icao4444-extracted.txt:3426-3429"
             }
         }
     },

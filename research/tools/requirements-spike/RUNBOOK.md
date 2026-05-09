@@ -87,7 +87,7 @@ consumers can begin to dereference them.
 
 ```bash
 PYTHON=/path/to/python3
-ROOT=/home/andrew/dev/projects/twr2
+ROOT="$(git rev-parse --show-toplevel)"
 SCRATCH=/tmp/ollama-first-phase-e-$(date +%Y-%m-%d)
 
 # 1. Drive ingestion across every document manifest under documents/.
