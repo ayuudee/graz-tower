@@ -467,4 +467,130 @@ side-effect ordering) still depends on a stable total order.
 
 ## Done summary
 
+fn-8.1 lands the four foundation pieces G1's two-aircraft test depends
+on: (1) `SimState.rngByAircraft` per-aircraft splittable PRNG with
+`SimRandom.split(id.value)` seeding in `SimState.initial`, threaded
+through `handlePilotTick` (one `nextLong()` advance per tick, persisted
+via `withAircraftRng`) and `handleSpawn`; (2) `WakeRule` sealed
+hierarchy in `WakeSeparation.kt` (`IcaoLeaderFollower` for table hits,
+`IcaoNoAdditionalWakeMinimum` carrying both categories for any non-
+listed pair, `UnknownCategory` for nulls) with `classifyWakeRule`
+classifier, populated additively at the single `SeparationAssessment`
+constructor site; (3) `Fixtures.LOWG_TWO_AIRCRAFT` carrying two VFR
+circuit-training plans and per-aircraft start points (`LOWG_STAND_1_POINT`
++ `LOWG_STAND_2_POINT`, both authored adjacently in
+`world-candidate.json`), via the new optional `Fixture.startPoints`
+field plus `requiredStartPoints()` helper and four new
+`FixtureViolation` leaves catching authoring bugs at load time; (4)
+event-ordering audit confirming `EventQueue.EVENT_ORDER` already
+totally orders simultaneous `PilotDecisionTick` events by
+`AgentId.Pilot.sortKey` — no comparator fix needed.
+
 ## Evidence
+
+### R2: per-aircraft RNG threading + determinism
+
+**Production threading.** `Step.kt:handlePilotTick` (around
+`Step.kt:436-455` post-fn-8.1) reads `state.aircraftRng(event.aircraftId)`,
+advances it via `acRng.nextLong()`, and persists the advance via
+`resultState.withAircraftRng(event.aircraftId, advancedRng)` in the
+return path. The `state.aircraftRng(id)` helper (`SimState.kt`) fails
+loud on missing-entry — so a regression that forgets to seed in
+`initial` or `handleSpawn` produces a clear error rather than silent
+fallback to default.
+
+**G0 trace stability.** `LowgGoldenTest` and `G2CrossAerodromeVfrTest`
+stay byte-stable post-threading (no pinned values changed). This is
+true by construction: pre-fn-8.1, no production code read `state.rng`
+for aircraft-scoped randomness, so swapping pilot ticks to read from
+`state.aircraftRng(id)` instead does not affect any pre-existing
+sampling site (there were none). The single `nextLong()` advance per
+tick is invisible to G0/G2 because no sim-emitted event reads it.
+
+**Determinism micro-scenario.** `PerAircraftRngSpec` (4 cases):
+- `per-aircraft RNG is independent of input list order` — `[A, B]` and
+  `[B, A]` input lists into `SimState.initial` produce the same
+  `aircraftRng(A)` and `aircraftRng(B)` (because `initial` sorts by
+  `id.value` before associating).
+- `per-aircraft draws are independent across aircraft` — drawing on A
+  first then B yields the same per-aircraft draws as drawing B first
+  then A (each id has its own stream; `split` doesn't advance the
+  parent).
+- `withAircraftRng updates only the named aircraft's stream` —
+  advancing A's stream leaves B's stream byte-stable.
+- `step handlePilotTick advances the per-aircraft RNG and leaves others
+  byte-stable` — integration test that drives one `PilotDecisionTick`
+  for A through `step()` and asserts (a) A's `aircraftRng` advanced,
+  (b) B's `aircraftRng` is byte-stable. This is the load-bearing R2
+  assertion: production tick handling actually consumes per-aircraft
+  RNG, not just the helper map in isolation.
+
+### R3: WakeRule ADT
+
+`WakeRuleClassifierSpec` (9 cases) covers the three regions:
+- table-hit: J→J at 6.0 NM (line 30), H→H at 4.0 NM (line 35), J→L at
+  8.0 NM (line 33);
+- fallback: L→L (no leader-L row), L→M (no leader-L row — fallback
+  preserves both categories), M→M (no medium-on-medium row);
+- unknown: null leader, null follower, both null.
+
+`SeparationAssessment.wakeRule` is populated at
+`SeparationEngine.kt:assessPair` (the single constructor site of
+`SeparationAssessment`). All existing readers ignore the new field; no
+downstream call site broke. NM units throughout — no `Meters`.
+
+### R4: tick-ordering audit
+
+`EventQueue.kt:24-30` carries the `EVENT_ORDER` comparator:
+```kotlin
+internal val EVENT_ORDER: Comparator<SimEvent> = Comparator { a, b ->
+    val byTime = a.time.compareTo(b.time)
+    if (byTime != 0) return@Comparator byTime
+    val bySource = a.source.compareTo(b.source)
+    if (bySource != 0) return@Comparator bySource
+    a.seq.compareTo(b.seq)
+}
+```
+Two simultaneous `PilotDecisionTick` events for different aircraft
+sort by `bySource`, which is `AgentId.Pilot.sortKey =
+"2-pilot-${id.value}"` (`AgentId.kt:28-30`). Lexicographic order on
+the id string — fully deterministic. No fix required; the comparator
+is the audit result.
+
+`Fixture.load` (`Fixture.kt:255`) iterates `flightPlans.entries.sortedBy
+{ it.key.value }` so initial `FlightPlanFiled` events enter the queue
+in stable order — and `Step.kt`'s `seq`-stamping
+(`stampSeq`/`emit` paths) preserves that order. Chain end-to-end
+deterministic.
+
+With per-aircraft RNG threading (R2), the within-tick comparator
+ordering matters less for *randomness* (each aircraft's stream is
+independent) but still matters for *non-RNG state mutations* — and
+the comparator already provides a stable total order for those.
+
+### R9: tests + lint
+
+- `LowgGoldenTest` (G0 single-aircraft): green.
+- `G2CrossAerodromeVfrTest` (G2 cross-aerodrome): green.
+- Full sweep `:sim:jvmTest :pilot:jvmTest :controller:jvmTest
+  :core:jvmTest :protocol:jvmTest`: green.
+- `./gradlew detekt`: 10 weighted issues, all pre-existing on master
+  (verified by running detekt at base commit `5b70f68` with my changes
+  stashed — same 10 issues). Baseline unchanged.
+
+### R1: LOWG_TWO_AIRCRAFT fixture + validation
+
+`Fixtures.LOWG_TWO_AIRCRAFT` constants visible in
+`Fixtures.kt:LOWG_TWO_AIRCRAFT`. Two distinct `PointId`s
+(`LOWG_STAND_1_POINT` + `LOWG_STAND_2_POINT`) with KDoc citing the
+world-candidate authoring as source. Two `FiledPlan.Vfr` entries
+(`OE-ABC`, `OE-DEF`), both LOWG → LOWG circuit training. Wake category
+NOT on `FiledPlan` (per spec) — set at aircraft construction in
+fn-8.2.
+
+`FixtureLoadSpec` (5 new cases): `LOWG_TWO_AIRCRAFT` happy-path load
+(2 filings, one per aircraft, both to LOWG_GROUND), the four new
+violation leaves (`StartPointWithoutFlightPlan`,
+`FlightPlanMissingStartPoint`, `DuplicateStartPoint`,
+`StartPointMissing`), and `requiredStartPoints` loud-fail on a
+single-aircraft fixture.

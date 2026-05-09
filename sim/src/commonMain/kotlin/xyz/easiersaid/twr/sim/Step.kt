@@ -439,6 +439,22 @@ private fun handlePilotTick(
         ifRight = { it },
     )
 
+    // fn-8.1 (R2): advance the per-aircraft RNG stream once per pilot tick
+    // and persist it. Threading the stream through the tick handler makes
+    // the order-of-dispatch invariance contract load-bearing — two pilot
+    // ticks at the same `time` for different aircraft draw on independent
+    // streams, so swapping their dispatch order produces identical
+    // per-aircraft post-tick states. Today the draw is a single `nextLong()`
+    // (no consumer yet — pilotDecide is total in PilotInput); future
+    // sampling sites (readback delay jitter, scan-rate jitter) will read
+    // and re-thread the stream the same way.
+    //
+    // Calls SimState.aircraftRng (loud-fail on missing entry) — every
+    // aircraft in state.aircraft must have a matching rngByAircraft entry
+    // by SimState.initial / handleSpawn invariant.
+    val acRng = state.aircraftRng(event.aircraftId)
+    val (_, advancedRng) = acRng.nextLong()
+
     // Apply intent to aircraft state.
     var updated = ac.copy(
         targetSpeedMps = decision.intent.targetSpeedMps,
@@ -556,7 +572,14 @@ private fun handlePilotTick(
         time = event.time + PilotConstants.PILOT_DECISION_INTERVAL,
         aircraftId = event.aircraftId,
     )
-    return resultState.copy(aircraft = aircraft).emit(commEvents + next)
+    // fn-8.1 (R2): persist the advanced per-aircraft RNG stream alongside
+    // the other tick-derived state mutations. Symmetric with how shared-rng
+    // sampling sites would call `state.copy(rng = newRng)` — but keyed by
+    // aircraft so other aircraft's streams stay byte-stable.
+    return resultState
+        .copy(aircraft = aircraft)
+        .withAircraftRng(event.aircraftId, advancedRng)
+        .emit(commEvents + next)
 }
 
 private fun handleControllerTick(
