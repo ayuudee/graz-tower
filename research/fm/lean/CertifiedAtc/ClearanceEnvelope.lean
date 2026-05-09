@@ -13,6 +13,7 @@ abbrev StarId := String
 abbrev VfrRouteId := String
 abbrev HoldingPatternId := String
 abbrev ApproachId := String
+abbrev AirspaceVolumeId := String
 
 inductive ProcedureRef
   | viaSid (sid : SidId)
@@ -340,9 +341,60 @@ structure CompileStarView where
   connectsTo : Option ApproachId := none
   deriving DecidableEq, Repr
 
+/--
+Proof-visible mirror of `VfrRouteAirspaceSegment` from
+`core/.../ProcedureAndAirspaceModel.kt:67-75`. Carries the runtime per-segment
+endpoint pair plus the airspace volume id the segment is asserted to lie
+inside.
+
+The runtime field names `from` / `to` are renamed to `fromPoint` / `toPoint`
+because `from` is a Lean keyword. `DecidableEq` is derived consistently with
+the existing `Scoped*Source` / `Compile*View` family — every carrier
+(`PointId`, `AirspaceVolumeId`, both `String` abbrevs) is decidable, so the
+derivation is constructive and does not pull in `Classical.propDecidable`.
+-/
+structure ProofVisibleAirspaceSegment where
+  fromPoint : PointId
+  toPoint : PointId
+  volume : AirspaceVolumeId
+  deriving DecidableEq, Repr
+
+/--
+Sealed sum mirroring the runtime `VfrRouteAirspaceProfile` from
+`core/.../ProcedureAndAirspaceModel.kt:77-85`. Three explicit constructors —
+no `Nonempty` / `Inhabited` shortcut — so that `match` exhaustiveness on the
+proof side catches a future runtime variant addition.
+
+`inVolume` carries an `AirspaceVolumeId` (volume-authoritative);
+`inClass` carries the airspace class (uniform-class shorthand);
+`segmented` carries the per-segment list (the smart-constructor non-empty
+runtime invariant is mirrored on the well-formedness side, not in the
+inductive itself, so legacy data round-trips are still legal at the type
+level).
+
+`DecidableEq` is derived: every constructor carrier is decidable
+(`AirspaceVolumeId` and `PointId` are `String` abbrevs; `AirspaceClass` is a
+finite enum; `List ProofVisibleAirspaceSegment` is decidable since
+`ProofVisibleAirspaceSegment` is). The derivation is therefore constructive
+— `Classical.propDecidable` is not invoked. This lets `CompileVfrRouteView`
+keep its `DecidableEq` instance after gaining the optional profile field.
+-/
+inductive ProofVisibleAirspaceProfile where
+  | inVolume (volume : AirspaceVolumeId)
+  | inClass (cls : AirspaceClass)
+  | segmented (segments : List ProofVisibleAirspaceSegment)
+  deriving DecidableEq, Repr
+
 structure CompileVfrRouteView where
   id : VfrRouteId
   waypoints : List CompileWaypointView
+  /-- Optional airspace profile (`InVolume` / `InClass` / `Segmented`) mirroring
+      the runtime nullable `VfrRoute.airspaceProfile`
+      (`ProcedureAndAirspaceModel.kt:91`). Legacy / unannotated routes carry
+      `none`. Populated by `ScopedVfrRouteSource.toCompileView` so the
+      profile rides through `extractRouteBearingCompileView` like the other
+      eight families. -/
+  airspaceProfile : Option ProofVisibleAirspaceProfile := none
   deriving DecidableEq, Repr
 
 structure CompileFixView where

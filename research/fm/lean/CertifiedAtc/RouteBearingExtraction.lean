@@ -151,66 +151,24 @@ def ScopedStarSource.toCompileView
     waypoints := star.waypoints
     connectsTo := star.connectsTo }
 
-/--
-Proof-visible mirror of `VfrRouteAirspaceSegment` from
-`core/.../ProcedureAndAirspaceModel.kt:67-75`. Carries the runtime per-segment
-endpoint pair plus the airspace volume id the segment is asserted to lie inside.
-
-The `from` / `to` field names from the runtime are renamed to `fromPoint` /
-`toPoint` because `from` is a Lean keyword. No `Inhabited` / `Nonempty`
-instance is derived eagerly — exhaustiveness on `match` is the regression
-signal we want from the proof side.
--/
-structure ProofVisibleAirspaceSegment where
-  fromPoint : PointId
-  toPoint : PointId
-  volume : Greenfield.AirspaceVolumeId
-  deriving DecidableEq, Repr
-
-/--
-Sealed sum mirroring the runtime `VfrRouteAirspaceProfile` from
-`core/.../ProcedureAndAirspaceModel.kt:77-85`. Three explicit constructors —
-no `Nonempty` shortcut — so that `match` exhaustiveness on the proof side
-catches a future runtime variant addition.
-
-`inVolume` carries an `AirspaceVolumeId` (volume-authoritative);
-`inClass` carries the airspace class (uniform-class shorthand);
-`segmented` carries the per-segment list (the smart-constructor non-empty
-runtime invariant is mirrored on the well-formedness side, not in the
-inductive itself, so legacy data round-trips are still legal at the type
-level).
-
-No `deriving DecidableEq` on the sum itself — segments contain a `List` whose
-decidable equality is fine, but adding `DecidableEq` here can poison
-downstream `decide` callers via `Classical.propDecidable`. Add only when a
-concrete site requires it.
--/
-inductive ProofVisibleAirspaceProfile where
-  | inVolume (volume : Greenfield.AirspaceVolumeId)
-  | inClass (cls : AirspaceClass)
-  | segmented (segments : List ProofVisibleAirspaceSegment)
-  deriving Repr
-
 structure ScopedVfrRouteSource where
   id : VfrRouteId
   waypoints : List CompileWaypointView
-  /-- Optional airspace profile mirroring the runtime nullable
-      `VfrRoute.airspaceProfile` (`ProcedureAndAirspaceModel.kt:91`). Legacy
-      / unannotated routes carry `none`. The compile view does not (yet)
-      receive this field — it stays on the source struct only (open
-      question 1: extend source only). -/
+  /-- Optional airspace profile (`InVolume` / `InClass` / `Segmented`)
+      mirroring the runtime nullable `VfrRoute.airspaceProfile`
+      (`ProcedureAndAirspaceModel.kt:91`). Legacy / unannotated routes carry
+      `none`. The companion `CompileVfrRouteView` (defined in
+      `ClearanceEnvelope.lean`) carries the same field and `toCompileView`
+      propagates it, so the profile rides through `extractRouteBearingCompileView`
+      like the other eight families. -/
   airspaceProfile : Option ProofVisibleAirspaceProfile := none
-  deriving Repr
--- `DecidableEq` is intentionally NOT derived on `ScopedVfrRouteSource` here:
--- `ProofVisibleAirspaceProfile` does not derive it (per epic spec — avoid
--- `Classical.propDecidable` poisoning of downstream `decide` callers), and
--- no downstream proof in the FM tree currently requires equality on
--- `ScopedVfrRouteSource`.
+  deriving DecidableEq, Repr
 
 def ScopedVfrRouteSource.toCompileView
     (route : ScopedVfrRouteSource) : CompileVfrRouteView :=
   { id := route.id
-    waypoints := route.waypoints }
+    waypoints := route.waypoints
+    airspaceProfile := route.airspaceProfile }
 
 structure ScopedFixSource where
   id : FixId
@@ -953,111 +911,26 @@ theorem findCompileFix_eq_some_of_mem
       hMemCompile
       hNodupCompile)
 
-/-! ### Ninth family: VFR-route airspace profile (fn-9 lift)
+/-! ### VFR-route airspace profile preservation (fn-9 lift)
 
-The airspace profile rides on `ScopedVfrRouteSource` directly (open question 1
-default: do not extend `CompileVfrRouteView`). The triple shape mirrors the
-existing eight families but indexes into the *source* list rather than the
-extracted compile view, since the profile is not (yet) part of the compile
-view. The semantic role is identical: given a known route id and the
-extraction well-formedness predicate, recover the source struct (and therefore
-its `airspaceProfile`) by id.
+The airspace profile is propagated by `ScopedVfrRouteSource.toCompileView`
+into `CompileVfrRouteView.airspaceProfile`, so the existing eight-family
+machinery — `findCompileVfrRoute_eq_some_of_mem` (above) — already exposes
+the profile through `extractRouteBearingCompileView`. By definitional
+unfolding of `toCompileView`, any `routeView : CompileVfrRouteView` obtained
+via `findCompileVfrRoute (extractRouteBearingCompileView world) routeId`
+satisfies `routeView.airspaceProfile = source.airspaceProfile` for the
+matching `source ∈ world.vfrRoutes`. No separate "ninth-family" lookup is
+needed.
+
+The convenience lemma below packages the well-formedness preservation step
+for callers that hold a `route ∈ world.vfrRoutes` membership directly.
 -/
 
 /--
-Source-side lookup of a VFR route by id. Mirrors the
-`findCompile<Family>` shape but on the source struct (where the airspace
-profile lives) rather than on the compile view.
--/
-def findVfrRouteSource (world : RouteBearingScopedAviationWorld)
-    (routeId : VfrRouteId) : Option ScopedVfrRouteSource :=
-  let rec go : List ScopedVfrRouteSource → Option ScopedVfrRouteSource
-    | [] => none
-    | route :: tail =>
-        if route.id = routeId then
-          some route
-        else
-          go tail
-  go world.vfrRoutes
-
-theorem findVfrRouteSource_go_eq_some_of_mem
-    {items : List ScopedVfrRouteSource}
-    {route : ScopedVfrRouteSource}
-    (hMem : route ∈ items)
-    (hNodup : (items.map (fun candidate => candidate.id)).Nodup) :
-    findVfrRouteSource.go route.id items = some route := by
-  induction items with
-  | nil =>
-      cases hMem
-  | cons head tail ih =>
-      simp at hMem hNodup
-      rcases hNodup with ⟨hHeadNotIn, hTailNodup⟩
-      rcases hMem with rfl | hTailMem
-      · simp [findVfrRouteSource.go]
-      · have hHeadNe : head.id ≠ route.id := by
-          intro hEq
-          exact (hHeadNotIn route hTailMem) (by simp [hEq])
-        simp [findVfrRouteSource.go, hHeadNe, ih hTailMem hTailNodup]
-
-private theorem findVfrRouteSource_go_origin
-    {routeId : VfrRouteId}
-    {source : ScopedVfrRouteSource} :
-    ∀ items : List ScopedVfrRouteSource,
-      findVfrRouteSource.go routeId items = some source →
-        source ∈ items ∧ source.id = routeId := by
-  intro items
-  induction items with
-  | nil =>
-      intro hContra
-      -- `findVfrRouteSource.go _ [] = none`, so `none = some _` is impossible.
-      simp [findVfrRouteSource.go] at hContra
-  | cons head tail ih =>
-      intro hSome
-      by_cases hHead : head.id = routeId
-      · -- Head matched: the `if` reduces to `some head`, so `head = source`.
-        have hStep : findVfrRouteSource.go routeId (head :: tail) = some head := by
-          simp [findVfrRouteSource.go, hHead]
-        have hSomeEq : (some head : Option ScopedVfrRouteSource) = some source :=
-          hStep ▸ hSome
-        have hHeadSource : head = source := Option.some.inj hSomeEq
-        refine ⟨?_, ?_⟩
-        · exact hHeadSource ▸ List.mem_cons_self
-        · exact hHeadSource ▸ hHead
-      · -- Head did not match: lookup recurses into the tail.
-        have hStep : findVfrRouteSource.go routeId (head :: tail) =
-            findVfrRouteSource.go routeId tail := by
-          simp [findVfrRouteSource.go, hHead]
-        have hRec : findVfrRouteSource.go routeId tail = some source :=
-          hStep ▸ hSome
-        rcases ih hRec with ⟨hMemTail, hIdEq⟩
-        exact ⟨List.mem_cons_of_mem head hMemTail, hIdEq⟩
-
-theorem extractRouteBearingCompileView_vfrAirspaceProfile_origin
-    {world : RouteBearingScopedAviationWorld}
-    {routeId : VfrRouteId}
-    {source : ScopedVfrRouteSource}
-    (hFind : findVfrRouteSource world routeId = some source) :
-    source ∈ world.vfrRoutes ∧ source.id = routeId := by
-  unfold findVfrRouteSource at hFind
-  exact findVfrRouteSource_go_origin world.vfrRoutes hFind
-
-theorem findVfrRouteSource_eq_some_of_mem
-    {world : RouteBearingScopedAviationWorld}
-    {route : ScopedVfrRouteSource}
-    (hWf : RouteBearingExtractionWellFormed world)
-    (hMem : route ∈ world.vfrRoutes) :
-    findVfrRouteSource world route.id = some route := by
-  unfold findVfrRouteSource
-  exact findVfrRouteSource_go_eq_some_of_mem
-    (items := world.vfrRoutes)
-    (route := route)
-    hMem
-    hWf.vfrRouteIds
-
-/--
-Profile-aware lookup convenience: when a route is known well-formed, its
-airspace profile (if any) is recoverable through `findVfrRouteSource` and
-satisfies `ProofVisibleAirspaceProfileWellFormed`. This is the
+Profile-aware preservation: when a route is known well-formed and carries an
+airspace profile, the profile satisfies `ProofVisibleAirspaceProfileWellFormed`
+against the world's airspace volumes and the route's waypoints. This is the
 profile-version of the runtime preservation step the existing eight families
 provide for their own carriers.
 -/

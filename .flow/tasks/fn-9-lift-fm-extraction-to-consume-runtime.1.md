@@ -11,16 +11,16 @@ This is conservative-extension only: nothing existing gets renamed or restructur
 **Size:** M
 
 **Files (expected):**
-- `research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean` — extend `ScopedVfrRouteSource` (`:154`), `RouteBearingExtractionWellFormed` (`:205`), the extractor `extractRouteBearingCompileView` (`:193`); add new origin/preservation theorems mirroring the eight-family pattern (`:437`, `:589`, `:661`).
-- `research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean` — `CompileVfrRouteView` (`:343-346`) only if open question 1 in the epic spec resolves to "extend compile-view too" (default: do not touch).
+- `research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean` — define `ProofVisibleAirspaceSegment` and `ProofVisibleAirspaceProfile` (upstream of `RouteBearingExtraction`), and extend `CompileVfrRouteView` (`:343-346`) with `airspaceProfile : Option ProofVisibleAirspaceProfile := none`. Open-question 1 from the epic spec resolved to "extend compile-view too" because the explicit acceptance criterion (extractor maps runtime profile into the new field) only holds when the compile-view carries the field.
+- `research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean` — extend `ScopedVfrRouteSource` (`:154`), `RouteBearingExtractionWellFormed` (`:205`), and update `ScopedVfrRouteSource.toCompileView` to propagate `airspaceProfile`. The eight-family `findCompileVfrRoute_eq_some_of_mem` (`:910`) then exposes the profile through `extractRouteBearingCompileView` by definitional unfolding — no separate "ninth-family" source-side lookup is added. One small preservation lemma (`vfrRouteAirspaceProfileWellFormed_of_mem`) packages the well-formedness step for callers holding `route ∈ world.vfrRoutes` directly.
 
 ## Approach
 
-- Mirror the sealed-interface variants from `core/.../ProcedureAndAirspaceModel.kt:77-83` as a Lean `inductive ProofVisibleAirspaceProfile` with three explicit constructors (`inVolume (volume : Greenfield.AirspaceVolumeId)`, `inClass (cls : Greenfield.AirspaceClass)`, `segmented (segments : List ProofVisibleAirspaceSegment)`). No `Nonempty` shortcut — exhaustiveness on `match` is the regression signal.
+- Mirror the sealed-interface variants from `core/.../ProcedureAndAirspaceModel.kt:77-83` as a Lean `inductive ProofVisibleAirspaceProfile` with three explicit constructors (`inVolume (volume : AirspaceVolumeId)`, `inClass (cls : AirspaceClass)`, `segmented (segments : List ProofVisibleAirspaceSegment)`). No `Nonempty` shortcut — exhaustiveness on `match` is the regression signal.
+- Define the new types in `ClearanceEnvelope.lean` (upstream of `RouteBearingExtraction`) so `CompileVfrRouteView` can carry the profile field without import cycles. Add a local `abbrev AirspaceVolumeId := String` next to the existing id abbrevs in that file.
 - Mirror runtime invariants (`core/.../WorldAirspaceValidation.kt:39-141`) as well-formedness conjuncts on `RouteBearingExtractionWellFormed`: (a) `Segmented.segments` non-empty + `from != to` per segment, (b) every referenced volume id resolves in `airspaceVolumes`, (c) segmented endpoints align with the route's waypoint pairs (sequence-mismatch invariant). Predicate-stack pattern at `:257`, `:270`, `:283`, `:298`.
-- Add origin/preservation theorems in the existing triple shape: `findCompile<Family>_go_eq_some_of_mem` / `extractRouteBearingCompileView_<family>_origin` / `findCompile<Family>_eq_some_of_mem`. Pick a family name like `vfrAirspaceProfile`; the goal is parity with how the existing eight families layer onto extraction.
-- Reuse `Greenfield.AirspaceVolumeId` (already in scope via `ScopedAirspaceVolumeSource.id` at `:170`); do not introduce a parallel id type.
-- No `deriving DecidableEq` on the new sum — leave it off until a concrete site forces it. Avoids `Classical.propDecidable` poisoning downstream `decide` callers.
+- The eight-family `findCompileVfrRoute_eq_some_of_mem` (`:910`) already proves the source-to-compile-view equality. After `toCompileView` is updated to propagate `airspaceProfile`, profile preservation through extraction is `rfl` for any caller — no new `findCompile<Family>_*` triple is added. Add only one small preservation lemma (`vfrRouteAirspaceProfileWellFormed_of_mem`) that packages the well-formedness step for callers holding `route ∈ world.vfrRoutes` directly.
+- `deriving DecidableEq` IS added on `ProofVisibleAirspaceSegment` and `ProofVisibleAirspaceProfile`. The concrete site that requires it: `CompileVfrRouteView` derives `DecidableEq`, and the existing eight-family proofs (e.g. `findCompileVfrRoute_go_eq_some_of_mem` at `:662`) rely on that instance. Every constructor carrier is decidable (`AirspaceVolumeId`, `PointId` are `String` abbrevs; `AirspaceClass` is a finite enum), so the derivation is constructive — `Classical.propDecidable` is not invoked.
 - Keep `simp only [...]` on every new proof; do not add `@[simp]` to new lemmas without re-running the full `lake build CertifiedAtc`.
 
 ## Investigation targets
@@ -51,12 +51,12 @@ This is conservative-extension only: nothing existing gets renamed or restructur
 - [ ] `ScopedVfrRouteSource` carries `airspaceProfile : Option ProofVisibleAirspaceProfile` alongside the existing `id` + `waypoints`; existing fields and types unchanged.
 - [ ] `extractRouteBearingCompileView` (`RouteBearingExtraction.lean:193`) maps the runtime profile into the new field for routes that carry one, and `none` for those that don't, without modifying any existing field mapping.
 - [ ] `RouteBearingExtractionWellFormed` extended with: (a) `Segmented.segments` non-empty + per-segment `from != to`; (b) every referenced volume id resolves in `airspaceVolumes`; (c) segmented endpoints align with the route's waypoint pairs.
-- [ ] Origin/preservation triple added in the existing eight-family shape; one entry registered alongside the existing eight in the well-formedness/origin/preservation pattern.
+- [ ] `airspaceProfile` rides through `extractRouteBearingCompileView` via `toCompileView` propagation; profile preservation through extraction holds by definitional unfolding (no separate "ninth-family" source-side lookup required). One small preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem` packages the well-formedness step for `route ∈ world.vfrRoutes` callers.
 - [ ] No existing theorem in `RouteBearingExtraction.lean`, `RouteBearingResolutionBridge.lean`, `GreenfieldAirspaceWorldBacked*`, or `GreenfieldDeliveredRefinement.lean` is renamed; existing Phase A and Phase 1-4 theorems compile unchanged.
-- [ ] `nix-shell -p lean4 --run 'cd research/fm/lean && lake build CertifiedAtc'` is green; zero `sorry` introduced (`grep -n sorry research/fm/lean/CertifiedAtc/*.lean` returns no new lines).
+- [ ] `lake build CertifiedAtc` is green (full library, all 91 modules); zero `sorry` introduced (`grep -rn '\bsorry\b' research/fm/lean/CertifiedAtc/` returns no new lines).
 - [ ] `./gradlew build` is green (Kotlin side untouched but parity tests still run).
 - [ ] No new `@[simp]` lemmas tagged on the new sum without verifying via full FM build; new proofs use `simp only [...]` with explicit lists.
-- [ ] No `deriving DecidableEq` on `ProofVisibleAirspaceProfile` unless a downstream proof concretely requires it (and then locally only).
+- [ ] `deriving DecidableEq` on `ProofVisibleAirspaceProfile` and `ProofVisibleAirspaceSegment` is justified by the concrete `CompileVfrRouteView`-DecidableEq site, and the comment above each type explains why the derivation is constructive (no `Classical.propDecidable` fallback).
 
 ## Done summary
 
