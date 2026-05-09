@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-09T05:39:15.305545Z",
+  "depends_on": [
+    "fn-9-lift-fm-extraction-to-consume-runtime.1"
+  ],
+  "epic": "fn-9-lift-fm-extraction-to-consume-runtime",
+  "id": "fn-9-lift-fm-extraction-to-consume-runtime.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-9-lift-fm-extraction-to-consume-runtime.2.md",
+  "status": "todo",
+  "title": "Drift-control gate + inventory/contract/status doc updates",
+  "updated_at": "2026-05-09T05:40:59.216031Z"
+}

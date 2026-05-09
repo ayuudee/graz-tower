@@ -1,6 +1,11 @@
 {
   "branch_name": "fn-9-lift-fm-extraction-to-consume-runtime",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
   "created_at": "2026-05-08T19:41:46.433729Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [],
   "id": "fn-9-lift-fm-extraction-to-consume-runtime",
   "next_task": 1,
@@ -9,5 +14,5 @@
   "spec_path": ".flow/specs/fn-9-lift-fm-extraction-to-consume-runtime.md",
   "status": "open",
   "title": "Lift FM extraction to consume runtime VfrRoute.airspaceProfile (InVolume / InClass / Segmented)",
-  "updated_at": "2026-05-08T19:41:46.433737Z"
+  "updated_at": "2026-05-09T05:41:04.438435Z"
 }
