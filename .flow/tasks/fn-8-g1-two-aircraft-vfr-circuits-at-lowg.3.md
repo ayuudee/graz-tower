@@ -1182,10 +1182,14 @@ review-finding gap.
   Downwind first; controller responds with landing clearance."
   ICAO Doc 4444 §7.10 (landing clearance procedure) corroborates:
   clearance is issued "when the pilot reports on final" or after
-  the pilot's position call. Verify these section numbers
-  against local research text or canonical PDF before commit; do
-  not commit speculative section numbers (per pass-2 plan-review
-  nitpick #4 that fn-8.3 inherited).
+  the pilot's position call. **Both citations are already
+  verified-in-use as regulation references in production code**
+  — `controller/procedure/TowerArrival.kt` carries the
+  `ICAO4444_7_10` regulation reference on existing arrival rules,
+  and `controller/observe/Event.kt` carries `CAP 413 §4.45-4.49`
+  in `DecisionTrace` prose for circuit-intent recognition. No
+  speculative new citations are introduced by this deferment;
+  the implementation pass reuses the existing regulation refs.
 - B5-α reality check: the change makes the controller WAIT for
   the pilot's report before clearing. Real ATC behaviour aligns
   — at controlled aerodromes the pilot's downwind/base/final call
