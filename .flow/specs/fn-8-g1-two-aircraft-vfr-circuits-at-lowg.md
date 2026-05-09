@@ -624,11 +624,12 @@ architectural surprises.
 | R3  | `SeparationAssessment.wakeRule: WakeRule` ADT (ICAO names, NM units) | fn-8.1 | — |
 | R4  | Tick ordering audit + fix if needed | fn-8.1 | — |
 | R5  | `G1TwoAircraftCircuitsTest` exists, mirrors G0 shape | fn-8.2 | — |
-| R6  | 5 causal partial-order pins (state-window for conflict-resolution) | fn-8.2 | — |
-| R7  | Wake-rule pin: `IcaoNoAdditionalWakeMinimum(leader = L, follower = L)` | fn-8.2 | — |
-| R8  | `extendDownwind(B)` observation pin (forced-conflict invariant) | fn-8.2 | — |
-| R9  | No regression in existing test suites + detekt | fn-8.1, fn-8.2 | — |
-| R10 | Cross-reference doc updates | fn-8.2 | — |
+| R6  | 5 causal partial-order pins (state-window for conflict-resolution) — authored fn-8.2; passing depends on closure | fn-8.2, fn-8.3 | Test authored & loudly failing pending fn-8.3 closure of multi-aircraft sequencing defect |
+| R7  | Wake-rule pin: `IcaoNoAdditionalWakeMinimum(leader = L, follower = L)` — authored fn-8.2; passing depends on closure | fn-8.2, fn-8.3 | Same as R6 |
+| R8  | `extendDownwind(B)` observation pin (forced-conflict invariant) — authored fn-8.2; passing depends on closure | fn-8.2, fn-8.3 | Same as R6 |
+| R9  | No regression in existing test suites + detekt | fn-8.1, fn-8.2, fn-8.3 | fn-8.3 inherits G0/G2 stability incl. doctrinal re-baseline allowance |
+| R10 | Cross-reference doc updates (incl. AGENTS.md G1 status update from "FAILING" → "green" once fn-8.3 closes) | fn-8.2, fn-8.3 | — |
+| R11 | fn-8.3 closure: diagnostic-first dive using existing trace harness + fix(es) for multi-aircraft TnG→fullstop sequencing defect; G1 + multi-aircraft `circuits=1` minimal pin both green; G1 time band tightened to ±15% | fn-8.3 | Inherits fn-8.2's deferred post-first-green time-band tightening (per fn-8.3 decision #11) |
 
 ## Deferments register
 
