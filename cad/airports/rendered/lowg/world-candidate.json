@@ -1612,6 +1612,7 @@
           "sourceLoop": "east_side"
         }
       },
+      "ctrApproximationRadiusNauticalMiles": 18,
       "elevationFeet": 1120,
       "holdingPatterns": {
         "LOWG_GBG_MISSED_HOLD": {

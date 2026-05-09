@@ -191,3 +191,16 @@ python bin/extract_xplane_airport_cache.py LJMB \
   require `wiki/identifier-reconciliation.md` updates first. The frequency `119.205` is
   pinned by `FixtureLoadSpec` (Phase A) so a regression to e.g. `119.20` or `119.250` is
   caught at unit-test latency.
+- **ctrApproximationRadius (fn-7, 2026-05-09).** 18 NM, conservative placeholder = same
+  as LOWG. Slovenia eAIP is not bot-fetchable (Slovenia Control's site returns 403/404
+  to scripted clients), so the LJMB AIP AD 2.17 polygon was not transcribed for fn-7;
+  real-polygon transcription is deferred as `D-AUDIT-ljmb-polygon` in
+  `~/.claude/plans/pilot-firewall.md` § Deferments register. **Note: the 18 NM value
+  is reused from LOWG as a conservative bound, not derived from regional-CTR comparisons.**
+  18 NM under-fires the boundary-release rule (LOWG_TOWER holds traffic too long when
+  LJMB's real polygon is smaller than 18 NM) which is regulatorily-safe. The 5 NM ICAO
+  Annex 11 §2.11 floor — what a `null` schema field would default to in
+  `WorldCandidateLoader` — would over-fire (release inside real CTR) at almost every
+  controlled aerodrome and is intentionally NOT used for LJMB. The exact authored value
+  is pinned by `CtrApproximationRadiusLoaderTest.expected` (R9), so a deliberate
+  retune (after AIP transcription) requires a paired test-update + plan-review.

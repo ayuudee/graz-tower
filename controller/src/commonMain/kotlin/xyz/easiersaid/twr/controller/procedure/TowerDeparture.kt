@@ -299,10 +299,11 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             // Pass 7 (D-PF.7 closure): boundary release sibling for the
             // unstaffed-APPROACH case. Same compatibility set as DEP-HANDOFF
             // except `Not(IsTransferTargetStaffed)` and the aircraft has
-            // crossed the CTR boundary (12 NM radial conservative). Per
-            // ICAO Doc 4444 §10.1.4: "radar service terminated, squawk
-            // 7000, frequency change approved." E17 architectural test
-            // pairs this with DEP-HANDOFF.
+            // crossed the per-aerodrome CTR-approximation radius (fn-7;
+            // `Aerodrome.ctrApproximationRadius`). Per ICAO Doc 4444
+            // §10.1.4: "radar service terminated, squawk 7000, frequency
+            // change approved." E17 architectural test pairs this with
+            // DEP-HANDOFF.
             AtcRule(
                 id = "DEP-RADAR-SERVICE-TERMINATED",
                 description = "Terminate radar service when APPROACH unstaffed and local traffic past CTR boundary",
@@ -319,7 +320,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH)),
                     Not(DestinationDifferentAerodrome),
-                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters.fromNauticalMiles(12)),  // D-AUDIT.7
+                    OutsideAerodromeRadius,  // fn-7: per-aerodrome radius read from world data
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(
@@ -348,12 +349,20 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             //    points at all; the radius gate is the load-bearing geometric
             //    check).
             //
-            // Geometry note: 12 NM = 22 224 m (D-AUDIT.7 conservative). Verified
-            // reachable for the G2 LOWG → LJMB fixture: OSMOT (LJMB's first
-            // VFR contact REP) is ~25 NM from LOWG ARP; the 12 NM ring is
-            // crossed well before the aircraft reaches the destination's REP.
-            // A future "per-aerodrome CTR boundary from world data" pass
-            // tightens this to LOWG's actual ~7 NM CTR.
+            // Geometry note: per-aerodrome `Aerodrome.ctrApproximationRadius`
+            // (fn-7) — read at evaluate time, defaulted to the ICAO Annex 11
+            // §2.11 5 NM floor (`Doctrine.IcaoAnnex11.CTR_FLOOR_5NM`) when
+            // the JSON schema field is null. LOWG authors 18 NM (max-edge
+            // 16.25 NM rounded up + ~1 NM ARP-proxy-offset margin from the
+            // AIP AD 2.17 polygon); LJMB authors the same conservative
+            // 18 NM placeholder pending real-polygon transcription
+            // (`D-AUDIT-ljmb-polygon`). Both LOWG (18 NM) and LJMB (18 NM)
+            // remain reachable for the G2 LOWG → LJMB fixture: OSMOT
+            // (LJMB's first VFR contact REP) is ~25 NM from LOWG ARP;
+            // the LOWG 18 NM ring is crossed well before the aircraft
+            // reaches the destination's REP. Polygon containment
+            // (`D-AUDIT-polygon-ctr`) is the future replacement for the
+            // circular approximation.
             //
             // Squawk 7000 (VFR conspicuity) per ICAO Doc 4444 §10.1.4 boundary
             // release. `forRole = APPROACH` mirrors the unstaffed-APPROACH
@@ -367,7 +376,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     Not(IsCircuitTraffic),
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     DestinationDifferentAerodrome,
-                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters.fromNauticalMiles(12)),
+                    OutsideAerodromeRadius,  // fn-7: per-aerodrome radius read from world data
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(

@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.Degrees
+import xyz.easiersaid.twr.core.world.Doctrine
 import xyz.easiersaid.twr.core.world.Feet
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.core.world.Path
@@ -29,14 +30,27 @@ import kotlin.test.Test
  * the kinematic [AircraftObservation.coords] field rather than the
  * snap-derived `worldIndex.positions[ac.position]` lookup.
  *
+ * fn-7 (R6): rule shape moved to `data object` and the threshold lives on
+ * [Aerodrome.ctrApproximationRadius] (read at evaluate time) instead of
+ * the rule's constructor argument. The first three rows preserve the
+ * original 22 224 m (12 NM) test geometry by **explicitly authoring**
+ * `ctrApproximationRadius = Meters.fromNauticalMiles(12)` on the test
+ * fixture aerodrome — this is a deliberate spec edit to keep the
+ * pre-fn-7 rows' invariants intact, not a fixture migration to chase
+ * the new field. A 4th row pins the primary-constructor default at
+ * `Doctrine.IcaoAnnex11.CTR_FLOOR_5NM` (= 9 260 m) by constructing the
+ * fixture without an explicit `ctrApproximationRadius` argument.
+ *
  * Rule-agnostic: tests `OutsideAerodromeRadius` directly, not
  * `DEP-CROSS-AERODROME-RELEASE` / `DEP-RADAR-SERVICE-TERMINATED`. Both call
  * sites pick up identical kinematic semantics; one spec suffices.
  *
  * **Geometry.** ARP proxy is the lex-first runway threshold
  * (`Guard.kt:OutsideAerodromeRadius`). Tests place that threshold at the
- * origin so the ring radius is the only geometric variable. Ring is
- * `Meters.fromNauticalMiles(12)` = 22 224 m exactly.
+ * origin so the ring radius is the only geometric variable. The first
+ * three rows ring is `Meters.fromNauticalMiles(12)` = 22 224 m exactly;
+ * the fourth row's ring is `Doctrine.IcaoAnnex11.CTR_FLOOR_5NM`
+ * = `Meters.fromNauticalMiles(5)` = 9 260 m exactly.
  *
  * **Why `coordsOverride` is the load-bearing mechanism.** The
  * `fromTestPoint` helper defaults `coords` to `worldIndex.positions[point]`
@@ -56,8 +70,14 @@ class OutsideAerodromeRadiusSpec {
     /** ARP proxy = lex-first runway threshold; placed at origin. */
     private val arpPosition = Position(xMeters = 0.0, yMeters = 0.0)
 
-    /** 12 NM = 22 224 m exactly. */
+    /** 12 NM = 22 224 m exactly. First three rows. */
     private val ringRadiusMeters = 22_224.0
+
+    /**
+     * 5 NM = 9 260 m exactly. Fourth-row ring — the
+     * `Doctrine.IcaoAnnex11.CTR_FLOOR_5NM` primary-constructor default.
+     */
+    private val floorRingRadiusMeters = 9_260.0
 
     private val worldIndex = WorldIndex(
         positions = mapOf(
@@ -66,6 +86,12 @@ class OutsideAerodromeRadiusSpec {
         ),
     )
 
+    /**
+     * Test fixture aerodrome — first three rows preserve the pre-fn-7
+     * 22 224 m ring by explicitly authoring 12 NM. (Without this the
+     * primary-constructor default kicks in at 5 NM and the rows'
+     * geometric invariants would silently shift.)
+     */
     private val aerodrome = Aerodrome(
         icao = aerodromeId,
         elevation = Feet(0),
@@ -78,9 +104,32 @@ class OutsideAerodromeRadiusSpec {
                 threshold = thresholdPoint,
             ),
         ),
+        ctrApproximationRadius = Meters.fromNauticalMiles(12),
+    )
+
+    /**
+     * Fourth-row fixture — no explicit `ctrApproximationRadius` argument,
+     * so the primary-constructor default ([Doctrine.IcaoAnnex11.CTR_FLOOR_5NM])
+     * resolves the ring at 5 NM (9 260 m). Pins the default-resolution path.
+     */
+    private val aerodromeAtIcaoFloor = Aerodrome(
+        icao = aerodromeId,
+        elevation = Feet(0),
+        magneticVariation = Degrees(0.0),
+        transitionAltitude = Level.AltitudeFeet.unsafe(5000),
+        runways = mapOf(
+            runwayId to Runway(
+                id = runwayId,
+                path = Path(listOf(thresholdPoint, depEnd)),
+                threshold = thresholdPoint,
+            ),
+        ),
+        // No ctrApproximationRadius — primary-constructor default
+        // (Doctrine.IcaoAnnex11.CTR_FLOOR_5NM) resolves to 5 NM.
     )
 
     private val populatedWorld = AviationWorld(aerodromes = mapOf(aerodromeId to aerodrome))
+    private val floorWorld = AviationWorld(aerodromes = mapOf(aerodromeId to aerodromeAtIcaoFloor))
 
     private val commitment = Commitment(
         aircraft = aircraft,
@@ -121,8 +170,7 @@ class OutsideAerodromeRadiusSpec {
             callsign = Callsign("OEABC"),
             coordsOverride = insideRing,
         )
-        val guard = OutsideAerodromeRadius(Meters.fromNauticalMiles(12))
-        check(!guard.evaluate(ac, commitment, ctxWith(populatedWorld, ac))) {
+        check(!OutsideAerodromeRadius.evaluate(ac, commitment, ctxWith(populatedWorld, ac))) {
             "OutsideAerodromeRadius should be false at 22 124 m (100 m inside the 22 224 m ring)"
         }
     }
@@ -138,8 +186,7 @@ class OutsideAerodromeRadiusSpec {
             callsign = Callsign("OEABC"),
             coordsOverride = outsideRing,
         )
-        val guard = OutsideAerodromeRadius(Meters.fromNauticalMiles(12))
-        check(guard.evaluate(ac, commitment, ctxWith(populatedWorld, ac))) {
+        check(OutsideAerodromeRadius.evaluate(ac, commitment, ctxWith(populatedWorld, ac))) {
             "OutsideAerodromeRadius should be true at 22 324 m (100 m outside the 22 224 m ring)"
         }
     }
@@ -159,10 +206,49 @@ class OutsideAerodromeRadiusSpec {
             callsign = Callsign("OEABC"),
             coordsOverride = outsideRing,
         )
-        val guard = OutsideAerodromeRadius(Meters.fromNauticalMiles(12))
         val emptyWorld = AviationWorld() // no aerodromes
-        check(!guard.evaluate(ac, commitment, ctxWith(emptyWorld, ac))) {
+        check(!OutsideAerodromeRadius.evaluate(ac, commitment, ctxWith(emptyWorld, ac))) {
             "OutsideAerodromeRadius must fail closed when the aerodrome cannot be resolved"
+        }
+    }
+
+    @Test
+    fun `evaluate uses the ICAO Annex 11 5 NM floor when no per-aerodrome radius is authored`() {
+        // Pins the primary-constructor default
+        // (Doctrine.IcaoAnnex11.CTR_FLOOR_5NM = 5 NM = 9 260 m). Build
+        // coords just past the 5 NM ring; the rule must fire.
+        check(Doctrine.IcaoAnnex11.CTR_FLOOR_5NM.value == floorRingRadiusMeters) {
+            "Test pin assumption: CTR_FLOOR_5NM must be exactly 9 260 m " +
+                "(was ${Doctrine.IcaoAnnex11.CTR_FLOOR_5NM.value})"
+        }
+        val outsideFloorRing = Position(xMeters = floorRingRadiusMeters + 100.0, yMeters = 0.0)
+        val ac = AircraftObservation.fromTestPoint(
+            point = depEnd,
+            worldIndex = worldIndex,
+            id = aircraft,
+            callsign = Callsign("OEABC"),
+            coordsOverride = outsideFloorRing,
+        )
+        check(OutsideAerodromeRadius.evaluate(ac, commitment, ctxWith(floorWorld, ac))) {
+            "OutsideAerodromeRadius should fire at 9 360 m (100 m outside the 5 NM " +
+                "default ring) when the aerodrome carries no per-aerodrome radius authoring " +
+                "(primary-constructor default = Doctrine.IcaoAnnex11.CTR_FLOOR_5NM)"
+        }
+
+        // And conversely — inside the 5 NM default ring, the rule must NOT
+        // fire (would have fired under the old 12 NM hardcode if the
+        // default-resolution path were broken).
+        val insideFloorRing = Position(xMeters = floorRingRadiusMeters - 100.0, yMeters = 0.0)
+        val acInside = AircraftObservation.fromTestPoint(
+            point = depEnd,
+            worldIndex = worldIndex,
+            id = aircraft,
+            callsign = Callsign("OEABC"),
+            coordsOverride = insideFloorRing,
+        )
+        check(!OutsideAerodromeRadius.evaluate(acInside, commitment, ctxWith(floorWorld, acInside))) {
+            "OutsideAerodromeRadius should be false at 9 160 m (100 m inside the 5 NM " +
+                "default ring); a regression to the pre-fn-7 12 NM hardcode would over-fire here"
         }
     }
 }

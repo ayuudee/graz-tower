@@ -112,6 +112,39 @@ data class CandidateAerodrome(
      * asserts every rendered aerodrome publishes ≥1 role.
      */
     val roles: Map<RoleName, CandidateAerodromeRole> = emptyMap(),
+    /**
+     * Per-aerodrome circular CTR approximation radius, in **integer
+     * nautical miles**. Threaded into [xyz.easiersaid.twr.core.world.Aerodrome.ctrApproximationRadius]
+     * by `WorldCandidateLoader.toWorld`.
+     *
+     * **Authoring.** Author the **rounded-up** maximum-edge distance of
+     * the published AIP AD 2.17 CTR polygon from the aerodrome reference
+     * point, plus a small ARP-proxy-offset margin (the runtime guard
+     * centres the ring on the lexicographically-first runway threshold,
+     * not the true ARP). Rounding up keeps the rule from releasing
+     * inside the polygon under worst-case proxy offset. Authoring
+     * `ctrApproximationRadiusNauticalMiles: 16` when the polygon max
+     * edge is 16.25 NM would round *down* and release the aircraft
+     * inside the real CTR — that violates the "still in CTR until past
+     * every polygon edge" doctrine.
+     *
+     * **Sub-floor rejection.** The loader requires the authored value
+     * to be `>= Doctrine.IcaoAnnex11.CTR_FLOOR_NAUTICAL_MILES` (= 5),
+     * the ICAO Annex 11 §2.11 floor. Authoring 4 (or below) throws at
+     * load time with a message naming the constant and citing §2.11.
+     *
+     * **Default-null.** When omitted (`null`) the loader falls back to
+     * [xyz.easiersaid.twr.core.world.Doctrine.IcaoAnnex11.CTR_FLOOR_5NM]
+     * (= 5 NM = 9.3 km). The fallback is permissive-wrong at almost
+     * every controlled aerodrome (real polygons extend further on the
+     * approach axis); per-aerodrome authoring from AIP data is the
+     * intended shape.
+     *
+     * Schema unit is `Int?` (nautical miles). Sub-NM precision is
+     * irrelevant against the typical 5–20 NM polygon spread; authoring-
+     * side rounds up.
+     */
+    val ctrApproximationRadiusNauticalMiles: Int? = null,
 )
 
 /**

@@ -425,33 +425,44 @@ data class WithinDistanceOfThreshold(val maxMetres: Meters) : RuleGuard {
  *
  * Real CTR boundaries are typed polygons (FM/Lean campaign territory, fn-4
  * lineage); the circular-radius approximation is intentional pending that
- * work. **D-AUDIT.7** owns the polygon-membership upgrade. The conservative
- * 12 NM (~22.2 km) default fails closed: aircraft past the actual CTR but
- * inside 12 NM stay with the controller until they reach the threshold
- * (under-fires the release rather than over-firing inside controlled
- * airspace, which would be regulatorily wrong).
+ * work. **`D-AUDIT-polygon-ctr`** owns the polygon-membership upgrade.
+ * Today the radius is anisotropic-wrong: short on the approach axis,
+ * generous abeam. Per-aerodrome authoring from AIP AD 2.17 polygon data
+ * (rounded up, with proxy-offset margin) under fn-7 closes the
+ * one-radius-fits-all rot at LOWG; LJMB still uses a conservative
+ * placeholder pending real-polygon transcription (`D-AUDIT-ljmb-polygon`).
+ *
+ * fn-7: rule shape is `data object` — the per-aerodrome radius lives on
+ * [Aerodrome.ctrApproximationRadius] and is read at evaluate time. Rule
+ * equality changes from `data class` content equality to singleton
+ * identity; consumers look up rules by class, not value, so this is a
+ * runtime-no-op. Failure message is static (no longer interpolates a
+ * removed constructor field); per-aerodrome variance is no longer a
+ * concern at the rule level.
  *
  * The defensive `return false` paths preserve the "do not release on
  * unresolvable ARP" semantics — the aerodrome lookup or its proxy ARP
  * point may be missing in malformed worlds.
  */
-data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
-    override val failureMessage = "Aircraft within ${thresholdMetres.value}m radial of aerodrome (still in CTR scope)"
+data object OutsideAerodromeRadius : RuleGuard {
+    override val failureMessage = "Aircraft within aerodrome CTR approximation radius (still in CTR scope)"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
         val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId] ?: return false
         // Use the lexicographically-first runway's threshold as a stand-in
         // for the aerodrome reference point. Real ARPs come with the airport
         // manifest under a separate `referencePoint` field; today the field
         // exists on Aerodrome but isn't populated for every aerodrome (some
-        // are null until D-AUDIT.7's CTR-polygon work). The threshold is a
-        // reasonable proxy at small fields.
+        // are null until `D-AUDIT-polygon-ctr`'s CTR-polygon work). The
+        // threshold is a reasonable proxy at small fields, with the
+        // proxy-offset budget folded into the per-aerodrome radius
+        // authoring (`D-AUDIT-arp-proxy-runtime` tracks the runtime ARP).
         //
         // Pass 7 post-impl Impact-M.2: sort by `RunwayId.value` before
         // taking the first to make the proxy stable against manifest edits
         // (a new runway added at the head of the manifest would otherwise
         // shift the proxy point). Threshold offsets between runways at
         // multi-runway airports (e.g. LOWG 16C/16L/16R/28) can be hundreds
-        // of metres — small relative to the 12 NM (22.2 km) gate but not
+        // of metres — small relative to the per-aerodrome radius but not
         // negligible; a stable proxy is required for deterministic-replay.
         val arpPointId = aerodrome.runways.entries
             .sortedBy { it.key.value }
@@ -461,9 +472,10 @@ data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
         // projection of AircraftState.position (continuous Cartesian), not
         // the snap-derived `positionPoint`. Compare against the ARP proxy
         // in the same metric space.
+        // fn-7: per-aerodrome radius — read from world data.
         val dx = ac.coords.xMeters - arpPos.xMeters
         val dy = ac.coords.yMeters - arpPos.yMeters
-        val limit = thresholdMetres.value
+        val limit = aerodrome.ctrApproximationRadius.value
         return (dx * dx + dy * dy) > limit * limit
     }
 }
