@@ -1273,3 +1273,167 @@ nix develop --command ./gradlew :sim:jvmTest \
 ```
 Result: G0 + G2 + G1ClosureDive green; G1 fails at B-mission-incomplete
 check (B5 wedge confirmed).
+
+### Phase 4 — B5-α implementation + G1 doctrinally-correct re-baseline (2026-05-09, session 5) — G1 GREEN
+
+**B5-α implementation (controller-side commitment-scoped sticky witness):**
+
+1. **`Commitment.observedReportsDuringCommitment: Set<ReportEvent>`**
+   (`controller/bdi/Commitment.kt`) — sticky witness, default empty on
+   commitment formation. Reset via stage regression in
+   `advanceCommittedStages` (handles go-around + any future
+   regression-shape transitions uniformly across the three sticky
+   witnesses: `touchedDownDuringCommitment`,
+   `pilotReadyDuringCommitment`, `observedReportsDuringCommitment`).
+2. **`HasReportedPositionCall(acceptedReports: Set<PositionReportKind>)`**
+   BDI guard (`controller/bdi/Guard.kt`) — reads
+   `commitment.observedReportsDuringCommitment` and matches against
+   the accepted set. Typed `PositionReportKind` enum with 7 leaves
+   (DOWNWIND / BASE / FINAL / LONG_FINAL / ESTABLISHED /
+   ESTABLISHED_LOCALISER / ESTABLISHED_GLIDEPATH) covers both VFR
+   circuit-pattern and instrument-approach pre-clearance position
+   calls. The matcher's exhaustive `when` on `ReportEvent` forces a
+   compile-time decision when new variants are added.
+3. **Wired into shared `LandingConditions`** in `TowerArrival.kt`.
+   Gates ARR-LAND / ARR-LAND-TNG / ARR-LAND-REISSUE / ARR-LAND-TNG-
+   REISSUE on the pilot's pre-clearance position call. Failure-closed
+   default: empty witness → rule does not fire (live wedge surfaces
+   in tests, not a silent regression). Doctrine: CAP 413 §4.45-4.49 /
+   ICAO Doc 4444 §7.10 — landing clearance follows the position call.
+4. **Witness population** in `reconcileTowerArrival` (extracted helper
+   from `reconcileObservedStages` to keep cyclomatic complexity within
+   detekt's budget). Unions all `ControllerEvent.PositionReported`
+   events for the aircraft this cycle into the existing witness set.
+5. **Stage regression detection** in `advanceCommittedStages`: when
+   the procedure returns a `nextStage` whose ordinal is strictly less
+   than the current stage's ordinal (within the same stage hierarchy
+   — TowerArrivalStage / TowerDepartureStage / GroundDepartureStage /
+   GroundArrivalStage), all three sticky-witness fields reset to
+   their defaults. Closes a latent-correctness gap from B2 / B3
+   (which relied solely on fresh-commitment-formation reset and
+   would not have reset on go-around-style stage regression).
+
+**G1 doctrinally-correct re-baseline (per spec decision #9):**
+
+With B5-α landed, both aircraft fly their circuits cleanly: A holds
+the runway across her circuit-training session (taxi → takeoff →
+2 circuits → vacate), then releases to B. B never overlaps A on the
+pattern (single-runway gating doctrinally serializes). The pre-fix
+G1 invariants R6 / R7 / R8 (conflict-resolution chain, wake-rule
+assessment, forced-conflict ExtendDownwind) were structurally
+unreachable under the corrected sim because no pattern overlap occurs.
+
+Re-baseline: replaced R6 / R7 / R8 with:
+1. **Doctrinal serialization invariant**: A's `Report(RunwayVacated)`
+   transmission precedes B's first `Report(Downwind)`. Pin uses the
+   pilot-emitted RunwayVacated report (post-state observation), not
+   the controller's vacate INSTRUCTION (intent at emission). Codex
+   review iteration 1 caught the instruction-vs-observation
+   distinction; iteration 2 SHIPped on the post-state anchor.
+2. **fn-8.3 acceptance #5 multi-aircraft commitment-stage closure**
+   invariants (vacate / `BacktrackRunway` coordinations close;
+   `RunwayDutyState.holder` null after both vacate), duplicated
+   minimally in [G1TwoAircraftMinimalSpec] for the `circuits=1`
+   shape.
+3. **Wake-category sanity** (both C172 / `WakeCategory.L`) — the
+   wake-rule classifier code path is exercised by other tests; the
+   L→L pairing here documents that fn-8.1's fixture intent survives
+   AircraftState construction.
+4. **Time band tightened to ±15%** of observed wall (~50 sim
+   minutes; B's mission completes at ~2_975_000 ms) per spec
+   decision #11. Captured observed wall in evidence.
+
+**New: `G1TwoAircraftMinimalSpec`** — multi-aircraft `circuits=1`
+minimal pin per acceptance bullet 5. Pins the same multi-aircraft
+commitment-stage closure invariants at the smaller scenario shape
+(no T&G mid-flip). Catches regressions to the multi-aircraft
+serialization path before they reach G1's `circuits=2` scope.
+
+**Existing-query-first audit (acceptance bullet 3): PASS** for the
+fourth time. The existing trace harness (`responsibilityTransitions`,
+`missionStepTransitions`, `positionPointTransitions`,
+`commitmentStageTransitions`, `firstControllerInstructionOf`,
+`firstPilotReportOf`, direct `BeliefState` reads) was sufficient
+through the entire dive + fix + verification cycle. No typed-events
+build-out needed; `D-PASS-g1-diagnostics-typed-events` escalation
+gate did not fire across all four phases.
+
+**Empirical observed wall (acceptance bullet 8 — time-band
+tightening):** B's mission completion at 2_975_000 ms = 49.58 sim
+minutes. ±15% band: [2_528_750 ms, 3_421_250 ms] = [42.15 min,
+57.02 min]. A's mission completes earlier (lead-trail order, ~27
+sim minutes).
+
+**Test results post-Phase-4:**
+- `LowgGoldenTest` (G0) — green.
+- `G2CrossAerodromeVfrTest` (G2) — green.
+- `G1ClosureDiveTest` — green (diagnostic, kept for future passes).
+- `G1B4ClosurePinSpec` — green (Phase 3 round 1 regression pin
+  preserved).
+- `G1TwoAircraftCircuitsTest` (G1) — **GREEN** (closure proof).
+- `G1TwoAircraftMinimalSpec` — **GREEN** (new minimal pin).
+- Full `:sim :pilot :controller :core :protocol` — all green
+  (110 sim tests, all other suites green).
+- `:detekt` — 10 weighted issues, baseline unchanged.
+
+**Codex impl-review iterations:**
+- Iteration 1: NEEDS_WORK — pin used controller's vacate
+  INSTRUCTION timestamp, not aircraft's actual vacate observation.
+  Fix landed in commit `6aafe75`: anchor on
+  `Report(RunwayVacated)` pilot transmission instead.
+- Iteration 2: SHIP — post-state anchor satisfies the
+  serialization invariant correctly.
+
+**Memory captured (per worker.md Phase 4.5):**
+`bug/test-failures/tests-must-anchor-on-observed-post-2026-05-09`
+— "Tests must anchor on observed post-state, not controller-emitted
+instruction timestamps." Codifies the instruction-vs-observation
+distinction so future test-pin authors avoid the same trap.
+
+**Citation discipline note (decision #11):** B5-α reuses
+production-verified citations. CAP 413 §4.45-4.49 (downwind intent
+reporting) and ICAO Doc 4444 §7.10 (landing clearance procedure)
+are already in use as `RegulationDatabase.CAP413_4_45` /
+`RegulationDatabase.ICAO4444_7_10` references in
+`controller/procedure/TowerArrival.kt` and
+`controller/observe/Event.kt`. No speculative new citations.
+
+**Deferments register (acceptance bullet 12):**
+- `D-PASS-g1-diagnostics` — partial closure recorded across all four
+  phases. Existing trace harness was sufficient for fn-8.3's full
+  scope.
+- `D-PASS-g1-diagnostics-typed-events` (renamed from
+  `D-PASS-g1-diagnostics-broader`) — placeholder retained, unfired.
+- `D-PASS-cross-aircraft-step-on` — broader sim-radio infra; tried
+  in Phase 3 round 1, reverted (broke G2). Filed for a future pass
+  with dedicated impact-aware design.
+- `D-PASS-pilot-mid-tng-fullstop-recovery` — B5-β (pilot-side
+  two-stage replan) NOT activated this pass; Phase 4 closed B5-α
+  alone, which proved sufficient. The β contract remains filed for
+  any future pass that surfaces a residual case the controller-only
+  fix can't cover (e.g. delayed delivery where the pilot has
+  already advanced past the divergent step). Trigger: this entry
+  remains live — opens if a future failure surfaces residual M3
+  behavior.
+
+**Test commands run (Phase 4 evidence):**
+```
+nix develop --command ./gradlew :sim:jvmTest \
+  --tests xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest \
+  --tests xyz.easiersaid.twr.sim.G1TwoAircraftMinimalSpec \
+  --tests xyz.easiersaid.twr.sim.LowgGoldenTest \
+  --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest \
+  --tests xyz.easiersaid.twr.sim.G1ClosureDiveTest \
+  --tests xyz.easiersaid.twr.sim.G1B4ClosurePinSpec \
+  --console=plain --rerun-tasks
+
+nix develop --command ./gradlew :sim:jvmTest :pilot:jvmTest \
+  :controller:jvmTest :core:jvmTest :protocol:jvmTest \
+  --console=plain
+
+nix develop --command ./gradlew detekt --console=plain
+```
+
+**AGENTS.md updated:** G1 status moved from "FAILING — closure-pass
+pending" to "Green as of fn-8.3 Phase 4." Closure history retained.
+G1 minimal spec documented as a sibling.
