@@ -148,6 +148,88 @@ data object PilotReadyDuringCommitment : RuleGuard {
         commitment.pilotReadyDuringCommitment
 }
 
+/**
+ * fn-8.3 Phase 4 (B5-α): the controller has observed the pilot reporting
+ * a position-call during the **current** commitment lifetime that
+ * matches at least one of [acceptedReports]. Reads
+ * [Commitment.observedReportsDuringCommitment] (set by
+ * `reconcileObservedStages` from `ControllerEvent.PositionReported`).
+ *
+ * The gate covers both VFR circuit-pattern position calls (Downwind /
+ * Base / Final / LongFinal — CAP 413 §4.45-4.49) and instrument-approach
+ * equivalents (Established / EstablishedLocaliser / EstablishedGlidepath
+ * — ICAO Doc 4444 §7.10). The caller picks the set appropriate for the
+ * gating rule; today the shared `LandingConditions` accepts any of those
+ * because both VFR and instrument arrivals reach the same ARR-LAND rule.
+ *
+ * Used to gate `ARR-LAND` / `ARR-LAND-TNG` and their re-issue siblings.
+ * Doctrine: landing clearance follows the pilot's position call. Pre-fix,
+ * those rules fired on observed geometry + strip-derived
+ * `IsCircuitTrafficByStrip` (C2/C3) without waiting for the pilot's
+ * report; a stepped-on Downwind transmission led to the controller
+ * clearing the aircraft to land before the pilot's position call had
+ * been delivered (G1 B5 mechanism M1, fn-8.3 spec § Phase 3 round 2
+ * evidence).
+ *
+ * **Failure-closed default**: empty witness set means the rule does NOT
+ * fire — a future scenario where reports are mis-populated surfaces as
+ * "ARR-LAND never fires" (live wedge, surfaces in tests) rather than
+ * "ARR-LAND fires too eagerly" (dangerous silent regression).
+ */
+data class HasReportedPositionCall(
+    val acceptedReports: Set<PositionReportKind>,
+) : RuleGuard {
+    override val failureMessage =
+        "Pilot has not reported a qualifying position call " +
+            "(${acceptedReports.joinToString(", ") { it.name }}) during this commitment"
+
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        if (commitment.observedReportsDuringCommitment.isEmpty()) return false
+        return commitment.observedReportsDuringCommitment.any { event -> matches(event) }
+    }
+
+    private fun matches(event: xyz.easiersaid.twr.protocol.ReportEvent): Boolean = when (event) {
+        is xyz.easiersaid.twr.protocol.ReportEvent.Downwind -> PositionReportKind.DOWNWIND in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.Base -> PositionReportKind.BASE in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.Final -> PositionReportKind.FINAL in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.LongFinal -> PositionReportKind.LONG_FINAL in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.Established -> PositionReportKind.ESTABLISHED in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.EstablishedLocaliser ->
+            PositionReportKind.ESTABLISHED_LOCALISER in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.EstablishedGlidepath ->
+            PositionReportKind.ESTABLISHED_GLIDEPATH in acceptedReports
+        // All other ReportEvent variants are observation reports but not
+        // pre-clearance position calls in the CAP 413 / ICAO Doc 4444
+        // sense. The exhaustive listing forces a decision when new
+        // variants are added.
+        is xyz.easiersaid.twr.protocol.ReportEvent.Airborne,
+        is xyz.easiersaid.twr.protocol.ReportEvent.EstablishedInHold,
+        is xyz.easiersaid.twr.protocol.ReportEvent.RunwayVacated,
+        is xyz.easiersaid.twr.protocol.ReportEvent.Ready,
+        is xyz.easiersaid.twr.protocol.ReportEvent.GoingAround,
+        is xyz.easiersaid.twr.protocol.ReportEvent.VisualWithField,
+        is xyz.easiersaid.twr.protocol.ReportEvent.TcasRa,
+        is xyz.easiersaid.twr.protocol.ReportEvent.MinimumFuel,
+        is xyz.easiersaid.twr.protocol.ReportEvent.PassingLevel,
+        is xyz.easiersaid.twr.protocol.ReportEvent.LeavingLevel,
+        is xyz.easiersaid.twr.protocol.ReportEvent.DistanceDme,
+        is xyz.easiersaid.twr.protocol.ReportEvent.OverFix -> false
+    }
+}
+
+/**
+ * fn-8.3 Phase 4 (B5-α): typed accepted-report kind for
+ * [HasReportedPositionCall]. Distinct from [LegName] (which is
+ * geometric / world-graph topology) — these are protocol-level position
+ * reports the pilot can transmit. The 1:1 mapping to
+ * [xyz.easiersaid.twr.protocol.ReportEvent] is intentional; the guard's
+ * `matches` arm is exhaustive on `ReportEvent`.
+ */
+enum class PositionReportKind {
+    DOWNWIND, BASE, FINAL, LONG_FINAL,
+    ESTABLISHED, ESTABLISHED_LOCALISER, ESTABLISHED_GLIDEPATH,
+}
+
 /** Aircraft is at a known holding point for the commitment's runway. */
 data object AtHoldingPoint : RuleGuard {
     override val failureMessage = "Aircraft is not at a holding point for this runway"

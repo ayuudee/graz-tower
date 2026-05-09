@@ -26,6 +26,7 @@ import xyz.easiersaid.twr.controller.bdi.GroundDepartureStage
 import xyz.easiersaid.twr.controller.bdi.OperatorContext
 import xyz.easiersaid.twr.controller.bdi.OperatorResult
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
+import xyz.easiersaid.twr.controller.bdi.Stage
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.controller.bdi.TowerDepartureStage
 import xyz.easiersaid.twr.controller.observe.BeliefState
@@ -403,26 +404,8 @@ private fun reconcileObservedStages(
                     baseStage.copy(pilotReadyDuringCommitment = readyFlag)
                 } else baseStage
             }
-            CommitmentKind.TOWER_ARRIVAL -> {
-                val stage = cleared.stage as? TowerArrivalStage
-                    ?: return@mapValues cleared
-                val position = classifyArrivalPosition(ac, worldIndex)
-                val reconciled = reconcileArrivalStage(stage, position)
-                // fn-8.3 Phase 2 (B2): sticky witness for genuine touchdown
-                // during this commitment lifetime. Set when the aircraft is
-                // observed at a runway entity AND on the ground; never cleared
-                // here (cleared by fresh commitment creation in
-                // `reconcileCommitments`).
-                val touchedDownNow = ac.entities.any { it is xyz.easiersaid.twr.core.world.EntityRef.RunwayRef } &&
-                    ac.onGround
-                val touchdownFlag = cleared.touchedDownDuringCommitment || touchedDownNow
-                val baseStage = if (reconciled.stage != stage) {
-                    cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
-                } else cleared
-                if (touchdownFlag != baseStage.touchedDownDuringCommitment) {
-                    baseStage.copy(touchedDownDuringCommitment = touchdownFlag)
-                } else baseStage
-            }
+            CommitmentKind.TOWER_ARRIVAL ->
+                reconcileTowerArrival(cleared, ac, acId, worldIndex, events)
             CommitmentKind.GROUND_TAXI -> {
                 val activeRunway = beliefs.activeRunway
                 val position = classifyGroundPosition(ac, activeRunway, worldIndex)
@@ -443,6 +426,62 @@ private fun reconcileObservedStages(
             else -> cleared
         }
     }
+}
+
+/**
+ * Reconcile a [TOWER_ARRIVAL][CommitmentKind.TOWER_ARRIVAL] commitment
+ * against an aircraft observation + this cycle's events. Extracted from
+ * [reconcileObservedStages] to keep that function within detekt's
+ * cyclomatic-complexity budget; the body is otherwise unchanged.
+ *
+ * Updates three things:
+ *  - **Stage** via [reconcileArrivalStage] on the aircraft's classified
+ *    arrival position.
+ *  - **`touchedDownDuringCommitment`** sticky witness (B2): set when the
+ *    aircraft is at a `RunwayRef` AND `onGround`.
+ *  - **`observedReportsDuringCommitment`** sticky witness (B5-α): unions
+ *    every `PositionReported` event for this aircraft this cycle.
+ *
+ * Returns [cleared] unchanged when the stage is not a
+ * [TowerArrivalStage] (defensive — the type system encodes the
+ * invariant, but the cast guards a future kind reuse).
+ */
+private fun reconcileTowerArrival(
+    cleared: Commitment,
+    ac: AircraftObservation,
+    acId: AircraftId,
+    worldIndex: xyz.easiersaid.twr.core.world.WorldIndex,
+    events: List<xyz.easiersaid.twr.controller.observe.ControllerEvent>,
+): Commitment {
+    val stage = cleared.stage as? TowerArrivalStage ?: return cleared
+    val position = classifyArrivalPosition(ac, worldIndex)
+    val reconciled = reconcileArrivalStage(stage, position)
+    // fn-8.3 Phase 2 (B2): sticky witness for genuine touchdown during
+    // this commitment lifetime.
+    val touchedDownNow = ac.entities.any { it is xyz.easiersaid.twr.core.world.EntityRef.RunwayRef } &&
+        ac.onGround
+    val touchdownFlag = cleared.touchedDownDuringCommitment || touchedDownNow
+    // fn-8.3 Phase 4 (B5-α): sticky witness recording every
+    // PositionReported event during this commitment lifetime.
+    val reportsThisCycle = events.asSequence()
+        .filterIsInstance<xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported>()
+        .filter { it.aircraft == acId }
+        .map { it.event }
+        .toSet()
+    val reportsFlag = if (reportsThisCycle.isEmpty()) {
+        cleared.observedReportsDuringCommitment
+    } else {
+        cleared.observedReportsDuringCommitment + reportsThisCycle
+    }
+    val baseStage = if (reconciled.stage != stage) {
+        cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
+    } else cleared
+    val withTouchdown = if (touchdownFlag != baseStage.touchedDownDuringCommitment) {
+        baseStage.copy(touchedDownDuringCommitment = touchdownFlag)
+    } else baseStage
+    return if (reportsFlag != withTouchdown.observedReportsDuringCommitment) {
+        withTouchdown.copy(observedReportsDuringCommitment = reportsFlag)
+    } else withTouchdown
 }
 
 /**
@@ -579,12 +618,46 @@ private fun advanceCommittedStages(
     if (!wasCommitted && !isStageOnlyAdvance) return@fold acc
 
     val current = acc.commitments[run.aircraft] ?: run.commitment
-    acc.copy(
-        commitments = acc.commitments + (run.aircraft to current.copy(
-            stage = result.nextStage,
-            formedAt = result.stampReadyAt ?: current.formedAt,
-        ))
+    // fn-8.3 Phase 4 (B5-α): detect stage regression (e.g. go-around
+    // backtracking from `LandingClearanceIssued` / `AwaitLandedObserved` to
+    // `AwaitDownwind` per `GA-POST-CLEAR`). When the procedure's
+    // `nextStage` has a strictly smaller ordinal than the current stage,
+    // reset the commitment-scoped sticky witnesses so the aircraft re-
+    // earns their `true` value on the post-regression circuit. Forward
+    // advances keep the existing witness state. Mirrors fresh-commitment
+    // formation (where `createCommitment` constructs with defaults).
+    val regressed = isStageRegression(current.stage, result.nextStage)
+    val advanced = current.copy(
+        stage = result.nextStage,
+        formedAt = result.stampReadyAt ?: current.formedAt,
     )
+    val resetAdvanced = if (regressed) advanced.copy(
+        touchedDownDuringCommitment = false,
+        pilotReadyDuringCommitment = false,
+        observedReportsDuringCommitment = emptySet(),
+    ) else advanced
+    acc.copy(
+        commitments = acc.commitments + (run.aircraft to resetAdvanced),
+    )
+}
+
+/**
+ * fn-8.3 Phase 4 (B5-α): detect a backward stage transition along a
+ * stage hierarchy that defines a forward-only ordinal (e.g. go-around
+ * regressing `LandingClearanceIssued`/`AwaitLandedObserved` -> `AwaitDownwind`).
+ * Returns true when [next]'s ordinal is strictly less than [current]'s
+ * within the same hierarchy. Stages that don't share an ordinal (e.g.
+ * cross-hierarchy substitutions) are conservatively treated as
+ * non-regressions — this function only fires for the documented
+ * regression paths in [TowerArrivalStage] / [TowerDepartureStage] /
+ * [GroundDepartureStage] / [GroundArrivalStage].
+ */
+private fun isStageRegression(current: Stage, next: Stage): Boolean = when {
+    current is TowerArrivalStage && next is TowerArrivalStage -> next.ordinal < current.ordinal
+    current is TowerDepartureStage && next is TowerDepartureStage -> next.ordinal < current.ordinal
+    current is GroundDepartureStage && next is GroundDepartureStage -> next.ordinal < current.ordinal
+    current is GroundArrivalStage && next is GroundArrivalStage -> next.ordinal < current.ordinal
+    else -> false
 }
 
 /** Emit companion outputs for sequence info and traffic info alongside committed instructions. */

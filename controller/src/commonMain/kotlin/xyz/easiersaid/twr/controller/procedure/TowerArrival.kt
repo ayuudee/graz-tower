@@ -15,8 +15,10 @@ import xyz.easiersaid.twr.controller.bdi.ExtendDownwindAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.HasReportedPositionCall
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.JoinCircuitAction
+import xyz.easiersaid.twr.controller.bdi.PositionReportKind
 import xyz.easiersaid.twr.controller.bdi.TaxiToStandAction
 import xyz.easiersaid.twr.controller.bdi.TerminateRadarServiceAction
 import xyz.easiersaid.twr.controller.bdi.InCircuit
@@ -98,6 +100,36 @@ private val LandingConditions = AllOf(listOf(
     // and their re-issue rules. Fails closed for unknown designator or
     // absent declared distances.
     RunwayLengthSufficient(RunwayLengthOperation.LANDING),
+    // fn-8.3 Phase 4 (B5-α): the controller has observed at least one
+    // circuit-position pilot call (Downwind / Base / Final / LongFinal)
+    // during the **current** commitment lifetime. Doctrine: CAP 413
+    // §4.45-4.49 / ICAO Doc 4444 §7.10 — landing clearance follows the
+    // pilot's position call.
+    //
+    // Pre-fix, ARR-LAND / ARR-LAND-TNG fired purely on observed geometry
+    // + strip-derived `IsCircuitTrafficByStrip` (C2/C3) — a stepped-on
+    // Downwind didn't block landing-clearance issuance, so the controller
+    // could clear the aircraft to land BEFORE the pilot's position call
+    // had been delivered. The pilot's mission tree (T&G shape) then
+    // mismatched the controller's clearance disposition (full-stop), and
+    // M3/M4 surfaced (BacktrackRunway dropped, aircraft lifts off again).
+    // See fn-8.3 spec § Evidence § Phase 3 round 2 for the empirical
+    // four-mechanism trace (M1 — same-tick race).
+    //
+    // Reset points (mirrors B2 / B3 patterns): commitment formation
+    // (`createCommitment` → default empty), stage regression (e.g.
+    // go-around `LandingClearanceIssued`/`AwaitLandedObserved` →
+    // `AwaitDownwind` per `GA-POST-CLEAR` — handled by the regression
+    // detection in `advanceCommittedStages`).
+    HasReportedPositionCall(setOf(
+        PositionReportKind.DOWNWIND,
+        PositionReportKind.BASE,
+        PositionReportKind.FINAL,
+        PositionReportKind.LONG_FINAL,
+        PositionReportKind.ESTABLISHED,
+        PositionReportKind.ESTABLISHED_LOCALISER,
+        PositionReportKind.ESTABLISHED_GLIDEPATH,
+    )),
 ))
 
 @Suppress("LongMethod") // procedure spec is a flat list of rules — splitting into smaller

@@ -147,38 +147,36 @@ are what the run produced.
 - **G1 — `G1TwoAircraftCircuitsTest` (`sim/jvmTest`)**: single-aerodrome,
   **two-aircraft** circuit training. Two C172s (OE-ABC + OE-DEF) start
   at adjacent LOWG GA stands and fly two circuits each. B's mission-
-  start is offset by 2 sim-minutes so the controller has to extend B's
-  downwind for spacing while A is on base/final, then sequence B behind
-  A's completed landing. Pins five causal partial-orders (taxi
-  sequencing, single-runway gating, the conflict-resolution three-event
-  chain `extendDownwind(B) ≺ touchdown(A) ≺ turnBase(B)`, final-circuit
-  landing order, both aircraft taxi-to-stand) plus the wake-rule cell
-  that fired (L→L → `IcaoNoAdditionalWakeMinimum`) and a forced-
-  conflict invariant (`ExtendDownwind(B)` is observed during the run —
-  fails loud if circuit timing shifts and the conflict authoring goes
-  dull). The first multi-aircraft sim-level test in the repo.
-  **Currently failing (closure-pass pending — fn-8.3 in_progress).**
-  The original A-side wedge (T&G→full-stop intent flip leaving stale
-  `ClearedTouchAndGo` coordinations) closed in Phase 2 round 1
-  (commits `33833a2`, `a6249c9`) via sticky `touchedDownDuringCommitment`
-  + `pilotReadyDuringCommitment` witnesses; A now completes both
-  circuits + parks cleanly. Phase 3 round 1 (commits `bddff1b`
-  through `8e0a3ec`) closed B4 (DEP-CIRCUIT-COMPLETE wedging on a
-  stepped-on Downwind transmission) via same-aircraft pilot
-  radio-busy tracking, strip-based circuit-traffic recognition, and
-  ARR-LAND default flip to full-stop on unknown intent. The current
-  failure mode is **B5**: B's first-circuit Downwind(TOUCH_AND_GO)
-  collides with the controller's same-tick ARR-LAND emission;
-  controller defaults to full-stop, pilot reads back, lands; pilot's
-  T&G-shaped mission tree advances to FLY_DEPARTURE; B physically
-  takes off again (BacktrackRunway silently dropped because pilot
-  step is `LAND` not `AWAIT_VACATE_INSTRUCTION`); B flies an
-  unauthorised second circuit and wedges in REPORT_RUNWAY_VACATED on
-  the runway. Spec captures three reality-anchored fix-direction
-  candidates (controller-side observed-report gating, pilot-side
-  mission-tree replan on intent mismatch, broader per-frequency
-  busy-tracker). Loudly-failing convention preserved (no `@Disabled`,
-  no skip-list).
+  start is offset by 2 sim-minutes so the lead-trail ordering is
+  structural; the single-runway duty machine then serializes them
+  (A holds the runway across her circuit-training session, releasing
+  to B after she vacates). **Green** as of fn-8.3 Phase 4.
+  Pins per-aircraft outcomes (both complete + parked), causal
+  partial-orders (taxi-clearance order, single-runway gate, A's
+  `ClearedToLand` precedes B's, A's vacate precedes B's first
+  Downwind), the wake-category sanity (both C172 / L), and the
+  fn-8.3-acceptance multi-aircraft commitment-stage closure
+  invariants (vacate / `BacktrackRunway` coordinations close;
+  `RunwayDutyState.holder` null after both vacate). Time band
+  tightened to ±15% of the observed wall (~50 sim minutes) per
+  fn-8.3 decision #11. Closure history: A-side wedge closed Phase 2
+  round 1 (`33833a2`, `a6249c9`) via sticky
+  `touchedDownDuringCommitment` + `pilotReadyDuringCommitment`;
+  Phase 3 round 1 (`bddff1b`-`8e0a3ec`) closed B4 (DEP-CIRCUIT-
+  COMPLETE wedge) via same-aircraft pilot radio-busy tracking,
+  strip-based circuit-traffic recognition, and ARR-LAND default
+  flip; Phase 4 closed B5-α via the commitment-scoped
+  `observedReportsDuringCommitment` sticky witness gating ARR-LAND /
+  ARR-LAND-TNG on the pilot's pre-clearance position call.
+
+- **G1 minimal — `G1TwoAircraftMinimalSpec` (`sim/jvmTest`)**: scope-
+  narrower for G1, two C172s with `circuits=1` (full-stop only — no
+  T&G mid-flip). Pins the multi-aircraft commitment-stage closure
+  invariants (vacate coordinations close, runway-duty holder
+  released, B receives a runway slot, A's `ClearedToLand` precedes
+  B's) at the smaller scenario shape. Catches regressions to the
+  multi-aircraft serialization path before they reach G1's
+  `circuits=2` scope.
 
 - **G2 — `G2CrossAerodromeVfrTest` (`sim/jvmTest`)**: cross-aerodrome
   VFR transit. C172 OE-XYZ files VFR LOWG → LJMB, taxis at LOWG, takes
