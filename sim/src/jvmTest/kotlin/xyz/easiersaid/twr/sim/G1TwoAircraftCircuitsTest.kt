@@ -405,26 +405,30 @@ class G1TwoAircraftCircuitsTest {
         //
         // The replacement invariant captures what the doctrinally-
         // correct sim DOES exhibit: B's first Downwind report happens
-        // strictly AFTER A vacates the runway (the lead aircraft fully
-        // releases the runway before the trail aircraft enters the
-        // pattern).
-        val aVacateTime = records.firstControllerInstructionOf<AfterLandingVacateVia>(aircraftAId)
+        // strictly AFTER A is *actually* off the runway. The pin uses
+        // A's `Report(RunwayVacated)` transmission — the pilot only
+        // sends this after physically leaving the runway entity (the
+        // mission step `REPORT_RUNWAY_VACATED` is reachable only post-
+        // vacate). Pinning on the controller's vacate INSTRUCTION
+        // (codex review iteration 1 finding) would only show the
+        // controller TOLD A to vacate, not that A actually did so —
+        // a regression that emitted a vacate instruction but failed
+        // to actually release the runway would slip past such a pin.
+        val aRunwayVacatedTime = records.firstPilotReportOf<ReportEvent.RunwayVacated>(aircraftAId)
             .map { it.time.millis }
-            .getOrNull()
-        val aBacktrackTime = records.firstControllerInstructionOf<BacktrackRunway>(aircraftAId)
-            .map { it.time.millis }
-            .getOrNull()
-        val aFirstVacateTime = listOfNotNull(aVacateTime, aBacktrackTime).minOrNull()
-            ?: fail("Expected at least one vacate / backtrack instruction for $aircraftAId — " +
-                "controller must release A from the runway after her full-stop landing.\n$journey")
+            .getOrElse {
+                fail("Expected at least one RunwayVacated report from $aircraftAId — " +
+                    "without it, A never confirmed leaving the runway after her full-stop " +
+                    "landing.\n$journey")
+            }
         val bFirstDownwindTime = records.firstPilotReportOf<ReportEvent.Downwind>(aircraftBId)
             .map { it.time.millis }
             .getOrElse {
                 fail("Expected at least one Downwind report from $aircraftBId — without it, " +
                     "B never declared circuit-position to the controller.\n$journey")
             }
-        check(aFirstVacateTime < bFirstDownwindTime) {
-            "Doctrinal serialization: A's first vacate instruction (${aFirstVacateTime}ms) must " +
+        check(aRunwayVacatedTime < bFirstDownwindTime) {
+            "Doctrinal serialization: A's RunwayVacated report (${aRunwayVacatedTime}ms) must " +
                 "precede B's first Downwind report (${bFirstDownwindTime}ms). The single-runway " +
                 "duty machine should release A from the runway before B enters the pattern.\n$journey"
         }
