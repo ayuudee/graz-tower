@@ -78,7 +78,11 @@ Codex impl-review v1 (commit `0419a08`) returned NEEDS_WORK with three findings 
 - Commits:
   - `0419a08` — `docs(fm): reflect fn-9 airspaceProfile widening across inventory + status (fn-9.2)` (initial doc updates across 6 files)
   - `d0f9433` — `chore: remove accidentally-committed .gitignore.tmp scratch file` (stray file from gradle sandbox-cache exploration)
-  - (follow-up) — exec-summary reclassification + "Minimal FM follow-up set" rewrite, in response to codex impl-review v1 findings
+  - `93fd3ed` — `docs(fm): codex-review fixes — exec summary reclassification, follow-up rewrite, evidence` (codex impl-review v1 fixes — exec summary class A→C, "Minimal FM follow-up set" post-fn-9 rewrite, evidence section populated)
+  - `ce9f501` — `docs(fm): codex-review v2 fixes — segmented + memberPoints clarifications` (segmented impact-matrix row + memberPoints/boundary disambiguation across 3 docs)
+  - `45da0bc` — `docs(fm): codex-review v3 fixes — class-A consistency, runtime-validator parity wording, §2 obligation` (Class-A historical reframe, runtime-validator-parity language replacing "uncontrolled classes" claim, §2 airspaceProfile preservation obligation)
+  - `f27c605` — `docs(fn-9.2): record actual gradle gate results` (post-sandbox-unblock: goldens green via gradle, full gradle build surfaced two pre-existing failures unrelated to fn-9)
+  - `1d31859` — `docs(fm): codex-review v4 fixes — done-summary contradiction + sequencing rewrite` (done-summary paragraph rewrite to match evidence; "Recommended sequencing" reframed as historical with current next-steps subsection)
 - Tests:
   - `lake build CertifiedAtc` — green (91/91 modules), zero `sorry`. Defensive re-build after doc edits confirms no Lean regression.
   - `grep -rn "waypoint sequences only" research/fm/` — zero matches.
