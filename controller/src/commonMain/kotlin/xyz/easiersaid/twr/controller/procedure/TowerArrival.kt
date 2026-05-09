@@ -386,6 +386,20 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Re-issue T&G variant — gate matches ARR-LAND-TNG (explicit T&G only).
+            //
+            // fn-8.3 Phase 3 round 1 (codex review fix): also block on a
+            // pending `ClearedToLand`. With the C4 default flip
+            // ("clear-to-land when intent unknown") it's reachable for the
+            // controller to issue `ClearedToLand` before the pilot's
+            // delayed Downwind transmission delivers its T&G
+            // CircuitIntent. If the land-clearance readback is still
+            // pending when the intent arrives, this rule must NOT issue a
+            // T&G clearance on top — that would create conflicting
+            // landing clearances on the same approach. The `NoPendingReadback`
+            // matcher widens to include `ClearedToLand` so the rule waits
+            // for the prior coordination to GC (or, on a successful
+            // readback, supersede via the existing readback flow) before
+            // re-issuing.
             AtcRule(
                 id = "ARR-LAND-TNG-REISSUE",
                 description = "Re-issue touch-and-go clearance after readback timeout",
@@ -393,7 +407,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     LandingConditions,
                     CircuitIntentIs(CircuitIntent.TOUCH_AND_GO),
-                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
+                    NoPendingReadback(InstructionMatcher.AnyOf(listOf(
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
+                    ))),
                 )),
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,

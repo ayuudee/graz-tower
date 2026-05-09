@@ -583,8 +583,16 @@ private fun handlePilotTick(
             }
             // fn-8.3 Phase 3 (B4 closure): persist the new radio-free-at
             // for the next pilot tick to honour.
+            //
+            // fn-8.3 Phase 3 round 1 (codex review fix): write-back uses
+            // `maxOf(existingFloor, nextFreeAt)` so this path can never
+            // regress the per-aircraft floor below an already-tracked
+            // future busy-until established by a sibling emission path
+            // (readback / InitialContact / respond-correction).
+            val existingFloor = txState.pilotRadioFreeAt[event.aircraftId] ?: nextFreeAt
             resultState = txState.copy(
-                pilotRadioFreeAt = txState.pilotRadioFreeAt + (event.aircraftId to nextFreeAt),
+                pilotRadioFreeAt = txState.pilotRadioFreeAt +
+                    (event.aircraftId to maxOf(existingFloor, nextFreeAt)),
             )
         }
     }
@@ -1144,9 +1152,19 @@ private fun handleInstructFromController(
     // this, a ReadBackCorrect queued behind the original instruction will
     // overlap the readback, causing both to be stepped-on and the readback
     // to never reach the controller.
+    //
+    // fn-8.3 Phase 3 round 1 (codex review fix): the per-aircraft
+    // [SimState.pilotRadioFreeAt] floor must also gate the readback's
+    // earliest start. Otherwise a prior pilot tick that scheduled a future
+    // transmission (queued at its deferred `startedAt`, not yet processed
+    // by `handleTransmissionStart`) is invisible to `pilotFrequencyFreeFrom`
+    // here, and the readback can overlap with it. Same-aircraft race; the
+    // [pilotRadioFreeAt] tracker exists precisely so this race is closed.
     val earliestReadback = eventTime + CommsConstants.PILOT_READBACK_PREP
+    val pilotRadioFloor = afterApply.pilotRadioFreeAt[ac.id] ?: earliestReadback
     val readbackStartAt = maxOf(
         earliestReadback,
+        pilotRadioFloor,
         pilotFrequencyFreeFrom(withReadbackId, controller.frequency, earliestReadback),
     )
     val readbackTx = InFlightTransmission(
@@ -1192,8 +1210,16 @@ private fun handleInstructFromController(
     // floor so the next pilot tick honours it. Symmetric with the same
     // discipline on `handlePilotTick`. See SimState.pilotRadioFreeAt KDoc
     // for doctrine.
+    //
+    // fn-8.3 Phase 3 round 1 (codex review fix): write-back uses
+    // `maxOf(existingFloor, finalRadioFreeAt)` so a freshly-emitted
+    // transmission with a larger `endsAt` cannot regress the floor below
+    // an already-tracked future busy-until. The non-monotonic write was a
+    // race when a prior path stamped a far-future floor and this readback
+    // path overwrote it with a nearer value.
+    val existingFloor = afterIc.pilotRadioFreeAt[ac.id] ?: finalRadioFreeAt
     val withRadioFreeAt = afterIc.copy(
-        pilotRadioFreeAt = afterIc.pilotRadioFreeAt + (ac.id to finalRadioFreeAt),
+        pilotRadioFreeAt = afterIc.pilotRadioFreeAt + (ac.id to maxOf(existingFloor, finalRadioFreeAt)),
     )
     return withRadioFreeAt.emit(listOf(readbackStart) + icEvents)
 }
@@ -1234,8 +1260,15 @@ private fun handleRespondFromController(
     val (withTxId, txId) = afterMission.mintTransmissionId()
     val utterance = Utterance.FromPilot(tx)
     val earliestStart = eventTime + CommsConstants.PILOT_READBACK_PREP
+    // fn-8.3 Phase 3 round 1 (codex review fix): consult the per-aircraft
+    // [SimState.pilotRadioFreeAt] floor when computing `startAt`, symmetric
+    // with the readback path. Without it, a corrected readback can collide
+    // with a prior queued (not-yet-applied) transmission from the same
+    // aircraft.
+    val pilotRadioFloor = afterMission.pilotRadioFreeAt[ac.id] ?: earliestStart
     val startAt = maxOf(
         earliestStart,
+        pilotRadioFloor,
         pilotFrequencyFreeFrom(withTxId, controller.frequency, earliestStart),
     )
     val inflight = InFlightTransmission(
@@ -1250,8 +1283,14 @@ private fun handleRespondFromController(
     // fn-8.3 Phase 3 (B4 closure): persist the per-aircraft radio-free-at
     // floor for the corrected-readback path. See SimState.pilotRadioFreeAt
     // KDoc for doctrine.
+    //
+    // fn-8.3 Phase 3 round 1 (codex review fix): write-back uses
+    // `maxOf(existingFloor, inflight.endsAt)` so a freshly-emitted
+    // transmission can never regress the per-aircraft floor below an
+    // already-tracked future busy-until.
+    val existingFloor = withTxId.pilotRadioFreeAt[ac.id] ?: inflight.endsAt
     val withRadioFreeAt = withTxId.copy(
-        pilotRadioFreeAt = withTxId.pilotRadioFreeAt + (ac.id to inflight.endsAt),
+        pilotRadioFreeAt = withTxId.pilotRadioFreeAt + (ac.id to maxOf(existingFloor, inflight.endsAt)),
     )
     return withRadioFreeAt.emit(listOf(SimEvent.TransmissionStart(time = inflight.startedAt, transmission = inflight)))
 }
