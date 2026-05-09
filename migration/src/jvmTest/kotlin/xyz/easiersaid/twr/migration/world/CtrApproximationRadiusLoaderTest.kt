@@ -136,12 +136,32 @@ class CtrApproximationRadiusLoaderTest {
         }
 
         for ((dir, file) in worldCandidates) {
+            // R9 hardening (impl-review fn-7-1 finding): key the allowlist by
+            // the rendered-directory name (uppercased), NOT by the JSON's
+            // self-declared `aerodrome.icao`. Otherwise a new directory like
+            // `cad/airports/rendered/abcd/world-candidate.json` could ship a
+            // copy-pasted JSON that still says `"icao": "LOWG"` and silently
+            // satisfy the allowlist — bypassing the "every new rendered
+            // airport requires deliberate review" guard. The directory name
+            // is the contract; the JSON content is verified against it
+            // before any allowlist lookup.
+            val dirIcao = dir.uppercase()
             val document = json.decodeFromString<WorldCandidateDocument>(file.readText())
-            val icao = document.world.aerodrome.icao
+            val documentIcao = document.world.aerodrome.icao
+            assertEquals(
+                dirIcao,
+                documentIcao,
+                "R9 GUARDRAIL: rendered directory `cad/airports/rendered/$dir/" +
+                    "world-candidate.json` declares `aerodrome.icao = " +
+                    "\"$documentIcao\"` — must match the directory name " +
+                    "(`$dirIcao`). A copy-pasted JSON with a stale ICAO would " +
+                    "let a new rendered airport bypass the allowlist guard " +
+                    "below by impersonating an allowlisted airport.",
+            )
             val authored = document.world.aerodrome.ctrApproximationRadiusNauticalMiles
-            val expectedNm = expected[icao]
+            val expectedNm = expected[dirIcao]
             check(expectedNm != null) {
-                "R9 GUARDRAIL: rendered airport `$icao` (in $dir/world-candidate.json) " +
+                "R9 GUARDRAIL: rendered airport `$dirIcao` (in $dir/world-candidate.json) " +
                     "is not in the CtrApproximationRadiusLoaderTest.expected allowlist. " +
                     "Add an entry with the deliberate per-airport value derived from " +
                     "AIP AD 2.17 polygon data (rounded UP to NM, with proxy-offset margin). " +
@@ -149,7 +169,7 @@ class CtrApproximationRadiusLoaderTest {
                     "LJMB authoring precedent."
             }
             check(authored != null) {
-                "R9 GUARDRAIL: rendered airport `$icao` (in $dir/world-candidate.json) " +
+                "R9 GUARDRAIL: rendered airport `$dirIcao` (in $dir/world-candidate.json) " +
                     "has no `ctrApproximationRadiusNauticalMiles` field — would silently " +
                     "fall back to the 5 NM ICAO Annex 11 §2.11 floor, which is permissive-" +
                     "wrong at almost every controlled aerodrome (releases inside the real " +
@@ -158,7 +178,7 @@ class CtrApproximationRadiusLoaderTest {
             assertEquals(
                 expectedNm,
                 authored,
-                "R9 GUARDRAIL: rendered airport `$icao` (in $dir/world-candidate.json) " +
+                "R9 GUARDRAIL: rendered airport `$dirIcao` (in $dir/world-candidate.json) " +
                     "authors $authored NM; expected $expectedNm NM per allowlist. A " +
                     "deliberate change requires updating both the JSON and the " +
                     "CtrApproximationRadiusLoaderTest.expected map (with citation).",
@@ -174,7 +194,7 @@ class CtrApproximationRadiusLoaderTest {
             assertEquals(
                 Meters.fromNauticalMiles(expectedNm),
                 aerodrome.ctrApproximationRadius,
-                "Loader threading regression: $icao authored $expectedNm NM but " +
+                "Loader threading regression: $dirIcao authored $expectedNm NM but " +
                     "Aerodrome.ctrApproximationRadius came out as " +
                     "${aerodrome.ctrApproximationRadius.value} m " +
                     "(expected ${Meters.fromNauticalMiles(expectedNm).value} m).",
