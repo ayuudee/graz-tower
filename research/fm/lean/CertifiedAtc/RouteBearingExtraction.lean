@@ -1021,7 +1021,7 @@ private theorem findVfrRouteSource_go_origin
           hStep ▸ hSome
         have hHeadSource : head = source := Option.some.inj hSomeEq
         refine ⟨?_, ?_⟩
-        · exact hHeadSource ▸ List.mem_cons_self head tail
+        · exact hHeadSource ▸ List.mem_cons_self
         · exact hHeadSource ▸ hHead
       · -- Head did not match: lookup recurses into the tail.
         have hStep : findVfrRouteSource.go routeId (head :: tail) =
