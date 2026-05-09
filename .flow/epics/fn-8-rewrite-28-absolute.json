@@ -7,7 +7,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-8-rewrite-28-absolute.md",
-  "status": "open",
+  "status": "done",
   "title": "Rewrite legacy /home/andrew/dev/projects/twr2/ path refs across ~78 docs/JSON + 3 code files",
-  "updated_at": "2026-05-08T21:02:44.910299Z"
+  "updated_at": "2026-05-09T05:10:51.780701Z"
 }
