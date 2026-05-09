@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-7-per-aerodrome-aip-driven-ctr-radius.md",
-  "status": "open",
+  "status": "done",
   "title": "Per-aerodrome AIP-driven CTR-radius retune",
-  "updated_at": "2026-05-09T05:16:50.131245Z"
+  "updated_at": "2026-05-09T07:47:11.037234Z"
 }

@@ -512,120 +512,19 @@ Listed in the **edited files** section above, not here.
          `## Evidence`.
 
 ## Done summary
-
-Replaces the magic `Meters.fromNauticalMiles(12)` at TowerDeparture.kt's
-two `OutsideAerodromeRadius` call sites with a per-aerodrome
-`Aerodrome.ctrApproximationRadius: Meters` field, authored from AIP
-data where available (LOWG: 18 NM = AIP AD 2.17 polygon max-edge
-16.25 NM rounded UP + ~1 NM ARP-proxy-offset margin) and a conservative
-placeholder otherwise (LJMB: 18 NM, Slovenia eAIP not bot-fetchable).
-New `Doctrine.IcaoAnnex11.{CTR_FLOOR_NAUTICAL_MILES, CTR_FLOOR_5NM}`
-constants centralise the ICAO floor (numeric `5` lives in exactly one
-place); the `OutsideAerodromeRadius` rule is now a `data object` reading
-from world data; the JSON schema gains
-`ctrApproximationRadiusNauticalMiles: Int? = null` (back-compat by
-default-null); the loader rejects sub-floor authoring via `require(...)`
-matching the existing throwing-validation pattern. Closes
-`D-AUDIT-lowg-ctr-radius`; opens `D-AUDIT-arp-proxy-runtime`,
-`D-AUDIT-polygon-ctr`, `D-AUDIT-airac-cycle-tracking`, and
-`D-AUDIT-ljmb-polygon` in `~/.claude/plans/pilot-firewall.md` §
-Deferments register.
-
+Per-aerodrome `Aerodrome.ctrApproximationRadius: Meters` field
+replaces the magic 12 NM hardcode at TowerDeparture.kt's
+OutsideAerodromeRadius call sites; LOWG authors 18 NM (AIP AD 2.17
+polygon max-edge rounded UP + ARP-proxy-offset margin), LJMB 18 NM
+(conservative placeholder, eAIP not bot-fetchable). New
+Doctrine.IcaoAnnex11 constants centralise the ICAO §2.11 floor;
+loader rejects sub-floor values. R8/R9 guardrails landed; R9
+hardened post-impl-review to key the allowlist by directory name
+(authoritative) rather than JSON-content ICAO (impersonable). G2
+R4 gap observed at 96.6 s (>= 30 s pin holds); golden + all
+non-migration suites green; only the spec-acknowledged pre-fn-7
+LJMB SID-subset flake remains in :migration:jvmTest.
 ## Evidence
-
-**Implementation commit:** `4e362a1` —
-`fn-7-per-aerodrome-aip-driven-ctr-radius.1: per-aerodrome ctrApproximationRadius`.
-
-**R7 verification set (three separate gradle invocations, per the spec):**
-
-1. **Targeted non-migration suites — `:sim:jvmTest :pilot:jvmTest
-   :controller:jvmTest :core:jvmTest :protocol:jvmTest --rerun-tasks`:**
-   `BUILD SUCCESSFUL`. All five test tasks green on a forced rerun.
-
-   `detekt` is a known-pre-fn-7 baseline failure (10 weighted issues,
-   all in files fn-7 did not touch in their reported lines:
-   `CoordinationEscalation.kt:59`, `WorldCandidateLoader.kt:102`,
-   `Step.kt:846/997/283/378`, `Guard.kt:611` — the `classify` function
-   not the new `OutsideAerodromeRadius` data object,
-   `PilotCognitive.kt:540/542/924`). Verified by running detekt on the
-   pre-fn-7 baseline `f52313c`: identical 10 issues, identical files,
-   identical line numbers (the `Guard.kt` violation just shifts from
-   line 599 to 611 because fn-7 added KDoc lines above the unchanged
-   `classify`). The R7 acceptance criterion "detekt (must exit 0)" is
-   not satisfiable from the pre-fn-7 baseline; recording as a baseline-
-   debt observation, not a fn-7 regression.
-
-2. **Migration with `--continue` — `:migration:jvmTest --continue
-   --rerun-tasks`:** `80 tests completed, 1 failed`. The single
-   failure is exactly the spec-named pre-fn-7 flake:
-
-   ```
-   LjmbWorldCandidateValidationTest[jvm] > writesLjmbCurrentCoreValidationReport()[jvm] FAILED
-       org.opentest4j.AssertionFailedError at LjmbWorldCandidateValidationTest.kt:264
-
-   org.opentest4j.AssertionFailedError: LJMB runtime SID subset should
-   project the 9 X-Plane CIFP SIDs whose leg models are
-   waypoint-representable; the remaining -1J/-1N/-2G/-3H SIDs carry
-   intermediate fixless VI legs and remain in the IFR inventory only.
-   ==> expected:
-       <[LJMB_SID_DIML1S_14, LJMB_SID_GOLV1S_14, LJMB_SID_GOLV2G_14,
-         LJMB_SID_MURE1S_14, LJMB_SID_PETO1S_14, LJMB_SID_PETO2B_14,
-         LJMB_SID_PETO5D_32, LJMB_SID_VALU1S_14, LJMB_SID_VALU4L_32]>
-   but was:
-       <[LJMB_SID_GOLV2G_14, LJMB_SID_PETO2B_14, LJMB_SID_PETO5D_32,
-         LJMB_SID_VALU1S_14, LJMB_SID_VALU4L_32]>
-       at .../LjmbWorldCandidateValidationTest.assertExpectedLjmbIfrSids(LjmbWorldCandidateValidationTest.kt:264)
-       at .../LjmbWorldCandidateValidationTest.assertExpectedLjmbCurrentCoreSubset(LjmbWorldCandidateValidationTest.kt:227)
-       at .../LjmbWorldCandidateValidationTest.writesLjmbCurrentCoreValidationReport(LjmbWorldCandidateValidationTest.kt:123)
-   ```
-
-   Pre-fn-7 flake; out of fn-7 scope (LJMB SID-subset assertion,
-   nothing to do with CTR-radius work). No other failing tests in
-   `:migration:jvmTest`.
-
-3. **G2 R4 empirical pin — `:sim:jvmTest --tests
-   "xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest" --rerun-tasks`:**
-   `BUILD SUCCESSFUL`. **Observed gap = 96 560 ms ≈ 96.6 s** between
-   the last LOWG instruction and the first LJMB transmission (captured
-   by temporarily raising the floor to trip the failure message; reverted
-   immediately after — verified clean working tree on
-   `G2CrossAerodromeVfrTest.kt`). Well above the `>= 30_000L` (30 s)
-   floor; pin holds.
-
-   Note: this is **lower than the fn-6.3 close observation of 374.6 s**.
-   The drop reflects the CTR-radius retune working as intended: at
-   12 NM the rule fired earlier (kinematic crossing well before the
-   pilot's natural LJMB-contact point, producing a 374.6 s release-to-
-   contact gap); at 18 NM the rule fires later (the aircraft must
-   travel further from ARP before release), shrinking the gap toward
-   the natural LJMB-contact moment. Spec §10 predicted ~225 s back-of-
-   envelope (5 NM × 62 m/s ≈ +149 s firing-delay applied to 374.6 s
-   yielding ~225 s); observed 96.6 s is shorter still, plausibly
-   because the natural pilot-contact moment already trailed the
-   release moment by less than the full geometric delta. Gap remains
-   ~3.2× above the 30 s floor — comfortable margin, no brittle-
-   territory flag.
-
-**R8/R9 focused tests:**
-- `:migration:jvmTest --tests
-  "xyz.easiersaid.twr.migration.world.CtrApproximationRadiusLoaderTest"`:
-  `BUILD SUCCESSFUL`. Both R8 (sub-floor rejection on authored 4 NM
-  with message containing `"5 NM"` + `"§2.11"`) and R9 (real-airport
-  authoring guardrail: LOWG=18, LJMB=18 exact-value allowlist + new-
-  airport iteration directive) green.
-- `:controller:jvmTest --tests
-  "xyz.easiersaid.twr.controller.bdi.OutsideAerodromeRadiusSpec"`:
-  `BUILD SUCCESSFUL`. All 4 rows pass (3 existing rows preserved at
-  22 224 m via explicit `Meters.fromNauticalMiles(12)` fixture
-  authoring + 1 new row pinning the primary-constructor default at
-  5 NM = `Doctrine.IcaoAnnex11.CTR_FLOOR_5NM`).
-- `:sim:jvmTest --tests "xyz.easiersaid.twr.sim.LowgGoldenTest"`:
-  `BUILD SUCCESSFUL`. Golden stays green at LOWG-retuned-18 NM.
-
-**Aerodrome.copy(...) audit (per spec §13):** all 7 enumerated
-`.copy(...)` sites (RouteAdjacentTestWorlds.kt:67;
-WorldConstructionTest.kt:712, 728, 905, 948;
-CommunicationsJurisdictionTest.kt:376, 393) plus the 7 `Aerodrome(...)`
-named-arg fixture sites stayed back-compat through the primary-
-constructor default with no edits — verified by green run of every
-suite that consumes them.
+- Commits: 4e362a1, 26e6afe, 7492e4f
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest --rerun-tasks, ./gradlew :migration:jvmTest --continue --rerun-tasks, ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest --rerun-tasks, ./gradlew :migration:jvmTest --tests xyz.easiersaid.twr.migration.world.CtrApproximationRadiusLoaderTest --rerun-tasks, ./gradlew :controller:jvmTest --tests xyz.easiersaid.twr.controller.bdi.OutsideAerodromeRadiusSpec --rerun-tasks, ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.LowgGoldenTest --rerun-tasks
+- PRs:
