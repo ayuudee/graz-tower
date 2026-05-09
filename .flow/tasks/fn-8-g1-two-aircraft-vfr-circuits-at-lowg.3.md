@@ -820,3 +820,207 @@ filed as a separate task scope rather than bundled into fn-8.3's
 acceptance, mirroring how fn-8.3 itself was filed as a separate task
 beyond fn-8.2's scope. fn-8.3 stays in_progress until B5 closure or
 user direction to re-pin G1's expectation.
+
+### Phase 3 round 2 — B5 confirmation dive + STOP-and-report (2026-05-09, session 4)
+
+**Re-anchored on master tip `8e0a3ec` (Phase 3 round 1 ship).** Re-ran
+the existing G1 + dive harness to confirm Phase 3 round 1's closure
+of B4 holds and to characterise B5 precisely. Per the prompt's
+explicit STOP-and-report contract (worker.md "third phase needed"
+pattern), this round does NOT attempt a B5 fix — it confirms the
+wedge, sharpens the candidate-fix space with one new finding, and
+files deferments.
+
+**G1 baseline (post-`8e0a3ec`):**
+- `LowgGoldenTest` (G0) — green.
+- `G2CrossAerodromeVfrTest` (G2) — green.
+- `G1ClosureDiveTest` — green (diagnostic).
+- `G1TwoAircraftCircuitsTest` (G1) — failing at the B-mission-incomplete
+  check (line 321), wall-time exhausted at 5 400 000 ms.
+
+**B's full mission step trace (from per-aircraft trace summary,
+captured 2026-05-09):**
+```
+[126440ms]  REQUEST_TAXI         → TAXI_TO_HOLDING
+[222000ms]  TAXI_TO_HOLDING      → RUN_UP_CHECKS
+[283000ms]  RUN_UP_CHECKS        → AWAIT_LINE_UP
+[1156440ms] AWAIT_LINE_UP        → AWAIT_TAKEOFF_CLEARANCE
+[1176440ms] AWAIT_TAKEOFF_CLEARANCE → FLY_DEPARTURE
+[1559000ms] FLY_DEPARTURE        → REPORT_DOWNWIND       (1st circuit downwind)
+[1560000ms] REPORT_DOWNWIND      → REPORT_BASE
+[1561000ms] REPORT_BASE          → FLY_FINAL
+[1586440ms] FLY_FINAL            → REPORT_FINAL
+[1588000ms] REPORT_FINAL         → LAND
+[1856000ms] LAND                 → FLY_DEPARTURE         (T&G post-LAND)
+[2244000ms] FLY_DEPARTURE        → REPORT_DOWNWIND       (2nd circuit downwind)
+[2245000ms] REPORT_DOWNWIND      → REPORT_BASE
+[2246000ms] REPORT_BASE          → REPORT_FINAL
+[2247000ms] REPORT_FINAL         → LAND
+[2541000ms] LAND                 → REPORT_RUNWAY_VACATED (groundArrivalTask)
+                                                          (B wedged here through wall)
+```
+
+**Final controller-side state at wall (5 400 000 ms):**
+- Tower commitment for B: `kind=ARRIVAL stage=AwaitVacating
+  contacted=true runway=16C`. Frozen at AwaitVacating since the
+  first circuit's BacktrackRunway readback (1862 440 ms).
+- Tower coordinations for B: `{}` (empty — no outstanding
+  coordination ledger entries).
+- `RunwayDutyState`: `holder=null, lastOperationCompletedAt=
+  2 020 000 ms, lastOperationWakeCategory=L`.
+- B's pilot active task: `REPORT_RUNWAY_VACATED`, mission incomplete,
+  `phase=LandingRoll, positionPoint=LOWG_RWY_16C_THR`.
+
+**The four interlocking mechanisms behind B5 (sharpened from
+Phase 3 round 1's filing):**
+
+**M1 — Same-tick race between controller's ARR-LAND emission and
+pilot's Downwind report.** At [1560940ms] three transmissions are
+on-air simultaneously: ARR-REPORT-FINAL (controller),
+ARR-LAND ClearedToLand (controller, full-stop default per C4), and
+B's `Report(Downwind, intent=TOUCH_AND_GO)` (pilot). The controller
+fires ARR-LAND BEFORE B's downwind transmission has been
+delivered/processed. Doctrinal divergence: per CAP 413 §4.45-4.49,
+the pilot calls the position first; the controller responds with a
+landing clearance. The current sim fires ARR-LAND on observation
++ strip-derived `IsCircuitTrafficByStrip` (C2/C3) without waiting
+for the pilot's report.
+
+**M2 — Pilot mission tree obediently complies with the wrong-intent
+clearance.** B reads back ClearedToLand at 1589 440 ms.
+`handleLandingClearance` (`PilotCognitive.kt:835`) marks
+AWAIT_SEQUENCING / FLY_BASE / FLY_FINAL / AWAIT_LANDING_CLEARANCE
+all complete and sets `hasClearance = true`. The mission's T&G
+shape is preserved (LAND→FLY_DEPARTURE remains queued); the pilot
+will lift off again post-LAND because the next mission step is
+FLY_DEPARTURE, not REPORT_RUNWAY_VACATED.
+
+**M3 — BacktrackRunway is silently dropped because the pilot's step
+is wrong.** At 1855 440 ms the controller (per C4 / ARR-VACATE)
+issues `BacktrackRunway`. The pilot's step is `LAND`
+(CompletionMode.PHYSICAL — incomplete because the aircraft is
+still on the runway). `processInstruction` for BacktrackRunway
+(`PilotCognitive.kt:645`) requires `step ==
+MissionStep.AWAIT_VACATE_INSTRUCTION`. Step is `LAND`, so the
+match fails and the instruction is silently dropped. Sim layer's
+`applyAfterLandingVacateVia` writes the ground route, but the
+mission tree doesn't advance.
+
+**M4 — B physically lifts off again and flies a second
+(unauthorised, unobserved-by-tower) circuit.** Mission step
+advances `LAND → FLY_DEPARTURE` at 1856 000 ms; kinematic intent
+is climb-out. B physically takes off, flies the full second
+circuit (Downwind/Base/Final reports at 2244-2248k ms — these
+sequence cleanly because A has parked and the radio is quiet),
+lands again at 2541 000 ms. The tower's commitment never re-formed
+for this second circuit (it stayed `AwaitVacating` from the first
+BacktrackRunway). B's second-circuit reports go to a controller
+that doesn't process them at this commitment stage. After the
+second LAND, mission step advances to REPORT_RUNWAY_VACATED (the
+groundArrivalTask first step, because circuitTask is the last
+sibling under CircuitTraining for the full-stop circuit). Pilot
+then sits in REPORT_RUNWAY_VACATED on the runway threshold. No
+controller-side rule fires (commitment is `AwaitVacating`, not
+`AwaitLandedObserved`).
+
+**Existing-query-first audit (acceptance bullet 3): PASS again.**
+The dive used `formatJourney` + the trace summary (`responsibilityTransitions`,
+`missionStepTransitions`, `positionPointTransitions`) and direct
+`finalState.beliefs[tower.id].commitments[bId]` reads — all
+existing surfaces. No new typed events needed for this round; the
+escalation gate does not fire.
+
+**Reality-anchored fix-direction space (no implementation in this
+round — the user picks):**
+
+- **B5-α — controller-side: tighten ARR-LAND / ARR-LAND-TNG gate
+  on observed circuit-position report.** Add a `HasReportedCircuitPosition`
+  guard (or extend `LandingConditions`) so the rule does not fire
+  until the controller has *observed* the pilot's Downwind/Base/Final
+  report. CAP 413 §4.45-4.49 doctrinal: clearance follows the
+  position call, not observation alone. C2/C3's strip-based
+  `IsCircuitTrafficByStrip` would still drive commitment formation
+  / DEP-CIRCUIT-COMPLETE advancement; only the actual `ClearLandAction`
+  / `ClearTouchAndGoAction` emission would be gated. Risk surface:
+  the report-gating must compose with `ARR-CONTINUE` (when runway
+  not clear — shouldn't matter, ARR-CONTINUE doesn't issue land
+  clearance) and with `ARR-LAND-REISSUE` (re-issue path also gates
+  on the observed-report so a stepped-on first-issue doesn't
+  re-fire prematurely). Plan-review focus: does the
+  observed-report gate break `LowgGoldenTest`'s G0 timing? G0's
+  pilot reports Downwind cleanly; the gate should be transparent
+  for G0.
+
+- **B5-β — pilot-side: replan mission tree on receipt of a
+  ClearedToLand-when-T&G-mission-shape mismatch.** When the pilot
+  receives ClearedToLand and the active circuit task is `TouchAndGo`,
+  collapse the remaining T&G + intermediate circuit siblings into
+  a fall-through to `groundArrivalTask`, AND reset kinematic intent
+  to a ground-vacate shape (analogous to `applySelfInitiatedGoAround`'s
+  `PilotIntent` reset to `phase = PilotPhase.Climbing`, but for
+  ground-arrival). Phase 3 round 1's earlier attempt
+  (`collapseToGroundArrival` helper) reverted because the kinematic
+  intent reset wasn't deep enough — pilot lifted off again from
+  the runway threshold. A complete fix needs to also handle the
+  BacktrackRunway-at-non-AVI-step case (M3) so the post-LAND vacate
+  instruction lands on the right step. Risk surface: touches
+  go-around / join-circuit / cross-aerodrome flows that all share
+  mission-tree replan discipline.
+
+- **B5-γ — broader sim-radio fix: per-frequency `frequencyBusyUntil`
+  tracker.** Already documented in Phase 3 round 1 as
+  `D-PASS-cross-aircraft-step-on`. Phase 3 round 1 attempted this and
+  broke G2's handoff timing. Filed for a future dedicated pass with
+  impact-aware design. Not part of B5's immediate fix space.
+
+**Recommendation (informational; user picks):** B5-α has the smaller
+blast radius (controller-only, 1-2 guard files + targeted rule
+gates) and aligns most cleanly with CAP 413's doctrine. B5-β is the
+deeper architectural fix but touches pilot-side replan discipline
+that the project is still evolving (go-around / replan flows in
+flight). The cleanest sequencing is α first — confirm the
+controller-side gating restores G1's first-circuit T&G path. If a
+residual case still surfaces from intent ambiguity, β follows in a
+later pass with proper plan-review.
+
+**STOP-and-report disposition (per spec abort criterion #10 +
+worker.md "third phase needed" pattern):** fn-8.3 stays
+in_progress. G1 closure work continues in a follow-on session
+under one of the directions above. The Phase 3 round 2 deliverable
+is this confirmation evidence + the deferment filings below.
+
+**Deferments filed (per acceptance bullet 12 — captured in
+`~/.claude/plans/pilot-firewall.md`):**
+
+- `D-PASS-g1-diagnostics` — partial closure recorded: the existing
+  trace harness was sufficient for the entire fn-8.3 dive cycle
+  (Phase 1, Phase 2 round 1, Phase 3 round 1, Phase 3 round 2). No
+  typed events on `:common` were needed.
+- `D-PASS-g1-diagnostics-typed-events` — placeholder retained,
+  unfired. Trigger: a future closure pass where `BeliefState`
+  snapshots are insufficient because the relevant state is mid-
+  decide-cycle and not surfaced.
+- `D-PASS-cross-aircraft-step-on` — broader sim-radio infra
+  (per-frequency `frequencyBusyUntil` tracker). Tried in Phase 3
+  round 1, reverted (broke G2). Filed for a dedicated pass with
+  impact-aware design. Trigger: future multi-aircraft scenario
+  where same-frequency same-instant cross-aircraft transmissions
+  collide and C1's same-aircraft `pilotRadioFreeAt` doesn't help.
+- `D-PASS-pilot-mid-tng-fullstop-recovery` — the B5 wedge as
+  refined here. Pilot-side mission-tree replan + kinematic-intent
+  reset on receipt of a ClearedToLand-when-T&G-mission-shape
+  mismatch (β path), AND/OR controller-side observed-report gating
+  on ARR-LAND / ARR-LAND-TNG (α path). Trigger: this entry IS the
+  trigger — fn-8.3's next session opens it.
+
+**Test commands run (Phase 3 round 2 evidence):**
+```
+nix develop --command ./gradlew :sim:jvmTest \
+  --tests xyz.easiersaid.twr.sim.G1ClosureDiveTest \
+  --tests xyz.easiersaid.twr.sim.LowgGoldenTest \
+  --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest \
+  --tests xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest \
+  --console=plain --rerun-tasks
+```
+Result: G0 + G2 + G1ClosureDive green; G1 fails at B-mission-incomplete
+check (B5 wedge confirmed).

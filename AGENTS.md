@@ -157,15 +157,28 @@ are what the run produced.
   conflict invariant (`ExtendDownwind(B)` is observed during the run —
   fails loud if circuit timing shifts and the conflict authoring goes
   dull). The first multi-aircraft sim-level test in the repo.
-  **Currently failing (closure-pass pending).** First run surfaces a
-  multi-aircraft circuit-pattern intent-flip defect: when A's second
-  circuit declares FULL_STOP, the tower's prior `ClearedTouchAndGo`
-  coordination is not GC'd, so `ARR-LAND-TNG-REISSUE` keeps firing and
-  A never receives the FULL_STOP `ClearedToLand` /
-  `AfterLandingVacateVia` instructions she needs to vacate. The test
-  KDoc documents the suspect zones (coordination ledger /
-  stage-transition / supersession) and the loudly-failing convention
-  is preserved (no `@Disabled`, no skip-list).
+  **Currently failing (closure-pass pending — fn-8.3 in_progress).**
+  The original A-side wedge (T&G→full-stop intent flip leaving stale
+  `ClearedTouchAndGo` coordinations) closed in Phase 2 round 1
+  (commits `33833a2`, `a6249c9`) via sticky `touchedDownDuringCommitment`
+  + `pilotReadyDuringCommitment` witnesses; A now completes both
+  circuits + parks cleanly. Phase 3 round 1 (commits `bddff1b`
+  through `8e0a3ec`) closed B4 (DEP-CIRCUIT-COMPLETE wedging on a
+  stepped-on Downwind transmission) via same-aircraft pilot
+  radio-busy tracking, strip-based circuit-traffic recognition, and
+  ARR-LAND default flip to full-stop on unknown intent. The current
+  failure mode is **B5**: B's first-circuit Downwind(TOUCH_AND_GO)
+  collides with the controller's same-tick ARR-LAND emission;
+  controller defaults to full-stop, pilot reads back, lands; pilot's
+  T&G-shaped mission tree advances to FLY_DEPARTURE; B physically
+  takes off again (BacktrackRunway silently dropped because pilot
+  step is `LAND` not `AWAIT_VACATE_INSTRUCTION`); B flies an
+  unauthorised second circuit and wedges in REPORT_RUNWAY_VACATED on
+  the runway. Spec captures three reality-anchored fix-direction
+  candidates (controller-side observed-report gating, pilot-side
+  mission-tree replan on intent mismatch, broader per-frequency
+  busy-tracker). Loudly-failing convention preserved (no `@Disabled`,
+  no skip-list).
 
 - **G2 — `G2CrossAerodromeVfrTest` (`sim/jvmTest`)**: cross-aerodrome
   VFR transit. C172 OE-XYZ files VFR LOWG → LJMB, taxis at LOWG, takes
