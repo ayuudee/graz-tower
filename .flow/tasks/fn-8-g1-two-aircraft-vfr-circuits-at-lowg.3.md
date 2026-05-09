@@ -465,3 +465,147 @@ Phase 3.
 count as the c543139 baseline (fn-8.2 ship). No new issues introduced
 by `G1ClosureDiveTest.kt` (jvmTest scope, default detekt config does
 not flag the diagnostic shape).
+
+### Phase 2 round 1 — Root-cause fix B2 + auxiliary B3 (2026-05-09, session 2)
+
+**OnRunway flicker investigation (Phase 2 thread (a)) — disposition.**
+The Phase 1 prior-worker hypothesis ("the `OnRunway` position
+classification fires repeatedly during the airborne portion of circuit
+1 — that 'flicker' is the actual cause") **did not hold under
+empirical investigation**. The dive's new event-tagged stage trace +
+worldIndex entity audit proved:
+
+- The runaway commitment ping-pong fires at points that are **NOT**
+  on `RunwayRef` entities — primarily at circuit anchors like
+  `LOWG_ANCHOR_CIRCUIT_SE_ENTRY` (phase=Base, alt=305m, NOT runway-
+  adjacent). There is no per-cycle `OnRunway` (entity) flicker for
+  the runway during the airborne portion of circuit 1.
+- The actual proximate cause is **multi-leg circuit-leg classification
+  in `worldIndex.circuitLegsByPoint`**: certain shared graph points
+  belong to multiple circuit legs simultaneously. Audit output:
+  ```
+  LOWG_ANCHOR_CIRCUIT_SE_ENTRY → FINAL BASE DOWNWIND
+  LOWG_CIRCUIT_MAIN_SHARED_GRAPH_07 → FINAL BASE
+  LOWG_CIRCUIT_CENTER_EAST_AXIS_02 → FINAL
+  LOWG_CIRCUIT_CENTER_EAST_AXIS_03 → FINAL
+  LOWG_RWY_16C_THR → Approach Runway
+  LOWG_CIRCUIT_MAIN_SHARED_GRAPH_08 → BASE
+  ```
+  `OnCircuitLeg(LegName.FINAL)` therefore evaluates **TRUE** at
+  base-leg / circuit-anchor positions, allowing `LandingConditions`
+  (`AnyOf(OnApproach, OnCircuitLeg(FINAL))`) to fire `ARR-LAND-TNG`
+  prematurely on the base leg, far from short final.
+
+- The actual **load-bearing** root cause of the loop is
+  `ARR-TNG-AIRBORNE`'s gate being too eager: `Airborne &&
+  IsCircuitTraffic && !FULL_STOP`. After `ARR-LAND-TNG` fires
+  (premature or not) and the pilot reads back, stage advances to
+  `AwaitLandedObserved` via `readbackAdvancesToStage`, where
+  `ARR-TNG-AIRBORNE` fires immediately because the aircraft is
+  airborne (even though it never touched the runway during this
+  commitment) → completes the commitment → fresh one re-forms each
+  cycle.
+
+The two bugs interact: the multi-leg classification shortens the
+ping-pong cycle (fires earlier), but the over-eager `ARR-TNG-AIRBORNE`
+is what makes the cycle **runaway**.
+
+**Fix shape: per spec direction Option A — gate `ARR-TNG-AIRBORNE`
+on observed-runway-touchdown during current commitment lifetime.**
+The fix is doctrinally analogous to `RunwayDutyState.holderReachedRunway`
+(already in the runway-duty machine).
+
+**B2 implementation (3 surgical changes):**
+1. `Commitment.touchedDownDuringCommitment: Boolean = false` — sticky
+   witness, default false on commitment formation
+   (`controller/bdi/Commitment.kt`).
+2. `reconcileObservedStages` for `TOWER_ARRIVAL` sets the flag when
+   observation has `RunwayRef` membership AND `onGround = true`
+   (`controller/Controller.kt`).
+3. New `TouchedDownDuringCommitment` BDI guard added to `ARR-TNG-AIRBORNE`'s
+   `AllOf` gate (`controller/bdi/Guard.kt`,
+   `controller/procedure/TowerArrival.kt`).
+
+**B3 implementation — exposed by B2's success.** With B2 collapsing
+the runaway loop, A's full circuit completes cleanly (2 circuits +
+park). Result: aircraft B was wedged at TOWER_DEPARTURE@AwaitReady
+with the runway granted but `DEP-LUAW` never firing. Root cause:
+`DEP-LUAW`'s `DepartureTrigger = PilotReady` is a single-cycle event
+guard. Pilots report Ready ONCE; for sequential departures behind a
+circuit-traffic arrival, the runway is granted to the second
+departure many cycles after the pilot's one-shot Ready event has
+aged out of `ctx.events`. **Real ATC retains "Ready" on the strip**
+— this fix models that. Three surgical changes:
+
+1. `Commitment.pilotReadyDuringCommitment: Boolean = false` — sticky
+   witness for `ReadyForDepartureReceived` event during commitment
+   lifetime (`controller/bdi/Commitment.kt`).
+2. `reconcileObservedStages` for `TOWER_DEPARTURE` sets the flag from
+   the `events` parameter (`controller/Controller.kt`; signature
+   gains `events: List<ControllerEvent>`).
+3. New `PilotReadyDuringCommitment` BDI guard replaces `PilotReady`
+   in `DepartureTrigger` (`controller/bdi/Guard.kt`,
+   `controller/procedure/TowerDeparture.kt`).
+
+**Test results post-B2+B3:**
+- `G1ClosureDiveTest` — green (diagnostic, kept for Phase 2+ work).
+- `LowgGoldenTest` — green (G0 unchanged).
+- `G2CrossAerodromeVfrTest` — green (G2 unchanged).
+- `G1TwoAircraftCircuitsTest` — **still failing**, but at a new
+  later wedge (see B4 below).
+- Full `:sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest
+  :protocol:jvmTest` — 105 of 106 sim tests + all other suites pass.
+  Only G1TwoAircraftCircuitsTest fails. **No regressions from B2+B3.**
+- Detekt — 10 weighted issues, baseline unchanged.
+
+**Downstream wedge (B4) — surfaced by B2+B3 closure, deferred to
+Phase 2 round 2.** With A and B both flying, A completes cleanly. B
+takes off ([1171440ms]) but its commitment stays at TOWER_DEPARTURE
+@AwaitTakeoffObserved instead of transitioning to TOWER_ARRIVAL after
+B reports Downwind. `DEP-CIRCUIT-COMPLETE` (gate: `Airborne &&
+OnCircuitLeg(DOWNWIND) && IsCircuitTraffic`, advances to Complete →
+re-forms as TOWER_ARRIVAL) does not fire because B's pilot reports
+Downwind, Base, Final at the same SimTime tick [1560940ms] (likely a
+pilot-AI timing compression after the long ground delay), and the
+controller cycle doesn't see B simultaneously on Downwind leg AND
+with `IsCircuitTraffic = true` set.
+
+This is a **distinct, third bug** beyond Phase 2's two original
+threads, surfaced because B2+B3 freed the rest of B's path. Per the
+Phase 1→Phase 2 handoff ("STOP and report when Phase 2's threads
+are resolved or if a third phase is needed"), B4 is filed for Phase
+2 round 2 / Phase 3. Candidate fixes (no implementation in this
+round):
+- (B4-a) Relax `DEP-CIRCUIT-COMPLETE`'s leg gate to also fire on
+  Base or Final, not just Downwind, provided IsCircuitTraffic is
+  true and aircraft is airborne. Doctrine: at any leg of the
+  circuit, if the aircraft is established as circuit traffic, it's
+  "circuit complete" from a TOWER_DEPARTURE perspective.
+- (B4-b) Investigate the pilot AI's Downwind+Base+Final compression
+  when departure is delayed — may be a pilot-side timing model issue.
+- (B4-c) Auto-complete TOWER_DEPARTURE when the controller observes
+  the aircraft on any circuit leg (entity-derived) with
+  IsCircuitTraffic = true, regardless of the specific leg.
+
+**Citation discipline note (decision #11 / Operational correctness):**
+neither B2 nor B3 changes ATC phraseology or introduces new
+regulation citations. B2 tightens an internal commitment-stage
+gate; B3 changes the controller's "ready" witness from event-only to
+strip-state-style persistent. CAP 413 / ICAO Doc 4444 section
+numbers on existing rules are unchanged. No speculative citations.
+
+**Test commands run (Phase 2 round 1 evidence):**
+```
+nix develop --command ./gradlew :sim:jvmTest \
+  --tests xyz.easiersaid.twr.sim.G1ClosureDiveTest \
+  --tests xyz.easiersaid.twr.sim.LowgGoldenTest \
+  --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest \
+  --tests xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest \
+  --console=plain --rerun-tasks
+
+nix develop --command ./gradlew :sim:jvmTest :pilot:jvmTest \
+  :controller:jvmTest :core:jvmTest :protocol:jvmTest \
+  --console=plain
+
+nix develop --command ./gradlew detekt --console=plain
+```

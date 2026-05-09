@@ -74,6 +74,52 @@ data class Commitment(
      *  (e.g. runway incursion). Reset to null after one cycle so it's a
      *  single-cycle flag, not persistent state. */
     val lastTransition: xyz.easiersaid.twr.controller.procedure.TransitionKind? = null,
+    /**
+     * fn-8.3 Phase 2 (B2): sticky witness that the controller has observed
+     * this aircraft on a runway entity AND on the ground at least once
+     * during the **current** commitment lifetime.
+     *
+     * Set by [reconcileObservedStages] when a `TOWER_ARRIVAL` aircraft's
+     * observation has both `RunwayRef` membership and `onGround = true`.
+     * Resets to `false` when a fresh commitment is formed in
+     * [reconcileCommitments] (because the field is **not** copied across
+     * commitment re-creation — fresh commitments take the default).
+     *
+     * Used by [TouchedDownDuringCommitment] to gate `ARR-TNG-AIRBORNE`:
+     * the touch-and-go arrival completes only after the aircraft has
+     * actually been observed on the runway-on-ground (real touchdown),
+     * not merely from an airborne observation. Pre-fix, `ARR-TNG-AIRBORNE`
+     * fired on bare `Airborne`, allowing a re-issued landing-clearance
+     * coordination to advance to `AwaitLandedObserved` (via readback) and
+     * immediately complete the arrival, reforming a fresh one — the
+     * runaway commitment ping-pong documented in the fn-8.3 dive evidence.
+     *
+     * Analogous to `RunwayDutyState.holderReachedRunway` (already in the
+     * runway-duty machine) — same observation, different lifecycle.
+     */
+    val touchedDownDuringCommitment: Boolean = false,
+    /**
+     * fn-8.3 Phase 2 (B3): sticky witness that the pilot has reported
+     * "Ready for departure" at least once during the **current**
+     * commitment lifetime. Set by [reconcileObservedStages] when the
+     * controller-side `ControllerEvent.ReadyForDepartureReceived` event
+     * fires for this aircraft.
+     *
+     * The pre-fix `DEP-LUAW` rule gated on `PilotReady` (single-cycle
+     * event), which works for the single-aircraft case where the runway
+     * is granted in the same cycle as the Ready report. For sequential
+     * departures behind an arriving circuit, the runway is granted to
+     * the second departure long after the pilot's one-shot Ready report
+     * is gone from `ctx.events` — so `DEP-LUAW` never fires and the
+     * second aircraft wedges at `AwaitReady` indefinitely. This was
+     * surfaced by fn-8.3 Phase 2 once the runaway commitment loop
+     * (B2 fix) was collapsed, freeing the runway for B's slot.
+     *
+     * Real controllers retain "ready to go" on the strip — the pilot
+     * doesn't repeat "Ready" every cycle. This sticky witness models
+     * that strip-state.
+     */
+    val pilotReadyDuringCommitment: Boolean = false,
 ) {
     val isComplete: Boolean get() = stage.isComplete
 }

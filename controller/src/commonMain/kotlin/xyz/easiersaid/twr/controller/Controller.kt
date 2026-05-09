@@ -108,7 +108,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
             // to match what the controller actually observes. Runs after
             // reconcileCommitments (which creates/prunes) and before procedure
             // execution (which evaluates rules against the reconciled stage).
-            val reconciled = reconcileObservedStages(b, view.worldIndex)
+            val reconciled = reconcileObservedStages(b, view.worldIndex, events)
             b.copy(commitments = reconciled)
         }
         .let { b ->
@@ -372,6 +372,7 @@ private fun atisLetterMismatchAdvisories(
 private fun reconcileObservedStages(
     beliefs: BeliefState,
     worldIndex: xyz.easiersaid.twr.core.world.WorldIndex,
+    events: List<xyz.easiersaid.twr.controller.observe.ControllerEvent> = emptyList(),
 ): Map<AircraftId, Commitment> {
     if (beliefs.commitments.isEmpty()) return beliefs.commitments
     return beliefs.commitments.mapValues { (acId, commitment) ->
@@ -385,18 +386,42 @@ private fun reconcileObservedStages(
                     ?: return@mapValues cleared
                 val position = classifyDeparturePosition(ac, worldIndex)
                 val reconciled = reconcileDepartureStage(stage, position)
-                if (reconciled.stage != stage) {
+                // fn-8.3 Phase 2 (B3): sticky pilot-Ready witness. The
+                // pilot's single-cycle Report(Ready) gets retained on the
+                // commitment so `DEP-LUAW` can fire later when the runway
+                // becomes available — even if many cycles after the Ready
+                // report. Once true, never cleared during the commitment.
+                val readyNow = events.any {
+                    it is xyz.easiersaid.twr.controller.observe.ControllerEvent.ReadyForDepartureReceived &&
+                        it.aircraft == acId
+                }
+                val readyFlag = cleared.pilotReadyDuringCommitment || readyNow
+                val baseStage = if (reconciled.stage != stage) {
                     cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
                 } else cleared
+                if (readyFlag != baseStage.pilotReadyDuringCommitment) {
+                    baseStage.copy(pilotReadyDuringCommitment = readyFlag)
+                } else baseStage
             }
             CommitmentKind.TOWER_ARRIVAL -> {
                 val stage = cleared.stage as? TowerArrivalStage
                     ?: return@mapValues cleared
                 val position = classifyArrivalPosition(ac, worldIndex)
                 val reconciled = reconcileArrivalStage(stage, position)
-                if (reconciled.stage != stage) {
+                // fn-8.3 Phase 2 (B2): sticky witness for genuine touchdown
+                // during this commitment lifetime. Set when the aircraft is
+                // observed at a runway entity AND on the ground; never cleared
+                // here (cleared by fresh commitment creation in
+                // `reconcileCommitments`).
+                val touchedDownNow = ac.entities.any { it is xyz.easiersaid.twr.core.world.EntityRef.RunwayRef } &&
+                    ac.onGround
+                val touchdownFlag = cleared.touchedDownDuringCommitment || touchedDownNow
+                val baseStage = if (reconciled.stage != stage) {
                     cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
                 } else cleared
+                if (touchdownFlag != baseStage.touchedDownDuringCommitment) {
+                    baseStage.copy(touchedDownDuringCommitment = touchdownFlag)
+                } else baseStage
             }
             CommitmentKind.GROUND_TAXI -> {
                 val activeRunway = beliefs.activeRunway

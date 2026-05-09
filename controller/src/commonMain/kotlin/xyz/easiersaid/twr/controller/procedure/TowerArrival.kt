@@ -29,6 +29,7 @@ import xyz.easiersaid.twr.controller.bdi.OnApproach
 import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.OnGround
 import xyz.easiersaid.twr.controller.bdi.OnRunway
+import xyz.easiersaid.twr.controller.bdi.TouchedDownDuringCommitment
 import xyz.easiersaid.twr.controller.bdi.PositionReported
 import xyz.easiersaid.twr.controller.bdi.ProcedureInterrupt
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
@@ -396,8 +397,32 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 // T&G intent (or no intent → defaults to T&G). Without
                 // IsCircuitTraffic, a non-circuit airborne arrival could
                 // trigger spurious completion.
+                //
+                // fn-8.3 Phase 2 (B2): also requires that the aircraft was
+                // actually observed on the runway on-ground during this
+                // commitment lifetime ([TouchedDownDuringCommitment]).
+                // Pre-fix, this rule fired on bare `Airborne` and produced
+                // a runaway commitment ping-pong: each `ARR-LAND-TNG`
+                // readback advanced the stage to `AwaitLandedObserved`,
+                // `ARR-TNG-AIRBORNE` fired immediately because the aircraft
+                // was airborne (even though it had never touched the
+                // runway), the commitment completed, a fresh one re-formed,
+                // and the cycle repeated every ~10s — saturating the
+                // frequency and stepping on the pilot's FULL_STOP downwind
+                // (fn-8.3 spec § Evidence § Phase 1).
+                //
+                // The gate matches the doctrinal definition of "touch-and-
+                // go": the aircraft must have actually touched down on the
+                // runway. Without the witness, the controller cannot in
+                // good faith claim the arrival commitment is fulfilled by
+                // the aircraft being airborne again.
                 regulations = listOf(ICAO4444_7_10),
-                guard = AllOf(listOf(IsCircuitTraffic, Not(CircuitIntentIs(CircuitIntent.FULL_STOP)), Airborne)),
+                guard = AllOf(listOf(
+                    IsCircuitTraffic,
+                    Not(CircuitIntentIs(CircuitIntent.FULL_STOP)),
+                    Airborne,
+                    TouchedDownDuringCommitment,
+                )),
                 nextStage = TowerArrivalStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),

@@ -104,6 +104,50 @@ data object AnomalousTransition : RuleGuard {
         commitment.lastTransition == xyz.easiersaid.twr.controller.procedure.TransitionKind.ANOMALOUS
 }
 
+/**
+ * fn-8.3 Phase 2 (B2): sticky witness that the aircraft has been observed
+ * on a runway entity AND on the ground at least once during the **current**
+ * commitment lifetime. Reads [Commitment.touchedDownDuringCommitment] (set
+ * by `reconcileObservedStages` in the controller). Pass-through guard —
+ * the witness flag is the load-bearing state.
+ *
+ * Used to gate `ARR-TNG-AIRBORNE` so that airborne-only observations
+ * cannot complete a touch-and-go arrival. Pre-fix, `ARR-TNG-AIRBORNE`
+ * fired on bare `Airborne` and combined with `readbackAdvancesToStage =
+ * AwaitLandedObserved` produced a runaway commitment ping-pong any time
+ * `ARR-LAND-TNG` was issued at a non-runway pattern point — even if the
+ * aircraft never reached the runway during this circuit. See fn-8.3 spec
+ * § Evidence § Phase 1 + Phase 2 for the empirical loop trace.
+ */
+data object TouchedDownDuringCommitment : RuleGuard {
+    override val failureMessage =
+        "Aircraft has not been observed on the runway on-ground during this commitment"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        commitment.touchedDownDuringCommitment
+}
+
+/**
+ * fn-8.3 Phase 2 (B3): sticky witness that the pilot has reported "Ready
+ * for departure" at least once during the **current** commitment lifetime.
+ * Reads [Commitment.pilotReadyDuringCommitment] (set by
+ * `reconcileObservedStages` in the controller from the
+ * `ReadyForDepartureReceived` controller event).
+ *
+ * Replaces the single-cycle [PilotReady] gate on `DEP-LUAW`. Pilots
+ * report Ready once; the controller retains that on the strip. With
+ * sequential departures behind a circuit-traffic arrival, the runway
+ * is granted to the second departure long after the pilot's one-shot
+ * Ready event has aged out of `ctx.events`. Pre-fix `DEP-LUAW` would
+ * never fire for the second departure → wedge at AwaitReady. See fn-8.3
+ * spec § Evidence § Phase 2 (post-B2-fix) for the empirical wedge.
+ */
+data object PilotReadyDuringCommitment : RuleGuard {
+    override val failureMessage =
+        "Pilot has not reported ready for departure during this commitment"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        commitment.pilotReadyDuringCommitment
+}
+
 /** Aircraft is at a known holding point for the commitment's runway. */
 data object AtHoldingPoint : RuleGuard {
     override val failureMessage = "Aircraft is not at a holding point for this runway"

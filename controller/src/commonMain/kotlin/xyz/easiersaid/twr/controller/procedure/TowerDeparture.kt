@@ -29,7 +29,7 @@ import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.OnGround
 import xyz.easiersaid.twr.controller.bdi.OnRunway
 import xyz.easiersaid.twr.controller.bdi.OtherTrafficOnShortFinal
-import xyz.easiersaid.twr.controller.bdi.PilotReady
+import xyz.easiersaid.twr.controller.bdi.PilotReadyDuringCommitment
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
 import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
 import xyz.easiersaid.twr.controller.bdi.RunwayLengthOperation
@@ -54,10 +54,21 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_5005
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
-// AI pilots emit Report(Ready) the same way human pilots do, so PilotReady
-// alone is sufficient. Removing AiProactive closes a firewall leak — the
-// controller no longer reads `humanPiloted`.
-private val DepartureTrigger = PilotReady
+// AI pilots emit Report(Ready) the same way human pilots do, so the
+// pilot-Ready report is the trigger for both. Removing AiProactive
+// closed a firewall leak — the controller no longer reads `humanPiloted`.
+//
+// fn-8.3 Phase 2 (B3): switched from the single-cycle `PilotReady` event
+// gate to the sticky [PilotReadyDuringCommitment] commitment-witness
+// gate. Pilots report Ready ONCE, but the runway grant for sequential
+// departures behind a circuit-traffic arrival can land many cycles
+// later. Pre-fix, `DEP-LUAW` would never fire for the second departure
+// because the Ready event had aged out. Real controllers retain the
+// Ready report on the strip — this gate models that strip-state. The
+// `PilotReady` event still drives the **flag set** in
+// `reconcileObservedStages` (B3); the rule reads the persistent
+// witness, not the event directly.
+private val DepartureTrigger = PilotReadyDuringCommitment
 
 /** Shared guard: conditions for issuing or re-issuing a takeoff clearance. */
 private val TakeoffConditions = AllOf(listOf(
