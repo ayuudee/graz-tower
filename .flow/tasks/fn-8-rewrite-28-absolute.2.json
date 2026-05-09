@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-08T21:02:59.470385Z",
+  "depends_on": [],
+  "epic": "fn-8-rewrite-28-absolute",
+  "id": "fn-8-rewrite-28-absolute.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-8-rewrite-28-absolute.2.md",
+  "status": "todo",
+  "title": "Make 3 code files cwd-independent",
+  "updated_at": "2026-05-09T04:21:13.147840Z"
+}
