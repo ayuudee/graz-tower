@@ -23,22 +23,27 @@ Use this together with:
 From the FM point of view, the LOWG-driven runtime changes split into three
 classes.
 
-Status as of April 18, 2026:
+Status as of May 9, 2026:
 
-- the first runtime slice is now implemented in Kotlin
-- the route/airspace cleanup pass is also implemented in Kotlin
+- the first runtime slice is implemented in Kotlin
+- the route/airspace cleanup pass is implemented in Kotlin
+- **fn-9 (May 9, 2026) lifted `VfrRoute.airspaceProfile` into Class C** —
+  the proof-visible extraction now carries the field on both
+  `ScopedVfrRouteSource` and `CompileVfrRouteView`, with new well-formedness
+  conjuncts on `RouteBearingExtractionWellFormed`; predicate strengthening
+  (the `Ready` / `Issuable` predicates that consume the new data) remains
+  the next deliberate widening branch
 - the remaining items in this note are the still-open FM-boundary decisions,
   not undone repository work
 
 ### A. Pure runtime changes with no immediate Lean churn
 
-These can change in runtime without forcing immediate Lean/extraction edits,
-because the current proof-visible route extraction does not carry route-airspace
-payloads at all:
+These can change in runtime without forcing immediate Lean/extraction edits:
 
-- widening `VfrRoute.airspaceProfile` into nullable
-  `InVolume` / `InClass` / `Segmented`
-- making segmented route-airspace legs volume-authoritative
+- making segmented route-airspace legs volume-authoritative — the
+  segmented variant of `VfrRouteAirspaceProfile` is now proof-visible (fn-9)
+  but the underlying Kotlin volume-authoritative refactor itself was a
+  no-op for the older waypoint-only Lean extraction
 - distinguishing `AirspaceVolume.memberPoints` from optional boundary geometry
 
 ### B. No immediate Lean theorem/code changes, but docs/boundary notes must be explicit
@@ -60,7 +65,17 @@ facts the current proofs use:
 These require real Lean world/extraction/proof work if we want the FM boundary
 to mirror the richer runtime semantics rather than ignore them:
 
+- **landed in fn-9 (May 9, 2026)**: widening `VfrRoute.airspaceProfile`
+  into nullable `InVolume` / `InClass` / `Segmented` and lifting it into
+  the proof-visible source extraction (`ScopedVfrRouteSource.airspaceProfile`,
+  `CompileVfrRouteView.airspaceProfile`) — conservative-extension only, no
+  Phase 1-4 closure reopened
 - replacing point-set airspace semantics with polygon/boundary semantics
+  (depends on the fn-9 extraction widening)
+- predicate strengthening — making the world-backed
+  `ClearedToEnterControlZone` / `SpecialVfrClearance` /
+  `RemainOutsideControlledAirspace` `Ready` / `Issuable` predicates consume
+  the new `airspaceProfile` data instead of staying on point-membership
 - making operational sectors proof-visible / instruction-addressable /
   authority-bearing
 - making published VFR procedures proof-visible / instruction-addressable /
@@ -408,27 +423,59 @@ To keep the split honest:
 5. Only then decide whether sectors/published procedures deserve a new FM
    widening branch.
 
-## Minimal FM follow-up set for the first runtime slice
+## Minimal FM follow-up set for the first runtime slice — landed in fn-9
 
-If the first runtime slice is:
+The first runtime slice this note anticipated has now landed (May 9, 2026,
+fn-9). The original prediction held — the widening was cheap and conservative
+— but the actual scope of FM doc churn was wider than this section originally
+named. Recording the post-fn-9 reality:
 
-- widened `VfrRoute`
-- richer `AirspaceVolume` with added boundary geometry
-- runtime-only operational sectors
-- runtime-only published VFR procedures
-
-then the exact FM follow-up set is:
-
-### Lean code
+### Lean code that moved (fn-9.1)
 
 - [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+  — added `ProofVisibleAirspaceSegment`, `ProofVisibleAirspaceProfile` (sealed
+  sum), and the `airspaceProfile` field on `CompileVfrRouteView`
 - [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+  — added `airspaceProfile` field on `ScopedVfrRouteSource`, propagated via
+  `toCompileView`, extended `RouteBearingExtractionWellFormed` with the new
+  `vfrRouteAirspaceProfileWellFormed` conjunct, added the preservation lemma
+  `vfrRouteAirspaceProfileWellFormed_of_mem`
 
-### FM docs
+### Lean theorem surface that did NOT move
+
+- the existing eight-family `findCompileVfrRoute_eq_some_of_mem` already
+  exposes the new field through extraction by definitional unfolding — no
+  separate "ninth-family" source-side lookup was needed
+- the central refinement registry `GreenfieldDeliveredRefinement.lean` is
+  unchanged: fn-9 added a preservation helper, not a new top-level
+  delivered refinement theorem
+- `RouteBearingResolutionBridge`, `GreenfieldRouteBearingCurrentShape`,
+  `GreenfieldRouteBearingLifecycle`, and the world-backed airspace stack are
+  all unchanged — fn-9 is conservative-extension only
+
+### FM docs that moved (fn-9.2)
 
 - [parity_inventory.md](research/fm/parity_inventory.md)
+  — runtime note + Phase A row drift seam
 - [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
-- [README.md](research/fm/README.md)
+  — status note flipped to name what is now extracted and what stays open
+- [route_bearing_scope.md](research/fm/route_bearing_scope.md)
+  — runtime note flipped (airspaceProfile is now inside the widening track)
+- [refinement_inventory.md](research/fm/refinement_inventory.md)
+  — Phase A row notes the source-extraction extension + preservation lemma
+- this file ([runtime_model_change_impact.md](research/fm/runtime_model_change_impact.md))
+  — executive summary, impact-matrix row, and §1 detail revised
 - [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
+  — bullet-list narrative updated; new fn-9 changelog entry appended
 
-Nothing else on the Lean theorem side needs to move for that first slice.
+### Successor branches deferred to later widening
+
+- predicate strengthening — `ClearedToEnterControlZone` /
+  `SpecialVfrClearance` / `RemainOutsideControlledAirspace` `Ready` /
+  `Issuable` predicates consuming the new profile data
+- profile-aware `worldBackedAirspaceRouteInteraction?` (currently
+  single-volume API)
+- polygonal `AirspaceVolume.boundary` proof-visibility (depends on fn-9
+  extraction)
+- runtime operational sectors and published VFR procedures into the
+  proof-visible world

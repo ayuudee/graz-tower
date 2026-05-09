@@ -44,19 +44,42 @@ The doc updates must state honestly what is now proof-visible (the three airspac
 
 ## Acceptance
 
-- [ ] Drift-control gate green: `./gradlew build` passes; `nix-shell -p lean4 --run 'cd research/fm/lean && lake build CertifiedAtc'` passes; `./gradlew :sim:jvmTest --tests '*LowgGoldenTest' --tests '*G2CrossAerodromeVfrTest'` passes.
-- [ ] `research/fm/parity_inventory.md` runtime note + affected row(s) updated to reflect the new proof-visible airspaceProfile boundary, with the still-open list named.
-- [ ] `research/fm/refinement_inventory.md` row(s) updated; if fn-9-lift-fm-extraction-to-consume-runtime.1 added a top-level theorem name, the registry alias is added.
-- [ ] `research/fm/runtime_model_change_impact.md` `§1 VfrRoute widening` table row revised away from "No immediate Lean churn" to reflect Class-C change landed.
-- [ ] `research/fm/aviation_world_extraction_contract.md` status note (`:17-33`) revised — `airspaceProfile` is no longer "intentionally unextracted"; updated wording names what is now extracted and what still isn't.
-- [ ] `research/fm/route_bearing_scope.md` runtime note (`:8-19`) revised — `airspaceProfile` is no longer "outside this current widening track".
-- [ ] `research/fm/PROJECT_STATUS.md` has a dated changelog entry naming the widening, the new well-formedness conjuncts (including `vfrRouteAirspaceProfileWellFormed` field on `RouteBearingExtractionWellFormed`), the new preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem` (NOT a full origin/preservation/findCompile triple — fn-9.1 reuses the existing `findCompileVfrRoute_eq_some_of_mem` via `toCompileView` propagation), and the still-open list (predicate strengthening, profile-aware airspace-route interaction, polygonal boundary). <!-- Updated by plan-sync: fn-9.1 shipped one preservation lemma, not a "theorem family" triple -->
-- [ ] No FM doc still claims VFR routes extract as waypoint sequences only; `grep -n "waypoint sequences only" research/fm/` returns either zero matches or only matches on intentionally-historical context (e.g. dated changelog entries).
-- [ ] STRATEGY.md is NOT edited unless explicitly justified in the PR description (default for fn-9: leave STRATEGY.md alone).
+- [~] Drift-control gate green: `./gradlew build` passes; `nix-shell -p lean4 --run 'cd research/fm/lean && lake build CertifiedAtc'` passes; `./gradlew :sim:jvmTest --tests '*LowgGoldenTest' --tests '*G2CrossAerodromeVfrTest'` passes. — **partial**: `lake build CertifiedAtc` green (91/91, zero `sorry`); Gradle stack sandbox-blocked (OS-level UDP socket bind for `FileLockContentionHandler`, not addressable via `~/.claude/settings.json`); deferred to user-side verification. By construction the goldens cannot regress from this task — diff contains zero `.kt` files.
+- [x] `research/fm/parity_inventory.md` runtime note + affected row(s) updated to reflect the new proof-visible airspaceProfile boundary, with the still-open list named.
+- [x] `research/fm/refinement_inventory.md` row(s) updated; if fn-9-lift-fm-extraction-to-consume-runtime.1 added a top-level theorem name, the registry alias is added. — fn-9.1 added `vfrRouteAirspaceProfileWellFormed_of_mem`, a preservation helper, NOT a top-level delivered refinement theorem; the central registry `GreenfieldDeliveredRefinement.lean` is intentionally untouched.
+- [x] `research/fm/runtime_model_change_impact.md` `§1 VfrRoute widening` table row revised away from "No immediate Lean churn" to reflect Class-C change landed. Executive summary class A→C reclassification + "Minimal FM follow-up set" rewritten as post-fn-9 status also done in the same pass.
+- [x] `research/fm/aviation_world_extraction_contract.md` status note (`:17-33`) revised — `airspaceProfile` is no longer "intentionally unextracted"; updated wording names what is now extracted and what still isn't.
+- [x] `research/fm/route_bearing_scope.md` runtime note (`:8-19`) revised — `airspaceProfile` is no longer "outside this current widening track".
+- [x] `research/fm/PROJECT_STATUS.md` has a dated changelog entry naming the widening, the new well-formedness conjuncts (including `vfrRouteAirspaceProfileWellFormed` field on `RouteBearingExtractionWellFormed`), the new preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem` (NOT a full origin/preservation/findCompile triple — fn-9.1 reuses the existing `findCompileVfrRoute_eq_some_of_mem` via `toCompileView` propagation), and the still-open list (predicate strengthening, profile-aware airspace-route interaction, polygonal boundary). <!-- Updated by plan-sync: fn-9.1 shipped one preservation lemma, not a "theorem family" triple -->
+- [x] No FM doc still claims VFR routes extract as waypoint sequences only; `grep -rn "waypoint sequences only" research/fm/` returns zero matches.
+- [x] STRATEGY.md is NOT edited unless explicitly justified in the PR description (default for fn-9: leave STRATEGY.md alone).
 
 ## Done summary
 
+Updated the FM doc surface to honestly state that `VfrRoute.airspaceProfile` is now proof-visible at the source extraction level (fn-9.1's contribution), and to name the still-open successor branches: predicate strengthening of `ClearedToEnterControlZone` / `SpecialVfrClearance` / `RemainOutsideControlledAirspace`, profile-aware `worldBackedAirspaceRouteInteraction?` (single-volume API unchanged), and polygonal `AirspaceVolume.boundary` proof-visibility.
+
+Files edited (six FM docs):
+- `research/fm/aviation_world_extraction_contract.md` — status note flipped from "intentionally unextracted" to "now proof-visible" with the new well-formedness invariants spelled out.
+- `research/fm/parity_inventory.md` — runtime note + Phase A row drift seam reference the new airspaceProfile carriers and conjuncts.
+- `research/fm/route_bearing_scope.md` — runtime note flipped (airspaceProfile is now inside the widening track).
+- `research/fm/refinement_inventory.md` — Phase A row notes the source-extraction extension + preservation lemma; the central registry `GreenfieldDeliveredRefinement.lean` is intentionally not edited (no new top-level delivered refinement theorem from fn-9.1; the new `vfrRouteAirspaceProfileWellFormed_of_mem` is a preservation helper, not a registry-aliased delivered theorem).
+- `research/fm/runtime_model_change_impact.md` — executive summary class A→C reclassification for `airspaceProfile`, impact-matrix row, §1 detail revised, and "Minimal FM follow-up set" rewritten as post-fn-9 status with the actual files that moved.
+- `research/fm/PROJECT_STATUS.md` — existing "kept intentionally narrower" bullet flipped; new fn-9 changelog entry appended naming what landed (sealed sum + propagation + well-formedness conjuncts + preservation lemma) and what stays open.
+
+`STRATEGY.md` is intentionally not edited (per fn-9.2 spec default — the widening unblocks rather than closes the active surface). `grep -rn "waypoint sequences only" research/fm/` returns zero matches, confirming no doc still claims the old narrower boundary.
+
+Drift-control gate is partial: `lake build CertifiedAtc` is green (the substantive Lean evidence — fn-9 is a Lean-side widening), but `./gradlew build` and the golden tests `LowgGoldenTest` / `G2CrossAerodromeVfrTest` cannot run from this Claude Code sandbox. The blocker is OS-level, not config-level: Gradle's `FileLockContentionHandler` requires binding a UDP socket on a localhost port, and the sandbox blocks socket creation (`java.net.SocketException: Operation not permitted`) — adding paths to `~/.claude/settings.json` filesystem allow lists does not unblock this. Deferred to user-side verification (or a sandbox capability change). The substantive risk is low: fn-9.2 only edits documentation, no code touched, no Kotlin files in the diff.
+
+Codex impl-review v1 (commit `0419a08`) returned NEEDS_WORK with three findings: executive summary classification stale, "Minimal FM follow-up set" still future-tense, and empty evidence section. Commits `d0f9433` (stray-file removal) and the follow-up resolved all three.
+
 ## Evidence
 - Commits:
+  - `0419a08` — `docs(fm): reflect fn-9 airspaceProfile widening across inventory + status (fn-9.2)` (initial doc updates across 6 files)
+  - `d0f9433` — `chore: remove accidentally-committed .gitignore.tmp scratch file` (stray file from gradle sandbox-cache exploration)
+  - (follow-up) — exec-summary reclassification + "Minimal FM follow-up set" rewrite, in response to codex impl-review v1 findings
 - Tests:
+  - `lake build CertifiedAtc` — green (91/91 modules), zero `sorry`. Defensive re-build after doc edits confirms no Lean regression.
+  - `grep -rn "waypoint sequences only" research/fm/` — zero matches.
+  - `./gradlew build` — sandbox-blocked (`FileLockContentionHandler` UDP socket bind blocked by OS-level sandbox; not addressable via `~/.claude/settings.json`). Deferred to user-side verification.
+  - `./gradlew :sim:jvmTest --tests '*LowgGoldenTest' --tests '*G2CrossAerodromeVfrTest'` — same sandbox blocker. By construction the goldens cannot regress from fn-9.2: the diff contains zero `.kt` files (`git diff --stat HEAD~3 HEAD -- '*.kt'` empty across both fn-9.1 and fn-9.2 commits).
 - PRs:
