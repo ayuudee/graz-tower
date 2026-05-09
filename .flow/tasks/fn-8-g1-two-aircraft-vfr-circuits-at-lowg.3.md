@@ -983,6 +983,133 @@ controller-side gating restores G1's first-circuit T&G path. If a
 residual case still surfaces from intent ambiguity, β follows in a
 later pass with proper plan-review.
 
+#### Phase 3 round 2 — Review considerations (per `feedback_plans_review_aware.md`)
+
+This subsection covers the new direction recommendations introduced
+in Phase 3 round 2 (B5-α / B5-β / B5-γ sequencing). A future plan-
+review pass before the B5 fix lands will iterate on these, but the
+load-bearing concerns are captured inline here so silence isn't a
+review-finding gap.
+
+**FP / type-safety (B5-α path — controller-side):**
+- New BDI guard (e.g. `HasReportedCircuitPosition(legs:
+  Set<LegName>?)`) sources from a typed observation surface — most
+  likely an extended `BeliefState.observedReports[aircraft]:
+  Set<ReportEvent>` or per-aircraft latest report tracking. Sealed
+  `ReportEvent` already lives in `:protocol`. The guard's failure
+  mode is total over the surface (present/absent typed; no
+  stringly).
+- No new `ControllerDecisionResult` shape change. Pure-decide
+  contract preserved (per `feedback_architecture.md`).
+- `BeliefState` already carries `circuitIntent: Map<AircraftId,
+  CircuitIntent>` (M2's mechanism path). The new
+  `observedReports` field complements it: intent (semantic) +
+  reported-leg (positional). They serve different gates, no
+  conflation.
+- Failure-closed default: if the guard's underlying observation
+  field is empty for an aircraft, the rule does NOT fire. A future
+  scenario where the field is mis-populated surfaces as "ARR-LAND
+  never fires" rather than "ARR-LAND fires too eagerly."
+
+**FP / type-safety (B5-β path — pilot-side):**
+- Mission-tree replan is a `PilotMission → PilotMission` transform.
+  Existing `replaceChild` infrastructure (`PilotMission.kt`)
+  handles the structural work. The new function (e.g.
+  `collapseToGroundArrival`) takes `(mission: PilotMission, now:
+  SimTime): PilotMission` and is total — non-circuit-task missions
+  flow through unchanged.
+- `PilotIntent` reset analogous to `applySelfInitiatedGoAround`'s
+  `phase = PilotPhase.Climbing` shape, but for ground-vacate:
+  `phase = PilotPhase.LandingRoll, route = vacateRoute,
+  targetSpeedMps = taxiSpeed`. Sealed `PilotPhase` discrimination
+  ensures the new state is representable without stringly cases.
+- The Phase 3 round 1 attempt's hidden bug: kinematic intent reset
+  was only on the cognitive override path; the kinematic layer
+  (`Pilot.kt:planRoute`) re-derived an airborne route on the next
+  tick because mission step was still `LAND` (CompletionMode.PHYSICAL
+  — incomplete because aircraft on runway). The fix needs to also
+  mark LAND complete + advance the step, OR have the kinematic
+  layer respect the cognitive override of phase even when the
+  step is mid-PHYSICAL-completion.
+
+**Test architecture:**
+- B5-α tests: a controller-only spec exercising the new guard
+  against `BeliefState` fixtures with / without observed reports.
+  Existing `controller/jvmTest` style (e.g. similar to
+  `RunwayLengthGatingSpec` or the `Tower*Spec` files) is the
+  precedent.
+- G1 closure proof: G1 + the new minimal `circuits=1` two-aircraft
+  pin (per fn-8.3 acceptance bullet 5). Both must go green for
+  fn-8.3 closure.
+- G0 / G2 byte-stability: the load-bearing regression risk. G0's
+  pilot reports Downwind cleanly so the new guard fires
+  transparently; G2's pilot also reports cleanly on the LJMB
+  pattern. Re-baseline policy (decision #9): if a fix shifts pinned
+  values doctrinally-correctly, re-baseline with explicit
+  rationale; otherwise fix the regression.
+- No scaffold tests (per `feedback_testing_philosophy.md`). The
+  guard's first real-job test IS the G1 minimal pin; targeted
+  controller spec is "the rule + this guard fires under these
+  beliefs" — that's a real-job assertion.
+
+**Impact:**
+- B5-α surface: 1-3 production files in `:controller`
+  (`bdi/Guard.kt`, `procedure/TowerArrival.kt`, possibly
+  `observe/BeliefState.kt` for the new field). New BDI atom in
+  `Guard.kt` (sealed leaf addition — exhaustiveness compiles
+  loud across all guard consumers).
+- B5-β surface: 2-4 production files in `:pilot`
+  (`PilotCognitive.kt`, `Pilot.kt`, `PilotMission.kt` for the
+  helper, `processInstruction` arms for BacktrackRunway /
+  AfterLandingVacateVia at non-AVI step). Touches go-around /
+  join-circuit replan flows by proximity.
+- B5-γ (deferred): broader sim-radio infra; out of fn-8.3 scope
+  per `D-PASS-cross-aircraft-step-on`.
+- Pre-write audit at fix time per `feedback_pass_scope`
+  discipline. If B5-α's guard introduction touches > 10 BDI rule
+  call sites or B5-β's pilot replan touches > 10 mission-tree
+  call sites, STOP and re-plan-review before landing.
+
+**Operational correctness:**
+- B5-α citation discipline (per `feedback_reality_anchored.md`):
+  CAP 413 §4.45-4.49 is the doctrinal source for "pilot calls
+  Downwind first; controller responds with landing clearance."
+  ICAO Doc 4444 §7.10 (landing clearance procedure) corroborates:
+  clearance is issued "when the pilot reports on final" or after
+  the pilot's position call. Verify these section numbers
+  against local research text or canonical PDF before commit; do
+  not commit speculative section numbers (per pass-2 plan-review
+  nitpick #4 that fn-8.3 inherited).
+- B5-α reality check: the change makes the controller WAIT for
+  the pilot's report before clearing. Real ATC behaviour aligns
+  — at controlled aerodromes the pilot's downwind/base/final call
+  drives clearance issuance; observation alone (e.g. radar)
+  triggers traffic-info calls, not landing clearances. The
+  current code's "fire on observation alone" is the doctrinally-
+  wrong shape that B5 surfaces.
+- B5-β reality check: pilots who receive "cleared to land" when
+  they expected "cleared touch and go" comply with the cleared-
+  to-land instruction. They do NOT lift off again unbidden. The
+  current sim's "pilot lifts off because mission tree says
+  FLY_DEPARTURE next" is the doctrinally-wrong shape that M4
+  surfaces. The replan must resolve the intent mismatch in favour
+  of the controller's most recent clearance.
+- B5-γ (filed): cross-aircraft step-on remains a real-radio
+  phenomenon (real radios ARE half-duplex on a single frequency).
+  The current sim model approximates this but with a known
+  staleness gap; the deferment captures the contract.
+
+**Sequencing rationale:**
+- α first: smallest blast radius, doctrinally cleanest, controller-
+  only. Verifies the M1 mechanism is the load-bearing root cause.
+- β follows if needed: handles pilot-side residual cases the
+  controller-only fix can't cover (e.g. delayed delivery where
+  pilot has already advanced past the divergent step before the
+  controller's intent-aligned clearance arrives). Plan-review
+  cycle when β's scope is concrete.
+- γ remains deferred: independent infra problem with its own
+  impact-aware design.
+
 **STOP-and-report disposition (per spec abort criterion #10 +
 worker.md "third phase needed" pattern):** fn-8.3 stays
 in_progress. G1 closure work continues in a follow-on session

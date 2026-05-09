@@ -460,6 +460,28 @@ Full exploratory adversary surface (vectors, holding, sequencing stress) not yet
 
 ---
 
+### fn-8.3 G1 closure deferments (filed 2026-05-09)
+
+These items were surfaced during fn-8.3's G1 multi-session closure pass (Phase 1 → Phase 3 round 2). Full real-fix contracts live in the sister register `~/.claude/plans/pilot-firewall.md § fn-8 deferments` (per `reference_audit_registers.md` user-memory: D-PASS items carry their full four-field contract there). This `.plan` mirror gives short summaries + impact/effort grades so on-repo readers can find them.
+
+**D-PASS-g1-diagnostics — DONE (CLOSED-PARTIAL by fn-8.3)**
+Existing `SimTraceQueries.kt` harness was sufficient through Phase 3 round 2; `G1ClosureDiveTest` (`sim/jvmTest`) is the per-round dive driver.
+Impact: M | Effort: L
+
+**D-PASS-g1-diagnostics-typed-events — OPEN (placeholder)**
+Trace queries derive from `BeliefState` snapshots between events; mid-decide-cycle state is not surfaced. Trigger: a future closure pass where `BeliefState` snapshots cannot answer the dive question.
+Impact: L | Effort: M
+
+**D-PASS-cross-aircraft-step-on — OPEN**
+Same-frequency same-instant cross-aircraft transmissions collide because each emission site reads `state.inFlightTransmissions` against a stale view. Phase 3 round 1's `pilotRadioFreeAt` only addresses same-aircraft. A broader per-frequency `frequencyBusyUntil` tracker was attempted + reverted (broke G2's JoinCircuit handoff). Filed for a dedicated impact-aware design pass.
+Impact: M | Effort: M
+
+**D-PASS-pilot-mid-tng-fullstop-recovery — OPEN (the B5 wedge)**
+B's first-circuit Downwind(TOUCH_AND_GO) collides on-air with the controller's same-tick ARR-LAND (full-stop default per Phase 3 round 1 C4). Pilot reads back, lands; T&G-shaped mission tree advances to FLY_DEPARTURE; BacktrackRunway silently dropped (pilot step is `LAND`, not `AWAIT_VACATE_INSTRUCTION`); B physically lifts off again, flies an unauthorised second circuit, wedges in REPORT_RUNWAY_VACATED on runway. Two real-fix paths: α (controller-side: ARR-LAND gate on observed pilot circuit-position report) and β (pilot-side: mission-tree replan + kinematic-intent reset on intent mismatch). α has smaller blast radius — recommended first. Blocks fn-8.3 closure (G1 green) and indirectly fn-8.2 done.
+Impact: H | Effort: M
+
+---
+
 ### Controller backlog (future scope, no imminent ETA)
 
 **CB-1** — Approach sequencing: "number N", speed control, vectoring, essential traffic
