@@ -17,10 +17,14 @@ The source inputs remain:
 Status note:
 
 As of May 9, 2026, the runtime widening branch landed in fn-9 has lifted
-`VfrRoute.airspaceProfile` into the proof-visible surface. The remaining
-runtime-only facts still sit outside the currently extracted proof surface:
+`VfrRoute.airspaceProfile` into the proof-visible surface. Point membership
+is also proof-visible — `ScopedAirspaceVolumeSource.points : List PointId` is
+the current proof-side projection of the runtime `AirspaceVolume.memberPoints`
+field. The remaining runtime facts still sit outside the currently extracted
+proof surface:
 
-- `AirspaceVolume.memberPoints` plus optional `boundary`
+- the optional `AirspaceVolume.boundary` (polygonal geometry) — point
+  membership is proof-visible; the boundary geometry alongside it is not
 - runtime operational sectors in `AerodromeAip`
 - runtime published VFR procedures in `AerodromeAip`
 

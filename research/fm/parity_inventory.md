@@ -25,8 +25,10 @@ Runtime note:
   `RouteBearingExtractionWellFormed` mirroring the runtime invariants from
   [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt)
 - the delivered FM boundary still extracts airspace as explicit point
-  membership only; the runtime `AirspaceVolume.memberPoints` plus optional
-  `boundary` geometry, runtime-owned operational sectors, and published VFR
+  membership only — point membership IS proof-visible
+  (`ScopedAirspaceVolumeSource.points` projects the runtime
+  `AirspaceVolume.memberPoints`); the optional `boundary` polygonal geometry
+  alongside it, runtime-owned operational sectors, and published VFR
   procedures remain intentionally outside the current proof-visible boundary
 - predicate strengthening (consuming the new profile data inside the
   `ClearedToEnterControlZone` / `SpecialVfrClearance` /

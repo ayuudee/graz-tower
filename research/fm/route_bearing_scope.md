@@ -15,8 +15,10 @@ well-formedness conjuncts on `RouteBearingExtractionWellFormed` mirroring the
 runtime invariants from
 [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt).
 The richer runtime facts that still sit outside the proof-visible boundary
-are `AirspaceVolume.memberPoints` plus optional boundaries, runtime-owned
-operational sectors, and published VFR procedures. Predicate strengthening
+are the optional `AirspaceVolume.boundary` polygonal geometry (point
+membership is proof-visible — `ScopedAirspaceVolumeSource.points` projects
+the runtime `AirspaceVolume.memberPoints`), runtime-owned operational
+sectors, and published VFR procedures. Predicate strengthening
 to consume the new profile data inside `ClearedToEnterControlZone`,
 `SpecialVfrClearance`, and `RemainOutsideControlledAirspace`, or to widen
 `worldBackedAirspaceRouteInteraction?` to be profile-aware, is a successor

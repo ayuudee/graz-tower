@@ -38,13 +38,16 @@ Status as of May 9, 2026:
 
 ### A. Pure runtime changes with no immediate Lean churn
 
-These can change in runtime without forcing immediate Lean/extraction edits:
+This class is **now empty** post-fn-9:
 
-- making segmented route-airspace legs volume-authoritative — the
-  segmented variant of `VfrRouteAirspaceProfile` is now proof-visible (fn-9)
-  but the underlying Kotlin volume-authoritative refactor itself was a
-  no-op for the older waypoint-only Lean extraction
-- distinguishing `AirspaceVolume.memberPoints` from optional boundary geometry
+- the original `VfrRoute.airspaceProfile` widening and the Kotlin refactor
+  making segmented route-airspace legs volume-authoritative were Class A at
+  the time of the runtime landing (May 2026), but fn-9 reclassified both as
+  Class C below — they are now proof-visible
+- the runtime distinguishing `AirspaceVolume.memberPoints` from optional
+  `boundary` geometry remains Class B (point membership is proof-visible via
+  `ScopedAirspaceVolumeSource.points`; the optional `boundary` polygon
+  alongside it is not yet)
 
 ### B. No immediate Lean theorem/code changes, but docs/boundary notes must be explicit
 
@@ -88,7 +91,7 @@ to mirror the richer runtime semantics rather than ignore them:
 | Runtime change | Lean compile break? | Minimum FM action | Wider FM action if proof boundary widens |
 | --- | --- | --- | --- |
 | Widen `VfrRoute.airspaceProfile` to nullable `InVolume` / `InClass` / `Segmented` | No | (fn-9, May 9 2026: now landed as Class-C extension — see §1 below) | Add proof-visible route-airspace payloads and theorems if route/airspace semantics become proof-visible — **landed in fn-9** as conservative source-extraction widening; predicate strengthening + multi-volume `worldBackedAirspaceRouteInteraction?` remain successor branches |
-| Make segmented route-airspace legs volume-authoritative | No | Document that FM still ignores route-airspace payloads entirely | Add proof-visible route-airspace payloads and related validation / resolution theorems |
+| Make segmented route-airspace legs volume-authoritative | No | (fn-9, May 9 2026: segmented profiles are now proof-visible at the source extraction with per-segment `from != to` + volume-resolution + waypoint-pair-alignment well-formedness) | Add proof-visible route-airspace payloads and related validation / resolution theorems — **partially landed in fn-9**: extraction + well-formedness for segmented profiles done; predicate-level consumption (profile-aware `worldBackedAirspaceRouteInteraction?`, predicate strengthening) remains successor branches |
 | Add airspace boundary geometry while keeping point membership | No | Document that FM remains closed on the point-membership subprojection | Widen airspace proof world and completion semantics |
 | Add runtime operational-sector entities only | No | Document that sectors remain outside the current proof boundary | Add ids, compile views, extraction, authority, and airspace/procedure theorems |
 | Add runtime published-VFR-procedure entities only | No | Document that published-procedure semantics remain package/runtime-only, not proof-visible | Add ids, compile views, extraction, and route-bearing/admission theorems |
