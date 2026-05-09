@@ -15,6 +15,7 @@ pkgs.mkShell {
     pkgs.nodejs_22
     pkgs.poppler-utils
     pkgs.jq
+    pkgs.git
   ];
 
   JAVA_HOME = "${jdk.home}";
