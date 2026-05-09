@@ -18,6 +18,7 @@ import xyz.easiersaid.twr.controller.bdi.HandoffAction
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.HoldPositionAction
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
+import xyz.easiersaid.twr.controller.bdi.IsCircuitTrafficByStrip
 import xyz.easiersaid.twr.controller.bdi.LineUpAction
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
@@ -270,15 +271,37 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "DEP-CIRCUIT-COMPLETE",
                 description = "Departure complete — circuit traffic reaching downwind, tower retains",
                 // Fires for any aircraft the controller has identified as
-                // circuit traffic — i.e. the pilot has reported a Downwind
-                // call carrying a CircuitIntent. The intent value (T&G or
-                // FULL_STOP) is irrelevant here; the relevance is "the
-                // aircraft is in the circuit pattern, retain at tower."
+                // circuit traffic, by either signal:
+                //  • [IsCircuitTraffic] — the pilot has reported a Downwind
+                //    call carrying a CircuitIntent (radio-derived, requires
+                //    the Downwind transmission to have been delivered to
+                //    the controller; vulnerable to step-on on a busy
+                //    multi-aircraft frequency).
+                //  • [IsCircuitTrafficByStrip] — the AFTN-distributed strip
+                //    carries no onward destination aerodrome; real ATC's
+                //    "VFR LCL" kind-of-flight tag, available to the
+                //    controller before any radio contact. Robust to lost
+                //    radio reports.
+                //
+                // fn-8.3 Phase 3 (B4 closure): adds the strip-derived
+                // signal alongside the radio-derived one. Pre-fix, a
+                // multi-aircraft circuit pattern could lose B's first
+                // Downwind transmission to a same-instant collision with
+                // A's Readback (both at the moment the frequency just
+                // became free), leaving the controller's
+                // `circuitIntent[B]` permanently empty and B wedged at
+                // `TOWER_DEPARTURE@AwaitTakeoffObserved` for the run.
+                // The strip already carried "B is a local flight";
+                // teaching the rule to read it lets DEP-CIRCUIT-COMPLETE
+                // fire on observation alone.
+                //
+                // Doctrine: ICAO Doc 4444 §7.9 (aerodrome local control),
+                // AIP / AIC kind-of-flight markings (VFR LCL).
                 regulations = listOf(ICAO4444_7_9),
                 guard = AllOf(listOf(
                     Airborne,
                     OnCircuitLeg(LegName.DOWNWIND),
-                    IsCircuitTraffic,
+                    AnyOf(listOf(IsCircuitTraffic, IsCircuitTrafficByStrip)),
                 )),
                 nextStage = TowerDepartureStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,

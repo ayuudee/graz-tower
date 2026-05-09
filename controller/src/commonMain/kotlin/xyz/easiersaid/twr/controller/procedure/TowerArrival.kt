@@ -286,24 +286,41 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 urgency = Urgency.PROGRESSION,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Clear to land — VFR, full-stop intent declared
+            // Clear to land — VFR, full-stop intent OR no circuit intent
+            // signal received (radio default is "full-stop unless explicit
+            // T&G heard"). fn-8.3 Phase 3 (B4 closure follow-on): the
+            // strip-based DEP-CIRCUIT-COMPLETE broadening can advance the
+            // commitment to TOWER_ARRIVAL before any Downwind transmission
+            // is delivered (e.g. cross-aircraft step-on lost the radio
+            // call). Without this default-to-full-stop semantic, ARR-LAND-TNG
+            // would fire with `Not(CircuitIntentIs(FULL_STOP))=true` when
+            // intent is empty, issuing a T&G clearance against a pilot who
+            // never declared T&G. Reality-anchored: a real controller
+            // hearing no Downwind call but seeing the aircraft on final
+            // would clear to land (safe default), not offer T&G.
             AtcRule(
                 id = "ARR-LAND",
-                description = "Clear to land when on final and runway available, pilot declared full-stop",
+                description = "Clear to land when on final and runway available — full-stop or unknown intent",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(LandingConditions, CircuitIntentIs(CircuitIntent.FULL_STOP))),
+                guard = AllOf(listOf(
+                    LandingConditions,
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                    )),
+                )),
                 action = ClearLandAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Clear touch-and-go — default for circuit traffic that has not declared full-stop
+            // Clear touch-and-go — only on explicit T&G intent declaration
             AtcRule(
                 id = "ARR-LAND-TNG",
-                description = "Clear touch-and-go when on final and runway available (default for circuit traffic)",
+                description = "Clear touch-and-go when on final and runway available — explicit T&G intent",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(LandingConditions, Not(CircuitIntentIs(CircuitIntent.FULL_STOP)))),
+                guard = AllOf(listOf(LandingConditions, CircuitIntentIs(CircuitIntent.TOUCH_AND_GO))),
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
@@ -346,13 +363,18 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Re-issue: ClearedToLand was stepped on → coordination GC'd → re-issue.
+            // Gate matches ARR-LAND: explicit FULL_STOP OR no circuit-intent
+            // signal received (default-to-full-stop for unknown intent).
             AtcRule(
                 id = "ARR-LAND-REISSUE",
                 description = "Re-issue landing clearance after readback timeout",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
                 guard = AllOf(listOf(
                     LandingConditions,
-                    CircuitIntentIs(CircuitIntent.FULL_STOP),
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                    )),
                     NoPendingReadback(InstructionMatcher.AnyOf(listOf(
                         instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
                         instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
@@ -363,14 +385,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Re-issue T&G variant
+            // Re-issue T&G variant — gate matches ARR-LAND-TNG (explicit T&G only).
             AtcRule(
                 id = "ARR-LAND-TNG-REISSUE",
                 description = "Re-issue touch-and-go clearance after readback timeout",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
                 guard = AllOf(listOf(
                     LandingConditions,
-                    Not(CircuitIntentIs(CircuitIntent.FULL_STOP)),
+                    CircuitIntentIs(CircuitIntent.TOUCH_AND_GO),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
                 )),
                 action = ClearTouchAndGoAction,

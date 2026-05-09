@@ -24,6 +24,7 @@ import xyz.easiersaid.twr.protocol.Wind
 import xyz.easiersaid.twr.sim.testing.Fixtures
 import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
 import xyz.easiersaid.twr.sim.testing.controllerByRole
+import xyz.easiersaid.twr.sim.testing.responsibilityTransitions
 import xyz.easiersaid.twr.sim.testing.load
 import xyz.easiersaid.twr.sim.testing.requiredStartPoints
 import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
@@ -428,5 +429,308 @@ class G1ClosureDiveTest {
                 )
             }
         }
+    }
+
+    /**
+     * fn-8.3 Phase 3 — B4 dive. With B2 + B3 collapsing A's runaway loop, B
+     * now flies the first circuit but its commitment stays at
+     * `TOWER_DEPARTURE@AwaitTakeoffObserved` instead of advancing to
+     * `TOWER_ARRIVAL` after B reports Downwind. `DEP-CIRCUIT-COMPLETE`
+     * (gate: `Airborne && OnCircuitLeg(DOWNWIND) && IsCircuitTraffic`)
+     * never fires — the spec hypothesis is that B reports Downwind+Base+Final
+     * at the same SimTime tick (compressed pilot output), so by the time
+     * the controller cycle observes B with `IsCircuitTraffic = true`,
+     * B's `positionPoint` is no longer on a Downwind leg point.
+     *
+     * This dive prints, for B (`OE-DEF`):
+     *  - every transmission B emits + tower's `circuitIntent[B]` cursor.
+     *  - every position-point transition for B + the legs that point
+     *    belongs to (`worldIndex.circuitLegsByPoint`) for each.
+     *  - every commitment-stage transition for B at LOWG_TOWER.
+     *  - a focused window dump around the suspected Downwind+Base+Final
+     *    compression: every step row from 1.55Ms to 1.62Ms with stage,
+     *    positionPoint, leg-set, circuitIntent, mission step.
+     */
+    @Test
+    fun `dive — B4 B downwind compression vs DEP-CIRCUIT-COMPLETE`() {
+        val fixture = Fixtures.LOWG_TWO_AIRCRAFT
+        val loaded = fixture.load().getOrElse { error("LOWG_TWO_AIRCRAFT load failed: $it") }
+        val lowg = AerodromeId("LOWG")
+        val ground = checkNotNull(loaded.controllerByRole(RoleName.GROUND))
+        val tower = checkNotNull(loaded.controllerByRole(RoleName.TOWER))
+
+        val aId = AircraftId("OE-ABC")
+        val bId = AircraftId("OE-DEF")
+        val now = SimTime.ZERO
+        val starts = fixture.requiredStartPoints()
+        val standA = starts.getValue(aId)
+        val standB = starts.getValue(bId)
+
+        val missionA = createMission(
+            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            startPhase = PilotPhase.AtStand, time = now,
+            filedPlan = fixture.flightPlans.getValue(aId),
+        )
+        val missionB = createMission(
+            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            startPhase = PilotPhase.AtStand, time = now,
+            filedPlan = fixture.flightPlans.getValue(bId),
+        )
+
+        val acA = AircraftState(
+            id = aId, callsign = Callsign("OEABC"),
+            position = loaded.world.geometry.points.getValue(standA),
+            positionPoint = standA, phase = PilotPhase.AtStand,
+            type = AircraftType.C172, pilotMission = missionA,
+        )
+        val acB = AircraftState(
+            id = bId, callsign = Callsign("OEDEF"),
+            position = loaded.world.geometry.points.getValue(standB),
+            positionPoint = standB, phase = PilotPhase.AtStand,
+            type = AircraftType.C172, pilotMission = missionB,
+        )
+
+        val state = SimState.initial(
+            seed = 42L, world = loaded.world, worldIndex = loaded.worldIndex,
+            aircraft = listOf(acA, acB), controllers = listOf(ground, tower),
+            weatherByAerodrome = mapOf(lowg to fixture.weather),
+        ).getOrElse { error("SimState.initial failed: $it") }
+
+        val until = SimTime.ZERO + SimDuration.ofMillis(90 * 60 * 1000L)
+        val atis = Atis(
+            letter = 'A', aerodrome = lowg,
+            configuration = RunwayConfiguration(
+                arrivals = listOf(RunwayId("16C")), departures = listOf(RunwayId("16C")),
+            ),
+            wind = Wind.unsafe(160, 8), qnh = null, visibility = null, generatedAt = now,
+        )
+        val bOffset = SimDuration.ofMillis(2 * 60 * 1000L)
+        val initialEvents = loaded.initialEvents + listOf(
+            SimEvent.AtisIssued(time = now, aerodrome = lowg, atis = atis),
+            SimEvent.PilotDecisionTick(time = now, aircraftId = aId),
+            SimEvent.PilotDecisionTick(time = now + bOffset, aircraftId = bId),
+            SimEvent.PhysicsTick(time = now),
+            SimEvent.ControllerCycle(time = now, controllerId = ground.id),
+            SimEvent.ControllerCycle(time = now, controllerId = tower.id),
+        )
+        val (_, records, trace) = runUntilWithStateTrace(state, initialEvents, until)
+
+        // 1. B's transmissions over the run, with tower-side intent at the cursor.
+        println("\n=== B transmissions + tower circuitIntent[B] ===")
+        records.forEach { rec ->
+            val pilotTx = (rec.utterance as? Utterance.FromPilot)?.transmission
+            val ctrlTx = (rec.utterance as? Utterance.FromController)?.output as? ControllerOutput.Instruct
+            val pilotSpeaker = rec.speaker as? SpeakerRef.Pilot
+            if (pilotSpeaker?.aircraftId == bId && pilotTx != null) {
+                // intent at-or-before this transmission
+                var intent: String? = trace.initial.beliefs[tower.id]?.circuitIntent?.get(bId)?.name
+                for (s in trace.steps) {
+                    if (s.time > rec.time) break
+                    intent = s.state.beliefs[tower.id]?.circuitIntent?.get(bId)?.name
+                }
+                val txKind = pilotTx::class.simpleName
+                val report = pilotTx as? xyz.easiersaid.twr.protocol.Report
+                val events = report?.events?.joinToString(",") { ev ->
+                    when (ev) {
+                        is xyz.easiersaid.twr.protocol.ReportEvent.Downwind -> "Downwind(intent=${ev.circuitIntent})"
+                        else -> ev::class.simpleName ?: "?"
+                    }
+                } ?: ""
+                println("  [${rec.time.millis}ms] PILOT $txKind $events | tower-intent=$intent")
+            } else if (ctrlTx != null && ctrlTx.target == bId) {
+                println("  [${rec.time.millis}ms] CONTROLLER ${ctrlTx.trace.ruleId}")
+            }
+        }
+
+        // 2. positionPoint transitions for B + leg memberships.
+        println("\n=== B positionPoint + leg memberships ===")
+        var prevPoint: String? = null
+        for (s in trace.steps) {
+            val ac = s.state.aircraft[bId] ?: continue
+            val pp = ac.positionPoint.value
+            if (pp == prevPoint) continue
+            val legs = loaded.worldIndex.circuitLegsByPoint[ac.positionPoint].orEmpty()
+                .joinToString(",") { it.name }
+            val ents = loaded.worldIndex.entitiesByPoint[ac.positionPoint].orEmpty()
+            val onRwy = ents.any { it is EntityRef.RunwayRef }
+            println("  [${s.time.millis}ms] $pp legs=[$legs] onRwyEntity=$onRwy phase=${ac.phase::class.simpleName}")
+            prevPoint = pp
+        }
+
+        // 3. Commitment-stage transitions for B at TOWER.
+        println("\n=== commitment.stage[B] at TOWER ===")
+        trace.commitmentStageTransitions(bId, tower.id).forEach { t ->
+            val from = t.from.fold({ "absent" }, { it.name })
+            val to = t.to.fold({ "absent" }, { it.name })
+            println("  [${t.after.time.millis}ms] $from → $to")
+        }
+
+        // 4. circuitIntent[B] transitions at TOWER.
+        println("\n=== circuitIntent[B] at TOWER ===")
+        val intentTransitions = trace.transitionsOf { st ->
+            Option.fromNullable(st.beliefs[tower.id]?.circuitIntent?.get(bId))
+        }
+        intentTransitions.forEach { t ->
+            val from = t.from.fold({ "absent" }, { it.name })
+            val to = t.to.fold({ "absent" }, { it.name })
+            println("  [${t.after.time.millis}ms] $from → $to")
+        }
+
+        // 5. Focused window dump: every step row from 1.55Ms to 1.62Ms with
+        //    {time, stage, positionPoint, leg-set, IsCircuitTraffic, mission step,
+        //    triggering SimEvent}.
+        println("\n=== B focused window dump [1550000ms..1620000ms] ===")
+        val win = 1_550_000L..1_620_000L
+        for (s in trace.steps) {
+            if (s.time.millis !in win) continue
+            val ac = s.state.aircraft[bId] ?: continue
+            val pp = ac.positionPoint
+            val legs = loaded.worldIndex.circuitLegsByPoint[pp].orEmpty()
+            val legStr = legs.joinToString(",") { it.name }
+            val intent = s.state.beliefs[tower.id]?.circuitIntent?.get(bId)?.name ?: "absent"
+            val isCT = bId in (s.state.beliefs[tower.id]?.circuitIntent ?: emptyMap())
+            val stage = s.state.beliefs[tower.id]?.commitments?.get(bId)?.stage?.name ?: "absent"
+            val step = ac.pilotMission?.currentTask?.step?.name ?: "?"
+            val evName = s.event::class.simpleName ?: "?"
+            val evDetail = when (val e = s.event) {
+                is SimEvent.TransmissionStart -> {
+                    val sp = e.transmission.speaker
+                    val u = e.transmission.utterance
+                    val from = if (sp is SpeakerRef.Pilot) "P:${sp.aircraftId.value}"
+                        else if (sp is SpeakerRef.Controller) "C:${sp.id.value}" else "?"
+                    val payload = when (u) {
+                        is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
+                            ?: u::class.simpleName ?: "?"
+                        is Utterance.FromPilot -> u.transmission::class.simpleName ?: "?"
+                    }
+                    "$from $payload"
+                }
+                else -> ""
+            }
+            println(
+                "  [${s.time.millis}ms] step=$step stage=$stage pp=${pp.value} legs=[$legStr] " +
+                    "intent=$intent isCT=$isCT | $evName $evDetail",
+            )
+        }
+
+        // 6a. B's responsibility state across controllers — who owns B at each
+        //     significant moment? A pilot transmission goes to whichever controller
+        //     has Owned responsibility (or to knownStrips fallback).
+        println("\n=== B responsibility transitions (per controller) ===")
+        trace.responsibilityTransitions(bId).forEach { rt ->
+            val from = rt.from.fold({ "absent" }, { it::class.simpleName ?: "?" })
+            val to = rt.to.fold({ "absent" }, { it::class.simpleName ?: "?" })
+            println("  [${rt.after.time.millis}ms] ${rt.controller.value}: $from → $to")
+        }
+
+        // 6b. Direct receiver check: at [1560940ms], who is the receiver of B's
+        //     transmissions? And does the tower actually receive a CircuitIntentReported
+        //     event for B at any point?
+        println("\n=== B Downwind transmission's receiver + delivery audit ===")
+        records.forEach { rec ->
+            val pilotTx = (rec.utterance as? Utterance.FromPilot)?.transmission ?: return@forEach
+            val speaker = rec.speaker as? SpeakerRef.Pilot ?: return@forEach
+            if (speaker.aircraftId != bId) return@forEach
+            val report = pilotTx as? xyz.easiersaid.twr.protocol.Report ?: return@forEach
+            val hasDownwind = report.events.any { it is xyz.easiersaid.twr.protocol.ReportEvent.Downwind }
+            if (!hasDownwind) return@forEach
+            // receiver shows in TransmissionRecord
+            val receiver = rec.receiver
+            println("  [${rec.time.millis}ms] B Downwind speaker=$speaker receiver=$receiver")
+            // also check whether this transmission was stepped on
+            println("    (steppedOn flag not directly available; check transmission events around this time)")
+        }
+
+        // 6c. All in-flight transmissions overlapping B's first Downwind transmission
+        //     window (1560000ms..1570000ms). Identifies any collision / step-on.
+        println("\n=== In-flight transmissions overlapping B Downwind window ===")
+        for (s in trace.steps) {
+            val ev = s.event as? SimEvent.TransmissionStart ?: continue
+            val tx = ev.transmission
+            if (tx.endsAt.millis < 1_555_000L || tx.startedAt.millis > 1_580_000L) continue
+            val sp = tx.speaker
+            val from = when (sp) {
+                is SpeakerRef.Pilot -> "P:${sp.aircraftId.value}"
+                is SpeakerRef.Controller -> "C:${sp.id.value}"
+            }
+            val to = when (val r = tx.receiver) {
+                is ReceiverRef.Controller -> "C:${r.id.value}"
+                is ReceiverRef.Pilot -> "P:${r.aircraftId.value}"
+            }
+            val payload = when (val u = tx.utterance) {
+                is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
+                    ?: u::class.simpleName ?: "?"
+                is Utterance.FromPilot -> {
+                    val pt = u.transmission
+                    when (pt) {
+                        is xyz.easiersaid.twr.protocol.Report -> "Report(${pt.events.joinToString(",") {
+                            when (it) {
+                                is xyz.easiersaid.twr.protocol.ReportEvent.Downwind -> "Dw[${it.circuitIntent}]"
+                                else -> it::class.simpleName ?: "?"
+                            }
+                        }})"
+                        else -> pt::class.simpleName ?: "?"
+                    }
+                }
+            }
+            println(
+                "  [${tx.startedAt.millis}..${tx.endsAt.millis}ms] freq=${tx.frequency.mhz} " +
+                    "$from → $to $payload",
+            )
+        }
+
+        // 6d. Event ordering around B's Downwind transmission — print every
+        //     SimEvent step in [1559500ms..1563500ms] to disambiguate why
+        //     two B transmissions from consecutive ticks both got
+        //     startedAt=1560940 (the apparent ordering bug).
+        println("\n=== Event order around B Downwind window [1559500..1563500] ===")
+        for (s in trace.steps) {
+            if (s.time.millis !in 1_559_500L..1_563_500L) continue
+            val evName = s.event::class.simpleName ?: "?"
+            val detail = when (val e = s.event) {
+                is SimEvent.TransmissionStart -> {
+                    val tx = e.transmission
+                    val sp = tx.speaker
+                    val from = if (sp is SpeakerRef.Pilot) "P:${sp.aircraftId.value}"
+                        else if (sp is SpeakerRef.Controller) "C:${sp.id.value}" else "?"
+                    val payload = when (val u = tx.utterance) {
+                        is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
+                            ?: u::class.simpleName ?: "?"
+                        is Utterance.FromPilot -> {
+                            val pt = u.transmission
+                            when (pt) {
+                                is xyz.easiersaid.twr.protocol.Report ->
+                                    "Report(${pt.events.joinToString(",") { it::class.simpleName ?: "?" }})"
+                                else -> pt::class.simpleName ?: "?"
+                            }
+                        }
+                    }
+                    "id=${tx.id.value} tx[${tx.startedAt.millis}..${tx.endsAt.millis}] $from $payload steppedOn=${tx.steppedOn}"
+                }
+                is SimEvent.TransmissionEnd -> "txEnd id=${e.transmissionId}"
+                is SimEvent.PilotDecisionTick -> "pilotTick ac=${e.aircraftId.value}"
+                is SimEvent.ControllerCycle -> "ctrlCycle ${e.controllerId.value}"
+                else -> ""
+            }
+            println("  [${s.time.millis}ms] $evName $detail")
+        }
+
+        // 7. Direct check: was there ANY tick in the trace where B was simultaneously
+        //    `Airborne && OnCircuitLeg(DOWNWIND) && IsCircuitTraffic`?
+        println("\n=== B simultaneous Airborne+OnDownwind+IsCircuitTraffic check ===")
+        var foundCount = 0
+        var firstFound: Long = -1
+        for (s in trace.steps) {
+            val ac = s.state.aircraft[bId] ?: continue
+            val airborne = ac.altitudeM > 0.5
+            val onDownwind = loaded.worldIndex.circuitLegsByPoint[ac.positionPoint]
+                ?.contains(xyz.easiersaid.twr.core.world.LegName.DOWNWIND) == true
+            val isCT = bId in (s.state.beliefs[tower.id]?.circuitIntent ?: emptyMap())
+            if (airborne && onDownwind && isCT) {
+                foundCount += 1
+                if (firstFound < 0) firstFound = s.time.millis
+            }
+        }
+        println("  total steps where all 3 true: $foundCount (firstFound=$firstFound ms)")
     }
 }

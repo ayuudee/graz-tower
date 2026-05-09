@@ -545,7 +545,25 @@ private fun handlePilotTick(
             }
         if (ctrl != null) {
             var txState = resultState
-            var nextFreeAt = state.now
+            // fn-8.3 Phase 3 (B4 closure): seed `nextFreeAt` with the per-
+            // aircraft `pilotRadioFreeAt` floor. Pre-fix, two consecutive
+            // pilot ticks (1s apart) on the same aircraft both computed
+            // proposedStart against `state.inFlightTransmissions` — but the
+            // prior tick's emitted [TransmissionStart] sits in the queue at
+            // its deferred `startedAt` and isn't yet visible. Both ticks
+            // selected the same `proposedStart`, the two transmissions
+            // collided on the same frequency at the same instant, and both
+            // got marked stepped-on. The first-circuit Downwind report
+            // (carrying CircuitIntent — the only signal the controller
+            // has for circuit traffic) and the immediately-following Base
+            // both vanished, leaving `circuitIntent[B]` unset and
+            // `DEP-CIRCUIT-COMPLETE` permanently false.
+            //
+            // The reality-anchored model: a pilot whose own PTT is still
+            // active will not begin a new transmission. The audio panel
+            // signals "transmitting." Persisting `endsAt` per-aircraft and
+            // reading it back here matches that real-cockpit fact.
+            var nextFreeAt = maxOf(state.now, state.pilotRadioFreeAt[event.aircraftId] ?: state.now)
             for (tx in decision.transmissions) {
                 val proposedStart = maxOf(nextFreeAt, pilotFrequencyFreeFrom(txState, ctrl.frequency, nextFreeAt))
                 val utterance = Utterance.FromPilot(tx)
@@ -563,7 +581,11 @@ private fun handlePilotTick(
                 commEvents.add(SimEvent.TransmissionStart(time = ift.startedAt, transmission = ift))
                 nextFreeAt = ift.endsAt
             }
-            resultState = txState
+            // fn-8.3 Phase 3 (B4 closure): persist the new radio-free-at
+            // for the next pilot tick to honour.
+            resultState = txState.copy(
+                pilotRadioFreeAt = txState.pilotRadioFreeAt + (event.aircraftId to nextFreeAt),
+            )
         }
     }
 
@@ -1147,7 +1169,7 @@ private fun handleInstructFromController(
     val cf = instruct.instruction as? ContactFrequency
     val newController = cf?.let { responsibleController(withReadbackId, ac.id) }
         ?.takeIf { it.id != controller.id }
-    val (afterIc, icEvents) = if (cf != null && newController != null) {
+    val (afterIc, icEvents, finalRadioFreeAt) = if (cf != null && newController != null) {
         val (withIcId, icTxId) = withReadbackId.mintTransmissionId()
         val icUtterance = Utterance.FromPilot(InitialContact(stationCalled = cf.role))
         val icStartAt = readbackTx.endsAt + CommsConstants.PILOT_FREQ_SWITCH_DELAY
@@ -1160,9 +1182,20 @@ private fun handleInstructFromController(
             startedAt = icStartAt,
             endsAt = icStartAt + utteranceDuration(icUtterance),
         )
-        withIcId to listOf(SimEvent.TransmissionStart(time = icTx.startedAt, transmission = icTx))
-    } else withReadbackId to emptyList()
-    return afterIc.emit(listOf(readbackStart) + icEvents)
+        Triple(
+            withIcId,
+            listOf(SimEvent.TransmissionStart(time = icTx.startedAt, transmission = icTx)),
+            icTx.endsAt,
+        )
+    } else Triple(withReadbackId, emptyList(), readbackTx.endsAt)
+    // fn-8.3 Phase 3 (B4 closure): persist the per-aircraft radio-free-at
+    // floor so the next pilot tick honours it. Symmetric with the same
+    // discipline on `handlePilotTick`. See SimState.pilotRadioFreeAt KDoc
+    // for doctrine.
+    val withRadioFreeAt = afterIc.copy(
+        pilotRadioFreeAt = afterIc.pilotRadioFreeAt + (ac.id to finalRadioFreeAt),
+    )
+    return withRadioFreeAt.emit(listOf(readbackStart) + icEvents)
 }
 
 /**
@@ -1214,7 +1247,13 @@ private fun handleRespondFromController(
         startedAt = startAt,
         endsAt = startAt + utteranceDuration(utterance),
     )
-    return withTxId.emit(listOf(SimEvent.TransmissionStart(time = inflight.startedAt, transmission = inflight)))
+    // fn-8.3 Phase 3 (B4 closure): persist the per-aircraft radio-free-at
+    // floor for the corrected-readback path. See SimState.pilotRadioFreeAt
+    // KDoc for doctrine.
+    val withRadioFreeAt = withTxId.copy(
+        pilotRadioFreeAt = withTxId.pilotRadioFreeAt + (ac.id to inflight.endsAt),
+    )
+    return withRadioFreeAt.emit(listOf(SimEvent.TransmissionStart(time = inflight.startedAt, transmission = inflight)))
 }
 
 /**

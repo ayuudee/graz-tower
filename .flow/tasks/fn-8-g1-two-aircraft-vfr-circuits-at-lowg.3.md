@@ -609,3 +609,214 @@ nix develop --command ./gradlew :sim:jvmTest :pilot:jvmTest \
 
 nix develop --command ./gradlew detekt --console=plain
 ```
+
+### Phase 3 round 1 — B4 dive + same-instant frequency-collision fix + strip-based circuit recognition (2026-05-09, session 3)
+
+**B4 dive findings (G1ClosureDiveTest 3rd `@Test` method
+`dive — B4 B downwind compression vs DEP-CIRCUIT-COMPLETE`):**
+
+The Phase 2 round 1 hypothesis ("B reports Downwind+Base+Final at the
+same SimTime tick — pilot-AI timing compression") **partially held but
+the actual mechanism is different**. The dive's event-tagged trace shows:
+
+1. **B's pilot tick at `1559000ms` produced ONE Downwind transmission
+   (intent=TOUCH_AND_GO).** Not two. `pilotCognitiveDecide` returns at
+   most one tx per call by construction.
+2. **B's NEXT pilot tick at `1560000ms` produced ONE Base transmission.**
+   These are two consecutive ticks 1s apart — not a single-tick burst.
+3. **Both transmissions ended up scheduled at exactly `1560940ms`** —
+   the tick at `1559000ms` saw A's `RunwayVacated` (1558940..1560940) in
+   `inFlightTransmissions` and computed `proposedStart = 1560940ms`.
+   The tick at `1560000ms` saw the **same** stale view (the prior
+   tick's emitted `TransmissionStart` event was queued at `1560940ms`
+   and not yet processed) and ALSO computed `proposedStart = 1560940ms`.
+4. **A's Readback (handleInstructFromController emission) also got
+   `startedAt=1560940ms`** for the same reason: the tick at `1559000ms`
+   processed A's `ARR-VACATE-HANDOFF` reception, generating a Readback
+   delayed to the freq-free moment.
+5. **Three transmissions on the same frequency at the exact same instant**
+   (B's Downwind, B's Base, A's Readback). All three got marked
+   `steppedOn=true` by `handleTransmissionStart`. None delivered.
+6. **`circuitIntent[B]` was never set** — Downwind was the only path the
+   controller has to learn circuit-end intent (CAP 413 §4.45-4.49).
+   Without it, `IsCircuitTraffic` was false for B for the entire run.
+7. **`DEP-CIRCUIT-COMPLETE` never fired** because its gate
+   `IsCircuitTraffic` was false. B's commitment stayed at
+   `TOWER_DEPARTURE@AwaitTakeoffObserved` from `1177000ms` until run end.
+
+**The bug surfaces as multi-aircraft frequency contention**, not pilot-AI
+compression as initially hypothesised. The proximate cause is
+`handlePilotTick`'s frequency-busy check reading `state.inFlightTransmissions`
+which doesn't yet include freshly-emitted-but-pending-at-future-time
+transmissions queued by prior pilot ticks (or by other aircraft's
+simultaneous ticks). Reality-anchored model: a real pilot whose own PTT
+is still active will not begin a new transmission; the audio panel
+signals "transmitting." The current sim layer doesn't honour this.
+
+**Fix shape — three coordinated changes:**
+
+1. **C1 — same-aircraft pilot radio-busy tracking (`SimState.pilotRadioFreeAt` +
+   `Step.handlePilotTick`).** Per-aircraft `Map<AircraftId, SimTime>`
+   eagerly tracks the `endsAt` of the aircraft's most recently emitted
+   pilot transmission. Subsequent pilot ticks for the same aircraft
+   honour this floor when computing `proposedStart`. Also updated in
+   `handleInstructFromController` (readback + InitialContact paths) and
+   `handleRespondFromController` (corrected-readback path) for
+   completeness. Doctrine: a pilot doesn't talk over their own
+   transmission. After C1, B's same-tick Downwind+Base collision
+   resolves: Downwind at `1560940ms`, Base at `1562940ms` (after
+   Downwind ends).
+2. **C2 — strip-based circuit-traffic recognition (new `IsCircuitTrafficByStrip`
+   guard in `controller/bdi/Guard.kt`).** Reads
+   `ControllerView.flightStripDestinations` — absent ⇔ filed plan has
+   no onward destination ⇔ VFR LCL local flight. The strip carries this
+   *before any radio contact*. Doctrine: ICAO Annex 11 §4.3,
+   AIP/AIC kind-of-flight markings (VFR LCL); real ATC strips for
+   circuit-training flights are tagged "VFR LCL" / "LOCAL" so the
+   controller knows from the AFTN-distributed strip alone. The guard
+   tightens "no destination" to "has a strip AND no destination" to
+   fail closed for unknown aircraft.
+3. **C3 — `DEP-CIRCUIT-COMPLETE` accepts strip-based signal alongside
+   radio-derived `IsCircuitTraffic`** (`controller/procedure/TowerDeparture.kt`).
+   Gate becomes `Airborne && OnCircuitLeg(DOWNWIND) &&
+   AnyOf(IsCircuitTraffic, IsCircuitTrafficByStrip)`. Robust to lost
+   radio reports — a single Downwind step-on no longer wedges
+   commitment-stage advancement.
+4. **C4 — `ARR-LAND` / `ARR-LAND-TNG` default flip** (`controller/procedure/TowerArrival.kt`).
+   Pre-fix, `ARR-LAND-TNG`'s gate was `Not(CircuitIntentIs(FULL_STOP))`
+   — i.e., default to T&G when intent is empty. Combined with the C3
+   strip-based commitment advancement, this caused G0 (single-aircraft
+   circuit, full-stop) to receive a T&G clearance before its Downwind
+   was processed. Doctrinally, a controller hearing no Downwind call
+   should clear the aircraft to land (safe default), not offer T&G.
+   `ARR-LAND` now fires on `CircuitIntentIs(FULL_STOP) || Not(IsCircuitTraffic)`;
+   `ARR-LAND-TNG` requires explicit `CircuitIntentIs(TOUCH_AND_GO)`.
+   Symmetric change to `ARR-LAND-REISSUE` and `ARR-LAND-TNG-REISSUE`
+   gates.
+
+**Test results post-Phase-3-round-1:**
+- `G1ClosureDiveTest` — green (diagnostic, kept).
+- `LowgGoldenTest` (G0) — green (G0 unchanged byte-stable on outcome
+  assertions; the C4 default-flip avoided a regression that would have
+  fired when C2 broadened DEP-CIRCUIT-COMPLETE).
+- `G2CrossAerodromeVfrTest` (G2) — green (G2 unchanged).
+- `G1TwoAircraftCircuitsTest` (G1) — **still failing**, but at a
+  different downstream wedge surfaced by Phase 3's success (see B5
+  below). Aircraft A now completes both circuits + parks cleanly. B
+  takes off, has its first-circuit Downwind stepped on, the controller
+  defaults to ARR-LAND on observation alone (because of `Not(IsCircuitTraffic)`
+  via the strip-only signal — wait, the strip says local but radio
+  intent is empty, so `Not(IsCircuitTraffic)` is true — that fires
+  ARR-LAND).
+- Full `:sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest
+  :protocol:jvmTest` — 106 of 107 sim tests + all pilot/controller/
+  core/protocol tests pass. Only G1TwoAircraftCircuitsTest fails. **No
+  regressions from C1-C4.**
+- Detekt — 10 weighted issues, baseline unchanged.
+
+**B5 — downstream wedge surfaced by C1-C4 closure (Phase 3 round 2 / next session).**
+
+With C1-C4 unblocking B's first circuit, B reaches Downwind→Base→Final,
+gets `ClearedToLand` (full-stop default — pilot's intent is empty
+because Downwind was stepped on, so `Not(IsCircuitTraffic)` fires
+ARR-LAND), touches down, receives `AfterLandingVacateVia` (ARR-VACATE
+fires correctly). Pilot reads back the vacate. **But B's pilot mission
+tree was configured for T&G on first circuit** (`circuits=2,
+fullStopOnLast=true` → first circuit is `touchAndGoCircuitTask` which
+has a trailing `FLY_DEPARTURE` after `LAND` for the climb-out).
+
+After LAND completes, the pilot's mission step advances to the trailing
+`FLY_DEPARTURE`. `processInstruction(AfterLandingVacateVia)` only
+matches `step == AWAIT_VACATE_INSTRUCTION` and silently drops the
+instruction. The sim layer's `applyAfterLandingVacateVia` writes a
+ground route to the exit point, but the pilot's mission tree doesn't
+advance. **B sits in `LandingRoll` at `LOWG_RWY_16C_THR` indefinitely
+with `active task = REPORT_RUNWAY_VACATED`** (the next mission step
+that was reachable via mission-tree advance).
+
+**Empirically tested but reverted Phase 3 round 1 fix.** A pilot-side
+HTN-replan (`collapseToGroundArrival` helper in `PilotCognitive.kt`)
+that replaces the active TouchAndGo task + subsequent circuit siblings
+with a fall-through to the existing `groundArrivalTask` was implemented
+and tested. It changed B's wedge from "LandingRoll + REPORT_RUNWAY_VACATED"
+to "Climbing + REPORT_RUNWAY_VACATED" (B's kinematic layer took off
+again from the runway threshold despite the mission tree being in a
+ground-arrival shape). The collapse left `applyAfterLandingVacateVia`'s
+ground route in place, but the pilot's `Pilot.kt` decide loop must
+have over-ruled it from the mission-tree's pilot-phase-derivation.
+
+The fix needs a **deeper pilot-side replan** that also resets the
+kinematic intent (analogous to `applySelfInitiatedGoAround`'s
+`PilotIntent` reset to `phase = PilotPhase.Climbing`). Filed as
+**B5** for Phase 3 round 2 / next session. The pilot-side fix is its
+own scope and risk surface — it touches kinematic-layer interaction,
+mission-tree replan discipline, and may have impact on go-around/
+join-circuit flows. Best handled with a fresh dive + plan-review
+cycle rather than bundling into Phase 3 round 1.
+
+**Filed deferments (Phase 3 round 1):**
+- **B5** (this round's surfacing): pilot-side mid-T&G→full-stop
+  recovery on `AfterLandingVacateVia` / `BacktrackRunway` receipt when
+  step is the trailing `FLY_DEPARTURE` of a `TouchAndGoCircuitTask`.
+  The pilot must replan the mission tree (collapse remaining
+  circuit-pattern siblings under `CircuitTraining`, advance to
+  `groundArrivalTask`) AND reset kinematic intent to a ground-vacate
+  shape. Real ATC parallel: "OE-DEF, vacate at <exit> via <route>" —
+  the cockpit acknowledges and complies regardless of whether the
+  pilot's plan was T&G; the controller's instruction supersedes.
+  Single-aircraft cases (G0) don't surface this because the radio is
+  uncongested and `circuitIntent` is delivered cleanly, so the
+  controller correctly issues `ClearedTouchAndGo` per pilot intent.
+- **D-PASS-cross-aircraft-step-on** (broader sim radio infra):
+  simultaneous transmissions from different aircraft on the same
+  frequency at the same instant collide because each emission site
+  reads `inFlightTransmissions` against a stale view (the prior
+  emission's `TransmissionStart` event is queued but not yet
+  processed). C1's `pilotRadioFreeAt` only addresses the same-aircraft
+  case. A broader fix (per-frequency `frequencyBusyUntil` tracker
+  updated eagerly across all emission sites) was attempted in this
+  session but broke G2's handoff timing (G2 went `LostCommsDeclared`
+  on a JoinCircuit coordination because the pre-applied
+  `inFlightTransmissions` shifted controller-cycle output ordering in
+  a way that disrupted readback delivery). The narrow fix is filed for
+  a future pass with a dedicated impact-aware design.
+
+**Citation discipline note:** the C1-C4 fixes change ATC default
+behaviour (clear-to-land vs T&G when intent unknown) and add a
+strip-based signal recognition path. Both are reality-anchored:
+- C4's full-stop default for unknown intent: real ATC's safe default
+  is to clear the aircraft to land; offering T&G to a pilot who hasn't
+  declared T&G is doctrinally backwards. CAP 413 §4.45-4.49 (downwind
+  intent reporting), ICAO Doc 4444 §7.10 (landing clearance procedure)
+  — the CAP 413 phraseology "[callsign], cleared touch and go" is the
+  correct response WHEN the pilot has reported "downwind, touch and
+  go". Without that report, "cleared to land" is the default.
+- C2's strip-based circuit recognition: ICAO Annex 11 §4.3 (flight
+  rules), AIP / AIC kind-of-flight markings (VFR LCL). No new
+  regulation citations — the strip's `destinationAerodrome=null`
+  encoding is the existing protocol-layer signal for "local flight."
+
+**Test commands run (Phase 3 round 1 evidence):**
+```
+nix develop --command ./gradlew :sim:jvmTest \
+  --tests xyz.easiersaid.twr.sim.G1ClosureDiveTest \
+  --tests xyz.easiersaid.twr.sim.LowgGoldenTest \
+  --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest \
+  --tests xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest \
+  --console=plain --rerun-tasks
+
+nix develop --command ./gradlew :sim:jvmTest :pilot:jvmTest \
+  :controller:jvmTest :core:jvmTest :protocol:jvmTest \
+  --console=plain
+
+nix develop --command ./gradlew detekt --console=plain
+```
+
+**Scope note for fn-8.3 closure:** Phase 3 round 1 closes the original
+B4 mechanism (DEP-CIRCUIT-COMPLETE no longer wedges on a stepped-on
+Downwind transmission). G1 is not yet green — the B5 follow-on wedge
+prevents B from completing. Per the spec's abort criterion #10, B5 is
+filed as a separate task scope rather than bundled into fn-8.3's
+acceptance, mirroring how fn-8.3 itself was filed as a separate task
+beyond fn-8.2's scope. fn-8.3 stays in_progress until B5 closure or
+user direction to re-pin G1's expectation.

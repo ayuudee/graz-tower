@@ -287,6 +287,46 @@ data object IsCircuitTraffic : RuleGuard {
 }
 
 /**
+ * fn-8.3 Phase 3 (B4 closure): the aircraft is filed as a **VFR local
+ * flight** — the strip carries no onward destination aerodrome. Real ATC
+ * strips for circuit-training and other local flights are marked "VFR LCL"
+ * (or equivalent kind-of-flight indicator) so the controller knows from
+ * the AFTN-distributed strip — *before any radio contact* — that this
+ * flight is not transiting anywhere else.
+ *
+ * Distinct from [IsCircuitTraffic] (which keys off the radio-derived
+ * Downwind circuit-intent declaration). The two together cover:
+ *  - **Strip-known local**: the controller has the filed plan in hand and
+ *    knows this is a local flight before the pilot's first transmission.
+ *  - **Radio-confirmed circuit**: the pilot has reported a Downwind with
+ *    explicit T&G or full-stop intent.
+ *
+ * The pre-existing `IsCircuitTraffic` is the only signal currently fed to
+ * `DEP-CIRCUIT-COMPLETE`'s gate, which causes a wedge when the Downwind
+ * transmission is stepped on (multi-aircraft frequency contention) — the
+ * controller never sees the radio-derived signal and the commitment never
+ * advances out of `TOWER_DEPARTURE`. The strip-based fallback keeps
+ * commitment-stage advancement robust to lost radio reports without
+ * paving over the radio-side defect (cross-aircraft step-on stays as a
+ * separately-tracked deferment).
+ *
+ * Reads [ControllerView.flightStripDestinations]; absence ↔ local flight
+ * (the projection filters non-null on write). Doctrine: ICAO Annex 11
+ * §4.3 (flight rules), AIP / AIC kind-of-flight markings (VFR LCL).
+ */
+data object IsCircuitTrafficByStrip : RuleGuard {
+    override val failureMessage = "Aircraft strip carries an onward destination — not a local flight"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        // Tighten "no destination" to "has a strip AND no destination".
+        // A controller without a strip for the aircraft has no doctrinal
+        // grounds to call it local — guard fails closed.
+        val hasStrip = ac.id in ctx.view.flightStripIntents
+        val hasDestination = ac.id in ctx.view.flightStripDestinations
+        return hasStrip && !hasDestination
+    }
+}
+
+/**
  * The role this rule is about to hand off to has a staffed controller at the
  * current aerodrome.
  *
