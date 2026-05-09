@@ -336,10 +336,12 @@ It now contains:
   [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt)
   (segmented non-empty + per-segment `from != to`, every referenced volume
   resolves, segmented endpoints align with route waypoint pairs, `inClass`
-  restricted to uncontrolled classes — controlled classes A/B/C/D require an
-  authoritative volume reference per `validateInClassRouteAirspace` and so
-  fail well-formedness on the proof side, mirroring the runtime
-  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` rejection); one
+  restricted to the classes the runtime `validateInClassRouteAirspace` accepts
+  as VFR-routable without an authoritative volume reference — kotlin classes
+  A/B/C/D fail with `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME`,
+  E/F/G are accepted; the Lean `AirspaceClass` enum models `c | d | e | g`,
+  so the proof-side guard is `cls = e ∨ cls = g` — runtime-validator parity,
+  not a regulatory classification claim); one
   preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem` packages the
   well-formedness step for callers holding `route ∈ world.vfrRoutes`
   directly; conservative-extension only — no Phase 1-4 closure reopened, no

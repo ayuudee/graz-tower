@@ -41,12 +41,20 @@ What is now proof-visible (fn-9 lift):
   [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt):
   `Segmented.segments` non-empty + per-segment `from != to`, every
   referenced volume id resolves in `airspaceVolumes`, segmented endpoints
-  align with the route's waypoint pairs, and `InClass` is restricted to
-  uncontrolled classes (`e ∨ g`) — controlled classes A/B/C/D require an
-  authoritative volume reference per
-  `validateInClassRouteAirspace` and so fail well-formedness on the proof
-  side, mirroring the runtime
-  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` rejection
+  align with the route's waypoint pairs, and `InClass` is restricted to the
+  classes the runtime validator
+  [`validateInClassRouteAirspace`](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt)
+  accepts as VFR-routable without an authoritative volume reference. The
+  Lean `AirspaceClass` enum
+  ([Core.lean](research/fm/lean/CertifiedAtc/Core.lean#L60))
+  models four variants `c | d | e | g`; the runtime validator emits
+  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` for classes A/B/C/D
+  (kotlin enum) and accepts E/F/G — the proof-side guard therefore reads
+  `cls = e ∨ cls = g` (the two runtime-accepted variants present in the
+  Lean enum). This is a runtime-validator parity claim, not a regulatory
+  classification — the project does not assert here whether class E is
+  controlled or uncontrolled airspace under ICAO Annex 11 / SERA; it
+  simply mirrors what the Kotlin validator currently accepts.
 - the convenience preservation lemma
   `vfrRouteAirspaceProfileWellFormed_of_mem` packages the well-formedness
   step for callers holding `route ∈ world.vfrRoutes` directly
@@ -127,6 +135,19 @@ Examples:
 - holding-pattern fix, path, turn direction, and stack separation
 - approach waypoint sequence and missed-approach linkage
 - route-procedure waypoint order and clearance-limit-relevant fixes
+- since fn-9 (May 9, 2026): `VfrRoute.airspaceProfile` — the optional sealed
+  sum (`InVolume` / `InClass` / `Segmented`) must be preserved through
+  extraction onto both `ScopedVfrRouteSource.airspaceProfile` and
+  `CompileVfrRouteView.airspaceProfile` (via
+  `ScopedVfrRouteSource.toCompileView`). For routes that carry a profile,
+  extraction must additionally satisfy
+  `ProofVisibleAirspaceProfileWellFormed` (volume references resolve in
+  `airspaceVolumes`; segmented variants are non-empty with `from != to`
+  per segment and waypoint-pair-aligned endpoints; `inClass` is one of the
+  classes the runtime `validateInClassRouteAirspace` accepts as
+  VFR-routable without an authoritative volume reference). Routes without
+  a profile carry `none` — extraction must not invent a profile where the
+  runtime did not state one.
 
 ### 3. Local-certifier preservation
 

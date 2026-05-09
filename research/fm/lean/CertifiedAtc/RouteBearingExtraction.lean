@@ -241,15 +241,19 @@ invariants from `WorldAirspaceValidation.kt:39-141`:
 
 * `inVolume` — the referenced volume id must resolve in `airspaceVolumes`
   (`VFR_ROUTE_UNKNOWN_VOLUME`, `validateInVolumeRouteAirspace`).
-* `inClass` — the class must be one the runtime accepts as uniform without
-  an authoritative volume reference. `validateInClassRouteAirspace`
-  (`WorldAirspaceValidation.kt:49-71`) rejects controlled classes A/B/C/D
-  with `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` and accepts
-  E/F/G. The Lean `AirspaceClass` enum (`Core.lean:60-65`) covers `c | d |
-  e | g`, so the proof-side restriction is `cls = e ∨ cls = g`. This
-  matches open question 2 default ("filter / guard") via the guard route:
-  worlds with controlled-class `inClass` profiles fail well-formedness,
-  mirroring the runtime rejection.
+* `inClass` — the class must be one the runtime accepts as VFR-routable
+  without an authoritative volume reference. `validateInClassRouteAirspace`
+  (`WorldAirspaceValidation.kt:49-71`) rejects kotlin classes A/B/C/D with
+  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` and accepts E/F/G.
+  The Lean `AirspaceClass` enum (`Core.lean:60-65`) covers `c | d | e | g`,
+  so the proof-side restriction is `cls = e ∨ cls = g` — the two
+  runtime-accepted variants present in the Lean enum. This is a
+  runtime-validator parity claim, not a regulatory classification: we do
+  not assert here whether class E is controlled or uncontrolled airspace
+  under ICAO Annex 11 / SERA, only that the runtime validator currently
+  accepts it. Matches open question 2 default ("filter / guard") via the
+  guard route: worlds with non-runtime-accepted `inClass` profiles fail
+  well-formedness, mirroring the runtime rejection.
 * `segmented` — non-empty (smart-constructor at
   `ProcedureAndAirspaceModel.kt:82`), each segment well-formed
   (`from != to` + volume known, see `ProofVisibleAirspaceSegmentWellFormed`),

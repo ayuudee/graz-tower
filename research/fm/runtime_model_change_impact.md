@@ -38,16 +38,12 @@ Status as of May 9, 2026:
 
 ### A. Pure runtime changes with no immediate Lean churn
 
-This class is **now empty** post-fn-9:
-
-- the original `VfrRoute.airspaceProfile` widening and the Kotlin refactor
-  making segmented route-airspace legs volume-authoritative were Class A at
-  the time of the runtime landing (May 2026), but fn-9 reclassified both as
-  Class C below — they are now proof-visible
-- the runtime distinguishing `AirspaceVolume.memberPoints` from optional
-  `boundary` geometry remains Class B (point membership is proof-visible via
-  `ScopedAirspaceVolumeSource.points`; the optional `boundary` polygon
-  alongside it is not yet)
+Historical context: the original `VfrRoute.airspaceProfile` widening and the
+Kotlin refactor making segmented route-airspace legs volume-authoritative
+were Class A at the time of the runtime landing (May 2026) — they did not
+force any Lean churn because the older waypoint-only Lean extraction
+ignored route-airspace payloads entirely. fn-9 (May 9, 2026) reclassified
+both as Class C below — they are now proof-visible.
 
 ### B. No immediate Lean theorem/code changes, but docs/boundary notes must be explicit
 
@@ -55,6 +51,10 @@ These can be added to runtime `core` without immediately changing Lean code,
 **if** the FM boundary intentionally continues to project only the subset of
 facts the current proofs use:
 
+- the runtime distinguishing `AirspaceVolume.memberPoints` from optional
+  `boundary` geometry — point membership is proof-visible via
+  `ScopedAirspaceVolumeSource.points`; the optional `boundary` polygon
+  alongside it is not yet
 - adding airspace boundary geometry alongside the current point-membership model
 - adding operational sectors as runtime/world entities only
 - adding published VFR procedures as runtime/world entities only
@@ -121,7 +121,12 @@ reopened.
   [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt):
   segmented non-empty + per-segment `from != to`, every referenced volume
   resolves, segmented endpoints align with route waypoint pairs, and
-  `inClass` is restricted to uncontrolled classes (`e ∨ g`)
+  `inClass` is restricted to the classes the runtime
+  `validateInClassRouteAirspace` accepts as VFR-routable without an
+  authoritative volume reference (kotlin A/B/C/D rejected with
+  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME`, E/F/G accepted);
+  Lean `AirspaceClass` models `c | d | e | g`, so the proof-side guard is
+  `cls = e ∨ cls = g` — runtime-validator parity, not a regulatory claim
 - one preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem`
   packages the well-formedness step for callers holding `route ∈ world.vfrRoutes`
 - the existing eight-family `findCompileVfrRoute_eq_some_of_mem` exposes
