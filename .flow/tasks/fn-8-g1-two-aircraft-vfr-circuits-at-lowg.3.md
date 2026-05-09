@@ -951,21 +951,45 @@ round — the user picks):**
   pilot reports Downwind cleanly; the gate should be transparent
   for G0.
 
-- **B5-β — pilot-side: replan mission tree on receipt of a
-  ClearedToLand-when-T&G-mission-shape mismatch.** When the pilot
-  receives ClearedToLand and the active circuit task is `TouchAndGo`,
-  collapse the remaining T&G + intermediate circuit siblings into
-  a fall-through to `groundArrivalTask`, AND reset kinematic intent
-  to a ground-vacate shape (analogous to `applySelfInitiatedGoAround`'s
-  `PilotIntent` reset to `phase = PilotPhase.Climbing`, but for
-  ground-arrival). Phase 3 round 1's earlier attempt
-  (`collapseToGroundArrival` helper) reverted because the kinematic
-  intent reset wasn't deep enough — pilot lifted off again from
-  the runway threshold. A complete fix needs to also handle the
-  BacktrackRunway-at-non-AVI-step case (M3) so the post-LAND vacate
-  instruction lands on the right step. Risk surface: touches
-  go-around / join-circuit / cross-aerodrome flows that all share
-  mission-tree replan discipline.
+- **B5-β — pilot-side: two-stage transition on
+  ClearedToLand-when-T&G-mission-shape mismatch + on post-touchdown
+  vacate instruction.** When the pilot receives `ClearedToLand` and
+  the active circuit task is `TouchAndGo`, the fix splits across
+  two transitions to respect kinematic timing (the aircraft is
+  airborne on final at receipt; ground-vacate kinematics only
+  apply post-touchdown):
+  - **Stage 1 — on `ClearedToLand` receipt**: replan the mission
+    tree only. Collapse the active TouchAndGo + remaining circuit-
+    pattern siblings under `CircuitTraining` to a fall-through
+    `groundArrivalTask`. Mark `hasClearance = true` via the
+    existing `handleLandingClearance` semantic. Do **NOT** touch
+    `PilotIntent.phase` — the kinematic layer correctly maintains
+    the descent profile on final approach. Mission step advances
+    `LAND` next (CompletionMode.PHYSICAL — completes on
+    touchdown), then `groundArrivalTask`'s steps post-touchdown.
+  - **Stage 2 — on `BacktrackRunway` / `AfterLandingVacateVia`
+    receipt while on the runway post-touchdown**: the kinematic
+    ground-vacate transition. Extend `processInstruction` so
+    these instructions match at any post-touchdown on-runway step
+    (not only `AWAIT_VACATE_INSTRUCTION` — handles the M3 case
+    where the pilot's step is `LAND` complete or
+    `REPORT_RUNWAY_VACATED`). Advance the step + set pilot intent
+    to taxi the vacate/backtrack route. `phase = LandingRoll` is
+    the correct kinematic state here (post-touchdown,
+    decelerating on the runway pre-vacate); `route =
+    vacateRoute, targetSpeedMps = taxiSpeed` set when the route
+    is built.
+  Phase 3 round 1's earlier `collapseToGroundArrival` attempt
+  conflated both stages into a single ClearedToLand-receipt-time
+  transition, forcing kinematic ground-vacate while the aircraft
+  was still airborne — the kinematic layer correctly overrode it
+  and the pilot lifted off again. The two-stage contract avoids
+  this. Risk surface: touches go-around / join-circuit / cross-
+  aerodrome flows that share mission-tree replan discipline; the
+  Stage 2 `processInstruction` widening must compose with the
+  existing AWAIT_VACATE_INSTRUCTION handling for normal full-stop
+  arrivals (idempotent — same step-mark-complete + intent-update
+  shape).
 
 - **B5-γ — broader sim-radio fix: per-frequency `frequencyBusyUntil`
   tracker.** Already documented in Phase 3 round 1 as
