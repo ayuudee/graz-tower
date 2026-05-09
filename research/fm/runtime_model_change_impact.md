@@ -418,18 +418,48 @@ Exact proof surfaces affected:
 This should remain a deliberate later branch, not part of the first
 migration-to-core slice.
 
-## Recommended sequencing
+## Sequencing — historical, post-fn-9
 
-To keep the split honest:
+The recommended order at the time of the runtime widening was:
 
-1. Change Kotlin `VfrRoute` first and do the small Lean compile/extraction fix.
-2. Add runtime airspace boundary geometry without changing the current
-   point-membership subprojection used by Lean.
-3. Add runtime operational sectors and published VFR procedures without
-   immediately widening the proof boundary.
-4. Update FM docs to state that those new entities are runtime-only for now.
-5. Only then decide whether sectors/published procedures deserve a new FM
-   widening branch.
+1. ~~Change Kotlin `VfrRoute` first and do the small Lean compile/extraction fix.~~
+   **Landed (fn-9, May 9, 2026)** — but the "small Lean compile/extraction fix"
+   turned out to be a Class-C proof-visible widening rather than a no-op:
+   `ScopedVfrRouteSource.airspaceProfile` and
+   `CompileVfrRouteView.airspaceProfile` carry the field, with new
+   well-formedness conjuncts on `RouteBearingExtractionWellFormed`.
+2. ~~Add runtime airspace boundary geometry without changing the current
+   point-membership subprojection used by Lean.~~ Landed at the runtime
+   level; the proof-visible boundary still reads point membership only —
+   making the optional `boundary` polygon proof-visible is a deferred
+   successor branch (depends on fn-9).
+3. ~~Add runtime operational sectors and published VFR procedures without
+   immediately widening the proof boundary.~~ Landed at the runtime level;
+   proof-visibility for either is a deferred successor branch.
+4. ~~Update FM docs to state that those new entities are runtime-only for now.~~
+   Done. Post-fn-9 the docs name what is now proof-visible vs what stays open.
+
+### Current next steps (after fn-9)
+
+The deliberate widening branches still open after fn-9, in roughly the order
+they unblock each other:
+
+1. Predicate strengthening — make the world-backed
+   `ClearedToEnterControlZone` / `SpecialVfrClearance` /
+   `RemainOutsideControlledAirspace` `Ready` / `Issuable` predicates consume
+   the new `airspaceProfile` data instead of staying on point-membership.
+2. Profile-aware `worldBackedAirspaceRouteInteraction?` — widen the
+   single-volume API to handle segmented profiles natively.
+3. Polygonal `AirspaceVolume.boundary` proof-visibility — depends on fn-9
+   extraction; bring boundary geometry alongside point membership into the
+   proof world and adapt completion semantics.
+4. Operational sectors and published VFR procedures into the proof-visible
+   world — adds ids, compile views, extraction, authority, and
+   airspace/procedure theorems.
+
+These should remain deliberate widening choices rather than reflex moves;
+keep the already-closed scoped, current-shape, and world-backed branches
+stable while each one lands.
 
 ## Minimal FM follow-up set for the first runtime slice — landed in fn-9
 
