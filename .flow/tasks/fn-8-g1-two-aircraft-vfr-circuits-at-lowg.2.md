@@ -58,7 +58,9 @@ val fixture = Fixtures.LOWG_TWO_AIRCRAFT
 val loaded = fixture.load().getOrElse { fail("...") }
 val aircraftAId = AircraftId("OE-ABC")
 val aircraftBId = AircraftId("OE-DEF")
-// (or whatever pair the fixture seeds; document choice in test)
+// fn-8.1 confirmed: fixture seeds OE-ABC at LOWG_STAND_1_POINT and
+// OE-DEF at LOWG_STAND_2_POINT (adjacent GA stands authored in the
+// LOWG world-candidate). <!-- Updated by plan-sync: fn-8.1 used concrete stand pair LOWG_STAND_1/2_POINT -->
 val missionA = createMission(
     goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
     startPhase = PilotPhase.AtStand,
@@ -107,11 +109,11 @@ val initial = SimState.initial(
 `SimState.initial` (post-fn-8.1) seeds `rngByAircraft` for both
 aircraft via `SimRandom.split(id.value)`.
 
-(`fixture.weather` field — implementer audits the
-`Fixtures.LOWG_TWO_AIRCRAFT` shape post-fn-8.1; existing fixtures
-expose weather authoring via either a single `weather:
-WeatherObservation` field or a per-aerodrome map. Match the existing
-pattern.)
+(`fixture.weather` is a single `WeatherObservation` field on the
+single-aerodrome `Fixture` shape — confirmed in `Fixtures.kt` after
+fn-8.1. Pass it directly as the value side of the `weatherByAerodrome`
+map in `SimState.initial`; no per-aerodrome map plumbing on the fixture
+side.) <!-- Updated by plan-sync: fn-8.1 fixture confirmed single weather field -->
 
 ### 3. Conflict authoring (deliberate — mission-start offset, NOT filing offset)
 
@@ -380,6 +382,17 @@ authoring shifts.
 **Optional** (reference as needed):
 - `controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt`
   (`ARR-EXTEND` rule — confirm it issues `ExtendDownwind` instruction).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/PerAircraftRngSpec.kt`
+  (fn-8.1 added; per-aircraft RNG determinism contract test — useful
+  reference for the "swap-dispatch-order leaves draws unchanged" property
+  if G1 needs to assert the same shape).
+  <!-- Updated by plan-sync: fn-8.1 added PerAircraftRngSpec -->
+- `controller/src/jvmTest/kotlin/xyz/easiersaid/twr/controller/assess/WakeRuleClassifierSpec.kt`
+  (fn-8.1 added; canonical truth-table for `classifyWakeRule` —
+  reference for which `(leader, follower)` pairs hit `IcaoLeaderFollower`
+  vs `IcaoNoAdditionalWakeMinimum` vs `UnknownCategory`. The L→L row
+  is what G1's R7 wake-rule pin asserts.)
+  <!-- Updated by plan-sync: fn-8.1 added WakeRuleClassifierSpec -->
 
 ## Key context
 
