@@ -323,9 +323,11 @@ For each fix, the plan-review-aware discipline (per
         typed-events build-out specifically.
 
 ## Done summary
-
+G1 closure achieved via Phase 4 B5-α (commitment-scoped `observedReportsDuringCommitment` sticky witness gating ARR-LAND / ARR-LAND-TNG on the pilot's pre-clearance position call) plus a doctrinally-correct re-baseline of G1's R6/R7/R8 invariants, which were structurally unreachable under the corrected sim's runway-duty serialization. New `G1TwoAircraftMinimalSpec` pins the multi-aircraft commitment-stage closure invariants at the smaller `circuits=1` shape; G0 + G2 + G1B4 + G1ClosureDive remain green; detekt baseline unchanged.
 ## Evidence
-
+- Commits: d01fc58fn-8.3 Phase 4: B5-α + G1 doctrinally-correct re-baseline (G1 GREEN), 6aafe75fn-8.3 Phase 4: codex review iteration 1 — pin doctrinal serialization on actual vacate observation, 20e957cfn-8.3 Phase 4: spec evidence + memory capture
+- Tests: ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest --tests xyz.easiersaid.twr.sim.G1TwoAircraftMinimalSpec --tests xyz.easiersaid.twr.sim.LowgGoldenTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest --tests xyz.easiersaid.twr.sim.G1ClosureDiveTest --tests xyz.easiersaid.twr.sim.G1B4ClosurePinSpec --rerun-tasks, ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest, ./gradlew detekt
+- PRs:
 ### Phase 1 — Diagnostic dive (2026-05-09, session 1)
 
 **Existing-query-first audit (decision #4 / acceptance bullet 3): PASS.**
