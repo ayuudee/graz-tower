@@ -60,6 +60,7 @@ class AtisSpec {
             now = now0,
             seq = 0L,
             rng = SimRandom(0L),
+            rngByAircraft = emptyMap(),
             aircraft = LinkedHashMap(),
             controllers = emptyMap(),
             beliefs = emptyMap(),

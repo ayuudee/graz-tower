@@ -804,8 +804,15 @@ private fun handleSpawn(
         )
     }
     val aircraft = LinkedHashMap(state.aircraft).apply { put(ac.id, ac) }
+    // fn-8.1: seed the per-aircraft RNG entry for the newly-spawned aircraft.
+    // Without this the SimState invariant "every key in state.aircraft has
+    // a matching rngByAircraft entry" would break the moment a Spawn event
+    // fires, and the first pilot tick would hit aircraftRng's loud error.
+    // Splitting from the shared `state.rng` keyed by `ac.id.value` mirrors
+    // the seeding shape in SimState.initial.
     val firstPilotTick = SimEvent.PilotDecisionTick(event.time, ac.id)
-    return state.copy(aircraft = aircraft).emit(listOf(firstPilotTick))
+    val seeded = state.copy(aircraft = aircraft).withAircraftRng(ac.id, state.rng.split(ac.id.value))
+    return seeded.emit(listOf(firstPilotTick))
 }
 
 // ── Comms handlers ──────────────────────────────────────────────────

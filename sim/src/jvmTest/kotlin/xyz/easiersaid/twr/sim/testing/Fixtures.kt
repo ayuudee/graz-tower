@@ -53,6 +53,71 @@ object Fixtures {
         ),
     )
 
+    /**
+     * fn-8.1 (G1 foundation): two-aircraft VFR circuit-training fixture at LOWG.
+     *
+     * Both aircraft are local circuit traffic (VFR LOWG → LOWG) at adjacent GA
+     * stands. Stand pair: `LOWG_STAND_1_POINT` and `LOWG_STAND_2_POINT` —
+     * authored adjacently in the LOWG `world-candidate.json` (both gates,
+     * `aircraftTypes = jets|turboprops`, both `direct_authored_geometry_with_reference_attrs`
+     * from the NEW_Parking_Points authoring pass). Choice is from the
+     * world-candidate authoring; not a speculative AIP claim.
+     *
+     * **Wake category lives on `AircraftState` / aircraft observation, not
+     * on `FiledPlan`** — `FiledPlan.Vfr` carries departure/destination/runway/
+     * intent only. The two-Light-category requirement (e.g. C172 / PA-28) is
+     * enforced at aircraft construction in fn-8.2, where the
+     * `AircraftState.type.wakeCategory` is set. This fixture only carries the
+     * filed plans; its KDoc records the intended wake-category pairing.
+     *
+     * Frequencies, weather, controller roles mirror the single-aircraft G0
+     * [LOWG] fixture (GROUND + TOWER on 118.200, light SE wind).
+     */
+    val LOWG_TWO_AIRCRAFT: Fixture = Fixture(
+        aerodromeId = AerodromeId("LOWG"),
+        candidatePath = projectRoot().resolve("cad/airports/rendered/lowg/world-candidate.json"),
+        // standPointId is the legacy single-aircraft anchor; tests using this
+        // multi-aircraft fixture should reach for requiredStartPoints() and
+        // ignore standPointId. The field remains non-null because the Fixture
+        // shape preserves the single-aircraft default for G0/G2 fixtures.
+        standPointId = PointId("LOWG_STAND_1_POINT"),
+        frequency = Frequency.unsafe("118.200"),
+        weather = WeatherObservation(
+            wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
+            qnh = null,
+            visibility = null,
+        ),
+        controllerRoles = setOf(RoleName.GROUND, RoleName.TOWER),
+        // Two VFR circuit-training plans, both LOWG → LOWG. AircraftId values
+        // sort lexicographically as ABC < DEF, so the loader's
+        // `flightPlans.entries.sortedBy { it.key.value }` pass produces
+        // `OE-ABC` first, then `OE-DEF` — deterministic seq-assignment.
+        // The intended wake-category pairing for fn-8.2 is two Lights
+        // (C172 / PA-28) — not enforced here because FiledPlan doesn't
+        // carry wake category; enforced at AircraftState construction.
+        flightPlans = mapOf(
+            AircraftId("OE-ABC") to FiledPlan.Vfr(
+                departureAerodrome = AerodromeId("LOWG"),
+                destinationAerodrome = null,
+                intent = AircraftIntent.Departing,
+            ),
+            AircraftId("OE-DEF") to FiledPlan.Vfr(
+                departureAerodrome = AerodromeId("LOWG"),
+                destinationAerodrome = null,
+                intent = AircraftIntent.Departing,
+            ),
+        ),
+        // Distinct, adjacent GA stands authored in the LOWG world-candidate.
+        // Validation in `LoadedFixture.validate` enforces:
+        // - both points exist in worldIndex.positions
+        // - no flightPlan entry without a startPoints entry (and vice versa)
+        // - no two aircraft sharing a start point.
+        startPoints = mapOf(
+            AircraftId("OE-ABC") to PointId("LOWG_STAND_1_POINT"),
+            AircraftId("OE-DEF") to PointId("LOWG_STAND_2_POINT"),
+        ),
+    )
+
     val LJMB: Fixture = Fixture(
         aerodromeId = AerodromeId("LJMB"),
         candidatePath = projectRoot().resolve("cad/airports/rendered/ljmb/world-candidate.json"),

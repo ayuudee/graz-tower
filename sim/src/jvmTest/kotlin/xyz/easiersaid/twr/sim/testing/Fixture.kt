@@ -57,7 +57,53 @@ data class Fixture(
      * (departure + destination).
      */
     val flightPlans: Map<AircraftId, FiledPlan> = emptyMap(),
+    /**
+     * fn-8.1 (G1 foundation): per-aircraft start points for multi-aircraft
+     * fixtures.
+     *
+     * **Asymmetry intentional.** Single-aircraft fixtures (G0 LOWG, G2
+     * LJMB) carry [standPointId] and leave [startPoints] null — the field
+     * exists so multi-aircraft fixtures (G1 LOWG_TWO_AIRCRAFT) can author
+     * one start point per aircraft without an Option-C unification of the
+     * single-aircraft shape (deferred). Tests in multi-aircraft mode must
+     * reach for [requiredStartPoints] (loud-fail on null) instead of
+     * [standPointId].
+     *
+     * **Validation.** When non-null, [LoadedFixture.validate] enforces:
+     *  - every aircraft id in [startPoints] is also in [flightPlans]
+     *    ([FixtureViolation.StartPointWithoutFlightPlan])
+     *  - every aircraft id in [flightPlans] has a [startPoints] entry
+     *    ([FixtureViolation.FlightPlanMissingStartPoint])
+     *  - no two aircraft share a start `pointId`
+     *    ([FixtureViolation.DuplicateStartPoint])
+     *  - every authored `pointId` exists in `worldIndex.positions`
+     *    ([FixtureViolation.StartPointMissing]).
+     *
+     * Single-aircraft fixtures keep the existing [standPointId] check
+     * via [FixtureViolation.StandPointMissing]; the new violations only
+     * fire when [startPoints] is non-null.
+     */
+    val startPoints: Map<AircraftId, PointId>? = null,
 )
+
+/**
+ * fn-8.1: non-null-asserting accessor for [Fixture.startPoints].
+ *
+ * Multi-aircraft tests need a non-null map. Returning the nullable field
+ * directly forces every call site to either re-assert non-null or take
+ * the NPE on `null.getValue(id)`. This helper pushes the failure to a
+ * single, loud, source-cited error.
+ *
+ * Single-aircraft fixtures (G0/G2) continue to use [Fixture.standPointId]
+ * and never call this helper.
+ */
+fun Fixture.requiredStartPoints(): Map<AircraftId, PointId> =
+    startPoints
+        ?: error(
+            "Fixture for ${aerodromeId.value} ($candidatePath) has no startPoints — " +
+                "this is a single-aircraft fixture (use standPointId). " +
+                "Multi-aircraft tests need a fixture authoring per-aircraft startPoints.",
+        )
 
 /**
  * Result of loading a [Fixture]. Immutable; callers consume and discard.
@@ -166,6 +212,48 @@ sealed interface FixtureViolation {
         val aerodrome: AerodromeId,
         val role: RoleName,
         val delta: FrequencyDelta,
+    ) : FixtureViolation
+
+    /**
+     * fn-8.1: a [Fixture.startPoints] entry references an [AircraftId] that
+     * is not in [Fixture.flightPlans]. The aircraft has no filed plan; the
+     * sim-init `FlightPlanFiled` event would never fire and the aircraft
+     * would never be recognised by the controller.
+     */
+    data class StartPointWithoutFlightPlan(
+        val aircraft: AircraftId,
+        val point: PointId,
+    ) : FixtureViolation
+
+    /**
+     * fn-8.1: a [Fixture.flightPlans] entry has no corresponding
+     * [Fixture.startPoints] entry. Only fires when [Fixture.startPoints] is
+     * non-null — single-aircraft fixtures using [Fixture.standPointId]
+     * are unaffected.
+     */
+    data class FlightPlanMissingStartPoint(val aircraft: AircraftId) : FixtureViolation
+
+    /**
+     * fn-8.1: two aircraft authored at the same start [PointId]. The
+     * `SimState.initial` smart constructor would still accept this (its
+     * `AircraftPositionPointNotInIndex` check is per-aircraft, not
+     * pair-wise), but kinematics layered on top would have two aircraft
+     * occupying one geometry point. The fixture-load layer is the right
+     * place to catch this — clearer error than a runtime symptom.
+     */
+    data class DuplicateStartPoint(
+        val point: PointId,
+        val aircraft: List<AircraftId>,
+    ) : FixtureViolation
+
+    /**
+     * fn-8.1: a [Fixture.startPoints] entry's [PointId] is not in
+     * `worldIndex.positions`. Mirrors [StandPointMissing] but for the
+     * multi-aircraft authoring path.
+     */
+    data class StartPointMissing(
+        val aircraft: AircraftId,
+        val point: PointId,
     ) : FixtureViolation
 }
 
@@ -285,6 +373,35 @@ fun Fixture.load(): Either<LoadError, LoadedFixture> {
 fun LoadedFixture.validate(fixture: Fixture): List<FixtureViolation> = buildList {
     if (fixture.standPointId !in worldIndex.positions) {
         add(FixtureViolation.StandPointMissing(fixture.standPointId))
+    }
+    // fn-8.1: multi-aircraft start-point validation. Only fires when the
+    // fixture authored startPoints; single-aircraft fixtures (startPoints
+    // == null) keep the existing StandPointMissing-only check above.
+    val starts = fixture.startPoints
+    if (starts != null) {
+        val planIds = fixture.flightPlans.keys
+        for ((acId, ptId) in starts) {
+            if (acId !in planIds) {
+                add(FixtureViolation.StartPointWithoutFlightPlan(acId, ptId))
+            }
+            if (ptId !in worldIndex.positions) {
+                add(FixtureViolation.StartPointMissing(acId, ptId))
+            }
+        }
+        for (acId in planIds) {
+            if (acId !in starts) {
+                add(FixtureViolation.FlightPlanMissingStartPoint(acId))
+            }
+        }
+        // Group start-point reverse-lookup → list of aircraft sharing it.
+        // A single aircraft per point is the healthy case (group size 1);
+        // anything ≥ 2 is a duplicate.
+        starts.entries
+            .groupBy({ it.value }, { it.key })
+            .filter { it.value.size > 1 }
+            .forEach { (pt, acs) ->
+                add(FixtureViolation.DuplicateStartPoint(point = pt, aircraft = acs.sortedBy { it.value }))
+            }
     }
     val ad = world.aerodromes[fixture.aerodromeId]
     if (ad == null) {

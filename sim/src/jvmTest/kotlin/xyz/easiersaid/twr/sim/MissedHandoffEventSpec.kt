@@ -49,6 +49,7 @@ class MissedHandoffEventSpec {
         now = time,
         seq = 0L,
         rng = SimRandom(0L),
+        rngByAircraft = mapOf(aircraft.id to SimRandom(1L)),
         aircraft = LinkedHashMap<AircraftId, AircraftState>().apply { put(aircraft.id, aircraft) },
         controllers = linkedMapOf(ctrlA.id to ctrlA, ctrlB.id to ctrlB),
         beliefs = emptyMap(),

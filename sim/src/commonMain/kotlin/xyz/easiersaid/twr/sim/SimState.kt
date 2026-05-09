@@ -36,6 +36,28 @@ data class SimState(
     val now: SimTime,
     val seq: Long,
     val rng: SimRandom,
+    /**
+     * fn-8.1: per-aircraft splittable PRNG state, seeded once per aircraft
+     * via [SimRandom.split] keyed by `AircraftId.value` in [initial] (and
+     * mid-sim by [xyz.easiersaid.twr.sim.handleSpawn]).
+     *
+     * **Determinism contract.** Order-of-dispatch invariance for same
+     * aircraft IDs: swapping the within-tick scheduling order of aircraft
+     * A and B leaves each aircraft's draws unchanged. (Each id has its own
+     * stream, independent of the parent's future advances.) Changing an
+     * aircraft's id intentionally produces a different child stream — the
+     * key *is* the id.
+     *
+     * **Invariant**: every key in [aircraft] has a matching entry here.
+     * [initial] enforces this at construction; spawn/despawn paths must
+     * preserve it. Helpers [aircraftRng] / [withAircraftRng] are the only
+     * call-site shape for read/write — they fail loud on missing-entry.
+     *
+     * The shared [rng] field above is preserved for non-aircraft-scoped
+     * randomness (weather, ATIS letter rotation, anything not keyed by
+     * aircraft).
+     */
+    val rngByAircraft: Map<AircraftId, SimRandom>,
     val aircraft: LinkedHashMap<AircraftId, AircraftState>,
     val controllers: Map<ControllerId, ControllerSpec>,
     val beliefs: Map<ControllerId, BeliefState>,
@@ -172,10 +194,20 @@ data class SimState(
                 }
             }
             validateControllers(controllers, world, aircraftIds)?.let { return it.left() }
+            // fn-8.1: seed per-aircraft RNG state. Sort by AircraftId.value
+            // ascending so the seeding pass is deterministic regardless of
+            // the caller's input list order. Each child stream is split from
+            // the same `rootRng` keyed by id; SimRandom.split does not
+            // advance the parent, so all per-aircraft streams are independent.
+            val rootRng = SimRandom.ofSeed(seed)
+            val rngByAircraft = aircraft
+                .sortedBy { it.id.value }
+                .associate { it.id to rootRng.split(it.id.value) }
             return SimState(
                 now = SimTime.ZERO,
                 seq = 0L,
-                rng = SimRandom.ofSeed(seed),
+                rng = rootRng,
+                rngByAircraft = rngByAircraft,
                 aircraft = LinkedHashMap<AircraftId, AircraftState>().apply {
                     aircraft.forEach { put(it.id, it) }
                 },
@@ -234,3 +266,29 @@ data class HandoffEscalationKey(
     val sender: ControllerId,
     val aircraft: AircraftId,
 )
+
+/**
+ * fn-8.1: read the per-aircraft RNG. Fails loud on missing-entry rather
+ * than returning a default — every aircraft in [SimState.aircraft] is
+ * required by invariant to have a [SimState.rngByAircraft] entry. A miss
+ * is a wiring defect (init / spawn path didn't seed) and the test should
+ * hard-fail with the actual cause.
+ */
+fun SimState.aircraftRng(id: AircraftId): SimRandom =
+    rngByAircraft[id]
+        ?: error(
+            "aircraftRng: $id has no RNG entry — invariant violated. " +
+                "Every key in state.aircraft must have a matching " +
+                "rngByAircraft entry. Check SimState.initial / handleSpawn.",
+        )
+
+/**
+ * fn-8.1: write back the per-aircraft RNG after a sampling site advances
+ * the child stream. Mirrors `state.copy(rng = newRng)` shape for the
+ * shared RNG, but keyed by aircraft.
+ *
+ * Returns a fresh [SimState] with the entry replaced. Adding a new key
+ * (i.e. mid-sim spawn) is also valid — [handleSpawn] uses this shape.
+ */
+fun SimState.withAircraftRng(id: AircraftId, newRng: SimRandom): SimState =
+    copy(rngByAircraft = rngByAircraft + (id to newRng))

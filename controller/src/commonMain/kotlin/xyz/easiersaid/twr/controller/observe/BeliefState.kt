@@ -184,6 +184,13 @@ data class ObservationSnapshot(
 /**
  * Pair-wise separation assessment between two aircraft.
  * Computed by the separation engine (Phase 6b Phase A) and written to beliefs.
+ *
+ * fn-8.1: [wakeRule] is the diagnostic record of which wake-separation rule
+ * applied (table hit, fallback radar minimum, or unknown category). It carries
+ * both wake categories for the fallback case so non-same-category pairs are
+ * diagnosable. The numeric `requiredSeparationNm` continues to be the load-
+ * bearing field for procedure guards; `wakeRule` is purely additive for
+ * downstream consumers (logs, RECAT-EU overlay, future diagnostics).
  */
 data class SeparationAssessment(
     val aircraft: AircraftId,
@@ -193,6 +200,7 @@ data class SeparationAssessment(
     val closureRateKt: Double?,
     val timeToMinimumSeconds: Double?,
     val concern: SeparationConcern,
+    val wakeRule: xyz.easiersaid.twr.controller.assess.WakeRule,
 )
 
 /**

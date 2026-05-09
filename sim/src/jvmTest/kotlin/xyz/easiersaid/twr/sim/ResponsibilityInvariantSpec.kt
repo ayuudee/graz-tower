@@ -208,6 +208,7 @@ class ResponsibilityInvariantSpec {
             now = SimTime.ofMillis(0),
             seq = 0L,
             rng = SimRandom(0L),
+            rngByAircraft = emptyMap(),
             aircraft = LinkedHashMap(),
             controllers = controllers.associateBy { it.id },
             beliefs = emptyMap(),
