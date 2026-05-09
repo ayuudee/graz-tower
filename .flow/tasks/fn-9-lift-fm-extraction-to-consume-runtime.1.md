@@ -60,7 +60,22 @@ This is conservative-extension only: nothing existing gets renamed or restructur
 
 ## Done summary
 
+Threaded `ProofVisibleAirspaceProfile` (sealed sum: `inVolume` / `inClass` / `segmented`, mirroring runtime `VfrRouteAirspaceProfile` at `core/.../ProcedureAndAirspaceModel.kt:77-85`) through both the source struct AND the compile view, so the profile rides through `extractRouteBearingCompileView` via the existing eight-family pattern — no new "ninth-family" lookup machinery required. Added `ProofVisibleAirspaceSegment` + `ProofVisibleAirspaceProfile` types upstream in `ClearanceEnvelope.lean` (above `CompileVfrRouteView`) so the compile view can carry `airspaceProfile : Option ProofVisibleAirspaceProfile := none` without import cycles. `ScopedVfrRouteSource.toCompileView` propagates the field; `findCompileVfrRoute_eq_some_of_mem` (`:910`) already exposes the profile through extraction by definitional unfolding.
+
+Well-formedness conjuncts on `RouteBearingExtractionWellFormed` capture the runtime invariants from `WorldAirspaceValidation.kt:39-141`: `Segmented.segments` non-empty + `from != to` per segment, every referenced volume id resolves in `airspaceVolumes`, and segmented endpoints align with the route's waypoint pairs (`waypointAirspacePairs` helper). One small preservation lemma (`vfrRouteAirspaceProfileWellFormed_of_mem`) packages the well-formedness step for callers holding `route ∈ world.vfrRoutes` directly.
+
+`deriving DecidableEq` on the profile sum + segment is constructive — every carrier is decidable (`AirspaceVolumeId`, `PointId` are `String` abbrevs; `AirspaceClass` is a finite enum) — so `Classical.propDecidable` is not invoked. The instance is required to maintain `CompileVfrRouteView.DecidableEq` after the field add, which the existing eight-family proofs depend on.
+
+Codex impl-review v1 (commit `0038b64`) flagged that the original ninth-family approach indexed into `world.vfrRoutes` instead of through the extracted compile view, leaving acceptance R3 unsatisfied. Refactor in commit `2938700` flips open-question 1 ("extend the source only" → "extend compile-view too"), removes ~100 lines of source-side lookup machinery, and brings the implementation in line with the eight-family pattern. Codex impl-review v2 returned R1+R3 met, R2+R4 partial pending build evidence (recorded below), R5 deferred to `fn-9-lift-fm-extraction-to-consume-runtime.2`.
+
 ## Evidence
 - Commits:
+  - `0038b64` — `feat(fm): widen ScopedVfrRouteSource with proof-visible airspaceProfile` (initial widening — flagged by codex review)
+  - `cea4ae5` — `fix(fm): drop explicit args from List.mem_cons_self in fn-9.1` (Lean 4.29 stdlib API correction)
+  - `2938700` — `refactor(fm): thread airspaceProfile through CompileVfrRouteView (fn-9.1)` (resolution of codex review v1 findings)
 - Tests:
+  - `lake build CertifiedAtc` — green; all 91 modules built; zero `sorry` (`grep -rn '\bsorry\b' research/fm/lean/CertifiedAtc/` returns no matches).
+  - `lake build CertifiedAtc.RouteBearingExtraction` — green standalone (12/12 modules); confirms downstream importers (`RouteBearingResolutionBridge`, `GreenfieldAirspaceWorldBacked*`, `GreenfieldDeliveredRefinement`) all rebuild without proof regression.
+  - `./gradlew build` — deferred to `fn-9-lift-fm-extraction-to-consume-runtime.2` (its drift-control gate is the explicit home for the Gradle + golden-tests stack). fn-9.1 touches only Lean files; `git diff --stat HEAD~3 HEAD -- '*.kt'` returns zero, so the Kotlin parity tests (`ResolvedClearanceTest`, `CompletionEvaluationTest`, `ActiveClearanceEngineTest`, `DeliveredMetadataParityTest`) and goldens (`LowgGoldenTest`, `G2CrossAerodromeVfrTest`) cannot regress from this task by construction. Sandbox-level: `gradle` and `./gradlew` both blocked (native-lib + wrapper cache writes outside the allow list); fn-9.2 will run the gate.
+  - codex impl-review v2: `verdict NEEDS_WORK → evidence` (only finding was empty evidence section; R1+R3 met, R2+R4 partial pending the above build evidence, R5 deferred).
 - PRs:
