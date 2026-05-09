@@ -29,6 +29,7 @@ import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.OnGround
 import xyz.easiersaid.twr.controller.bdi.OnRunway
 import xyz.easiersaid.twr.controller.bdi.OtherTrafficOnShortFinal
+import xyz.easiersaid.twr.controller.bdi.PilotReady
 import xyz.easiersaid.twr.controller.bdi.PilotReadyDuringCommitment
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
 import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
@@ -54,21 +55,29 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.SERA_5005
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
-// AI pilots emit Report(Ready) the same way human pilots do, so the
-// pilot-Ready report is the trigger for both. Removing AiProactive
-// closed a firewall leak — the controller no longer reads `humanPiloted`.
+// AI pilots emit Report(Ready) the same way human pilots do, so PilotReady
+// alone is sufficient. Removing AiProactive closes a firewall leak — the
+// controller no longer reads `humanPiloted`.
 //
-// fn-8.3 Phase 2 (B3): switched from the single-cycle `PilotReady` event
-// gate to the sticky [PilotReadyDuringCommitment] commitment-witness
-// gate. Pilots report Ready ONCE, but the runway grant for sequential
-// departures behind a circuit-traffic arrival can land many cycles
-// later. Pre-fix, `DEP-LUAW` would never fire for the second departure
-// because the Ready event had aged out. Real controllers retain the
-// Ready report on the strip — this gate models that strip-state. The
-// `PilotReady` event still drives the **flag set** in
-// `reconcileObservedStages` (B3); the rule reads the persistent
-// witness, not the event directly.
-private val DepartureTrigger = PilotReadyDuringCommitment
+// Two trigger flavours, deliberate split (fn-8.3 Phase 2 round 2 — codex
+// review correction):
+//
+// • [DepartureTrigger] (single-cycle) — used by *response-shape* rules
+//   that fire once IN RESPONSE to the pilot's Ready report (e.g.
+//   `DEP-HOLD-IMC` instructs Hold Position when weather is below VMC at
+//   the moment Ready is reported). Sticky-witness here would re-fire
+//   the response every cycle while weather stays bad, which is wrong.
+//
+// • [RunwaySlotTrigger] (sticky `PilotReadyDuringCommitment`) — used by
+//   *runway-slot-grant* rules (`DEP-LUAW`, `DEP-LUAW-COND`) that gate
+//   on the runway becoming available. Pilots report Ready ONCE; for
+//   sequential departures behind a circuit-traffic arrival, the runway
+//   grant can land many cycles after the one-shot Ready event has
+//   aged out. Pre-B3, `DEP-LUAW` would never fire for the second
+//   departure → wedge at AwaitReady. The sticky witness models the
+//   strip-state real controllers retain ("pilot's still ready").
+private val DepartureTrigger = PilotReady
+private val RunwaySlotTrigger = PilotReadyDuringCommitment
 
 /** Shared guard: conditions for issuing or re-issuing a takeoff clearance. */
 private val TakeoffConditions = AllOf(listOf(
@@ -116,7 +125,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 description = "Line up and wait when pilot ready and runway available",
                 regulations = listOf(ICAO4444_7_9, ICAO4444_7_9_3, ICAO9432_LINEUP),
                 guard = AllOf(listOf(
-                    DepartureTrigger,
+                    RunwaySlotTrigger,
                     ContactEstablished,
                     WeatherPermitsVfr,
                     RunwayAccessGranted,
@@ -140,7 +149,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 description = "Conditional line-up behind landing/departing traffic",
                 regulations = listOf(ICAO4444_7_9_3, ICAO9432_CONDITIONAL),
                 guard = AllOf(listOf(
-                    DepartureTrigger,
+                    RunwaySlotTrigger,
                     ContactEstablished,
                     WeatherPermitsVfr,
                     RunwayAccessGranted,
