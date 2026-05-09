@@ -39,11 +39,8 @@ The 3 code files referencing `/home/andrew/dev/projects/twr2/` use the absolute 
 - [ ] No new occurrences of `/home/andrew` introduced anywhere; no other code paths broken (`grep -n "Path(__file__)" <each python file>` confirms the substitute is in place).
 
 ## Done summary
-
-_(filled in by `flowctl done` after the work lands)_
-
+Made the 3 requirements-spike code files cwd-independent: test_quality_gates.py:1413,1603 now use str(Path(__file__).resolve().parent) (matching the existing pattern at line 25), RUNBOOK.md:90 uses ROOT="$(git rev-parse --show-toplevel)", and build_icao4444_seeded_promotions.py has its 7 sourceRef strings stripped of the legacy /home/andrew/dev/projects/twr2/ prefix. R1 + R2 verified: in-scope grep returns empty and the two affected tests pass when run from cwd=/tmp. Review skipped per user direction (codex CLI not installed; mechanical task).
 ## Evidence
-
-- Commits:
-- Tests:
+- Commits: 78b8cf7899dbea0bb1932f4df41d1eab892fac88
+- Tests: cd /tmp && python3 -c "import sys; sys.path.insert(0, '/Users/andrew/dev/projects/graz-tower/research/tools/requirements-spike'); import test_quality_gates; test_quality_gates.test_prompt_version_shas_per_stage_are_distinct(); test_quality_gates.test_audit_full_imports_resolve()" — both PASS from non-repo cwd, grep -n '/home/andrew/dev/projects/twr2' research/tools/requirements-spike/{RUNBOOK.md,build_icao4444_seeded_promotions.py,test_quality_gates.py} — empty (R1), cd /tmp && bash -c 'cd /Users/andrew/dev/projects/graz-tower; ROOT="$(git rev-parse --show-toplevel)"; ls $ROOT/research/tools/requirements-spike/RUNBOOK.md' — ROOT resolves correctly (R2 bash)
 - PRs:

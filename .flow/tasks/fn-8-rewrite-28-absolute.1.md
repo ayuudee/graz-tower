@@ -53,11 +53,18 @@ Strip the legacy `/home/andrew/dev/projects/twr2/` prefix from every markdown li
 - [ ] **R5** — Epic title no longer says "28 absolute"; prospect's `#idea-2` description text reflects ~78-file scope.
 
 ## Done summary
+Stripped legacy `/home/andrew/dev/projects/twr2/` prefix from 72 doc/JSON files via `sed s|/home/andrew/dev/projects/twr2/||g`.
 
-_(filled in by `flowctl done` after the work lands)_
+Top files: `research/fm/README.md` (158 occurrences), `research/fm/lean/README.md` (93), `research/fm/runtime_model_change_impact.md` (61), `research/fm/PROJECT_STATUS.md` (56), `cad/airports/lowg-authoring.md` (38), `cad/airports/ljmb-authoring.md` (28). Plus `research/tools/requirements-spike/{golden,downstream}/*.json` `sourceRef` strings.
 
+R5 fixups also landed: epic title rewritten from "28 absolute" → "Rewrite legacy /home/andrew/dev/projects/twr2/ path refs across ~78 docs/JSON + 3 code files"; prospect's `#idea-2` description text updated to ~78-file scope.
+
+Excluded per R4: 3 code files reserved for fn-8.2 (RUNBOOK.md bash block, build_icao4444_seeded_promotions.py x2 sys.path.insert, test_quality_gates.py x2 sys.path.insert), and historical audit JSONs under `research/tools/requirements-spike/quality/curation/**/*.error.json` and `quality/adequacy/**/sample_manifest.json`.
+
+R1 satisfied for the in-scope substantive surface — 8 residual hits are all (a) the 3 code files reserved for fn-8.2 or (b) self-documenting planning files where the legacy path is named as the search needle in prose. R3 spot-check: 5 markdown links across the highest-hit files render as valid repo-relative links. R4: `git diff --name-only` for excluded paths empty. R5 confirmed.
+
+Review skipped per user direction (codex CLI not installed; mechanical sed sweep — low review value).
 ## Evidence
-
-- Commits:
+- Commits: 73f022e
 - Tests:
 - PRs:
