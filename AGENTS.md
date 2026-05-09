@@ -131,18 +131,41 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G2)
+## Golden tests (G0, G1, G2)
 
-Two integration tests serve as the runtime golden anchors for end-to-end ATC
-flow. Both follow the same shape: a single `@Test` method, a fixture-driven
-load, a deterministic event run, the run is the test, the assertions are
-what the run produced.
+Three integration tests serve as the runtime golden anchors for end-to-end
+ATC flow. All follow the same shape: a single `@Test` method, a fixture-
+driven load, a deterministic event run, the run is the test, the assertions
+are what the run produced.
 
 - **G0 — `LowgGoldenTest` (`sim/jvmTest`)**: single-aerodrome circuit
   training. C172 OE-ABC files at LOWG, taxis to RWY 16C, takes off,
   flies the circuit pattern, lands, taxis back to a stand. Pins the
   intra-aerodrome handoff chain (GROUND → TOWER → arrival → GROUND)
   and the full clearance lifecycle. **Must remain green at all times.**
+
+- **G1 — `G1TwoAircraftCircuitsTest` (`sim/jvmTest`)**: single-aerodrome,
+  **two-aircraft** circuit training. Two C172s (OE-ABC + OE-DEF) start
+  at adjacent LOWG GA stands and fly two circuits each. B's mission-
+  start is offset by 2 sim-minutes so the controller has to extend B's
+  downwind for spacing while A is on base/final, then sequence B behind
+  A's completed landing. Pins five causal partial-orders (taxi
+  sequencing, single-runway gating, the conflict-resolution three-event
+  chain `extendDownwind(B) ≺ touchdown(A) ≺ turnBase(B)`, final-circuit
+  landing order, both aircraft taxi-to-stand) plus the wake-rule cell
+  that fired (L→L → `IcaoNoAdditionalWakeMinimum`) and a forced-
+  conflict invariant (`ExtendDownwind(B)` is observed during the run —
+  fails loud if circuit timing shifts and the conflict authoring goes
+  dull). The first multi-aircraft sim-level test in the repo.
+  **Currently failing (closure-pass pending).** First run surfaces a
+  multi-aircraft circuit-pattern intent-flip defect: when A's second
+  circuit declares FULL_STOP, the tower's prior `ClearedTouchAndGo`
+  coordination is not GC'd, so `ARR-LAND-TNG-REISSUE` keeps firing and
+  A never receives the FULL_STOP `ClearedToLand` /
+  `AfterLandingVacateVia` instructions she needs to vacate. The test
+  KDoc documents the suspect zones (coordination ledger /
+  stage-transition / supersession) and the loudly-failing convention
+  is preserved (no `@Disabled`, no skip-list).
 
 - **G2 — `G2CrossAerodromeVfrTest` (`sim/jvmTest`)**: cross-aerodrome
   VFR transit. C172 OE-XYZ files VFR LOWG → LJMB, taxis at LOWG, takes

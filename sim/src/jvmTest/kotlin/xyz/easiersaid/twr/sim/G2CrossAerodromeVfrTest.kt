@@ -55,6 +55,12 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  * [LowgGoldenTest] structure: single `@Test` method, the run is the test,
  * assertions are what the run produced.
  *
+ * **Sibling tests:** G0 ([LowgGoldenTest]) is the single-aircraft same-
+ * aerodrome circuit-training anchor; G1 ([G1TwoAircraftCircuitsTest]) is
+ * the **multi-aircraft same-aerodrome** sibling (two C172s flying two
+ * circuits each at LOWG with deliberate conflict authoring). G2 is the
+ * single-aircraft **cross-aerodrome** anchor.
+ *
  * **Architectural anchors (R7 / R8):**
  * - The pilot reads only chart-equivalent data from `world.aerodromes[…]`;
  *   no peeks at controller state, no shared SimulationState bus.

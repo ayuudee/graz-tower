@@ -43,6 +43,21 @@ private fun SimTrace.firstAtTime(time: SimTime): TraceCursor? {
     return if (idx < 0) null else TraceCursor(this, idx + 1)
 }
 
+/**
+ * fn-8.2 (G1 §5 conflict-resolution helper): last cursor whose state's
+ * sim-time is at-or-before [time]. Returns [None] only when [time] is
+ * strictly before the trace's [SimTrace.initial] time (i.e. the trace
+ * doesn't cover the requested moment).
+ *
+ * Used by `G1TwoAircraftCircuitsTest` to pin the conflict-resolution
+ * three-event chain `extendDownwind(B).time < touchdown(A).time <
+ * turnBase(B).time` against state observables at a given record time
+ * (transmission records carry `SimTime`s; this helper bridges the cursor
+ * vocabulary to those times).
+ */
+fun SimTrace.stateAtOrBefore(time: SimTime): Option<TraceCursor> =
+    lastWhere { it.now <= time }
+
 // ── Generic transition primitive ─────────────────────────────────────
 
 /**

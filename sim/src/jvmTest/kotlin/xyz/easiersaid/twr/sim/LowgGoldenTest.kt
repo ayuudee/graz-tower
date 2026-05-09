@@ -47,6 +47,11 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  * Pass 4: typed [TransmissionRecord]s replace opaque-string assertions; the
  * shared `runUntilWithTransmissions` drives the sim; `Fixtures.LOWG` collapses
  * the world-loading ceremony.
+ *
+ * @see G1TwoAircraftCircuitsTest the multi-aircraft same-aerodrome sibling
+ *      (two C172s at LOWG, conflict-resolution chain, wake-rule pin).
+ * @see G2CrossAerodromeVfrTest the cross-aerodrome single-aircraft sibling
+ *      (LOWG → LJMB transit, autonomous arrival contact).
  */
 class LowgGoldenTest {
 

@@ -24,6 +24,26 @@ import xyz.easiersaid.twr.protocol.Wind
  * remove the need for `weather` and `controllerRoles` injection; those
  * fields disappear from [Fixture]. The `Fixtures` constants survive with
  * shrunk shapes.
+ *
+ * **Per-fixture provenance** (G0 / G1 / G2 anchors):
+ *  - [LOWG] — single-aircraft circuit training. Stand point
+ *    `LOWG_STAND_1_POINT` from the LOWG world-candidate authoring.
+ *    Drives G0 ([xyz.easiersaid.twr.sim.LowgGoldenTest]).
+ *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
+ *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
+ *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG
+ *    `world-candidate.json` (chosen from world-candidate authoring; no
+ *    speculative AIP claim — both stands are
+ *    `direct_authored_geometry_with_reference_attrs` from the
+ *    `NEW_Parking_Points` authoring pass). Drives G1
+ *    ([xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest]). Wake category
+ *    lives on `AircraftState.type` (set at aircraft construction in the
+ *    test); the fixture itself only carries filed plans + start points.
+ *  - [LJMB] — single-aerodrome reference fixture (not a golden anchor;
+ *    used for cross-aerodrome composition).
+ *  - [LOWG_LJMB_VFR] — multi-aerodrome G2 anchor (cross-aerodrome
+ *    transit). Drives G2
+ *    ([xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest]).
  */
 object Fixtures {
 
