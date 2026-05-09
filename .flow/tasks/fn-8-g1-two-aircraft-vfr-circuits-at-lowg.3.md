@@ -767,6 +767,15 @@ cycle rather than bundling into Phase 3 round 1.
   Single-aircraft cases (G0) don't surface this because the radio is
   uncongested and `circuitIntent` is delivered cleanly, so the
   controller correctly issues `ClearedTouchAndGo` per pilot intent.
+  **Note (Phase 3 round 2 supersession):** this Phase 3 round 1
+  draft conflated mission-tree replan with kinematic-intent reset
+  into a single transition. Phase 3 round 2's dive identified that
+  the kinematic reset must defer to post-touchdown — the
+  ClearedToLand receipt shouldn't touch `PilotIntent.phase` because
+  the aircraft is still airborne on final. The corrected two-stage
+  contract lives in `D-PASS-pilot-mid-tng-fullstop-recovery` (Phase
+  3 round 2 deferments list + sister register); future
+  implementers MUST follow that contract, not this round 1 draft.
 - **D-PASS-cross-aircraft-step-on** (broader sim radio infra):
   simultaneous transmissions from different aircraft on the same
   frequency at the same instant collide because each emission site
@@ -1231,11 +1240,23 @@ is this confirmation evidence + the deferment filings below.
   where same-frequency same-instant cross-aircraft transmissions
   collide and C1's same-aircraft `pilotRadioFreeAt` doesn't help.
 - `D-PASS-pilot-mid-tng-fullstop-recovery` — the B5 wedge as
-  refined here. Pilot-side mission-tree replan + kinematic-intent
-  reset on receipt of a ClearedToLand-when-T&G-mission-shape
-  mismatch (β path), AND/OR controller-side observed-report gating
-  on ARR-LAND / ARR-LAND-TNG (α path). Trigger: this entry IS the
-  trigger — fn-8.3's next session opens it.
+  refined here. Two real-fix paths (full contracts in
+  `~/.claude/plans/pilot-firewall.md § fn-8 deferments` and the
+  Phase 3 round 2 Review considerations subsection above):
+  - α (controller-side, recommended first): `ARR-LAND` /
+    `ARR-LAND-TNG` gate on a commitment-scoped
+    `Commitment.observedReportsDuringCommitment` sticky witness
+    (mirroring Phase 2's `touchedDownDuringCommitment` discipline
+    so first-circuit reports cannot satisfy second-circuit
+    landing clearance).
+  - β (pilot-side, two-stage timing): Stage 1 on `ClearedToLand`
+    receipt replans mission tree only and leaves kinematics
+    untouched while airborne; Stage 2 on post-touchdown
+    `BacktrackRunway` / `AfterLandingVacateVia` receipt performs
+    the kinematic ground-vacate (extends `processInstruction`
+    matching to any post-touchdown on-runway step).
+  Trigger: this entry IS the trigger — fn-8.3's next session
+  opens it.
 
 **Test commands run (Phase 3 round 2 evidence):**
 ```
