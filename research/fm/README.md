@@ -1,13 +1,13 @@
 # FM Research
 
 `research/fm` is the proof-authoritative research spike for the split
-certification architecture described in [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md).
+certification architecture described in [brief_v4.md](research/fm/brief_v4.md).
 
 As of April 21, 2026, the product-authoritative world and clearance design for
 the next project lives in
-[path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+[path-network-design.md](docs/design/path-network-design.md)
 and
-[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md).
+[clearance-model-design.md](docs/design/clearance-model-design.md).
 `research/fm` should now be read as the formalization base for that future
 project, not as a commitment to the current repo's runtime model.
 
@@ -50,20 +50,20 @@ As of April 21, 2026:
   `JoinCircuit`, `ExtendDownwind`, `ContinueApproach`, `ReduceSpeedTo`,
   `ClimbTo`, `DescendTo`, `ClearedApproach`, and `CrossControlledAirspace`
 - the product-authoritative world and clearance model now lives in
-  [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+  [path-network-design.md](docs/design/path-network-design.md)
   and
-  [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+  [clearance-model-design.md](docs/design/clearance-model-design.md)
 - the current Kotlin model in this repo remains a useful staging mirror of that
   direction: entity-referenced instructions and typed procedure references in
-  [Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt),
+  [Instruction.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt),
   compound-clearance vocabulary in
-  [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt),
+  [ClearanceModel.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt),
   instruction timing/domain rules in
-  [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt),
+  [InstructionRules.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt),
   the world model in
-  [WorldModel.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt),
+  [WorldModel.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt),
   and clearance lifecycle state in
-  [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+  [StructuredClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
 - the LOWG-driven first runtime widening slice is now also in the repo model:
   `VfrRoute.airspaceProfile` is now optional and, when present, is one of
   `InVolume`, `InClass`, or volume-authoritative `Segmented`; `AirspaceVolume`
@@ -79,42 +79,42 @@ As of April 21, 2026:
   extraction surface
 - the structural extraction contract from overlay-entity `AviationWorld` into
   proof-local views is now recorded in
-  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md),
+  [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md),
   including the requirement that authority data extract as explicit role grants
   plus controller-role assignments
 - the scoped `Safety-complete (N₀)` extraction boundary is now theorem-bearing
   in
-  [ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean):
+  [ScopedExtraction.lean](research/fm/lean/CertifiedAtc/ScopedExtraction.lean):
   extracted compile-view facts are proved not to invent ids, in-scope
   runway/taxiway/role references are proved preserved, the runway/surface
   operational bridge back into the certifier-local views is proved, and
   extracted authority data now implies `controllerHasAuthorityGrant` and
   `instructionIssuerAuthorized`
 - the narrowed instruction-level authority surface is now recorded in
-  [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md),
+  [instruction_authority_contract.md](research/fm/instruction_authority_contract.md),
   with a conservative Lean mapping for the currently authority-resolved
   instruction families
 - the Lean side now has
-  [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+  [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   as the current-shape greenfield model, while
-  [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+  [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   remains the legacy frontier/compiler bridge back into the existing atomic
   certified path for the currently supported slice
 - the scoped greenfield theorem surface is now explicitly packaged in
-  [ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean):
+  [ScopedGreenfield.lean](research/fm/lean/CertifiedAtc/ScopedGreenfield.lean):
   greenfield-side authority mapping for the scoped surface, a no-partial-
   issuance theorem for compound surface envelopes, theorem-bearing conditional
   surface-compound normalization, and a scoped reachability wrapper over the
   resolved execution layer
 - the final scoped issuing-layer theorem package now exists in
-  [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean):
+  [ScopedIssuance.lean](research/fm/lean/CertifiedAtc/ScopedIssuance.lean):
   a theorem-bearing bridge into the older atomic certified path, plus routing,
   plan-instantiation, peer-coverage, compatibility, authority-gated issuance,
   non-bypass, and issuance soundness for the scoped `Safety-complete (N₀)`
   surface
 - the reachable-state safety layer above that final issuing boundary now exists
   in
-  [ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean):
+  [ScopedSafety.lean](research/fm/lean/CertifiedAtc/ScopedSafety.lean):
   scoped world/state well-formedness, preservation of the nominal / runway /
   surface / air / interface invariant package through issuance, a reachable
   issued-state relation, and issued-step separation soundness for the scoped
@@ -124,7 +124,7 @@ As of April 21, 2026:
   targets only
 - the initial route-bearing widening increment now exists above the closed scoped
   programme:
-  [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+  [GreenfieldRouteBearing.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
   packages truthful resolved-side semantics for `ClearedTo`, `HoldAt`,
   `ClearedApproach`, and `JoinCircuit`, including the fact that all four need
   specific resolution, that `ClearedTo` / `HoldAt` / `JoinCircuit` already
@@ -134,13 +134,13 @@ As of April 21, 2026:
   missed-approach-hold entry in the current graph-backed published-procedure
   model
 - the first widened issuing-layer increment also now exists in
-  [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean):
+  [BridgeableRouteBearingIssuance.lean](research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean):
   theorem-bearing legacy-bridge issuance for `ClearedApproach` plus
   `JoinCircuit` only where the join type still lives in the older atomic
   subset (`downwind`, `base`, `straightIn`)
 - a first theorem-bearing procedure-bearing extraction increment now also
   exists in
-  [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean):
+  [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean):
   route-bearing ids are proved preserved into widened compile views, the
   extracted procedure-bearing sources are proved not to invent ids, and
   compile-ready widened route-bearing instructions are proved to compile
@@ -152,16 +152,16 @@ As of April 21, 2026:
   extraction surfaces, but they are not yet carried through the older atomic
   issuance path
 - the route-bearing current-shape execution seam is now theorem-bearing too:
-  [GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+  [GreenfieldRouteBearingLifecycle.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
   closes completion/active-state behavior for `ClearedTo`, `HoldAt`,
   `ClearedApproach`, and `JoinCircuit`, and
-  [GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+  [GreenfieldRouteBearingSupersession.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
   closes the first route-bearing supersession consequences on that same
   greenfield engine, including explicit proof of the current modeled `HoldAt`
   behavior after frequency supersession
 - the whole current-shape Phase A surface is now also packaged behind one
   source-level theorem in
-  [GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean):
+  [GreenfieldRouteBearingCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean):
   if a source `StructuredClearance` is in the currently supported Phase A
   route-bearing surface and satisfies the present authority / readiness
   conditions, then there exists a resolved clearance that admits into
@@ -171,11 +171,11 @@ As of April 21, 2026:
   on the greenfield path, the Phase A core is closed on the current
   graph-backed published-procedure boundary:
   it has a theorem-bearing extraction-to-resolution bridge in
-  [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean),
+  [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean),
   a greenfield admission / current-shape issuance layer in
-  [GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean),
+  [GreenfieldRouteBearingAdmission.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean),
   a first compound current-shape issuance layer in
-  [GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean),
+  [GreenfieldRouteBearingCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean),
   current-shape lifecycle / supersession layers in
   `GreenfieldRouteBearingLifecycle.lean` and
   `GreenfieldRouteBearingSupersession.lean`,
@@ -193,18 +193,18 @@ As of April 21, 2026:
   `JoinCircuit`, `ExtendDownwind`, and `Orbit` now match the current Kotlin
   metadata at the instruction layer, the current persistent-only-compound
   consequence is explicit rather than implicit, and
-  [GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean),
-  [GreenfieldContinueApproachCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean),
-  [GreenfieldExtendDownwind.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean),
-  [GreenfieldExtendDownwindCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean),
+  [GreenfieldContinueApproach.lean](research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean),
+  [GreenfieldContinueApproachCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean),
+  [GreenfieldExtendDownwind.lean](research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean),
+  [GreenfieldExtendDownwindCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean),
   and
-  [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean),
-  [GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean),
+  [GreenfieldOrbit.lean](research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean),
+  [GreenfieldOrbitCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean),
   with
-  [GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
+  [GreenfieldSourceDomainPersistentPlain.lean](research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
   freezing the shared source-domain-supplied convention for the
   metadata-domain-less persistent families, and
-  [GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
+  [GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
   now packages the whole delivered Phase B set behind one source-level
   world-backed theorem boundary on the current explicit approach/circuit model;
   the earlier current-shape files remain historical context for how the branch
@@ -216,7 +216,7 @@ As of April 21, 2026:
   together these packages cover source-level issuance into
   `ReachableResolvedSet`, current lifecycle behavior, and explicit current
   supersession / engine-consequence theorems
-- [GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+- [GreenfieldRouteAdjacentWorldBackedAuthority.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
   now closes the authority layer for that delivered world-backed Phase B set:
   `ContinueApproach` is treated conservatively as
   `(instrumentApproach, sequence)` on the current type-level role model,
@@ -225,9 +225,9 @@ As of April 21, 2026:
   the delivered Phase B slices now therefore also have authority-gated
   issuance on the current greenfield boundary
 - the next current-Kotlin-family widening increment is now also in place:
-  [GreenfieldAirspaceCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceCurrentShape.lean)
+  [GreenfieldAirspaceCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceCurrentShape.lean)
   and
-  [GreenfieldAirspaceCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceCompound.lean)
+  [GreenfieldAirspaceCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceCompound.lean)
   now close the first honest current-shape airspace-clearance slice:
   `RemainOutsideControlledAirspace` now has a single-step package, and
   `ClearedToEnterControlZone` / `SpecialVfrClearance` now have both a
@@ -237,120 +237,120 @@ As of April 21, 2026:
   aligned metadata, resolve as plain route-domain steps, have explicit current
   lifecycle/supersession regressions, and use a conservative type-level
   authority mapping to `(airspaceVolume, airspaceTransit)`
-- [GreenfieldAirspaceDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceDeliveredCurrentShape.lean)
+- [GreenfieldAirspaceDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceDeliveredCurrentShape.lean)
   now packages that delivered airspace-clearance slice behind one source-level
   current-shape theorem boundary, including a unified authority-gated issuance
   theorem over the already-delivered single-step and narrow-compound cases
-- [GreenfieldRadioCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRadioCurrentShape.lean)
+- [GreenfieldRadioCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRadioCurrentShape.lean)
   now closes a small current-shape radio package for
   `ContactFrequency` and `MonitorFrequency`:
   source-level single-step admission, conservative
   `(radioRole, contact)` / `(radioRole, monitor)` authority, explicit and
   implicit frequency resolution, and theorem-bearing lifecycle/supersession
   regressions
-- [GreenfieldSetSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean)
+- [GreenfieldSetSquawkCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldSetSquawkCurrentShape.lean)
   now closes a small current-shape `SetSquawk` package:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit on-activation completion, and frequency
   non-supersession behavior
-- [GreenfieldConfirmSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean)
+- [GreenfieldConfirmSquawkCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldConfirmSquawkCurrentShape.lean)
   now closes a small current-shape `ConfirmSquawk` package:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit matching-code completion, and frequency
   non-supersession behavior
-- [GreenfieldSquawkIdentCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkIdentCurrentShape.lean)
+- [GreenfieldSquawkIdentCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldSquawkIdentCurrentShape.lean)
   now closes a small current-shape `SquawkIdent` package:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit ident-activation completion, and frequency
   non-supersession behavior
-- [GreenfieldSquawkStandbyCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkStandbyCurrentShape.lean)
+- [GreenfieldSquawkStandbyCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldSquawkStandbyCurrentShape.lean)
   now closes a small current-shape `SquawkStandby` package:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit standby-mode completion, and frequency
   non-supersession behavior
-- [GreenfieldSquawkNormalCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSquawkNormalCurrentShape.lean)
+- [GreenfieldSquawkNormalCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldSquawkNormalCurrentShape.lean)
   now closes a small current-shape `SquawkNormal` package:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit matching-mode completion, and frequency
   non-supersession behavior
-- [GreenfieldStopSquawkCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldStopSquawkCurrentShape.lean)
+- [GreenfieldStopSquawkCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldStopSquawkCurrentShape.lean)
   now closes a small current-shape `StopSquawk` package:
   source-level single-step issuance, conservative `(radioRole, squawk)`
   authority, explicit mode-change completion, and frequency
   non-supersession behavior
-- [GreenfieldTransponderDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
+- [GreenfieldTransponderDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldTransponderDeliveredCurrentShape.lean)
   now packages the delivered current-shape transponder family behind one
   source-level theorem boundary, with unified authority-gated issuance over
   the already-delivered single-step slices for `SetSquawk`,
   `ConfirmSquawk`, `SquawkIdent`, `SquawkStandby`, `SquawkNormal`, and
   `StopSquawk`
-- [GreenfieldCommunicationsCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsCompound.lean)
+- [GreenfieldCommunicationsCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldCommunicationsCompound.lean)
   now carries the explicit current lifecycle/supersession consequences for the
   delivered communications/surveillance compound layer on the current
   immediate radio/transponder model:
   mixed radio/transponder compounds, partial frequency-vs-squawk
   supersession, and the current completion/terminalization behavior after
   suppression
-- [GreenfieldCommunicationsDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean)
+- [GreenfieldCommunicationsDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldCommunicationsDeliveredCurrentShape.lean)
   now packages the delivered communications/surveillance surface behind one
   source-level current-shape theorem boundary, and
-  [GreenfieldCommunicationsExpandedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsExpandedCurrentShape.lean)
+  [GreenfieldCommunicationsExpandedCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldCommunicationsExpandedCurrentShape.lean)
   now packages the broadened branch closure for the current immediate
   radio/transponder model
-- [GreenfieldRadioJurisdictionWorldBacked.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRadioJurisdictionWorldBacked.lean)
+- [GreenfieldRadioJurisdictionWorldBacked.lean](research/fm/lean/CertifiedAtc/GreenfieldRadioJurisdictionWorldBacked.lean)
   now closes the first world-backed published-handoff jurisdiction slice for
   `ContactFrequency` and `MonitorFrequency`, and
-  [GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean)
+  [GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldCommunicationsJurisdictionDeliveredCurrentShape.lean)
   now packages that branch behind one reachable / authorized theorem surface
-- [GreenfieldBacktrackCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
+- [GreenfieldBacktrackCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldBacktrackCurrentShape.lean)
   now closes a small current-shape `BacktrackRunway` package:
   source-level single-step issuance, conservative `(runway, backtrack)`
   authority, resolved far-end-point completion, and theorem-bearing terminal
   behavior after reconciliation
-- [GreenfieldLineUpAndWaitCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLineUpAndWaitCurrentShape.lean)
+- [GreenfieldLineUpAndWaitCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldLineUpAndWaitCurrentShape.lean)
   now closes a small current-shape `LineUpAndWait` package:
   source-level single-step issuance, conservative `(runway, lineUp)`
   authority, explicit active and conditional lifecycle behavior, and
   theorem-bearing runway/frequency supersession regressions
-- [GreenfieldTakeoffCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTakeoffCurrentShape.lean)
+- [GreenfieldTakeoffCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldTakeoffCurrentShape.lean)
   now closes a small current-shape `ClearedForTakeoff` package:
   source-level single-step issuance, conservative `(runway, takeoff)`
   authority, explicit airborne completion, explicit conditional
   staging/activation, and theorem-bearing frequency non-supersession
   behavior
-- [GreenfieldLandingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLandingCurrentShape.lean)
+- [GreenfieldLandingCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldLandingCurrentShape.lean)
   now closes a small current-shape `ClearedToLand` package:
   source-level single-step issuance, conservative `(runway, land)` authority,
   runway-vacation completion, explicit conditional staging/activation, and
   theorem-bearing `GoAround` supersession plus frequency non-supersession
   behavior
-- [GreenfieldTouchAndGoCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldTouchAndGoCurrentShape.lean)
+- [GreenfieldTouchAndGoCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldTouchAndGoCurrentShape.lean)
   now closes a small current-shape `ClearedTouchAndGo` package:
   source-level single-step issuance, conservative `(runway, touchAndGo)`
   authority, runway-transition airborne completion, explicit conditional
   staging/activation, and theorem-bearing `GoAround` supersession plus
   frequency non-supersession behavior
-- [GreenfieldLowApproachCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLowApproachCurrentShape.lean)
+- [GreenfieldLowApproachCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldLowApproachCurrentShape.lean)
   now closes a small current-shape `ClearedLowApproach` package:
   source-level single-step issuance, conservative `(runway, lowApproach)`
   authority, runway-transition-and-exit completion, explicit conditional
   staging/activation, and theorem-bearing `GoAround` supersession plus
   frequency non-supersession behavior
-- [GreenfieldGoAroundCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGoAroundCurrentShape.lean)
+- [GreenfieldGoAroundCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldGoAroundCurrentShape.lean)
   now closes a small current-shape `GoAround` package:
   source-level single-step issuance, conservative `(runway, goAround)`
   authority, explicit active lifecycle behavior, theorem-bearing landing
   supersession, and frequency non-supersession behavior
-- [GreenfieldRunwayDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
+- [GreenfieldRunwayDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRunwayDeliveredCurrentShape.lean)
   now packages the historical delivered current-shape runway-operation family
   behind one source-level theorem boundary, with unified authority-gated
   issuance over the already-delivered single-step slices for `LineUpAndWait`,
   `ClearedForTakeoff`, `ClearedToLand`, `ClearedTouchAndGo`,
   `ClearedLowApproach`, and `GoAround`
-- [GreenfieldRunwayWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCurrentShape.lean),
-  [GreenfieldRunwayWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCompound.lean),
+- [GreenfieldRunwayWorldBackedCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCurrentShape.lean),
+  [GreenfieldRunwayWorldBackedCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedCompound.lean),
   and
-  [GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
+  [GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
   now close the authoritative world-backed runway-operation branch above that
   historical current-shape package:
   the Kotlin runtime and Lean surface now agree on explicit runway
@@ -358,7 +358,7 @@ As of April 21, 2026:
   transition completion, `GoAround` on explicit `currentRunway` context, and
   the first narrow compound layer for the current published-runway graph
   model
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   now aligns `instructionMayBeConditional` with the current Kotlin runway-
   clearance metadata for `ClearedForTakeoff`, `ClearedToLand`,
   `ClearedTouchAndGo`, and `ClearedLowApproach`
@@ -373,15 +373,15 @@ As of April 21, 2026:
   `Viable_sep`; a conservative neutral-command slice and a partial generated
   continuation set are now wired through the current air-state model, including
   a conservative hold-current-path case and a real speed-reduction act;
-  [ScopedSeparation.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
+  [ScopedSeparation.lean](research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
   now also exposes `ScopedSeparationBoundarySufficiencyTheorem` and
   `ScopedViableSepTheorem`, and
-  [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+  [SeparationChecker.lean](research/fm/lean/CertifiedAtc/SeparationChecker.lean)
   now proves `viable_sep_of_capableApproval_equivIssuedScenario`; that local
   theorem is now consumed by
   `ScopedIssuedScenarioViableSepTheorem` in `ScopedSeparation`, so the scoped
   nominal separation bar is closed
-- [ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+- [ScopedModes.lean](research/fm/lean/CertifiedAtc/ScopedModes.lean)
   now closes the full-brief mode layer for the same scoped surface: abstract
   assumption assessment, strongest-justified regime selection, nominal
   guarantee withdrawal, a concrete fallback command vocabulary, and reachable
@@ -390,9 +390,9 @@ As of April 21, 2026:
   the primary success criterion
 - code refinement and drift enforcement: closed for the delivered branch set
   via
-  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md),
+  [refinement_inventory.md](research/fm/refinement_inventory.md),
   the proof-side registry in
-  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean),
+  [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean),
   and tracked Kotlin drift tests; broader automated refinement beyond the
   delivered branch set remains open
 
@@ -404,7 +404,7 @@ The default critical path is now:
   work
 - the active widening method is now incremental small closed slices on the
   greenfield boundary; the route-bearing proof surface defined in
-  [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+  [route_bearing_scope.md](research/fm/route_bearing_scope.md)
   remains the main route-centric widening track, but it is no longer the only
   live widening branch
 - the current route-bearing / route-adjacent widening state now has two closed
@@ -512,11 +512,11 @@ The default critical path is now:
   `RemainOutsideControlledAirspace`,
   `ClearedToEnterControlZone`, and `SpecialVfrClearance` against concrete
   `AirspaceVolume` entities, and
-  [GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
+  [GreenfieldAirspaceWorldBackedCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
   plus
-  [GreenfieldAirspaceWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean)
+  [GreenfieldAirspaceWorldBackedCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean)
   and
-  [GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
+  [GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
   now add the matching Lean boundary for world-backed airspace semantics:
   concrete airspace-volume existence in the proof-side world, resolved
   airspace payloads, graph-backed route/airspace interaction facts, source-
@@ -535,12 +535,12 @@ The default critical path is now:
   authority family is frozen, and whose proof surface does not require new
   world-resolution theory is now theorem-bearing on the greenfield boundary;
   this now explicitly includes the delivered route/vector-control surface in
-  [GreenfieldRouteControlCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
-  [GreenfieldRouteControlCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),
+  [GreenfieldRouteControlCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteControlCurrentShape.lean),
+  [GreenfieldRouteControlCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteControlCompound.lean),
   and
-  [GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean),
+  [GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteControlWorldBackedDeliveredCurrentShape.lean),
   plus the delivered air-modifier/admin subset in
-  [GreenfieldAirModifierCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirModifierCurrentShape.lean),
+  [GreenfieldAirModifierCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirModifierCurrentShape.lean),
   with the route/vector surface now widened through its first narrow
   immediate-adjunct compound layer and `TurnByDegrees` closed on the current
   explicit observed-turn-progress boundary; richer heading-hold semantics
@@ -558,10 +558,10 @@ The default critical path is now:
   now packages that slice together with single-step `BacktrackRunway`
 - the runway-operation branch is now also closed on a stronger boundary than
   the original phase-3 current-shape package:
-  [GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
+  [GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRunwayWorldBackedDeliveredCurrentShape.lean)
   now packages the authoritative delivered runway family on the current
   published-runway graph model, and
-  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+  [parity_inventory.md](research/fm/parity_inventory.md)
   now classifies that branch as `WORLD_BACKED_COMPLETE`
 - the phase-4 airspace widening closure is now also complete under that same
   frozen rule:
@@ -571,29 +571,29 @@ The default critical path is now:
   world-backed airspace layer is now theorem-bearing through its single-step
   and first narrow-compound slices
 - the parity / refinement / drift-control branch is now closed and frozen in
-  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md):
+  [parity_inventory.md](research/fm/parity_inventory.md):
   the delivered families are now classified as scoped-core complete,
   current-shape complete, world-backed complete on the current model, or
   intentionally open, and the load-bearing drift seams are recorded for
   metadata, authority, completion, and supersession
 - the route-to-95%-plan phase 2 is now also closed:
-  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  [refinement_inventory.md](research/fm/refinement_inventory.md)
   now freezes the enforcement boundary for the delivered surface,
-  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
   now re-exports the load-bearing theorem surfaces for the delivered branches,
   and the tracked Kotlin drift suites in
-  [DeliveredMetadataParityTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/DeliveredMetadataParityTest.kt),
-  [StableRuntimeCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/StableRuntimeCurrentShapeTest.kt),
-  [GroundMovementCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementCurrentShapeTest.kt),
-  [GroundMovementProgressionTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementProgressionTest.kt),
+  [DeliveredMetadataParityTest.kt](core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/DeliveredMetadataParityTest.kt),
+  [StableRuntimeCurrentShapeTest.kt](core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/StableRuntimeCurrentShapeTest.kt),
+  [GroundMovementCurrentShapeTest.kt](core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementCurrentShapeTest.kt),
+  [GroundMovementProgressionTest.kt](core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/GroundMovementProgressionTest.kt),
   and
-  [RouteAdjacentCurrentShapeTest.kt](/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/RouteAdjacentCurrentShapeTest.kt)
+  [RouteAdjacentCurrentShapeTest.kt](core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/RouteAdjacentCurrentShapeTest.kt)
   now make delivered metadata and current-engine behavior fail loudly on drift
 - the delivered broader ground / surface movement branch is now also closed:
-  [GroundMovementResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GroundMovementResolutionBridge.lean),
-  [GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
+  [GroundMovementResolutionBridge.lean](research/fm/lean/CertifiedAtc/GroundMovementResolutionBridge.lean),
+  [GreenfieldGroundMovementCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean),
   and
-  [GreenfieldGroundMovementDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean)
+  [GreenfieldGroundMovementDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldGroundMovementDeliveredCurrentShape.lean)
   now close the current graph-backed ground branch:
   world-backed `TaxiTo`, `HoldShortOf`, and `CrossRunway`, current-shape
   `HoldPosition`, and a first narrow sequential ground compound layer now all
@@ -612,162 +612,162 @@ The default critical path is now:
 
 For a new human or AI agent, start here:
 
-1. [AGENT_GUIDE.md](/home/andrew/dev/projects/twr2/research/fm/AGENT_GUIDE.md)
-2. [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
-3. [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-4. [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
-5. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
-6. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-7. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
-8. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
-8. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-9. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
-10. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
-11. [completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md)
+1. [AGENT_GUIDE.md](research/fm/AGENT_GUIDE.md)
+2. [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
+3. [parity_inventory.md](research/fm/parity_inventory.md)
+4. [refinement_inventory.md](research/fm/refinement_inventory.md)
+5. [greenfield_alignment.md](research/fm/greenfield_alignment.md)
+6. [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+7. [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
+8. [clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md)
+8. [path-network-design.md](docs/design/path-network-design.md)
+9. [clearance-model-design.md](docs/design/clearance-model-design.md)
+10. [milestones.md](research/fm/milestones.md)
+11. [completion_milestones.md](research/fm/completion_milestones.md)
     Shortest path from the current state to `Safety-complete (N₀)` and then to
     full-brief closure.
-12. [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+12. [safety_complete_scope.md](research/fm/safety_complete_scope.md)
     Exact theorem-target inventory for the scoped `Safety-complete (N₀)` claim.
-13. [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+13. [route_bearing_scope.md](research/fm/route_bearing_scope.md)
     Exact widening target for the route-bearing proof surface.
-14. [certifier_interfaces.md](/home/andrew/dev/projects/twr2/research/fm/certifier_interfaces.md)
-15. [canonical_theorem.md](/home/andrew/dev/projects/twr2/research/fm/canonical_theorem.md)
+14. [certifier_interfaces.md](research/fm/certifier_interfaces.md)
+15. [canonical_theorem.md](research/fm/canonical_theorem.md)
    Optional. Read this only if you are working on the single-issuer
    composition layer.
-16. [lean/README.md](/home/andrew/dev/projects/twr2/research/fm/lean/README.md)
+16. [lean/README.md](research/fm/lean/README.md)
 
 Then go to the specific Lean module you need.
 
 ## Directory Layout
 
-- [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md)
+- [brief_v4.md](research/fm/brief_v4.md)
   Original design brief.
-- [canonical_theorem.md](/home/andrew/dev/projects/twr2/research/fm/canonical_theorem.md)
+- [canonical_theorem.md](research/fm/canonical_theorem.md)
   Optional top-level orchestration theorem and what it is supposed to mean.
-- [command_catalog.md](/home/andrew/dev/projects/twr2/research/fm/command_catalog.md)
+- [command_catalog.md](research/fm/command_catalog.md)
   Static command vocabulary and plan-shape contract.
-- [certifier_interfaces.md](/home/andrew/dev/projects/twr2/research/fm/certifier_interfaces.md)
+- [certifier_interfaces.md](research/fm/certifier_interfaces.md)
   Kernel and orchestration signatures, plus implementation status.
-- [certifier_view_alignment.md](/home/andrew/dev/projects/twr2/research/fm/certifier_view_alignment.md)
+- [certifier_view_alignment.md](research/fm/certifier_view_alignment.md)
   Boundary from the greenfield world into proof-friendly certifier inputs.
-- [clearance_model_alignment.md](/home/andrew/dev/projects/twr2/research/fm/clearance_model_alignment.md)
+- [clearance_model_alignment.md](research/fm/clearance_model_alignment.md)
   Boundary from greenfield clearances into the current atomic Lean certified
   path.
-- [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
+- [clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md)
   Narrowed proof-authoritative subset of the greenfield clearance envelope.
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
   Structural extraction contract from `AviationWorld` into proof-local views.
-- [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+- [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
   Narrowed instruction-to-authority mapping for the currently stable subset.
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
   Frozen Kotlin-to-Lean parity inventory for the delivered FM surface, plus
   drift-control rules and the current open widening branches.
-- [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
+- [greenfield_alignment.md](research/fm/greenfield_alignment.md)
   How `research/fm` should now relate to the product-authoritative
   `docs/design/` specs and the future project boundary.
-- [m0_instance.md](/home/andrew/dev/projects/twr2/research/fm/m0_instance.md)
+- [m0_instance.md](research/fm/m0_instance.md)
   Why a concrete airport is not part of the proof foundation.
-- [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
+- [milestones.md](research/fm/milestones.md)
   Nine-phase roadmap and current execution status.
-- [completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md)
+- [completion_milestones.md](research/fm/completion_milestones.md)
   Shortest-path completion plan from the current FM state to
   `Safety-complete (N₀)`.
-- [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+- [safety_complete_scope.md](research/fm/safety_complete_scope.md)
   Exact scoped theorem target for `Safety-complete (N₀)`.
-- [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+- [route_bearing_scope.md](research/fm/route_bearing_scope.md)
   Exact next widening target for the route-bearing proof surface.
-- [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
+- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
   Current theorem inventory, proof debt, and next work.
-- [AGENT_GUIDE.md](/home/andrew/dev/projects/twr2/research/fm/AGENT_GUIDE.md)
+- [AGENT_GUIDE.md](research/fm/AGENT_GUIDE.md)
   Working guide for follow-on agents.
-- [lean/](/home/andrew/dev/projects/twr2/research/fm/lean)
+- [lean/](research/fm/lean)
   Standalone Lean 4 project and source of truth.
 
 ## Lean Modules
 
 The Lean project is organized as:
 
-- [Core.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Core.lean)
+- [Core.lean](research/fm/lean/CertifiedAtc/Core.lean)
   Shared vocabulary and base types.
-- [CommandCatalog.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/CommandCatalog.lean)
+- [CommandCatalog.lean](research/fm/lean/CertifiedAtc/CommandCatalog.lean)
   Typed command catalog and static plan templates.
-- [RunwayKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RunwayKernel.lean)
+- [RunwayKernel.lean](research/fm/lean/CertifiedAtc/RunwayKernel.lean)
   Concrete, proved runway kernel.
-- [SurfaceKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
+- [SurfaceKernel.lean](research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
   Concrete, proved surface kernel with a validation graph.
-- [AirKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/AirKernel.lean)
+- [AirKernel.lean](research/fm/lean/CertifiedAtc/AirKernel.lean)
   Concrete local air-path checker with local soundness theorem.
-- [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+- [SeparationChecker.lean](research/fm/lean/CertifiedAtc/SeparationChecker.lean)
   Concrete pairwise separation checker with a local soundness theorem.
-- [ScopedSeparation.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
+- [ScopedSeparation.lean](research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
   Scoped `Safety-complete (N₀)` separation theorem package over the current
   certifier and orchestration surfaces.
-- [ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+- [ScopedExtraction.lean](research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
   Scoped extraction boundary from proof-side world facts into
   `ClearanceCompileView`, certifier-local views, and issuer-authority facts.
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   Current Kotlin-aligned greenfield model surface:
   `steps + completedSteps`, envelope-level conditions, lifecycle categories,
   and frontier selection.
-- [GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
+- [GreenfieldLifecycle.lean](research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
   Abstract active-clearance lifecycle layer over the current greenfield model.
-- [GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
+- [GreenfieldResolved.lean](research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
   Proof-side resolved execution boundary aligned to Kotlin `ResolvedStep` /
   `ResolvedClearance`.
-- [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
+- [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
   Proof-side world-to-resolved relation for the current execution boundary.
-- [GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
+- [GreenfieldCompletion.lean](research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
   Structured completion-observation layer over resolved steps.
 - the observation-regression layer over that completion model is now also in
   the tracked Lean tree:
-  [GreenfieldObservationInstructionRunwayRadio.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionRunwayRadio.lean),
-  [GreenfieldObservationInstructionLevelSpeedA.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedA.lean),
-  [GreenfieldObservationInstructionLevelSpeedB.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedB.lean),
-  [GreenfieldObservationInstructionTransponder.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionTransponder.lean),
-  [GreenfieldObservationResolvedGroundRunway.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedGroundRunway.lean),
-  [GreenfieldObservationResolvedRouteProcedure.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedRouteProcedure.lean),
-  [GreenfieldObservationResolvedAirspaceFrequency.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedAirspaceFrequency.lean),
+  [GreenfieldObservationInstructionRunwayRadio.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionRunwayRadio.lean),
+  [GreenfieldObservationInstructionLevelSpeedA.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedA.lean),
+  [GreenfieldObservationInstructionLevelSpeedB.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionLevelSpeedB.lean),
+  [GreenfieldObservationInstructionTransponder.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationInstructionTransponder.lean),
+  [GreenfieldObservationResolvedGroundRunway.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedGroundRunway.lean),
+  [GreenfieldObservationResolvedRouteProcedure.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedRouteProcedure.lean),
+  [GreenfieldObservationResolvedAirspaceFrequency.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationResolvedAirspaceFrequency.lean),
   and
-  [GreenfieldObservationPlainInstructionSteps.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldObservationPlainInstructionSteps.lean);
+  [GreenfieldObservationPlainInstructionSteps.lean](research/fm/lean/CertifiedAtc/GreenfieldObservationPlainInstructionSteps.lean);
   those theorem-only modules pin the current instruction-level and
   resolved-step observation semantics for runway/radio, level/speed,
   transponder, plain-step, ground/runway, route/procedure, and
   airspace/frequency families without widening the execution model itself
-- [GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
+- [GreenfieldExecution.lean](research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
   Resolved active-clearance execution and reconciliation layer.
-- [GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
+- [GreenfieldReachability.lean](research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
   Reachable active-set package above the resolved execution layer.
-- [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+- [GreenfieldRouteBearing.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
   First widened route-bearing layer above the closed scoped programme:
   truthful resolved-side semantics for `ClearedTo`, `HoldAt`,
   `ClearedApproach`, and `JoinCircuit`.
-- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+- [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
   First widened procedure-bearing extraction layer above the scoped
   extraction boundary: widened source world, route-bearing reference
   preservation, and compile-success theorems for compile-ready widened
   instructions through `ClearanceCompileView`.
-- [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+- [BridgeableRouteBearingIssuance.lean](research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
   Honest legacy-bridge issuance only for the route-bearing families the older
   atomic path can already carry: `ClearedApproach` plus legacy-supported
   `JoinCircuit`.
-- [ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+- [ScopedGreenfield.lean](research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
   Scoped greenfield theorem package for `Safety-complete (N₀)`: scoped
   authority mapping, no-partial-issuance for surface compounds, and the bridge
   into the resolved execution/reachability layer.
-- [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+- [ScopedIssuance.lean](research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
   Final scoped issuing layer above extraction and greenfield execution:
   honest greenfield-to-atomic bridging plus the Milestone 5 theorem package.
-- [ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+- [ScopedSafety.lean](research/fm/lean/CertifiedAtc/ScopedSafety.lean)
   Reachable-state safety layer above the scoped issuing boundary:
   state preservation for nominal/runway/surface/air/interface invariants plus
   issued-step separation soundness.
-- [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+- [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
   Optional orchestration / composition layer, including plan instantiation,
   compatibility, peer coverage, and a partial issuance path.
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   Greenfield clearance vocabulary, frontier selection, and partial compiler
   into the current atomic certified path.
-- [JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+- [JointActs.lean](research/fm/lean/CertifiedAtc/JointActs.lean)
   Narrow orchestration milestone theorem for the first joint acts.
 
 ## Build

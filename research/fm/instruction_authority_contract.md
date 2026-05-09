@@ -4,7 +4,7 @@ This note narrows the greenfield authority story into the smaller instruction
 subset that `research/fm` should currently treat as authority-resolved.
 
 It builds on
-[aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md).
+[aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md).
 That note freezes the **shape** of the authority payload. This note freezes the
 current **instruction-to-grant mapping** that is justified strongly enough to
 drive Lean work now.
@@ -95,10 +95,10 @@ The following instruction families are now treated as authority-resolved:
 - `HoldAt` -> `(holdingPattern, hold)`
 
 The longstanding envelope-facing subset is mirrored in
-[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+[ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 through `instructionRequiredAuthorityGrant?`, and the delivered world-backed
 Phase B route-adjacent mappings are mirrored in
-[GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+[GreenfieldRouteAdjacentWorldBackedAuthority.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
 for the delivered world-backed Phase B route-adjacent surface.
 
 On the published-handoff jurisdiction branch, `ContactFrequency` and
@@ -106,7 +106,7 @@ On the published-handoff jurisdiction branch, `ContactFrequency` and
 Published handoffs add world-backed readiness and completion facts, not a new
 authority family.
 The delivered broader ground/surface movement mappings are now mirrored in
-[GreenfieldGroundMovementCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean)
+[GreenfieldGroundMovementCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldGroundMovementCurrentShape.lean)
 for the current graph-backed ground branch.
 
 ## Why These Are Safe To Freeze
@@ -174,7 +174,7 @@ It is a proof claim that `research/fm` has not justified the mapping yet.
 ## Current Lean Surface
 
 The current authority scaffold in
-[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+[ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 now provides:
 
 - `instructionRequiredAuthorityGrant?`

@@ -7,7 +7,7 @@ passed that point. The useful plan now is the full staged proof path, with
 explicit status for each phase.
 
 For milestone-critical closure status, use
-[completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md).
+[completion_milestones.md](research/fm/completion_milestones.md).
 That shorter plan is now closed for the scoped surface; this roadmap remains for
 broader and optional follow-on work.
 
@@ -47,11 +47,11 @@ Exit condition:
 
 Delivered in:
 
-- [Core.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Core.lean)
-- [CommandCatalog.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/CommandCatalog.lean)
-- [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
-- [command_catalog.md](/home/andrew/dev/projects/twr2/research/fm/command_catalog.md)
-- [certifier_interfaces.md](/home/andrew/dev/projects/twr2/research/fm/certifier_interfaces.md)
+- [Core.lean](research/fm/lean/CertifiedAtc/Core.lean)
+- [CommandCatalog.lean](research/fm/lean/CertifiedAtc/CommandCatalog.lean)
+- [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
+- [command_catalog.md](research/fm/command_catalog.md)
+- [certifier_interfaces.md](research/fm/certifier_interfaces.md)
 
 ## Phase 2: Finish The Generic Runway Kernel
 
@@ -71,7 +71,7 @@ Exit condition:
 
 Delivered in:
 
-- [RunwayKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RunwayKernel.lean)
+- [RunwayKernel.lean](research/fm/lean/CertifiedAtc/RunwayKernel.lean)
 
 Primary theorem:
 
@@ -97,8 +97,8 @@ Exit condition:
 
 Delivered in:
 
-- [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
-- [JointActs.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/JointActs.lean)
+- [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
+- [JointActs.lean](research/fm/lean/CertifiedAtc/JointActs.lean)
 
 Primary theorems:
 
@@ -124,7 +124,7 @@ Exit condition:
 
 Delivered in:
 
-- [SurfaceKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
+- [SurfaceKernel.lean](research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
 
 Primary theorem:
 
@@ -152,7 +152,7 @@ Exit condition:
 
 Delivered in:
 
-- [AirKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/AirKernel.lean)
+- [AirKernel.lean](research/fm/lean/CertifiedAtc/AirKernel.lean)
 
 Primary theorem:
 
@@ -187,9 +187,9 @@ Exit condition:
 Current state:
 
 - a concrete pairwise checker and `SeparationCheckerSoundnessTheorem` now exist
-  in [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+  in [SeparationChecker.lean](research/fm/lean/CertifiedAtc/SeparationChecker.lean)
 - `SeparationCoverageTheorem` is now proved in
-  [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+  [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
 - `SeparationNeutralTransition` and
   `SeparationBoundarySufficiencyTheorem` now provide a local stepwise target
   for non-certified-command neutrality and boundary sufficiency
@@ -252,9 +252,9 @@ Current state:
   entity-referenced instructions, compound clearance content,
   the world model, and `StructuredClearance`
 - the future project model is now documented in
-  [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+  [path-network-design.md](docs/design/path-network-design.md)
   and
-  [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md),
+  [clearance-model-design.md](docs/design/clearance-model-design.md),
   which should be treated as product-authoritative over the current repo's
   staging types
 - the structural extraction contract from `AviationWorld` into
@@ -263,7 +263,7 @@ Current state:
   boundary
 - the authority surface is now narrowed further by an explicit partial
   instruction-to-grant mapping for the stable instruction subset
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   now mirrors that boundary in Lean with greenfield clearance instructions,
   an explicit `sequential | immediate | standalone` timing split, frontier
   selection, and a partial compiler back into the current atomic certified path

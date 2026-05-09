@@ -70,8 +70,8 @@ passes the three-condition check).
 
 ## Evidence
 
-- [icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md)
-- [icao4444-ollama-first-rr7-rr8-deterministic-post-steps-2026-04-25.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-rr7-rr8-deterministic-post-steps-2026-04-25.md)
+- [icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md](docs/design/icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md)
+- [icao4444-ollama-first-rr7-rr8-deterministic-post-steps-2026-04-25.md](docs/design/icao4444-ollama-first-rr7-rr8-deterministic-post-steps-2026-04-25.md)
 - [Spike 7 readback summary](/tmp/icao4444-ollama-first-prototype-spike-7-readback/summary.md)
 - [Spike 7 transfer summary](/tmp/icao4444-ollama-first-prototype-spike-7-transfer/summary.md)
 - [Spike 7 EGAST summary](/tmp/icao4444-ollama-first-prototype-spike-7-egast/summary.md)

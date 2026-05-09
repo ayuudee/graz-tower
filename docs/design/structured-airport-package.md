@@ -246,4 +246,4 @@ For LOWG, this means the next package-completion focus is now narrower:
 Only once that package is stable should the corresponding `core` changes be designed.
 
 The current actionable handoff for that next step now lives in
-[airport-migration-core-gap.md](/home/andrew/dev/projects/twr2/docs/design/airport-migration-core-gap.md).
+[airport-migration-core-gap.md](docs/design/airport-migration-core-gap.md).

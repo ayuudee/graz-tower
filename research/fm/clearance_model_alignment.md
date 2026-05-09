@@ -7,57 +7,57 @@ model now implemented in Kotlin.
 
 The product-authoritative model lives in:
 
-- [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-- [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+- [path-network-design.md](docs/design/path-network-design.md)
+- [clearance-model-design.md](docs/design/clearance-model-design.md)
 
 The Kotlin implementation that now matters for Lean alignment is:
 
-- [Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
-- [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
-- [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
-- [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
-- [ResolvedClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ResolvedClearance.kt)
-- [CompletionEvaluation.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/CompletionEvaluation.kt)
-- [SupersessionEngine.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/SupersessionEngine.kt)
-- [ActiveClearanceEngine.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ActiveClearanceEngine.kt)
+- [Instruction.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
+- [ClearanceModel.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+- [InstructionRules.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
+- [StructuredClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+- [ResolvedClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ResolvedClearance.kt)
+- [CompletionEvaluation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/CompletionEvaluation.kt)
+- [SupersessionEngine.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/SupersessionEngine.kt)
+- [ActiveClearanceEngine.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ActiveClearanceEngine.kt)
 
 ## Current Lean Boundary
 
 There are now eight Lean layers above the local certifiers:
 
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   This is the older staging/compiler surface. It still owns the partial bridge
   back into the atomic certified command path and the theorem work that already
   sits above that bridge.
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   This is the current Kotlin-aligned clearance/lifecycle boundary. It mirrors
   the modern model shape directly rather than translating it into the older
   proof-side envelope first.
-- [GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
+- [GreenfieldLifecycle.lean](research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
   This is the abstract active-clearance state machine above the current model
   boundary. It captures managed clearances, suppressed domains, admission,
   supersession, completion advancement, and conditional activation without
   importing geometry or world resolution.
-- [GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
+- [GreenfieldResolved.lean](research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
   This is the proof-side resolved execution boundary aligned to Kotlin
   `ResolvedStep` / `ResolvedClearance`. It carries the concrete facts that
   completion actually depends on: destination points, runway transitions,
   far-end backtrack points, resolved route limits, radio roles, and circuit
   joins.
-- [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
+- [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
   This is the proof-side world-to-resolved relation. It states what world and
   state facts justify a resolved step or resolved clearance, so the resolved
   layer is no longer treated as hand-authored data.
-- [GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
+- [GreenfieldCompletion.lean](research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
   This is the structured proof-side completion observation contract above the
   resolved layer. It turns concrete observations like reached point,
   runway transitions, circuit membership, radio contact, altitude/speed, and
   transponder state into resolved step completion.
-- [GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
+- [GreenfieldExecution.lean](research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
   This is the resolved active-clearance layer. It combines resolved completion,
   lifecycle status updates, supersession bridging, and conditional activation
   over managed resolved clearances.
-- [GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
+- [GreenfieldReachability.lean](research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
   This is the reachable active-set layer above execution. It packages fresh
   admission and reconciliation into a reusable `ReachableResolvedSet`
   predicate and derives `WellFormedResolvedSet` from reachability.

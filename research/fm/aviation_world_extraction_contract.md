@@ -2,7 +2,7 @@
 
 This note freezes the stable part of the extraction boundary from the
 greenfield
-[AviationWorld](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+[AviationWorld](docs/design/path-network-design.md)
 into the proof-local views used by `research/fm`.
 
 It is not a repo-specific adapter plan. It is the narrower contract that a
@@ -11,8 +11,8 @@ runtime code.
 
 The source inputs remain:
 
-- [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-- [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+- [path-network-design.md](docs/design/path-network-design.md)
+- [clearance-model-design.md](docs/design/clearance-model-design.md)
 
 Status note:
 
@@ -126,7 +126,7 @@ reconstructing it from controller ids or phraseology.
 ### 5. Lifecycle stability for referenced entities
 
 The extraction boundary must support the clearance-level invariant from
-[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md):
+[clearance-model-design.md](docs/design/clearance-model-design.md):
 if a live clearance references an entity, that entity must remain extractable
 for the clearance lifecycle unless the clearance is superseded or cancelled.
 
@@ -212,7 +212,7 @@ The next proof work should assume:
 This note is no longer prose-only for the scoped `Safety-complete (N₀)`
 surface.
 
-[ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+[ScopedExtraction.lean](research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
 now mechanizes a scoped extraction boundary with theorem-bearing:
 
 - deterministic extraction into `ClearanceCompileView`, certifier-local views,

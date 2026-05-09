@@ -21,7 +21,7 @@
   "sourceTraceability": {
     "document": "H01",
     "section": "readback a)",
-    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/h01-extracted.txt:4206-4208"
+    "sourceRef": "research/txt/h01-extracted.txt:4206-4208"
   },
   "notes": [
     "This is operational-guidance level, not an authoritative law claim.",

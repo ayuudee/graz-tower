@@ -2,7 +2,7 @@
 
 The typed command source of truth is:
 
-- [CommandCatalog.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/CommandCatalog.lean)
+- [CommandCatalog.lean](research/fm/lean/CertifiedAtc/CommandCatalog.lean)
 
 That module is both:
 
@@ -33,7 +33,7 @@ Derived orchestration function:
 - `compile_command : CommandClass → PlanTemplate`
 
 `compile_command` is defined in
-[Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+[Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
 as the orchestration-side projection of the static plan stored in the command
 profile.
 

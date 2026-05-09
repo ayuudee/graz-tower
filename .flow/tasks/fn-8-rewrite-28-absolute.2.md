@@ -15,7 +15,7 @@ The 3 code files referencing `/home/andrew/dev/projects/twr2/` use the absolute 
 
 ## Approach
 
-- **Python (both files):** replace `sys.path.insert(0, "/home/andrew/dev/projects/twr2/research/tools/requirements-spike")` with `sys.path.insert(0, str(Path(__file__).resolve().parent))` (assumes the script lives at the path it inserts; if it inserts a *different* directory, use `Path(__file__).resolve().parent / "<rel>"` instead — verify per occurrence). Add `from pathlib import Path` if not already imported.
+- **Python (both files):** replace `sys.path.insert(0, "research/tools/requirements-spike")` with `sys.path.insert(0, str(Path(__file__).resolve().parent))` (assumes the script lives at the path it inserts; if it inserts a *different* directory, use `Path(__file__).resolve().parent / "<rel>"` instead — verify per occurrence). Add `from pathlib import Path` if not already imported.
 - **Bash (RUNBOOK.md):** replace `ROOT=/home/andrew/dev/projects/twr2` with `ROOT="$(git rev-parse --show-toplevel)"`. The runbook is read by humans following commands manually, so this keeps the same `${ROOT}/...` substitution pattern downstream in the same fenced block.
 - **Verify** by smoke-running each script from a non-repo cwd:
   - `cd /tmp && python3 /Users/andrew/dev/projects/graz-tower/research/tools/requirements-spike/build_icao4444_seeded_promotions.py --help` (or the equivalent invocation that exercises the import).

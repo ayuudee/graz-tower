@@ -61,7 +61,7 @@ with an auditable safety condition is the right answer.
 
 ## Evidence
 
-- [icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md)
+- [icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md](docs/design/icao4444-ollama-first-rr5-deterministic-override-2026-04-25.md)
 - [Spike 6 readback summary](/tmp/icao4444-ollama-first-prototype-spike-6-readback/summary.md)
 - [Spike 6 transfer summary](/tmp/icao4444-ollama-first-prototype-spike-6-transfer/summary.md)
 - [Spike 6 EGAST summary](/tmp/icao4444-ollama-first-prototype-spike-6-egast/summary.md)

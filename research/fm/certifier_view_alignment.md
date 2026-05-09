@@ -4,25 +4,25 @@ This note records the intended boundary between the richer app/world model and
 the Lean certifier kernels.
 
 The source-of-truth world is the overlay-entity design in
-[path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md),
+[path-network-design.md](docs/design/path-network-design.md),
 with envelope semantics from
-[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md).
+[clearance-model-design.md](docs/design/clearance-model-design.md).
 The proof side should not consume that whole world directly. It should consume
 compiled projections that keep only the facts the certifiers and
 clearance-envelope layer actually use.
 
 The current repo staging inputs around that boundary are:
 
-- [Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
-- [WorldModel.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt)
-- [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
-- [ResolvedClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ResolvedClearance.kt)
+- [Instruction.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
+- [WorldModel.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt)
+- [StructuredClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+- [ResolvedClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/ResolvedClearance.kt)
 
 The current Lean-side boundaries are:
 
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
-- [clearance_model_alignment.md](/home/andrew/dev/projects/twr2/research/fm/clearance_model_alignment.md)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [clearance_model_alignment.md](research/fm/clearance_model_alignment.md)
 
 ## View Split
 
@@ -104,7 +104,7 @@ compiled-view boundary more honest.
 
 The extraction contract from the richer greenfield `AviationWorld` into
 proof-local views is now structurally frozen in
-[aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md),
+[aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md),
 including explicit authority payload, but the instruction-level and dynamic
 semantics above that contract are still open.
 
@@ -134,7 +134,7 @@ larger than this alignment step:
 For the scoped `Safety-complete (N₀)` surface, this alignment is now
 theorem-bearing rather than only aspirational.
 
-[ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+[ScopedExtraction.lean](research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
 now proves the scoped bridge from proof-side world facts into:
 
 - `ClearanceCompileView`

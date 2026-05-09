@@ -150,10 +150,10 @@ architectural; the new defaults are inert for smaller cases.
   goal is materially in place — adding additional families is "add a
   CASES entry, run, possibly bump a budget."
 - **Operational correctness**: source claims grounded in
-  [icao4444-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt),
-  [egast-vfr-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/egast-vfr-extracted.txt),
-  [h01-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/h01-extracted.txt),
-  and [cap413-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/cap413-extracted.txt).
+  [icao4444-extracted.txt](research/txt/icao4444-extracted.txt),
+  [egast-vfr-extracted.txt](research/txt/egast-vfr-extracted.txt),
+  [h01-extracted.txt](research/txt/h01-extracted.txt),
+  and [cap413-extracted.txt](research/txt/cap413-extracted.txt).
 
 ## Suggested next probes
 

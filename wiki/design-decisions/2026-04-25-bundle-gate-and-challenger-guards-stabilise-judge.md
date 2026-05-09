@@ -38,7 +38,7 @@ was the source of the VMC/IMC instability.
 
 ## Evidence
 
-- [icao4444-ollama-first-bundle-gate-and-challenger-guards-2026-04-25.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-bundle-gate-and-challenger-guards-2026-04-25.md)
+- [icao4444-ollama-first-bundle-gate-and-challenger-guards-2026-04-25.md](docs/design/icao4444-ollama-first-bundle-gate-and-challenger-guards-2026-04-25.md)
 - [transfer Spike 3 summary](/tmp/icao4444-ollama-first-prototype-spike-3-transfer/summary.md)
 - [readback Spike 3 summary](/tmp/icao4444-ollama-first-prototype-spike-3-readback/summary.md)
 

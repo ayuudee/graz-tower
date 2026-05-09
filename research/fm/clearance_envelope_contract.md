@@ -1,9 +1,9 @@
 # Clearance Envelope Contract
 
 This note narrows
-[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
+[clearance-model-design.md](docs/design/clearance-model-design.md)
 into the smaller clearance subset that the legacy
-[ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+[ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 bridge still treats as proof-authoritative.
 
 The purpose is not to replace the greenfield design. It is to say which part of
@@ -13,9 +13,9 @@ forward.
 
 The project-authoritative greenfield model is now the `steps + completedSteps`
 shape in
-[ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+[ClearanceModel.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
 and
-[GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean).
+[GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean).
 This document records the older `ClearanceEnvelope.lean` frontier/compiler
 surface, not the final runtime shape.
 
@@ -49,10 +49,10 @@ separate immediate/sequential buckets.
 
 That split is now reflected across:
 
-- [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
-- [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [ClearanceModel.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+- [InstructionRules.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 
 ### 2. Every instruction has an explicit timing class
 

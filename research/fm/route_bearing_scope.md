@@ -18,7 +18,7 @@ additions therefore remain outside this current widening track unless a later
 FM branch chooses to make them proof-visible.
 
 It does not replace
-[safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md).
+[safety_complete_scope.md](research/fm/safety_complete_scope.md).
 That document remains the authoritative statement of the already-closed scoped
 claim. This note defines the next command families we intend to pull into the
 theorem-bearing surface, and the order in which to do it.
@@ -41,15 +41,15 @@ This note is the guardrail for that widening work.
 
 As of April 14, 2026, the first honest widening increment is now in place.
 
-- [GreenfieldRouteBearing.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
+- [GreenfieldRouteBearing.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearing.lean)
   gives truthful resolved-side semantics for all four Phase A families:
   `ClearedTo`, `HoldAt`, `ClearedApproach`, and `JoinCircuit`
-- [BridgeableRouteBearingIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
+- [BridgeableRouteBearingIssuance.lean](research/fm/lean/CertifiedAtc/BridgeableRouteBearingIssuance.lean)
   adds theorem-bearing legacy-bridge issuance only for the route-bearing pair
   that the older atomic path can already carry honestly:
   `ClearedApproach`, and `JoinCircuit` only when the join type maps back into
   the legacy subset (`downwind`, `base`, `straightIn`)
-- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+- [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
   adds the first theorem-bearing procedure-bearing extraction increment:
   widened source-world extraction for fixes, holds, approaches, SIDs, airways,
   STARs, VFR routes, and circuit procedures; route-bearing reference
@@ -61,27 +61,27 @@ As of April 14, 2026, the first honest widening increment is now in place.
 - `ClearedTo` and `HoldAt` therefore now have theorem-bearing resolved and
   extraction surfaces today, plus current-shape greenfield issuance, but they
   still do not have a theorem-bearing legacy atomic issuance path
-- [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
+- [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
   now closes the extraction-to-resolution seam for the full current Phase A
   surface:
   `ClearedTo`, published `HoldAt`, non-circling `ClearedApproach`, and
   `JoinCircuit` when the extracted circuit source carries an explicit supported
   join procedure
-- [GreenfieldRouteBearingAdmission.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
+- [GreenfieldRouteBearingAdmission.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingAdmission.lean)
   now packages the first honest greenfield admission layer for that same
   bridged Phase A surface:
   authority-gated admission over the widened compile view, resolved-clearance
   existence from extracted world data, admission soundness into
   `ReachableResolvedSet`, and a packaged current-shape issuance theorem for the
   same surface
-- [GreenfieldRouteBearingCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
+- [GreenfieldRouteBearingCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCompound.lean)
   now widens that current-shape theorem surface from single-step route-bearing
   clearances to a narrow but useful compound family:
   one leading Phase A route-bearing step plus zero or more immediate adjunct
   instructions; it packages whole-clearance resolution, admission soundness,
   authority-gated issuance, and freezes the current world-backed approach
   lifecycle boundary rather than inventing richer progression semantics
-- [GreenfieldRouteBearingLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
+- [GreenfieldRouteBearingLifecycle.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingLifecycle.lean)
   now closes the current-shape execution behavior for that same surface:
   `ClearedTo` compounds complete on resolved limit plus adjunct completion,
   single-step `HoldAt` remains active, `HoldAt` compounds complete once their
@@ -90,14 +90,14 @@ As of April 14, 2026, the first honest widening increment is now in place.
   clearances follow the current engine rule that any non-persistent adjuncts
   must also complete, and `JoinCircuit` compounds complete on
   circuit-membership / altitude plus adjunct completion
-- [GreenfieldRouteBearingSupersession.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
+- [GreenfieldRouteBearingSupersession.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingSupersession.lean)
   now closes the first route-bearing supersession consequences on the current
   greenfield engine:
   frequency updates partially supersede mixed route/frequency compounds
   without destroying the route-bearing step, `GoAround` fully supersedes
   active approach compounds, and the current modeled `HoldAt` behavior after
   frequency supersession is explicit rather than implicit
-- [GreenfieldRouteBearingCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
+- [GreenfieldRouteBearingCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteBearingCurrentShape.lean)
   now packages that whole current-shape Phase A surface behind one source-level
   theorem boundary:
   if a source `StructuredClearance` is in the currently supported Phase A
@@ -124,18 +124,18 @@ As of April 14, 2026, the first honest widening increment is now in place.
   the new `ExtendDownwind` / `Orbit` slices prove that current behavior
 - the first honest Phase B increment is now also delivered on the same
   greenfield boundary:
-  [GreenfieldContinueApproach.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean),
-  [GreenfieldContinueApproachCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean),
-  [GreenfieldExtendDownwind.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean),
-  [GreenfieldExtendDownwindCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean),
+  [GreenfieldContinueApproach.lean](research/fm/lean/CertifiedAtc/GreenfieldContinueApproach.lean),
+  [GreenfieldContinueApproachCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldContinueApproachCompound.lean),
+  [GreenfieldExtendDownwind.lean](research/fm/lean/CertifiedAtc/GreenfieldExtendDownwind.lean),
+  [GreenfieldExtendDownwindCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldExtendDownwindCompound.lean),
   and
-  [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean),
-  [GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean),
+  [GreenfieldOrbit.lean](research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean),
+  [GreenfieldOrbitCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean),
   with
-  [GreenfieldSourceDomainPersistentPlain.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
+  [GreenfieldSourceDomainPersistentPlain.lean](research/fm/lean/CertifiedAtc/GreenfieldSourceDomainPersistentPlain.lean)
   freezing the shared null-domain / source-domain-supplied persistent-plain
   convention used by `ExtendDownwind` and `Orbit`, and
-  [GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
+  [GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape.lean)
   now packages the whole currently delivered Phase B surface behind one
   source-level world-backed theorem boundary on the current explicit
   approach/circuit model, and the earlier current-shape files remain
@@ -150,7 +150,7 @@ As of April 14, 2026, the first honest widening increment is now in place.
   these delivered slices package source-level issuance into
   `ReachableResolvedSet`, explicit current lifecycle behavior, and explicit
   supersession / engine-consequence theorems for the currently modeled cases
-- [GreenfieldRouteAdjacentWorldBackedAuthority.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
+- [GreenfieldRouteAdjacentWorldBackedAuthority.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedAuthority.lean)
   now closes the authority layer for that delivered world-backed Phase B
   surface:
   `ContinueApproach` is mapped conservatively to
@@ -210,7 +210,7 @@ programme.
 
 Until this widening track closes, the current proven claim remains exactly the
 one in
-[safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md).
+[safety_complete_scope.md](research/fm/safety_complete_scope.md).
 
 ### 3. Make extraction and resolution lead the widening
 

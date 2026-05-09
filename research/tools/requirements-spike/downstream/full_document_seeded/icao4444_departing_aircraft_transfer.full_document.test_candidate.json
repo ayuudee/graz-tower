@@ -22,7 +22,7 @@
   "sourceTraceability": {
     "document": "ICAO Doc 4444",
     "section": "4.3.2.1.3",
-    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3130"
+    "sourceRef": "research/txt/icao4444-extracted.txt:3110-3130"
   },
   "sourcePromotionId": "accepted-atoms:icao4444:4.3.2.1.3:full-document"
 }

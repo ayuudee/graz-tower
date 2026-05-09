@@ -3,7 +3,8 @@
 ## Conversation Evidence
 
 > "Continue G2 (cross-aerodrome VFR transit, LOWG → LJMB) implementation in
-> the TWR2 ATC simulator at /home/andrew/dev/projects/twr2." [user, opening turn]
+> the TWR2 ATC simulator at [legacy absolute path elided; repo now lives at
+> /Users/andrew/dev/projects/graz-tower]." [user, opening turn]
 >
 > "G0 (sim/src/jvmTest/.../LowgGoldenTest.kt) is the existing single-aerodrome
 > VFR circuit-training golden test — alive, passes, rich assertions. G2 is its

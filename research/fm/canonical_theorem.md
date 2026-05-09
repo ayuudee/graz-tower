@@ -30,7 +30,7 @@ If orchestration issues a command, then:
 In Lean this statement currently lives as:
 
 - `CanonicalTopLevelTheorem` in
-  [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+  [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
 
 ## What Is Already Proved
 

@@ -198,5 +198,5 @@ condition.
   becoming clear: where the local model has a deep prior that prompting
   can't displace, deterministic logic is the right answer.
 - **Operational correctness**: source claims grounded in
-  [icao4444-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt)
-  and [egast-vfr-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/egast-vfr-extracted.txt).
+  [icao4444-extracted.txt](research/txt/icao4444-extracted.txt)
+  and [egast-vfr-extracted.txt](research/txt/egast-vfr-extracted.txt).

@@ -58,6 +58,6 @@ neutralises one specific class of challenger noise.
 
 ## Evidence
 
-- [icao4444-ollama-first-h01-cap413-multi-family-2026-04-27.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-h01-cap413-multi-family-2026-04-27.md)
+- [icao4444-ollama-first-h01-cap413-multi-family-2026-04-27.md](docs/design/icao4444-ollama-first-h01-cap413-multi-family-2026-04-27.md)
 - [H01 readback summary](/tmp/icao4444-ollama-first-prototype-h01-readback/summary.md) — 8 candidates, 6 accepted
 - [CAP 413 readback summary](/tmp/icao4444-ollama-first-prototype-cap413-readback/summary.md) — 8 candidates, 6 accepted

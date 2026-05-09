@@ -21,12 +21,12 @@ integration work.
 
 The split currently lives across these modules:
 
-- [RunwayKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RunwayKernel.lean)
-- [SurfaceKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
-- [AirKernel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/AirKernel.lean)
-- [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
-- [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [RunwayKernel.lean](research/fm/lean/CertifiedAtc/RunwayKernel.lean)
+- [SurfaceKernel.lean](research/fm/lean/CertifiedAtc/SurfaceKernel.lean)
+- [AirKernel.lean](research/fm/lean/CertifiedAtc/AirKernel.lean)
+- [SeparationChecker.lean](research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+- [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
 
 ## Local Kernel Signatures
 
@@ -59,17 +59,17 @@ The intended long-term integration boundary is now:
 
 Relevant files:
 
-- [Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
-- [ClearanceModel.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
-- [InstructionRules.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
-- [WorldModel.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt)
-- [StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
-- [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-- [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
-- [clearance_model_alignment.md](/home/andrew/dev/projects/twr2/research/fm/clearance_model_alignment.md)
-- [certifier_view_alignment.md](/home/andrew/dev/projects/twr2/research/fm/certifier_view_alignment.md)
-- [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+- [Instruction.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt)
+- [ClearanceModel.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/ClearanceModel.kt)
+- [InstructionRules.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/InstructionRules.kt)
+- [WorldModel.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt)
+- [StructuredClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt)
+- [path-network-design.md](docs/design/path-network-design.md)
+- [clearance-model-design.md](docs/design/clearance-model-design.md)
+- [clearance_model_alignment.md](research/fm/clearance_model_alignment.md)
+- [certifier_view_alignment.md](research/fm/certifier_view_alignment.md)
+- [greenfield_alignment.md](research/fm/greenfield_alignment.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
 
 The current Kotlin boundary types in this repo are best read as a staging
 mirror of the `docs/design/` design. The next job is to freeze the extraction
@@ -117,7 +117,7 @@ More specifically:
   `CrossRunway`, `LineUpAndWait`, a conservative `JoinCircuit` path, and
   `ReduceSpeedTo`
 - `compileClearanceCommand` in
-  [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+  [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   now compiles greenfield entity-referenced instructions into the older atomic
   Lean `Command` language
 - `compile_clearance_instruction` now compiles that greenfield instruction

@@ -73,7 +73,7 @@
         "sourceUnitId": "icao4444::sub_list_item::05662::unit",
         "unitKind": "sub_list_item",
         "parentSourceUnitId": "icao4444::section_heading::05634::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:19466-19468",
+        "sourceRef": "research/txt/icao4444-extracted.txt:19466-19468",
         "sectionPath": [
           "MISCELLANEOUS PROCEDURES",
           "STRATEGIC LATERAL OFFSET PROCEDURES (SLOP)",

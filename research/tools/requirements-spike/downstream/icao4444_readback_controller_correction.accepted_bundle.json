@@ -1,7 +1,7 @@
 {
   "bundleId": "icao4444:4.5.7.5.2",
   "sourceUnitId": "icao4444_readback::clause::4.5.7.5.2",
-  "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3424-3425",
+  "sourceRef": "research/txt/icao4444-extracted.txt:3424-3425",
   "documentId": "icao4444-extracted",
   "sectionPath": [
     "READBACK OF CLEARANCES",

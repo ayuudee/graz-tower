@@ -16,9 +16,9 @@ change?" note. It is a status note answering:
 
 Use this together with:
 
-- [structured-airport-package.md](/home/andrew/dev/projects/twr2/docs/design/structured-airport-package.md)
-- [entity-driven-plates.md](/home/andrew/dev/projects/twr2/docs/design/entity-driven-plates.md)
-- [runtime_model_change_impact.md](/home/andrew/dev/projects/twr2/research/fm/runtime_model_change_impact.md)
+- [structured-airport-package.md](docs/design/structured-airport-package.md)
+- [entity-driven-plates.md](docs/design/entity-driven-plates.md)
+- [runtime_model_change_impact.md](research/fm/runtime_model_change_impact.md)
 
 ## First runtime slice: delivered
 
@@ -51,9 +51,9 @@ The current LOWG pipeline now has:
 
 1. authoring / collaboration inputs in DXF + sidecar
 2. a richer structured airport package in
-   [structured-airport-package.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/lowg/structured-airport-package.json)
+   [structured-airport-package.json](cad/airports/rendered/lowg/structured-airport-package.json)
 3. a filtered current-core projection in
-   [world-candidate.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/lowg/world-candidate.json)
+   [world-candidate.json](cad/airports/rendered/lowg/world-candidate.json)
 
 For LOWG version 1, the current-core candidate now includes:
 
@@ -67,7 +67,7 @@ For LOWG version 1, the current-core candidate now includes:
   FIR ownership, and runtime-owned boundary geometry
 
 The candidate still validates cleanly in
-[world-validation-report.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/lowg/world-validation-report.json).
+[world-validation-report.json](cad/airports/rendered/lowg/world-validation-report.json).
 
 So the migration is no longer blocked on parking, apron connectivity, basic
 aerodrome geometry, or the first VFR route/sector/procedure runtime boundary.
@@ -163,5 +163,5 @@ If you are continuing LOWG or another airport migration:
 
 If you are changing `core` again, do it only for one of the still-open items
 above, and keep
-[runtime_model_change_impact.md](/home/andrew/dev/projects/twr2/research/fm/runtime_model_change_impact.md)
+[runtime_model_change_impact.md](research/fm/runtime_model_change_impact.md)
 aligned with the exact FM consequences.

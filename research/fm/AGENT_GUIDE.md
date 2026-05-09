@@ -24,18 +24,18 @@ It is:
 
 Read in this order:
 
-1. [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
-2. [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
-3. [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-4. [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
-5. [greenfield_alignment.md](/home/andrew/dev/projects/twr2/research/fm/greenfield_alignment.md)
-6. [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-7. [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
-8. [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
-9. [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
-10. [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md)
-11. [milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md)
-12. [lean/README.md](/home/andrew/dev/projects/twr2/research/fm/lean/README.md)
+1. [README.md](research/fm/README.md)
+2. [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
+3. [parity_inventory.md](research/fm/parity_inventory.md)
+4. [refinement_inventory.md](research/fm/refinement_inventory.md)
+5. [greenfield_alignment.md](research/fm/greenfield_alignment.md)
+6. [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+7. [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
+8. [clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md)
+9. [path-network-design.md](docs/design/path-network-design.md)
+10. [clearance-model-design.md](docs/design/clearance-model-design.md)
+11. [milestones.md](research/fm/milestones.md)
+12. [lean/README.md](research/fm/lean/README.md)
 
 Then open the specific Lean module for the phase you are changing.
 
@@ -51,21 +51,21 @@ Then open the specific Lean module for the phase you are changing.
   a concrete joint `CrossRunway` path, and a concrete joint
   `LineUpAndWait` path
 - the target app/proof boundary is now anchored to
-  [path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+  [path-network-design.md](docs/design/path-network-design.md)
   and
-  [clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md),
+  [clearance-model-design.md](docs/design/clearance-model-design.md),
   with the current repo's Kotlin protocol/world/clearance types serving as a
   staging mirror rather than the committed implementation target
 - the structural extraction contract for that boundary is now recorded in
-  [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md),
+  [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md),
   including explicit authority payload requirements
 - the narrowed instruction-level authority mapping is now recorded in
-  [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md),
+  [instruction_authority_contract.md](research/fm/instruction_authority_contract.md),
   and the Lean side now has a conservative authorization checker for that
   resolved subset
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   is the current-shape proof-side greenfield model, while
-  [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+  [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
   remains the legacy bridge into the atomic certified path
 - a partial greenfield compiler path now exists:
   `compileClearanceCommand`, `compile_clearance_instruction`, and
@@ -73,7 +73,7 @@ Then open the specific Lean module for the phase you are changing.
   frontier steps back into the existing atomic certified path
 - the envelope timing split is now explicit in Lean as
   `InstructionStepTiming = sequential | immediate | standalone`, and
-  [clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md)
+  [clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md)
   records the narrower theorem surface that follows from that split
 - the scoped surface is now both `Safety-complete (N₀)` and `Full-brief
   complete`
@@ -319,13 +319,13 @@ Unless the user says otherwise, the next default task in `research/fm` is:
 
 - keep the scoped surface stable and honest
 - use the frozen parity / refinement / drift-control inventory in
-  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+  [parity_inventory.md](research/fm/parity_inventory.md)
   and the enforcing branch map in
-  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  [refinement_inventory.md](research/fm/refinement_inventory.md)
   as guardrails before opening a new branch:
   if metadata, authority, completion, supersession, or family status changes,
   update the inventories and the central registry in
-  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
 - remember what is already closed and therefore not the default “next” task:
   the current graph-backed published-procedure route-bearing branch,
   the world-backed Phase B route-adjacent branch on the current

@@ -14,9 +14,9 @@ It is intentionally narrower than a redesign note. The goal is to answer:
 
 Use this together with:
 
-- [airport-migration-core-gap.md](/home/andrew/dev/projects/twr2/docs/design/airport-migration-core-gap.md)
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+- [airport-migration-core-gap.md](docs/design/airport-migration-core-gap.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
 
 ## Executive summary
 
@@ -89,9 +89,9 @@ Under the current FM boundary, this turned out to be cheaper than first feared.
 The current proof-visible route extraction already ignores route-airspace
 payloads entirely:
 
-- [CompileVfrRouteView](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L343)
+- [CompileVfrRouteView](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L343)
   carries only `id` and `waypoints`
-- [ScopedVfrRouteSource](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L154)
+- [ScopedVfrRouteSource](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L154)
   likewise carries only `id` and `waypoints`
 
 So changing Kotlin from a route-wide `airspaceClass` to nullable
@@ -104,21 +104,21 @@ None.
 
 Important non-impact:
 
-- [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
+- [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
   still uses only waypoint points when converting a VFR route into route
   points. It does not consume route-airspace payloads.
 
 ### FM docs that should be updated
 
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
   to make it explicit that the proof-visible extraction remains narrower than
   the runtime route-airspace model
-- [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
+- [README.md](research/fm/README.md)
   so it does not imply proof-visible route-airspace parity
-- [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
+- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
   so the staging-mirror description matches the narrower proof boundary
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-  and [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
+  and [route_bearing_scope.md](research/fm/route_bearing_scope.md)
   so the route-bearing boundary note remains honest
 
 ### What does **not** need to change
@@ -147,11 +147,11 @@ Reason:
 
 - the current delivered airspace theorem surface is explicitly closed only for
   the point-set + transition model in
-  [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md#L25)
+  [parity_inventory.md](research/fm/parity_inventory.md#L25)
 - the world-backed airspace proofs currently consume only `volume.points` in
-  [GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean#L27)
+  [GreenfieldAirspaceWorldBackedCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean#L27)
   and the associated bridge in
-  [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L167)
+  [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L167)
 
 So Lean can remain correct **if** we explicitly say:
 
@@ -161,12 +161,12 @@ So Lean can remain correct **if** we explicitly say:
 
 #### Docs that should change
 
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
   to make the “point-set + transition model” limitation even more explicit
-- [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
+- [README.md](research/fm/README.md)
   if it would otherwise read as if the delivered airspace branch mirrors the
   full runtime airspace entity
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
   if we want to record boundary geometry as an intentionally unextracted
   runtime-owned fact for now
 
@@ -179,7 +179,7 @@ This is a real FM theorem-surface change.
 ##### `research/fm/lean/CertifiedAtc/GreenfieldResolved.lean`
 
 - `ResolvedAirspaceInstruction.points` at
-  [GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean#L128)
+  [GreenfieldResolved.lean](research/fm/lean/CertifiedAtc/GreenfieldResolved.lean#L128)
 - `airspaceRouteInsidePoints`
 - `airspaceRouteEntryTransitions`
 - `airspaceRouteExitTransitions`
@@ -193,12 +193,12 @@ This is a real FM theorem-surface change.
 - `airspaceExited`
 
 See
-[GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean#L17).
+[GreenfieldCompletion.lean](research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean#L17).
 
 ##### `research/fm/lean/CertifiedAtc/GreenfieldResolution.lean`
 
 - `ResolutionWorld.airspaceVolume` at
-  [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L15)
+  [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L15)
 - `ConcreteAirspaceVolumeBinding`
 - `ConcreteResolutionWorld.airspaceVolumes`
 - `ResolvesIndexedStep.remainOutsideControlledAirspace`
@@ -208,33 +208,33 @@ See
 ##### `research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean`
 
 - `ScopedAirspaceVolumeSource` at
-  [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L172)
+  [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L172)
 
 ##### `research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean`
 
 - `toConcreteResolutionWorld` airspace section at
-  [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L167)
+  [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L167)
 - `mem_airspaceVolume_of_mem` at
-  [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L837)
+  [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L837)
 
 ##### Airspace theorem packages
 
-- [GreenfieldAirspaceWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
-- [GreenfieldAirspaceWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean)
-- [GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
-- [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+- [GreenfieldAirspaceWorldBackedCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCurrentShape.lean)
+- [GreenfieldAirspaceWorldBackedCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedCompound.lean)
+- [GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldAirspaceWorldBackedDeliveredCurrentShape.lean)
+- [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
 
 These modules are currently proved against the explicit point-set + transition
 model and would need theorem restatement and proof repair.
 
 #### FM docs that must change
 
-- [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
-- [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-- [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+- [README.md](research/fm/README.md)
+- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
+- [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
   only if the authority family stops being conservatively `airspaceVolume`
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
 
 ## 3. Operational sectors
 
@@ -263,20 +263,20 @@ Then real Lean widening is required.
 
 ##### IDs / front-door model
 
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean#L175)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean#L175)
 - likely a new id type or equivalent identifier family
 
 ##### Compile view and authority surface
 
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L435)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L435)
   for a new compile-view list
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L378)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L378)
   if sectors become authority-bearing and need a new entity family in
   `CompileAuthorityEntityType`
 
 ##### Extraction layer
 
-- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+- [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
   for sector source structures, well-formedness conditions, and origin/preservation theorems
 
 ##### Resolution / theorem layer
@@ -287,12 +287,12 @@ Then real Lean widening is required.
 
 #### FM docs that must change
 
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-- [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+- [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
   if sectors become authority-bearing
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-- [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
-- [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
+- [README.md](research/fm/README.md)
+- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
 
 ## 4. Published VFR procedures
 
@@ -319,19 +319,19 @@ leave the new entity outside the current proof boundary.
 
 Then the first edit sites are similar to sectors:
 
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
   for ids / instruction references if needed
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L435)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L435)
   for compile-view additions
-- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+- [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
   for source structures, well-formedness, and origin theorems
 
 If runtime instructions start resolving against published VFR procedures rather
 than existing route/circuit/airspace entities, then the route-bearing theorem
 surface will need a real widening branch:
 
-- [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
-- [GreenfieldRouteBearing*.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/)
+- [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
+- [GreenfieldRouteBearing*.lean](research/fm/lean/CertifiedAtc/)
 - possibly the route-adjacent current-shape branch too
 
 That is not a small maintenance edit. It is a new FM branch.
@@ -350,8 +350,8 @@ Current Lean route-adjacent and route-bearing proofs already assume:
 
 See:
 
-- [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L36)
-- [RouteBearingResolutionBridge.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L338)
+- [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L36)
+- [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean#L338)
 
 So:
 
@@ -369,21 +369,21 @@ This is explicitly deferred, but it is the biggest FM change if/when it lands.
 Current Lean route-adjacent and holding proofs assume loop-based semantics:
 
 - `ScopedOrbitPointSource.loopPoints` in
-  [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L41)
+  [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L41)
 - `ResolutionWorld.circuitOrbit` in
-  [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L36)
+  [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L36)
 - `ResolutionWorld.holdingPatternLoop` in
-  [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L27)
+  [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean#L27)
 - `ResolvedAirspaceInstruction` is unaffected, but
   `ResolvedHoldingInstruction` / `ResolvedOrbitInstruction` and completion
   observation are not
 
 Exact proof surfaces affected:
 
-- [GreenfieldOrbit.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean)
-- [GreenfieldOrbitCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean)
-- [GreenfieldRouteAdjacentWorldBackedCurrentShape.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedCurrentShape.lean)
-- [GreenfieldRouteAdjacentWorldBackedCompound.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedCompound.lean)
+- [GreenfieldOrbit.lean](research/fm/lean/CertifiedAtc/GreenfieldOrbit.lean)
+- [GreenfieldOrbitCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldOrbitCompound.lean)
+- [GreenfieldRouteAdjacentWorldBackedCurrentShape.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedCurrentShape.lean)
+- [GreenfieldRouteAdjacentWorldBackedCompound.lean](research/fm/lean/CertifiedAtc/GreenfieldRouteAdjacentWorldBackedCompound.lean)
 - the published-hold route-bearing bridge and lifecycle files for `HoldAt`
 
 This should remain a deliberate later branch, not part of the first
@@ -415,14 +415,14 @@ then the exact FM follow-up set is:
 
 ### Lean code
 
-- [ClearanceEnvelope.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
-- [RouteBearingExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
+- [ClearanceEnvelope.lean](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean)
+- [RouteBearingExtraction.lean](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean)
 
 ### FM docs
 
-- [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md)
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-- [README.md](/home/andrew/dev/projects/twr2/research/fm/README.md)
-- [PROJECT_STATUS.md](/home/andrew/dev/projects/twr2/research/fm/PROJECT_STATUS.md)
+- [parity_inventory.md](research/fm/parity_inventory.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+- [README.md](research/fm/README.md)
+- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
 
 Nothing else on the Lean theorem side needs to move for that first slice.

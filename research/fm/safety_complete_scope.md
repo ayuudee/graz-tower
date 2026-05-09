@@ -3,7 +3,7 @@
 Last updated: April 13, 2026
 
 This document is the Milestone 1 deliverable from
-[completion_milestones.md](/home/andrew/dev/projects/twr2/research/fm/completion_milestones.md).
+[completion_milestones.md](research/fm/completion_milestones.md).
 
 Its job is to freeze the exact theorem target for
 `Safety-complete (N₀)`.
@@ -12,7 +12,7 @@ This is the shortest-path scope, not the largest interesting scope.
 
 The next widening target above this closed scoped claim is defined separately
 in
-[route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md).
+[route_bearing_scope.md](research/fm/route_bearing_scope.md).
 
 ## Purpose
 

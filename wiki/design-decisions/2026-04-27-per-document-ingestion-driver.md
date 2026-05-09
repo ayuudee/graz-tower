@@ -42,6 +42,6 @@ driver removes that bottleneck without changing the per-section pipeline:
 
 ## Evidence
 
-- [icao4444-ollama-first-per-document-driver-2026-04-27.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-per-document-driver-2026-04-27.md)
+- [icao4444-ollama-first-per-document-driver-2026-04-27.md](docs/design/icao4444-ollama-first-per-document-driver-2026-04-27.md)
 - `research/tools/requirements-spike/ingest_document.py` (driver)
 - `research/tools/requirements-spike/documents/icao4444.json` (first manifest)

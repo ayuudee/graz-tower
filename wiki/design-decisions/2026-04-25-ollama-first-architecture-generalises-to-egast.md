@@ -51,5 +51,5 @@ case-plus-sourceOverride pattern.
 
 ## Evidence
 
-- [icao4444-ollama-first-egast-generality-2026-04-25.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-egast-generality-2026-04-25.md)
+- [icao4444-ollama-first-egast-generality-2026-04-25.md](docs/design/icao4444-ollama-first-egast-generality-2026-04-25.md)
 - [Spike 4 readback summary](/tmp/icao4444-ollama-first-prototype-spike-4-egast-readback/summary.md)

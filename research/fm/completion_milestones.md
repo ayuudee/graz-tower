@@ -6,7 +6,7 @@ This document defines the shortest path from the current FM state to
 completion.
 
 It is intentionally narrower than the full historical roadmap in
-[milestones.md](/home/andrew/dev/projects/twr2/research/fm/milestones.md).
+[milestones.md](research/fm/milestones.md).
 The goal here is not to enumerate every worthwhile improvement. The goal is to
 reach the point where the certifiers and the top issuing layer are actually
 proved for the safety properties the project claims.
@@ -14,7 +14,7 @@ proved for the safety properties the project claims.
 Current status:
 
 - `Safety-complete (N₀)` is now achieved for the scoped surface defined in
-  [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+  [safety_complete_scope.md](research/fm/safety_complete_scope.md)
 - `Full-brief complete` is now also achieved for that same scoped surface
 
 ## Completion Bars
@@ -33,7 +33,7 @@ The project is `Safety-complete (N₀)` when all of the following hold:
 - runway, surface, air-path, and separation each have complete local theorem
   coverage for the scoped surface
 - the extraction boundary from
-  [AviationWorld](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
+  [AviationWorld](research/fm/aviation_world_extraction_contract.md)
   into proof views is mechanized rather than only documented
 - the greenfield clearance and active-clearance semantics are stable enough to
   support top-level proofs
@@ -42,7 +42,7 @@ The project is `Safety-complete (N₀)` when all of the following hold:
   soundness for the scoped surface
 - reachable issued states preserve the scoped runway, surface, air/separation,
   and interface invariant families under the nominal assumption set in
-  [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md)
+  [brief_v4.md](research/fm/brief_v4.md)
 
 This is the main definition of "complete" for the current programme.
 
@@ -122,8 +122,8 @@ Work:
 Recommended outputs:
 
 - a theorem-target note derived from
-  [brief_v4.md](/home/andrew/dev/projects/twr2/research/fm/brief_v4.md)
-- [safety_complete_scope.md](/home/andrew/dev/projects/twr2/research/fm/safety_complete_scope.md)
+  [brief_v4.md](research/fm/brief_v4.md)
+- [safety_complete_scope.md](research/fm/safety_complete_scope.md)
   This is the current scoped theorem-target inventory.
 - a scoped command-family table
 - explicit theorem declarations for the final top layer
@@ -139,7 +139,7 @@ Status: `complete`
 
 Primary module:
 
-- [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+- [SeparationChecker.lean](research/fm/lean/CertifiedAtc/SeparationChecker.lean)
 
 Purpose:
 close the largest remaining local-kernel gap.
@@ -154,12 +154,12 @@ Work:
 
 Current state:
 
-- [ScopedSeparation.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
+- [ScopedSeparation.lean](research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
   now packages the exact `Safety-complete (N₀)` separation scope:
   scoped command classification, scoped neutrality, scoped peer coverage,
   `ScopedSeparationBoundarySufficiencyTheorem`, and
   `ScopedViableSepTheorem` over the concrete continuation-family cases
-- [SeparationChecker.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/SeparationChecker.lean)
+- [SeparationChecker.lean](research/fm/lean/CertifiedAtc/SeparationChecker.lean)
   now has stronger viability support for the concrete continuation families:
   `continueCurrentPath`, `holdCurrentPath`, and `reduceSpeed` can now establish
   `Viable_sep` from baseline pairwise separation, the reserved-branch and
@@ -169,7 +169,7 @@ Current state:
   the issued separation scenario's `subjectAfter` is operationally equivalent
   to the approved successor state
 
-- [ScopedSeparation.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
+- [ScopedSeparation.lean](research/fm/lean/CertifiedAtc/ScopedSeparation.lean)
   now also contains `ScopedIssuedScenarioViableSepTheorem`, which closes the
   final scoped packaging gap by taking `ClearedForTakeoff`,
   `ClearedToLand`, `ClearedTouchAndGo`, `GoAround`, and knot-based
@@ -194,12 +194,12 @@ Status: `complete`
 
 Primary sources:
 
-- [aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md)
-- [certifier_view_alignment.md](/home/andrew/dev/projects/twr2/research/fm/certifier_view_alignment.md)
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+- [certifier_view_alignment.md](research/fm/certifier_view_alignment.md)
 
 Recommended Lean destination:
 
-- [ScopedExtraction.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
+- [ScopedExtraction.lean](research/fm/lean/CertifiedAtc/ScopedExtraction.lean)
 
 Purpose:
 turn the extraction notes into theorem-bearing proof inputs.
@@ -245,13 +245,13 @@ Status: `complete`
 
 Primary modules:
 
-- [GreenfieldModel.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
-- [GreenfieldLifecycle.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
-- [GreenfieldResolved.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
-- [GreenfieldResolution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
-- [GreenfieldCompletion.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
-- [GreenfieldExecution.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
-- [GreenfieldReachability.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
+- [GreenfieldModel.lean](research/fm/lean/CertifiedAtc/GreenfieldModel.lean)
+- [GreenfieldLifecycle.lean](research/fm/lean/CertifiedAtc/GreenfieldLifecycle.lean)
+- [GreenfieldResolved.lean](research/fm/lean/CertifiedAtc/GreenfieldResolved.lean)
+- [GreenfieldResolution.lean](research/fm/lean/CertifiedAtc/GreenfieldResolution.lean)
+- [GreenfieldCompletion.lean](research/fm/lean/CertifiedAtc/GreenfieldCompletion.lean)
+- [GreenfieldExecution.lean](research/fm/lean/CertifiedAtc/GreenfieldExecution.lean)
+- [GreenfieldReachability.lean](research/fm/lean/CertifiedAtc/GreenfieldReachability.lean)
 
 Purpose:
 stabilize the final proof-side clearance and execution semantics that the top
@@ -259,7 +259,7 @@ layer will rely on.
 
 Delivered:
 
-- [ScopedGreenfield.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
+- [ScopedGreenfield.lean](research/fm/lean/CertifiedAtc/ScopedGreenfield.lean)
   now packages the exact scoped greenfield theorem surface above the current
   model / lifecycle / resolution / execution stack
 - the scoped greenfield authority mapping now exists as
@@ -333,7 +333,7 @@ Target theorem package:
 
 Delivered:
 
-- [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+- [ScopedIssuance.lean](research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
   now owns the final scoped issuing-layer theorem package above
   `ScopedExtraction`, `ScopedGreenfield`, and the resolved execution boundary
 - a theorem-bearing bridge now exists from the scoped greenfield instruction
@@ -371,7 +371,7 @@ Exit condition:
 Important constraint:
 
 - do not treat
-  [Interfaces.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/Interfaces.lean)
+  [Interfaces.lean](research/fm/lean/CertifiedAtc/Interfaces.lean)
   as the final home of this theorem unless doing so is genuinely cheaper than a
   greenfield-final module with the same theorem shape
 
@@ -396,9 +396,9 @@ Work:
 
 Delivered:
 
-- [ScopedSafety.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedSafety.lean)
+- [ScopedSafety.lean](research/fm/lean/CertifiedAtc/ScopedSafety.lean)
   now closes the reachable-state package above
-  [ScopedIssuance.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
+  [ScopedIssuance.lean](research/fm/lean/CertifiedAtc/ScopedIssuance.lean)
 - a scoped world/state well-formedness boundary now exists via:
   `ScopedSafetyWorldWellFormed` and `ScopedOrchestrationInv`
 - approval collection now has theorem-bearing component-preservation lemmas for
@@ -446,7 +446,7 @@ Work:
 
 Delivered:
 
-- [ScopedModes.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/ScopedModes.lean)
+- [ScopedModes.lean](research/fm/lean/CertifiedAtc/ScopedModes.lean)
   now provides the full-brief mode layer above the scoped nominal issuer
 - `AssumptionAssessment`, `selectedMode`, and `selectedMode_strongest` make
   regime assessment and strongest-justified fallback explicit
@@ -491,6 +491,6 @@ The scoped programme is now complete.
 The next work, if desired, is optional scope widening:
 
 - the default widening track is now the route-bearing surface defined in
-  [route_bearing_scope.md](/home/andrew/dev/projects/twr2/research/fm/route_bearing_scope.md)
+  [route_bearing_scope.md](research/fm/route_bearing_scope.md)
 - richer mode-monitor or fallback semantics are secondary widening work, not
   the default next move

@@ -1,13 +1,13 @@
 {
   "promotionId": "accepted-atoms:egast:readback_required_items",
   "sourceUnitId": "egast_vfr_readback::best_practice_note::Messages containing the following must be read back:",
-  "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/egast-vfr-extracted.txt:539-545",
+  "sourceRef": "research/txt/egast-vfr-extracted.txt:539-545",
   "documentId": "egast-vfr-extracted",
   "sectionPath": [
     "Messages containing the following must be read back:"
   ],
   "promotionBasis": {
-    "judgementCsv": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv",
+    "judgementCsv": "research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv",
     "selectedModel": "qwen2.5-coder:32b",
     "sourceTrial": "/tmp/requirements-benchmark-run-2026-04-23/results/qwen2.5-coder__32b/egast_readback_required_items.json",
     "promotionMode": "accepted"

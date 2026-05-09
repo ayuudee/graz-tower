@@ -190,7 +190,7 @@ These are out of scope for this commit:
   re-running the driver. The per-section quality (RR-1..RR-8 pattern,
   three deterministic post-steps) carries through unchanged.
 - **Operational correctness**: source claims grounded in
-  [icao4444-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt)
+  [icao4444-extracted.txt](research/txt/icao4444-extracted.txt)
   via the existing per-section pipeline.
 
 ## Roadmap

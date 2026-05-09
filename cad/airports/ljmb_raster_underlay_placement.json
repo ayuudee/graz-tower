@@ -1,6 +1,6 @@
 {
-  "imagePath": "/home/andrew/dev/projects/twr2/cad/airports/ljmb_raster_underlay.png",
-  "sourceGeojson": "/home/andrew/dev/projects/twr2/cad/airports/ljmb_osm_underlay.geojson",
+  "imagePath": "cad/airports/ljmb_raster_underlay.png",
+  "sourceGeojson": "cad/airports/ljmb_osm_underlay.geojson",
   "boundsMeters": {
     "minX": -4722.663938528079,
     "minY": -5071.565492986302,

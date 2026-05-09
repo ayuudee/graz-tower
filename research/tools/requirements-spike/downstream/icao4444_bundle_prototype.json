@@ -14,7 +14,7 @@
         "READBACK OF CLEARANCES",
         "4.5.7.5.1"
       ],
-      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+      "sourceRef": "research/txt/icao4444-extracted.txt:3405-3406",
       "bundleKind": "clause_with_list_and_note",
       "recommendation": "bundle_required",
       "members": [
@@ -26,7 +26,7 @@
             "READBACK OF CLEARANCES",
             "4.5.7.5.1"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3405-3406",
           "text": "The flight crew shall read back to the air traffic controller safety-related parts of ATC clearances and\ninstructions which are transmitted by voice. The following items shall always be read back:"
         },
         {
@@ -38,7 +38,7 @@
             "4.5.7.5.1",
             "a)"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3407-3408",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3407-3408",
           "text": "ATC route clearances;"
         },
         {
@@ -50,7 +50,7 @@
             "4.5.7.5.1",
             "b)"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3411-3412",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3411-3412",
           "text": "clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any\nrunway; and"
         },
         {
@@ -62,7 +62,7 @@
             "4.5.7.5.1",
             "c)"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3413-3416",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3413-3416",
           "text": "runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and, whether\nissued by the controller or contained in automatic terminal information service (ATIS) broadcasts, transition\nlevels."
         },
         {
@@ -74,7 +74,7 @@
             "4.5.7.5.1",
             "note"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3419-3421",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3419-3421",
           "text": "Note.\u2014 If the level of an aircraft is reported in relation to standard pressure 1 013.2 hPa, the words \u201cFLIGHT\nLEVEL\u201d precede the level figures. If the level of the aircraft is reported in relation to QNH/QFE, the figures are followed\nby the word \u201cMETRES\u201d or \u201cFEET\u201d, as appropriate."
         }
       ]
@@ -86,7 +86,7 @@
       "sectionPath": [
         "4.3.2.1.2"
       ],
-      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+      "sourceRef": "research/txt/icao4444-extracted.txt:3104-3106",
       "bundleKind": "clause_with_support_note",
       "recommendation": "standalone_with_support",
       "members": [
@@ -97,7 +97,7 @@
           "sectionPath": [
             "4.3.2.1.2"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3104-3106",
           "text": "Transfer of communications to the aerodrome controller should be effected at such a point, level or time\nthat clearance to land or alternative instructions, as well as information on essential local traffic, can be issued in a timely\nmanner."
         },
         {
@@ -108,7 +108,7 @@
             "4.3.2.1.2",
             "note"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3107-3109",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3107-3109",
           "text": "Note.\u2014 Even though there is an approach control unit, control of certain flights may be transferred directly from an\nACC to an aerodrome control tower and vice versa, by prior arrangement between the units concerned for the relevant\npart of approach control service to be provided by the ACC or the aerodrome control tower, as applicable."
         }
       ]
@@ -120,7 +120,7 @@
       "sectionPath": [
         "4.3.2.1.3"
       ],
-      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3111",
+      "sourceRef": "research/txt/icao4444-extracted.txt:3110-3111",
       "bundleKind": "clause_with_list_and_note",
       "recommendation": "bundle_required",
       "members": [
@@ -131,7 +131,7 @@
           "sectionPath": [
             "4.3.2.1.3"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3110-3111",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3110-3111",
           "text": "Departing aircraft. Control of a departing aircraft shall be transferred from the unit providing aerodrome\ncontrol service to the unit providing approach control service:"
         },
         {
@@ -142,7 +142,7 @@
             "4.3.2.1.3",
             "a)"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3112-3117",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3112-3117",
           "text": "when visual meteorological conditions prevail in the vicinity of the aerodrome:\n1) prior to the time the aircraft leaves the vicinity of the aerodrome,\n2) prior to the aircraft entering instrument meteorological conditions, or\n3) when the aircraft is at a prescribed point or level,\nas specified in letters of agreement or ATS unit instructions;"
         },
         {
@@ -153,7 +153,7 @@
             "4.3.2.1.3",
             "b)"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3126-3129",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3126-3129",
           "text": "when instrument meteorological conditions prevail at the aerodrome:\n1) immediately after the aircraft is airborne, or\n2) when the aircraft is at a prescribed point or level,\nas specified in letters of agreement or local instructions."
         },
         {
@@ -164,7 +164,7 @@
             "4.3.2.1.3",
             "note"
           ],
-          "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3130-3130",
+          "sourceRef": "research/txt/icao4444-extracted.txt:3130-3130",
           "text": "Note.\u2014 See Note following 4.3.2.1.2."
         }
       ]

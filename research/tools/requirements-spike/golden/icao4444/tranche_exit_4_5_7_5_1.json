@@ -27,7 +27,7 @@
       "sourceUnitId": "icao4444::numeric_clause::01432::unit",
       "unitKind": "normative_clause",
       "parentSourceUnitId": "icao4444::section_heading::01431::unit",
-      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+      "sourceRef": "research/txt/icao4444-extracted.txt:3405-3406",
       "sectionPath": [
         "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
         "READBACK OF CLEARANCES",
@@ -51,7 +51,7 @@
         "sourceUnitId": "icao4444::numeric_clause::01432::unit",
         "unitKind": "normative_clause",
         "parentSourceUnitId": "icao4444::section_heading::01431::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3405-3406",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3405-3406",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "READBACK OF CLEARANCES",
@@ -63,7 +63,7 @@
         "sourceUnitId": "icao4444::list_item::01433::unit",
         "unitKind": "list_item",
         "parentSourceUnitId": "icao4444::numeric_clause::01432::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3407-3409",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3407-3409",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "READBACK OF CLEARANCES",
@@ -75,7 +75,7 @@
         "sourceUnitId": "icao4444::list_item::01434::unit",
         "unitKind": "list_item",
         "parentSourceUnitId": "icao4444::numeric_clause::01432::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3411-3412",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3411-3412",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "READBACK OF CLEARANCES",
@@ -87,7 +87,7 @@
         "sourceUnitId": "icao4444::list_item::01435::unit",
         "unitKind": "list_item",
         "parentSourceUnitId": "icao4444::numeric_clause::01432::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3413-3417",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3413-3417",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "READBACK OF CLEARANCES",

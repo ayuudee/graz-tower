@@ -6,7 +6,7 @@ This file is the authoritative branch-by-branch refinement map for the delivered
 FM surface.
 
 Use it together with
-[parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md):
+[parity_inventory.md](research/fm/parity_inventory.md):
 
 - `parity_inventory.md` says **what is closed**
 - this file says **where that closure is enforced**
@@ -18,7 +18,7 @@ all of the following are true:
 - a tracked Kotlin test fails loudly on drift
 - the Lean theorem boundary is explicit
 - the central Lean registry in
-  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
   points at the load-bearing theorem surface
 - the status/docs are updated
 
@@ -44,10 +44,10 @@ all of the following are true:
 
 Before widening a delivered branch further:
 
-1. update [parity_inventory.md](/home/andrew/dev/projects/twr2/research/fm/parity_inventory.md) if the branch status changes
+1. update [parity_inventory.md](research/fm/parity_inventory.md) if the branch status changes
 2. update this file if the enforcing Kotlin test file or Lean theorem boundary changes
 3. update
-   [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+   [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
    if the top-level theorem aliases change
 4. rerun both verification stacks:
    - `./gradlew build`

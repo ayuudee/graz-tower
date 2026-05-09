@@ -2,9 +2,9 @@
 
 This note records how `research/fm` should now relate to the product-authoritative
 design docs in
-[path-network-design.md](/home/andrew/dev/projects/twr2/docs/design/path-network-design.md)
+[path-network-design.md](docs/design/path-network-design.md)
 and
-[clearance-model-design.md](/home/andrew/dev/projects/twr2/docs/design/clearance-model-design.md).
+[clearance-model-design.md](docs/design/clearance-model-design.md).
 
 ## Authority
 
@@ -12,10 +12,10 @@ For future-project architecture decisions, treat those two `docs/design/` docs
 as authoritative.
 
 Treat the current Kotlin boundary types in this repo
-([Instruction.kt](/home/andrew/dev/projects/twr2/protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt),
-[WorldModel.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt),
+([Instruction.kt](protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt),
+[WorldModel.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt),
 and
-[StructuredClearance.kt](/home/andrew/dev/projects/twr2/core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt))
+[StructuredClearance.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/clearance/StructuredClearance.kt))
 as a staging mirror of those ideas, not as the frozen API of the next
 codebase.
 
@@ -26,11 +26,11 @@ codebase.
 - the explicit statement of which claims are proved and which are still open
 
 The current legacy envelope subset is recorded in
-[clearance_envelope_contract.md](/home/andrew/dev/projects/twr2/research/fm/clearance_envelope_contract.md).
+[clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md).
 The structural extraction boundary is now recorded in
-[aviation_world_extraction_contract.md](/home/andrew/dev/projects/twr2/research/fm/aviation_world_extraction_contract.md).
+[aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md).
 The narrowed instruction-level authority subset is now recorded in
-[instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md).
+[instruction_authority_contract.md](research/fm/instruction_authority_contract.md).
 
 ## What Carries Forward
 

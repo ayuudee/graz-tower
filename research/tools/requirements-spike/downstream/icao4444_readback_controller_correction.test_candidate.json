@@ -34,7 +34,7 @@
   "sourceTraceability": {
     "document": "ICAO Doc 4444",
     "section": "4.5.7.5.2",
-    "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3424-3425"
+    "sourceRef": "research/txt/icao4444-extracted.txt:3424-3425"
   },
   "notes": [
     "This is a downstream proof artifact, not yet an executable test.",

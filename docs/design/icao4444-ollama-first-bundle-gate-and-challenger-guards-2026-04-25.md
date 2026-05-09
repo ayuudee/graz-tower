@@ -159,5 +159,5 @@ which was the root cause of the v4 VMC/IMC inconsistency.
   comfortably inside the latency budget already established for the
   Ollama-first prototype.
 - **Operational correctness**: source claims remain grounded in
-  [icao4444-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt)
+  [icao4444-extracted.txt](research/txt/icao4444-extracted.txt)
   readback and transfer-of-control clauses.

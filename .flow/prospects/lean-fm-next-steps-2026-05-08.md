@@ -77,8 +77,8 @@ plan_state:
 
 doc_drift:
   research/fm/*.md last_updated: April 13-21 (3+ weeks behind today)
-  28 files in research/fm/ + docs/ reference legacy absolute path /home/andrew/dev/projects/twr2/
-    (repo lives at /Users/andrew/dev/projects/graz-tower)
+  ~78 files (research/fm, docs/, wiki/, cad/airports, requirements-spike) reference legacy absolute path /home/andrew/dev/projects/twr2/
+    (repo lives at /Users/andrew/dev/projects/graz-tower; original prospect-time count was 28 — corrected post-scout)
 
 ## Survivors
 
@@ -93,12 +93,12 @@ doc_drift:
 **Persona:** senior-maintainer
 **Next step:** /flow-next:interview
 
-#### 2. Rewrite 28 absolute /home/andrew/dev/projects/twr2 path refs in research/fm + docs
-**Summary:** Repo lives at graz-tower; FM docs still point at the old twr2 absolute path. Cross-machine, cross-repo-name links are dead.
-**Leverage:** Small-diff lever because the path string is unique and grep-replaceable across 28 files; impact lands on every new agent or human reader of research/fm and docs/design.
+#### 2. Rewrite legacy absolute path refs across ~78 docs/JSON + 3 code files (originally counted as 28)
+**Summary:** Repo lives at graz-tower; FM docs, design docs, wiki entries, CAD authoring boards, and requirements-spike registry/golden/downstream JSONs still point at the old twr2 absolute path. Cross-machine, cross-repo-name links are dead. Original prospect estimate of 28 files turned out to be ~78 after a fuller repo scout.
+**Leverage:** Small-diff lever because the path string is unique and grep-replaceable across ~78 files (75 doc/JSON via sed strip-the-prefix; 3 code files needing cwd-independent rewrites — Python `Path(__file__).parent`, bash `git rev-parse --show-toplevel`); impact lands on every new agent or human reader of research/fm, docs/design, wiki/, cad/airports/, and the requirements-spike outputs.
 **Size:** S
-**Affected areas:** research/fm/*.md, docs/design/*.md
-**Risk notes:** Mechanical but boring; risk is replacing the wrong substring (e.g. inside code blocks).
+**Affected areas:** research/fm/*.md, docs/design/*.md, wiki/data-sources/*.md, wiki/design-decisions/*.md, cad/airports/*.md + *_underlay_placement.json, research/tools/requirements-spike/{golden,downstream,registry}/**/*.json + RUNBOOK.md + 2 *.py files
+**Risk notes:** Mechanical but boring; risk is replacing the wrong substring (e.g. inside code blocks). Historical audit JSONs under requirements-spike/quality/curation/ and quality/adequacy/.../sample_manifest.json are excluded — rewriting them would alter an audit trail.
 **Persona:** first-time-user
 **Next step:** /flow-next:interview
 

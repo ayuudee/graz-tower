@@ -127,4 +127,4 @@ challenger surface. The likely fixes remain the same:
   (`authoritative_requirement`, `best_practice`, with `operational_guidance`
   not yet probed but a much smaller delta from EGAST than from ICAO).
 - **Operational correctness**: source claims grounded in
-  [egast-vfr-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/egast-vfr-extracted.txt).
+  [egast-vfr-extracted.txt](research/txt/egast-vfr-extracted.txt).

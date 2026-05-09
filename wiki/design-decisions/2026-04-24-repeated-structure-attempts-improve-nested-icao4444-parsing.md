@@ -14,7 +14,7 @@ final adjudication results.
 
 ## Evidence
 
-- [icao4444-ollama-first-structure-reconciliation-pass-2026-04-24.md](/home/andrew/dev/projects/twr2/docs/design/icao4444-ollama-first-structure-reconciliation-pass-2026-04-24.md)
+- [icao4444-ollama-first-structure-reconciliation-pass-2026-04-24.md](docs/design/icao4444-ollama-first-structure-reconciliation-pass-2026-04-24.md)
 - [transfer summary](/tmp/icao4444-ollama-first-prototype-transfer-structure-consistency-v4/summary.md)
 - [transfer structure reconciliation](/tmp/icao4444-ollama-first-prototype-transfer-structure-consistency-v4/structure_reconciliation_response.json)
 

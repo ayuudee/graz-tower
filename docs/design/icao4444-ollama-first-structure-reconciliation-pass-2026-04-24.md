@@ -97,4 +97,4 @@ production-quality promotion.
   and prompt size, which is acceptable for this background research pipeline.
 - Operational correctness: The source claims are grounded in `ICAO Doc 4444`
   readback and transfer-of-control clauses from
-  [icao4444-extracted.txt](/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt).
+  [icao4444-extracted.txt](research/txt/icao4444-extracted.txt).

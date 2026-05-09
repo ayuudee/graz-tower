@@ -24,7 +24,7 @@ Validate the batch without contacting Ollama:
 
 ```bash
 nix-shell -p python3 --run "python3 research/tools/requirements-spike/ingest_section_batch.py \
-  --batch-manifest /home/andrew/dev/projects/twr2/research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json \
+  --batch-manifest research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json \
   --dry-run"
 ```
 
@@ -32,7 +32,7 @@ Run the exact manifest-only batch with:
 
 ```bash
 nix-shell -p python3 --run "python3 research/tools/requirements-spike/ingest_section_batch.py \
-  --batch-manifest /home/andrew/dev/projects/twr2/research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json \
+  --batch-manifest research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-01/ready_to_ingest_batch.json \
   --output-root /tmp/requirements-source-units-$(date +%Y-%m-%d)"
 ```
 

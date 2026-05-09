@@ -26,7 +26,7 @@
       "sourceUnitId": "icao4444::numeric_clause::01324::unit",
       "unitKind": "normative_clause",
       "parentSourceUnitId": "icao4444::section_heading::01321::unit",
-      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3090-3091",
+      "sourceRef": "research/txt/icao4444-extracted.txt:3090-3091",
       "sectionPath": [
         "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
         "4.3.2.1.1"
@@ -49,7 +49,7 @@
         "sourceUnitId": "icao4444::numeric_clause::01324::unit",
         "unitKind": "normative_clause",
         "parentSourceUnitId": "icao4444::section_heading::01321::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3090-3091",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3090-3091",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "4.3.2.1.1"
@@ -60,7 +60,7 @@
         "sourceUnitId": "icao4444::list_item::01325::unit",
         "unitKind": "list_item",
         "parentSourceUnitId": "icao4444::numeric_clause::01324::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3092-3094",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3092-3094",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "a)"
@@ -71,7 +71,7 @@
         "sourceUnitId": "icao4444::list_item::01328::unit",
         "unitKind": "list_item",
         "parentSourceUnitId": "icao4444::numeric_clause::01324::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3098-3098",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3098-3098",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "b)"
@@ -82,7 +82,7 @@
         "sourceUnitId": "icao4444::list_item::01329::unit",
         "unitKind": "list_item",
         "parentSourceUnitId": "icao4444::numeric_clause::01324::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3099-3103",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3099-3103",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "c)"

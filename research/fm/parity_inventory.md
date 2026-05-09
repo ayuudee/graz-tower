@@ -11,7 +11,7 @@ FM surface. It is the authoritative inventory for:
 - where drift must be checked before widening further
 
 Use it together with
-[refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md):
+[refinement_inventory.md](research/fm/refinement_inventory.md):
 
 - this file says **what status each delivered branch has**
 - `refinement_inventory.md` says **where that status is enforced**
@@ -79,7 +79,7 @@ changes:
    domain, timing, conditional capability, completion category, or
    supersession behavior.
 2. Authority mapping:
-   `AuthorityModel.kt`, [instruction_authority_contract.md](/home/andrew/dev/projects/twr2/research/fm/instruction_authority_contract.md), or the corresponding Lean authority package.
+   `AuthorityModel.kt`, [instruction_authority_contract.md](research/fm/instruction_authority_contract.md), or the corresponding Lean authority package.
 3. Runtime lifecycle:
    resolution, completion, or active-set consequences in `core`.
 4. Proof boundary:
@@ -103,9 +103,9 @@ low-risk widening branch of exactly the same shape.
 The next deliberate choices are:
 
 - keep
-  [refinement_inventory.md](/home/andrew/dev/projects/twr2/research/fm/refinement_inventory.md)
+  [refinement_inventory.md](research/fm/refinement_inventory.md)
   and
-  [GreenfieldDeliveredRefinement.lean](/home/andrew/dev/projects/twr2/research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
   current whenever a delivered branch changes
 - richer communications / surveillance semantics beyond the current immediate radio/transponder + published-handoff model, or
 - the next genuinely semantic research branch beyond the current models

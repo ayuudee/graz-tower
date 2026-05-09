@@ -1,6 +1,6 @@
 {
-  "imagePath": "/home/andrew/dev/projects/twr2/cad/airports/lowg_osm_underlay.png",
-  "sourceGeojson": "/home/andrew/dev/projects/twr2/cad/airports/lowg_osm_underlay.geojson",
+  "imagePath": "cad/airports/lowg_osm_underlay.png",
+  "sourceGeojson": "cad/airports/lowg_osm_underlay.geojson",
   "boundsMeters": {
     "minX": -4275.893413796826,
     "minY": -7950.160157328751,

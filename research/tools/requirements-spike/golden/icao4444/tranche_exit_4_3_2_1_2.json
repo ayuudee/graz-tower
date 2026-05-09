@@ -26,7 +26,7 @@
       "sourceUnitId": "icao4444::numeric_clause::01330::unit",
       "unitKind": "normative_clause",
       "parentSourceUnitId": "icao4444::section_heading::01321::unit",
-      "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+      "sourceRef": "research/txt/icao4444-extracted.txt:3104-3106",
       "sectionPath": [
         "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
         "4.3.2.1.2"
@@ -47,7 +47,7 @@
         "sourceUnitId": "icao4444::numeric_clause::01330::unit",
         "unitKind": "normative_clause",
         "parentSourceUnitId": "icao4444::section_heading::01321::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3104-3106",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3104-3106",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "4.3.2.1.2"
@@ -58,7 +58,7 @@
         "sourceUnitId": "icao4444::note_block::01331::unit",
         "unitKind": "background_explanation",
         "parentSourceUnitId": "icao4444::numeric_clause::01330::unit",
-        "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:3107-3109",
+        "sourceRef": "research/txt/icao4444-extracted.txt:3107-3109",
         "sectionPath": [
           "GENERAL PROVISIONS FOR AIR TRAFFIC SERVICES",
           "Note.\u2014"

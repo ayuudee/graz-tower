@@ -4,28 +4,28 @@ This file tracks the bootstrap and authoring state for LJMB.
 
 ## Current package
 
-- Manifest: [ljmb.manifest.json](/home/andrew/dev/projects/twr2/cad/airports/ljmb.manifest.json)
-- Baseline DXF target: [ljmb_xplane_baseline.dxf](/home/andrew/dev/projects/twr2/cad/airports/ljmb_xplane_baseline.dxf)
-- Airspace reference DXF: [ljmb_airspace_working.dxf](/home/andrew/dev/projects/twr2/cad/airports/ljmb_airspace_working.dxf)
-- Combined working DXF: [ljmb_working_combined.dxf](/home/andrew/dev/projects/twr2/cad/airports/ljmb_working_combined.dxf)
+- Manifest: [ljmb.manifest.json](cad/airports/ljmb.manifest.json)
+- Baseline DXF target: [ljmb_xplane_baseline.dxf](cad/airports/ljmb_xplane_baseline.dxf)
+- Airspace reference DXF: [ljmb_airspace_working.dxf](cad/airports/ljmb_airspace_working.dxf)
+- Combined working DXF: [ljmb_working_combined.dxf](cad/airports/ljmb_working_combined.dxf)
 - Raster underlay:
-  - [ljmb_raster_underlay.png](/home/andrew/dev/projects/twr2/cad/airports/ljmb_raster_underlay.png)
-  - [ljmb_raster_underlay_placement.json](/home/andrew/dev/projects/twr2/cad/airports/ljmb_raster_underlay_placement.json)
-- OSM cache: [ljmb_osm_underlay.geojson](/home/andrew/dev/projects/twr2/cad/airports/ljmb_osm_underlay.geojson)
-- OSM DXF reference: [ljmb_osm_underlay.dxf](/home/andrew/dev/projects/twr2/cad/airports/ljmb_osm_underlay.dxf)
+  - [ljmb_raster_underlay.png](cad/airports/ljmb_raster_underlay.png)
+  - [ljmb_raster_underlay_placement.json](cad/airports/ljmb_raster_underlay_placement.json)
+- OSM cache: [ljmb_osm_underlay.geojson](cad/airports/ljmb_osm_underlay.geojson)
+- OSM DXF reference: [ljmb_osm_underlay.dxf](cad/airports/ljmb_osm_underlay.dxf)
 
 ## Local source inventory
 
-- `apt.dat` sample: [LJMB.dat](/home/andrew/dev/projects/twr2/migration/src/commonTest/resources/airports/LJMB.dat)
-- Jepp trip kit: [LJMB.pdf](/home/andrew/dev/projects/twr2/data/charts/LJMB/LJMB.pdf)
-- OFMX bundle: [ofmx_lj.zip](/home/andrew/dev/projects/twr2/data/charts/LJMB/ofmx_lj.zip)
-- Stable extracted OFMX path: [ofmx_lj.ofmx](/home/andrew/dev/projects/twr2/data/ofm/slovenia/ofmx_extracted/ofmx_lj/isolated/ofmx_lj.ofmx)
-- ARINC bundle: [arinc_lj.zip](/home/andrew/dev/projects/twr2/data/charts/LJMB/arinc_lj.zip)
-- OpenAir bundle: [openair_lj.zip](/home/andrew/dev/projects/twr2/data/charts/LJMB/openair_lj.zip)
-- CUP bundle: [cup_slovenia.zip](/home/andrew/dev/projects/twr2/data/charts/LJMB/cup_slovenia.zip)
+- `apt.dat` sample: [LJMB.dat](migration/src/commonTest/resources/airports/LJMB.dat)
+- Jepp trip kit: [LJMB.pdf](data/charts/LJMB/LJMB.pdf)
+- OFMX bundle: [ofmx_lj.zip](data/charts/LJMB/ofmx_lj.zip)
+- Stable extracted OFMX path: [ofmx_lj.ofmx](data/ofm/slovenia/ofmx_extracted/ofmx_lj/isolated/ofmx_lj.ofmx)
+- ARINC bundle: [arinc_lj.zip](data/charts/LJMB/arinc_lj.zip)
+- OpenAir bundle: [openair_lj.zip](data/charts/LJMB/openair_lj.zip)
+- CUP bundle: [cup_slovenia.zip](data/charts/LJMB/cup_slovenia.zip)
 - Raster/tile underlays:
-  - [slippyTiles_clipped.zip](/home/andrew/dev/projects/twr2/data/charts/LJMB/slippyTiles_clipped.zip)
-  - [ljla_256.mbtiles](/home/andrew/dev/projects/twr2/data/charts/LJMB/ljla_256.mbtiles)
+  - [slippyTiles_clipped.zip](data/charts/LJMB/slippyTiles_clipped.zip)
+  - [ljla_256.mbtiles](data/charts/LJMB/ljla_256.mbtiles)
 
 ## What we know already
 
@@ -53,8 +53,8 @@ This file tracks the bootstrap and authoring state for LJMB.
 - OFMX Slovenia data now exists in the stable repo data layout used by the migration tools.
 - The currently selected isolated `ofmx_lj.ofmx` source still resolves VFR reporting points and airport metadata, but the present parser path yields `0` LJMB airspace records.
 - OpenAir is now the first structured airspace fallback for LJMB:
-  - [openair_lj.zip](/home/andrew/dev/projects/twr2/data/charts/LJMB/openair_lj.zip) is now parsed directly for nearby CTR/TMA/RMZ geometry.
-  - [ljmb_airspace_working.dxf](/home/andrew/dev/projects/twr2/cad/airports/ljmb_airspace_working.dxf) now renders those OpenAir-backed boundaries instead of only runway/tower/VFR-point reference.
+  - [openair_lj.zip](data/charts/LJMB/openair_lj.zip) is now parsed directly for nearby CTR/TMA/RMZ geometry.
+  - [ljmb_airspace_working.dxf](cad/airports/ljmb_airspace_working.dxf) now renders those OpenAir-backed boundaries instead of only runway/tower/VFR-point reference.
   - The current structured package now carries `9` candidate airspace volumes:
     - `CTR MARIBOR`
     - `TMA MARIBOR 1`
@@ -88,8 +88,8 @@ This file tracks the bootstrap and authoring state for LJMB.
     - one on the small-runway entry line
   - The original `apt.dat` taxi-route naming appears usable as reference, but it is segment-level and mixed rather than a clean one-to-one taxiway labelling. In particular, the authored graph aligns against a mix of original `A`, `C/A`, `C/B`, and `D/B` route segments, so the final taxiway naming should be carried explicitly in authoring metadata rather than inferred only from nearest-edge matching.
   - A first structured package and entity bundle now build from the authored ground graph:
-    - [structured-airport-package.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/structured-airport-package.json)
-    - [entity-bundle.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/entity-bundle.json)
+    - [structured-airport-package.json](cad/airports/rendered/ljmb/structured-airport-package.json)
+    - [entity-bundle.json](cad/airports/rendered/ljmb/entity-bundle.json)
   - The current direct-fit LJMB package now includes:
     - `39` authored/support taxiway path entities
     - `7` authored stands
@@ -99,8 +99,8 @@ This file tracks the bootstrap and authoring state for LJMB.
   - Stand names are still provisional because they are inferred from the nearest `apt.dat` parking references. They are good enough for the first package, but they are not yet authoritative authored stand names.
 - `New_Mano` is currently projected as apron-style perimeter geometry because the current core model has no dedicated manoeuvring-area primitive.
 - A first current-core candidate world now also builds:
-  - [world-candidate.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/world-candidate.json)
-  - [world-validation-report.json](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/world-validation-report.json)
+  - [world-candidate.json](cad/airports/rendered/ljmb/world-candidate.json)
+  - [world-validation-report.json](cad/airports/rendered/ljmb/world-validation-report.json)
   - Current LJMB subset:
     - `4` runways
     - `39` taxiways
@@ -109,13 +109,13 @@ This file tracks the bootstrap and authoring state for LJMB.
     - `7` runtime-usable airspace volumes
   - `RMZ PTUJ` and `RMZ SLOVENSKE KONJICE` stay boundary-only in the richer package and are not projected into the current-core subset.
   - LJMB now has a JVM current-core validation harness alongside LOWG:
-    - [LjmbWorldCandidateValidationTest.kt](/home/andrew/dev/projects/twr2/migration/src/jvmTest/kotlin/xyz/easiersaid/twr/migration/world/LjmbWorldCandidateValidationTest.kt)
+    - [LjmbWorldCandidateValidationTest.kt](migration/src/jvmTest/kotlin/xyz/easiersaid/twr/migration/world/LjmbWorldCandidateValidationTest.kt)
     - the current candidate validates cleanly with `issueCount = 0` and `structuralIssueCount = 0`
 - The authoring map now renders for LJMB as well:
-  - [index.html](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/index.html)
-  - [ljmb_ground_overlay.svg](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/ljmb_ground_overlay.svg)
-  - [ljmb_ground_divergence_zoom.svg](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/ljmb_ground_divergence_zoom.svg)
-  - [ljmb_vfr_circuit_overlay.svg](/home/andrew/dev/projects/twr2/cad/airports/rendered/ljmb/ljmb_vfr_circuit_overlay.svg)
+  - [index.html](cad/airports/rendered/ljmb/index.html)
+  - [ljmb_ground_overlay.svg](cad/airports/rendered/ljmb/ljmb_ground_overlay.svg)
+  - [ljmb_ground_divergence_zoom.svg](cad/airports/rendered/ljmb/ljmb_ground_divergence_zoom.svg)
+  - [ljmb_vfr_circuit_overlay.svg](cad/airports/rendered/ljmb/ljmb_vfr_circuit_overlay.svg)
   - The main LJMB HTML render is now treated as a candidate/publish-stage view:
     - it prefers `workingDxf` authored layers (`NEW_Taxi`, `NEW_Parking`, `NEW_Holding`, `New_Mano`) when no separate `drawings` are present
     - it suppresses source/reference overlays like X-Plane parking-access helpers and apt taxi-reference layers from the main page

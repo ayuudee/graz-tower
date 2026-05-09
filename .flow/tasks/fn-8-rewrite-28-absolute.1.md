@@ -24,7 +24,7 @@ Strip the legacy `/home/andrew/dev/projects/twr2/` prefix from every markdown li
 ## Approach
 
 - Build the file list once with the grep pattern from the epic's `## Quick commands`.
-- Use `sed -i '' 's|/home/andrew/dev/projects/twr2/||g' <files>` (mac BSD sed). The trailing `/` is intentional — strip the path AND the separator so the remaining string is a clean repo-relative path.
+- Use `sed -i '' 's|||g' <files>` (mac BSD sed). The trailing `/` is intentional — strip the path AND the separator so the remaining string is a clean repo-relative path.
 - After the sweep:
   - Re-run the post-sweep grep — must return empty (R1).
   - Spot-check 5 markdown links across the highest-hit files (README.md, lean/README.md, PROJECT_STATUS.md) — verify they render as valid relative links (R3).
@@ -35,9 +35,9 @@ Strip the legacy `/home/andrew/dev/projects/twr2/` prefix from every markdown li
 ## Investigation targets
 
 **Required** (read before starting):
-- `research/fm/README.md` — 158 occurrences; pattern is overwhelmingly `[text](/home/andrew/dev/projects/twr2/<rel>)` markdown inline links. This is the proof-of-concept file.
+- `research/fm/README.md` — 158 occurrences; pattern is overwhelmingly `[text](<rel>)` markdown inline links. This is the proof-of-concept file.
 - `research/fm/lean/README.md:18` — sample of an inline link form to confirm strip cleanly produces `[text](research/fm/lean/CertifiedAtc.lean)`.
-- `research/tools/requirements-spike/downstream/icao4444_bundle_prototype.json:76` — JSON `"sourceRef": "/home/andrew/dev/projects/twr2/research/txt/icao4444-extracted.txt:NNNN-NNNN"` shape.
+- `research/tools/requirements-spike/downstream/icao4444_bundle_prototype.json:76` — JSON `"sourceRef": "research/txt/icao4444-extracted.txt:NNNN-NNNN"` shape.
 - `cad/airports/lowg-authoring.md:9` — confirms `cad/airports/` files use the same markdown link form.
 - `wiki/data-sources/ljmb.md:5` — confirms `wiki/` uses the same shape.
 

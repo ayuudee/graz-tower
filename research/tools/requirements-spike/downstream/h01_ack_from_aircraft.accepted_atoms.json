@@ -1,13 +1,13 @@
 {
   "promotionId": "accepted-atoms:h01:ack_from_aircraft",
   "sourceUnitId": "h01_readback::lettered::a",
-  "sourceRef": "/home/andrew/dev/projects/twr2/research/txt/h01-extracted.txt:4206-4208",
+  "sourceRef": "research/txt/h01-extracted.txt:4206-4208",
   "documentId": "h01-extracted",
   "sectionPath": [
     "a)"
   ],
   "promotionBasis": {
-    "judgementCsv": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv",
+    "judgementCsv": "research/tools/requirements-spike/benchmark_judgements_2026-04-23.csv",
     "selectedModel": "qwen2.5-coder:32b",
     "sourceTrial": "/tmp/requirements-benchmark-run-2026-04-23/results/qwen2.5-coder__32b/h01_ack_from_aircraft.json",
     "promotionMode": "accepted"
