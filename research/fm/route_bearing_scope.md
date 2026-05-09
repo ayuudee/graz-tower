@@ -1,21 +1,26 @@
 # Route-Bearing Widening Scope
 
-Last updated: April 18, 2026
+Last updated: May 9, 2026
 
 This document defines the next widening track after the scoped
 `Safety-complete (N₀)` and `Full-brief complete` closures.
 
 Runtime note:
 
-The repo runtime now carries a wider LOWG-driven airport slice than the current
-route-bearing proof boundary: optional `VfrRoute.airspaceProfile`
-(`InVolume`, `InClass`, `Segmented`), `AirspaceVolume.memberPoints` plus
-optional boundaries, and runtime-owned operational sectors plus published VFR
-procedures. The current proof-visible route-bearing boundary still extracts VFR
-routes as waypoint sequences only and does not consume the richer
-route-airspace, boundary, sector, or published-procedure data. Those runtime
-additions therefore remain outside this current widening track unless a later
-FM branch chooses to make them proof-visible.
+The fn-9 widening (May 9, 2026) has lifted optional `VfrRoute.airspaceProfile`
+(`InVolume`, `InClass`, `Segmented`) into the proof-visible route-bearing
+extraction: the profile rides on both `ScopedVfrRouteSource` and
+`CompileVfrRouteView` via `ScopedVfrRouteSource.toCompileView`, with new
+well-formedness conjuncts on `RouteBearingExtractionWellFormed` mirroring the
+runtime invariants from
+[WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt).
+The richer runtime facts that still sit outside the proof-visible boundary
+are `AirspaceVolume.memberPoints` plus optional boundaries, runtime-owned
+operational sectors, and published VFR procedures. Predicate strengthening
+to consume the new profile data inside `ClearedToEnterControlZone`,
+`SpecialVfrClearance`, and `RemainOutsideControlledAirspace`, or to widen
+`worldBackedAirspaceRouteInteraction?` to be profile-aware, is a successor
+widening branch — fn-9 is conservative-extension only.
 
 It does not replace
 [safety_complete_scope.md](research/fm/safety_complete_scope.md).

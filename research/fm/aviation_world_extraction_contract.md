@@ -16,21 +16,53 @@ The source inputs remain:
 
 Status note:
 
-As of April 18, 2026, the repo runtime now also carries richer airport-migration
-facts that sit outside the currently extracted proof surface:
+As of May 9, 2026, the runtime widening branch landed in fn-9 has lifted
+`VfrRoute.airspaceProfile` into the proof-visible surface. The remaining
+runtime-only facts still sit outside the currently extracted proof surface:
 
-- optional `VfrRoute.airspaceProfile` with `InVolume`, `InClass`, and
-  volume-authoritative `Segmented` cases
 - `AirspaceVolume.memberPoints` plus optional `boundary`
 - runtime operational sectors in `AerodromeAip`
 - runtime published VFR procedures in `AerodromeAip`
 
-The current proof-visible extraction remains narrower than that runtime shape:
-VFR routes still extract as waypoint sequences only, and proof-visible airspace
-still extracts as explicit membership points only. The richer route-airspace,
-boundary-geometry, sector, and published-procedure additions remain
-intentionally unextracted while the current FM branch stays closed on its
-narrower world model.
+What is now proof-visible (fn-9 lift):
+
+- the optional `VfrRoute.airspaceProfile` field — sealed sum
+  `InVolume` / `InClass` / `Segmented` — rides through the source struct
+  `ScopedVfrRouteSource` AND the compile view `CompileVfrRouteView` via
+  `ScopedVfrRouteSource.toCompileView`, so the eight-family
+  `findCompileVfrRoute_eq_some_of_mem` exposes the profile through
+  `extractRouteBearingCompileView` by definitional unfolding
+- `RouteBearingExtractionWellFormed` carries new conjuncts mirroring the
+  runtime invariants from
+  [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt):
+  `Segmented.segments` non-empty + per-segment `from != to`, every
+  referenced volume id resolves in `airspaceVolumes`, segmented endpoints
+  align with the route's waypoint pairs, and `InClass` is restricted to
+  uncontrolled classes (`e ∨ g`) — controlled classes A/B/C/D require an
+  authoritative volume reference per
+  `validateInClassRouteAirspace` and so fail well-formedness on the proof
+  side, mirroring the runtime
+  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` rejection
+- the convenience preservation lemma
+  `vfrRouteAirspaceProfileWellFormed_of_mem` packages the well-formedness
+  step for callers holding `route ∈ world.vfrRoutes` directly
+
+What still remains open after fn-9:
+
+- predicate strengthening — `ClearedToEnterControlZone`,
+  `SpecialVfrClearance`, and `RemainOutsideControlledAirspace` still keep
+  their `Ready` / `Issuable` predicates on point-membership; consuming the
+  new profile data inside those predicates is a successor branch
+- profile-aware `worldBackedAirspaceRouteInteraction?` — single-volume API
+  unchanged in fn-9; richer multi-volume route/airspace interaction is a
+  successor branch
+- polygonal `AirspaceVolume.boundary` proof-visibility — separate widening
+  branch that depends on this fn-9 extraction
+- airspace as explicit membership points only on the world-backed side —
+  the airspace family theorems still operate on the graph-backed point-set
+  + transition model
+- runtime operational sectors and published VFR procedures remain
+  package/runtime-only, not yet proof-visible
 
 ## Boundary Shape
 

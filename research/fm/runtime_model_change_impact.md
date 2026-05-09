@@ -72,7 +72,7 @@ to mirror the richer runtime semantics rather than ignore them:
 
 | Runtime change | Lean compile break? | Minimum FM action | Wider FM action if proof boundary widens |
 | --- | --- | --- | --- |
-| Widen `VfrRoute.airspaceProfile` to nullable `InVolume` / `InClass` / `Segmented` | No | Document that FM still extracts VFR routes as waypoint sequences only | Add proof-visible route-airspace payloads and theorems if route/airspace semantics become proof-visible |
+| Widen `VfrRoute.airspaceProfile` to nullable `InVolume` / `InClass` / `Segmented` | No | (fn-9, May 9 2026: now landed as Class-C extension — see §1 below) | Add proof-visible route-airspace payloads and theorems if route/airspace semantics become proof-visible — **landed in fn-9** as conservative source-extraction widening; predicate strengthening + multi-volume `worldBackedAirspaceRouteInteraction?` remain successor branches |
 | Make segmented route-airspace legs volume-authoritative | No | Document that FM still ignores route-airspace payloads entirely | Add proof-visible route-airspace payloads and related validation / resolution theorems |
 | Add airspace boundary geometry while keeping point membership | No | Document that FM remains closed on the point-membership subprojection | Widen airspace proof world and completion semantics |
 | Add runtime operational-sector entities only | No | Document that sectors remain outside the current proof boundary | Add ids, compile views, extraction, authority, and airspace/procedure theorems |
@@ -82,53 +82,59 @@ to mirror the richer runtime semantics rather than ignore them:
 
 ## 1. `VfrRoute` widening
 
-Under the current FM boundary, this turned out to be cheaper than first feared.
+This was originally classed as "no immediate Lean churn — document only".
+**Update (fn-9, May 9 2026):** the proof-visible widening did land as a
+Class-C extension (proof-visible theorem-surface change), but conservatively:
+the source-extraction now carries the profile, no Phase 1-4 closure is
+reopened.
 
-### Why
-
-The current proof-visible route extraction already ignores route-airspace
-payloads entirely:
+### What landed in fn-9
 
 - [CompileVfrRouteView](research/fm/lean/CertifiedAtc/ClearanceEnvelope.lean#L343)
-  carries only `id` and `waypoints`
+  now carries `airspaceProfile : Option ProofVisibleAirspaceProfile := none`
 - [ScopedVfrRouteSource](research/fm/lean/CertifiedAtc/RouteBearingExtraction.lean#L154)
-  likewise carries only `id` and `waypoints`
+  carries the same field; `ScopedVfrRouteSource.toCompileView` propagates it
+- the new sealed sum `ProofVisibleAirspaceProfile`
+  (`inVolume` / `inClass` / `segmented`) and segment carrier
+  `ProofVisibleAirspaceSegment` are defined upstream of `RouteBearingExtraction`
+  in `ClearanceEnvelope.lean`
+- `RouteBearingExtractionWellFormed` carries new conjuncts mirroring the
+  runtime invariants from
+  [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt):
+  segmented non-empty + per-segment `from != to`, every referenced volume
+  resolves, segmented endpoints align with route waypoint pairs, and
+  `inClass` is restricted to uncontrolled classes (`e ∨ g`)
+- one preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem`
+  packages the well-formedness step for callers holding `route ∈ world.vfrRoutes`
+- the existing eight-family `findCompileVfrRoute_eq_some_of_mem` exposes
+  the profile through `extractRouteBearingCompileView` by definitional
+  unfolding — no separate "ninth-family" source-side lookup was added
 
-So changing Kotlin from a route-wide `airspaceClass` to nullable
-`VfrRouteAirspaceProfile` does **not** mechanically break the current Lean
-compile/extraction boundary.
+### What still does not change
 
-### Immediate Lean files that must change
-
-None.
-
-Important non-impact:
-
+- the existing world-backed route-bearing theorems, world-backed airspace
+  theorems, route-bearing resolution bridge, and circuit/orbit/holding
+  proofs are untouched — fn-9 is conservative-extension only
+- `worldBackedAirspaceRouteInteraction?` keeps its single-volume API; a
+  future widening will bring multi-volume awareness if/when the predicates
+  consuming the new profile data are strengthened
 - [RouteBearingResolutionBridge.lean](research/fm/lean/CertifiedAtc/RouteBearingResolutionBridge.lean)
   still uses only waypoint points when converting a VFR route into route
-  points. It does not consume route-airspace payloads.
+  points; the bridge does not consume the new profile data yet
 
-### FM docs that should be updated
+### FM docs updated by fn-9
 
-- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
-  to make it explicit that the proof-visible extraction remains narrower than
-  the runtime route-airspace model
-- [README.md](research/fm/README.md)
-  so it does not imply proof-visible route-airspace parity
-- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
-  so the staging-mirror description matches the narrower proof boundary
-- [parity_inventory.md](research/fm/parity_inventory.md)
-  and [route_bearing_scope.md](research/fm/route_bearing_scope.md)
-  so the route-bearing boundary note remains honest
-
-### What does **not** need to change
-
-These do not currently depend on the route-wide class field:
-
-- world-backed route-bearing theorems
-- world-backed airspace theorems
-- route-bearing resolution bridge
-- circuit/orbit/holding proofs
+- [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md):
+  status note flipped — `airspaceProfile` is now extracted; what remains
+  open is named explicitly
+- [parity_inventory.md](research/fm/parity_inventory.md):
+  runtime note + Phase A row updated
+- [route_bearing_scope.md](research/fm/route_bearing_scope.md):
+  runtime note flipped — `airspaceProfile` is now in the widening track
+- [refinement_inventory.md](research/fm/refinement_inventory.md):
+  Phase A row notes the source-extraction extension and preservation lemma
+- [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md):
+  changelog entry added for fn-9
 
 ## 2. Airspace boundary geometry
 

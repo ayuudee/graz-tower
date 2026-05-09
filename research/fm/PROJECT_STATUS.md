@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: April 21, 2026
+Last updated: May 9, 2026
 
 This file is the current execution status for `research/fm`.
 
@@ -24,11 +24,12 @@ It now contains:
   `AirspaceVolume` now carries explicit `memberPoints` plus optional boundary
   geometry; and `AerodromeAip` now carries runtime operational sectors plus
   published VFR procedures
-- the FM boundary has been kept intentionally narrower than that runtime slice:
-  the current proof-visible extraction still treats VFR routes as waypoint
-  sequences only and airspace as explicit membership points only, so the richer
-  runtime route-airspace, airspace-boundary, operational-sector, and
-  published-VFR concepts remain outside the current proof-visible world
+- the FM boundary has now absorbed the first proof-visible widening slice
+  from that runtime mirror: as of fn-9 (May 9, 2026), `VfrRoute.airspaceProfile`
+  is proof-visible at the source extraction level, and the airspace-boundary,
+  operational-sector, and published-VFR concepts remain outside the current
+  proof-visible world (their predicate-strengthening successors are flagged
+  as the next widening branches)
 - a concrete proved runway kernel
 - a concrete proved surface kernel with one validation graph
 - a concrete proved air-path kernel with one validation graph
@@ -317,6 +318,39 @@ It now contains:
 - the delivered-branch refinement/drift-control branch is now closed too, so
   the next default FM work is no longer parity enforcement; the next branch is
   again a deliberate widening choice
+- as of fn-9 (May 9, 2026), the first proof-visible widening slice on top of
+  the now-frozen delivered surface has landed:
+  optional `VfrRoute.airspaceProfile`
+  (sealed sum: `inVolume` / `inClass` / `segmented`, mirroring the runtime
+  `VfrRouteAirspaceProfile` from
+  [ProcedureAndAirspaceModel.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/ProcedureAndAirspaceModel.kt))
+  now rides through both the source struct `ScopedVfrRouteSource` AND the
+  compile view `CompileVfrRouteView` via `ScopedVfrRouteSource.toCompileView`;
+  the new sealed sum and segment carrier `ProofVisibleAirspaceSegment` are
+  defined upstream in `ClearanceEnvelope.lean` so the existing eight-family
+  `findCompileVfrRoute_eq_some_of_mem` exposes the profile through
+  `extractRouteBearingCompileView` by definitional unfolding;
+  `RouteBearingExtractionWellFormed` now carries the new
+  `vfrRouteAirspaceProfileWellFormed` conjunct field encoding the runtime
+  invariants from
+  [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt)
+  (segmented non-empty + per-segment `from != to`, every referenced volume
+  resolves, segmented endpoints align with route waypoint pairs, `inClass`
+  restricted to uncontrolled classes — controlled classes A/B/C/D require an
+  authoritative volume reference per `validateInClassRouteAirspace` and so
+  fail well-formedness on the proof side, mirroring the runtime
+  `UNIFORM_VFR_ROUTE_CONTROLLED_CLASS_WITHOUT_VOLUME` rejection); one
+  preservation lemma `vfrRouteAirspaceProfileWellFormed_of_mem` packages the
+  well-formedness step for callers holding `route ∈ world.vfrRoutes`
+  directly; conservative-extension only — no Phase 1-4 closure reopened, no
+  existing theorem renamed, and Phase A `WORLD_BACKED_COMPLETE` is unchanged;
+  what still remains open: predicate strengthening
+  (`ClearedToEnterControlZone` / `SpecialVfrClearance` /
+  `RemainOutsideControlledAirspace` `Ready` / `Issuable` predicates still on
+  point-membership), profile-aware `worldBackedAirspaceRouteInteraction?`
+  (single-volume API unchanged), and polygonal `AirspaceVolume.boundary`
+  proof-visibility (separate widening branch that depends on this fn-9
+  extraction)
 
 It does not yet contain:
 

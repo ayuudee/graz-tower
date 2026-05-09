@@ -1,6 +1,6 @@
 # Kotlin / Lean Parity Inventory
 
-Last updated: April 18, 2026
+Last updated: May 9, 2026
 
 This file freezes the current Kotlin-to-Lean parity boundary for the delivered
 FM surface. It is the authoritative inventory for:
@@ -18,15 +18,23 @@ Use it together with
 
 Runtime note:
 
-- the repo runtime now carries richer route/airspace/AIP facts than the
-  currently delivered FM boundary: optional `VfrRoute.airspaceProfile`
-  (`InVolume`, `InClass`, `Segmented`), `AirspaceVolume.memberPoints` plus
-  optional boundary geometry, and runtime-owned operational sectors plus
-  published VFR procedures
-- the delivered FM boundary still extracts VFR routes as waypoint sequences and
-  airspace as explicit point membership only; the richer runtime
-  route-airspace, boundary-geometry, sector, and published-procedure data
-  remain intentionally outside the current proof-visible boundary
+- the fn-9 widening (May 9, 2026) has lifted optional `VfrRoute.airspaceProfile`
+  (`InVolume`, `InClass`, `Segmented`) into the proof-visible extraction:
+  it now rides on both `ScopedVfrRouteSource` and `CompileVfrRouteView` via
+  `ScopedVfrRouteSource.toCompileView`, with new well-formedness conjuncts on
+  `RouteBearingExtractionWellFormed` mirroring the runtime invariants from
+  [WorldAirspaceValidation.kt](core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldAirspaceValidation.kt)
+- the delivered FM boundary still extracts airspace as explicit point
+  membership only; the runtime `AirspaceVolume.memberPoints` plus optional
+  `boundary` geometry, runtime-owned operational sectors, and published VFR
+  procedures remain intentionally outside the current proof-visible boundary
+- predicate strengthening (consuming the new profile data inside the
+  `ClearedToEnterControlZone` / `SpecialVfrClearance` /
+  `RemainOutsideControlledAirspace` `Ready` / `Issuable` predicates,
+  widening `worldBackedAirspaceRouteInteraction?` to be profile-aware, or
+  bringing `AirspaceVolume.boundary` into proof-visibility) is a successor
+  widening branch — fn-9 is conservative-extension only, no Phase 1-4 closure
+  reopened
 
 ## Status Classes
 
@@ -46,7 +54,7 @@ Runtime note:
 | Family | Kotlin boundary | Lean/FM boundary | Status | Load-bearing drift seams |
 | --- | --- | --- | --- | --- |
 | Scoped nominal + full-brief core | `protocol/*`, `core/*`, scoped FM interfaces | `ScopedGreenfield`, `ScopedIssuance`, `ScopedSafety`, `ScopedModes` | `SCOPED_CORE_COMPLETE` | Keep scoped command classification, authority assumptions, and separation packaging aligned. |
-| Route-bearing Phase A: `ClearedTo`, published `HoldAt`, non-circling `ClearedApproach`, `JoinCircuit` | `InstructionResolution.kt`, `ClearanceResolution.kt`, `CompletionEvaluation.kt` | `RouteBearingResolutionBridge`, `GreenfieldRouteBearingCurrentShape`, `GreenfieldRouteBearingLifecycle` | `WORLD_BACKED_COMPLETE` | Published-procedure progress/completion is closed only for the current graph-backed published-procedure model. |
+| Route-bearing Phase A: `ClearedTo`, published `HoldAt`, non-circling `ClearedApproach`, `JoinCircuit` | `InstructionResolution.kt`, `ClearanceResolution.kt`, `CompletionEvaluation.kt` | `RouteBearingResolutionBridge`, `GreenfieldRouteBearingCurrentShape`, `GreenfieldRouteBearingLifecycle` | `WORLD_BACKED_COMPLETE` | Published-procedure progress/completion is closed only for the current graph-backed published-procedure model. fn-9 widened the source extraction to carry `VfrRoute.airspaceProfile` (`InVolume` / `InClass` / `Segmented`) — the field is proof-visible at extraction (`ScopedVfrRouteSource.airspaceProfile`, `CompileVfrRouteView.airspaceProfile`) with well-formedness conjuncts on `RouteBearingExtractionWellFormed`; the existing world-backed Phase A theorems are unchanged. |
 | Route-adjacent Phase B: `ContinueApproach`, `ExtendDownwind`, `Orbit` | `InstructionResolution.kt`, `ClearanceResolution.kt`, `CompletionEvaluation.kt` | `GreenfieldRouteAdjacentWorldBackedCurrentShape`, `GreenfieldRouteAdjacentWorldBackedCompound`, `GreenfieldRouteAdjacentWorldBackedDeliveredCurrentShape` | `WORLD_BACKED_COMPLETE` | Closed only for the current explicit approach/circuit model: `ContinueApproach` uses current published-approach facts, `ExtendDownwind` uses published extended-downwind plus off-ramp paths, and `Orbit` uses published orbit loops at the current orbit point; the source-domain-supplied fallback for `ExtendDownwind` / `Orbit` is part of that current model. |
 | Airspace family: `RemainOutsideControlledAirspace`, `ClearedToEnterControlZone`, `SpecialVfrClearance` | `InstructionResolution.kt`, `ClearanceResolution.kt`, `CompletionEvaluation.kt` | `GreenfieldAirspaceWorldBackedDeliveredCurrentShape` | `WORLD_BACKED_COMPLETE` | Closed only for the current graph-backed point-set + transition model; richer polygonal/continuous geometry remains open. |
 | Ground movement core: `TaxiTo`, `HoldShortOf`, `CrossRunway` | `InstructionResolution.kt`, `ClearanceResolution.kt`, `CompletionEvaluation.kt` | `GroundMovementResolutionBridge`, `GreenfieldGroundMovementDeliveredCurrentShape` | `WORLD_BACKED_COMPLETE` | Closed only for the current graph-backed ground-progress model: taxi routes, holding points, crossing points, traversed points, crossed runways, and reached holding points. |
