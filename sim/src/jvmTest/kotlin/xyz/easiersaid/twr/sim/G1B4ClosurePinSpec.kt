@@ -229,7 +229,22 @@ class G1B4ClosurePinSpec {
         val tower = trace.initial.controllers.values
             .firstOrNull { it.role == RoleName.TOWER && it.aerodromeId == AerodromeId("LOWG") }
             ?: error("LOWG_TOWER not in initial state")
-        for (s in trace.steps) {
+        // Walk steps. When a TransmissionStart fires a ClearedTouchAndGo,
+        // look BACKWARDS for the most recent ControllerCycle for the
+        // *tower* whose post-state is what produced this rule firing.
+        // The rule fires inside the controller cycle's `controllerDecide`
+        // pass; the cycle's post-state is the cursor-of-record for
+        // checking what the controller's beliefs were at rule-firing
+        // time. The TransmissionStart's post-state can drift — a
+        // CircuitIntentReported event processed via handleTransmissionEnd
+        // between rule firing and TStart processing would update
+        // `circuitIntent` and pass the (weaker) check. Codex iteration-4
+        // surfaced this assertion-timing gap.
+        //
+        // Iteration over trace.steps: indices.indexed walk so we can
+        // go back from the TStart to find the most recent tower
+        // ControllerCycle.
+        for ((i, s) in trace.steps.withIndex()) {
             val ev = s.event as? SimEvent.TransmissionStart ?: continue
             val tx = ev.transmission
             val u = tx.utterance as? Utterance.FromController ?: continue
@@ -238,13 +253,31 @@ class G1B4ClosurePinSpec {
                 ?: (instr.dispatch as? xyz.easiersaid.twr.controller.bdi.Dispatch.Conditional)?.instruction
             if (payload !is xyz.easiersaid.twr.protocol.ClearedTouchAndGo) continue
             val target = instr.target
-            // Look up circuitIntent at the cursor immediately before this
-            // transmission was emitted — i.e., the controller's state at
-            // the moment of issuance.
-            val intentAtCursor = s.state.beliefs[tower.id]?.circuitIntent?.get(target)
-            check(intentAtCursor != null) {
+            // Walk backwards from i-1 until we find a ControllerCycle for
+            // the tower. The post-state of THAT step is the rule-firing
+            // cursor. If no such cycle exists in the prefix, the
+            // transmission is from a path other than the tower's
+            // procedure cycle — skip (no other code path emits
+            // ClearedTouchAndGo today).
+            var ruleFiringIntent: xyz.easiersaid.twr.protocol.CircuitIntent? = null
+            var found = false
+            for (j in (i - 1) downTo 0) {
+                val prior = trace.steps[j]
+                val priorEv = prior.event as? SimEvent.ControllerCycle ?: continue
+                if (priorEv.controllerId != tower.id) continue
+                ruleFiringIntent = prior.state.beliefs[tower.id]?.circuitIntent?.get(target)
+                found = true
+                break
+            }
+            check(found) {
+                "C4 test wiring: could not find a tower ControllerCycle " +
+                    "before ClearedTouchAndGo at ${tx.startedAt.millis}ms " +
+                    "for ${target.value} — trace shape changed."
+            }
+            check(ruleFiringIntent != null) {
                 "C4 regression: ClearedTouchAndGo issued to ${target.value} at " +
-                    "${tx.startedAt.millis}ms with empty circuitIntent — pre-fix default-T&G semantics."
+                    "${tx.startedAt.millis}ms with empty circuitIntent at the " +
+                    "rule-firing controller-cycle cursor — pre-fix default-T&G semantics."
             }
         }
     }

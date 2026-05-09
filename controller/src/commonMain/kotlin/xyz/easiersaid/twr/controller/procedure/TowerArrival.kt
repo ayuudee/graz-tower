@@ -23,6 +23,7 @@ import xyz.easiersaid.twr.controller.bdi.InCircuit
 import xyz.easiersaid.twr.controller.bdi.InstructionMatcher
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
+import xyz.easiersaid.twr.controller.bdi.CoordinationIssued
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
 import xyz.easiersaid.twr.controller.bdi.OnApproach
@@ -493,13 +494,35 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "ARR-VACATE",
                 description = "Vacate the runway via assigned exit or backtrack",
                 regulations = listOf(ICAO4444_7_11),
-                // Vacate fires for full-stop arrivals (declared FULL_STOP) and
+                // Vacate fires for full-stop arrivals (declared FULL_STOP),
                 // for non-circuit arrivals (no circuit intent declared at all —
-                // a one-shot Arrival mission). T&G traffic that has declared
-                // touch-and-go is excluded.
+                // a one-shot Arrival mission), and for aircraft the
+                // controller has already committed to a full-stop landing
+                // for via `ClearedToLand`. T&G traffic that has declared
+                // touch-and-go and that the controller has not yet
+                // committed to a full-stop is excluded.
+                //
+                // fn-8.3 Phase 3 round 1 (codex review iteration 4): the
+                // third disjunct (`CoordinationIssued(ClearedToLand)`)
+                // closes a wedge where a delayed Downwind delivers
+                // `TOUCH_AND_GO` *after* the controller has already
+                // committed to full-stop via the C4 default-flip. Without
+                // it, the aircraft is on the runway with no firing rule:
+                // `ARR-TNG-AIRBORNE` is false (on ground, not airborne)
+                // and the original two disjuncts of `ARR-VACATE` flip to
+                // false when `circuitIntent` updates to T&G. The
+                // disposition-locking semantic (real ATC: "I cleared this
+                // pilot to land; their disposition is now full-stop
+                // regardless of any late report") is encoded by checking
+                // the controller's own issued-coordination ledger rather
+                // than the mutable circuit-intent belief.
                 guard = AllOf(listOf(
                     OnRunway, OnGround,
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     NoPendingReadback(InstructionMatcher.AnyOf(listOf(
                         instructionOfType<AfterLandingVacateVia>(),
                         instructionOfType<xyz.easiersaid.twr.protocol.BacktrackRunway>(),
@@ -532,7 +555,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    // fn-8.3 Phase 3 round 1 (codex review iteration 4):
+                    // sibling of ARR-VACATE — `CoordinationIssued(ClearedToLand)`
+                    // closes the late-T&G-Downwind wedge symmetrically.
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
                     IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND),
                 )),
@@ -554,7 +584,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_11, ICAO4444_7_6, SERA_8005_C, ICAO9432_TAXI),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    // fn-8.3 Phase 3 round 1 (codex review iteration 4):
+                    // sibling of ARR-VACATE — `CoordinationIssued(ClearedToLand)`
+                    // closes the late-T&G-Downwind wedge symmetrically.
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND)),
                     NoActiveInstruction(instructionOfType<xyz.easiersaid.twr.protocol.TaxiToStand>()),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TaxiToStand>()),
@@ -585,7 +622,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    // fn-8.3 Phase 3 round 1 (codex review iteration 4):
+                    // sibling of ARR-VACATE — `CoordinationIssued(ClearedToLand)`
+                    // closes the late-T&G-Downwind wedge symmetrically.
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND)),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),

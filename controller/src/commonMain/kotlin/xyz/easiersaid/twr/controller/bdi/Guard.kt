@@ -205,6 +205,38 @@ data class NoPendingReadback(val matcher: InstructionMatcher) : RuleGuard {
             .none { it.state is xyz.easiersaid.twr.controller.observe.CoordinationState.Issued && matcher.matches(it.instruction) }
 }
 
+/**
+ * fn-8.3 Phase 3 round 1 (codex review iteration 4): an instruction
+ * matching [matcher] has been issued by the controller for this aircraft
+ * at any point — fresh-Issued, in escalation (Querying / Reissued /
+ * LostCommsDeclared), or recently terminal-but-not-yet-pruned.
+ *
+ * Use this guard for **disposition-locking** semantics: once the
+ * controller has committed to a particular instruction (e.g.
+ * `ClearedToLand` for a full-stop landing), downstream rules need to
+ * stay aligned with that disposition even if the pilot's later radio
+ * traffic would otherwise reclassify the aircraft.
+ *
+ * Concrete trigger that motivated this guard: a circuit-traffic
+ * aircraft whose first-circuit Downwind was stepped on receives
+ * `ClearedToLand` per the C4 default-flip ("clear-to-land when intent
+ * unknown"). The pilot reads back, touches down. THEN the delayed
+ * Downwind transmission delivers `CircuitIntent=TOUCH_AND_GO`. Without
+ * this guard, `ARR-VACATE`'s gate
+ * `AnyOf(CircuitIntentIs(FULL_STOP), Not(IsCircuitTraffic))` evaluates
+ * false (intent is now T&G; aircraft IS circuit traffic), and the
+ * aircraft wedges on the runway even though it was cleared to land.
+ *
+ * Reads `ctx.beliefs.coordinations[ac.id]` and matches on instruction
+ * type. Symmetric to [NoPendingReadback] but state-agnostic.
+ */
+data class CoordinationIssued(val matcher: InstructionMatcher) : RuleGuard {
+    override val failureMessage = "No coordination for the matching instruction has been issued"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.coordinations[ac.id].orEmpty()
+            .any { matcher.matches(it.instruction) }
+}
+
 // ── Pilot events ─────────────────────────────────────────────────────
 
 /** Pilot has reported ready for departure this cycle. */
