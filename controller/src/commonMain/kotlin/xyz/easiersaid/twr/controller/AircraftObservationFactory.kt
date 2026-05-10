@@ -26,38 +26,34 @@ import xyz.easiersaid.twr.protocol.WakeCategory
  * primary surveillance) alongside the existing snap-projected [position].
  * See [AircraftObservation]'s "Position vs. coords" KDoc paragraph.
  */
-// Param list is intentionally wide; FirewallObservationTest enforces the
-// canonical constructor as the sole AircraftObservation factory (firewall
-// doctrine — every change reviewed at the named-arg site). The `internal`
-// primary constructor + this one factory is the boundary; folding the
-// params into a value object would either re-introduce a parallel
-// construction path or make the firewall test less direct. Detekt
-// LongParameterList suppressed at this single site, not raised globally.
-@Suppress("LongParameterList")
+data class AircraftObservationInput(
+    val id: AircraftId,
+    val callsign: Callsign,
+    val position: PointId,
+    val coords: Position,
+    val altitude: Level?,
+    val groundSpeed: Knots?,
+    val onGround: Boolean,
+    val wakeCategory: WakeCategory?,
+    val icaoTypeDesignator: IcaoTypeDesignator?,
+)
+
 fun AircraftObservation.Companion.from(
-    id: AircraftId,
-    callsign: Callsign,
-    position: PointId,
-    coords: Position,
-    altitude: Level?,
-    groundSpeed: Knots?,
-    onGround: Boolean,
-    wakeCategory: WakeCategory?,
-    icaoTypeDesignator: IcaoTypeDesignator?,
+    input: AircraftObservationInput,
     worldIndex: WorldIndex,
 ): AircraftObservation {
-    val entities = worldIndex.entitiesByPoint[position] ?: emptySet()
+    val entities = worldIndex.entitiesByPoint[input.position] ?: emptySet()
     return AircraftObservation(
-        id = id,
-        callsign = callsign,
-        position = position,
-        coords = coords,
+        id = input.id,
+        callsign = input.callsign,
+        position = input.position,
+        coords = input.coords,
         entities = entities,
-        altitude = altitude,
+        altitude = input.altitude,
         speed = null,
-        groundSpeed = groundSpeed,
-        onGround = onGround,
-        wakeCategory = wakeCategory,
-        icaoTypeDesignator = icaoTypeDesignator,
+        groundSpeed = input.groundSpeed,
+        onGround = input.onGround,
+        wakeCategory = input.wakeCategory,
+        icaoTypeDesignator = input.icaoTypeDesignator,
     )
 }

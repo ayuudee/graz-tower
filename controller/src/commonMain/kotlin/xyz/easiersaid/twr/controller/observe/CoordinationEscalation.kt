@@ -58,72 +58,78 @@ import xyz.easiersaid.twr.protocol.Urgency
 internal fun coordinationEscalationOutputs(
     beliefs: BeliefState,
     now: SimTime,
-): List<ControllerOutput> {
-    if (beliefs.coordinations.isEmpty()) return emptyList()
-    val out = mutableListOf<ControllerOutput>()
-    for ((aircraft, coords) in beliefs.coordinations) {
-        for (c in coords) {
-            when (val s = c.state) {
-                is CoordinationState.Querying -> {
-                    if (s.emittedAt == null) {
-                        val ageSec = (now - c.issuedAt).millis / 1000.0
-                        out += ControllerOutput.Respond(
-                            target = aircraft,
-                            response = ConfirmInstruction(target = aircraft, instruction = c.readbackInstruction),
-                            trace = DecisionTrace(
-                                ruleId = "COORD-QUERY",
-                                description = "Readback overdue (issued ${"%.1f".format(ageSec)} s ago) — confirm prior " +
-                                    "instruction (CAP 413 / Doc 4444 §12.3.1.2)",
-                                regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
-                            ),
-                        )
-                    }
-                }
-                is CoordinationState.Reissued -> {
-                    if (s.emittedAt == null) {
-                        val ageSec = (now - c.issuedAt).millis / 1000.0
-                        out += ControllerOutput.Instruct.fromCoordinationReissue(
-                            coordination = c,
-                            urgency = Urgency.TIME_SENSITIVE,
-                            trace = DecisionTrace(
-                                ruleId = "COORD-REISSUE",
-                                description = "Re-issue instruction after query unanswered (attempt ${s.attemptCount}, " +
-                                    "issued ${"%.1f".format(ageSec)} s ago; Doc 4444 §12.3.1.2)",
-                                regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
-                            ),
-                            // Replay-as-original (M.2): re-emit the original
-                            // instruction verbatim, NOT enrichInstruction(c.instruction, weather).
-                            // §12.3.1.2 "I SAY AGAIN" replays the original transmission.
-                            // Reissues do NOT advance stage — that gate fires once when the
-                            // original Issued coordination confirms. Re-emission is for
-                            // delivery, not progress.
-                        )
-                    }
-                }
-                is CoordinationState.LostCommsDeclared -> {
-                    // Pass 12 (D-AUDIT.2.A): emit one TransmittingBlind on
-                    // entry to the LostCommsDeclared state. Doc 4444 §12.3.1.4
-                    // / §15.1.4 — controller transitions to "transmit blind"
-                    // posture (one-way; pilot doesn't read back).
-                    if (s.emittedBlindAt == null) {
-                        val ageSec = (now - c.issuedAt).millis / 1000.0
-                        out += ControllerOutput.Respond(
-                            target = aircraft,
-                            response = TransmittingBlind(target = aircraft, instruction = c.readbackInstruction),
-                            trace = DecisionTrace(
-                                ruleId = "COORD-BLIND",
-                                description = "Lost-comms posture — transmit blind (issued ${"%.1f".format(ageSec)} s ago; " +
-                                    "Doc 4444 §12.3.1.4 / §15.1.4)",
-                                regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
-                            ),
-                        )
-                    }
-                }
-                is CoordinationState.Issued -> Unit
+): List<ControllerOutput> =
+    beliefs.coordinations.flatMap { (aircraft, coords) ->
+        coords.mapNotNull { coordination ->
+            when (val state = coordination.state) {
+                is CoordinationState.Querying -> queryEscalationOutput(aircraft, coordination, now, state)
+                is CoordinationState.Reissued -> reissueEscalationOutput(coordination, now, state)
+                is CoordinationState.LostCommsDeclared -> blindEscalationOutput(aircraft, coordination, now, state)
+                is CoordinationState.Issued -> null
             }
         }
     }
-    return out
+
+private fun queryEscalationOutput(
+    aircraft: xyz.easiersaid.twr.protocol.AircraftId,
+    coordination: OutstandingCoordination,
+    now: SimTime,
+    state: CoordinationState.Querying,
+): ControllerOutput? {
+    if (state.emittedAt != null) return null
+    val ageSec = (now - coordination.issuedAt).millis / 1000.0
+    return ControllerOutput.Respond(
+        target = aircraft,
+        response = ConfirmInstruction(target = aircraft, instruction = coordination.readbackInstruction),
+        trace = DecisionTrace(
+            ruleId = "COORD-QUERY",
+            description = "Readback overdue (issued ${"%.1f".format(ageSec)} s ago) — confirm prior " +
+                "instruction (CAP 413 / Doc 4444 §12.3.1.2)",
+            regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
+        ),
+    )
+}
+
+private fun reissueEscalationOutput(
+    coordination: OutstandingCoordination,
+    now: SimTime,
+    state: CoordinationState.Reissued,
+): ControllerOutput? {
+    if (state.emittedAt != null) return null
+    val ageSec = (now - coordination.issuedAt).millis / 1000.0
+    return ControllerOutput.Instruct.fromCoordinationReissue(
+        coordination = coordination,
+        urgency = Urgency.TIME_SENSITIVE,
+        trace = DecisionTrace(
+            ruleId = "COORD-REISSUE",
+            description = "Re-issue instruction after query unanswered (attempt ${state.attemptCount}, " +
+                "issued ${"%.1f".format(ageSec)} s ago; Doc 4444 §12.3.1.2)",
+            regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
+        ),
+        // Replay-as-original (M.2): re-emit the original instruction verbatim,
+        // NOT enrichInstruction(c.instruction, weather). §12.3.1.2 "I SAY
+        // AGAIN" replays the original transmission.
+    )
+}
+
+private fun blindEscalationOutput(
+    aircraft: xyz.easiersaid.twr.protocol.AircraftId,
+    coordination: OutstandingCoordination,
+    now: SimTime,
+    state: CoordinationState.LostCommsDeclared,
+): ControllerOutput? {
+    if (state.emittedBlindAt != null) return null
+    val ageSec = (now - coordination.issuedAt).millis / 1000.0
+    return ControllerOutput.Respond(
+        target = aircraft,
+        response = TransmittingBlind(target = aircraft, instruction = coordination.readbackInstruction),
+        trace = DecisionTrace(
+            ruleId = "COORD-BLIND",
+            description = "Lost-comms posture — transmit blind (issued ${"%.1f".format(ageSec)} s ago; " +
+                "Doc 4444 §12.3.1.4 / §15.1.4)",
+            regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
+        ),
+    )
 }
 
 /**

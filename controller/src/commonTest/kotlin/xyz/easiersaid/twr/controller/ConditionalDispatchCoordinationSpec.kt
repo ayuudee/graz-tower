@@ -2,6 +2,8 @@ package xyz.easiersaid.twr.controller
 
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.bdi.ProposedAction
+import xyz.easiersaid.twr.controller.assess.RunwayDutyState
+import xyz.easiersaid.twr.controller.assess.RunwayOperation
 import xyz.easiersaid.twr.controller.certify.ActionCertifier
 import xyz.easiersaid.twr.controller.certify.CertificationContext
 import xyz.easiersaid.twr.controller.certify.KotlinRuntimeKernelCertifiers
@@ -10,6 +12,7 @@ import xyz.easiersaid.twr.controller.observe.CoordinationState
 import xyz.easiersaid.twr.controller.observe.coordinationEscalationOutputs
 import xyz.easiersaid.twr.controller.observe.recordCoordinations
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -103,6 +106,7 @@ class ConditionalDispatchCoordinationSpec {
             id = aircraft,
             callsign = Callsign("OEABC"),
             position = PointId("P"),
+            coords = Position(xMeters = 0.0, yMeters = 0.0),
             entities = emptySet(),
             altitude = null,
             speed = null,
@@ -126,6 +130,18 @@ class ConditionalDispatchCoordinationSpec {
             beliefs = BeliefState.EMPTY.copy(
                 trackedAircraft = mapOf(aircraft to observation),
                 activeRunway = runway,
+                runwayDuty = RunwayDutyState(
+                    runway = runway,
+                    holder = aircraft,
+                    operation = RunwayOperation.DEPARTURE,
+                ),
+                runwayBeliefs = mapOf(
+                    runway to RunwayObservation(
+                        id = runway,
+                        status = RunwayStatus.CLEAR,
+                        occupants = emptySet(),
+                    ),
+                ),
             ),
             world = AviationWorld(),
             decisionTime = SimTime.ZERO,

@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.controller
 
 import xyz.easiersaid.twr.controller.assess.Intervention
+import xyz.easiersaid.twr.controller.assess.WakeRule
 import xyz.easiersaid.twr.controller.assess.emitReactiveOutputs
 import xyz.easiersaid.twr.controller.certify.CertificationEvidence
 import xyz.easiersaid.twr.controller.observe.BeliefState
@@ -29,6 +30,7 @@ class ReactiveSeparationCertificationSpec {
             closureRateKt = 40.0,
             timeToMinimumSeconds = 0.0,
             concern = SeparationConcern.Severity.VIOLATION,
+            wakeRule = WakeRule.UnknownCategory,
         )
 
         val outputs = emitReactiveOutputs(
@@ -66,6 +68,7 @@ class ReactiveSeparationCertificationSpec {
             closureRateKt = 40.0,
             timeToMinimumSeconds = 0.0,
             concern = SeparationConcern.Severity.VIOLATION,
+            wakeRule = WakeRule.UnknownCategory,
         )
 
         val outputs = emitReactiveOutputs(

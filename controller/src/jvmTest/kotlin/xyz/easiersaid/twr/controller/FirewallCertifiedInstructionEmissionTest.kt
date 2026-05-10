@@ -102,6 +102,29 @@ class FirewallCertifiedInstructionEmissionTest {
         }
     }
 
+    @Test
+    fun `RunwayKernel accepted decisions are constructed only inside runway kernel`() {
+        val allowed = setOf(
+            "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/certify/RunwayKernel.kt",
+        )
+        val violations = productionKotlinFiles()
+            .filterNot { path -> root.relativize(path).toString() in allowed }
+            .flatMap { path ->
+                val text = path.readText()
+                Regex("""RunwayKernelDecision\.Accepted\s*\(""")
+                    .findAll(text)
+                    .map { match -> "${root.relativize(path)}:${lineNumber(text, match.range.first)}" }
+                    .toList()
+            }
+        check(violations.isEmpty()) {
+            """
+            FIREWALL VIOLATION: RunwayKernelDecision.Accepted construction must
+            stay inside the runway kernel. Violations:
+            ${violations.joinToString(separator = "\n")}
+            """.trimIndent()
+        }
+    }
+
     private fun productionKotlinFiles(): List<Path> {
         val base = root.resolve("controller/src/commonMain/kotlin")
         return Files.walk(base).use { stream ->

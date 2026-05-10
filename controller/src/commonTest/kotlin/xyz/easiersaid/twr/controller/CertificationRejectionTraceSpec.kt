@@ -8,6 +8,7 @@ import xyz.easiersaid.twr.controller.assess.RunwayOperation
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -103,6 +104,7 @@ class CertificationRejectionTraceSpec {
             id = id,
             callsign = Callsign(callsign),
             position = PointId("RWY-34C"),
+            coords = Position(xMeters = 0.0, yMeters = 0.0),
             entities = setOf(EntityRef.RunwayRef(staleCommitmentRunway)),
             altitude = null,
             speed = null,

@@ -74,17 +74,12 @@ class CoordinationsCleanupSpec {
         positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
     )
 
-    private fun observation(): AircraftObservation = AircraftObservation.from(
+    private fun observation(): AircraftObservation = AircraftObservation.fromTestPoint(
+        point = PointId("P"),
+        worldIndex = testWorldIndex,
         id = ac,
         callsign = Callsign("OEABC"),
-        position = PointId("P"),
-        coords = testWorldIndex.positions.getValue(PointId("P")),
-        altitude = null,
-        groundSpeed = null,
         onGround = true,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = testWorldIndex,
     )
 
     @Test

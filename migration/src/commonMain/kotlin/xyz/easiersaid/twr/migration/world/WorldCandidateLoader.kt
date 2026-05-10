@@ -440,24 +440,25 @@ object WorldCandidateLoader {
             firs = firs,
         )
     }
+}
 
-    /**
-     * Reproject each airport's geometry into a single shared frame, with
-     * the global origin at the arithmetic mean of all
-     * [Aerodrome.referencePoint]s.
-     *
-     * Strict per round-3 review: when reprojecting, *every* aerodrome
-     * across all input worlds must have a reference point, else the
-     * merge fails loudly. Silent partial reprojection (some airports in
-     * shared frame, others in airport-local frame) is the foot-gun
-     * G1-DEF-11 was meant to close.
-     *
-     * Loud fail also when any airport's ENU offset from the global
-     * origin exceeds [MAX_ENU_OFFSET_M] — flat-earth approximation
-     * breaks beyond ~150 km, and the right structural fix at that
-     * scale is a spherical projection (deferred).
-     */
-    private fun reprojectToSharedFrame(worlds: List<AviationWorld>): List<AviationWorld> {
+/**
+ * Reproject each airport's geometry into a single shared frame, with
+ * the global origin at the arithmetic mean of all
+ * [Aerodrome.referencePoint]s.
+ *
+ * Strict per round-3 review: when reprojecting, *every* aerodrome
+ * across all input worlds must have a reference point, else the
+ * merge fails loudly. Silent partial reprojection (some airports in
+ * shared frame, others in airport-local frame) is the foot-gun
+ * G1-DEF-11 was meant to close.
+ *
+ * Loud fail also when any airport's ENU offset from the global
+ * origin exceeds [MAX_ENU_OFFSET_M] — flat-earth approximation
+ * breaks beyond ~150 km, and the right structural fix at that
+ * scale is a spherical projection (deferred).
+ */
+private fun reprojectToSharedFrame(worlds: List<AviationWorld>): List<AviationWorld> {
         val allRefs = worlds.flatMap { world ->
             world.aerodromes.values.map { it.referencePoint }
         }
@@ -874,4 +875,3 @@ object WorldCandidateLoader {
             "INTERMEDIATE" -> HoldingPointType.INTERMEDIATE
             else -> error("Unsupported holding point type: $this")
         }
-}

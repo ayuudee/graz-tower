@@ -63,17 +63,12 @@ class ReadbackQueryEscalationIntegrationTest {
         positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
     )
 
-    private val acObservation = AircraftObservation.from(
+    private val acObservation = AircraftObservation.fromTestPoint(
+        point = PointId("P"),
+        worldIndex = testWorldIndex,
         id = ac,
         callsign = Callsign("OEABC"),
-        position = PointId("P"),
-        coords = testWorldIndex.positions.getValue(PointId("P")),
-        altitude = null,
-        groundSpeed = null,
         onGround = true,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = testWorldIndex,
     )
 
     private fun viewWith(time: SimTime): ControllerView = ControllerView(

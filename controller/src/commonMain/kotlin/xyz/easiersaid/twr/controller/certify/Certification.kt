@@ -189,6 +189,13 @@ object KotlinRuntimeKernelCertifiers : RuntimeKernelCertifiers {
     override fun certifyRunway(
         work: RunwayCertificationWork,
     ): Either<CertificationFailure, CertificationEvidence.KernelBacked> {
+        val operation = runwayKernelOperationFor(work.action.instruction)
+        if (operation != null) {
+            return when (val decision = KotlinRunwayKernel.evaluate(RunwayKernelInput(operation, work.context))) {
+                is RunwayKernelDecision.Accepted -> decision.toKernelBackedEvidence().right()
+                is RunwayKernelDecision.Rejected -> decision.failure.toCertificationFailure().left()
+            }
+        }
         val runway = runwayOf(work.action, work.context).fold(
             { return it.left() },
             { it },

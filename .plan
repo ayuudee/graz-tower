@@ -71,15 +71,23 @@ Impact: M | Effort: M
 
 ### Medium impact, medium-high effort — architecture-dependent
 
-**QUAL-1 — Repository-wide detekt gate is red on pre-existing findings**
-`./gradlew detekt` currently fails on 11 findings outside the certification-gate
-change surface: `AircraftObservationFactory.from` long parameter list,
-`coordinationEscalationOutputs` nested block depth, `WorldCandidateLoader`
-large class, `Step.handleTransmissionEnd` nested block depth, `Step` complex
-condition and loop jump findings, `Guard.classify` return count, and
-`PilotCognitive` max-line-length findings. The certification-gate work removed
-the new detekt findings it introduced, but the full Phase 6 command remains red
-until this repo-wide quality debt is resolved or deliberately re-baselined.
+**QUAL-1 — Repository-wide detekt gate is red on pre-existing findings** - DONE (2026-05-10)
+`./gradlew detekt` is green again. The fix replaced the long aircraft-observation
+factory parameter list with an input value object, split coordination escalation
+output rendering into leaf-specific helpers, reduced `WorldCandidateLoader`'s
+public object size by moving private helpers to file-private top-level scope,
+factored sim responsibility scans/transmission-end handling into named helpers,
+and wrapped the pilot line-length offenders.
+Impact: M | Effort: M
+
+**M5 — LJMB runtime SID candidate/test mismatch keeps `./gradlew build` red**
+`cad/airports/rendered/ljmb/world-candidate.json` currently contains 5 runtime
+SIDs (`GOLV2G`, `PETO2B`, `PETO5D`, `VALU1S`, `VALU4L`), while
+`LjmbWorldCandidateValidationTest.assertExpectedLjmbIfrSids` and the stale
+`world-validation-report.json` expect 9 runtime SIDs. This is not a Kotlin
+compile or detekt issue, but it means broad `./gradlew build` remains red until
+the LJMB candidate is regenerated to the 9-SID state or the test/docs are
+reconciled to a deliberately accepted 5-SID runtime subset.
 Impact: M | Effort: M
 
 **A9 — Manual routes in `LowgSpike` and `ArrivalVerticalTest`**
@@ -525,8 +533,8 @@ runway/surface/air-path/separation/no-certification plans, rejects unsupported
 or incompatible actions with typed failures surfaced in decision traces, carries
 certification evidence on outputs and coordination reissues, preserves
 conditional dispatch through the ledger, and derives action targets from the
-instruction target. Remaining repo-wide quality cleanup is tracked separately in
-`QUAL-1`.
+instruction target. The repo-wide quality cleanup that remained after this work
+was closed in `QUAL-1`.
 Impact: H | Effort: M
 
 ---

@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.core.world.Degrees
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.Feet
 import xyz.easiersaid.twr.core.world.Path
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.RunwayExit
 import xyz.easiersaid.twr.core.world.WorldIndex
@@ -154,6 +155,7 @@ class CertifiedControllerActionSpec {
             id = id,
             callsign = Callsign(callsign),
             position = PointId("RWY-16C"),
+            coords = Position(xMeters = 0.0, yMeters = 0.0),
             entities = setOf(EntityRef.RunwayRef(runway)),
             altitude = null,
             speed = null,

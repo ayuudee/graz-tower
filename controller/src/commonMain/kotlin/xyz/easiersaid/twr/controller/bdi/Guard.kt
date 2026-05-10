@@ -12,9 +12,12 @@ import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.protocol.ClearanceDomain
+import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 import kotlin.reflect.KClass
 
@@ -810,22 +813,50 @@ data class RunwayLengthSufficient(
         ac: AircraftObservation,
         commitment: Commitment,
         ctx: OperatorContext,
+    ): RunwayLengthFailure? =
+        when (val designator = ac.icaoTypeDesignator) {
+            null -> RunwayLengthFailure.NullAircraftTypeDesignator
+            else -> classifyKnownDesignator(designator, commitment, ctx)
+        }
+
+    private fun classifyKnownDesignator(
+        designator: IcaoTypeDesignator,
+        commitment: Commitment,
+        ctx: OperatorContext,
     ): RunwayLengthFailure? {
-        val designator = ac.icaoTypeDesignator
-            ?: return RunwayLengthFailure.NullAircraftTypeDesignator
-        val requirements = xyz.easiersaid.twr.protocol.AircraftType
+        val requirements = AircraftType
             .runwayRequirementsFor(designator)
             .getOrNull()
-            ?: return RunwayLengthFailure.UnknownDesignator(designator)
         val runwayId = commitment.runway
-            ?: return RunwayLengthFailure.NullCommitmentRunway
+        return when {
+            requirements == null -> RunwayLengthFailure.UnknownDesignator(designator)
+            runwayId == null -> RunwayLengthFailure.NullCommitmentRunway
+            else -> classifyKnownRunway(designator, requirements, runwayId, ctx)
+        }
+    }
+
+    private fun classifyKnownRunway(
+        designator: IcaoTypeDesignator,
+        requirements: AircraftType.RunwayLengthRequirements,
+        runwayId: RunwayId,
+        ctx: OperatorContext,
+    ): RunwayLengthFailure? {
         // Aerodrome-scoped lookup (Pass 17 D-PASS-13.1).
-        val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId]
-            ?: return RunwayLengthFailure.RunwayNotInWorld(runwayId)
-        val runway = aerodrome.runways[runwayId]
-            ?: return RunwayLengthFailure.RunwayNotInWorld(runwayId)
-        val distances = runway.declaredDistances
-            ?: return RunwayLengthFailure.NullDeclaredDistances(runwayId)
+        val runway = ctx.world.aerodromes[ctx.view.aerodromeId]?.runways?.get(runwayId)
+        val distances = runway?.declaredDistances
+        return when {
+            runway == null -> RunwayLengthFailure.RunwayNotInWorld(runwayId)
+            distances == null -> RunwayLengthFailure.NullDeclaredDistances(runwayId)
+            else -> classifyDeclaredDistances(designator, requirements, runwayId, distances)
+        }
+    }
+
+    private fun classifyDeclaredDistances(
+        designator: IcaoTypeDesignator,
+        requirements: AircraftType.RunwayLengthRequirements,
+        runwayId: RunwayId,
+        distances: xyz.easiersaid.twr.core.world.DeclaredDistances,
+    ): RunwayLengthFailure? {
         val (availableM, requiredM) = when (operation) {
             RunwayLengthOperation.TAKEOFF -> distances.toda.value to requirements.takeoffMinM
             RunwayLengthOperation.LANDING -> distances.lda.value to requirements.landingMinM

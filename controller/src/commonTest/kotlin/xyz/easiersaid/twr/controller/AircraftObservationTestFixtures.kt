@@ -53,15 +53,17 @@ fun AircraftObservation.Companion.fromTestPoint(
                 "kinematic position is intentional (document why inline).",
         )
     return AircraftObservation.from(
-        id = id,
-        callsign = callsign,
-        position = point,
-        coords = coords,
-        altitude = altitude,
-        groundSpeed = groundSpeed,
-        onGround = onGround,
-        wakeCategory = wakeCategory,
-        icaoTypeDesignator = icaoTypeDesignator,
+        AircraftObservationInput(
+            id = id,
+            callsign = callsign,
+            position = point,
+            coords = coords,
+            altitude = altitude,
+            groundSpeed = groundSpeed,
+            onGround = onGround,
+            wakeCategory = wakeCategory,
+            icaoTypeDesignator = icaoTypeDesignator,
+        ),
         worldIndex = worldIndex,
     )
 }

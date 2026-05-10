@@ -3,6 +3,10 @@ package xyz.easiersaid.twr.controller.certify
 import arrow.core.Either
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.controller.RunwayObservation
+import xyz.easiersaid.twr.controller.RunwayStatus
+import xyz.easiersaid.twr.controller.assess.RunwayDutyState
+import xyz.easiersaid.twr.controller.assess.RunwayOperation
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.bdi.ProposedAction
 import xyz.easiersaid.twr.controller.observe.BeliefState
@@ -12,12 +16,15 @@ import xyz.easiersaid.twr.core.world.Degrees
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.Feet
 import xyz.easiersaid.twr.core.world.Path
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ConfirmSquawk
 import xyz.easiersaid.twr.protocol.ConditionalPredicate
 import xyz.easiersaid.twr.protocol.ContactFrequency
@@ -198,6 +205,95 @@ class CertificationBoundarySpec {
     }
 
     @Test
+    fun `runtime runway operation kernel certifies line-up from primitive evidence`() {
+        val result = runtimeCertifier().certify(
+            action = ProposedAction(LineUpAndWait(aircraft, runway)),
+            context = contextWithTrackedAircraft(
+                activeRunway = runway,
+                runwayDuty = RunwayDutyState(runway, holder = aircraft, operation = RunwayOperation.DEPARTURE),
+                runwayObservation = RunwayObservation(runway, RunwayStatus.CLEAR, emptySet()),
+            ),
+        )
+        val certified = result.getOrNull() ?: error("LineUpAndWait should certify through runway kernel")
+        val runwayEvidence = certified.evidence.all.filterIsInstance<CertificationEvidence.KernelBacked>()
+            .single { it.requirement == KernelRequirement.Runway }
+        assertTrue(runwayEvidence.summary.contains("runway operation kernel accepted"))
+        assertTrue(runwayEvidence.summary.contains("ActiveRunwayMatched"))
+        assertTrue(runwayEvidence.summary.contains("ControllerHeldRunwayAuthority"))
+        assertTrue(runwayEvidence.summary.contains("RunwayOccupancyCompatible"))
+        assertTrue(runwayEvidence.summary.contains("AircraftPhaseCompatible"))
+    }
+
+    @Test
+    fun `runtime runway operation kernel certifies takeoff when the holder occupies the runway`() {
+        val result = runtimeCertifier().certify(
+            action = ProposedAction(ClearedForTakeoff(aircraft, runway)),
+            context = contextWithTrackedAircraft(
+                activeRunway = runway,
+                runwayDuty = RunwayDutyState(runway, holder = aircraft, operation = RunwayOperation.DEPARTURE),
+                runwayObservation = RunwayObservation(runway, RunwayStatus.OCCUPIED_DEPARTURE, setOf(aircraft)),
+            ),
+        )
+        val certified = result.getOrNull() ?: error("ClearedForTakeoff should certify when only target occupies runway")
+        assertTrue(certified.evidence.all.any { it is CertificationEvidence.KernelBacked && it.requirement == KernelRequirement.Runway })
+    }
+
+    @Test
+    fun `runtime runway operation kernel certifies landing when runway is clear and aircraft is airborne`() {
+        val result = runtimeCertifier().certify(
+            action = ProposedAction(ClearedToLand(aircraft, runway)),
+            context = contextWithTrackedAircraft(
+                activeRunway = runway,
+                runwayDuty = RunwayDutyState(runway, holder = aircraft, operation = RunwayOperation.ARRIVAL),
+                runwayObservation = RunwayObservation(runway, RunwayStatus.CLEAR, emptySet()),
+                onGround = false,
+            ),
+        )
+        val certified = result.getOrNull() ?: error("ClearedToLand should certify for airborne holder and clear runway")
+        assertTrue(certified.evidence.all.any { it is CertificationEvidence.KernelBacked && it.requirement == KernelRequirement.Runway })
+    }
+
+    @Test
+    fun `runtime runway operation kernel rejects line-up without runway authority`() {
+        val result = runtimeCertifier().certify(
+            action = ProposedAction(LineUpAndWait(aircraft, runway)),
+            context = contextWithTrackedAircraft(
+                activeRunway = runway,
+                runwayObservation = RunwayObservation(runway, RunwayStatus.CLEAR, emptySet()),
+            ),
+        )
+        val failure = assertIs<CertificationFailure.KernelRejected>(result.leftOrNull())
+        assertEquals(KernelRequirement.Runway, failure.requirement)
+        assertTrue(failure.reason.contains("No runway-duty authority state"))
+    }
+
+    @Test
+    fun `covered runway operations cannot fall back to primitive active-runway certification`() {
+        val actions = listOf(
+            ProposedAction(LineUpAndWait(aircraft, runway)) to true,
+            ProposedAction(ClearedForTakeoff(aircraft, runway)) to true,
+            ProposedAction(ClearedToLand(aircraft, runway)) to false,
+        )
+
+        actions.forEach { (action, onGround) ->
+            val result = runtimeCertifier().certify(
+                action = action,
+                context = contextWithTrackedAircraft(
+                    activeRunway = runway,
+                    runwayObservation = RunwayObservation(runway, RunwayStatus.CLEAR, emptySet()),
+                    onGround = onGround,
+                ),
+            )
+            val failure = assertIs<CertificationFailure.KernelRejected>(result.leftOrNull())
+            assertEquals(KernelRequirement.Runway, failure.requirement)
+            assertTrue(
+                failure.reason.contains("No runway-duty authority state"),
+                "${action.instruction::class.simpleName} must be rejected by the runway operation kernel; got ${failure.reason}",
+            )
+        }
+    }
+
+    @Test
     fun `certifier creates non-empty evidence for supported kernel-backed instruction`() {
         val result = certifier().certify(
             action = ProposedAction(LineUpAndWait(aircraft, runway)),
@@ -259,11 +355,14 @@ class CertificationBoundarySpec {
         lvpMode: Boolean = false,
         activeRunway: RunwayId? = null,
         onGround: Boolean = true,
+        runwayDuty: RunwayDutyState? = null,
+        runwayObservation: RunwayObservation? = null,
     ): CertificationContext {
         val observation = AircraftObservation(
             id = aircraft,
             callsign = Callsign("OEABC"),
             position = PointId("P"),
+            coords = Position(xMeters = 0.0, yMeters = 0.0),
             entities = entities,
             altitude = null,
             speed = null,
@@ -286,7 +385,12 @@ class CertificationBoundarySpec {
         )
         return CertificationContext(
             view = view,
-            beliefs = BeliefState.EMPTY.copy(trackedAircraft = tracked, activeRunway = activeRunway),
+            beliefs = BeliefState.EMPTY.copy(
+                trackedAircraft = tracked,
+                activeRunway = activeRunway,
+                runwayDuty = runwayDuty,
+                runwayBeliefs = if (runwayObservation == null) emptyMap() else mapOf(runwayObservation.id to runwayObservation),
+            ),
             world = world,
             decisionTime = SimTime.ZERO,
         )

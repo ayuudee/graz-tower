@@ -537,9 +537,13 @@ private fun stepTransmission(
             Report(listOf(ReportEvent.Downwind(deriveCircuitIntent(mission))), mission.activeRunway.getOrNull()?.runway)
         } else null
     MissionStep.REPORT_BASE ->
-        if (mission.lastReportedLeg != Some(LegName.BASE)) Report(listOf(ReportEvent.Base), mission.activeRunway.getOrNull()?.runway) else null
+        if (mission.lastReportedLeg != Some(LegName.BASE)) {
+            Report(listOf(ReportEvent.Base), mission.activeRunway.getOrNull()?.runway)
+        } else null
     MissionStep.REPORT_FINAL ->
-        if (mission.lastReportedLeg != Some(LegName.FINAL)) Report(listOf(ReportEvent.Final), mission.activeRunway.getOrNull()?.runway) else null
+        if (mission.lastReportedLeg != Some(LegName.FINAL)) {
+            Report(listOf(ReportEvent.Final), mission.activeRunway.getOrNull()?.runway)
+        } else null
     MissionStep.AWAIT_LANDING_CLEARANCE -> {
         val elapsed = now.millis - mission.stepEnteredAt.millis
         // Escalation: query controller after 15s with no clearance.
@@ -921,7 +925,9 @@ private fun updateActiveRunwayFromInstruction(
  * `ExhaustivenessTest` (pilot/jvmTest) is the proof obligation: every
  * concrete leaf appears as `is X -> ...`, no category-arm absorption.
  */
-@Suppress("CyclomaticComplexMethod", "LongMethod", "UnusedParameter") // intrinsic to the 98-leaf AtcInstruction sealed hierarchy; priorRunway/worldIndex retained for signature stability per D-PF.6 close — the multi-runway disambiguator deletes used them
+@Suppress("CyclomaticComplexMethod", "LongMethod", "UnusedParameter")
+// Intrinsic to the 98-leaf AtcInstruction sealed hierarchy; priorRunway/worldIndex
+// remain for D-PF.6 signature stability until the multi-runway disambiguator is gone.
 private fun runwayFromInstruction(
     instruction: AtcInstruction,
     priorRunway: Option<RunwayAssignment<RunwayAssignmentSource>>,

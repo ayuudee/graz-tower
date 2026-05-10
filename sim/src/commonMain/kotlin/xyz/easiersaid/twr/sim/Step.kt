@@ -267,8 +267,7 @@ internal fun assertResponsibilityInvariant(state: SimState) {
     // (1) at most one Owned per aircraft
     val ownerOf = mutableMapOf<AircraftId, ControllerId>()
     for (spec in state.controllers.values) {
-        for ((acId, st) in spec.responsibilities) {
-            if (st !is ResponsibilityState.Owned) continue
+        for ((acId, _) in spec.responsibilities.filterValues { it is ResponsibilityState.Owned }) {
             val existing = ownerOf[acId]
             check(existing == null) {
                 "RESPONSIBILITY INVARIANT VIOLATION (Owned): aircraft $acId is Owned by both " +
@@ -279,37 +278,34 @@ internal fun assertResponsibilityInvariant(state: SimState) {
         }
     }
     // (2) HandingOff(Peer(target)) ↔ Watching(from=current) pairing
-    for (sender in state.controllers.values) {
-        for ((acId, st) in sender.responsibilities) {
-            if (st !is ResponsibilityState.HandingOff) continue
-            val target = st.target
-            if (target !is HandoffTarget.Peer) continue
-            val targetSpec = state.controllers[target.controllerId]
-            check(targetSpec != null) {
-                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
-                    "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but no controller " +
-                    "${target.controllerId} exists in state.controllers. Wiring defect."
-            }
-            val targetState = targetSpec.responsibilities[acId]
-            check(targetState is ResponsibilityState.Watching) {
-                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
-                    "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but " +
-                    "${target.controllerId}'s state for that aircraft is $targetState (expected " +
-                    "Watching(from=${sender.id})). One side updated, the other skipped."
-            }
-            check(targetState.from == sender.id) {
-                "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
-                    "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but " +
-                    "${target.controllerId}.responsibilities[$acId] is Watching(from=${targetState.from}) " +
-                    "(expected from=${sender.id})."
-            }
+    for (handoff in peerHandoffCandidates(state)) {
+        val sender = handoff.sender
+        val acId = handoff.aircraft
+        val target = handoff.target
+        val targetSpec = state.controllers[target.controllerId]
+        check(targetSpec != null) {
+            "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
+                "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but no controller " +
+                "${target.controllerId} exists in state.controllers. Wiring defect."
+        }
+        val targetState = targetSpec.responsibilities[acId]
+        check(targetState is ResponsibilityState.Watching) {
+            "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
+                "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but " +
+                "${target.controllerId}'s state for that aircraft is $targetState (expected " +
+                "Watching(from=${sender.id})). One side updated, the other skipped."
+        }
+        check(targetState.from == sender.id) {
+            "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${sender.id} has " +
+                "HandingOff(Peer(${target.controllerId})) for aircraft $acId, but " +
+                "${target.controllerId}.responsibilities[$acId] is Watching(from=${targetState.from}) " +
+                "(expected from=${sender.id})."
         }
     }
     // (3) Watching(from) references a real controller. (Mirror direction:
     // every Watching has a matching HandingOff(Peer) on the named sender.)
     for (receiver in state.controllers.values) {
-        for ((acId, st) in receiver.responsibilities) {
-            if (st !is ResponsibilityState.Watching) continue
+        for ((acId, st) in receiver.responsibilities.watchingEntries()) {
             val senderSpec = state.controllers[st.from]
             check(senderSpec != null) {
                 "RESPONSIBILITY INVARIANT VIOLATION (pairing): controller ${receiver.id} has " +
@@ -329,6 +325,37 @@ internal fun assertResponsibilityInvariant(state: SimState) {
         }
     }
 }
+
+private data class PeerHandoffCandidate(
+    val sender: ControllerSpec,
+    val aircraft: AircraftId,
+    val state: ResponsibilityState.HandingOff,
+    val target: HandoffTarget.Peer,
+)
+
+private data class WatchingResponsibility(
+    val aircraft: AircraftId,
+    val state: ResponsibilityState.Watching,
+)
+
+private fun peerHandoffCandidates(state: SimState): List<PeerHandoffCandidate> =
+    state.controllers.values.flatMap { sender ->
+        sender.responsibilities.mapNotNull { (aircraft, responsibility) ->
+            val handoff = responsibility as? ResponsibilityState.HandingOff
+            val target = handoff?.target as? HandoffTarget.Peer
+            if (handoff != null && target != null) {
+                PeerHandoffCandidate(sender, aircraft, handoff, target)
+            } else {
+                null
+            }
+        }
+    }
+
+private fun Map<AircraftId, ResponsibilityState>.watchingEntries(): List<WatchingResponsibility> =
+    entries.mapNotNull { entry ->
+        val watching = entry.value as? ResponsibilityState.Watching
+        watching?.let { WatchingResponsibility(entry.key, it) }
+    }
 
 private fun handlePhysicsTick(
     state: SimState,
@@ -374,20 +401,16 @@ internal fun sweepHandoffTimeouts(state: SimState): Pair<SimState, List<SimEvent
     val now = state.now
     val emitted = mutableListOf<SimEvent.MissedHandoffDetected>()
     val updatedEscalations = state.handoffEscalations.toMutableMap()
-    for (sender in state.controllers.values) {
-        for ((acId, st) in sender.responsibilities) {
-            if (st !is xyz.easiersaid.twr.protocol.ResponsibilityState.HandingOff) continue
-            val target = st.target
-            if (target !is xyz.easiersaid.twr.protocol.HandoffTarget.Peer) continue
-            val key = HandoffEscalationKey(sender = sender.id, aircraft = acId)
-            val anchor = updatedEscalations[key] ?: st.since
-            if ((now - anchor) <= MISSED_HANDOFF_TIMEOUT) continue
+    for (handoff in peerHandoffCandidates(state)) {
+        val key = HandoffEscalationKey(sender = handoff.sender.id, aircraft = handoff.aircraft)
+        val anchor = updatedEscalations[key] ?: handoff.state.since
+        if ((now - anchor) > MISSED_HANDOFF_TIMEOUT) {
             emitted += SimEvent.MissedHandoffDetected(
                 time = now,
-                aircraft = acId,
-                sender = sender.id,
-                target = target.controllerId,
-                handoffSince = st.since,
+                aircraft = handoff.aircraft,
+                sender = handoff.sender.id,
+                target = handoff.target.controllerId,
+                handoffSince = handoff.state.since,
             )
             updatedEscalations[key] = now
         }
@@ -923,169 +946,87 @@ private fun handleTransmissionEnd(
             )
             withoutTx.emit(listOf(completion))
         }
-        is ReceiverRef.Controller -> {
-            val msg = receivedMessageFrom(tx) ?: return withoutTx to emptyList()
-            // Party-line broadcast: deliver to ALL controllers on this
-            // frequency, not just the addressed receiver. Real radio works
-            // this way — anyone on the freq hears the call, not just the
-            // station being addressed. The "addressed" notion only governs
-            // who is expected to respond, not who hears.
-            //
-            // Why this matters: the controller's belief fold ingests typed
-            // events from radio observation. Without broadcast, a non-
-            // responsible controller on the same freq would never see the
-            // pilot's reports, and any cross-controller belief flow (e.g. a
-            // GROUND controller knowing the aircraft is circuit traffic
-            // because it overheard the pilot's Downwind to TOWER) would
-            // require a sim-side fudge.
-            //
-            // For G0/G1 (LOWG GROUND + TOWER share 118.200), this is the
-            // mechanism by which both controllers' belief states stay
-            // synchronised on radio observations. For G2 (different freqs),
-            // each freq has its own party-line — the receiving aerodrome's
-            // controllers won't see the sending aerodrome's transmissions,
-            // which is correct (they're on different radios).
-            //
-            // Side-effects: every controller on the freq accumulates events
-            // for aircraft they don't own. `reconcileCommitments` only acts
-            // on aircraft in `responsibilities`, so the extra belief state
-            // is harmless. The architectural firewall test
-            // `FirewallBeliefWriteTest` is unaffected — writes are still
-            // gated by `Observe.kt`'s typed fold.
-            val recipients = withoutTx.controllers.values
-                .filter { it.frequency == tx.frequency }
-                .map { it.id }
-            val nextInbox = recipients.fold(withoutTx.controllerInbox) { acc, ctrlId ->
-                acc + (ctrlId to (acc[ctrlId].orEmpty() + msg))
-            }
-            // Pass 7 (D-AUDIT.5): the responsibility transition fires on
-            // the FIRST received transmission from the aircraft on the new
-            // frequency, where some controller is currently Watching them.
-            // Per ICAO Doc 4444 §10.1.1, two-way communication is
-            // established when the receiving station acknowledges receipt
-            // — the model treats that as the controller actually receiving
-            // the transmission. Real-world phraseology combines initial
-            // contact and report into one transmission ("Tower, OE-ABC,
-            // holding short 16C, ready"); we accept any pilot utterance as
-            // implicit initial contact for the responsibility-transition
-            // purpose.
-            //
-            // G2 Phase H post-impl impact-M1: the pilot's
-            // `contactedOnFrequency` flip is gated on the SAME predicate
-            // as `applyTwoWayCommsEstablished` — i.e., it fires only when
-            // the InitialContact actually lands on a controller who was
-            // Watching the aircraft (peer handoff) or holding the strip
-            // in `knownStrips` (cross-aerodrome arrival). Pre-fix, the
-            // flip fired on ANY InitialContact arriving at any controller
-            // on the transmission's frequency, regardless of receiver
-            // state. That created a non-monotonic mission-progression
-            // bug for the cross-aerodrome race: at the destination's REP,
-            // the pilot's autonomous InitialContact was routed to the
-            // departure tower (still Owning), the flip fired despite no
-            // Watching/knownStrips match, the mission advanced past
-            // CALL_INBOUND to AWAIT_JOINING_INSTRUCTIONS — and once the
-            // boundary release fired and reset `contactedOnFrequency =
-            // false`, there was no way to rewind the mission. Tying the
-            // flip to the receiver-found predicate keeps mission
-            // progression monotonic: the pilot's "I have made initial
-            // contact" notion advances only when the contact actually
-            // landed on a controller waiting for it.
-            val pilotTransmission: AircraftId? =
-                (msg as? ReceivedMessage.Clear)?.aircraft
-            val withMissionAcked = if (pilotTransmission != null) {
-                val acId = pilotTransmission
-                val ac = withoutTx.aircraft[acId]
-                val mission = ac?.pilotMission
-                val inboundTransmission = (msg as? ReceivedMessage.Clear)?.transmission
-                // Look up the receiving controller this transmission was
-                // routed to (whose Watching state should flip to Owned).
-                // G2 (Phase E): the receiver candidate is a controller
-                // EITHER Watching the aircraft (intra-aerodrome handoff,
-                // Pass 7) OR holding the filed strip in knownStrips (cross-
-                // aerodrome arrival, Pass 14 + this pass).
-                //
-                // G2 Phase F bugfix: the lookup is FREQUENCY-SCOPED to the
-                // transmission's frequency. Pre-fix, the broad walk across
-                // all controllers caught LJMB_TWR's `knownStrips` even when
-                // the pilot was transmitting on LOWG_GROUND's frequency
-                // (118.200) — yielding a premature flip and a "two
-                // simultaneous Owners" invariant violation.
-                //
-                // For G0 single-aerodrome handoff (GND→TWR on 118.200), the
-                // frequency scope keeps both candidates in view and the
-                // Watching/knownStrips filter selects the right one (the
-                // newly-Watching TWR controller). For G2 cross-aerodrome,
-                // pilot transmissions on LOWG's frequency don't reach
-                // LJMB_TWR's strip; only when the pilot autonomously tunes
-                // to LJMB_TWR's frequency does the flip fire.
-                // Phase F retroactive review (impact M2): the lookup must
-                // prefer `Watching` over `knownStrips` and fail loud on
-                // ambiguity. Pre-fix, `firstOrNull` over `controllers.values`
-                // returned the first map-iteration candidate — fine for
-                // the current G0/G2 fixtures (Watching is set up by an
-                // explicit handoff, knownStrips by AFTN distribution; they
-                // don't collide today), but a future fixture with both
-                // (e.g., a re-filed plan during an in-progress handoff)
-                // would silently pick whichever the LinkedHashMap iterated
-                // first. Two-stage lookup expresses the priority; the
-                // `count == 1` invariants throw rather than first-wins.
-                val candidates = withoutTx.controllers.values
-                    .filter { it.frequency == tx.frequency }
-                val watchingCandidates = candidates
-                    .filter { it.responsibilities[acId] is ResponsibilityState.Watching }
-                val knownStripCandidates = candidates
-                    .filter { acId in it.knownStrips }
-                check(watchingCandidates.size <= 1) {
-                    "Ambiguous Watching candidates on frequency ${tx.frequency} for $acId: " +
-                        "${watchingCandidates.map { it.id }} — at most one controller may be " +
-                        "Watching an aircraft on a given frequency."
-                }
-                check(knownStripCandidates.size <= 1) {
-                    "Ambiguous knownStrip candidates on frequency ${tx.frequency} for $acId: " +
-                        "${knownStripCandidates.map { it.id }} — at most one controller per " +
-                        "frequency may hold the filed strip for an aircraft."
-                }
-                val receivingControllerId =
-                    watchingCandidates.firstOrNull()?.id
-                        ?: knownStripCandidates.firstOrNull()?.id
-                if (receivingControllerId != null) {
-                    // Receiver is in the right state — flip the pilot's
-                    // mission AND apply the responsibility transition in
-                    // lockstep. Both updates are "the InitialContact
-                    // actually landed."
-                    val withFlippedMission = if (
-                        ac != null && mission != null
-                        && !mission.contactedOnFrequency
-                        && inboundTransmission is InitialContact
-                    ) {
-                        val updatedAc = ac.copy(
-                            pilotMission = mission.copy(contactedOnFrequency = true),
-                        )
-                        withoutTx.copy(
-                            aircraft = LinkedHashMap(withoutTx.aircraft).apply {
-                                put(acId, updatedAc)
-                            },
-                        )
-                    } else withoutTx
-                    val receivingRole = withFlippedMission.controllers[receivingControllerId]?.role
-                    val acAfter = withFlippedMission.aircraft[acId]
-                    if (receivingRole != null && acAfter != null) {
-                        applyTwoWayCommsEstablished(withFlippedMission, acAfter, receivingRole)
-                    } else withFlippedMission
-                } else {
-                    // The receiver of this transmission is not in Watching
-                    // and does not hold the strip in knownStrips for this
-                    // aircraft — a normal in-frequency transmission to an
-                    // already-Owning controller (Report, Readback, Request)
-                    // or a transmission to a controller that has no claim
-                    // on this aircraft. No transition needed; mission
-                    // unchanged.
-                    withoutTx
-                }
-            } else withoutTx
-            withMissionAcked.copy(controllerInbox = nextInbox) to emptyList()
-        }
+        is ReceiverRef.Controller -> handleControllerTransmissionEnd(withoutTx, tx)
     }
+}
+
+private fun handleControllerTransmissionEnd(
+    state: SimState,
+    tx: InFlightTransmission,
+): Pair<SimState, List<SimEvent>> {
+    val msg = receivedMessageFrom(tx) ?: return state to emptyList()
+    val nextInbox = controllerInboxAfterBroadcast(state, tx.frequency, msg)
+    val withMissionAcked = applyInitialContactLanding(state, tx.frequency, msg)
+    return withMissionAcked.copy(controllerInbox = nextInbox) to emptyList()
+}
+
+private fun controllerInboxAfterBroadcast(
+    state: SimState,
+    frequency: Frequency,
+    msg: ReceivedMessage,
+): Map<ControllerId, List<ReceivedMessage>> {
+    val recipients = state.controllers.values
+        .filter { it.frequency == frequency }
+        .map { it.id }
+    return recipients.fold(state.controllerInbox) { acc, ctrlId ->
+        acc + (ctrlId to (acc[ctrlId].orEmpty() + msg))
+    }
+}
+
+private fun applyInitialContactLanding(
+    state: SimState,
+    frequency: Frequency,
+    msg: ReceivedMessage,
+): SimState {
+    val clear = msg as? ReceivedMessage.Clear ?: return state
+    val receivingControllerId = receivingControllerForInbound(state, frequency, clear.aircraft) ?: return state
+    val withFlippedMission = flipMissionContactedOnInitialContact(state, clear)
+    val receivingRole = withFlippedMission.controllers[receivingControllerId]?.role
+    val acAfter = withFlippedMission.aircraft[clear.aircraft]
+    return if (receivingRole != null && acAfter != null) {
+        applyTwoWayCommsEstablished(withFlippedMission, acAfter, receivingRole)
+    } else {
+        withFlippedMission
+    }
+}
+
+private fun receivingControllerForInbound(
+    state: SimState,
+    frequency: Frequency,
+    aircraft: AircraftId,
+): ControllerId? {
+    val candidates = state.controllers.values.filter { it.frequency == frequency }
+    val watchingCandidates = candidates.filter {
+        it.responsibilities[aircraft] is ResponsibilityState.Watching
+    }
+    val knownStripCandidates = candidates.filter { aircraft in it.knownStrips }
+    check(watchingCandidates.size <= 1) {
+        "Ambiguous Watching candidates on frequency $frequency for $aircraft: " +
+            "${watchingCandidates.map { it.id }} — at most one controller may be " +
+            "Watching an aircraft on a given frequency."
+    }
+    check(knownStripCandidates.size <= 1) {
+        "Ambiguous knownStrip candidates on frequency $frequency for $aircraft: " +
+            "${knownStripCandidates.map { it.id }} — at most one controller per " +
+            "frequency may hold the filed strip for an aircraft."
+    }
+    return watchingCandidates.firstOrNull()?.id ?: knownStripCandidates.firstOrNull()?.id
+}
+
+private fun flipMissionContactedOnInitialContact(
+    state: SimState,
+    clear: ReceivedMessage.Clear,
+): SimState {
+    val ac = state.aircraft[clear.aircraft] ?: return state
+    val mission = ac.pilotMission ?: return state
+    if (mission.contactedOnFrequency) return state
+    if (clear.transmission !is InitialContact) return state
+    val updatedAc = ac.copy(pilotMission = mission.copy(contactedOnFrequency = true))
+    return state.copy(
+        aircraft = LinkedHashMap(state.aircraft).apply {
+            put(clear.aircraft, updatedAc)
+        },
+    )
 }
 
 private fun receivedMessageFrom(tx: InFlightTransmission): ReceivedMessage? {
@@ -1918,4 +1859,3 @@ internal fun SimState.emit(events: List<SimEvent>): Pair<SimState, List<SimEvent
     val sorted = stamped.sortedWith(EVENT_ORDER)
     return copy(seq = newSeq) to sorted
 }
-

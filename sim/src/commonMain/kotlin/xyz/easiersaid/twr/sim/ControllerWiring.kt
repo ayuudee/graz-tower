@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.controller.AircraftObservation
+import xyz.easiersaid.twr.controller.AircraftObservationInput
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.ControllerView
 import xyz.easiersaid.twr.controller.from
@@ -169,15 +170,17 @@ private fun toObservation(
     worldIndex: WorldIndex,
 ): AircraftObservation =
     AircraftObservation.from(
-        id = reading.id,
-        callsign = reading.callsign,
-        position = reading.position,
-        coords = reading.coords,
-        altitude = reading.altitude,
-        groundSpeed = reading.groundSpeed,
-        onGround = reading.onGround,
-        wakeCategory = reading.wakeCategory,
-        icaoTypeDesignator = strip?.icaoTypeDesignator,
+        AircraftObservationInput(
+            id = reading.id,
+            callsign = reading.callsign,
+            position = reading.position,
+            coords = reading.coords,
+            altitude = reading.altitude,
+            groundSpeed = reading.groundSpeed,
+            onGround = reading.onGround,
+            wakeCategory = reading.wakeCategory,
+            icaoTypeDesignator = strip?.icaoTypeDesignator,
+        ),
         worldIndex = worldIndex,
     )
 
