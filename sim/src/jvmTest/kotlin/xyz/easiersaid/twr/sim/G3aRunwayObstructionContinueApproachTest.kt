@@ -624,16 +624,34 @@ class G3aRunwayObstructionContinueApproachTest {
         //
         // CONTINUE APPROACH primary instruction (typed `ContinueApproach`),
         // emitted via `Dispatch.Direct` by `ObstructionContinueApproachAction`.
-        val caRecord = records.firstControllerInstructionOf<ContinueApproach>(aircraftId)
-            .getOrElse {
-                fail(
-                    "Controller never transmitted ContinueApproach to $aircraftId — the new " +
-                        "ARR-CONTINUE-APPROACH-OBSTRUCTION rule did not fire. Expected: rule " +
-                        "fires when (i) commitment stage is AwaitApproach, (ii) RunwayObstructed " +
-                        "holds, (iii) ObstructionClearsInTime holds. Check the authorship hook " +
-                        "preconditions and `ObstructionClearsInTime`'s ETA arithmetic.\n$journey"
-                )
+        //
+        // **Exactly-one-CA pin** (codex round-3 finding): collect ALL CA
+        // records targeting this aircraft and assert exactly one. The
+        // `continueApproachIssuedThisAttempt` witness suppresses re-fire
+        // for the duration of the approach attempt (fn-13.1 R6); a duplicate
+        // CA would indicate either (i) the witness re-arm hook fired
+        // erroneously mid-approach (fn-13.2 codex round-3 fix: stage gate
+        // on AwaitDownwind for the Downwind-driven re-arm), (ii) the
+        // witness-application pass missed setting the flag, or (iii) the
+        // rule-arbitration arbitrated multiple candidates in one cycle.
+        val allCaRecords = records.filter { rec ->
+            val out = (rec.utterance as? Utterance.FromController)?.output as? ControllerOutput.Instruct
+                ?: return@filter false
+            val instr = (out.dispatch as? Dispatch.Direct)?.instruction ?: return@filter false
+            out.target == aircraftId && instr is ContinueApproach
+        }
+        check(allCaRecords.size == 1) {
+            val caSummary = allCaRecords.joinToString("\n  ") { rec ->
+                "[${rec.time.millis}ms] ${rec.utterance}"
             }
+            "Exactly-one-CA pin: expected exactly one ContinueApproach instruction to $aircraftId " +
+                "(witness suppresses re-fire for the duration of the approach attempt per fn-13.1 R6); " +
+                "observed ${allCaRecords.size}. Records:\n  $caSummary\n" +
+                "Duplicates indicate the `continueApproachIssuedThisAttempt` witness did not " +
+                "suppress the rule on subsequent cycles — check fn-13.2's re-arm-hook stage gate " +
+                "(`stageAllowsRearm = stage == AwaitDownwind`) in `reconcileTowerArrival`.\n$journey"
+        }
+        val caRecord = allCaRecords.single()
         val caMs = caRecord.time.millis
 
         // Verify the protocol payload: `reason == RUNWAY_OBSTRUCTED`. Set
@@ -666,16 +684,29 @@ class G3aRunwayObstructionContinueApproachTest {
         )
 
         // Companion `RunwayObstructionInformation` record + decision-cycle.
-        val companionRecord = records.firstOrNull { rec ->
-            val out = (rec.utterance as? Utterance.FromController)?.output ?: return@firstOrNull false
-            val respond = out as? ControllerOutput.Respond ?: return@firstOrNull false
+        //
+        // **Exactly-one-companion pin** (codex round-3 finding): collect
+        // ALL companion records and assert exactly one. The companion is
+        // derived from CA outputs in `deriveCompanionOutputs`; duplicate
+        // companions imply duplicate CA fires (caught by the
+        // exactly-one-CA pin above, but pinned independently here as
+        // defense-in-depth).
+        val allCompanionRecords = records.filter { rec ->
+            val out = (rec.utterance as? Utterance.FromController)?.output ?: return@filter false
+            val respond = out as? ControllerOutput.Respond ?: return@filter false
             respond.target == aircraftId && respond.response is RunwayObstructionInformation
-        } ?: fail(
-            "Controller never transmitted RunwayObstructionInformation companion to $aircraftId " +
-                "— the pre-clearance reason-on-radio (CAP 413 §4.55-4.56, ICAO §12.3.4.16(d) + " +
-                "§8.9.6.1.8) was not emitted alongside ContinueApproach. The companion is " +
-                "mandatory; without it the CA instruction lacks the structured doctrinal reason.\n$journey"
-        )
+        }
+        check(allCompanionRecords.size == 1) {
+            val compSummary = allCompanionRecords.joinToString("\n  ") { rec ->
+                "[${rec.time.millis}ms] ${rec.utterance}"
+            }
+            "Exactly-one-companion pin: expected exactly one RunwayObstructionInformation " +
+                "companion to $aircraftId, observed ${allCompanionRecords.size}. Records:\n" +
+                "  $compSummary\nDuplicates indicate `deriveCompanionOutputs` fired for multiple " +
+                "CA outputs in the run — either the no-refire witness failed to suppress the rule, " +
+                "or two different rules produced obstruction-info actions in one cycle.\n$journey"
+        }
+        val companionRecord = allCompanionRecords.single()
         val companionMs = companionRecord.time.millis
         val companionRespond = (companionRecord.utterance as Utterance.FromController).output
             as ControllerOutput.Respond

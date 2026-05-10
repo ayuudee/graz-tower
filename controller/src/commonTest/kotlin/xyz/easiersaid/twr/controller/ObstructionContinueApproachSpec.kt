@@ -331,6 +331,70 @@ class ObstructionContinueApproachSpec {
         }
     }
 
+    // ── Pin 6b: re-arm gate (fn-13.2 codex round-3 fix) ──────────────────
+
+    @Test
+    fun `re-arm gate — late-arriving Downwind on AwaitApproach must NOT clear the CA witness`() {
+        // fn-13.2 codex round-3 regression: when the AwaitApproach commitment
+        // was formed directly (no AwaitDownwind step — single-aircraft
+        // post-departure where the prior TOWER_DEPARTURE completed and the
+        // fresh TOWER_ARRIVAL skipped AwaitDownwind because the aircraft is
+        // already a circuit-traffic airborne arrival), the pilot's
+        // Report(Downwind) from THIS approach attempt is delivered to the
+        // controller AFTER radio latency — typically several cycles later,
+        // AFTER the CA rule has already fired and set the witness.
+        //
+        // Without the fn-13.2 stage gate, that late Report(Downwind) would
+        // re-arm the witness on the AwaitApproach commitment, letting the
+        // CA rule fire AGAIN on the same approach attempt (duplicate CA +
+        // duplicate companion). The gate (`stage == AwaitDownwind`) prevents
+        // this: re-arm only fires when the commitment is genuinely in the
+        // recovery downwind window (post-GA regression OR pre-AwaitApproach
+        // entry), NOT on an AwaitApproach commitment that just-fired the CA.
+        val obs = RunwayObstruction(clearsAt = SimTime.ofMillis(15_000))
+        val previous = baseBeliefs(
+            stage = TowerArrivalStage.AwaitApproach,
+            obstruction = obs,
+        ).let { b ->
+            val c = b.commitments.getValue(AC).copy(
+                continueApproachIssuedThisAttempt = true,
+            )
+            b.copy(commitments = b.commitments + (AC to c))
+        }
+        val view = baseView(
+            point = PointId("FINAL"), // aircraft already past downwind, on final
+            groundSpeed = Knots.unsafe(80),
+            receivedMessages = listOf(
+                ReceivedMessage.Clear(
+                    aircraft = AC,
+                    transmission = Report(
+                        events = listOf(ReportEvent.Downwind(circuitIntent = null)),
+                    ),
+                ),
+            ),
+        )
+
+        val result = controllerDecide(view, previous, worldWithRunway())
+
+        val updated = result.updatedBeliefs.commitments[AC]
+            ?: error("Commitment must persist; got ${result.updatedBeliefs.commitments}")
+        check(updated.continueApproachIssuedThisAttempt) {
+            "fn-13.2 re-arm gate regression: late-arriving Report(Downwind) on AwaitApproach " +
+                "commitment must NOT clear the CA witness (the witness suppresses re-fire for " +
+                "the duration of the CURRENT approach attempt). Got " +
+                "continueApproachIssuedThisAttempt=${updated.continueApproachIssuedThisAttempt}."
+        }
+        // Additionally: the CA rule must NOT re-fire — the witness suppression
+        // is the load-bearing pin. Even if the witness was somehow flipped,
+        // the rule re-firing would be the observable regression.
+        check(result.outputs.filterIsInstance<ControllerOutput.Instruct>()
+            .none { it.instruction is ContinueApproach }) {
+            "fn-13.2 re-arm gate regression: CA rule must NOT re-fire on AwaitApproach commitment " +
+                "with witness=true even when a Report(Downwind) arrives in events. Got: " +
+                "${result.outputs.filterIsInstance<ControllerOutput.Instruct>().filter { it.instruction is ContinueApproach }}"
+        }
+    }
+
     // ── Pin 7: escalation to GA + supersession of stale CA coord ─────────
 
     @Test

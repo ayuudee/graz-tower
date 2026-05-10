@@ -548,15 +548,43 @@ private fun reconcileTowerArrival(
     // same trigger so the fresh recovery approach can drive both a fresh
     // obstruction GA and a fresh CONTINUE APPROACH if the obstruction
     // pattern recurs.
+    //
+    // **fn-13.2 (codex round-3 fix — late-Downwind regression)**: the
+    // re-arm trigger must gate on the commitment's stage being
+    // `AwaitDownwind`, NOT just on a Downwind report arriving this cycle.
+    //
+    // The bug it prevents: a single-aircraft fresh-arrival commitment is
+    // formed directly at `AwaitApproach` (the prior `TOWER_DEPARTURE`
+    // completed at takeoff observation, and `reconcileCommitments` skips
+    // `AwaitDownwind` for an already-airborne circuit-traffic aircraft).
+    // The pilot's `Report(Downwind)` from that arrival is delivered to
+    // the controller's inbox AFTER radio latency — i.e. several cycles
+    // AFTER the AwaitApproach commitment formed AND after the CA rule
+    // already fired and set the witness. Without the stage gate, the
+    // late-arriving Downwind report would trigger re-arm, clear the
+    // witness, and let the CA rule fire again on the SAME approach
+    // attempt — duplicating both the CA instruction and its
+    // `RunwayObstructionInformation` companion.
+    //
+    // The stage gate keeps the recovery-circuit behaviour intact: after
+    // a GA fires from `AwaitApproach`/`LandingClearanceIssued`/
+    // `AwaitLandedObserved`, `advanceCommittedStages`'s regression-reset
+    // flips the stage to `AwaitDownwind`. The pilot then re-reports
+    // Downwind from the recovery circuit; the re-arm fires correctly
+    // because the stage is now `AwaitDownwind`. Symmetric for the
+    // obstruction-GA witness on the same recovery path.
     val downwindReportedThisCycle = events.any { ev ->
         ev is xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported &&
             ev.aircraft == acId &&
             ev.event is xyz.easiersaid.twr.protocol.ReportEvent.Downwind
     }
+    val stageAllowsRearm = withReports.stage == TowerArrivalStage.AwaitDownwind
     val needsObstructionGaRearm =
-        downwindReportedThisCycle && withReports.obstructionGoAroundIssuedThisAttempt
+        downwindReportedThisCycle && stageAllowsRearm &&
+            withReports.obstructionGoAroundIssuedThisAttempt
     val needsContinueApproachRearm =
-        downwindReportedThisCycle && withReports.continueApproachIssuedThisAttempt
+        downwindReportedThisCycle && stageAllowsRearm &&
+            withReports.continueApproachIssuedThisAttempt
     return when {
         needsObstructionGaRearm && needsContinueApproachRearm -> withReports.copy(
             obstructionGoAroundIssuedThisAttempt = false,
