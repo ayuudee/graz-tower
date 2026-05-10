@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-09T11:24:33.159441Z",
+  "depends_on": [
+    "fn-10-complete-remaining-source-window.1"
+  ],
+  "epic": "fn-10-complete-remaining-source-window",
+  "id": "fn-10-complete-remaining-source-window.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-10-complete-remaining-source-window.2.md",
+  "status": "todo",
+  "title": "Ingest and promote hardened windows",
+  "updated_at": "2026-05-09T11:24:33.159453Z"
+}

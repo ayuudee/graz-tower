@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-09T11:24:33.016924Z",
+  "depends_on": [],
+  "epic": "fn-10-complete-remaining-source-window",
+  "id": "fn-10-complete-remaining-source-window.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-10-complete-remaining-source-window.1.md",
+  "status": "todo",
+  "title": "Harden the 82 remaining source windows",
+  "updated_at": "2026-05-09T11:24:43.118855Z"
+}

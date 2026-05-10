@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-09T10:36:16.503809Z",
+  "depends_on": [],
+  "epic": "fn-9-current-source-unit-production-readiness",
+  "id": "fn-9-current-source-unit-production-readiness.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-9-current-source-unit-production-readiness.1.md",
+  "status": "todo",
+  "title": "Stabilize current source status baseline",
+  "updated_at": "2026-05-09T10:44:38.426983Z"
+}
