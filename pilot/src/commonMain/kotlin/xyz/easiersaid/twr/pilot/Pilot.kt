@@ -121,22 +121,31 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     } else null
 
     // 2. ATC-reactive (fn-12.2). Inspects [PilotMission.pendingAtcGoAroundFrom]
-    //    set by `handleGoAround` BEFORE its tree rewrite. Two-layer flag-
-    //    clear defense: layer 1 — `handleGoAround` only sets the flag when
-    //    on-final-eligible; layer 2 — this arm clears the flag on every
-    //    inspection, regardless of whether the discriminator fires. The
-    //    single-cycle lifetime invariant must survive across all three GA
-    //    paths' precedence — see post-fold flag re-clear below.
+    //    set by `handleGoAround` BEFORE its tree rewrite. Only runs when
+    //    trained-GA did NOT fire — trained-GA short-circuits per spec
+    //    R9c. When trained-GA wins, the flag is still defensively cleared
+    //    via the post-fold reconciliation below (single-cycle invariant)
+    //    WITHOUT constructing the typed event leaf or invoking the apply
+    //    function — that would produce dead writes masked by trained-GA's
+    //    precedence.
+    //
+    //    Two-layer flag-clear defense: layer 1 — `handleGoAround` only
+    //    sets the flag when on-final-eligible; layer 2 — both this
+    //    recognition arm (when invoked) and the post-fold reconciliation
+    //    below clear the flag on every cycle, so the single-cycle
+    //    lifetime invariant holds across all three GA paths' precedence.
     //
     //    Constructs [PilotEvent.AtcGoAroundOnFinal] at the recognition
     //    site (NOT in `derivePilotEvent`) for trace coherence; the apply
     //    function does not consume the event payload but the leaf
     //    formalises the typed channel parallel to fn-11.1.
-    val atcGoAroundOutcome = recognizeAtcInitiatedGoAround(
-        aircraft = aircraft,
-        mission = cognitive.updatedMission,
-        world = input.world,
-    )
+    val atcGoAroundOutcome: RecognizedAtcGoAround? = if (plannedGoAround == null) {
+        recognizeAtcInitiatedGoAround(
+            aircraft = aircraft,
+            mission = cognitive.updatedMission,
+            world = input.world,
+        )
+    } else null
 
     // 3. Self-initiated (Pass 16). Only when neither trained-GA nor
     //    ATC-reactive fired. Self-init's trigger predicate is independent
@@ -149,29 +158,15 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
 
     // Effective mission: trained-GA → ATC-reactive (only when it fired
     // intent) → self-init → cognitive baseline. The post-fold flag re-clear
-    // below restores the single-cycle invariant for any path that doesn't
-    // already carry the flag-clear write.
+    // below restores the single-cycle invariant for whichever path won.
     val effectiveMission = (
         plannedGoAround?.mission
             ?: (atcGoAroundOutcome?.mission?.takeIf { atcGoAroundOutcome.intent != null })
             ?: goAround?.mission
             ?: atcGoAroundOutcome?.mission  // discriminator-fail path: flag-cleared mission
             ?: cognitive.updatedMission
-        ).let { selectedMission ->
-            // Single-cycle flag-clear invariant: if the ATC recognition arm
-            // ran (i.e. flag was Some on entry), it ALWAYS produces a
-            // mission with the flag cleared. Re-apply that write to
-            // whichever mission won, so trained-GA / self-init paths
-            // (which build their missions from `cognitive.updatedMission`,
-            // unaware of the flag) cannot accidentally let the flag
-            // survive across cycles. Idempotent — `.copy(flag = None)` on a
-            // None field is a no-op.
-            if (atcGoAroundOutcome != null) {
-                selectedMission.copy(pendingAtcGoAroundFrom = None)
-            } else {
-                selectedMission
-            }
-        }
+        )
+        .copy(pendingAtcGoAroundFrom = None)  // single-cycle invariant: flag NEVER persists
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
     // Plan execution: if the current task needs an airborne route the pilot

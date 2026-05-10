@@ -8,23 +8,35 @@ import xyz.easiersaid.twr.protocol.AircraftId
 
 /**
  * Sealed pilot proactive-event channel — parallel to `ControllerEvent`
- * in `:controller/observe`. Pass 16 (D-AUDIT.9 partial closure) lands
- * the architectural shape with one leaf:
- * [DecisionAltitudeWithoutClearance]. Future leaves land with their
- * consumers (filed as D-AUDIT.9.II–V-FOLLOWUP).
+ * in `:controller/observe`. Pass 16 (D-AUDIT.9 partial closure) introduced
+ * the architectural shape with [DecisionAltitudeWithoutClearance];
+ * fn-12.2 (G3a-obstruction) added [AtcGoAroundOnFinal] as the second leaf.
+ *
+ * **Current leaf set (2 leaves)**:
+ *  - [DecisionAltitudeWithoutClearance] — pilot has descended to or below
+ *    decision altitude without a landing clearance (self-initiated GA
+ *    trigger).
+ *  - [AtcGoAroundOnFinal] — ATC issued `Instruction.GoAround` and
+ *    `handleGoAround` recorded the pre-rewrite on-final step on the
+ *    mission flag (ATC-reactive GA trigger).
+ *
+ * Future leaves land with their consumers (filed as
+ * D-AUDIT.9.II–V-FOLLOWUP) — the sealed shape is open to extension via
+ * additional leaves, each with its own recognition site and response
+ * function.
  *
  * **Two recognition axes** (per fn-12.2 G3a-obstruction):
  *  - **Self-initiated events** are derived purely from `(AircraftState,
  *    PilotMission)` by [derivePilotEvent] — observation-to-event derivation
  *    with no time dependency today. [DecisionAltitudeWithoutClearance] is
- *    the canonical example.
+ *    derived here.
  *  - **Post-cognitive flag-driven events** are constructed at decision time
  *    in `pilotDecide` from transient mission flags written by the cognitive
  *    layer (`pilotCognitiveDecide` / `processInstruction`). The recognition
  *    site is `pilotDecide`, NOT [derivePilotEvent], because the trigger
  *    state — e.g. [PilotMission.pendingAtcGoAroundFrom] — is set by the
- *    cognitive cycle that just ran. [AtcGoAroundOnFinal] is the canonical
- *    example: ATC issued `Instruction.GoAround`, `processInstruction`
+ *    cognitive cycle that just ran. [AtcGoAroundOnFinal] is constructed
+ *    here: ATC issued `Instruction.GoAround`, `processInstruction`
  *    rewrote the mission tree, and `handleGoAround` stamped the
  *    pre-rewrite step onto the mission for the recognition arm in
  *    `pilotDecide` to consume.
