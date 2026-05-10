@@ -33,6 +33,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -699,16 +700,18 @@ class PilotAtcInitiatedGoAroundSpec {
      * apply (defensive — trained-GA's natural flow never sets the flag,
      * but mutual-exclusivity is a stated invariant).
      *
-     * Construct a pathological scenario where a trained-GA mission has
-     * the flag artificially set; the trained-GA Tick A's intent should
-     * fire (which is structurally identical to ATC-reactive, but must be
-     * sourced from `applyPlannedGoAround`, not `applyAtcInitiatedGoAround`).
-     * The pin: the flag is still cleared (single-cycle invariant), and
-     * the trained-GA mission state (post-`resetForGoAround`) is what
-     * survives.
+     * **Reset-sensitive sentinels** distinguish the two paths:
+     *  - `applyPlannedGoAround` calls `mission.resetForGoAround(now)`,
+     *    which clears `hasClearance`, `altitudeRestrictionM`, etc.
+     *  - `applyAtcInitiatedGoAround` is INTENT-ONLY (does NOT call
+     *    resetForGoAround) — sentinel fields would survive.
+     *
+     * Pin: seed sentinels, run pilotDecide, assert the trained-GA reset
+     * actually fired. If the precedence regressed (ATC-reactive winning),
+     * the sentinels would survive and the assertion would fail.
      */
     @Test
-    fun `precedence — trained-GA wins over ATC-reactive (flag still cleared)`() {
+    fun `precedence — trained-GA wins over ATC-reactive (reset-sensitive sentinel pin)`() {
         // Walk a trained-GA mission to FLY_FINAL_TO_SHORT_FINAL — the
         // trained-GA Tick A trigger.
         val goal = HighLevelGoal.CircuitTraining(
@@ -732,9 +735,17 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = mission.copy(root = mission.root.markComplete(step))
         }
         assertEquals(MissionStep.FLY_FINAL_TO_SHORT_FINAL, mission.currentTask?.step)
-        // Manually inject a stale ATC flag — trained-GA would normally
-        // never have this; this is the defensive precedence pin.
-        mission = mission.copy(pendingAtcGoAroundFrom = Some(MissionStep.FLY_FINAL))
+        // Reset-sensitive sentinels — applyPlannedGoAround clears these
+        // via resetForGoAround; applyAtcInitiatedGoAround leaves them
+        // untouched. Together they discriminate trained-GA from ATC.
+        // Plus the stale ATC-flag (which trained-GA would normally never
+        // have set). The defensive precedence pin: trained-GA must win.
+        mission = mission.copy(
+            pendingAtcGoAroundFrom = Some(MissionStep.FLY_FINAL),
+            hasClearance = true,
+            altitudeRestrictionM = Some(80.0),
+            activeConstraints = setOf(ActiveConstraint.ExtendingDownwind),
+        )
 
         val world = syntheticWorld()
         val worldIndex = world.buildWorldIndex()
@@ -747,19 +758,124 @@ class PilotAtcInitiatedGoAroundSpec {
             PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
-        // Trained-GA Tick A intent shape (same shape as ATC-reactive, so
-        // we can't discriminate by intent alone — pin via mission state:
-        // trained-GA calls `mission.resetForGoAround(now)` in
-        // `applyPlannedGoAround`, which IS the structural difference).
+        // Trained-GA Tick A intent shape (same shape as ATC-reactive).
         assertEquals(PilotPhase.Final, output.intent.phase)
         assertEquals(PilotRoute.None, output.intent.route)
-        // Flag still cleared (single-cycle invariant survives precedence).
         val newMission = output.updatedMission ?: fail("updatedMission must be non-null")
+        // ── Reset-sensitive sentinel pins ──
+        // Trained-GA's applyPlannedGoAround calls resetForGoAround. If
+        // ATC-reactive had won (precedence regression), these would still
+        // be set (applyAtcInitiatedGoAround does NOT reset).
+        assertEquals(
+            false,
+            newMission.hasClearance,
+            "Trained-GA's applyPlannedGoAround calls resetForGoAround → hasClearance cleared. " +
+                "ATC-reactive's applyAtcInitiatedGoAround would PRESERVE hasClearance. " +
+                "If this assertion fails, ATC-reactive incorrectly won precedence over trained-GA.",
+        )
+        assertEquals(
+            None,
+            newMission.altitudeRestrictionM,
+            "Trained-GA reset clears altitudeRestrictionM; ATC-reactive does NOT.",
+        )
+        assertTrue(
+            newMission.activeConstraints.isEmpty(),
+            "Trained-GA reset clears activeConstraints; ATC-reactive does NOT.",
+        )
+        // Single-cycle flag-clear invariant survives the precedence chain.
         assertEquals(
             None,
             newMission.pendingAtcGoAroundFrom,
             "Single-cycle flag-clear invariant: even when trained-GA wins, the ATC-flag " +
-                "is cleared (post-fold reconciliation)",
+                "is cleared (post-fold reconciliation in pilotDecide)",
+        )
+    }
+
+    /**
+     * Discriminator-fail: genuinely non-Circuit mode (Visual). The flag
+     * is set + aircraft on-final, but `mission.navigationMode = Some(Visual)`
+     * — `isEffectiveCircuitMode` returns false (the stored field is
+     * checked first), so Tick A must NOT fire. Flag is defensively cleared.
+     *
+     * This is the negative-discriminator pin parallel to the positive
+     * `navigationMode=None + circuit-training tree-shape` pin above —
+     * verifies the helper correctly distinguishes Visual from Circuit
+     * even when both have an active runway and final-leg state.
+     *
+     * **Tested via `recognizeAtcInitiatedGoAround` directly** rather than
+     * a full `pilotDecide` round-trip: a Circuit-training-tree-shape
+     * mission with `navigationMode = Visual` is artificial (real missions
+     * derive consistently), and `planRoute` legitimately fails on the
+     * Visual-mode FINAL geometry of the synthetic test world. The
+     * discriminator unit is what we need to pin here, not the full
+     * end-to-end planning path.
+     */
+    @Test
+    fun `discriminator-fail — non-Circuit mode (Visual) does NOT fire Tick A`() {
+        // Mission has the on-final flag set but navigationMode = Visual.
+        val mission = missionAtStep(MissionStep.FLY_FINAL).copy(
+            navigationMode = Some(NavigationMode.Visual(RWY_ID, destination = null)),
+            pendingAtcGoAroundFrom = Some(MissionStep.FLY_FINAL),
+        )
+        val world = syntheticWorld()
+        val aircraft = aircraftAt(
+            phase = PilotPhase.Final,
+            altitudeM = 50.0,
+            mission = mission,
+        )
+        val recognized = recognizeAtcInitiatedGoAround(aircraft, mission, world)
+            ?: fail("recognize must return non-null when flag is Some")
+
+        // Discriminator MUST reject Visual mode — intent stays null even
+        // though the flag was Some.
+        assertNull(
+            recognized.intent,
+            "Visual mode + on-final flag MUST NOT fire Tick A. Discriminator must reject " +
+                "non-Circuit mode even with the flag set.",
+        )
+        // Event must be null when the discriminator rejected.
+        assertNull(
+            recognized.event,
+            "Visual-mode discriminator-fail: typed event must NOT be constructed",
+        )
+        // Defensive flag-clear: flag is cleared even though apply did not fire.
+        assertEquals(
+            None,
+            recognized.mission.pendingAtcGoAroundFrom,
+            "Visual-mode discriminator-fail: flag MUST still be defensively cleared",
+        )
+    }
+
+    /**
+     * Companion to the Visual-mode pin: the typed event leaf is constructed
+     * (and surfaced via `RecognizedAtcGoAround.event`) when the
+     * discriminator passes. Verifies the leaf is wired (not dead API)
+     * AND that future trace consumers can read it.
+     */
+    @Test
+    fun `recognize — typed event AtcGoAroundOnFinal is constructed when discriminator passes`() {
+        // Normal LOWG case (navigationMode = None, derived Circuit).
+        val mission = missionAtStep(MissionStep.LAND).copy(
+            pendingAtcGoAroundFrom = Some(MissionStep.LAND),
+            hasClearance = true,
+        )
+        val world = syntheticWorld()
+        val aircraft = aircraftAt(phase = PilotPhase.Final, altitudeM = 50.0, mission = mission)
+        val recognized = recognizeAtcInitiatedGoAround(aircraft, mission, world)
+            ?: fail("recognize must return non-null when flag is Some")
+
+        // Discriminator passed — Tick A apply fired.
+        assertNotNull(recognized.intent, "Tick A intent must be non-null when discriminator passes")
+        assertEquals(PilotPhase.Final, recognized.intent!!.phase)
+        assertEquals(PilotRoute.None, recognized.intent.route)
+        // Typed event leaf surfaced for trace consumers.
+        val event = recognized.event
+            ?: fail("RecognizedAtcGoAround.event must be non-null when discriminator passes")
+        assertEquals(ac, event.aircraft, "event carries aircraft id")
+        assertEquals(
+            MissionStep.LAND,
+            event.originalStep,
+            "event carries the pre-rewrite step the flag captured",
         )
     }
 

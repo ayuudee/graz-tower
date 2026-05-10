@@ -878,7 +878,7 @@ internal fun applyAtcInitiatedGoAround(
  *    but the discriminator fails — `mission` carries the cleared flag.
  *    Caller treats this as "use the cleared mission, no intent override."
  */
-private fun recognizeAtcInitiatedGoAround(
+internal fun recognizeAtcInitiatedGoAround(
     aircraft: AircraftState,
     mission: PilotMission,
     world: AviationWorld,
@@ -896,20 +896,25 @@ private fun recognizeAtcInitiatedGoAround(
         // Construct the typed event leaf at the recognition site (NOT in
         // `derivePilotEvent`) — this is the post-cognitive flag-driven
         // axis of `PilotEvent`, parallel to but distinct from
-        // `derivePilotEvent`'s pure-derivation axis. Currently the leaf
-        // is consumed only as a typed witness of recognition (no payload
-        // dispatch beyond the apply call); future trace consumers will
-        // read it like fn-11.1's `DecisionAltitudeWithoutClearance`.
-        @Suppress("UNUSED_VARIABLE")
+        // `derivePilotEvent`'s pure-derivation axis. Returned to the
+        // caller as a typed witness of recognition; future trace
+        // consumers (peer to fn-11.1's `DecisionAltitudeWithoutClearance`)
+        // will read it from `RecognizedAtcGoAround.event`.
         val event = xyz.easiersaid.twr.pilot.observe.PilotEvent.AtcGoAroundOnFinal(
             aircraft = aircraft.id,
             originalStep = flag,
         )
         val applied = applyAtcInitiatedGoAround(mission, aircraft)
-        RecognizedAtcGoAround(intent = applied.intent, mission = applied.mission)
+        RecognizedAtcGoAround(intent = applied.intent, mission = applied.mission, event = event)
     } else {
-        // Defensive flag-clear on discriminator-fail.
-        RecognizedAtcGoAround(intent = null, mission = mission.copy(pendingAtcGoAroundFrom = None))
+        // Defensive flag-clear on discriminator-fail. No event constructed
+        // — the recognition predicate explicitly rejected the trigger; an
+        // event leaf would mislead future trace consumers.
+        RecognizedAtcGoAround(
+            intent = null,
+            mission = mission.copy(pendingAtcGoAroundFrom = None),
+            event = null,
+        )
     }
 }
 
@@ -920,10 +925,14 @@ private fun recognizeAtcInitiatedGoAround(
  *  - [intent] null: discriminator failed, but the flag was Some and has
  *    been defensively cleared in [mission]; caller uses the cleared
  *    mission (no intent override).
+ *  - [event] non-null when (and only when) [intent] is non-null — the
+ *    typed witness of recognition for trace consumers. Future telemetry
+ *    will read this without needing to re-derive the trigger.
  */
-private data class RecognizedAtcGoAround(
+internal data class RecognizedAtcGoAround(
     val intent: PilotIntent?,
     val mission: PilotMission,
+    val event: xyz.easiersaid.twr.pilot.observe.PilotEvent.AtcGoAroundOnFinal?,
 )
 
 /**
@@ -945,7 +954,7 @@ private data class RecognizedAtcGoAround(
  *
  * Signature includes `world` because [deriveNavigationMode] needs it.
  */
-private fun isEffectiveCircuitMode(mission: PilotMission, world: AviationWorld): Boolean {
+internal fun isEffectiveCircuitMode(mission: PilotMission, world: AviationWorld): Boolean {
     mission.navigationMode.getOrNull()?.let { return it is NavigationMode.Circuit }
     val rwy = mission.activeRunway.getOrNull()?.runway ?: return false
     return deriveNavigationMode(mission.goal, rwy, world)
