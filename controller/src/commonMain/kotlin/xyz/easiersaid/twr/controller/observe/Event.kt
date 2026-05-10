@@ -37,26 +37,40 @@ import xyz.easiersaid.twr.protocol.Unable
 import xyz.easiersaid.twr.protocol.Wilco
 
 /**
- * Semantic events derived from received messages and belief deltas.
+ * Semantic events derived from received messages, belief deltas, and
+ * world-state changes.
  *
- * **Two source classes** (per fn-12):
- *  1. **Radio-derived** — derived from a [PilotTransmission] after physics +
- *     interpretation resolves it. Each leaf below that carries an
- *     `aircraft: AircraftId` field falls in this class. The
- *     `aircraftIdOf` / `intentFromRadio` helpers (in this module) assume
- *     this shape.
- *  2. **World-state-derived** — emitted directly by the sim's per-cycle
- *     world-diff producer when a world-model field changes value. The
- *     [RunwayObstructionDetected] and [RunwayObstructionCleared] leaves
- *     are the first instances. They carry no `AircraftId` payload (per-
- *     controller-scoped — see those KDocs) and are therefore **exempt
- *     from `aircraftIdOf`** aircraft-extraction. Helpers that walk all
- *     events must either filter to the radio-derived subset or handle the
- *     null-aircraft case explicitly.
+ * **Three source classes** (post fn-12):
+ *  1. **Radio-derived, aircraft-scoped** — derived from a
+ *     [PilotTransmission] after physics + interpretation resolves it.
+ *     Examples: [ReadyForDepartureReceived], [InitialContactReceived],
+ *     [PositionReported], [ReadbackReceived], [GoAroundDetected],
+ *     [UnableReceived], [TrafficInSightReceived], [PilotRequestReceived],
+ *     [CircuitIntentReported], [AircraftArrivalCommitted]. All emitted by
+ *     `deriveFromTransmission` in this module; all carry `aircraft:
+ *     AircraftId`.
+ *  2. **Controller-state-derived, aircraft-scoped** — emitted directly
+ *     by controller-side state transitions (not from radio). The current
+ *     instance is [ResponsibilityTaken], emitted when responsibility for
+ *     an aircraft is acquired (e.g. cross-aerodrome pickup); it carries
+ *     `aircraft: AircraftId` and `aircraftIdOf` returns it normally.
+ *  3. **World-state-derived, no-aircraft** — emitted directly by the
+ *     sim's per-cycle world-diff producer when a world-model field
+ *     changes value. The [RunwayObstructionDetected] and
+ *     [RunwayObstructionCleared] leaves are the first instances. They
+ *     carry no `AircraftId` payload (per-controller-scoped — see those
+ *     KDocs) and are therefore **exempt from `aircraftIdOf`** aircraft-
+ *     extraction. Helpers that walk all events must either filter to
+ *     aircraft-scoped events or handle the null-aircraft case explicitly.
  *
- * Both source classes flow through the same [BeliefState] fold pipeline.
- * The firewall contract is "typed events from world or radio, never raw
- * audio, never blocking calls" — see
+ * Filtering by "has an `aircraft` field" is NOT a reliable proxy for
+ * "radio-derived" — class 2 also carries `aircraft` without being radio-
+ * derived. Use `deriveFromTransmission` as the canonical radio-derivation
+ * site; everything else is non-radio.
+ *
+ * All three source classes flow through the same [BeliefState] fold
+ * pipeline. The firewall contract is "typed events from world or radio
+ * or controller-side state, never raw audio, never blocking calls" — see
  * `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
  * § Unified Event Taxonomy.
  */
