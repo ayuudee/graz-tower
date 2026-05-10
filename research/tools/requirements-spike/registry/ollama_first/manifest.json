@@ -2,7 +2,7 @@
   "schemaName": "ollama_first_registry_manifest",
   "formatVersion": "2026-04-28-v1",
   "createdAt": "2026-04-25T00:00:00Z",
-  "updatedAt": "2026-05-04T19:48:21Z",
+  "updatedAt": "2026-05-09T11:02:27Z",
   "counts": {
     "candidates": 431,
     "pending": 0,
@@ -18,10 +18,10 @@
       "slovenia-vfr-extracted": 15
     },
     "byAuthorityClass": {
-      "authoritative_requirement": 232,
+      "authoritative_requirement": 213,
       "background_support": 14,
       "best_practice": 48,
-      "operational_guidance": 137
+      "operational_guidance": 156
     },
     "byModality": {
       "example": 13,

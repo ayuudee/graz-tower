@@ -1,0 +1,1842 @@
+{
+  "schemaName": "requirements_source_unit_package",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:12:37Z",
+  "sourceFrameId": "fn9-current-frame-2026-05-09",
+  "documentId": "egast-vfr-extracted",
+  "documentTitle": "EGAST GA9 — VFR Phraseology Pocket Guide",
+  "sourcePath": "research/txt/egast-vfr-extracted.txt",
+  "manifestPath": "research/tools/requirements-spike/documents/egast.json",
+  "packageStatus": "ready",
+  "closureReadiness": "package-ready",
+  "closureReason": "manifested windows landed, no pending records, no source-window hardening backlog",
+  "sections": [
+    {
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "sourceRef": "research/txt/egast-vfr-extracted.txt:539-608",
+      "acceptedRecords": 17,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "notes": "Readback advisory family. Mixed best-practice prose, bullet list of items requiring readback, acknowledgement-by-callsign rule, Wilco usage, and read-back-when-required guidance, with inline page-layout noise. No clause numbering."
+    }
+  ],
+  "sourceUnits": [
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::00298a278a5c629e",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "‘Wilco’ may be used for brevity, or where readback of an instruction or part of an instruction might be confused with a transmission advising completion of the action instructed.",
+      "rationale": "Consistent advisory requirement for acknowledging non-readback transmissions.",
+      "modality": "may",
+      "authorityClass": "best_practice",
+      "requirementKind": "phraseology_rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "It may be used for brevity, or where readback of an instruction or part of an instruction might be confused with a transmission advising completion of the action instructed."
+      ],
+      "sourceItemIds": [
+        "clause_ack_callsign"
+      ],
+      "claimSha256": "2674d1de8bddb1d7c7751c0e2a8234693fa801deb3d9d606fd46640c352f9412",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "rr13_manual_repair_2026-04-29:readback_advisory:2674d1de8bdd",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3,
+        "runStartedAt": "2026-04-28T19:35:19Z"
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "invariantViolated": false,
+          "modality": "may",
+          "authorityClass": "best_practice"
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "manual_missing_record_accept",
+          "confidence": "high",
+          "reasoning": "Added source-supported EGAST readback guidance missing from the accepted registry.",
+          "model": "codex-same-agent",
+          "runId": "rr13_manual_repair_2026-04-29",
+          "appliedAt": "2026-04-29T20:18:31Z"
+        },
+        "manualRepair": {
+          "runId": "rr13_manual_repair_2026-04-29",
+          "reasoning": "Added source-supported EGAST readback guidance missing from the accepted registry.",
+          "appliedAt": "2026-04-29T20:18:31Z",
+          "previousCanonicalId": "egast-vfr-extracted::readback_advisory::ea54527cb9d9e0fa"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "human"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-29T20:18:31Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::1219ed8ddedc98c5",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "‘Wilco’ means ‘I understand your message and will comply’. It should not be used in place of a full read back of the items on page 10.",
+      "rationale": "Consistent definition and prohibition against using Wilco as a substitute for full readback.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "‘Wilco’ means ‘I understand your message and will comply’.",
+        "It should not be used in place of a full read back of the items on page 10."
+      ],
+      "sourceItemIds": [
+        "clause_wilco_def"
+      ],
+      "claimSha256": "29d3a05feab708131ee85b0715ae7d6f6fefdcfa79a80d197a84843303138a95",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_wilco_definition",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "medium"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": true
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::1576d7c0cb75108a",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "When a read back is required you must ensure it is complete and follow it with your callsign.",
+      "rationale": "Consistent mandatory requirement for completeness and callsign inclusion.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "When a read back is required you must ensure it is complete and follow it with your callsign."
+      ],
+      "sourceItemIds": [
+        "clause_readback_procedure"
+      ],
+      "claimSha256": "4391e7ad2afdc1773709151fe8eae1f414d05ff3b996a03d00a5304b5a39ed5b",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_complete",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::1e77905db6680e43",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "If departure instructions are transmitted together with a take-off clearance, it may be more logical to read back the take-off clearance first, followed by the departure instructions.",
+      "rationale": "Consistent advisory requirement for acknowledging non-readback transmissions.",
+      "modality": "may",
+      "authorityClass": "best_practice",
+      "requirementKind": "best_practice",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "if departure instructions are transmitted together with a take-off clearance, it may be more logical to read back the take-off clearance first, followed by the departure instructions."
+      ],
+      "sourceItemIds": [
+        "clause_ack_callsign"
+      ],
+      "claimSha256": "38e4296a28561034de1766f129a764b48732d2a8a99643f4205523ee43e72156",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "rr13_manual_repair_2026-04-29:readback_advisory:38e4296a2856",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3,
+        "runStartedAt": "2026-04-28T19:35:19Z"
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "invariantViolated": false,
+          "modality": "may",
+          "authorityClass": "best_practice"
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "manual_missing_record_accept",
+          "confidence": "high",
+          "reasoning": "Added source-supported EGAST readback guidance missing from the accepted registry.",
+          "model": "codex-same-agent",
+          "runId": "rr13_manual_repair_2026-04-29",
+          "appliedAt": "2026-04-29T20:18:31Z"
+        },
+        "manualRepair": {
+          "runId": "rr13_manual_repair_2026-04-29",
+          "reasoning": "Added source-supported EGAST readback guidance missing from the accepted registry.",
+          "appliedAt": "2026-04-29T20:18:31Z",
+          "previousCanonicalId": "egast-vfr-extracted::readback_advisory::ea54527cb9d9e0fa"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "human"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-29T20:18:31Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::2a5d4629a99284e3",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "If in any doubt you must request clarification.",
+      "rationale": "Consistent mandatory requirement to request clarification when in doubt.",
+      "modality": "must",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "If in any doubt you must request clarification."
+      ],
+      "sourceItemIds": [
+        "clause_general_advice"
+      ],
+      "claimSha256": "2de1330a968df03cd139e2cec9a47401dd142b722feb560c0d01e5bb91fc3ee8",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_request_clarification",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "must",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote_with_corrections",
+          "reasoning": "The claim text is verbatim supported by the source, and the source uses the word “must” for this specific instruction. Because the authority class is already best_practice, this does not improperly elevate the advisory document to an authoritative requirement, but the modality should match the source wording.",
+          "corrections": {
+            "modality": "must"
+          },
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:08:15Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "needs_human_review",
+          "confidence": "medium"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:08:15Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::2c0a6da5b0abc95f",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Reading back a clearance and any safety critical information helps both the pilot and the controller understand what the aircraft has been instructed to do.",
+      "rationale": "Background support explaining the rationale for readbacks, not a direct operational obligation.",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "requirementKind": "background_support",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "support_only",
+      "exactSourceQuotes": [
+        "Reading back a clearance and any safety critical information helps both the pilot and the controller understand what the aircraft has been instructed to do."
+      ],
+      "sourceItemIds": [
+        "clause_general_advice"
+      ],
+      "claimSha256": "b511a66f1c5e06961312bc1f1166a8077e6369aa6a65a14f178566e350d80579",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "sup_readback_benefit",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "note",
+          "authorityClass": "background_support",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote_with_corrections",
+          "reasoning": "The quote is verbatim and the claim accurately captures explanatory background rather than an operative readback obligation. Because the source wording is non-normative rationale, it should remain a note but be classified as background support rather than best practice.",
+          "corrections": {
+            "authorityClass": "background_support",
+            "requirementKind": "background_support"
+          },
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:08:39Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:08:39Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::4c550f13299b2142",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing clearances/instructions to enter, land on, take-off from, hold short of, cross or backtrack any runway must be read back.",
+      "rationale": "Consistent mandatory readback requirement for runway operations across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "Clearances/instructions to enter, land on, take-off from, hold short of, cross or backtrack any runway"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_runway"
+      ],
+      "claimSha256": "7a06f37e85ef91b08be4858785a7d04cd4b8eecf47f7a6ed53293cf76b083cf7",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_runway",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::5faf696eefce9006",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing altimeter settings must be read back.",
+      "rationale": "Consistent mandatory readback requirement for altimeter settings across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "Altimeter settings"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_altimeter"
+      ],
+      "claimSha256": "96aa6cda9f0440f0fda94852e1712750feae34d54a24797147e64c9173d02970",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_altimeter",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::60929bb516ae7098",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "It is normally best to read back the items in the order given.",
+      "rationale": "Advisory best practice for readback order, explicitly allowing exceptions.",
+      "modality": "should",
+      "authorityClass": "best_practice",
+      "requirementKind": "best_practice",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "It is normally best to read back the items in the order given"
+      ],
+      "sourceItemIds": [
+        "clause_readback_procedure"
+      ],
+      "claimSha256": "f8ecd3a0fa9bd661dbae320f513a2828535bae8bfe35dda77aab586c41e15f79",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_order",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quote exists verbatim and supports the claim as an advisory best-practice statement, with no identity-field problem. The candidate is atomic and is not already covered by the accepted siblings; the pending status appears to stem from the advisory-only handling rather than a substantive defect.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:08:52Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:08:52Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::612775fd37fd5576",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing transition levels must be read back.",
+      "rationale": "Consistent mandatory readback requirement for transition levels across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "Transition levels"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_transition"
+      ],
+      "claimSha256": "5bb501737ee07a9e890f50a99fb2aa3a5867ebc95c431b6bd286bbe6e940b0d8",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_transition",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::774c1fdb78d8d6f4",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing speed instructions must be read back.",
+      "rationale": "Consistent mandatory readback requirement for speed instructions across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "Speed instructions"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_speed"
+      ],
+      "claimSha256": "402f646fc25607afb571ceb785716c43a8dda5d7bf91d556e61c4abb1429a378",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_speed",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::88d9700208363bf5",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing ATC route clearance must be read back.",
+      "rationale": "Consistent mandatory readback requirement for ATC route clearance across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "ATC route clearance"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_route_clearance"
+      ],
+      "claimSha256": "bf8906111a0aa5df7ce0cdc7ea489802344171ed2157a9934e1e7dbb9325dcb7",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_route",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::987300b2eaab8d13",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing the runway in use must be read back.",
+      "rationale": "Consistent mandatory readback requirement for runway in use across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "Runway in use"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_runway_in_use"
+      ],
+      "claimSha256": "e67b7aef3c542597dfc329065a61b8317f4e8ae77a45020de4ade2d64fecd59a",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_runway_in_use",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::b3c3324d8aecf8df",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing level or heading instructions must be read back.",
+      "rationale": "Consistent mandatory readback requirement for level/heading instructions across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "Level or heading instructions"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_level_heading"
+      ],
+      "claimSha256": "723b700faf8e7785cd30f1371d897fff3be4d4e87e9aab1c74df827063dcaa5f",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_level_heading",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::ea54527cb9d9e0fa",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "If a transmission contains information that does not need to be read back, you should acknowledge by transmitting your callsign.",
+      "rationale": "Consistent advisory requirement for acknowledging non-readback transmissions.",
+      "modality": "should",
+      "authorityClass": "best_practice",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "If a transmission contains information that does not need to be read back, you should acknowledge by transmitting your callsign."
+      ],
+      "sourceItemIds": [
+        "clause_ack_callsign"
+      ],
+      "claimSha256": "17e23ea6b1c1d205f14a45d3cdbda90dea3c1ddf11964c8d18fb0ccc4ade5983",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_ack_callsign",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "medium"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": true
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::f1c9d615439c5349",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "You may also transmit your callsign together with the word ‘roger’, which means ‘I have received all your last transmission’.",
+      "rationale": "Consistent advisory requirement for acknowledging non-readback transmissions.",
+      "modality": "may",
+      "authorityClass": "best_practice",
+      "requirementKind": "phraseology_rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "You may also transmit your callsign together with the word ‘roger’, which means ‘I have received all your last transmission’."
+      ],
+      "sourceItemIds": [
+        "clause_ack_callsign"
+      ],
+      "claimSha256": "c415921d44f01a7db10b61cc7ad65e2dbd1d313aa9bf8b20c6da8074da155045",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "rr13_manual_repair_2026-04-29:readback_advisory:c415921d44f0",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3,
+        "runStartedAt": "2026-04-28T19:35:19Z"
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "invariantViolated": false,
+          "modality": "may",
+          "authorityClass": "best_practice"
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "manual_missing_record_accept",
+          "confidence": "high",
+          "reasoning": "Added source-supported EGAST readback guidance missing from the accepted registry.",
+          "model": "codex-same-agent",
+          "runId": "rr13_manual_repair_2026-04-29",
+          "appliedAt": "2026-04-29T20:18:31Z"
+        },
+        "manualRepair": {
+          "runId": "rr13_manual_repair_2026-04-29",
+          "reasoning": "Added source-supported EGAST readback guidance missing from the accepted registry.",
+          "appliedAt": "2026-04-29T20:18:31Z",
+          "previousCanonicalId": "egast-vfr-extracted::readback_advisory::ea54527cb9d9e0fa"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "human"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-29T20:18:31Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "egast-vfr-extracted::readback_advisory::fa15744547eaf342",
+      "documentId": "egast-vfr-extracted",
+      "sectionId": "readback_advisory",
+      "familyId": "egast_vfr_readback_family",
+      "claimText": "Messages containing SSR codes must be read back.",
+      "rationale": "Consistent mandatory readback requirement for SSR codes across all attempts.",
+      "modality": "shall",
+      "authorityClass": "best_practice",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Messages containing the following must be read back:",
+        "SSR codes"
+      ],
+      "sourceItemIds": [
+        "intro_readback_req",
+        "list_ssr"
+      ],
+      "claimSha256": "292e432b4b0ddf4fbcfc02d3691c9ea63105b723620310e9f130ec01698c5e0a",
+      "provenance": {
+        "sourcePath": "research/txt/egast-vfr-extracted.txt",
+        "sourceSha256": "baa8c22162a6e67a2b5b017bf8f5445b6dd3bfc9e34858c27a56bb23075943dd",
+        "startLine": 539,
+        "endLine": 608
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "egast_vfr_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_readback_ssr",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "best_practice",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/egast-vfr-extracted/readback_advisory/judged_candidates.json"
+      }
+    }
+  ],
+  "recordCounts": {
+    "accepted": 17,
+    "pending": 0,
+    "rejected": 0
+  },
+  "rejectedRecordIds": [],
+  "residualGaps": {
+    "highPriorityRowsNeedingSourceWindowHardening": 0
+  },
+  "blockers": [],
+  "nonClaims": [
+    "This package is per-source only; it does not integrate, deduplicate, or choose precedence across sources.",
+    "This package does not claim full corpus completeness, Nolan coverage, or EPPLS coverage."
+  ],
+  "validationEvidence": {
+    "closureReview": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/closure_report.json",
+    "sourceProgressReport": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-final/source_progress_report.json",
+    "quoteAudit": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/quote_audit.json",
+    "reproducibilityAudit": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/reproducibility_audit.json",
+    "adequacyAssessment": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame/adequacy_assessment.md"
+  }
+}

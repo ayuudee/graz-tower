@@ -1,0 +1,14 @@
+{
+  "schemaName": "requirements_source_package_validation",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:12:37Z",
+  "status": "pass",
+  "errors": [],
+  "counts": {
+    "packages": 8,
+    "ready": 3,
+    "scopedReady": 5,
+    "blocked": 0,
+    "sourceUnits": 431
+  }
+}

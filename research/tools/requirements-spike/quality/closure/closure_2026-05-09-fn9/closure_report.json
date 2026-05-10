@@ -1,0 +1,235 @@
+{
+  "schemaName": "current_source_unit_closure_review",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:09:16Z",
+  "sourceTask": "fn-9-current-source-unit-production-readiness.5",
+  "status": "pass_with_scoped_nonclaims",
+  "globalGates": {
+    "qualityGates": "pass: all 91 quality-gate tests passed",
+    "overrideContracts": "pass: all 13 contract tests passed",
+    "registryReproducibility": "pass",
+    "quoteAudit": "pass",
+    "flowValidation": "pass"
+  },
+  "counts": {
+    "manifestWindows": 47,
+    "landedManifestWindows": 47,
+    "pendingOnlyManifestWindows": 0,
+    "readyToIngestManifestWindows": 0,
+    "pendingCurationSections": 0,
+    "pendingCurationRecords": 0,
+    "highPriorityRowsNeedingSourceWindowHardening": 82,
+    "includedSources": 8,
+    "excludedFutureSources": 2,
+    "failedWindowRetryCandidates": 0
+  },
+  "quoteAuditSummary": {
+    "documentsAudited": 8,
+    "candidatesAudited": 431,
+    "totalQuotes": 546,
+    "totalMisses": 0,
+    "errors": 0,
+    "byDocument": {
+      "cap413-extracted": {
+        "candidatesAudited": 79,
+        "totalQuotes": 87,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "egast-vfr-extracted": {
+        "candidatesAudited": 17,
+        "totalQuotes": 26,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "h01-extracted": {
+        "candidatesAudited": 24,
+        "totalQuotes": 28,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "icao4444-extracted": {
+        "candidatesAudited": 186,
+        "totalQuotes": 220,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "icao9432-extracted": {
+        "candidatesAudited": 22,
+        "totalQuotes": 29,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "safetysense22-extracted": {
+        "candidatesAudited": 15,
+        "totalQuotes": 30,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "sera-923-2012-extracted": {
+        "candidatesAudited": 73,
+        "totalQuotes": 102,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "slovenia-vfr-extracted": {
+        "candidatesAudited": 15,
+        "totalQuotes": 24,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      }
+    }
+  },
+  "adequacyReview": {
+    "path": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame",
+    "recordSampleSize": 48,
+    "sectionSampleSize": 12,
+    "recordVerdictCounts": {
+      "correct": 48
+    },
+    "sectionVerdictCounts": {
+      "no_material_omission": 12
+    },
+    "methodNote": "80/20 gate-backed sample closure; exact semantic completeness remains bounded by source-level scoped non-claims."
+  },
+  "sourceClassifications": [
+    {
+      "documentId": "cap413-extracted",
+      "readiness": "scoped-package-ready",
+      "reason": "manifested windows are landed, but high-priority source-window hardening remains outside current package scope",
+      "manifestSections": 12,
+      "landedManifestSections": 12,
+      "acceptedRecords": 79,
+      "pendingRecords": 0,
+      "rejectedRecords": 4,
+      "highPriorityRowsNeedingSourceWindowHardening": 4,
+      "scopeNotes": []
+    },
+    {
+      "documentId": "egast-vfr-extracted",
+      "readiness": "package-ready",
+      "reason": "manifested windows landed, no pending records, no source-window hardening backlog",
+      "manifestSections": 1,
+      "landedManifestSections": 1,
+      "acceptedRecords": 17,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "highPriorityRowsNeedingSourceWindowHardening": 0,
+      "scopeNotes": []
+    },
+    {
+      "documentId": "h01-extracted",
+      "readiness": "scoped-package-ready",
+      "reason": "H01 is English-side scoped and not full-document complete; see H01 source readiness review",
+      "manifestSections": 4,
+      "landedManifestSections": 4,
+      "acceptedRecords": 24,
+      "pendingRecords": 0,
+      "rejectedRecords": 1,
+      "highPriorityRowsNeedingSourceWindowHardening": 10,
+      "scopeNotes": [
+        "Current H01 records are English-side scoped for manifested AIC A 21/23 sections 3.8.1-3.8.3; they do not certify German/English translation equivalence.",
+        "The H01 package must not claim full-document completeness while the source-window hardening backlog still contains high-priority H01 sections outside the manifested 3.8 windows."
+      ]
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "readiness": "scoped-package-ready",
+      "reason": "manifested windows are landed, but high-priority source-window hardening remains outside current package scope",
+      "manifestSections": 15,
+      "landedManifestSections": 15,
+      "acceptedRecords": 186,
+      "pendingRecords": 0,
+      "rejectedRecords": 19,
+      "highPriorityRowsNeedingSourceWindowHardening": 47,
+      "scopeNotes": []
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "readiness": "scoped-package-ready",
+      "reason": "manifested windows are landed, but high-priority source-window hardening remains outside current package scope",
+      "manifestSections": 4,
+      "landedManifestSections": 4,
+      "acceptedRecords": 22,
+      "pendingRecords": 0,
+      "rejectedRecords": 6,
+      "highPriorityRowsNeedingSourceWindowHardening": 13,
+      "scopeNotes": []
+    },
+    {
+      "documentId": "safetysense22-extracted",
+      "readiness": "package-ready",
+      "reason": "manifested windows landed, no pending records, no source-window hardening backlog",
+      "manifestSections": 1,
+      "landedManifestSections": 1,
+      "acceptedRecords": 15,
+      "pendingRecords": 0,
+      "rejectedRecords": 1,
+      "highPriorityRowsNeedingSourceWindowHardening": 0,
+      "scopeNotes": []
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "readiness": "scoped-package-ready",
+      "reason": "manifested windows are landed, but high-priority source-window hardening remains outside current package scope",
+      "manifestSections": 9,
+      "landedManifestSections": 9,
+      "acceptedRecords": 73,
+      "pendingRecords": 0,
+      "rejectedRecords": 3,
+      "highPriorityRowsNeedingSourceWindowHardening": 8,
+      "scopeNotes": []
+    },
+    {
+      "documentId": "slovenia-vfr-extracted",
+      "readiness": "package-ready",
+      "reason": "manifested windows landed, no pending records, no source-window hardening backlog",
+      "manifestSections": 1,
+      "landedManifestSections": 1,
+      "acceptedRecords": 15,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "highPriorityRowsNeedingSourceWindowHardening": 0,
+      "scopeNotes": []
+    }
+  ],
+  "residualGaps": {
+    "highPriorityRowsNeedingSourceWindowHardening": 82,
+    "readyToIngestManifestWindows": 0,
+    "pendingCurationRecords": 0,
+    "failedWindowRetryCandidates": 0,
+    "excludedFutureSources": [
+      {
+        "sourceKey": "nolan",
+        "classification": "excluded_future",
+        "reason": "not in current document-manifest/registry control set",
+        "evidencePaths": [
+          "research/txt/nolan-fundamentals-extracted.txt"
+        ]
+      },
+      {
+        "sourceKey": "eppls",
+        "classification": "excluded_future",
+        "reason": "not in current document-manifest/registry control set",
+        "evidencePaths": []
+      }
+    ]
+  },
+  "evidence": {
+    "sourceProgressReport": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-post-curation/source_progress_report.json",
+    "adequacyReviewPack": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame/review_pack.md",
+    "recordReviewCsv": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame/record_review.csv",
+    "sectionOmissionReviewCsv": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame/section_omission_review.csv",
+    "quoteAuditJson": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/quote_audit.json",
+    "reproducibilityAuditJson": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/reproducibility_audit.json",
+    "h01Review": "research/tools/requirements-spike/quality/h01_review/h01_review_2026-05-09-fn9/h01_review.md"
+  }
+}

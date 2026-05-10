@@ -5,25 +5,326 @@
   "defaultAuthorityCeiling": "operational_guidance",
   "sections": [
     {
+      "sectionId": "establishment_rtf_intro_3_3_to_3_3_1",
+      "familyId": "h01_rtf_communications_family",
+      "startLine": 3494,
+      "endLine": 3688,
+      "notes": "AIC A 21/23 \u00a73.3 through \u00a73.3.1 establishment of radiotelephony communications. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "establishment_rtf_ifr_initial_calls_3_3_1_1",
+      "familyId": "h01_rtf_communications_family",
+      "startLine": 3689,
+      "endLine": 3779,
+      "notes": "AIC A 21/23 \u00a73.3.1.1 IFR initial calls. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+      "familyId": "h01_rtf_communications_family",
+      "startLine": 3780,
+      "endLine": 3915,
+      "notes": "AIC A 21/23 \u00a73.3.1.2 VFR initial and subsequent ATS frequency calls. Bilingual layout; extract English-side content only."
+    },
+    {
       "sectionId": "acknowledgement_3_8_1",
       "familyId": "h01_readback_family",
       "startLine": 4197,
       "endLine": 4337,
-      "notes": "§3.8.1 ACKNOWLEDGEMENT OF RECEIPT, items a)-h). Bilingual German/English: each lettered item appears twice (German first, English second) with the same letter marker. Nested numbered list 1-4 (the items always to be read back) is laid out separately from its parent clause c) due to two-column extraction."
+      "notes": "\u00a73.8.1 ACKNOWLEDGEMENT OF RECEIPT, items a)-h). Bilingual German/English: each lettered item appears twice (German first, English second) with the same letter marker. Nested numbered list 1-4 (the items always to be read back) is laid out separately from its parent clause c) due to two-column extraction."
     },
     {
       "sectionId": "end_of_conversation_3_8_2",
       "familyId": "h01_end_of_conversation_family",
       "startLine": 4339,
       "endLine": 4348,
-      "notes": "§3.8.2 END OF CONVERSATION. Bilingual single-paragraph rule: a radiotelephone conversation shall be terminated by the receiving ATS unit or aircraft using its own callsign."
+      "notes": "\u00a73.8.2 END OF CONVERSATION. Bilingual single-paragraph rule: a radiotelephone conversation shall be terminated by the receiving ATS unit or aircraft using its own callsign."
     },
     {
       "sectionId": "corrections_3_8_3",
       "familyId": "h01_corrections_family",
       "startLine": 4359,
-      "endLine": 4500,
-      "notes": "§3.8.3 CORRECTIONS AND REPETITIONS, items a)-onwards. Bilingual German/English with shared lettered markers. CORRECTION/'CORRECTION I SAY AGAIN' phraseology rules, request-for-repetition phraseology."
+      "endLine": 4465,
+      "notes": "\u00a73.8.3 CORRECTIONS AND REPETITIONS, items a)-onwards. Bilingual German/English with shared lettered markers. CORRECTION/'CORRECTION I SAY AGAIN' phraseology rules, request-for-repetition phraseology."
+    },
+    {
+      "sectionId": "assurance_rtf_frequencies_3_9",
+      "familyId": "h01_assurance_rtf_frequency_family",
+      "startLine": 4467,
+      "endLine": 4485,
+      "notes": "\u00a73.9 ASSURANCE OF RTF COMMUNICATION/FREQUENCIES TO BE USED. Bilingual German/English: aircraft frequency-use obligation and air-ground control station frequency designation responsibility."
+    },
+    {
+      "sectionId": "transfer_vhf_communications_3_10",
+      "familyId": "h01_transfer_communications_family",
+      "startLine": 4631,
+      "endLine": 4746,
+      "notes": "AIC A 21/23 \u00a73.10 Transfer of VHF communications. Bilingual layout; extract English-side operational guidance and phraseology only."
+    },
+    {
+      "sectionId": "distress_urgency_general_4_1_1",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 4827,
+      "endLine": 4931,
+      "notes": "AIC A 21/23 \u00a74.1.1 general distress and urgency communication procedures. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "distress_aircraft_action_4_1_2_1",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 4932,
+      "endLine": 5055,
+      "notes": "AIC A 21/23 \u00a74.1.2.1 aircraft action in distress. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "distress_ats_action_4_1_2_2",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 5056,
+      "endLine": 5160,
+      "notes": "AIC A 21/23 \u00a74.1.2.2 ATS-unit action for distress communications. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 5161,
+      "endLine": 5307,
+      "notes": "AIC A 21/23 \u00a7\u00a74.1.2.3-4.1.2.5 distress silence, other ATS/aircraft action, and termination. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "urgency_aircraft_action_4_1_3_1",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 5308,
+      "endLine": 5407,
+      "notes": "AIC A 21/23 \u00a74.1.3.1 urgency aircraft action. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "urgency_ats_action_4_1_3_2",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 5408,
+      "endLine": 5486,
+      "notes": "AIC A 21/23 \u00a74.1.3.2 ATS action for urgency communications. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 5487,
+      "endLine": 5673,
+      "notes": "AIC A 21/23 \u00a7\u00a74.1.3.3-4.1.4 urgency action by others, medical transport, and emergency frequency use. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "unlawful_interference_direction_finding_4_2_to_4_3",
+      "familyId": "h01_contingency_family",
+      "startLine": 5674,
+      "endLine": 5819,
+      "notes": "AIC A 21/23 \u00a7\u00a74.2-4.3 unlawful interference and direction-finding material. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "voice_failure_air_ground_4_4_1",
+      "familyId": "h01_communications_failure_family",
+      "startLine": 5820,
+      "endLine": 6022,
+      "notes": "AIC A 21/23 \u00a74.4.1 air-ground voice communications failure. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "voice_failure_ground_air_relay_4_4_2",
+      "familyId": "h01_communications_failure_family",
+      "startLine": 6023,
+      "endLine": 6132,
+      "notes": "AIC A 21/23 \u00a74.4.2 ground-air relay communication technique. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 6133,
+      "endLine": 6264,
+      "notes": "AIC A 21/23 \u00a7\u00a74.5-4.6 blocked frequency and unauthorized ATC frequency use. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "minimum_fuel_transponder_emergency_4_7_to_4_8",
+      "familyId": "h01_contingency_communications_family",
+      "startLine": 6265,
+      "endLine": 6418,
+      "notes": "AIC A 21/23 \u00a7\u00a74.7-4.8 minimum fuel/fuel emergency and emergency transponder codes. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 6822,
+      "endLine": 6967,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.1-5.3.1.3 controlled-aerodrome ground time, towing, and start phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_pushback_deice_5_3_1_4_to_5_3_1_5",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 6968,
+      "endLine": 7107,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.4-5.3.1.5 pushback/powerback and de/anti-icing phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7108,
+      "endLine": 7275,
+      "notes": "AIC A 21/23 \u00a75.3.1.6 taxi procedures, bounded part 1. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part2",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7276,
+      "endLine": 7463,
+      "notes": "AIC A 21/23 \u00a75.3.1.6 taxi procedures, bounded part 2. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7464,
+      "endLine": 7592,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.7-5.3.1.8 departure instructions and runway entry. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7593,
+      "endLine": 7735,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.9-5.3.1.11 conditional clearances, take-off preparation, and intersection take-off. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7736,
+      "endLine": 7857,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.12-5.3.1.13 take-off and helicopter departure phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7858,
+      "endLine": 8001,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.2.1-5.3.2.3 airborne, control-zone, and circuit-entry phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 8002,
+      "endLine": 8114,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.2.4-5.3.2.6 circuit, delaying, and traffic-circuit reports. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 8115,
+      "endLine": 8265,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.2.7-5.3.2.11 touch-and-go, landing, helicopter landing, and missed approach phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+      "familyId": "h01_controlled_aerodrome_family",
+      "startLine": 8266,
+      "endLine": 8358,
+      "notes": "AIC A 21/23 \u00a75.3.3 controlled aerodrome after-landing and runway-vacating phraseology. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "uncontrolled_aerodromes_5_4",
+      "familyId": "h01_uncontrolled_aerodrome_family",
+      "startLine": 8359,
+      "endLine": 8517,
+      "notes": "AIC A 21/23 \u00a75.4 aerodromes without ATC: taxiing, IFR route clearances, departure, circuit intentions, leaving frequency, approach and landing. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "general_flight_handling_clearances_5_6_1",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 9212,
+      "endLine": 9395,
+      "notes": "AIC A 21/23 \u00a75.6.1 general flight-handling phraseology for ATC clearances, clearance contents, issuance, relay, readback confirmation, and delayed clearance. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 9396,
+      "endLine": 9605,
+      "notes": "AIC A 21/23 \u00a7\u00a75.6.2-5.6.5 transfer of control/communications, call-sign changes, holding, and delay information. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "general_flight_plan_rmz_5_6_6_to_5_6_7",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 9606,
+      "endLine": 9715,
+      "notes": "AIC A 21/23 \u00a7\u00a75.6.6-5.6.7 flight plan and RMZ phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_flight_rules_channel_5_6_8_to_5_6_9",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 9716,
+      "endLine": 9857,
+      "notes": "AIC A 21/23 \u00a7\u00a75.6.8-5.6.9 flight rules and 8.33 kHz channel-spacing phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 9858,
+      "endLine": 10020,
+      "notes": "AIC A 21/23 \u00a7\u00a75.6.10.1-5.6.10.3 traffic information phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 10021,
+      "endLine": 10125,
+      "notes": "AIC A 21/23 \u00a7\u00a75.6.10.4-5.6.10.6 traffic information with ATS surveillance and avoiding action. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_position_reporting_5_6_11",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 10126,
+      "endLine": 10320,
+      "notes": "AIC A 21/23 \u00a75.6.11 position-reporting phraseology for IFR/VFR, present position, specified-place reports, and omitted reports. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "general_levels_5_6_12",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 10321,
+      "endLine": 10445,
+      "notes": "AIC A 21/23 \u00a75.6.12 level instructions. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_level_changes_5_6_13",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 10446,
+      "endLine": 10617,
+      "notes": "AIC A 21/23 \u00a75.6.13 level changes, reports, and rates. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_speed_5_6_14",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 10618,
+      "endLine": 10725,
+      "notes": "AIC A 21/23 \u00a75.6.14 speed phraseology. Bilingual layout; extract English-side content only."
+    },
+    {
+      "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+      "familyId": "h01_general_flight_handling_family",
+      "startLine": 10726,
+      "endLine": 10907,
+      "notes": "AIC A 21/23 \u00a7\u00a75.6.15-5.6.21 controlled/other airspace warnings, direction finding, military escort/interception, banner/parachute drop, and aerobatics. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+      "familyId": "h01_phraseology_contingency_family",
+      "startLine": 12001,
+      "endLine": 12086,
+      "notes": "AIC A 21/23 \u00a7\u00a75.8.1-5.8.3 contingency phraseologies: general, aircraft communications failure, suspected loss of communication, and low altitude warning. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6",
+      "familyId": "h01_phraseology_contingency_family",
+      "startLine": 12087,
+      "endLine": 12181,
+      "notes": "AIC A 21/23 \u00a7\u00a75.8.4-5.8.6 emergency descent, fuel dumping, and visual inspection of landing gear phraseology. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+      "familyId": "h01_phraseology_contingency_family",
+      "startLine": 12182,
+      "endLine": 12285,
+      "notes": "AIC A 21/23 \u00a7\u00a75.8.7-5.8.9 miscellaneous contingency, VFR loss of position, and blocked runway phraseology. Bilingual layout; extract English-side phraseology only."
     }
   ]
 }

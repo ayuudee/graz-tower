@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-05-09T11:09:16Z",
+  "mode": "dry_run",
+  "registryRoot": "/home/andrew/dev/projects/twr2/research/tools/requirements-spike/registry/ollama_first",
+  "totalRecordsAudited": 465,
+  "totalUnexpectedFiles": 0,
+  "totalMismatches": 0,
+  "mismatches": [],
+  "status": "pass"
+}

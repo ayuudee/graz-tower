@@ -22,8 +22,10 @@ docs/*.pdf
 .mcp.json
 .codex
 .claude/
+.direnv/
 __pycache__/
 *.pyc
+.envrc
 cad/airports/#*
 cad/airports/*~
 data/charts/

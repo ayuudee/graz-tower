@@ -1,0 +1,19 @@
+{
+  "documentId": "h01-extracted",
+  "sectionId": "assurance_rtf_frequencies_3_9",
+  "familyId": "h01_assurance_rtf_frequency_family",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+  "startLine": 4467,
+  "endLine": 4485,
+  "lastPromotedRunId": "manual_fn9_h01_section_boundary_2026-05-09",
+  "lastPromotedAt": "2026-05-09T11:02:27Z",
+  "audit": {
+    "sectionBoundaryReview": {
+      "status": "created_from_split",
+      "reviewedAt": "2026-05-09T11:02:27Z",
+      "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+      "reasoning": "H01 manifest section corrections_3_8_3 previously ended at line 4500 and therefore included the start of H01 section 3.9. These records cite sourceItemIds 3.9_req1/3.9_req2 and are source-supported, but their sectionId had to be moved to the explicit H01 3.9 manifest section. Claim text and exactSourceQuotes are unchanged; canonicalId changed because sectionId is part of source-unit identity."
+    }
+  }
+}

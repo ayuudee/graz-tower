@@ -1114,6 +1114,7 @@ def append_csv_rows(
                     migrated_writer = csv.DictWriter(
                         f,
                         fieldnames=JUDGEMENTS_CSV_HEADERS,
+                        lineterminator="\n",
                     )
                     migrated_writer.writeheader()
                     for existing_row in existing_rows:
@@ -1126,10 +1127,10 @@ def append_csv_rows(
                         })
             else:
                 f.seek(0)
-                writer = csv.DictWriter(f, fieldnames=JUDGEMENTS_CSV_HEADERS)
+                writer = csv.DictWriter(f, fieldnames=JUDGEMENTS_CSV_HEADERS, lineterminator="\n")
                 writer.writeheader()
 
-            writer = csv.DictWriter(f, fieldnames=JUDGEMENTS_CSV_HEADERS)
+            writer = csv.DictWriter(f, fieldnames=JUDGEMENTS_CSV_HEADERS, lineterminator="\n")
             for row in rows:
                 full_row = {
                     **{key: "" for key in JUDGEMENTS_CSV_HEADERS},

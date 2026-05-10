@@ -6,9 +6,9 @@
   "sectionId": "acknowledgement_3_8_1",
   "familyId": "h01_readback_family",
   "claimText": "When acknowledgement of receipt is transmitted by an ATS unit to an aircraft, it shall comprise the call sign of the aircraft, followed if considered necessary, by the call sign of the ATS unit.",
-  "rationale": "Consistent authoritative requirement across all attempts for mandatory acknowledgement content.",
+  "rationale": "Consistent H01 operational-guidance rule across all attempts for mandatory acknowledgement content.",
   "modality": "shall",
-  "authorityClass": "authoritative_requirement",
+  "authorityClass": "operational_guidance",
   "requirementKind": "phraseology_rule",
   "testability": "sim_executable",
   "verificationMode": "deterministic_test",
@@ -61,7 +61,7 @@
     "authorityModalityCheck": {
       "status": "pass",
       "modality": "shall",
-      "authorityClass": "authoritative_requirement",
+      "authorityClass": "operational_guidance",
       "floorConsistent": true,
       "overrideFired": false,
       "invariantViolated": false,
@@ -71,7 +71,28 @@
       "status": "pass",
       "misses": []
     },
-    "rationaleNonEmpty": true
+    "rationaleNonEmpty": true,
+    "curationHistory": [
+      {
+        "action": "manual_authority_ceiling_correction",
+        "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+        "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+        "corrections": {
+          "authorityClass": "operational_guidance"
+        },
+        "confidence": "high",
+        "curatedAt": "2026-05-09T11:00:13Z"
+      }
+    ],
+    "authorityCeilingReview": {
+      "status": "corrected",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "previousAuthorityClass": "authoritative_requirement",
+      "currentAuthorityClass": "operational_guidance",
+      "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+      "reviewedAt": "2026-05-09T11:00:13Z",
+      "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+    }
   },
   "gate": {
     "overallStatus": "pass",

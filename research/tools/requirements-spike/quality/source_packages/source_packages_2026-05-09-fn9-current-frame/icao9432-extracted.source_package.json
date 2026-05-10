@@ -1,0 +1,2397 @@
+{
+  "schemaName": "requirements_source_unit_package",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:12:37Z",
+  "sourceFrameId": "fn9-current-frame-2026-05-09",
+  "documentId": "icao9432-extracted",
+  "documentTitle": "ICAO Doc 9432 — Manual of Radiotelephony",
+  "sourcePath": "research/txt/icao9432-extracted.txt",
+  "manifestPath": "research/tools/requirements-spike/documents/icao9432.json",
+  "packageStatus": "scoped_ready",
+  "closureReadiness": "scoped-package-ready",
+  "closureReason": "manifested windows are landed, but high-priority source-window hardening remains outside current package scope",
+  "sections": [
+    {
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "sourceRef": "research/txt/icao9432-extracted.txt:3903-3950",
+      "acceptedRecords": 8,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "notes": "§2.8.3 Issue of clearance and read-back requirements, English-language portion only (the section repeats in Polish translation immediately after, lines 3952+, which we exclude here)."
+    },
+    {
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "sourceRef": "research/txt/icao9432-extracted.txt:3642-3697",
+      "acceptedRecords": 5,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "notes": "§2.8.1 Establishment and continuation of communications, English-language portion only (the Polish translation begins at line 3699). Initial-contact rules, callsign abbreviations, transfer-of-frequency procedures."
+    },
+    {
+      "sectionId": "transfer_communications_2_8_2_en",
+      "familyId": "icao9432_clearance_comms_phraseology_family",
+      "sourceRef": "research/txt/icao9432-extracted.txt:3830-3855",
+      "acceptedRecords": 3,
+      "pendingRecords": 0,
+      "rejectedRecords": 3,
+      "notes": "ICAO Doc 9432 §2.8.2 English-only transfer-of-communications guidance and examples. Polish translation begins after this window. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "sourceRef": "research/txt/icao9432-extracted.txt:4917-5139",
+      "acceptedRecords": 6,
+      "pendingRecords": 0,
+      "rejectedRecords": 3,
+      "notes": "§4.4 Taxi Instructions, English portion. Comprehensive operational phraseology section: taxi-clearance content, runway-crossing, hold-short instructions, aircraft-stand procedures, with extensive RTF dialogue examples interleaved with rule prose."
+    }
+  ],
+  "sourceUnits": [
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+      "documentId": "icao9432-extracted",
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "claimText": "If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part.",
+      "rationale": "All attempts identify the mandatory nature ('shall') of requesting repetition. While one attempt suggested 'promote', the conservative approach keeps it within the document's operational guidance ceiling.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part."
+      ],
+      "sourceItemIds": [
+        "sec_2.8.1.4_eng"
+      ],
+      "claimSha256": "62c508a6e3b676435f9a772caf48751f67e8f2857f11844cc37d07c0d3361029",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3642,
+        "endLine": 3697
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_communications_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_2.8.1.4_repetition",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quoted text is verbatim-supported, schema and authority/modality gates passed, and there are no accepted sibling candidates making it redundant. The source uses 'shall', while the operational_guidance authorityClass appropriately preserves the conservative status of ICAO 9432 material without overstating it as authoritative.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:21:57Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:21:57Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+      "documentId": "icao9432-extracted",
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "claimText": "When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call \"ALL STATIONS\".",
+      "rationale": "All attempts agree on the guidance nature ('should') and the specific prefix requirement for aircraft broadcasts.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call\" ALL STATIONS\"."
+      ],
+      "sourceItemIds": [
+        "sec_2.8.1.3_eng"
+      ],
+      "claimSha256": "b5e9149538460bf062b2475f8f6b4854b8649437c8e7ff068971bc71ce2b9a83",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3642,
+        "endLine": 3697
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_communications_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_2.8.1.3_aircraft_broadcast",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quote is verbatim supported, the schema and authority/modality audits pass, and the candidate is not redundant with the accepted sibling. The source uses “should,” and the candidate correctly frames it as operational guidance rather than an authoritative requirement.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:22:10Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:22:10Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf",
+      "documentId": "icao9432-extracted",
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "claimText": "No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt.",
+      "rationale": "All attempts identify this as a note/advisory regarding the expectation of silence for general calls.",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "best_practice",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt."
+      ],
+      "sourceItemIds": [
+        "note_2.8.1.3_eng"
+      ],
+      "claimSha256": "80c86024e7681dfb8f845ecfd0b77e04340caf00ac3fd5621a5b31e1cec55b0c",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3642,
+        "endLine": 3697
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_communications_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_2.8.1.3_no_reply",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "note",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quote is verbatim and the claim is directly supported by the source. The candidate is correctly framed as a non-normative note/operational guidance item and is not redundant with the accepted sibling candidates.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:22:34Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:22:34Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+      "documentId": "icao9432-extracted",
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "claimText": "When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station.",
+      "rationale": "All attempts agree on the guidance nature ('should') and the specific phraseology requirement for initial contact.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "When establishing communications, an, aircraft should use the full call sign of both the aircraft and the aeronautical station."
+      ],
+      "sourceItemIds": [
+        "sec_2.8.1.1_eng"
+      ],
+      "claimSha256": "1b69fc79fdde61e905979c00864eaefd80b7d203911776af0f89a9a25ec093f2",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3642,
+        "endLine": 3697
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_communications_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_2.8.1.1_full_callsign",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quoted text is verbatim in the source and directly supports the claim, with 'should' correctly captured as operational guidance. The candidate is not redundant with the accepted sibling items, which address different clauses in section 2.8.1.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:22:47Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:22:47Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
+      "documentId": "icao9432-extracted",
+      "sectionId": "communications_2_8_1_en",
+      "familyId": "icao9432_communications_family",
+      "claimText": "When a ground station wishes to broadcast information, the message should be prefaced by the call \"ALL STATIONS\".",
+      "rationale": "All attempts agree on the guidance nature ('should') and the specific prefix requirement for ground station broadcasts.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "When a ground station wishes to broadcast information, the message should be prefaced by the call \"ALL STATIONS\"."
+      ],
+      "sourceItemIds": [
+        "sec_2.8.1.2_eng"
+      ],
+      "claimSha256": "039fc86d04a010522bc041ce03d503eff58ab87490b9360fdfe3d78c0572f96e",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3642,
+        "endLine": 3697
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_communications_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_2.8.1.2_ground_broadcast",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quoted sentence is present in the source and directly supports the claim. The source uses “should,” and the candidate’s operational_guidance classification is consistent; it is not redundant with the accepted aircraft-broadcast sibling because this one covers ground-station broadcasts.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:22:59Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/communications_2_8_1_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:22:59Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::15940532b37f8528",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "Clearances and instructions to enter, land on, take off from, hold short of, cross and backtrack on any runway shall always be read back.",
+      "rationale": "Direct mandatory requirement from section 2.8.3.5(b) specifying runway-related clearances and instructions must always be read back.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following shall always be read back:",
+        "b) clearances and instructions to enter, land on, take off from, hold short of, cross and backtrack on any runway;"
+      ],
+      "sourceItemIds": [
+        "item_2.8.3.5_intro",
+        "item_2.8.3.5_b"
+      ],
+      "claimSha256": "59a954bff43d95567fd3c6ec6181346d3e080b2001810e8a10469ef99ec802ec",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_mandatory_runway_ops",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "Runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions, and transition levels shall always be read back.",
+      "rationale": "Direct mandatory requirement from section 2.8.3.5(c) specifying tactical parameters must always be read back.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following shall always be read back:",
+        "c) runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions and, whether issued by the controller or contained in ATIS broadcasts, transition levels."
+      ],
+      "sourceItemIds": [
+        "item_2.8.3.5_intro",
+        "item_2.8.3.5_c"
+      ],
+      "claimSha256": "969cb469ed2da292c3fca1b460c8c246bf77085e392b694e00be6fa70aa2c776",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_mandatory_tactical_params",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "Whenever possible, controllers should pass a route clearance to an aircraft before start-up.",
+      "rationale": "The existing registry captured slow/clear delivery and avoiding taxi/line-up/take-off workload, but missed the before-start-up timing guidance.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "best_practice",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Whenever possible, a route clearance should be passed to an\naircraft before start up."
+      ],
+      "sourceItemIds": [
+        "2.8.3.2_clearance_timing"
+      ],
+      "claimSha256": "9cafdba72e096686292b6b76907485d2cf808b57f3fd97cbc775341010dfa8b1",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+        "runStartedAt": "2026-04-29T22:00:00Z",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "manual_rr17_coverage_review",
+          "extraction": "manual_rr17_coverage_review",
+          "challenge": "manual_rr17_coverage_review",
+          "defense": "manual_rr17_coverage_review",
+          "bundleGate": "manual_rr17_coverage_review",
+          "judge": "manual_rr17_coverage_review"
+        },
+        "promptVersion": "manual_rr17_coverage_review",
+        "promptVersionSha": "manual_rr17_coverage_review",
+        "originalCandidateId": "manual_rr17_route_clearance_before_startup_when_possible"
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "manual_add_accept",
+          "reasoning": "Adds a missed source-supported controller timing best practice from ICAO Doc 9432 section 2.8.3.2.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T22:00:00Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "human"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-29T22:00:00Z",
+        "promotedFrom": "manual RR-17 coverage ledger repair",
+        "curatedAt": "2026-04-29T22:00:00Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::4b6ece953649da07",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with.",
+      "rationale": "Mandatory requirement from section 2.8.3.6 for clearances not covered by the specific list in 2.8.3.5, requiring clear indication of understanding.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with."
+      ],
+      "sourceItemIds": [
+        "item_2.8.3.6_text"
+      ],
+      "claimSha256": "5cf9d01fdcd65ebfac0e84bc14f414a6ff3dbdf06de3cd9a65078ddd6ffba006",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_other_clearances_acknowledgement",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::58594a8ee6243296",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "ATC route clearances shall always be read back.",
+      "rationale": "Direct mandatory requirement from section 2.8.3.5(a) explicitly stating ATC route clearances must always be read back.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following shall always be read back:",
+        "a) ATC route clearances;"
+      ],
+      "sourceItemIds": [
+        "item_2.8.3.5_intro",
+        "item_2.8.3.5_a"
+      ],
+      "claimSha256": "99aa8c31269fd4b5b5f5b7ad90b1336bfa1ab8953b5d948b913bd1f04e45a75c",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_mandatory_route_clearances",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres.",
+      "rationale": "Operational guidance from section 2.8.3.2 regarding the manner and timing of clearance transmission. Merged split candidates from attempts 2 and 3 for completeness.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "best_practice",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "Controllers should pass a clearance slowly and clearly",
+        "controllers should avoid passing a clearance to a pilot engaged in complicated taxiing manoeuvres",
+        "on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres."
+      ],
+      "sourceItemIds": [
+        "item_2.8.3.2"
+      ],
+      "claimSha256": "966df6ccd60caccb3467812282e2a4252690d3e06beedf80a0bef9158fb8d8c5",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "clearance_passing_guidance",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 3,
+          "hits": 3,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quoted source text verbatim supports the claim, and the candidate correctly uses should-modality with operational_guidance authority for ICAO 9432 advisory material. It is not redundant with the accepted sibling read-back requirements, which cover different provisions.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:23:23Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:23:23Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; at other times, the word 'DEPARTURE' or 'AIRBORNE' is used.",
+      "rationale": "Phraseology rule from section 2.8.3.3 defining the specific words to be used for take-off clearances versus other departures.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The words \"TAKE OFF\" are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance.",
+        "At other times, the word \"DEPARTURE\" or \"AIRBORNE\" is used."
+      ],
+      "sourceItemIds": [
+        "item_2.8.3.3"
+      ],
+      "claimSha256": "f88bc1e13a8f89c7a8c306dd9ccba6d15f73b1e39f22c2d820ce5446ef8745bc",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "takeoff_clearance_phraseology",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/readback_2_8_3_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9",
+      "documentId": "icao9432-extracted",
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "claimText": "An ATC route clearance is not an instruction to take off or enter an active runway.",
+      "rationale": "The ICAO Doc 9432 readback section states this distinction directly before the TAKE OFF phraseology rule.",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "An air traffic control (ATC) route clearance is not an instruction to take off or enter an active\nrunway."
+      ],
+      "sourceItemIds": [
+        "2.8.3.3_route_clearance_scope"
+      ],
+      "claimSha256": "3e65a38c275fc649c069bb627363da5b5d4b131a89ee96e7431e25e465f176ee",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3903,
+        "endLine": 3950
+      },
+      "ingestionRun": {
+        "runId": "manual_rr17_coverage_2026-04-29T22-00-00Z",
+        "runStartedAt": "2026-04-29T22:00:00Z",
+        "caseId": "icao9432_readback_family",
+        "models": {
+          "structure": "manual_rr17_coverage_review",
+          "extraction": "manual_rr17_coverage_review",
+          "challenge": "manual_rr17_coverage_review",
+          "defense": "manual_rr17_coverage_review",
+          "bundleGate": "manual_rr17_coverage_review",
+          "judge": "manual_rr17_coverage_review"
+        },
+        "promptVersion": "manual_rr17_coverage_review",
+        "promptVersionSha": "manual_rr17_coverage_review",
+        "originalCandidateId": "manual_rr17_route_clearance_not_takeoff_or_runway_entry"
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "none",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "manual_add_accept",
+          "reasoning": "Adds a missed source-supported route-clearance scope rule that is distinct from the already accepted TAKE OFF word-use rule.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T22:00:00Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "human"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-29T22:00:00Z",
+        "promotedFrom": "manual RR-17 coverage ledger repair",
+        "curatedAt": "2026-04-29T22:00:00Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473",
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "claimText": "The clearance limit for departing aircraft may be any other position on the aerodrome depending on prevailing traffic circumstances.",
+      "rationale": "Attempts 1 and 2 identified this as a permissive rule ('may'). It defines the scope of controller discretion relative to the default holding point.",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "but it may be any other position on the aerodrome depending on the prevailing traffic circumstances"
+      ],
+      "sourceItemIds": [
+        "4.4.1_en"
+      ],
+      "claimSha256": "76e5bfab67103f826febc0d08a91556da90c36bfe198c6dbc84a6ee204907ec8",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 4917,
+        "endLine": 5139
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_taxi_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_clearance_limit_traffic_dependent",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "may",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The quote is verbatim and supports the permissive claim that the clearance limit for departing aircraft may be another aerodrome position depending on traffic. The candidate is correctly framed as operational guidance with may modality and is not redundant with the accepted sibling covering the general requirement to include a clearance limit.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:23:36Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:23:36Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::taxi_4_4_en::1367907005a34ad1",
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "claimText": "When a taxi clearance contains a taxi limit beyond a runway, it shall contain an explicit clearance to cross, or an instruction to hold short of that runway.",
+      "rationale": "All three attempts identified this as a mandatory 'shall' requirement. It is a critical safety rule regarding runway crossing permissions.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "When a taxi clearance contains a taxi limit beyond a runway, it shall contain an explicit clearance to cross, or an instruction to hold short of that runway"
+      ],
+      "sourceItemIds": [
+        "4.4.2_en"
+      ],
+      "claimSha256": "63b438c3e6c924c75b7a344a20bd685f59291dcff29fce6a066d277f43fb7460",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 4917,
+        "endLine": 5139
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_taxi_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_taxi_limit_beyond_runway_must_specify",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "claimText": "For departing aircraft, the clearance limit will normally be the taxi-holding point of the runway in use.",
+      "rationale": "Attempts 1 and 2 identified this as a 'normal' case (best practice/advisory). Attempt 3 omitted it, likely merging it into the general limit rule. It is preserved here as a distinct advisory constraint.",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "best_practice",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "For departing aircraft, the clearance limit will normally be the taxi-holding point of the runway in use"
+      ],
+      "sourceItemIds": [
+        "4.4.1_en"
+      ],
+      "claimSha256": "ccfcd2e8fcd930c70d0df8560cb08ffe96a5f368e79785c3d77507c4bf29c625",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 4917,
+        "endLine": 5139
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_taxi_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_clearance_limit_default_departing",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "none",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote_with_corrections",
+          "reasoning": "The quote exists verbatim and supports the claim as an advisory/default practice, and it is not redundant with the accepted sibling covering other possible aerodrome positions. However, the source says “will normally be” rather than using “should,” so the modality should be corrected to non-normative.",
+          "corrections": {
+            "modality": "none"
+          },
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:23:49Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:23:49Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58",
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "claimText": "Where an aircraft acknowledges receipt of the ATIS broadcast, the controller does not need to pass departure information to the pilot when giving taxiing instructions.",
+      "rationale": "All three attempts identified this exemption. It relieves the controller of a specific obligation under defined conditions.",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "workflow_constraint",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Where an aircraft acknowledges receipt of the ATIS broadcast, the controller does not need to pass departure information to the pilot when giving taxiing instructions"
+      ],
+      "sourceItemIds": [
+        "4.4.3_en"
+      ],
+      "claimSha256": "90e895efe1b49482dabf0ec20674de06facdadf12c02aabb22f99ed49101e81e",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 4917,
+        "endLine": 5139
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_taxi_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_atis_acknowledgement_exemption",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "may",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e",
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "claimText": "A taxi instruction issued by a controller must always contain a clearance limit, which is the point at which the aircraft must stop until further permission to proceed is given.",
+      "rationale": "All three attempts identified this as a mandatory requirement ('shall'/'must') based on the phrase 'will always contain'. Attempt 3 merged the definition into the claim, which is semantically accurate for the source text.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Taxi instruction issued by a controller will always contain a clearance limit"
+      ],
+      "sourceItemIds": [
+        "4.4.1_en"
+      ],
+      "claimSha256": "4690fefa5b40855c4357bd10b23ca81574521f4ed3fd092e2986b8ba1d5772ed",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 4917,
+        "endLine": 5139
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_taxi_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_taxi_clearance_limit_mandatory",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::taxi_4_4_en::eadf2541fcd51825",
+      "documentId": "icao9432-extracted",
+      "sectionId": "taxi_4_4_en",
+      "familyId": "icao9432_taxi_family",
+      "claimText": "The runway is considered vacated when the entire aircraft is beyond the relevant runway-holding position.",
+      "rationale": "All three attempts identified this definition. It is marked as a Note in the source and serves as a definition/support candidate rather than a standalone operational rule.",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "requirementKind": "definition",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "support_only",
+      "exactSourceQuotes": [
+        "The runway is vacated when the entire aircraft is beyond the relevant runway-holding position"
+      ],
+      "sourceItemIds": [
+        "note_runway_vacated_en"
+      ],
+      "claimSha256": "603c01e5a0b1c9a526670d96b74eae2df7b20d1c2de1449fcecfa76094ac5d78",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 4917,
+        "endLine": 5139
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "icao9432_taxi_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "def_runway_vacated",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "note",
+          "authorityClass": "background_support",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote_with_corrections",
+          "reasoning": "The quoted text is verbatim and the claim accurately captures the source Note as a definition. Because it is explicitly a non-normative note rather than operative guidance, it should be treated as background support rather than operational guidance.",
+          "corrections": {
+            "authorityClass": "background_support"
+          },
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:24:33Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/icao9432-extracted/taxi_4_4_en/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:24:33Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
+      "documentId": "icao9432-extracted",
+      "sectionId": "transfer_communications_2_8_2_en",
+      "familyId": "icao9432_clearance_comms_phraseology_family",
+      "claimText": "An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in accordance with agreed procedures.",
+      "rationale": "Mandatory requirement for ATC-initiated frequency changes found in clause 2.8.2.1.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in accordance with agreed procedures."
+      ],
+      "sourceItemIds": [
+        "sec_2_8_2_1"
+      ],
+      "claimSha256": "3e5ea4b121dc78cac8ac73cebbaf70be6619e0b30cbd9ed42c9f930dfd32f60e",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3830,
+        "endLine": 3855
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-05-04T16-53-48Z_83dd",
+        "caseId": "icao9432_clearance_comms_phraseology_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+        "originalCandidateId": "req_freq_change_advised",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-05-04T16:53:48Z",
+        "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao9432-extracted/transfer_communications_2_8_2_en/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
+      "documentId": "icao9432-extracted",
+      "sectionId": "transfer_communications_2_8_2_en",
+      "familyId": "icao9432_clearance_comms_phraseology_family",
+      "claimText": "Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'.",
+      "rationale": "Standard phraseology examples for frequency change instructions and readbacks from clause 2.8.2.1.",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "FASTAIR 345 CONTACT ALEXANDER CONTROL 129.1",
+        "129.1 FASTAIR 345"
+      ],
+      "sourceItemIds": [
+        "ex_2_8_2_1_a",
+        "ex_2_8_2_1_b"
+      ],
+      "claimSha256": "4c153683cdd9a5c27571bc4abbcd833aa1d13deb1b515ff8b20ce6a38ce20cfc",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3830,
+        "endLine": 3855
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-05-04T16-53-48Z_83dd",
+        "caseId": "icao9432_clearance_comms_phraseology_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+        "originalCandidateId": "ex_freq_change_phraseology",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "example",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The source quotes are verbatim and support the phraseology example claim, and the candidate is correctly framed as operational guidance with example modality. It is not redundant with the accepted sibling requirements, which cover the mandatory frequency-change procedure rather than the accompanying phraseology examples.",
+          "confidence": "high",
+          "curatedAt": "2026-05-04T17:20:08Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-05-04T16:53:48Z",
+        "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao9432-extracted/transfer_communications_2_8_2_en/judged_candidates.json",
+        "curatedAt": "2026-05-04T17:20:08Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
+      "documentId": "icao9432-extracted",
+      "sectionId": "transfer_communications_2_8_2_en",
+      "familyId": "icao9432_clearance_comms_phraseology_family",
+      "claimText": "In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place.",
+      "rationale": "Mandatory fallback procedure for pilot-initiated frequency changes found in clause 2.8.2.1.",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "requirementKind": "rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place."
+      ],
+      "sourceItemIds": [
+        "sec_2_8_2_1"
+      ],
+      "claimSha256": "8b8a4d9a7cf92ff044ca62a9012d4e325f8c1b7ad22fd0f630770b9a6b9db811",
+      "provenance": {
+        "sourcePath": "research/txt/icao9432-extracted.txt",
+        "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+        "startLine": 3830,
+        "endLine": 3855
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-05-04T16-53-48Z_83dd",
+        "caseId": "icao9432_clearance_comms_phraseology_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+        "originalCandidateId": "req_freq_change_notify",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "authoritative_requirement",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-05-04T16:53:48Z",
+        "promotedFrom": "/tmp/requirements-source-units-2026-05-01/icao9432-extracted/transfer_communications_2_8_2_en/judged_candidates.json"
+      }
+    }
+  ],
+  "recordCounts": {
+    "accepted": 22,
+    "pending": 0,
+    "rejected": 6
+  },
+  "rejectedRecordIds": [
+    "icao9432-extracted::taxi_4_4_en::453f27d271407f98",
+    "icao9432-extracted::taxi_4_4_en::462452af8743c2e1",
+    "icao9432-extracted::taxi_4_4_en::9b3186528c0a6e32",
+    "icao9432-extracted::transfer_communications_2_8_2_en::0619ba7ac11fcdac",
+    "icao9432-extracted::transfer_communications_2_8_2_en::99ba72189e5e5175",
+    "icao9432-extracted::transfer_communications_2_8_2_en::b3f67ba3a9d8a2b8"
+  ],
+  "residualGaps": {
+    "highPriorityRowsNeedingSourceWindowHardening": 13
+  },
+  "blockers": [],
+  "nonClaims": [
+    "This package is per-source only; it does not integrate, deduplicate, or choose precedence across sources.",
+    "This package does not claim full corpus completeness, Nolan coverage, or EPPLS coverage.",
+    "This package covers the manifested source windows only; high-priority source-window hardening rows outside those windows remain out of package scope."
+  ],
+  "validationEvidence": {
+    "closureReview": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/closure_report.json",
+    "sourceProgressReport": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-final/source_progress_report.json",
+    "quoteAudit": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/quote_audit.json",
+    "reproducibilityAudit": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/reproducibility_audit.json",
+    "adequacyAssessment": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame/adequacy_assessment.md"
+  }
+}

@@ -183,7 +183,18 @@ def main() -> int:
 
     sections = load_batch_sections(args.batch_manifest)
     if not sections:
-        raise SystemExit("batch manifest contains no sections")
+        print(
+            json.dumps(
+                {
+                    "status": "no_sections",
+                    "batchManifest": str(args.batch_manifest),
+                    "sectionsRequested": 0,
+                    "documents": {},
+                },
+                indent=2,
+            )
+        )
+        return 0
 
     selected_by_doc, stem_by_doc = validate_batch_sections(sections)
 

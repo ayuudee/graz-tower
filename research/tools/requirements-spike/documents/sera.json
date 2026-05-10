@@ -1,15 +1,36 @@
 {
   "documentId": "sera-923-2012-extracted",
-  "documentTitle": "SERA — Standardised European Rules of the Air, Regulation (EU) 923/2012",
+  "documentTitle": "SERA \u2014 Standardised European Rules of the Air, Regulation (EU) 923/2012",
   "sourcePath": "research/txt/sera-923-2012-extracted.txt",
   "defaultAuthorityCeiling": "authoritative_requirement",
   "sections": [
     {
-      "sectionId": "readback_8015_e",
-      "familyId": "sera_readback_family",
-      "startLine": 2023,
-      "endLine": 2037,
-      "notes": "SERA.8015(e) Read-back of clearances and safety-related information. Compact regulatory text: four numbered sub-paragraphs (1)-(4) with the always-read-back list (i)-(iv) nested under (1)."
+      "sectionId": "aerodrome_operations_3225",
+      "familyId": "sera_aerodrome_operations_family",
+      "startLine": 1441,
+      "endLine": 1448,
+      "notes": "SERA.3225 Operation on and in the vicinity of an aerodrome: observe traffic, conform/avoid traffic pattern, left turns unless otherwise indicated/instructed, and wind-preferred landing/take-off."
+    },
+    {
+      "sectionId": "communications_transponder_requirements_6005",
+      "familyId": "sera_airspace_comms_family",
+      "startLine": 1883,
+      "endLine": 1897,
+      "notes": "SERA.6005 Requirements for communications and SSR transponder in RMZ/TMZ airspace."
+    },
+    {
+      "sectionId": "ats_objectives_7001",
+      "familyId": "sera_ats_objectives_family",
+      "startLine": 1900,
+      "endLine": 1907,
+      "notes": "SERA.7001 General objectives of air traffic services."
+    },
+    {
+      "sectionId": "ats_operator_coordination_7005",
+      "familyId": "sera_ats_coordination_family",
+      "startLine": 1917,
+      "endLine": 1925,
+      "notes": "SERA.7005 Coordination between aircraft operator and air traffic services."
     },
     {
       "sectionId": "atc_service_8005",
@@ -31,6 +52,13 @@
       "startLine": 1985,
       "endLine": 2022,
       "notes": "SERA.8015 Air traffic control clearances paragraphs (a)-(d): (a) basis of clearances, (b) operation subject to clearance with sub-numbered cases, (c) potential reclearance, (d) contents of clearances (5 numbered fields). The (e) readback paragraph already covered separately as readback_8015_e."
+    },
+    {
+      "sectionId": "readback_8015_e",
+      "familyId": "sera_readback_family",
+      "startLine": 2023,
+      "endLine": 2037,
+      "notes": "SERA.8015(e) Read-back of clearances and safety-related information. Compact regulatory text: four numbered sub-paragraphs (1)-(4) with the always-read-back list (i)-(iv) nested under (1)."
     },
     {
       "sectionId": "clearance_coordination_8015_f",
@@ -66,6 +94,34 @@
       "startLine": 2142,
       "endLine": 2160,
       "notes": "SERA.8035 Communications: continuous voice watch, two-way communication as necessary, CPDLC persistence, and comms-failure reference. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "flight_information_service_scope_9005",
+      "familyId": "sera_fis_family",
+      "startLine": 2173,
+      "endLine": 2192,
+      "notes": "SERA.9005 Scope of flight information service."
+    },
+    {
+      "sectionId": "atis_9010",
+      "familyId": "sera_atis_family",
+      "startLine": 2201,
+      "endLine": 2330,
+      "notes": "SERA.9010 Automatic terminal information service: ATIS request/reply, acknowledgement, altimeter setting, current/updated ATIS, and ATIS message contents."
+    },
+    {
+      "sectionId": "emergency_service_11005",
+      "familyId": "sera_emergency_family",
+      "startLine": 2361,
+      "endLine": 2371,
+      "notes": "SERA.11005 Service to aircraft in the event of an emergency, including maximum consideration/assistance/priority and unlawful-interference handling."
+    },
+    {
+      "sectionId": "voice_aircraft_observations_12015",
+      "familyId": "sera_air_reports_family",
+      "startLine": 2840,
+      "endLine": 2843,
+      "notes": "SERA.12015 Reporting of aircraft observations by voice communication."
     }
   ]
 }

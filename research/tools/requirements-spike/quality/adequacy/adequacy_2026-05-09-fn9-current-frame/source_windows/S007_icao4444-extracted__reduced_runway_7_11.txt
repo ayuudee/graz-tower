@@ -1,0 +1,71 @@
+9175: 7.11 REDUCED RUNWAY SEPARATION MINIMA BETWEEN
+9176: AIRCRAFT USING THE SAME RUNWAY
+9177:
+9178: 7.11.1 Provided that an appropriate, documented safety assessment has shown that an acceptable level of safety
+9179: can be met, lower minima than those in 7.9.2 and 7.10.1 may be prescribed by the appropriate ATS authority, after
+9180: consultation with the operators. The safety assessment shall be carried out for each runway for which the reduced minima
+9181: are intended, taking into account factors such as:
+9182: a)
+9183:
+9184: runway length;
+9185:
+9186: b) aerodrome layout; and
+9187: c)
+9188:
+9189: types/categories of aircraft involved.
+9190:
+9191: 7.11.2 All applicable procedures related to the application of reduced runway separation minima shall be published
+9192: in the Aeronautical Information Publication as well as in local air traffic control instructions. Controllers shall be
+9193: provided with appropriate and adequate training in the use of the procedures.
+9194: 7.11.3 Reduced runway separation minima shall only be applied during the hours of daylight from 30 minutes after
+9195: local sunrise to 30 minutes before local sunset.
+9196: 7.11.4 For the purpose of reduced runway separation, aircraft shall be classified as follows:
+9197: a)
+9198:
+9199: Category 1 aircraft: single-engine propeller aircraft with a maximum certificated take-off mass of 2 000 kg or
+9200: less;
+9201:
+9202: b) Category 2 aircraft: single-engine propeller aircraft with a maximum certificated take-off mass of more than
+9203: 2 000 kg but less than 7 000 kg; and twin-engine propeller aircraft with a maximum certificated take-off mass of
+9204: less than 7 000 kg;
+9205: c)
+9206:
+9207: Category 3 aircraft: all other aircraft.
+9208:
+9209: 7.11.5 Reduced runway separation minima shall not apply between a departing aircraft and a preceding landing
+9210: aircraft.
+9211: 7.11.6 Reduced runway separation minima shall be subject to the following conditions:
+9212: a)
+9213:
+9214: wake turbulence separation minima shall be applied;
+9215:
+9216: b) visibility shall be at least 5 km and ceiling shall not be lower than 300 m (1 000 ft);
+9217: c)
+9218:
+9219: tailwind component shall not exceed 5 kt;
+9220:
+9221: d) there shall be available means, such as suitable landmarks, to assist the controller in assessing the distances
+9222: between aircraft. A surface surveillance system that provides the air traffic controller with position information
+9223: on aircraft may be utilized, provided that approval for operational use of such equipment includes a safety
+9224: assessment to ensure that all requisite operational and performance requirements are met;
+9225: e)
+9226:
+9227: 8/11/18
+9228: 10/11/16
+9229: No. 8
+9230:
+9231: minimum separation continues to exist between two departing aircraft immediately after take-off of the second
+9232: aircraft;
+9233:
+9234: Chapter 7.
+9235: f)
+9236:
+9237: Procedures for Aerodrome Control Service
+9238:
+9239: 7-17
+9240:
+9241: traffic information shall be provided to the flight crew of the succeeding aircraft concerned; and
+9242:
+9243: g) the braking action shall not be adversely affected by runway contaminants such as ice, slush, snow and water.
+9244: 7.11.7 Reduced runway separation minima which may be applied at an aerodrome shall be determined for each
+9245: separate runway. The separation to be applied shall in no case be less than the following minima:

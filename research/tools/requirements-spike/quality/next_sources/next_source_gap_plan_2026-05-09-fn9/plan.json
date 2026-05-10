@@ -1,0 +1,31 @@
+{
+  "schemaName": "next_source_gap_plan",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09",
+  "sources": [
+    {
+      "sourceKey": "nolan",
+      "evidencePaths": [
+        "research/pdf/fundies.pdf",
+        "research/txt/nolan-fundamentals-extracted.txt"
+      ],
+      "intakeState": "available_for_inventory",
+      "initialAuthorityCeiling": "background_support",
+      "nextAction": "Run deterministic ToC inventory and bounded LLM relevance review."
+    },
+    {
+      "sourceKey": "eppls",
+      "evidencePaths": [],
+      "intakeState": "intake_blocked",
+      "initialAuthorityCeiling": "unknown",
+      "nextAction": "Add/identify EPPLS PDF and text extract before relevance inventory."
+    }
+  ],
+  "redTeam": {
+    "status": "reviewed",
+    "report": "research/tools/requirements-spike/quality/next_sources/next_source_gap_plan_2026-05-09-fn9/red_team.md",
+    "unresolvedBlockers": [
+      "EPPLS file is not present in research/pdf or research/txt."
+    ]
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-05-09T11:09:16Z",
+  "summary": {
+    "documentsAudited": 8,
+    "candidatesAudited": 431,
+    "totalQuotes": 546,
+    "totalMisses": 0,
+    "errors": 0,
+    "byDocument": {
+      "cap413-extracted": {
+        "candidatesAudited": 79,
+        "totalQuotes": 87,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "egast-vfr-extracted": {
+        "candidatesAudited": 17,
+        "totalQuotes": 26,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "h01-extracted": {
+        "candidatesAudited": 24,
+        "totalQuotes": 28,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "icao4444-extracted": {
+        "candidatesAudited": 186,
+        "totalQuotes": 220,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "icao9432-extracted": {
+        "candidatesAudited": 22,
+        "totalQuotes": 29,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "safetysense22-extracted": {
+        "candidatesAudited": 15,
+        "totalQuotes": 30,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "sera-923-2012-extracted": {
+        "candidatesAudited": 73,
+        "totalQuotes": 102,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      },
+      "slovenia-vfr-extracted": {
+        "candidatesAudited": 15,
+        "totalQuotes": 24,
+        "totalMisses": 0,
+        "missRate": 0.0,
+        "errors": 0
+      }
+    }
+  },
+  "audits": [
+    {
+      "documentId": "cap413-extracted",
+      "sourcePath": "research/txt/cap413-extracted.txt",
+      "candidatesAudited": 79,
+      "totalQuotes": 87,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "egast-vfr-extracted",
+      "sourcePath": "research/txt/egast-vfr-extracted.txt",
+      "candidatesAudited": 17,
+      "totalQuotes": 26,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "h01-extracted",
+      "sourcePath": "research/txt/h01-extracted.txt",
+      "candidatesAudited": 24,
+      "totalQuotes": 28,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "sourcePath": "research/txt/icao4444-extracted.txt",
+      "candidatesAudited": 186,
+      "totalQuotes": 220,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "sourcePath": "research/txt/icao9432-extracted.txt",
+      "candidatesAudited": 22,
+      "totalQuotes": 29,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "safetysense22-extracted",
+      "sourcePath": "research/txt/safetysense22-extracted.txt",
+      "candidatesAudited": 15,
+      "totalQuotes": 30,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+      "candidatesAudited": 73,
+      "totalQuotes": 102,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    },
+    {
+      "documentId": "slovenia-vfr-extracted",
+      "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+      "candidatesAudited": 15,
+      "totalQuotes": 24,
+      "totalMisses": 0,
+      "candidatesWithMisses": [],
+      "errors": [],
+      "missRate": 0.0
+    }
+  ]
+}

@@ -1,36 +1,169 @@
 {
   "documentId": "icao9432-extracted",
-  "documentTitle": "ICAO Doc 9432 — Manual of Radiotelephony",
+  "documentTitle": "ICAO Doc 9432 \u2014 Manual of Radiotelephony",
   "sourcePath": "research/txt/icao9432-extracted.txt",
   "defaultAuthorityCeiling": "operational_guidance",
   "sections": [
-    {
-      "sectionId": "readback_2_8_3_en",
-      "familyId": "icao9432_readback_family",
-      "startLine": 3903,
-      "endLine": 3950,
-      "notes": "§2.8.3 Issue of clearance and read-back requirements, English-language portion only (the section repeats in Polish translation immediately after, lines 3952+, which we exclude here)."
-    },
     {
       "sectionId": "communications_2_8_1_en",
       "familyId": "icao9432_communications_family",
       "startLine": 3642,
       "endLine": 3697,
-      "notes": "§2.8.1 Establishment and continuation of communications, English-language portion only (the Polish translation begins at line 3699). Initial-contact rules, callsign abbreviations, transfer-of-frequency procedures."
+      "notes": "\u00a72.8.1 Establishment and continuation of communications, English-language portion only (the Polish translation begins at line 3699). Initial-contact rules, callsign abbreviations, transfer-of-frequency procedures."
     },
     {
       "sectionId": "transfer_communications_2_8_2_en",
       "familyId": "icao9432_clearance_comms_phraseology_family",
       "startLine": 3830,
       "endLine": 3855,
-      "notes": "ICAO Doc 9432 §2.8.2 English-only transfer-of-communications guidance and examples. Polish translation begins after this window. Hardened in clearance_comms_2026-04-30."
+      "notes": "ICAO Doc 9432 \u00a72.8.2 English-only transfer-of-communications guidance and examples. Polish translation begins after this window. Hardened in clearance_comms_2026-04-30."
+    },
+    {
+      "sectionId": "readback_2_8_3_en",
+      "familyId": "icao9432_readback_family",
+      "startLine": 3903,
+      "endLine": 3950,
+      "notes": "\u00a72.8.3 Issue of clearance and read-back requirements, English-language portion only (the section repeats in Polish translation immediately after, lines 3952+, which we exclude here)."
+    },
+    {
+      "sectionId": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+      "familyId": "icao9432_readback_family",
+      "startLine": 4011,
+      "endLine": 4085,
+      "notes": "ICAO Doc 9432 \u00a72.8.3.7-2.8.3.10 English-language continuation: callsign at end of readback, controller readback monitoring/correction, NEGATIVE correction, and UNABLE/if unable phraseology."
+    },
+    {
+      "sectionId": "test_procedures_2_8_4_en",
+      "familyId": "icao9432_communications_family",
+      "startLine": 4086,
+      "endLine": 4197,
+      "notes": "ICAO Doc 9432 \u00a72.8.4 English-language test procedures: radio-check content, replies, readability scale, examples, and ground-station test-signal duration."
+    },
+    {
+      "sectionId": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 4706,
+      "endLine": 4818,
+      "notes": "ICAO Doc 9432 Chapter 4 \u00a7\u00a74.1-4.2 English-side aerodrome control introduction, departure information, engine start, and start-up examples."
+    },
+    {
+      "sectionId": "pushback_powerback_4_3_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 4819,
+      "endLine": 4916,
+      "notes": "ICAO Doc 9432 \u00a74.3 English-side push-back/power-back procedures and examples."
     },
     {
       "sectionId": "taxi_4_4_en",
       "familyId": "icao9432_taxi_family",
       "startLine": 4917,
       "endLine": 5139,
-      "notes": "§4.4 Taxi Instructions, English portion. Comprehensive operational phraseology section: taxi-clearance content, runway-crossing, hold-short instructions, aircraft-stand procedures, with extensive RTF dialogue examples interleaved with rule prose."
+      "notes": "\u00a74.4 Taxi Instructions, English portion. Comprehensive operational phraseology section: taxi-clearance content, runway-crossing, hold-short instructions, aircraft-stand procedures, with extensive RTF dialogue examples interleaved with rule prose."
+    },
+    {
+      "sectionId": "takeoff_procedures_4_5_1_to_4_5_5_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5140,
+      "endLine": 5235,
+      "notes": "ICAO Doc 9432 \u00a74.5.1-4.5.5 take-off procedures. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "takeoff_procedures_4_5_6_to_4_5_7_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5236,
+      "endLine": 5329,
+      "notes": "ICAO Doc 9432 \u00a74.5.6-4.5.7 take-off report and conditional clearance. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "takeoff_procedures_4_5_8_to_4_5_12_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5330,
+      "endLine": 5481,
+      "notes": "ICAO Doc 9432 \u00a74.5.8-4.5.12 take-off clearance, departure instructions, cancellation, stop, and rejected take-off. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "aerodrome_traffic_circuit_4_6_part1_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5482,
+      "endLine": 5566,
+      "notes": "ICAO Doc 9432 \u00a74.6 aerodrome traffic circuit, bounded part 1. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "aerodrome_traffic_circuit_4_6_part2_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5567,
+      "endLine": 5674,
+      "notes": "ICAO Doc 9432 \u00a74.6 aerodrome traffic circuit, bounded part 2. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "final_approach_landing_4_7_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5675,
+      "endLine": 5795,
+      "notes": "ICAO Doc 9432 \u00a74.7 final approach and landing. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "go_around_4_8_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5796,
+      "endLine": 5867,
+      "notes": "ICAO Doc 9432 \u00a74.8 go around. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "after_landing_4_9_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5868,
+      "endLine": 5932,
+      "notes": "ICAO Doc 9432 \u00a74.9 after landing. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "essential_aerodrome_information_4_10_en",
+      "familyId": "icao9432_aerodrome_phraseology_family",
+      "startLine": 5933,
+      "endLine": 6011,
+      "notes": "ICAO Doc 9432 \u00a74.10 essential aerodrome information. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "aerodrome_vehicles_intro_movement_5_1_to_5_2_en",
+      "familyId": "icao9432_aerodrome_vehicle_family",
+      "startLine": 6012,
+      "endLine": 6185,
+      "notes": "ICAO Doc 9432 Chapter 5 \u00a7\u00a75.1-5.2 aerodrome vehicles introduction and movement instructions. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "aerodrome_vehicles_crossing_towing_5_3_to_5_4_en",
+      "familyId": "icao9432_aerodrome_vehicle_family",
+      "startLine": 6186,
+      "endLine": 6347,
+      "notes": "ICAO Doc 9432 Chapter 5 \u00a7\u00a75.3-5.4 crossing runways and vehicles towing aircraft. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "distress_urgency_intro_9_1_en",
+      "familyId": "icao9432_emergency_phraseology_family",
+      "startLine": 8686,
+      "endLine": 8808,
+      "notes": "ICAO Doc 9432 \u00a79.1 distress/urgency introduction. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "distress_messages_9_2_en",
+      "familyId": "icao9432_emergency_phraseology_family",
+      "startLine": 8809,
+      "endLine": 8993,
+      "notes": "ICAO Doc 9432 \u00a79.2 distress messages. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "urgency_emergency_descent_9_3_to_9_4_en",
+      "familyId": "icao9432_emergency_phraseology_family",
+      "startLine": 8994,
+      "endLine": 9157,
+      "notes": "ICAO Doc 9432 \u00a7\u00a79.3-9.4 urgency messages and emergency descent. Bilingual layout; extract English-side phraseology only."
+    },
+    {
+      "sectionId": "communications_failure_9_5_en",
+      "familyId": "icao9432_emergency_phraseology_family",
+      "startLine": 9158,
+      "endLine": 9252,
+      "notes": "ICAO Doc 9432 \u00a79.5 aircraft communications failure. Bilingual layout; extract English-side phraseology only."
     }
   ]
 }

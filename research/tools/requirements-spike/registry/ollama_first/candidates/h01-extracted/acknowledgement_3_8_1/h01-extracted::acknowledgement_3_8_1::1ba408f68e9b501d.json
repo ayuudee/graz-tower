@@ -6,9 +6,9 @@
   "sectionId": "acknowledgement_3_8_1",
   "familyId": "h01_readback_family",
   "claimText": "Clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any runway shall always be read back.",
-  "rationale": "Consistent specific mandatory readback item from the list in c).",
+  "rationale": "Consistent H01 operational-guidance readback item from the list in c).",
   "modality": "shall",
-  "authorityClass": "authoritative_requirement",
+  "authorityClass": "operational_guidance",
   "requirementKind": "rule",
   "testability": "sim_executable",
   "verificationMode": "deterministic_test",
@@ -63,7 +63,7 @@
     "authorityModalityCheck": {
       "status": "pass",
       "modality": "shall",
-      "authorityClass": "authoritative_requirement",
+      "authorityClass": "operational_guidance",
       "floorConsistent": true,
       "overrideFired": true,
       "invariantViolated": false,
@@ -76,9 +76,36 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "promote",
-      "reasoning": "The source quotes include both the operative parent wording, \u201cThe following items shall always be read back,\u201d and the specific runway-clearance list item, so the mandatory claim is supported as a standalone atomic requirement. The pending rationale appears to be a bundle-gate artefact, and the content is not already covered by the accepted sibling candidates.",
+      "reasoning": "The source quotes include both the operative parent wording, “The following items shall always be read back,” and the specific runway-clearance list item, so the mandatory claim is supported as a standalone atomic requirement. The pending rationale appears to be a bundle-gate artefact, and the content is not already covered by the accepted sibling candidates.",
       "confidence": "high",
       "curatedAt": "2026-04-29T09:09:06Z"
+    },
+    "curationHistory": [
+      {
+        "action": "promote",
+        "reasoning": "The source quotes include both the operative parent wording, “The following items shall always be read back,” and the specific runway-clearance list item, so the mandatory claim is supported as a standalone atomic requirement. The pending rationale appears to be a bundle-gate artefact, and the content is not already covered by the accepted sibling candidates.",
+        "confidence": "high",
+        "curatedAt": "2026-04-29T09:09:06Z"
+      },
+      {
+        "action": "manual_authority_ceiling_correction",
+        "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+        "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+        "corrections": {
+          "authorityClass": "operational_guidance"
+        },
+        "confidence": "high",
+        "curatedAt": "2026-05-09T11:00:13Z"
+      }
+    ],
+    "authorityCeilingReview": {
+      "status": "corrected",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "previousAuthorityClass": "authoritative_requirement",
+      "currentAuthorityClass": "operational_guidance",
+      "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+      "reviewedAt": "2026-05-09T11:00:13Z",
+      "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
     }
   },
   "gate": {

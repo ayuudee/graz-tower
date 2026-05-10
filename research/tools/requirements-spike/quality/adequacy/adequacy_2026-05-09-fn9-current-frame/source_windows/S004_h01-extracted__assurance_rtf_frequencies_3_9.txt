@@ -1,0 +1,19 @@
+4467: 3.9. GEWÄHRLEISTUNG DER FUNKVERBINDUNG/ZU VERWENDENDE
+4468: FREQUENZEN
+4469:
+4470: 3.9. ASSURANCE OF RTF COMMUNICATION/
+4471: FREQUENCIES TO BE USED
+4472:
+4473: Luftfunkstellen müssen die entsprechenden Funkfrequenzen
+4474: verwenden.
+4475:
+4476: Aircraft stations shall operate on the appropriate radio
+4477: frequencies.
+4478:
+4479: Die zu verwendende(n) Frequenz(en) wird/werden der
+4480: Luftfunkstelle von der Flugverkehrskontrollstelle, unter deren
+4481: Verantwortung sie sich befindet, zugewiesen.
+4482:
+4483: The air-ground control station shall designate the frequency
+4484: (-ies) to be used under normal conditions by aircraft stations
+4485: operating under its control.

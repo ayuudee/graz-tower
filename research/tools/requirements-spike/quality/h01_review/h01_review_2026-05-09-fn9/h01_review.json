@@ -1,0 +1,420 @@
+{
+  "schemaName": "h01_source_readiness_review",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:05:15Z",
+  "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+  "documentId": "h01-extracted",
+  "documentTitle": "AIC A 21/23 (Austria) Sprechfunkverfahren / Radio Communication Procedures",
+  "status": "resolved_for_current_manifest_with_scoped_nonclaims",
+  "manifestSections": 4,
+  "languageScope": {
+    "classification": "english_side_scoped",
+    "nonClaims": [
+      "No German/English translation-equivalence certification is claimed.",
+      "Accepted source units cite English-side exactSourceQuotes only.",
+      "Full H01 document coverage is not claimed; high-priority H01 sections remain in the source-window hardening backlog."
+    ]
+  },
+  "authorityReview": {
+    "expectedAuthorityClassCeiling": "operational_guidance",
+    "basis": [
+      "research/tools/requirements-spike/documents/h01.json defaultAuthorityCeiling",
+      "research/tools/requirements-spike/benchmark_manifest.json H01 expectedAuthorityClassCeiling entries"
+    ],
+    "acceptedAuthorityClassCountsAfterCorrection": {
+      "operational_guidance": 24
+    },
+    "rejectedAuthorityClassCountsAfterCorrection": {
+      "operational_guidance": 1
+    },
+    "authorityCorrectionRunId": "manual_fn9_h01_authority_ceiling_2026-05-09",
+    "recordsCorrected": 20
+  },
+  "sectionBoundaryReview": {
+    "status": "corrected",
+    "runId": "manual_fn9_h01_section_boundary_2026-05-09",
+    "changes": [
+      "corrections_3_8_3 endLine narrowed from 4500 to 4465.",
+      "assurance_rtf_frequencies_3_9 manifest section created for lines 4467-4485.",
+      "Two accepted 3.9 records moved from corrections_3_8_3 to assurance_rtf_frequencies_3_9 with new canonical IDs."
+    ]
+  },
+  "sections": [
+    {
+      "sectionId": "acknowledgement_3_8_1",
+      "sourceRef": "research/txt/h01-extracted.txt:4197-4337",
+      "familyId": "h01_readback_family",
+      "status": "reconciled_english_side_scoped",
+      "acceptedRecords": 11,
+      "pendingRecords": 0,
+      "rejectedRecords": 1,
+      "authorityClassCounts": {
+        "operational_guidance": 12
+      },
+      "clauseCoverage": [
+        {
+          "sourceItem": "3.8.1a_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::9f7c6e8ae357bb62"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1b_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::84ba9adfad38e69f"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1c_en_parent",
+          "classification": "rejected_needs_bundle",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::647df1446645072b"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1c_en_list_1",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::ae6bef87f80a813a"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1c_en_list_2",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::1ba408f68e9b501d"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1c_en_list_3",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1c_en_list_4",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::299a154acafe87cc"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1d_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::3225848831f73cdc"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1e_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::f6d1172db8916a27"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1f_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::11f3df660516dfe3"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1g_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::d19604b475643777"
+          ]
+        },
+        {
+          "sourceItem": "3.8.1h_en",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::acknowledgement_3_8_1::6281074482768bcc"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "end_of_conversation_3_8_2",
+      "sourceRef": "research/txt/h01-extracted.txt:4339-4348",
+      "familyId": "h01_end_of_conversation_family",
+      "status": "reconciled_english_side_scoped",
+      "acceptedRecords": 1,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "authorityClassCounts": {
+        "operational_guidance": 1
+      },
+      "clauseCoverage": [
+        {
+          "sourceItem": "3.8.2_en_body",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::end_of_conversation_3_8_2::1d66565b4872e6a0"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "corrections_3_8_3",
+      "sourceRef": "research/txt/h01-extracted.txt:4359-4465",
+      "familyId": "h01_corrections_family",
+      "status": "reconciled_english_side_scoped",
+      "acceptedRecords": 10,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "authorityClassCounts": {
+        "operational_guidance": 10
+      },
+      "clauseCoverage": [
+        {
+          "sourceItem": "3.8.3_a",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::384103454b613f22"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_b",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::8a2be49544be3901"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_c",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::86b96953b4cff92a"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_d_full_repetition",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::fc8020ddb859c620"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_d_partial_before",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::f72f24e73a9378c1"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_d_partial_to",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::8cebeec30159f975"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_d_partial_after",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::74a82f65f8238803"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_d_negative_i_say_again",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::08fa37157e593a92"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_d_specific_items",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::16272622eb9270ac"
+          ]
+        },
+        {
+          "sourceItem": "3.8.3_e_difficult_reception",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::corrections_3_8_3::3da4e8a007c77a4a"
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "assurance_rtf_frequencies_3_9",
+      "sourceRef": "research/txt/h01-extracted.txt:4467-4485",
+      "familyId": "h01_assurance_rtf_frequency_family",
+      "status": "reconciled_english_side_scoped",
+      "acceptedRecords": 2,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "authorityClassCounts": {
+        "operational_guidance": 2
+      },
+      "clauseCoverage": [
+        {
+          "sourceItem": "3.9_req1",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::assurance_rtf_frequencies_3_9::c6b6366d56bf87e2"
+          ]
+        },
+        {
+          "sourceItem": "3.9_req2",
+          "classification": "english_side_scoped",
+          "canonicalIds": [
+            "h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16"
+          ]
+        }
+      ]
+    }
+  ],
+  "pendingForTask3": [],
+  "packageBlockers": [],
+  "packageNonClaims": [
+    "H01 current package is scoped to manifested English-side windows only.",
+    "H01 package is not full-document complete while the high-priority hardening backlog remains.",
+    "H01 does not supersede ICAO/SERA/CAP sources; later integration must select authority deliberately."
+  ],
+  "remainingH01HardeningRows": [
+    {
+      "rowId": "h01-extracted::h01_3_3",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 3.3",
+      "title": "Establishment of radiotelephony communications",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_3_8",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 3.8",
+      "title": "Exchange of communications",
+      "disposition": "partially_extracted",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_3_10",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 3.10",
+      "title": "Transfer of VHF communications",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_4",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 4",
+      "title": "Contingencies",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_4_1",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 4.1",
+      "title": "Distress and urgency communication procedures",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_4_4",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 4.4",
+      "title": "Voice communications failure",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_5_3",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 5.3",
+      "title": "Controlled aerodromes",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_5_4",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 5.4",
+      "title": "Aerodromes without air traffic control",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_5_6",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 5.6",
+      "title": "General flight handling phraseology",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    },
+    {
+      "rowId": "h01-extracted::h01_5_8",
+      "documentId": "h01-extracted",
+      "sectionRef": "H01 5.8",
+      "title": "Phraseologies in contingencies",
+      "disposition": "extract",
+      "priority": "high",
+      "startLine": "",
+      "endLine": "",
+      "queueState": "needs_exact_line_range",
+      "rationale": "Austrian operational guidance; bilingual text needs English-side filtering before extraction.",
+      "nextAction": "Use in a phraseology/communications topic batch."
+    }
+  ],
+  "evidence": {
+    "currentSourceProgressReport": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-h01-reviewed/source_progress_report.md",
+    "authorityCurationDir": "research/tools/requirements-spike/quality/curation/manual_fn9_h01_authority_ceiling_2026-05-09",
+    "sectionBoundaryCurationDir": "research/tools/requirements-spike/quality/curation/manual_fn9_h01_section_boundary_2026-05-09",
+    "reproducibilityReport": "/tmp/fn9-h01-section-split-reproducibility-report.json"
+  }
+}

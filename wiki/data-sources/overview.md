@@ -65,3 +65,11 @@ Current example:
   - clipped raster/tile underlays
 
 These are useful bootstrap sources, but today only the OFMX and chart/PDF material fit directly into the existing migration flow.
+
+## Requirements / RT source units
+
+Structured source-unit packages for ATC rules, radio telephony, clearances,
+readback, and related phraseology now live under
+`research/tools/requirements-spike/quality/source_packages/`. See
+`wiki/data-sources/requirements-source-units.md` for the current package frame,
+source readiness statuses, and scope non-claims.

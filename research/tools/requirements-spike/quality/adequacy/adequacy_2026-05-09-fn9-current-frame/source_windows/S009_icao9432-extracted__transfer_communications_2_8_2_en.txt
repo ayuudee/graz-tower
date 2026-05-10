@@ -1,0 +1,26 @@
+3830: 2.8.2 Transfer of communications
+3831:
+3832: 2.8.2.1 An aircraft shall be advised by the appropriate aeronautical station to change from one radio
+3833: frequency to another in accordance with agreed procedures. In the absence of such advice, the aircraft shall
+3834: notify the aeronautical station before such a change takes place.
+3835:
+3836: FASTAIR 345 CONTACT ALEXANDER
+3837: CONTROL 129.1
+3838: 129.1 FASTAIR 345
+3839: ---------------FASTAIR 345 WHEN PASSING FL 80
+3840: CONTACT ALEXANDER CONTROL
+3841: 129.1
+3842: WHEN PASSING FL 80
+3843: 129.1 FASTAIR 345
+3844:
+3845: 2.8.2.2 An aircraft may be instructed to MONITOR a frequency – change a frequency as instructed and
+3846: standby (another ATS unit will initiate communications)15, and MONITOR a frequency on which information is
+3847: being broadcast.
+3848:
+3849: FASTAIR 345 MONITOR
+3850: STEPHENVILLE TOWER 118.9
+3851: 118.9 FASTAIR 345
+3852: ---------------FASTAIR 345 MONITOR ATIS 123.250
+3853: MONITORING 123.250 FASTAIR 345
+3854:
+3855: 15 See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES

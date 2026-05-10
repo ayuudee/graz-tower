@@ -1,0 +1,3015 @@
+{
+  "schemaName": "requirements_source_unit_package",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:12:37Z",
+  "sourceFrameId": "fn9-current-frame-2026-05-09",
+  "documentId": "h01-extracted",
+  "documentTitle": "AIC A 21/23 (Austria) Sprechfunkverfahren / Radio Communication Procedures",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "manifestPath": "research/tools/requirements-spike/documents/h01.json",
+  "packageStatus": "scoped_ready",
+  "closureReadiness": "scoped-package-ready",
+  "closureReason": "H01 is English-side scoped and not full-document complete; see H01 source readiness review",
+  "sections": [
+    {
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "sourceRef": "research/txt/h01-extracted.txt:4197-4337",
+      "acceptedRecords": 11,
+      "pendingRecords": 0,
+      "rejectedRecords": 1,
+      "notes": "§3.8.1 ACKNOWLEDGEMENT OF RECEIPT, items a)-h). Bilingual German/English: each lettered item appears twice (German first, English second) with the same letter marker. Nested numbered list 1-4 (the items always to be read back) is laid out separately from its parent clause c) due to two-column extraction."
+    },
+    {
+      "sectionId": "end_of_conversation_3_8_2",
+      "familyId": "h01_end_of_conversation_family",
+      "sourceRef": "research/txt/h01-extracted.txt:4339-4348",
+      "acceptedRecords": 1,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "notes": "§3.8.2 END OF CONVERSATION. Bilingual single-paragraph rule: a radiotelephone conversation shall be terminated by the receiving ATS unit or aircraft using its own callsign."
+    },
+    {
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "sourceRef": "research/txt/h01-extracted.txt:4359-4465",
+      "acceptedRecords": 10,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "notes": "§3.8.3 CORRECTIONS AND REPETITIONS, items a)-onwards. Bilingual German/English with shared lettered markers. CORRECTION/'CORRECTION I SAY AGAIN' phraseology rules, request-for-repetition phraseology."
+    },
+    {
+      "sectionId": "assurance_rtf_frequencies_3_9",
+      "familyId": "h01_assurance_rtf_frequency_family",
+      "sourceRef": "research/txt/h01-extracted.txt:4467-4485",
+      "acceptedRecords": 2,
+      "pendingRecords": 0,
+      "rejectedRecords": 0,
+      "notes": "§3.9 ASSURANCE OF RTF COMMUNICATION/FREQUENCIES TO BE USED. Bilingual German/English: aircraft frequency-use obligation and air-ground control station frequency designation responsibility."
+    }
+  ],
+  "sourceUnits": [
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::11f3df660516dfe3",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "Voice read-back of CPDLC messages shall not be required.",
+      "rationale": "Consistent H01 operational-guidance rule waiving voice readback for CPDLC.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Voice read-back of CPDLC messages shall not be required."
+      ],
+      "sourceItemIds": [
+        "3.8.1f_en"
+      ],
+      "claimSha256": "1c20cdcecacdcb98908d90f70532a48566fb64f4cbe1a99c9946f9cb77ec3030",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "no_voice_readback_cpdlc",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::1ba408f68e9b501d",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "Clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any runway shall always be read back.",
+      "rationale": "Consistent H01 operational-guidance readback item from the list in c).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following items shall always be read back:",
+        "Clearances and instructions to enter, land on, take off from, hold short of, cross, taxi and backtrack on any runway"
+      ],
+      "sourceItemIds": [
+        "3.8.1c_en",
+        "3.8.1c_en_list_2"
+      ],
+      "claimSha256": "227d69c2de1b337d9d9dd6ac6f9b2f0558a3f81d64626a826210885e20041db8",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_runway_clearances",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The source quotes include both the operative parent wording, “The following items shall always be read back,” and the specific runway-clearance list item, so the mandatory claim is supported as a standalone atomic requirement. The pending rationale appears to be a bundle-gate artefact, and the content is not already covered by the accepted sibling candidates.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:09:06Z"
+        },
+        "curationHistory": [
+          {
+            "action": "promote",
+            "reasoning": "The source quotes include both the operative parent wording, “The following items shall always be read back,” and the specific runway-clearance list item, so the mandatory claim is supported as a standalone atomic requirement. The pending rationale appears to be a bundle-gate artefact, and the content is not already covered by the accepted sibling candidates.",
+            "confidence": "high",
+            "curatedAt": "2026-04-29T09:09:06Z"
+          },
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "needs_bundle",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": true
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:09:06Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::299a154acafe87cc",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "Transition levels shall always be read back, whether issued by the controller or contained in ATIS broadcasts.",
+      "rationale": "Consistent H01 operational-guidance readback item from the list in c).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following items shall always be read back:",
+        "Transition levels, whether issued by the controller or contained in ATIS broadcasts."
+      ],
+      "sourceItemIds": [
+        "3.8.1c_en",
+        "3.8.1c_en_list_4"
+      ],
+      "claimSha256": "0463a8c93f971dcef2d64c4356911d96729602df104bc7ce9e23a824c8fcaf7c",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_transition_levels",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::3225848831f73cdc",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "Other clearances or instructions, including conditional clearances and taxi instructions, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with.",
+      "rationale": "Consistent H01 operational-guidance rule for non-mandatory-readback clearances.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Other clearances or instructions, including conditional clearances and taxi instructions, shall be read back or acknowledged in a manner to clearly indicate that they have been understood and will be complied with."
+      ],
+      "sourceItemIds": [
+        "3.8.1d_en"
+      ],
+      "claimSha256": "cea46695713308221c10acf1c6cef48d1de6ee53f25619320afdc356ba0e024a",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_other_clearances",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::6281074482768bcc",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "If both instructions subject to read-back and other information – such as weather reports – are received in the same message, the information should be acknowledged with the words such as WEATHER RECEIVED after the instruction has been read back.",
+      "rationale": "Consistent operational guidance on acknowledging non-readback information.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "If both instructions subject to read-back and other information – such as weather reports – are received in the same message, the information should be acknowledged with the words such as WEATHER RECEIVED after the instruction has been read back."
+      ],
+      "sourceItemIds": [
+        "3.8.1h_en"
+      ],
+      "claimSha256": "955e2067d2b6b21ef1b1dc8e915746d00df4f77d3e9e482621bb4f66bef5f157",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "acknowledge_non_readback_info",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The claim is verbatim supported by the source, the quote audit and schema/modality audits pass, and the statement is appropriately framed as should-level operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling candidates, which cover read-back obligations but not this specific acknowledgement phraseology for mixed read-back and informational messages.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:09:29Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:09:29Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::84ba9adfad38e69f",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "When acknowledgement of receipt is transmitted by an ATS unit to an aircraft, it shall comprise the call sign of the aircraft, followed if considered necessary, by the call sign of the ATS unit.",
+      "rationale": "Consistent H01 operational-guidance rule across all attempts for mandatory acknowledgement content.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "When acknowledgement of receipt is transmitted by an ATS unit to an aircraft, it shall comprise the call sign of the aircraft, followed if considered necessary, by the call sign of the ATS unit."
+      ],
+      "sourceItemIds": [
+        "3.8.1b_en"
+      ],
+      "claimSha256": "f148ad2b0dbcb8e5d5b923b67423eb45e5fbf16321eb87f5ca50d665d46de1ff",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "ack_ats_unit_call_sign",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::9f7c6e8ae357bb62",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "When transmitted by an aircraft, the acknowledgement of receipt of a message shall comprise the call sign of that aircraft.",
+      "rationale": "Consistent H01 operational-guidance rule across all attempts for mandatory acknowledgement content.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "When transmitted by an aircraft, the acknowledgement of receipt of a message shall comprise the call sign of that aircraft."
+      ],
+      "sourceItemIds": [
+        "3.8.1a_en"
+      ],
+      "claimSha256": "9afa15d8e1598bd5013deb261d55ad7d07c0da5e6dcc990b1c11eba1ffd74454",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "ack_aircraft_call_sign",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::ae6bef87f80a813a",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "ATC route clearances shall always be read back.",
+      "rationale": "Consistent H01 operational-guidance readback item from the list in c).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following items shall always be read back:",
+        "ATC route clearances"
+      ],
+      "sourceItemIds": [
+        "3.8.1c_en",
+        "3.8.1c_en_list_1"
+      ],
+      "claimSha256": "99aa8c31269fd4b5b5f5b7ad90b1336bfa1ab8953b5d948b913bd1f04e45a75c",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_atc_route_clearances",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::d19604b475643777",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "It is permissible for verification for the receiving station to read back the message as an additional acknowledgement of receipt.",
+      "rationale": "Consistent operational guidance permitting additional readback.",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "advisory_permission",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "It is permissible for verification for the receiving station to read back the message as an additional acknowledgement of receipt."
+      ],
+      "sourceItemIds": [
+        "3.8.1g_en"
+      ],
+      "claimSha256": "57584edffb27c9a5f75a01fc22a45fd180128787eb9ea4956e5ae463a91de50f",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "perm_station_readback",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "may",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote_with_corrections",
+          "reasoning": "The quote is verbatim and supports the claim as a permissive/advisory operational provision, and it is not redundant with the accepted sibling atomic items. The only issue is classification: this is a permission/advisory item rather than a best-practice requirement.",
+          "corrections": {
+            "requirementKind": "advisory_permission"
+          },
+          "confidence": "medium",
+          "curatedAt": "2026-04-29T09:09:51Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:09:51Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::f6d1172db8916a27",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew and shall take immediate action to correct any discrepancies revealed by the read-back.",
+      "rationale": "Consistent H01 operational-guidance rule for controller verification duties.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "workflow_constraint",
+      "testability": "partially_executable",
+      "verificationMode": "property_or_family_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew and shall take immediate action to correct any discrepancies revealed by the read-back."
+      ],
+      "sourceItemIds": [
+        "3.8.1e_en"
+      ],
+      "claimSha256": "94f72aaa723b3f3dbd71689e8e2ec158206a63f6067e293016f680111ce8d91a",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "controller_verify_readback",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::acknowledgement_3_8_1::fb4e915bd2eabca3",
+      "documentId": "h01-extracted",
+      "sectionId": "acknowledgement_3_8_1",
+      "familyId": "h01_readback_family",
+      "claimText": "Runway-in-use, altimeter settings, SSR codes, newly assigned communication channels, level instructions, heading and speed instructions shall always be read back.",
+      "rationale": "Consistent H01 operational-guidance readback item from the list in c).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The following items shall always be read back:",
+        "Runway-in-use, altimeter settings, SSR codes, newly assigned communication channels, level instructions, heading and speed instructions"
+      ],
+      "sourceItemIds": [
+        "3.8.1c_en",
+        "3.8.1c_en_list_3"
+      ],
+      "claimSha256": "04fb573e1c8c8a469c6afa7e76b892adc4eafe61e5a518bcd288ea533afbb64d",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4197,
+        "endLine": 4337
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_readback_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "readback_operational_data",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 2,
+          "hits": 2,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The exact quotes are present and the parent clause supplies the mandatory 'shall always be read back' modality for the cited list item. This is an atomic list item not already covered by the accepted siblings, which cover items 1, 2, and 4, so rejection as a redundant umbrella is not appropriate.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:10:03Z"
+        },
+        "curationHistory": [
+          {
+            "action": "promote",
+            "reasoning": "The exact quotes are present and the parent clause supplies the mandatory 'shall always be read back' modality for the cited list item. This is an atomic list item not already covered by the accepted siblings, which cover items 1, 2, and 4, so rejection as a redundant umbrella is not appropriate.",
+            "confidence": "high",
+            "curatedAt": "2026-04-29T09:10:03Z"
+          },
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "needs_bundle",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "unsupported_by_source",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": true
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/acknowledgement_3_8_1/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:10:03Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16",
+      "documentId": "h01-extracted",
+      "sectionId": "assurance_rtf_frequencies_3_9",
+      "familyId": "h01_assurance_rtf_frequency_family",
+      "claimText": "The air-ground control station shall designate the frequency (-ies) to be used under normal conditions by aircraft stations operating under its control.",
+      "rationale": "Consistent H01 operational-guidance rule for ATC frequency designation responsibility.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "The air-ground control station shall designate the frequency (-ies) to be used under normal conditions by aircraft stations operating under its control."
+      ],
+      "sourceItemIds": [
+        "3.9_req2"
+      ],
+      "claimSha256": "2687c55e7da9c4490da6f81d5d0e25772efaab18c894e50afedbb9f30ff6371b",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4467,
+        "endLine": 4485
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_assurance_rtf_frequency_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "freq_atc_designate",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          },
+          {
+            "action": "manual_section_boundary_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 manifest section corrections_3_8_3 previously ended at line 4500 and therefore included the start of H01 section 3.9. These records cite sourceItemIds 3.9_req1/3.9_req2 and are source-supported, but their sectionId had to be moved to the explicit H01 3.9 manifest section. Claim text and exactSourceQuotes are unchanged; canonicalId changed because sectionId is part of source-unit identity.",
+            "corrections": {
+              "sectionId": "assurance_rtf_frequencies_3_9",
+              "familyId": "h01_assurance_rtf_frequency_family",
+              "provenance.startLine": 4467,
+              "provenance.endLine": 4485,
+              "previousCanonicalId": "h01-extracted::corrections_3_8_3::ee8d8ce24e99c2be"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:02:27Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        },
+        "sectionBoundaryReview": {
+          "status": "corrected",
+          "previousCanonicalId": "h01-extracted::corrections_3_8_3::ee8d8ce24e99c2be",
+          "currentCanonicalId": "h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16",
+          "previousSectionId": "corrections_3_8_3",
+          "currentSectionId": "assurance_rtf_frequencies_3_9",
+          "reviewedAt": "2026-05-09T11:02:27Z",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reasoning": "H01 manifest section corrections_3_8_3 previously ended at line 4500 and therefore included the start of H01 section 3.9. These records cite sourceItemIds 3.9_req1/3.9_req2 and are source-supported, but their sectionId had to be moved to the explicit H01 3.9 manifest section. Claim text and exactSourceQuotes are unchanged; canonicalId changed because sectionId is part of source-unit identity."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::assurance_rtf_frequencies_3_9::c6b6366d56bf87e2",
+      "documentId": "h01-extracted",
+      "sectionId": "assurance_rtf_frequencies_3_9",
+      "familyId": "h01_assurance_rtf_frequency_family",
+      "claimText": "Aircraft stations shall operate on the appropriate radio frequencies.",
+      "rationale": "Consistent H01 operational-guidance rule for aircraft frequency usage.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "Aircraft stations shall operate on the appropriate radio frequencies."
+      ],
+      "sourceItemIds": [
+        "3.9_req1"
+      ],
+      "claimSha256": "531093348cbdf264ca4a4053f32bab90d61be7ac94c72e0c55e5529d53d52362",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4467,
+        "endLine": 4485
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_assurance_rtf_frequency_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "freq_aircraft",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          },
+          {
+            "action": "manual_section_boundary_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 manifest section corrections_3_8_3 previously ended at line 4500 and therefore included the start of H01 section 3.9. These records cite sourceItemIds 3.9_req1/3.9_req2 and are source-supported, but their sectionId had to be moved to the explicit H01 3.9 manifest section. Claim text and exactSourceQuotes are unchanged; canonicalId changed because sectionId is part of source-unit identity.",
+            "corrections": {
+              "sectionId": "assurance_rtf_frequencies_3_9",
+              "familyId": "h01_assurance_rtf_frequency_family",
+              "provenance.startLine": 4467,
+              "provenance.endLine": 4485,
+              "previousCanonicalId": "h01-extracted::corrections_3_8_3::e9b126d362773131"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:02:27Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        },
+        "sectionBoundaryReview": {
+          "status": "corrected",
+          "previousCanonicalId": "h01-extracted::corrections_3_8_3::e9b126d362773131",
+          "currentCanonicalId": "h01-extracted::assurance_rtf_frequencies_3_9::c6b6366d56bf87e2",
+          "previousSectionId": "corrections_3_8_3",
+          "currentSectionId": "assurance_rtf_frequencies_3_9",
+          "reviewedAt": "2026-05-09T11:02:27Z",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reasoning": "H01 manifest section corrections_3_8_3 previously ended at line 4500 and therefore included the start of H01 section 3.9. These records cite sourceItemIds 3.9_req1/3.9_req2 and are source-supported, but their sectionId had to be moved to the explicit H01 3.9 manifest section. Claim text and exactSourceQuotes are unchanged; canonicalId changed because sectionId is part of source-unit identity."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::08fa37157e593a92",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If, in checking the correctness of a read-back, incorrect items are noticed, the words NEGATIVE I SAY AGAIN shall be transmitted at the conclusion of the read-back followed by the correct version of the items concerned.",
+      "rationale": "Consistent H01 operational-guidance rule for correcting read-back errors.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "If, in checking the correctness of a read-back, incorrect items are noticed, the words “NEGATIVE I SAY AGAIN” shall be transmitted at the conclusion of the read-back followed by the correct version of the items concerned."
+      ],
+      "sourceItemIds": [
+        "3.8.3_d"
+      ],
+      "claimSha256": "4db9c6b550ebf74484d45f0dff1f7853c2a648eb2a8f5278b47e8727632dd019",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_negative_say_again",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::16272622eb9270ac",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "Specific items should be requested, as appropriate, such as SAY AGAIN WIND.",
+      "rationale": "Consistent operational guidance for requesting specific items.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "best_practice",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "Specific items should be requested, as appropriate, such as “SAY AGAIN WIND”."
+      ],
+      "sourceItemIds": [
+        "3.8.3_d"
+      ],
+      "claimSha256": "0ceb4a3d10ec422a0a7a30ddb8b1e62f0fc3b484c1afabfe72afa172c6d526ce",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_specific_item_repeat",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The exact source quote is present and uses 'should', supporting the candidate's advisory operational-guidance framing. The item is atomic and not redundant with the accepted sibling candidates, which cover separate shall-strength correction/repetition phrases.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:10:12Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:10:12Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::384103454b613f22",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "When an error has been made in transmission, the word CORRECTION shall be spoken, the last correct group or phrase repeated, and then the corrected version transmitted.",
+      "rationale": "Consistent H01 operational-guidance rule across all attempts for correcting transmission errors.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "When an error has been made in transmission, the word CORRECTION shall be spoken, the last correct group or phrase repeated, and then the corrected version transmitted."
+      ],
+      "sourceItemIds": [
+        "3.8.3_a"
+      ],
+      "claimSha256": "58ab7b0a1222eb93d7faa3f87f18f7cf7403e8ddeec847aee32becc0bf661fbd",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "corr_error_transmission",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::3da4e8a007c77a4a",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "When a station transmitting a message considers that reception is likely to be difficult, it should transmit the important elements of the message twice using the words I SAY AGAIN.",
+      "rationale": "Consistent operational guidance for difficult reception conditions.",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "best_practice",
+      "testability": "review_only",
+      "verificationMode": "review_only",
+      "promotionHint": "advisory_only",
+      "exactSourceQuotes": [
+        "When a station transmitting a message considers that reception is likely to be difficult, it should transmit the important elements of the message twice using the words “I SAY AGAIN”."
+      ],
+      "sourceItemIds": [
+        "3.8.3_e"
+      ],
+      "claimSha256": "2a0ab64b0986e0a61b02438e11f8985dd6113a2da65c19caf45a103ef0eaedc7",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_difficult_reception",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "should",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationApplied": {
+          "action": "promote",
+          "reasoning": "The claim is supported verbatim by the source, uses the source’s “should” modality, and is correctly classified as operational guidance rather than an authoritative requirement. It is an atomic item not already covered by the accepted siblings; the judge’s advisory-only rationale does not identify an identity or schema defect.",
+          "confidence": "high",
+          "curatedAt": "2026-04-29T09:10:24Z"
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "advisory_only",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json",
+        "curatedAt": "2026-04-29T09:10:24Z"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::74a82f65f8238803",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If repetition of a portion of a message is required, the phrase SAY AGAIN ALL AFTER… (last word satisfactorily received) shall be used.",
+      "rationale": "Consistent H01 operational-guidance rule for partial repetition phraseology (after).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "“SAY AGAIN ALL AFTER… (last word satisfactorily received)”"
+      ],
+      "sourceItemIds": [
+        "3.8.3_d"
+      ],
+      "claimSha256": "2a5b53121470a64c48d494247458ce94bf7250fd209cf9434c66f1652a5f4ab0",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_say_again_partial_after",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::86b96953b4cff92a",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If the receiving station is in doubt as to the correctness of the message received, a repetition either in full or in part shall be requested.",
+      "rationale": "Consistent H01 operational-guidance rule for requesting repetition upon doubt.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "If the receiving station is in doubt as to the correctness of the message received, a repetition either in full or in part shall be requested."
+      ],
+      "sourceItemIds": [
+        "3.8.3_c"
+      ],
+      "claimSha256": "f46036ebb19f4fab12fe4407af83797624adb93ce7682b124d70f467509170c1",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_repetition_doubt",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::8a2be49544be3901",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If a correction can best be made by repeating the entire message, the phrase CORRECTION, I SAY AGAIN shall be used before the message is transmitted a second time.",
+      "rationale": "Consistent H01 operational-guidance rule for full message correction phraseology.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "If a correction can best be made by repeating the entire message, the phrase “CORRECTION, I SAY AGAIN” shall be used before the message is transmitted a second time."
+      ],
+      "sourceItemIds": [
+        "3.8.3_b"
+      ],
+      "claimSha256": "649383183087ea8467afd3c71f26315811d16c2476144dbfc1c0c01bada18f41",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "corr_full_repeat",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": false,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": false
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::8cebeec30159f975",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If repetition of a portion of a message is required, the phrase SAY AGAIN … (word before missing portion) TO… (word after missing portion) shall be used.",
+      "rationale": "Consistent H01 operational-guidance rule for partial repetition phraseology (middle).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "“SAY AGAIN … (word before missing portion) TO… (word after missing portion)”"
+      ],
+      "sourceItemIds": [
+        "3.8.3_d"
+      ],
+      "claimSha256": "4b90afec615170b746640144f154254b95553707682bd7f6b2b951d91c00ac2e",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_say_again_partial_middle",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::f72f24e73a9378c1",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If repetition of a portion of a message is required, the phrase SAY AGAIN ALL BEFORE… (first word satisfactorily received) shall be used.",
+      "rationale": "Consistent H01 operational-guidance rule for partial repetition phraseology (before).",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "“SAY AGAIN ALL BEFORE… (first word satisfactorily received)” shall be used"
+      ],
+      "sourceItemIds": [
+        "3.8.3_d"
+      ],
+      "claimSha256": "30d176cddec97e1f77f671229ae15a9e2024eb0a2363cb728b202be8c9564b5d",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_say_again_partial_before",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::corrections_3_8_3::fc8020ddb859c620",
+      "documentId": "h01-extracted",
+      "sectionId": "corrections_3_8_3",
+      "familyId": "h01_corrections_family",
+      "claimText": "If repetition of an entire message is required, the words SAY AGAIN shall be spoken.",
+      "rationale": "Consistent H01 operational-guidance rule for full message repetition phraseology.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "phraseology_rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "If repetition of an entire message is required, the words “SAY AGAIN” shall be spoken."
+      ],
+      "sourceItemIds": [
+        "3.8.3_d"
+      ],
+      "claimSha256": "e89e6534f0ec0cc46103240ece9d39e0a6c134d1a2001e61b6462e389798413b",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4359,
+        "endLine": 4500
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_corrections_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "req_say_again_full",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true,
+        "curationHistory": [
+          {
+            "action": "manual_authority_ceiling_correction",
+            "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+            "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+            "corrections": {
+              "authorityClass": "operational_guidance"
+            },
+            "confidence": "high",
+            "curatedAt": "2026-05-09T11:00:13Z"
+          }
+        ],
+        "authorityCeilingReview": {
+          "status": "corrected",
+          "expectedAuthorityClassCeiling": "operational_guidance",
+          "previousAuthorityClass": "authoritative_requirement",
+          "currentAuthorityClass": "operational_guidance",
+          "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+          "reviewedAt": "2026-05-09T11:00:13Z",
+          "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+        }
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/corrections_3_8_3/judged_candidates.json"
+      }
+    },
+    {
+      "schemaName": "ollama_first_candidate",
+      "formatVersion": "2026-04-28-v1",
+      "canonicalId": "h01-extracted::end_of_conversation_3_8_2::1d66565b4872e6a0",
+      "documentId": "h01-extracted",
+      "sectionId": "end_of_conversation_3_8_2",
+      "familyId": "h01_end_of_conversation_family",
+      "claimText": "A radiotelephone conversation shall be terminated by the receiving ATS unit or the aircraft using its own call sign.",
+      "rationale": "All attempts agree on the core obligation. Attempt 1's split is less conservative as it fragments a single disjunctive rule. Attempts 2 and 3 provide the complete, unified claim found in the source.",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "requirementKind": "rule",
+      "testability": "sim_executable",
+      "verificationMode": "deterministic_test",
+      "promotionHint": "promote",
+      "exactSourceQuotes": [
+        "A radiotelephone conversation shall be terminated by the receiving ATS unit or the aircraft using its own call sign."
+      ],
+      "sourceItemIds": [
+        "3.8.2_en_body"
+      ],
+      "claimSha256": "5d38284abc4cb5c1772da3dade490a152c958bdfaeeef7943f45e277b2a6f75c",
+      "provenance": {
+        "sourcePath": "research/txt/h01-extracted.txt",
+        "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+        "startLine": 4339,
+        "endLine": 4348
+      },
+      "ingestionRun": {
+        "runId": "promote_2026-04-28T19-35-19Z_5786",
+        "caseId": "h01_end_of_conversation_family",
+        "models": {
+          "structure": "qwen3.6:35b-a3b",
+          "structureReconcile": "qwen3.6:35b-a3b",
+          "extraction": "qwen3.6:35b-a3b",
+          "reconcile": "qwen3.6:35b-a3b",
+          "challenge": "qwen2.5-coder:32b",
+          "defense": "qwen3.6:35b-a3b",
+          "bundleGate": "qwen3.6:35b-a3b",
+          "judge": "qwen3.6:35b-a3b"
+        },
+        "promptVersion": "ollama-first-2026-04-28",
+        "promptVersionSha": "25de32675884cb3976f22fb28206209e8e72a1db3a6e556bb46490935002b66c",
+        "originalCandidateId": "h01_conv_term_3.8.2",
+        "numCtx": 24576,
+        "structureAttempts": 3,
+        "extractionAttempts": 3
+      },
+      "audit": {
+        "verbatimQuoteCheck": {
+          "status": "pass",
+          "method": "windowed_substring_match",
+          "totalQuotes": 1,
+          "hits": 1,
+          "misses": []
+        },
+        "schemaCheck": {
+          "status": "pass",
+          "reasons": []
+        },
+        "authorityModalityCheck": {
+          "status": "pass",
+          "modality": "shall",
+          "authorityClass": "operational_guidance",
+          "floorConsistent": true,
+          "overrideFired": true,
+          "invariantViolated": false,
+          "reason": null
+        },
+        "overrideAuditTrailCheck": {
+          "status": "pass",
+          "misses": []
+        },
+        "rationaleNonEmpty": true
+      },
+      "gate": {
+        "overallStatus": "pass",
+        "judge": {
+          "decision": "accepted",
+          "confidence": "high"
+        },
+        "challenger": {
+          "verdict": "supported",
+          "overridden": true
+        },
+        "bundleGate": {
+          "scopeComplete": true
+        },
+        "siblingResolution": {
+          "fired": false
+        },
+        "judgeOverride": {
+          "fired": false
+        }
+      },
+      "lifecycle": {
+        "state": "accepted",
+        "promotedAt": "2026-04-28T19:35:19Z",
+        "promotedFrom": "/tmp/ollama-first-phase-e-2026-04-28/h01-extracted/end_of_conversation_3_8_2/judged_candidates.json"
+      }
+    }
+  ],
+  "recordCounts": {
+    "accepted": 24,
+    "pending": 0,
+    "rejected": 1
+  },
+  "rejectedRecordIds": [
+    "h01-extracted::acknowledgement_3_8_1::647df1446645072b"
+  ],
+  "residualGaps": {
+    "highPriorityRowsNeedingSourceWindowHardening": 10
+  },
+  "blockers": [],
+  "nonClaims": [
+    "This package is per-source only; it does not integrate, deduplicate, or choose precedence across sources.",
+    "This package does not claim full corpus completeness, Nolan coverage, or EPPLS coverage.",
+    "This package covers the manifested source windows only; high-priority source-window hardening rows outside those windows remain out of package scope.",
+    "Current H01 records are English-side scoped for manifested AIC A 21/23 sections 3.8.1-3.8.3; they do not certify German/English translation equivalence.",
+    "The H01 package must not claim full-document completeness while the source-window hardening backlog still contains high-priority H01 sections outside the manifested 3.8 windows."
+  ],
+  "validationEvidence": {
+    "closureReview": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/closure_report.json",
+    "sourceProgressReport": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-final/source_progress_report.json",
+    "quoteAudit": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/quote_audit.json",
+    "reproducibilityAudit": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/reproducibility_audit.json",
+    "adequacyAssessment": "research/tools/requirements-spike/quality/adequacy/adequacy_2026-05-09-fn9-current-frame/adequacy_assessment.md"
+  }
+}

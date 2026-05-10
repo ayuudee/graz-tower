@@ -1,6 +1,6 @@
 {
   "documentId": "cap413-extracted",
-  "documentTitle": "CAP 413 — UK Manual of Radiotelephony",
+  "documentTitle": "CAP 413 \u2014 UK Manual of Radiotelephony",
   "sourcePath": "research/txt/cap413-extracted.txt",
   "defaultAuthorityCeiling": "operational_guidance",
   "sections": [
@@ -9,84 +9,357 @@
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6255,
       "endLine": 6272,
-      "notes": "CAP 413 §§2.54-2.55: correction and full-message repetition phraseology. Split from the combined hardening window after first ingestion produced more candidates than the review cap."
+      "notes": "CAP 413 \u00a7\u00a72.54-2.55: correction and full-message repetition phraseology. Split from the combined hardening window after first ingestion produced more candidates than the review cap."
     },
     {
       "sectionId": "acknowledgement_receipt_2_56",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6273,
       "endLine": 6287,
-      "notes": "CAP 413 §2.56: acknowledgement of receipt by callsign or Roger/callsign. Split from the combined hardening window after first ingestion produced more candidates than the review cap."
+      "notes": "CAP 413 \u00a72.56: acknowledgement of receipt by callsign or Roger/callsign. Split from the combined hardening window after first ingestion produced more candidates than the review cap."
     },
     {
       "sectionId": "transfer_content_2_57_to_2_59",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6288,
       "endLine": 6306,
-      "notes": "CAP 413 §§2.57-2.59: transfer-instruction content, single-message guidance, readback-before-transfer guidance, and assumption of satisfactory transfer. Split from the transfer window after live ingestion produced invalid truncated JSON."
+      "notes": "CAP 413 \u00a7\u00a72.57-2.59: transfer-instruction content, single-message guidance, readback-before-transfer guidance, and assumption of satisfactory transfer. Split from the transfer window after live ingestion produced invalid truncated JSON."
     },
     {
       "sectionId": "frequency_change_permission_2_60_to_2_61",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6308,
       "endLine": 6324,
-      "notes": "CAP 413 §§2.60-2.61: advised frequency change, pilot notification before unauthorised change, and controlled-airspace permission before changing frequency. Split from the transfer window after live ingestion produced invalid truncated JSON."
+      "notes": "CAP 413 \u00a7\u00a72.60-2.61: advised frequency change, pilot notification before unauthorised change, and controlled-airspace permission before changing frequency. Split from the transfer window after live ingestion produced invalid truncated JSON."
     },
     {
       "sectionId": "standby_monitor_conditional_contact_2_62_to_2_63",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6326,
       "endLine": 6379,
-      "notes": "CAP 413 §§2.62-2.63: standby/monitor use, contact at a point or level, and radar-heading report on transfer. Split from the transfer window after live ingestion produced invalid truncated JSON."
+      "notes": "CAP 413 \u00a7\u00a72.62-2.63: standby/monitor use, contact at a point or level, and radar-heading report on transfer. Split from the transfer window after live ingestion produced invalid truncated JSON."
     },
     {
       "sectionId": "freecall_change_intention_2_64",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6381,
       "endLine": 6390,
-      "notes": "CAP 413 §2.64: pilot request or notification when intending to freecall or change to another agency. Split from the transfer window after live ingestion produced invalid truncated JSON."
+      "notes": "CAP 413 \u00a72.64: pilot request or notification when intending to freecall or change to another agency. Split from the transfer window after live ingestion produced invalid truncated JSON."
     },
     {
       "sectionId": "clearance_issue_context_2_65_to_2_67",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6391,
       "endLine": 6428,
-      "notes": "CAP 413 §§2.65-2.67: clearance issue context before the existing readback window, including clarity, start-up timing, route/local-departure separation, tactical-restriction reiteration, taxi/take-off timing, and take-off/departure wording. Split from the combined hardening window after first ingestion produced more candidates than the review cap."
+      "notes": "CAP 413 \u00a7\u00a72.65-2.67: clearance issue context before the existing readback window, including clarity, start-up timing, route/local-departure separation, tactical-restriction reiteration, taxi/take-off timing, and take-off/departure wording. Split from the combined hardening window after first ingestion produced more candidates than the review cap."
     },
     {
       "sectionId": "readback_2_68_2_71",
       "familyId": "cap413_readback_family",
       "startLine": 6429,
       "endLine": 6555,
-      "notes": "§2.68-2.71 Read-back Requirements (narrowed scope; the §2.65-2.67 introductory clauses and §2.72 UNABLE handling are out of scope for the readback-family proving slice). Numbered subsections with embedded RTF dialogue examples (BIGJET 347, G-ABCD, G-CD)."
+      "notes": "\u00a72.68-2.71 Read-back Requirements (narrowed scope; the \u00a72.65-2.67 introductory clauses and \u00a72.72 UNABLE handling are out of scope for the readback-family proving slice). Numbered subsections with embedded RTF dialogue examples (BIGJET 347, G-ABCD, G-CD)."
     },
     {
       "sectionId": "unable_reclearance_critical_info_2_72_to_2_75",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6556,
       "endLine": 6604,
-      "notes": "CAP 413 §§2.72-2.75: UNABLE, revised-clearance cancellation, and critical-information repetition. Hardened in clearance_comms_2026-04-30."
+      "notes": "CAP 413 \u00a7\u00a72.72-2.75: UNABLE, revised-clearance cancellation, and critical-information repetition. Hardened in clearance_comms_2026-04-30."
     },
     {
       "sectionId": "compliance_timing_2_82_to_2_87",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6703,
       "endLine": 6783,
-      "notes": "CAP 413 §§2.82-2.87: prompt compliance, pilot delay advice, when-ready/after-passing timing, now/immediately urgency, and placement examples. Split from the compliance/communication-failure window after live ingestion showed the combined window was too heavy."
+      "notes": "CAP 413 \u00a7\u00a72.82-2.87: prompt compliance, pilot delay advice, when-ready/after-passing timing, now/immediately urgency, and placement examples. Split from the compliance/communication-failure window after live ingestion showed the combined window was too heavy."
     },
     {
       "sectionId": "air_ground_communication_failure_2_88",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6784,
       "endLine": 6832,
-      "notes": "CAP 413 §2.88: aircraft-side communication-failure checks, alternate-frequency attempts, transmitting blind, receiver-failure reports, and intention transmission. Split from the compliance/communication-failure window after live ingestion showed the combined window was too heavy."
+      "notes": "CAP 413 \u00a72.88: aircraft-side communication-failure checks, alternate-frequency attempts, transmitting blind, receiver-failure reports, and intention transmission. Split from the compliance/communication-failure window after live ingestion showed the combined window was too heavy."
     },
     {
       "sectionId": "ground_air_communication_failure_2_89_to_2_91",
       "familyId": "cap413_clearance_comms_guidance_family",
       "startLine": 6833,
       "endLine": 6864,
-      "notes": "CAP 413 §§2.89-2.91: ground-station checks, blind transmission, and assumed level/route/EAT/weather message content. Split from the compliance/communication-failure window after live ingestion showed the combined window was too heavy."
+      "notes": "CAP 413 \u00a7\u00a72.89-2.91: ground-station checks, blind transmission, and assumed level/route/EAT/weather message content. Split from the compliance/communication-failure window after live ingestion showed the combined window was too heavy."
+    },
+    {
+      "sectionId": "ch4_4_1_to_4_4",
+      "familyId": "cap413_ch4_4_1_to_4_4_family",
+      "startLine": 7906,
+      "endLine": 7986,
+      "notes": "CAP 413 Chapter 4 \u00a74.1-4.4: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_5",
+      "familyId": "cap413_ch4_4_5_family",
+      "startLine": 7987,
+      "endLine": 8100,
+      "notes": "CAP 413 Chapter 4 \u00a74.5: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_6_to_4_10",
+      "familyId": "cap413_ch4_4_6_to_4_10_family",
+      "startLine": 8101,
+      "endLine": 8182,
+      "notes": "CAP 413 Chapter 4 \u00a7\u00a74.6-4.10: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_11_to_4_12",
+      "familyId": "cap413_ch4_4_11_to_4_12_family",
+      "startLine": 8183,
+      "endLine": 8321,
+      "notes": "CAP 413 Chapter 4 \u00a74.11-4.12: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_13_to_4_16",
+      "familyId": "cap413_ch4_4_13_to_4_16_family",
+      "startLine": 8322,
+      "endLine": 8429,
+      "notes": "CAP 413 Chapter 4 \u00a74.13-4.16: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_17_to_4_23",
+      "familyId": "cap413_ch4_4_17_to_4_23_family",
+      "startLine": 8430,
+      "endLine": 8527,
+      "notes": "CAP 413 Chapter 4 \u00a74.17-4.23: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_24_to_4_25",
+      "familyId": "cap413_ch4_4_24_to_4_25_family",
+      "startLine": 8528,
+      "endLine": 8557,
+      "notes": "CAP 413 Chapter 4 \u00a74.24-4.25: split from the former \u00a74.24-4.33 window after structure validation required a narrower source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_26",
+      "familyId": "cap413_ch4_4_26_family",
+      "startLine": 8558,
+      "endLine": 8572,
+      "notes": "CAP 413 Chapter 4 \u00a74.26: split from the former \u00a74.24-4.33 window after structure validation required a narrower source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_27_to_4_30",
+      "familyId": "cap413_ch4_4_27_to_4_30_family",
+      "startLine": 8573,
+      "endLine": 8618,
+      "notes": "CAP 413 Chapter 4 \u00a74.27-4.30: split from the former \u00a74.24-4.33 window after structure validation required a narrower source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_31",
+      "familyId": "cap413_ch4_4_31_family",
+      "startLine": 8619,
+      "endLine": 8629,
+      "notes": "CAP 413 Chapter 4 \u00a74.31: split from the former \u00a74.24-4.33 window after structure validation required a narrower source window. Treat the numbered immediate-take-off cases as separate source-supported subclauses where appropriate."
+    },
+    {
+      "sectionId": "ch4_4_32",
+      "familyId": "cap413_ch4_4_32_family",
+      "startLine": 8630,
+      "endLine": 8670,
+      "notes": "CAP 413 Chapter 4 \u00a74.32: split from the former \u00a74.24-4.33 window after structure validation required a narrower source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_33",
+      "familyId": "cap413_ch4_4_33_family",
+      "startLine": 8671,
+      "endLine": 8688,
+      "notes": "CAP 413 Chapter 4 \u00a74.33: split from the former \u00a74.24-4.33 window after structure validation required a narrower source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_34_to_4_39",
+      "familyId": "cap413_ch4_4_34_to_4_39_family",
+      "startLine": 8689,
+      "endLine": 8864,
+      "notes": "CAP 413 Chapter 4 \u00a74.34-4.39: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_40_to_4_44",
+      "familyId": "cap413_ch4_4_40_to_4_44_family",
+      "startLine": 8865,
+      "endLine": 8979,
+      "notes": "CAP 413 Chapter 4 \u00a74.40-4.44: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_45_to_4_49",
+      "familyId": "cap413_ch4_4_45_to_4_49_family",
+      "startLine": 8980,
+      "endLine": 9111,
+      "notes": "CAP 413 Chapter 4 \u00a74.45-4.49: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_50_to_4_60",
+      "familyId": "cap413_ch4_4_50_to_4_60_family",
+      "startLine": 9112,
+      "endLine": 9293,
+      "notes": "CAP 413 Chapter 4 \u00a74.50-4.60: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_61_to_4_69",
+      "familyId": "cap413_ch4_4_61_to_4_69_family",
+      "startLine": 9294,
+      "endLine": 9443,
+      "notes": "CAP 413 Chapter 4 \u00a74.61-4.69: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_70_to_4_83",
+      "familyId": "cap413_ch4_4_70_to_4_83_family",
+      "startLine": 9444,
+      "endLine": 9604,
+      "notes": "CAP 413 Chapter 4 \u00a74.70-4.83: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_84_part1",
+      "familyId": "cap413_ch4_4_84_part1_family",
+      "startLine": 9605,
+      "endLine": 9733,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 1: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_84_part2",
+      "familyId": "cap413_ch4_4_84_part2_family",
+      "startLine": 9734,
+      "endLine": 9895,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 2: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_84_part3",
+      "familyId": "cap413_ch4_4_84_part3_family",
+      "startLine": 9896,
+      "endLine": 10089,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 3: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_85",
+      "familyId": "cap413_ch4_4_85_family",
+      "startLine": 10090,
+      "endLine": 10225,
+      "notes": "CAP 413 Chapter 4 \u00a74.85: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_86_to_4_93",
+      "familyId": "cap413_ch4_4_86_to_4_93_family",
+      "startLine": 10226,
+      "endLine": 10350,
+      "notes": "CAP 413 Chapter 4 \u00a74.86-4.93: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_94_to_4_107",
+      "familyId": "cap413_ch4_4_94_to_4_107_family",
+      "startLine": 10351,
+      "endLine": 10494,
+      "notes": "CAP 413 Chapter 4 \u00a74.94-4.107: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_108_to_4_118",
+      "familyId": "cap413_ch4_4_108_to_4_118_family",
+      "startLine": 10495,
+      "endLine": 10677,
+      "notes": "CAP 413 Chapter 4 \u00a74.108-4.118: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_119_to_4_128",
+      "familyId": "cap413_ch4_4_119_to_4_128_family",
+      "startLine": 10678,
+      "endLine": 10864,
+      "notes": "CAP 413 Chapter 4 \u00a74.119-4.128: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_129_to_4_135",
+      "familyId": "cap413_ch4_4_129_to_4_135_family",
+      "startLine": 10865,
+      "endLine": 11025,
+      "notes": "CAP 413 Chapter 4 \u00a74.129-4.135: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_136_to_4_143",
+      "familyId": "cap413_ch4_4_136_to_4_143_family",
+      "startLine": 11026,
+      "endLine": 11143,
+      "notes": "CAP 413 Chapter 4 \u00a74.136-4.143: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_144_to_4_152",
+      "familyId": "cap413_ch4_4_144_to_4_152_family",
+      "startLine": 11144,
+      "endLine": 11283,
+      "notes": "CAP 413 Chapter 4 \u00a74.144-4.152: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_153",
+      "familyId": "cap413_ch4_4_153_family",
+      "startLine": 11284,
+      "endLine": 11472,
+      "notes": "CAP 413 Chapter 4 \u00a74.153: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_154_to_4_156_part1",
+      "familyId": "cap413_ch4_4_154_to_4_156_part1_family",
+      "startLine": 11473,
+      "endLine": 11571,
+      "notes": "CAP 413 Chapter 4 \u00a74.154-4.156 part 1: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_154_to_4_156_part2",
+      "familyId": "cap413_ch4_4_154_to_4_156_part2_family",
+      "startLine": 11572,
+      "endLine": 11708,
+      "notes": "CAP 413 Chapter 4 \u00a74.154-4.156 part 2: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_157_to_4_173",
+      "familyId": "cap413_ch4_4_157_to_4_173_family",
+      "startLine": 11709,
+      "endLine": 11857,
+      "notes": "CAP 413 Chapter 4 \u00a74.157-4.173: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_174_to_4_183",
+      "familyId": "cap413_ch4_4_174_to_4_183_family",
+      "startLine": 11858,
+      "endLine": 12027,
+      "notes": "CAP 413 Chapter 4 \u00a74.174-4.183: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_184_to_4_190",
+      "familyId": "cap413_ch4_4_184_to_4_190_family",
+      "startLine": 12028,
+      "endLine": 12166,
+      "notes": "CAP 413 Chapter 4 \u00a74.184-4.190: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_191_to_4_199",
+      "familyId": "cap413_ch4_4_191_to_4_199_family",
+      "startLine": 12167,
+      "endLine": 12280,
+      "notes": "CAP 413 Chapter 4 \u00a74.191-4.199: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "emergency_general_service_8_1_to_8_12",
+      "familyId": "cap413_emergency_phraseology_family",
+      "startLine": 16255,
+      "endLine": 16429,
+      "notes": "CAP 413 Chapter 8 \u00a7\u00a78.1-8.12: distress/urgency states, emergency-service use, emergency frequency, SSR code, acknowledgement, and message-minimisation rules."
+    },
+    {
+      "sectionId": "emergency_message_specials_8_13_to_8_20",
+      "familyId": "cap413_emergency_phraseology_family",
+      "startLine": 16430,
+      "endLine": 16597,
+      "notes": "CAP 413 Chapter 8 \u00a7\u00a78.13-8.20: emergency-message content, MAYDAY/PAN examples, PAN PAN MEDICAL, ejection, ballistic recovery, speechless/SSR response, and difficulty calls."
+    },
+    {
+      "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+      "familyId": "cap413_emergency_phraseology_family",
+      "startLine": 16598,
+      "endLine": 16841,
+      "notes": "CAP 413 Chapter 8 \u00a7\u00a78.21-8.34: practice emergencies, training fixes, relayed emergency messages, imposition of silence, emergency descent, fuel shortage, and termination of distress communications."
     }
   ]
 }

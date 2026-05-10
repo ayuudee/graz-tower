@@ -23,6 +23,10 @@ ROOT = Path.cwd()
 OUT = ROOT / "research/tools/requirements-spike/quality/source_section_ledger/source_section_ledger_2026-04-30"
 MANIFEST_DIR = ROOT / "research/tools/requirements-spike/documents"
 REGISTRY_ROOT = ROOT / "research/tools/requirements-spike/registry/ollama_first"
+WINDOW_HARDENED_NEXT_ACTION = (
+    "Use exact manifest-window rows for ingestion and curation; no further broad-row "
+    "source-window hardening is required."
+)
 
 
 @dataclass(frozen=True)
@@ -217,7 +221,7 @@ def cap413_rows(rows: list[Row]) -> None:
     sections = [
         ("CAP413 front matter", "Amendment record, effective pages, revision history, foreword", "out_of_scope", "none", "Document administration, not operational content."),
         ("CAP413 Ch1", "Glossary", "support_only", "low", "Definitions and abbreviations support interpretation but should not become standalone rules without a procedural source."),
-        ("CAP413 Ch2", "Radiotelephony general procedures", "partially_extracted", "high", "Current registry covers readback requirements plus CAP 413 §§2.82-2.91; other communication procedures remain available."),
+        ("CAP413 Ch2", "Radiotelephony general procedures", "window_hardened", "none", "Current registry covers readback and compliance/communication-failure windows; the remaining high-value Ch2 communication procedures are represented by exact manifest windows."),
         ("CAP413 Ch2 Introduction", "Introduction", "support_only", "low", "Context for UK radiotelephony procedure."),
         ("CAP413 Ch2 Use of VHF RTF Channels", "Use of VHF RTF channels", "extract", "medium", "Potential frequency/channel procedure material."),
         ("CAP413 Ch2 Transmitting Technique", "Transmitting technique", "extract", "medium", "Useful controller/pilot communication-behaviour material."),
@@ -232,7 +236,7 @@ def cap413_rows(rows: list[Row]) -> None:
         ("CAP413 Ch2 Corrections and Repetitions", "Corrections and repetitions", "manifest_only", "high", "Exact CAP 413 §§2.54-2.55 window exists but has not landed in the registry."),
         ("CAP413 Ch2 Acknowledgement of Receipt", "Acknowledgement of receipt", "manifest_only", "high", "Exact CAP 413 §2.56 window exists but has not landed in the registry."),
         ("CAP413 Ch2 Transfer of Communications", "Transfer of communications", "manifest_only", "high", "Exact CAP 413 §§2.57-2.64 split windows exist but have not landed in the registry."),
-        ("CAP413 Ch2 Clearance Issue and Read-back Requirements", "Clearance issue and read-back requirements", "partially_extracted", "high", "Registry covers CAP 413 2.68-2.71 and exact windows exist for 2.65-2.67 and 2.72-2.75."),
+        ("CAP413 Ch2 Clearance Issue and Read-back Requirements", "Clearance issue and read-back requirements", "window_hardened", "none", "Registry covers CAP 413 2.68-2.71 and exact manifest windows cover adjacent clearance issue and inability/reclearance material."),
         ("CAP413 Ch2 Withholding Clearances", "Withholding clearances", "extract", "medium", "Potential controller clearance timing behaviour."),
         ("CAP413 Ch2 Simultaneous Transmissions", "Simultaneous transmissions", "defer_with_reason", "low", "Radio-channel simulation detail not yet modelled."),
         ("CAP413 Ch2 Complying with Clearances and Instructions", "Complying with clearances and instructions", "extracted_current", "none", "CAP 413 §§2.82-2.87 landed in the registry on 2026-05-01."),
@@ -241,11 +245,11 @@ def cap413_rows(rows: list[Row]) -> None:
         ("CAP413 Ch2 Complaints and Records", "Telecommunication complaints, watch, and communication records", "out_of_scope", "none", "Administrative/operational logging material."),
         ("CAP413 Ch2 Categories of Message", "Categories of message", "extract", "medium", "May support message priority/emergency handling."),
         ("CAP413 Ch3", "General phraseology", "support_only", "medium", "Useful phraseology templates; lower authority than ICAO/SERA where they overlap."),
-        ("CAP413 Ch4", "Aerodrome phraseology", "extract", "high", "High-value tower/taxi/takeoff/landing phraseology coverage not represented by current manifest."),
+        ("CAP413 Ch4", "Aerodrome phraseology", "window_hardened", "none", "High-value tower/taxi/takeoff/landing phraseology is now represented by exact manifest windows across the chapter."),
         ("CAP413 Ch5", "Radar phraseology", "defer_with_reason", "medium", "Surveillance/service material; extract when radar services enter scope."),
         ("CAP413 Ch6", "Approach phraseology", "defer_with_reason", "medium", "Approach-control material; extract with IFR/APP sequencing work."),
         ("CAP413 Ch7", "Area phraseology", "defer_with_reason", "low", "En-route/area-control scope."),
-        ("CAP413 Ch8", "Emergency phraseology", "extract", "high", "Emergency communications likely valuable for controller/pilot failure modes."),
+        ("CAP413 Ch8", "Emergency phraseology", "window_hardened", "none", "Emergency communication material is now represented by exact manifest windows."),
         ("CAP413 Ch9", "Miscellaneous phraseology", "support_only", "medium", "Contains useful special topics but should be selected by consumer need."),
         ("CAP413 Ch10", "Military specific phraseology", "out_of_scope", "none", "Military-specific material is not in the current civil tower scope."),
         ("CAP413 Ch11", "Phraseology examples", "support_only", "medium", "Example dialogues should seed scenarios, not requirements by themselves."),
@@ -254,7 +258,13 @@ def cap413_rows(rows: list[Row]) -> None:
         ("CAP413 Bibliography", "Bibliography", "out_of_scope", "none", "Reference list only."),
     ]
     for ref, title, disposition, priority, rationale in sections:
-        next_action = "No ingestion now." if disposition in {"support_only", "out_of_scope", "defer_with_reason", "extracted_current"} else "Consider in a future topic batch."
+        next_action = (
+            WINDOW_HARDENED_NEXT_ACTION
+            if disposition == "window_hardened"
+            else "No ingestion now."
+            if disposition in {"support_only", "out_of_scope", "defer_with_reason", "extracted_current"}
+            else "Consider in a future topic batch."
+        )
         add(rows, "cap413-extracted", ref, title, "toc_major_section", disposition, priority, rationale, next_action)
 
 
@@ -336,11 +346,14 @@ def h01_rows(rows: list[Row]) -> None:
         ("H01 Appendix 5", "Sources"),
         ("H01 Amendments", "List of amendments"),
     ]
-    partial = {"H01 3.8"}
+    window_hardened = {"H01 3.3", "H01 3.8", "H01 3.9", "H01 3.10", "H01 4", "H01 4.1", "H01 4.4", "H01 5.3", "H01 5.4", "H01 5.6", "H01 5.8"}
+    partial = set()
     high_extract = {"H01 3.3", "H01 3.8", "H01 3.9", "H01 3.10", "H01 4", "H01 4.1", "H01 4.4", "H01 5.3", "H01 5.4", "H01 5.6", "H01 5.8"}
     out = {"H01 5.9", "H01 Appendix 5", "H01 Amendments"}
     for ref, title in sections:
-        if ref in partial:
+        if ref in window_hardened:
+            disposition = "window_hardened"
+        elif ref in partial:
             disposition = "partially_extracted"
         elif ref in out:
             disposition = "out_of_scope"
@@ -350,9 +363,18 @@ def h01_rows(rows: list[Row]) -> None:
             disposition = "support_only"
         else:
             disposition = "support_only"
-        priority = "high" if ref in high_extract else ("none" if disposition == "out_of_scope" else "medium")
-        rationale = "Austrian operational guidance; bilingual text needs English-side filtering before extraction."
-        add(rows, "h01-extracted", ref, title, "toc_section", disposition, priority, rationale, "Use in a phraseology/communications topic batch.")
+        priority = (
+            "none"
+            if disposition in {"out_of_scope", "window_hardened"}
+            else ("high" if ref in high_extract else "medium")
+        )
+        rationale = (
+            "Exact English-side manifest windows now represent this Austrian operational-guidance row."
+            if disposition == "window_hardened"
+            else "Austrian operational guidance; bilingual text needs English-side filtering before extraction."
+        )
+        next_action = WINDOW_HARDENED_NEXT_ACTION if disposition == "window_hardened" else "Use in a phraseology/communications topic batch."
+        add(rows, "h01-extracted", ref, title, "toc_section", disposition, priority, rationale, next_action)
 
 
 def icao4444_rows(rows: list[Row]) -> None:
@@ -501,10 +523,13 @@ def icao4444_rows(rows: list[Row]) -> None:
         "ICAO4444 7.14", "ICAO4444 7.15", "ICAO4444 7.16", "ICAO4444 7.17", "ICAO4444 12.1", "ICAO4444 12.2",
         "ICAO4444 12.3", "ICAO4444 15.1", "ICAO4444 15.3", "ICAO4444 15.4", "ICAO4444 15.6",
     }
+    window_hardened = high_extract - extracted
     defer_prefixes = ("ICAO4444 8", "ICAO4444 10", "ICAO4444 13", "ICAO4444 14", "ICAO4444 16", "ICAO4444 Appendix")
     for ref, title in sections:
         if ref in extracted:
             disposition = "extracted_current"
+        elif ref in window_hardened:
+            disposition = "window_hardened"
         elif ref in partial:
             disposition = "partially_extracted"
         elif ref in high_extract:
@@ -515,11 +540,18 @@ def icao4444_rows(rows: list[Row]) -> None:
             disposition = "support_only"
         else:
             disposition = "support_only"
-        priority = "high" if disposition in {"extract", "partially_extracted"} and ref in high_extract else ("none" if disposition == "extracted_current" else "medium")
+        priority = (
+            "high"
+            if disposition in {"extract", "partially_extracted"} and ref in high_extract
+            else ("none" if disposition in {"extracted_current", "window_hardened"} else "medium")
+        )
         rationale = "Primary ICAO procedural source; extract by topic where relevant to tower/controller behaviour."
+        if disposition == "window_hardened":
+            rationale = "Exact manifest windows now represent this high-value ICAO procedural row."
         if disposition == "defer_with_reason":
             rationale = "Relevant to future surveillance, coordination, data-link, en-route, or administrative scope rather than immediate tower extraction."
-        add(rows, "icao4444-extracted", ref, title, "toc_section", disposition, priority, rationale, "Queue by topic batch if disposition is extract or partially_extracted.")
+        next_action = WINDOW_HARDENED_NEXT_ACTION if disposition == "window_hardened" else "Queue by topic batch if disposition is extract or partially_extracted."
+        add(rows, "icao4444-extracted", ref, title, "toc_section", disposition, priority, rationale, next_action)
 
 
 def icao9432_rows(rows: list[Row]) -> None:
@@ -557,12 +589,15 @@ def icao9432_rows(rows: list[Row]) -> None:
         ("ICAO9432 11.6", "ACAS manoeuvres"), ("ICAO9432 Appendix 1", "Differences from ICAO radiotelephony procedures"),
         ("ICAO9432 Appendix 2", "Inaccuracies corrected in original version"),
     ]
-    partial = {"ICAO9432 2.8"}
+    partial = set()
     extracted = {"ICAO9432 2.8.1", "ICAO9432 2.8.3", "ICAO9432 4.4"}
     high = {"ICAO9432 2.8.2", "ICAO9432 Ch4", "ICAO9432 4.2", "ICAO9432 4.3", "ICAO9432 4.5", "ICAO9432 4.6", "ICAO9432 4.7", "ICAO9432 4.8", "ICAO9432 4.9", "ICAO9432 4.10", "ICAO9432 Ch5", "ICAO9432 Ch9"}
+    window_hardened = high | {"ICAO9432 2.8", "ICAO9432 2.8.4"}
     for ref, title in sections:
         if ref in extracted:
             disposition = "extracted_current"
+        elif ref in window_hardened:
+            disposition = "window_hardened"
         elif ref in partial:
             disposition = "partially_extracted"
         elif ref in high:
@@ -571,8 +606,18 @@ def icao9432_rows(rows: list[Row]) -> None:
             disposition = "defer_with_reason"
         else:
             disposition = "support_only"
-        priority = "high" if disposition in {"extract", "partially_extracted"} else ("none" if disposition == "extracted_current" else "medium")
-        add(rows, "icao9432-extracted", ref, title, "toc_section", disposition, priority, "ICAO radiotelephony manual; bilingual extraction requires English-side filtering.", "Use as phraseology/support extraction source by topic.")
+        priority = (
+            "high"
+            if disposition in {"extract", "partially_extracted"}
+            else ("none" if disposition in {"extracted_current", "window_hardened"} else "medium")
+        )
+        rationale = (
+            "Exact English-side manifest windows now represent this ICAO radiotelephony row."
+            if disposition == "window_hardened"
+            else "ICAO radiotelephony manual; bilingual extraction requires English-side filtering."
+        )
+        next_action = WINDOW_HARDENED_NEXT_ACTION if disposition == "window_hardened" else "Use as phraseology/support extraction source by topic."
+        add(rows, "icao9432-extracted", ref, title, "toc_section", disposition, priority, rationale, next_action)
 
 
 def sera_rows(rows: list[Row]) -> None:
@@ -581,6 +626,7 @@ def sera_rows(rows: list[Row]) -> None:
     seen: set[str] = set()
     current = {"SERA.8005", "SERA.8010", "SERA.8015", "SERA.8020", "SERA.8025", "SERA.8030", "SERA.8035"}
     high = {"SERA.3225", "SERA.6005", "SERA.7001", "SERA.7005", "SERA.8020", "SERA.8025", "SERA.8030", "SERA.8035", "SERA.9005", "SERA.9010", "SERA.11005", "SERA.12015"}
+    window_hardened = high - current
     medium = {"SERA.2005", "SERA.2010", "SERA.2015", "SERA.5005", "SERA.5010", "SERA.5015", "SERA.5020", "SERA.5025", "SERA.6001", "SERA.10005", "SERA.11010", "SERA.12020"}
     with source.open("r", encoding="utf-8", errors="replace") as f:
         for line_no, line in enumerate(f, start=1):
@@ -599,6 +645,10 @@ def sera_rows(rows: list[Row]) -> None:
                 disposition = "extracted_current"
                 priority = "none"
                 rationale = "Current SERA manifest covers this ATS/clearance section."
+            elif ref in window_hardened:
+                disposition = "window_hardened"
+                priority = "none"
+                rationale = "Exact manifest windows now represent this binding SERA row."
             elif ref in high:
                 disposition = "extract"
                 priority = "high"
@@ -611,7 +661,8 @@ def sera_rows(rows: list[Row]) -> None:
                 disposition = "defer_with_reason"
                 priority = "low"
                 rationale = "Binding regulation, but outside immediate ATC/tower extraction value or primarily flight-rule background."
-            add(rows, "sera-923-2012-extracted", ref, title, "sera_section", disposition, priority, rationale, "Queue by SERA topic if needed.", start_line=str(line_no))
+            next_action = WINDOW_HARDENED_NEXT_ACTION if disposition == "window_hardened" else "Queue by SERA topic if needed."
+            add(rows, "sera-923-2012-extracted", ref, title, "sera_section", disposition, priority, rationale, next_action, start_line=str(line_no))
 
 
 def safetysense_rows(rows: list[Row]) -> None:
@@ -680,7 +731,7 @@ def build_rows() -> list[Row]:
 
 def write_csv(path: Path, rows: list[Row]) -> None:
     with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(asdict(rows[0]).keys()))
+        writer = csv.DictWriter(f, fieldnames=list(asdict(rows[0]).keys()), lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow(asdict(row))

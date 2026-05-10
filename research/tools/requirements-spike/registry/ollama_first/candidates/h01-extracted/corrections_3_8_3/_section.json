@@ -5,7 +5,17 @@
   "sourcePath": "research/txt/h01-extracted.txt",
   "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
   "startLine": 4359,
-  "endLine": 4500,
+  "endLine": 4465,
   "lastPromotedRunId": "promote_2026-04-28T19-43-49Z_a0a1",
-  "lastPromotedAt": "2026-04-28T19:43:49Z"
+  "lastPromotedAt": "2026-04-28T19:43:49Z",
+  "audit": {
+    "sectionBoundaryReview": {
+      "status": "corrected",
+      "reviewedAt": "2026-05-09T11:02:27Z",
+      "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+      "previousEndLine": 4500,
+      "currentEndLine": 4465,
+      "reasoning": "H01 3.8.3 source text ends before the H01 3.9 heading at line 4467."
+    }
+  }
 }

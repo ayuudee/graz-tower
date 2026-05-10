@@ -1,0 +1,41 @@
+{
+  "schemaName": "manual_h01_authority_ceiling_curation",
+  "formatVersion": "2026-05-09-v1",
+  "runId": "manual_fn9_h01_authority_ceiling_2026-05-09",
+  "curatedAt": "2026-05-09T11:00:13Z",
+  "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+  "bucket": "candidates",
+  "recordPath": "research/tools/requirements-spike/registry/ollama_first/candidates/h01-extracted/acknowledgement_3_8_1/h01-extracted::acknowledgement_3_8_1::84ba9adfad38e69f.json",
+  "canonicalId": "h01-extracted::acknowledgement_3_8_1::84ba9adfad38e69f",
+  "documentId": "h01-extracted",
+  "sectionId": "acknowledgement_3_8_1",
+  "lifecycleState": "accepted",
+  "before": {
+    "authorityClass": "authoritative_requirement",
+    "rationale": "Consistent authoritative requirement across all attempts for mandatory acknowledgement content.",
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    }
+  },
+  "after": {
+    "authorityClass": "operational_guidance",
+    "rationale": "Consistent H01 operational-guidance rule across all attempts for mandatory acknowledgement content.",
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    }
+  },
+  "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+  "identityFieldsChanged": false
+}

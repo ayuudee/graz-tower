@@ -6,15 +6,15 @@
   "sectionId": "corrections_3_8_3",
   "familyId": "h01_corrections_family",
   "claimText": "If, in checking the correctness of a read-back, incorrect items are noticed, the words NEGATIVE I SAY AGAIN shall be transmitted at the conclusion of the read-back followed by the correct version of the items concerned.",
-  "rationale": "Consistent authoritative requirement for correcting read-back errors.",
+  "rationale": "Consistent H01 operational-guidance rule for correcting read-back errors.",
   "modality": "shall",
-  "authorityClass": "authoritative_requirement",
+  "authorityClass": "operational_guidance",
   "requirementKind": "phraseology_rule",
   "testability": "sim_executable",
   "verificationMode": "deterministic_test",
   "promotionHint": "promote",
   "exactSourceQuotes": [
-    "If, in checking the correctness of a read-back, incorrect items are noticed, the words \u201cNEGATIVE I SAY AGAIN\u201d shall be transmitted at the conclusion of the read-back followed by the correct version of the items concerned."
+    "If, in checking the correctness of a read-back, incorrect items are noticed, the words “NEGATIVE I SAY AGAIN” shall be transmitted at the conclusion of the read-back followed by the correct version of the items concerned."
   ],
   "sourceItemIds": [
     "3.8.3_d"
@@ -61,7 +61,7 @@
     "authorityModalityCheck": {
       "status": "pass",
       "modality": "shall",
-      "authorityClass": "authoritative_requirement",
+      "authorityClass": "operational_guidance",
       "floorConsistent": true,
       "overrideFired": false,
       "invariantViolated": false,
@@ -71,7 +71,28 @@
       "status": "pass",
       "misses": []
     },
-    "rationaleNonEmpty": true
+    "rationaleNonEmpty": true,
+    "curationHistory": [
+      {
+        "action": "manual_authority_ceiling_correction",
+        "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+        "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+        "corrections": {
+          "authorityClass": "operational_guidance"
+        },
+        "confidence": "high",
+        "curatedAt": "2026-05-09T11:00:13Z"
+      }
+    ],
+    "authorityCeilingReview": {
+      "status": "corrected",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "previousAuthorityClass": "authoritative_requirement",
+      "currentAuthorityClass": "operational_guidance",
+      "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+      "reviewedAt": "2026-05-09T11:00:13Z",
+      "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
+    }
   },
   "gate": {
     "overallStatus": "pass",

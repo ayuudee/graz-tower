@@ -1,0 +1,26 @@
+{
+  "schemaName": "requirements_window_hardening_reconciliation",
+  "formatVersion": "2026-05-09-v5",
+  "sourceBacklog": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-final/needs_source_window_hardening.csv",
+  "currentLedger": "research/tools/requirements-spike/quality/source_section_ledger/source_section_ledger_2026-04-30/source_section_ledger.csv",
+  "currentQueue": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn10-windowed-v5/source_processing_queue.json",
+  "oldRows": 82,
+  "oldRowsByDocument": {
+    "cap413-extracted": 4,
+    "h01-extracted": 10,
+    "icao4444-extracted": 47,
+    "icao9432-extracted": 13,
+    "sera-923-2012-extracted": 8
+  },
+  "currentHardeningRows": 0,
+  "unresolvedOldRows": 0,
+  "unexpectedOutcomes": 0,
+  "readyToIngestByDocument": {
+    "cap413-extracted": 39,
+    "h01-extracted": 42,
+    "icao4444-extracted": 77,
+    "icao9432-extracted": 19,
+    "sera-923-2012-extracted": 8
+  },
+  "note": "v5 splits CAP413 \u00a74.24-4.33 after live structure validation marked the v4 window requiresSplit=true."
+}

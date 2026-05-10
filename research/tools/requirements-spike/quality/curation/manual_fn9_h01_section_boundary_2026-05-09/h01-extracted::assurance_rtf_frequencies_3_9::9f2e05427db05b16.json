@@ -1,0 +1,37 @@
+{
+  "schemaName": "manual_h01_section_boundary_curation",
+  "formatVersion": "2026-05-09-v1",
+  "runId": "manual_fn9_h01_section_boundary_2026-05-09",
+  "curatedAt": "2026-05-09T11:02:27Z",
+  "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+  "recordPath": "research/tools/requirements-spike/registry/ollama_first/candidates/h01-extracted/assurance_rtf_frequencies_3_9/h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16.json",
+  "canonicalId": "h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16",
+  "previous": {
+    "canonicalId": "h01-extracted::corrections_3_8_3::ee8d8ce24e99c2be",
+    "sectionId": "corrections_3_8_3",
+    "familyId": "h01_corrections_family",
+    "provenance": {
+      "sourcePath": "research/txt/h01-extracted.txt",
+      "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+      "startLine": 4467,
+      "endLine": 4485
+    },
+    "path": "research/tools/requirements-spike/registry/ollama_first/candidates/h01-extracted/corrections_3_8_3/h01-extracted::corrections_3_8_3::ee8d8ce24e99c2be.json"
+  },
+  "after": {
+    "canonicalId": "h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16",
+    "sectionId": "assurance_rtf_frequencies_3_9",
+    "familyId": "h01_assurance_rtf_frequency_family",
+    "provenance": {
+      "sourcePath": "research/txt/h01-extracted.txt",
+      "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+      "startLine": 4467,
+      "endLine": 4485
+    },
+    "path": "research/tools/requirements-spike/registry/ollama_first/candidates/h01-extracted/assurance_rtf_frequencies_3_9/h01-extracted::assurance_rtf_frequencies_3_9::9f2e05427db05b16.json"
+  },
+  "reasoning": "H01 manifest section corrections_3_8_3 previously ended at line 4500 and therefore included the start of H01 section 3.9. These records cite sourceItemIds 3.9_req1/3.9_req2 and are source-supported, but their sectionId had to be moved to the explicit H01 3.9 manifest section. Claim text and exactSourceQuotes are unchanged; canonicalId changed because sectionId is part of source-unit identity.",
+  "identityFieldsChanged": true,
+  "claimTextChanged": false,
+  "exactSourceQuotesChanged": false
+}

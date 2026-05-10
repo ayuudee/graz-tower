@@ -6,9 +6,9 @@
   "sectionId": "acknowledgement_3_8_1",
   "familyId": "h01_readback_family",
   "claimText": "Runway-in-use, altimeter settings, SSR codes, newly assigned communication channels, level instructions, heading and speed instructions shall always be read back.",
-  "rationale": "Consistent specific mandatory readback item from the list in c).",
+  "rationale": "Consistent H01 operational-guidance readback item from the list in c).",
   "modality": "shall",
-  "authorityClass": "authoritative_requirement",
+  "authorityClass": "operational_guidance",
   "requirementKind": "rule",
   "testability": "sim_executable",
   "verificationMode": "deterministic_test",
@@ -63,7 +63,7 @@
     "authorityModalityCheck": {
       "status": "pass",
       "modality": "shall",
-      "authorityClass": "authoritative_requirement",
+      "authorityClass": "operational_guidance",
       "floorConsistent": true,
       "overrideFired": false,
       "invariantViolated": false,
@@ -79,6 +79,33 @@
       "reasoning": "The exact quotes are present and the parent clause supplies the mandatory 'shall always be read back' modality for the cited list item. This is an atomic list item not already covered by the accepted siblings, which cover items 1, 2, and 4, so rejection as a redundant umbrella is not appropriate.",
       "confidence": "high",
       "curatedAt": "2026-04-29T09:10:03Z"
+    },
+    "curationHistory": [
+      {
+        "action": "promote",
+        "reasoning": "The exact quotes are present and the parent clause supplies the mandatory 'shall always be read back' modality for the cited list item. This is an atomic list item not already covered by the accepted siblings, which cover items 1, 2, and 4, so rejection as a redundant umbrella is not appropriate.",
+        "confidence": "high",
+        "curatedAt": "2026-04-29T09:10:03Z"
+      },
+      {
+        "action": "manual_authority_ceiling_correction",
+        "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+        "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged.",
+        "corrections": {
+          "authorityClass": "operational_guidance"
+        },
+        "confidence": "high",
+        "curatedAt": "2026-05-09T11:00:13Z"
+      }
+    ],
+    "authorityCeilingReview": {
+      "status": "corrected",
+      "expectedAuthorityClassCeiling": "operational_guidance",
+      "previousAuthorityClass": "authoritative_requirement",
+      "currentAuthorityClass": "operational_guidance",
+      "sourceTask": "fn-9-current-source-unit-production-readiness.4",
+      "reviewedAt": "2026-05-09T11:00:13Z",
+      "reasoning": "H01 AIC A 21/23 is declared with defaultAuthorityCeiling=operational_guidance and the benchmark_manifest H01 cases all expect expectedAuthorityClassCeiling=operational_guidance. The source uses shall/muss wording, but these records must not exceed the source-family ceiling. Claim text and exactSourceQuotes are unchanged."
     }
   },
   "gate": {

@@ -1,0 +1,80 @@
+{
+  "schemaName": "requirements_source_package_manifest",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-09T11:12:37Z",
+  "sourceFrameId": "fn9-current-frame-2026-05-09",
+  "closureReview": "research/tools/requirements-spike/quality/closure/closure_2026-05-09-fn9/closure_report.json",
+  "sourceProgressReport": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn9-final/source_progress_report.json",
+  "validationReport": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/validation_report.json",
+  "packages": [
+    {
+      "documentId": "cap413-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/cap413-extracted.source_package.json",
+      "packageStatus": "scoped_ready",
+      "acceptedRecords": 79,
+      "pendingRecords": 0,
+      "rejectedRecords": 4
+    },
+    {
+      "documentId": "egast-vfr-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/egast-vfr-extracted.source_package.json",
+      "packageStatus": "ready",
+      "acceptedRecords": 17,
+      "pendingRecords": 0,
+      "rejectedRecords": 0
+    },
+    {
+      "documentId": "h01-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/h01-extracted.source_package.json",
+      "packageStatus": "scoped_ready",
+      "acceptedRecords": 24,
+      "pendingRecords": 0,
+      "rejectedRecords": 1
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/icao4444-extracted.source_package.json",
+      "packageStatus": "scoped_ready",
+      "acceptedRecords": 186,
+      "pendingRecords": 0,
+      "rejectedRecords": 19
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/icao9432-extracted.source_package.json",
+      "packageStatus": "scoped_ready",
+      "acceptedRecords": 22,
+      "pendingRecords": 0,
+      "rejectedRecords": 6
+    },
+    {
+      "documentId": "safetysense22-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/safetysense22-extracted.source_package.json",
+      "packageStatus": "ready",
+      "acceptedRecords": 15,
+      "pendingRecords": 0,
+      "rejectedRecords": 1
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/sera-923-2012-extracted.source_package.json",
+      "packageStatus": "scoped_ready",
+      "acceptedRecords": 73,
+      "pendingRecords": 0,
+      "rejectedRecords": 3
+    },
+    {
+      "documentId": "slovenia-vfr-extracted",
+      "packagePath": "research/tools/requirements-spike/quality/source_packages/source_packages_2026-05-09-fn9-current-frame/slovenia-vfr-extracted.source_package.json",
+      "packageStatus": "ready",
+      "acceptedRecords": 15,
+      "pendingRecords": 0,
+      "rejectedRecords": 0
+    }
+  ],
+  "nonClaims": [
+    "Packages are per-source; no cross-source integration, deduplication, or precedence selection is claimed.",
+    "Packages cover the current source frame only; Nolan and EPPLS are excluded future sources.",
+    "A package with status scoped_ready is not a full-document-complete source representation."
+  ]
+}
