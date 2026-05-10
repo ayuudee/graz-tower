@@ -288,21 +288,26 @@ Open targets:
 
 - `CanonicalTopLevelTheorem`
 
-## Phase 8: Refine Into Code
+## Phase 8: Controller Consumption Boundary
 
-Status: `not_started`
+Status: `closed_for_current_stream`
 
-Work:
+Closeout:
 
-- export kernel interfaces into Kotlin and Rust design
-- if the single-issuer architecture is adopted, make `Issued` constructible
-  only through orchestration
-- encode the routing table in code
-- keep compatibility narrow in implementation
+- the current stream does not require full code refinement or single-issuer
+  construction before product work can consume the FM output
+- the delivered artifact is the certified runtime contract in
+  [certified_runtime_contract_v1.md](research/fm/certified_runtime_contract_v1.md)
+- Kotlin alignment is guarded by the parity / refinement inventory and
+  `GreenfieldDeliveredRefinement.lean`
+- controller work owns operational composition and certifier selection
 
-Exit condition:
+Future work:
 
-- code architecture matches the proof architecture
+- if the product later adopts a single-issuer architecture, reopen the optional
+  composition theorem and code-construction path deliberately
+- otherwise, add only small controller-needed theorem surfaces or local-kernel
+  strengthening
 
 ## Phase Close-Out Rule
 
@@ -329,14 +334,13 @@ Exit condition:
 
 ## Immediate Next Move
 
-The current critical path is not "prove everything."
+The current critical path is not "prove everything." The current FM stream is
+closed around the certified runtime contract.
 
-It is:
+Future FM work should be opened only to:
 
-- freeze the greenfield-derived extraction boundary and theorem targets that a
-  future project will rely on
-- resolve the greenfield clearance semantics that block stronger Lean
-  sequencing, atomicity, authority, and clearance-limit theorems
-- make sequencing real above the current frontier compiler before widening much
-  more proof work on the older atomic command interface
-- then widen separation and command coverage through that stabilized boundary
+- strengthen one of the local kernels
+- repair Kotlin drift against a delivered theorem surface
+- add a small theorem surface needed by controller work
+- deliberately reopen the optional single-issuer path if product architecture
+  chooses it

@@ -1,23 +1,32 @@
 # Completion Milestones
 
-Last updated: April 13, 2026
+Last updated: May 9, 2026
 
-This document defines the shortest path from the current FM state to
-completion.
+This document records the shortest-path milestone history for the current FM
+state.
 
 It is intentionally narrower than the full historical roadmap in
 [milestones.md](research/fm/milestones.md).
-The goal here is not to enumerate every worthwhile improvement. The goal is to
-reach the point where the certifiers and the top issuing layer are actually
-proved for the safety properties the project claims.
+The goal is no longer to turn the optional top issuing layer into the default
+definition of success. The current stream is closed around the kernel-first
+[Certified Runtime Contract v1](research/fm/certified_runtime_contract_v1.md).
 
-Current status:
+Current closeout status:
 
 - `Safety-complete (N₀)` is now achieved for the scoped surface defined in
   [safety_complete_scope.md](research/fm/safety_complete_scope.md)
 - `Full-brief complete` is now also achieved for that same scoped surface
+- the four independent local certifiers are checked and should be treated as
+  the primary FM deliverable
+- the Kotlin relationship is locked down as a drift-guarded parity /
+  refinement registry, not as a full mechanical refinement proof
 
 ## Completion Bars
+
+The bars below are retained as historical scope definitions. They remain useful
+for understanding what the scoped package proves. They are no longer a mandate
+to keep widening the optional orchestration layer before controller work can
+consume the FM output.
 
 There are two completion bars.
 
@@ -488,9 +497,9 @@ These are real temptations, but they are not on the shortest path.
 
 The scoped programme is now complete.
 
-The next work, if desired, is optional scope widening:
+The current research stream is closed around the certified runtime contract.
+There is no default FM widening track.
 
-- the default widening track is now the route-bearing surface defined in
-  [route_bearing_scope.md](research/fm/route_bearing_scope.md)
-- richer mode-monitor or fallback semantics are secondary widening work, not
-  the default next move
+Future FM work should be opened only when it strengthens a local kernel, fixes
+Kotlin drift against a delivered theorem surface, or supports a controller
+feature with a small closed theorem surface.

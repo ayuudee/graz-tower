@@ -8,15 +8,19 @@ import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.PilotRoute
 import xyz.easiersaid.twr.pilot.createMission
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.CircuitIntent
+import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimDuration
@@ -35,6 +39,7 @@ import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
 import xyz.easiersaid.twr.sim.testing.firstWhere
 import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
+import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
 /**
  * G0 — single-aerodrome LOWG VFR circuit-training golden test.
@@ -250,6 +255,10 @@ class LowgGoldenTest {
                 "cleared the pilot to land based on the FULL_STOP circuit-intent declared on " +
                 "downwind.\n$journey"
         }
+        records.requireKernelBackedInstruction<TaxiToHoldingPoint>(aircraftId, journey)
+        records.requireKernelBackedInstruction<LineUpAndWait>(aircraftId, journey)
+        records.requireKernelBackedInstruction<ClearedForTakeoff>(aircraftId, journey)
+        records.requireKernelBackedInstruction<ClearedToLand>(aircraftId, journey)
 
         // (b) Tower did NOT issue ClearedTouchAndGo (pilot declared FULL_STOP).
         check(records.firstControllerInstructionOf<ClearedTouchAndGo>(aircraftId).isNone()) {
@@ -487,5 +496,21 @@ class LowgGoldenTest {
                 "or the two-way-comms-driven completion fired too eagerly (before the " +
                 "actual pilot transmission to the new controller), collapsing the overlap.\n$journey"
         }
+    }
+
+    private inline fun <reified I : AtcInstruction> List<TransmissionRecord>.requireKernelBackedInstruction(
+        aircraft: AircraftId,
+        journey: String,
+    ): ControllerOutput.Instruct {
+        val rec = firstControllerInstructionOf<I>(aircraft).getOrElse {
+            fail("Expected at least one ${I::class.simpleName} for $aircraft.\n$journey")
+        }
+        val output = (rec.utterance as? Utterance.FromController)?.output as? ControllerOutput.Instruct
+            ?: fail("Expected ${I::class.simpleName} record to carry ControllerOutput.Instruct.\n$journey")
+        check(output.certificationEvidence.all.any { it is CertificationEvidence.KernelBacked }) {
+            "Expected ${I::class.simpleName} to carry kernel-backed certification evidence; " +
+                "got ${output.certificationEvidence}.\n$journey"
+        }
+        return output
     }
 }

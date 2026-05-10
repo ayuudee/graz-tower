@@ -13,20 +13,21 @@ nix-shell -p lean4 --run 'cd research/fm/lean && lake build'
 ## Default Next Work
 
 The prepared observation-regression queue has now been promoted and exhausted.
+The current FM stream is closed around
+[../certified_runtime_contract_v1.md](../certified_runtime_contract_v1.md).
+There is no default widening task.
 
 - keep
   [CertifiedAtc.lean](research/fm/lean/CertifiedAtc.lean),
   [README.md](research/fm/README.md),
   and
   [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
-  aligned when observation-regression files are added or retired
+  aligned when proof status changes
 - treat `research/fm/r1-smoke/` as the ignored operations workspace only:
   regenerate queue artifacts there, but review and manually promote successful
   theorem files back into tracked `research/fm/lean`
-- author the next 3-8 coherent graphs / roughly 15-40 micro-units before the
-  next overnight proof run
-- beyond queue maintenance, choose the next deliberate widening branch as a
-  genuinely semantic branch beyond the current models
+- only open new FM widening when it strengthens a kernel, repairs Kotlin drift,
+  or supports a controller feature with a small closed theorem surface
 
 ## Module Order
 

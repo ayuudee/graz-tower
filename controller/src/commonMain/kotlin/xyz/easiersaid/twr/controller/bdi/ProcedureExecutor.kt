@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.controller.bdi
 
+import arrow.core.left
+import arrow.core.right
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
@@ -102,15 +104,37 @@ fun executeProcedure(
         rule.action.resolve(ac, commitment, ctx).fold(
             ifLeft = { failures += RuleResolutionFailure(rule.id, it.reason) },
             ifRight = { proposedAction ->
-                return ExecutionOutcome(
-                    result = operatorResultFor(rule, action = proposedAction, time = ctx.time),
-                    actionFailures = failures.toList(),
+                validateResolvedActionTarget(rule.id, ac.id, proposedAction).fold(
+                    { failure ->
+                        failures += failure
+                        return@fold
+                    },
+                    { validAction ->
+                        return ExecutionOutcome(
+                            result = operatorResultFor(rule, action = validAction, time = ctx.time),
+                            actionFailures = failures.toList(),
+                        )
+                    },
                 )
             },
         )
     }
     return ExecutionOutcome(result = null, actionFailures = failures.toList())
 }
+
+internal fun validateResolvedActionTarget(
+    ruleId: String,
+    procedureAircraft: xyz.easiersaid.twr.protocol.AircraftId,
+    proposedAction: ProposedAction,
+): arrow.core.Either<RuleResolutionFailure, ProposedAction> =
+    if (proposedAction.aircraft == procedureAircraft) {
+        proposedAction.right()
+    } else {
+        RuleResolutionFailure(
+            ruleId,
+            "Resolved action target ${proposedAction.aircraft} does not match procedure aircraft $procedureAircraft",
+        ).left()
+    }
 
 /** Trace why no rule fired — for diagnostics and training feedback. */
 fun traceRuleFailures(

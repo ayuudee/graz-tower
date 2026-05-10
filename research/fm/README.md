@@ -3,6 +3,18 @@
 `research/fm` is the proof-authoritative research spike for the split
 certification architecture described in [brief_v4.md](research/fm/brief_v4.md).
 
+## Closeout Position
+
+As of May 9, 2026, the current research stream is closed around the
+kernel-first contract in
+[certified_runtime_contract_v1.md](research/fm/certified_runtime_contract_v1.md).
+
+The delivered value is the four independent certified kernels, the scoped
+safety package, and the Kotlin-facing parity / refinement registry. The
+optional single-issuer orchestration theorem is no longer the default target
+for this stream. Future safety behavior should be owned by the controller,
+which can consume these certified kernels and theorem surfaces as guardrails.
+
 As of April 21, 2026, the product-authoritative world and clearance design for
 the next project lives in
 [path-network-design.md](docs/design/path-network-design.md)
@@ -600,27 +612,26 @@ The default critical path is now:
   have packaged source-level issuance plus authority-gated issuance on the
   current explicit ground-progress model: traversed points, reached holding
   points, crossed runways, and stopped-on-ground state
-- the next default FM work is no longer broader ground / surface movement,
-  delivered-branch refinement / drift-control, or broader
-  communications/surveillance semantics on the current immediate +
-  published-handoff model either; the next deliberate widening choices are
-  now genuinely semantic branches beyond the current models
-- richer mode semantics remain a secondary widening direction, not the default
-  next task
+- there is no default FM widening task after closeout; future proof work should
+  strengthen a kernel, repair Kotlin drift, or support a controller feature
+  with a small closed theorem surface
+- richer semantic branches remain possible future research, but controller
+  integration against the certified runtime contract is the next product move
 
 ## Reading Order
 
 For a new human or AI agent, start here:
 
 1. [AGENT_GUIDE.md](research/fm/AGENT_GUIDE.md)
-2. [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
-3. [parity_inventory.md](research/fm/parity_inventory.md)
-4. [refinement_inventory.md](research/fm/refinement_inventory.md)
-5. [greenfield_alignment.md](research/fm/greenfield_alignment.md)
-6. [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
-7. [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
-8. [clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md)
-8. [path-network-design.md](docs/design/path-network-design.md)
+2. [certified_runtime_contract_v1.md](research/fm/certified_runtime_contract_v1.md)
+3. [PROJECT_STATUS.md](research/fm/PROJECT_STATUS.md)
+4. [parity_inventory.md](research/fm/parity_inventory.md)
+5. [refinement_inventory.md](research/fm/refinement_inventory.md)
+6. [greenfield_alignment.md](research/fm/greenfield_alignment.md)
+7. [aviation_world_extraction_contract.md](research/fm/aviation_world_extraction_contract.md)
+8. [instruction_authority_contract.md](research/fm/instruction_authority_contract.md)
+9. [clearance_envelope_contract.md](research/fm/clearance_envelope_contract.md)
+10. [path-network-design.md](docs/design/path-network-design.md)
 9. [clearance-model-design.md](docs/design/clearance-model-design.md)
 10. [milestones.md](research/fm/milestones.md)
 11. [completion_milestones.md](research/fm/completion_milestones.md)

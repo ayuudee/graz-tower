@@ -39,7 +39,15 @@ fun checkFeasibility(
     aircraft: AircraftObservation,
     view: ControllerView,
     beliefs: BeliefState,
-): Feasibility = when (instruction) {
+): Feasibility = checkedFeasibility(instruction, aircraft, view, beliefs) ?: Feasibility.Feasible
+
+@Suppress("UnusedParameter") // beliefs reserved for sequence-aware predicates; public API already passes it.
+private fun checkedFeasibility(
+    instruction: AtcInstruction,
+    aircraft: AircraftObservation,
+    view: ControllerView,
+    beliefs: BeliefState,
+): Feasibility? = when (instruction) {
     is ClearedToLand -> checkLandingFeasibility(aircraft, view)
     is TurnBase -> checkTurnBaseFeasibility(aircraft, view)
     is xyz.easiersaid.twr.protocol.GoAround, is xyz.easiersaid.twr.protocol.BreakOff ->
@@ -48,7 +56,7 @@ fun checkFeasibility(
     is MaintainSpeed -> checkSpeedFeasibility(instruction.speed, aircraft)
     is ReduceSpeedTo -> checkSpeedFeasibility(instruction.speed, aircraft)
     is IncreaseSpeedTo -> checkSpeedFeasibility(instruction.speed, aircraft)
-    else -> Feasibility.Feasible
+    else -> null
 }
 
 /**

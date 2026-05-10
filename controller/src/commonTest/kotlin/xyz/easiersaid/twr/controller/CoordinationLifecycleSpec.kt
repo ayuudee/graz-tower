@@ -39,7 +39,8 @@ class CoordinationLifecycleSpec {
     private fun beliefsWith(state: CoordinationState, issuedAt: SimTime = t0): BeliefState {
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = instruction,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = issuedAt,
             state = state,
@@ -119,7 +120,8 @@ class CoordinationLifecycleSpec {
         val queriedAt = t0 + policy.queryAfter
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = instruction,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = t0,
             state = CoordinationState.Querying(queriedAt = queriedAt, emittedAt = queriedAt),
@@ -140,7 +142,8 @@ class CoordinationLifecycleSpec {
     fun `processReadback clears Reissued entry on correct readback (load-bearing post-escalation)`() {
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = instruction,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = t0,
             state = CoordinationState.Reissued(reissuedAt = t0, attemptCount = 1, emittedAt = t0),

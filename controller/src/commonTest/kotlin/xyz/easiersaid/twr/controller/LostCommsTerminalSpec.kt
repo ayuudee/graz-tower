@@ -28,7 +28,8 @@ class LostCommsTerminalSpec {
         val declaredAt = SimTime.ZERO
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = HoldShortOf(target = ac, runway = rwy),
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(HoldShortOf(target = ac, runway = rwy)),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = SimTime.ZERO,
             state = CoordinationState.LostCommsDeclared(declaredAt = declaredAt, emittedBlindAt = null),

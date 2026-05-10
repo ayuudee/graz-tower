@@ -84,22 +84,20 @@ sealed interface Dispatch {
 
 /** A proposed instruction before arbitration. Urgency comes from the rule, not the action. */
 data class ProposedAction(
-    val aircraft: AircraftId,
     val dispatch: Dispatch,
     val sequenceInfo: SequenceInfo? = null,
     val trafficInfo: TrafficInfo? = null,
 ) {
     val instruction: AtcInstruction get() = dispatch.instruction
+    val aircraft: AircraftId get() = instruction.target
 }
 
 /** Convenience constructor for the common direct-dispatch case. */
 fun ProposedAction(
-    aircraft: AircraftId,
     instruction: AtcInstruction,
     sequenceInfo: SequenceInfo? = null,
     trafficInfo: TrafficInfo? = null,
 ): ProposedAction = ProposedAction(
-    aircraft = aircraft,
     dispatch = Dispatch.Direct(instruction),
     sequenceInfo = sequenceInfo,
     trafficInfo = trafficInfo,
@@ -123,7 +121,7 @@ data object LineUpAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         when (val rwy = commitment.runway ?: ctx.beliefs.activeRunway) {
             null -> ActionResolutionFailure("No runway in commitment or beliefs").left()
-            else -> ProposedAction(ac.id, LineUpAndWait(ac.id, rwy)).right()
+            else -> ProposedAction(LineUpAndWait(ac.id, rwy)).right()
         }
 }
 
@@ -147,7 +145,6 @@ data object ConditionalLineUpAction : RuleAction {
             occupantIsCircuit)
             TrafficAction.LANDING else TrafficAction.DEPARTING
         return ProposedAction(
-            aircraft = ac.id,
             dispatch = Dispatch.Conditional(
                 instruction = LineUpAndWait(ac.id, rwy),
                 condition = ConditionalPredicate.AfterTraffic(trafficRef, action),
@@ -160,7 +157,7 @@ data object ClearTakeoffAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         when (val rwy = commitment.runway ?: ctx.beliefs.activeRunway) {
             null -> ActionResolutionFailure("No runway").left()
-            else -> ProposedAction(ac.id, ClearedForTakeoff(ac.id, rwy)).right()
+            else -> ProposedAction(ClearedForTakeoff(ac.id, rwy)).right()
         }
 }
 
@@ -169,7 +166,7 @@ data object ClearLandAction : RuleAction {
         val rwy = commitment.runway ?: ctx.beliefs.activeRunway
             ?: return ActionResolutionFailure("No runway").left()
         val traffic = findRelevantTraffic(ac.id, ctx)
-        return ProposedAction(ac.id, ClearedToLand(ac.id, rwy), trafficInfo = traffic).right()
+        return ProposedAction(ClearedToLand(ac.id, rwy), trafficInfo = traffic).right()
     }
 }
 
@@ -177,23 +174,23 @@ data object ClearTouchAndGoAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         when (val rwy = commitment.runway ?: ctx.beliefs.activeRunway) {
             null -> ActionResolutionFailure("No runway").left()
-            else -> ProposedAction(ac.id, ClearedTouchAndGo(ac.id, rwy)).right()
+            else -> ProposedAction(ClearedTouchAndGo(ac.id, rwy)).right()
         }
 }
 
 data object HoldPositionAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ProposedAction(ac.id, HoldPosition(ac.id)).right()
+        ProposedAction(HoldPosition(ac.id)).right()
 }
 
 data object CancelTakeoffAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ProposedAction(ac.id, HoldPositionCancelTakeoff(ac.id)).right()
+        ProposedAction(HoldPositionCancelTakeoff(ac.id)).right()
 }
 
 data object GoAroundAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ProposedAction(ac.id, GoAround(ac.id)).right()
+        ProposedAction(GoAround(ac.id)).right()
 }
 
 data object VacateAction : RuleAction {
@@ -208,33 +205,33 @@ data object VacateAction : RuleAction {
         // Pick nearest exit, or backtrack if no exits
         val exit = rwy.exits.firstOrNull()
         return if (exit != null) {
-            ProposedAction(ac.id, AfterLandingVacateVia(ac.id, exit.point)).right()
+            ProposedAction(AfterLandingVacateVia(ac.id, exit.point)).right()
         } else {
-            ProposedAction(ac.id, BacktrackRunway(ac.id, runway)).right()
+            ProposedAction(BacktrackRunway(ac.id, runway)).right()
         }
     }
 }
 
 data object TurnBaseAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ProposedAction(ac.id, TurnBase(ac.id)).right()
+        ProposedAction(TurnBase(ac.id)).right()
 }
 
 data object ReportFinalAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ProposedAction(ac.id, ReportWhen(ac.id, ReportEvent.Final)).right()
+        ProposedAction(ReportWhen(ac.id, ReportEvent.Final)).right()
 }
 
 data object ExtendDownwindAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {
         val seqInfo = deriveSequenceInfo(ac.id, ctx)
-        return ProposedAction(ac.id, ExtendDownwind(ac.id), sequenceInfo = seqInfo).right()
+        return ProposedAction(ExtendDownwind(ac.id), sequenceInfo = seqInfo).right()
     }
 }
 
 data object ContinueApproachAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
-        ProposedAction(ac.id, ContinueApproach(ac.id, inferContinueApproachReason(ac, ctx))).right()
+        ProposedAction(ContinueApproach(ac.id, inferContinueApproachReason(ac, ctx))).right()
 }
 
 /**
@@ -282,7 +279,6 @@ data class JoinCircuitAction(val joinType: JoinType) : RuleAction {
                     "world-data defect — the aerodrome publishes the runway but no circuit geometry.",
             ).left()
         return ProposedAction(
-            ac.id,
             JoinCircuit(
                 target = ac.id,
                 circuitDirection = circuit.direction,
@@ -335,7 +331,7 @@ data class HandoffAction(val toRole: RoleName) : RuleAction {
             ?: return ActionResolutionFailure("Aerodrome ${ctx.view.aerodromeId} not found").left()
         val role = aerodrome.roles[toRole]
             ?: return ActionResolutionFailure("No ${toRole.name} role at ${ctx.view.aerodromeId}").left()
-        return ProposedAction(ac.id, ContactFrequency(ac.id, toRole, frequency = role.frequency)).right()
+        return ProposedAction(ContactFrequency(ac.id, toRole, frequency = role.frequency)).right()
     }
 }
 
@@ -358,7 +354,6 @@ data class TerminateRadarServiceAction(
 ) : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> =
         ProposedAction(
-            ac.id,
             xyz.easiersaid.twr.protocol.RadarServiceTerminated(
                 target = ac.id,
                 suggestedFrequency = suggestedFrequency,
@@ -378,7 +373,6 @@ data object TaxiToHoldingAction : RuleAction {
         val via = findRoute(ac.position, destination, ctx.worldIndex)
             ?: return ActionResolutionFailure("No taxi route from ${ac.position} to $destination").left()
         return ProposedAction(
-            ac.id,
             TaxiToHoldingPoint(target = ac.id, destination = destination, runway = runway, via = via),
         ).right()
     }
@@ -394,7 +388,6 @@ data object TaxiToStandAction : RuleAction {
         val via = findRoute(ac.position, destination, ctx.worldIndex)
             ?: return ActionResolutionFailure("No taxi route from ${ac.position} to $destination").left()
         return ProposedAction(
-            ac.id,
             TaxiToStand(target = ac.id, destination = destination, via = via),
         ).right()
     }

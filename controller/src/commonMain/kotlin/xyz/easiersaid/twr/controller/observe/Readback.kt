@@ -452,11 +452,21 @@ internal fun BeliefState.recordCoordinations(
     if (outputs.isEmpty()) return this
     val updated = coordinations.toMutableMap()
     for (output in outputs) {
-        val atoms = requiredReadbackAtoms(output.instruction)
+        val readbackInstruction = when (val dispatch = output.dispatch) {
+            is xyz.easiersaid.twr.controller.bdi.Dispatch.Direct -> output.instruction
+            is xyz.easiersaid.twr.controller.bdi.Dispatch.Conditional ->
+                ConditionalClearance(
+                    target = output.instruction.target,
+                    condition = dispatch.condition,
+                    instruction = output.instruction,
+                )
+        }
+        val atoms = requiredReadbackAtoms(readbackInstruction)
         val readbackStage = output.readbackAdvancesToStage
         val coord = OutstandingCoordination(
             aircraft = output.target,
-            instruction = output.instruction,
+            dispatch = output.dispatch,
+            certificationEvidence = output.certificationEvidence,
             expectedReadback = atoms,
             issuedAt = time,
             advanceToStage = readbackStage,

@@ -8,6 +8,15 @@ This file is the current execution status for `research/fm`.
 
 `research/fm` is no longer just an architecture sketch.
 
+As of May 9, 2026, the current FM research stream is considered closed around
+the kernel-first
+[Certified Runtime Contract v1](certified_runtime_contract_v1.md). The
+contract deliberately treats the four independent certifiers and the delivered
+Kotlin-facing theorem registry as the useful artifact. It does not make the
+optional single-issuer orchestration theorem the default completion target.
+Future safety behavior should move upward into the controller, which can use
+the certified kernels and delivered theorem surfaces as checked guardrails.
+
 It now contains:
 
 - a frozen split-kernel contract
@@ -315,9 +324,9 @@ It now contains:
   and beyond the newly closed small current-shape compound slices for the
   current Phase B families; the older atomic closure for `ClearedTo` /
   `HoldAt` remains optional and separate
-- the delivered-branch refinement/drift-control branch is now closed too, so
-  the next default FM work is no longer parity enforcement; the next branch is
-  again a deliberate widening choice
+- the delivered-branch refinement/drift-control branch is now closed too; this
+  research stream is now closed around the certified runtime contract rather
+  than a default next widening branch
 - as of fn-9 (May 9, 2026), the first proof-visible widening slice on top of
   the now-frozen delivered surface has landed:
   optional `VfrRoute.airspaceProfile`

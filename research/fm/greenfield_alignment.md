@@ -77,9 +77,10 @@ The next proof-side work should make the following explicit:
 
 ## Working Implication
 
-The next default move in `research/fm` is not "write adapters for today's repo."
-It is "work against the greenfield-derived proof boundary and theorem targets
-that the next project will rely on."
+There is no default FM widening move after the current closeout. The
+greenfield-derived proof boundary remains the right place to add future theorem
+surfaces, but new work should start from a controller need, a local-kernel
+strengthening, or a Kotlin drift repair.
 
 Once that contract is stable, translators can be implemented in the new
 codebase or in a deliberately chosen staging layer.
@@ -88,7 +89,8 @@ codebase or in a deliberately chosen staging layer.
 
 1. keep the scoped `Safety-complete (N₀)` and `Full-brief complete` surface
    stable
-2. choose one widening track at a time: richer route-bearing semantics or richer
-   operational mode semantics
-3. widen extraction, greenfield semantics, and top-layer theorems together
-4. only then decide which new runtime boundary types belong in code
+2. keep the certified runtime contract and drift inventories current
+3. let controller work consume the checked kernels and delivered theorem
+   registry
+4. open one widening track only when it supports a concrete controller or
+   kernel-strengthening need

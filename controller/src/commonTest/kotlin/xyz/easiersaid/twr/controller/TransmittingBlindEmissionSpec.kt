@@ -36,7 +36,8 @@ class TransmittingBlindEmissionSpec {
     private fun beliefsWith(state: CoordinationState): BeliefState {
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = instruction,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = issuedAt,
             state = state,
@@ -76,4 +77,3 @@ class TransmittingBlindEmissionSpec {
         assertTrue(blinds.isEmpty(), "TransmittingBlind must not re-emit once emittedBlindAt is set; got $blinds")
     }
 }
-

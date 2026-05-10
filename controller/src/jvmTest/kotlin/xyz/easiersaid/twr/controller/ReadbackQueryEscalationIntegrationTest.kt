@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.controller
 
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.CoordinationState
 import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
@@ -82,7 +83,8 @@ class ReadbackQueryEscalationIntegrationTest {
     private fun beliefsWithIssuedCoordination(): BeliefState {
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = instruction,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = issuedAt,
             state = CoordinationState.Issued,
@@ -168,6 +170,12 @@ class ReadbackQueryEscalationIntegrationTest {
         assertTrue(
             reissues.single().trace.ruleId == "COORD-REISSUE",
             "re-emitted Instruct must carry the COORD-REISSUE rule id",
+        )
+        assertTrue(
+            reissues.single().certificationEvidence.all.any {
+                it is CertificationEvidence.RuntimeChecked && it.checkId == "test-coordination-evidence"
+            },
+            "re-emitted Instruct must carry the original coordination certification evidence",
         )
 
         // Assertion 2: the coordination state is now Reissued(1) with emittedAt set.

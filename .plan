@@ -71,6 +71,17 @@ Impact: M | Effort: M
 
 ### Medium impact, medium-high effort — architecture-dependent
 
+**QUAL-1 — Repository-wide detekt gate is red on pre-existing findings**
+`./gradlew detekt` currently fails on 11 findings outside the certification-gate
+change surface: `AircraftObservationFactory.from` long parameter list,
+`coordinationEscalationOutputs` nested block depth, `WorldCandidateLoader`
+large class, `Step.handleTransmissionEnd` nested block depth, `Step` complex
+condition and loop jump findings, `Guard.classify` return count, and
+`PilotCognitive` max-line-length findings. The certification-gate work removed
+the new detekt findings it introduced, but the full Phase 6 command remains red
+until this repo-wide quality debt is resolved or deliberately re-baselined.
+Impact: M | Effort: M
+
 **A9 — Manual routes in `LowgSpike` and `ArrivalVerticalTest`**
 Tests bypass the planner, creating a conformance gap. Migrate to planner-driven routes once
 IFR wiring lands.
@@ -472,6 +483,16 @@ Full exploratory adversary surface (vectors, holding, sequencing stress) not yet
 **CB-8** — Special VFR (#30)
 **CB-9** — Departure instructions after takeoff: turn direction, VFR route (#31)
 **CB-10** — `RunwayStatusChange` coordination message (TWR→APP) for closures
+**CB-11** — Kotlin action certification gate for FM kernel-shaped safety checks — DONE (2026-05-09)
+Controller instruction emission is now routed through `ActionCertifier` for
+procedure actions. The gate classifies emitted instructions into
+runway/surface/air-path/separation/no-certification plans, rejects unsupported
+or incompatible actions with typed failures surfaced in decision traces, carries
+certification evidence on outputs and coordination reissues, preserves
+conditional dispatch through the ledger, and derives action targets from the
+instruction target. Remaining repo-wide quality cleanup is tracked separately in
+`QUAL-1`.
+Impact: H | Effort: M
 
 ---
 
@@ -496,5 +517,9 @@ The following were audited and confirmed as intentional:
 - Hold-short conflates arrival/constraint — deferred, needs belief-delta work first
 - Cancel-takeoff has no readback guard — intentional; safety commands bypass readback horizon
 - Airspace boundary geometry — out of current FM scope
+- FM single-issuer canonical theorem — out of current closeout scope; the
+  certified runtime contract treats the four independent kernels plus
+  drift-guarded Kotlin theorem registry as the delivered artifact, with
+  controller work owning operational composition
 - `DEP-CANCEL-TAKEOFF` missing readback guard — intentional for time-critical safety command
 - DFA conformance test — already done (`DfaConformanceTest.kt`)

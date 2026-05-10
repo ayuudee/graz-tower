@@ -277,19 +277,30 @@ fun emitReactiveOutputs(
                 return@flatMap emptyList()
         }
 
-        val instruct = ControllerOutput.Instruct(
-            target = target,
-            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
-            urgency = intervention.urgency,
-            trace = xyz.easiersaid.twr.controller.DecisionTrace(
-                ruleId = "REACTIVE-SEPARATION",
-                description = "Reactive ${intervention::class.simpleName} — separation ${assessment.concern}",
-                regulations = listOf(
-                    xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_5,
-                    xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_10_2,
-                ),
+        val trace = xyz.easiersaid.twr.controller.DecisionTrace(
+            ruleId = "REACTIVE-SEPARATION",
+            description = "Reactive ${intervention::class.simpleName} — separation ${assessment.concern}",
+            regulations = listOf(
+                xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_5,
+                xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_10_2,
             ),
         )
+        val doctrine = "Reactive separation intervention under ICAO Doc 4444 §5.10.1.1"
+        val instruct = when (instruction) {
+            is xyz.easiersaid.twr.protocol.GoAround -> ControllerOutput.Instruct.fromReactiveSeparationEmergency(
+                instruction = instruction,
+                urgency = intervention.urgency,
+                trace = trace,
+                doctrine = doctrine,
+            )
+            is xyz.easiersaid.twr.protocol.BreakOff -> ControllerOutput.Instruct.fromReactiveSeparationEmergency(
+                instruction = instruction,
+                urgency = intervention.urgency,
+                trace = trace,
+                doctrine = doctrine,
+            )
+            else -> error("Reactive separation selected unsupported emergency instruction ${instruction::class.simpleName}")
+        }
 
         // Companion traffic information (Doc 4444 §5.10.1.1).
         val trafficRef = xyz.easiersaid.twr.controller.bdi.resolveTrafficRef(assessment.aircraft, beliefs)

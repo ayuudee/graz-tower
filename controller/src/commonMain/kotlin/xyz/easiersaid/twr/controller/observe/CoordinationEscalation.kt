@@ -2,7 +2,6 @@ package xyz.easiersaid.twr.controller.observe
 
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.DecisionTrace
-import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.protocol.ConfirmInstruction
 import xyz.easiersaid.twr.protocol.RegulationDatabase
 import xyz.easiersaid.twr.protocol.SimTime
@@ -70,7 +69,7 @@ internal fun coordinationEscalationOutputs(
                         val ageSec = (now - c.issuedAt).millis / 1000.0
                         out += ControllerOutput.Respond(
                             target = aircraft,
-                            response = ConfirmInstruction(target = aircraft, instruction = c.instruction),
+                            response = ConfirmInstruction(target = aircraft, instruction = c.readbackInstruction),
                             trace = DecisionTrace(
                                 ruleId = "COORD-QUERY",
                                 description = "Readback overdue (issued ${"%.1f".format(ageSec)} s ago) — confirm prior " +
@@ -83,12 +82,8 @@ internal fun coordinationEscalationOutputs(
                 is CoordinationState.Reissued -> {
                     if (s.emittedAt == null) {
                         val ageSec = (now - c.issuedAt).millis / 1000.0
-                        out += ControllerOutput.Instruct(
-                            target = aircraft,
-                            // Replay-as-original (M.2): re-emit the original
-                            // instruction verbatim, NOT enrichInstruction(c.instruction, weather).
-                            // §12.3.1.2 "I SAY AGAIN" replays the original transmission.
-                            dispatch = Dispatch.Direct(c.instruction),
+                        out += ControllerOutput.Instruct.fromCoordinationReissue(
+                            coordination = c,
                             urgency = Urgency.TIME_SENSITIVE,
                             trace = DecisionTrace(
                                 ruleId = "COORD-REISSUE",
@@ -96,6 +91,9 @@ internal fun coordinationEscalationOutputs(
                                     "issued ${"%.1f".format(ageSec)} s ago; Doc 4444 §12.3.1.2)",
                                 regulations = listOf(RegulationDatabase.ICAO9432_READBACK),
                             ),
+                            // Replay-as-original (M.2): re-emit the original
+                            // instruction verbatim, NOT enrichInstruction(c.instruction, weather).
+                            // §12.3.1.2 "I SAY AGAIN" replays the original transmission.
                             // Reissues do NOT advance stage — that gate fires once when the
                             // original Issued coordination confirms. Re-emission is for
                             // delivery, not progress.
@@ -111,7 +109,7 @@ internal fun coordinationEscalationOutputs(
                         val ageSec = (now - c.issuedAt).millis / 1000.0
                         out += ControllerOutput.Respond(
                             target = aircraft,
-                            response = TransmittingBlind(target = aircraft, instruction = c.instruction),
+                            response = TransmittingBlind(target = aircraft, instruction = c.readbackInstruction),
                             trace = DecisionTrace(
                                 ruleId = "COORD-BLIND",
                                 description = "Lost-comms posture — transmit blind (issued ${"%.1f".format(ageSec)} s ago; " +

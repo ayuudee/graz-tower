@@ -1,22 +1,31 @@
 package xyz.easiersaid.twr.controller
 
+import arrow.core.NonEmptyList
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
+import xyz.easiersaid.twr.controller.certify.CertifiedInstruction
+import xyz.easiersaid.twr.controller.certify.NoCertificationRequired
 import xyz.easiersaid.twr.controller.observe.BeliefState
+import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.BreakOff
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ClearanceDomain
 import xyz.easiersaid.twr.protocol.ClearanceId
 import xyz.easiersaid.twr.protocol.ClearanceStatus
 import xyz.easiersaid.twr.protocol.ConditionalPredicate
+import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.ControllerResponse
+import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.Level
+import xyz.easiersaid.twr.protocol.NumberInSequence
 import xyz.easiersaid.twr.protocol.ObligationId
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.PointId
@@ -248,7 +257,7 @@ sealed interface ReceivedMessage {
 
 sealed interface ControllerOutput {
     /** Issue an instruction. The caller creates the clearance and manages the lifecycle. */
-    data class Instruct(
+    class Instruct private constructor(
         val target: AircraftId,
         val dispatch: Dispatch,
         val obligation: ObligationId? = null,
@@ -261,10 +270,121 @@ sealed interface ControllerOutput {
             xyz.easiersaid.twr.controller.observe.AdvancementPolicy.Immediate,
         /** Stage to advance to when readback is confirmed. Recorded on the coordination. */
         val readbackAdvancesToStage: xyz.easiersaid.twr.controller.bdi.Stage? = null,
+        val certificationEvidence: NonEmptyList<CertificationEvidence>,
     ) : ControllerOutput {
         val instruction: AtcInstruction get() = dispatch.instruction
         val condition: ConditionalPredicate?
             get() = (dispatch as? Dispatch.Conditional)?.condition
+
+        companion object {
+            fun fromCertified(
+                certified: CertifiedInstruction,
+                obligation: ObligationId? = null,
+                urgency: Urgency,
+                trace: DecisionTrace,
+                advanceToStage: xyz.easiersaid.twr.controller.bdi.Stage? = null,
+                advancementPolicy: xyz.easiersaid.twr.controller.observe.AdvancementPolicy =
+                    xyz.easiersaid.twr.controller.observe.AdvancementPolicy.Immediate,
+                readbackAdvancesToStage: xyz.easiersaid.twr.controller.bdi.Stage? = null,
+            ): Instruct = Instruct(
+                target = certified.aircraft,
+                dispatch = certified.dispatch,
+                obligation = obligation,
+                urgency = urgency,
+                trace = trace,
+                advanceToStage = advanceToStage,
+                advancementPolicy = advancementPolicy,
+                readbackAdvancesToStage = readbackAdvancesToStage,
+                certificationEvidence = certified.evidence,
+            )
+
+            fun fromAdministrative(
+                instruction: NumberInSequence,
+                urgency: Urgency,
+                trace: DecisionTrace,
+            ): Instruct = Instruct(
+                target = instruction.target,
+                dispatch = Dispatch.Direct(instruction),
+                urgency = urgency,
+                trace = trace,
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.NotRequired(NoCertificationRequired.AdministrativeSequencing),
+                    emptyList(),
+                ),
+            )
+
+            fun fromMissedHandoffReissue(
+                instruction: ContactFrequency,
+                obligation: ObligationId? = null,
+                urgency: Urgency,
+                trace: DecisionTrace,
+            ): Instruct = Instruct(
+                target = instruction.target,
+                dispatch = Dispatch.Direct(instruction),
+                obligation = obligation,
+                urgency = urgency,
+                trace = trace,
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.RuntimeChecked(
+                        checkId = "missed-handoff-reissue",
+                        summary = "ContactFrequency reissued from missed handoff projection",
+                    ),
+                    emptyList(),
+                ),
+            )
+
+            fun fromCoordinationReissue(
+                coordination: OutstandingCoordination,
+                urgency: Urgency,
+                trace: DecisionTrace,
+            ): Instruct = Instruct(
+                target = coordination.aircraft,
+                dispatch = coordination.dispatch,
+                urgency = urgency,
+                trace = trace,
+                certificationEvidence = coordination.certificationEvidence,
+            )
+
+            fun fromReactiveSeparationEmergency(
+                instruction: GoAround,
+                urgency: Urgency,
+                trace: DecisionTrace,
+                doctrine: String,
+            ): Instruct = fromReactiveSeparationEmergency(
+                target = instruction.target,
+                dispatch = Dispatch.Direct(instruction),
+                urgency = urgency,
+                trace = trace,
+                doctrine = doctrine,
+            )
+
+            fun fromReactiveSeparationEmergency(
+                instruction: BreakOff,
+                urgency: Urgency,
+                trace: DecisionTrace,
+                doctrine: String,
+            ): Instruct = fromReactiveSeparationEmergency(
+                target = instruction.target,
+                dispatch = Dispatch.Direct(instruction),
+                urgency = urgency,
+                trace = trace,
+                doctrine = doctrine,
+            )
+
+            private fun fromReactiveSeparationEmergency(
+                target: AircraftId,
+                dispatch: Dispatch.Direct,
+                urgency: Urgency,
+                trace: DecisionTrace,
+                doctrine: String,
+            ): Instruct = Instruct(
+                target = target,
+                dispatch = dispatch,
+                urgency = urgency,
+                trace = trace,
+                certificationEvidence = NonEmptyList(CertificationEvidence.EmergencyPolicy(doctrine), emptyList()),
+            )
+        }
     }
 
     /** Send a response (readback correct, station callback, etc.). Not a clearance. */

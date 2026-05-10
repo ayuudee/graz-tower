@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.controller
 
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
@@ -67,6 +68,13 @@ class MissedHandoffReissueSpec {
         assertEquals(ac, cf.target)
         assertEquals(RoleName.TOWER, cf.role)
         assertEquals(targetFreq, cf.frequency)
+        val output = outputs.filterIsInstance<ControllerOutput.Instruct>().single()
+        assertTrue(
+            output.certificationEvidence.all.any {
+                it is CertificationEvidence.RuntimeChecked && it.checkId == "missed-handoff-reissue"
+            },
+            "handoff reissue must carry explicit reissue evidence",
+        )
 
         // Belief slice is bumped to dampen next cycle.
         assertEquals(now1, newBeliefs.handoffReissuedAt[ac])

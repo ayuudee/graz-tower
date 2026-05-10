@@ -38,7 +38,8 @@ class CoordinationsCleanupSpec {
     private fun beliefsWith(state: CoordinationState): BeliefState {
         val coord = OutstandingCoordination(
             aircraft = ac,
-            instruction = instruction,
+            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(instruction),
+            certificationEvidence = testCertificationEvidence(),
             expectedReadback = emptySet(),
             issuedAt = now,
             state = state,

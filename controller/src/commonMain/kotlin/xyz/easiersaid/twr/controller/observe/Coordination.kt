@@ -1,9 +1,13 @@
 package xyz.easiersaid.twr.controller.observe
 
+import arrow.core.NonEmptyList
 import xyz.easiersaid.twr.controller.bdi.Stage
+import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.AtomicReadback
+import xyz.easiersaid.twr.protocol.ConditionalClearance
 import xyz.easiersaid.twr.protocol.SimTime
 
 /**
@@ -23,13 +27,26 @@ import xyz.easiersaid.twr.protocol.SimTime
  */
 data class OutstandingCoordination(
     val aircraft: AircraftId,
-    val instruction: AtcInstruction,
+    val dispatch: Dispatch,
+    val certificationEvidence: NonEmptyList<CertificationEvidence>,
     val expectedReadback: Set<AtomicReadback>,
     val issuedAt: SimTime,
     val state: CoordinationState = CoordinationState.Issued,
     /** The stage to advance to when this coordination is CONFIRMED. Null = no advancement. */
     val advanceToStage: Stage? = null,
-)
+) {
+    val instruction: AtcInstruction get() = dispatch.instruction
+
+    val readbackInstruction: AtcInstruction
+        get() = when (val d = dispatch) {
+            is Dispatch.Direct -> instruction
+            is Dispatch.Conditional -> ConditionalClearance(
+                target = instruction.target,
+                condition = d.condition,
+                instruction = instruction,
+            )
+        }
+}
 
 /**
  * Lifecycle state of an instruction-readback coordination.

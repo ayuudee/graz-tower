@@ -14,8 +14,10 @@ The split-kernel architecture supports two different usage patterns:
 2. an optional orchestration layer consumes those local guarantees and becomes
    the single issuing layer
 
-The first mode is the primary project goal. The second mode is optional
-integration work.
+The first mode is now the closed project goal for the current research stream.
+The second mode is optional integration work and should not be treated as a
+blocker for controller work. See
+[certified_runtime_contract_v1.md](research/fm/certified_runtime_contract_v1.md).
 
 ## Module Split
 
@@ -109,6 +111,11 @@ one kernel's local state model, it belongs in that kernel, not in orchestration.
 - air kernel: concrete and proved
 - separation checker: concrete and proved locally
 - optional orchestration layer: partially concrete and partially proved
+- Kotlin-facing delivered theorem surfaces: registered in
+  [GreenfieldDeliveredRefinement.lean](research/fm/lean/CertifiedAtc/GreenfieldDeliveredRefinement.lean)
+  and guarded by
+  [parity_inventory.md](research/fm/parity_inventory.md) /
+  [refinement_inventory.md](research/fm/refinement_inventory.md)
 
 More specifically:
 
@@ -166,14 +173,19 @@ The intended certified path is:
 
 ## Open Interface Risks
 
-The important remaining local-kernel obligations are:
+The current local-kernel stream is closed for the certified runtime contract.
+Future local-kernel work should be deliberate strengthening, not milestone
+completion work.
+
+Potential future local-kernel strengthening includes:
 
 - widening the now-concrete separation-layer targets for non-certified-command
   neutrality, boundary sufficiency, and horizon viability beyond the current
   conservative command slice and partial typed-command surface, which now
   includes `ReduceSpeedTo`
 
-The important remaining optional composition obligations are:
+The important remaining optional composition obligations are deliberately
+parked unless the product chooses a single-issuer architecture:
 
 - turning the now-recorded extraction contract from overlay-entity
   `AviationWorld` into actual boundary checks and theorem inputs for the future
@@ -188,3 +200,7 @@ The important remaining optional composition obligations are:
 - keeping compatibility structurally narrow as orchestration widens
 - making the full issuance theorem hold for more than the current partial
   runway/surface/air slice
+
+For the current product direction, those concerns move upward into controller
+design. The controller owns operational judgment and certifier selection; FM
+provides checked kernels and drift-guarded theorem surfaces.

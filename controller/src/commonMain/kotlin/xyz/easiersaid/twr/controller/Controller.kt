@@ -15,6 +15,9 @@ import xyz.easiersaid.twr.controller.assess.selectRunwayIntoWind
 import xyz.easiersaid.twr.controller.bdi.applySupersessionCleanup
 import xyz.easiersaid.twr.controller.assess.updateArrivalSequence
 import xyz.easiersaid.twr.controller.assess.updateRunwayDuty
+import xyz.easiersaid.twr.controller.certify.ActionCertifier
+import xyz.easiersaid.twr.controller.certify.CertificationContext
+import xyz.easiersaid.twr.controller.certify.KotlinRuntimeKernelCertifiers
 import xyz.easiersaid.twr.controller.bdi.Commitment
 import xyz.easiersaid.twr.controller.bdi.executeProcedure
 import xyz.easiersaid.twr.controller.bdi.reconcileCommitments
@@ -135,9 +138,11 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
 
     val ctx = OperatorContext(view, beliefs, events, world)
     val (runs, skipped) = executeAllProcedures(view.responsibilities, beliefs, ctx)
-    val (rawOutputs, committedAircraft) = arbitrate(runs, beliefs, view)
-    val outputs = rawOutputs.map { enrichInstruction(it, view.weather) }
-    val companions = deriveCompanionOutputs(rawOutputs, runs)
+    val certificationContext = CertificationContext(view, beliefs, world, view.time)
+    val arbitration = arbitrate(runs, beliefs, view, certificationContext)
+    val outputs = arbitration.outputs
+    val committedAircraft = arbitration.committedAircraft
+    val companions = deriveCompanionOutputs(outputs, runs)
 
     // Phase 6b Phase B: reactive safety net — catch separation concerns not addressed by procedures.
     val reactiveIntv = reactiveInterventions(beliefs, outputs)
@@ -214,7 +219,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
         trace = OverallDecisionTrace(
             controllerId = view.controllerId, time = view.time,
             actionsConsidered = runs.size, actionsCommitted = outputs.size,
-            skippedActions = skipped,
+            skippedActions = skipped + arbitration.skipped,
         ),
     )
 }
@@ -490,13 +495,22 @@ private data class ArbState(
     val outputs: List<ControllerOutput.Instruct> = emptyList(),
     val committed: Set<AircraftId> = emptySet(),
     val committedByUrgency: Set<Urgency> = emptySet(),
+    val skipped: List<SkippedAction> = emptyList(),
+)
+
+private data class ArbitrationResult(
+    val outputs: List<ControllerOutput.Instruct>,
+    val committedAircraft: Set<AircraftId>,
+    val skipped: List<SkippedAction>,
 )
 
 private fun arbitrate(
     runs: List<ProcedureRun>,
     beliefs: BeliefState,
     view: ControllerView,
-): Pair<List<ControllerOutput.Instruct>, Set<AircraftId>> {
+    certificationContext: CertificationContext,
+): ArbitrationResult {
+    val certifier = ActionCertifier(KotlinRuntimeKernelCertifiers)
     val sorted = runs.sortedWith(
         compareBy<ProcedureRun> { it.result.urgency.ordinal }
             .thenBy { it.commitment.formedAt.millis }
@@ -518,8 +532,23 @@ private fun arbitrate(
             }
         }
 
-        val instruct = ControllerOutput.Instruct(
-            target = action.aircraft, dispatch = action.dispatch,
+        val enrichedAction = enrichAction(action, view.weather)
+        val certified = when (val certification = certifier.certify(enrichedAction, certificationContext)) {
+            is Either.Left -> {
+                val failure = certification.value
+                return@fold state.copy(
+                    skipped = state.skipped + SkippedAction(
+                        aircraft = action.aircraft,
+                        reason = "${run.commitment.kind}/${run.commitment.stage.name}: certification rejected",
+                        ruleTraces = listOf("${result.trace.ruleId}: ${failure.describe()}"),
+                    ),
+                )
+            }
+            is Either.Right -> certification.value
+        }
+
+        val instruct = ControllerOutput.Instruct.fromCertified(
+            certified = certified,
             obligation = null,
             urgency = result.urgency, trace = result.trace,
             advanceToStage = result.nextStage,
@@ -533,8 +562,22 @@ private fun arbitrate(
                 else state.committedByUrgency + result.urgency,
         )
     }
-    return final.outputs to final.committed
+    return ArbitrationResult(final.outputs, final.committed, final.skipped)
 }
+
+private fun xyz.easiersaid.twr.controller.certify.CertificationFailure.describe(): String =
+    when (this) {
+        is xyz.easiersaid.twr.controller.certify.CertificationFailure.UnsupportedInstruction ->
+            "unsupported instruction ${instruction::class.simpleName}"
+        is xyz.easiersaid.twr.controller.certify.CertificationFailure.MissingAircraft ->
+            "missing aircraft $aircraft"
+        is xyz.easiersaid.twr.controller.certify.CertificationFailure.StaleSnapshot ->
+            "stale snapshot observedAt=$observedAt decisionAt=$decisionAt"
+        is xyz.easiersaid.twr.controller.certify.CertificationFailure.KernelRejected ->
+            "$requirement rejected: $reason"
+        is xyz.easiersaid.twr.controller.certify.CertificationFailure.CompatibilityRejected ->
+            "compatibility rejected: $reason"
+    }
 
 /**
  * Advance committed stages for rules with [AdvancementPolicy.Immediate].
@@ -573,11 +616,8 @@ private fun deriveCompanionOutputs(
         val companions = mutableListOf<ControllerOutput>()
 
         action?.sequenceInfo?.let { seq ->
-            companions.add(ControllerOutput.Instruct(
-                target = output.target,
-                dispatch = Dispatch.Direct(
-                    NumberInSequence.unsafe(output.target, seq.number, seq.behindTraffic)
-                ),
+            companions.add(ControllerOutput.Instruct.fromAdministrative(
+                instruction = NumberInSequence.unsafe(output.target, seq.number, seq.behindTraffic),
                 urgency = Urgency.INFORMATIONAL,
                 trace = DecisionTrace(
                     ruleId = "SEQ-INFO", description = "Number ${seq.number} in sequence",
@@ -609,29 +649,29 @@ private fun deriveCompanionOutputs(
 }
 
 /** Enrich instruction with wind/QNH based on instruction type (CAP 413 pattern from TWR1). */
-private fun enrichInstruction(
-    output: ControllerOutput.Instruct,
+private fun enrichAction(
+    action: xyz.easiersaid.twr.controller.bdi.ProposedAction,
     weather: WeatherObservation?,
-): ControllerOutput.Instruct {
+): xyz.easiersaid.twr.controller.bdi.ProposedAction {
     // No weather observation at all → don't enrich. WeatherObservation.wind
     // itself is non-nullable (sealed `WindReport`), so the only null path
     // here is the outer optional.
-    val report = weather?.wind ?: return output
+    val report = weather?.wind ?: return action
     val wind = when (report) {
-        is WindReport.NotReported -> return output
+        is WindReport.NotReported -> return action
         is WindReport.Available -> report.wind
     }
-    val enriched = when (val instr = output.instruction) {
+    val enriched = when (val instr = action.instruction) {
         is ClearedForTakeoff -> instr.copy(surfaceWind = wind)
         is ClearedToLand -> instr.copy(surfaceWind = wind)
         is ClearedTouchAndGo -> instr.copy(surfaceWind = wind)
-        else -> return output
+        else -> return action
     }
-    val newDispatch = when (val d = output.dispatch) {
+    val newDispatch = when (val d = action.dispatch) {
         is Dispatch.Direct -> Dispatch.Direct(enriched)
         is Dispatch.Conditional -> Dispatch.Conditional(enriched, d.condition)
     }
-    return output.copy(dispatch = newDispatch)
+    return action.copy(dispatch = newDispatch)
 }
 
 /**
@@ -708,7 +748,7 @@ private fun processReadback(
     // structurally consistent with the instruction; if a future rule pair
     // issues two different RST instructions whose readbacks differ, only
     // the matching coord(s) close — the non-matching one stays open.
-    val classified = coords.mapIndexed { i, c -> i to classifyReadback(c.instruction, readback) }
+    val classified = coords.mapIndexed { i, c -> i to classifyReadback(c.readbackInstruction, readback) }
     val correctIdxs = classified.filter { it.second is ReadbackVerdict.Correct }.map { it.first }
     if (correctIdxs.isNotEmpty()) return acceptReadback(msg.aircraft, coords, correctIdxs, state)
 
@@ -789,7 +829,7 @@ private fun correctReadback(
     state: ReadbackFoldState,
 ): ReadbackFoldState {
     val (idx, verdict) = target
-    val correction = ReadbackCorrection(aircraft, coords[idx].instruction, (verdict as ReadbackVerdict.Incorrect).defects)
+    val correction = ReadbackCorrection(aircraft, coords[idx].readbackInstruction, (verdict as ReadbackVerdict.Incorrect).defects)
     val response = ControllerOutput.Respond(
         target = aircraft,
         response = correction,
@@ -826,14 +866,11 @@ internal fun missedHandoffReissueOutputs(
     for ((aircraft, notice) in view.outgoingMissedHandoffs) {
         val lastReissued = updatedReissues[aircraft]
         if (lastReissued != null && lastReissued >= notice.since) continue
-        outputs += ControllerOutput.Instruct(
-            target = aircraft,
-            dispatch = xyz.easiersaid.twr.controller.bdi.Dispatch.Direct(
-                xyz.easiersaid.twr.protocol.ContactFrequency(
-                    target = aircraft,
-                    role = notice.targetRole,
-                    frequency = notice.targetFrequency,
-                ),
+        outputs += ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = xyz.easiersaid.twr.protocol.ContactFrequency(
+                target = aircraft,
+                role = notice.targetRole,
+                frequency = notice.targetFrequency,
             ),
             urgency = xyz.easiersaid.twr.protocol.Urgency.TIME_SENSITIVE,
             trace = DecisionTrace(

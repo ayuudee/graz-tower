@@ -6,19 +6,18 @@ This file is for follow-on AI agents working in `research/fm`.
 
 Treat `research/fm` as a standalone proof project.
 
-Your job is not to speculate about the architecture again unless the Lean and
-project docs force that conclusion. The architecture contract is already
-substantially frozen.
+Your job is not to reopen the architecture unless the user explicitly asks for
+new FM research. The current stream is closed around
+[certified_runtime_contract_v1.md](research/fm/certified_runtime_contract_v1.md).
 
 The default success criterion is not "finish one giant whole-system theorem."
-It is:
+The closed success criterion is:
 
 - make the local certifiers concrete and defensible
 - make their ownership boundaries explicit
-- put proof effort on the long-term greenfield boundary rather than on the
-  older atomic command surface when those goals diverge
-- only do orchestration-composition work when the user or product architecture
-  actually needs a single issuing layer
+- keep Kotlin-facing theorem surfaces drift-guarded
+- let controller work own operational composition unless the user explicitly
+  reopens the optional single-issuer theorem
 
 ## Start Here
 
@@ -315,9 +314,13 @@ For orchestration:
 
 ## Immediate Next Move
 
-Unless the user says otherwise, the next default task in `research/fm` is:
+Unless the user says otherwise, there is no default widening task in
+`research/fm`. The next default product work is controller integration against
+the certified runtime contract:
 
 - keep the scoped surface stable and honest
+- keep [certified_runtime_contract_v1.md](research/fm/certified_runtime_contract_v1.md)
+  accurate
 - use the frozen parity / refinement / drift-control inventory in
   [parity_inventory.md](research/fm/parity_inventory.md)
   and the enforcing branch map in
@@ -338,7 +341,7 @@ Unless the user says otherwise, the next default task in `research/fm` is:
   the broadened current-shape runway surface,
   the current graph-backed broader ground / surface branch,
   and the delivered-branch refinement / drift-control branch
-- the next widening branch is now a deliberate choice, not an automatic
+- any new widening branch is now a deliberate choice, not an automatic
   default:
   prefer one genuinely semantic branch at a time beyond the current models
 - after that branch, choose one widening direction at a time:
