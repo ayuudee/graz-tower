@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-10T05:41:20.793430Z",
+  "depends_on": [
+    "fn-11-g3a-single-aircraft-pilot-trained-vfr.1"
+  ],
+  "epic": "fn-11-g3a-single-aircraft-pilot-trained-vfr",
+  "id": "fn-11-g3a-single-aircraft-pilot-trained-vfr.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-11-g3a-single-aircraft-pilot-trained-vfr.2.md",
+  "status": "todo",
+  "title": "G3aPilotTrainedGoAroundTest + cross-reference doc updates + time-band tightening",
+  "updated_at": "2026-05-10T07:08:25.225120Z"
+}

@@ -1,0 +1,20 @@
+{
+  "branch_name": "fn-11-g3a-single-aircraft-pilot-trained-vfr",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-10T05:37:14.500628Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [
+    "fn-8-g1-two-aircraft-vfr-circuits-at-lowg"
+  ],
+  "id": "fn-11-g3a-single-aircraft-pilot-trained-vfr",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-11-g3a-single-aircraft-pilot-trained-vfr.md",
+  "status": "open",
+  "title": "G3a \u2014 single-aircraft pilot-trained VFR go-around as circuit-training outcome",
+  "updated_at": "2026-05-10T07:14:45.491403Z"
+}
