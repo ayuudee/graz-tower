@@ -796,14 +796,16 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
     val preBase = preCircuit + setOf(
         MissionStep.REPORT_DOWNWIND, MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE,
     )
-    // FLY_FINAL_TO_SHORT_FINAL (fn-11.1) is the trained-GA equivalent of
-    // FLY_FINAL — both are "I'm flying the FINAL leg" steps. A pilot who
-    // spawns already on PilotPhase.Final has flown past the FINAL-leg
-    // entry regardless of which variant the active circuit uses, so both
-    // are skipped together.
-    val preFinal = preBase + setOf(
-        MissionStep.REPORT_BASE, MissionStep.FLY_FINAL, MissionStep.FLY_FINAL_TO_SHORT_FINAL,
-    )
+    val preFinal = preBase + setOf(MissionStep.REPORT_BASE, MissionStep.FLY_FINAL)
+    // FLY_FINAL_TO_SHORT_FINAL (fn-11.1) is **deliberately absent** from the
+    // pre-final/pre-land skip sets. Unlike FLY_FINAL (which completes by
+    // reaching the FINAL-leg waypoint), the trained-GA short-final descent
+    // step completes by ALTITUDE (`DECISION_ALTITUDE_M`). A spawn on
+    // PilotPhase.Final at, say, 500m AGL has not yet crossed the decision
+    // gate; pre-completing the step would skip the trained-GA fork entirely
+    // and advance straight to GOING_AROUND. The altitude predicate in
+    // `isPhysicallyComplete` is the only correct trigger. Per fn-11.1
+    // codex review finding #1.
     val preLand = preFinal + setOf(
         MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND,
     )
