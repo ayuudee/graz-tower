@@ -526,6 +526,62 @@ class PlannedGoAroundSpec {
         is CompoundTask -> task.children.flatMap { collectIncompleteSteps(it) }
     }
 
+    // ── Future-circuit preservation: ClearedToLand during trained-GA ───────
+
+    @Test
+    fun `ClearedToLand during trained-GA does NOT corrupt recovery circuit's FLY_FINAL or AWAIT_LANDING_CLEARANCE`() {
+        // Per fn-11.1 codex re-review round 4: a trained-GA mission's
+        // active `Circuit` compound has no `FLY_FINAL` or
+        // `AWAIT_LANDING_CLEARANCE` (those names belong to the recovery
+        // `FullStop` outcome's `circuitTask` later in the list). A naive
+        // `root.markComplete(FLY_FINAL)` would walk past the trained-GA
+        // compound and mark the FUTURE recovery circuit's FLY_FINAL,
+        // corrupting that not-yet-active state. `markCompleteInActiveCompound`
+        // scopes the marking to the active outcome.
+        //
+        // This test pins the future-circuit preservation: after
+        // `ClearedToLand` during the trained-GA outcome, the recovery
+        // FullStop circuit's `FLY_FINAL` and `AWAIT_LANDING_CLEARANCE`
+        // primitives MUST remain incomplete.
+        val mission = missionAtFinalToShortFinalStep()
+        val worldIndex = WorldIndex(holdingPointsByRunway = emptyMap())
+        val updated = processInstruction(
+            instruction = ClearedToLand(target = ac, runway = RWY_ID),
+            mission = mission,
+            now = now0,
+            worldIndex = worldIndex,
+        )
+        // Root structure: CircuitTraining → [groundDeparture, trainedGA,
+        // recoveryFullStop, groundArrival]. The recoveryFullStop is the
+        // 3rd child (index 2). It carries the standard `circuitTask`'s
+        // FLY_FINAL + AWAIT_LANDING_CLEARANCE primitives.
+        val recoveryCircuit = updated.root.children[2] as CompoundTask
+        val recoverySteps = collectStepShape(recoveryCircuit)
+        // Sanity: the recovery circuit DOES contain these primitives.
+        assertTrue(
+            MissionStep.FLY_FINAL in recoverySteps,
+            "test-fixture sanity: recovery circuit must carry FLY_FINAL (got $recoverySteps)",
+        )
+        assertTrue(
+            MissionStep.AWAIT_LANDING_CLEARANCE in recoverySteps,
+            "test-fixture sanity: recovery circuit must carry AWAIT_LANDING_CLEARANCE",
+        )
+        // Pin: those primitives are still INCOMPLETE in the recovery circuit.
+        // If the marking had walked past the active trained-GA compound
+        // and corrupted the recovery circuit, these would be marked complete.
+        val recoveryIncomplete = collectIncompleteSteps(recoveryCircuit)
+        assertTrue(
+            MissionStep.FLY_FINAL in recoveryIncomplete,
+            "ClearedToLand during trained-GA must NOT mark recovery circuit's FLY_FINAL " +
+                "complete (got incomplete=$recoveryIncomplete)",
+        )
+        assertTrue(
+            MissionStep.AWAIT_LANDING_CLEARANCE in recoveryIncomplete,
+            "ClearedToLand during trained-GA must NOT mark recovery circuit's " +
+                "AWAIT_LANDING_CLEARANCE complete (got incomplete=$recoveryIncomplete)",
+        )
+    }
+
     // ── Test 4: Trained-GA REPORT_DOWNWIND carries CircuitIntent.FULL_STOP ──
 
     @Test

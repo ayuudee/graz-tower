@@ -864,14 +864,76 @@ private val TAXI_TO_STEPS = setOf(
  * skip the trained step and advance straight to `GOING_AROUND`, defeating the
  * trained-GA fork. Per the task's new-MissionStep audit pin (Acceptance R3
  * audit, sub-bullet `handleLandingClearance`).
+ *
+ * fn-11.1 (codex re-review round 4): step-marking is **scoped to the active
+ * top-level compound** to prevent future-circuit corruption. `markComplete`
+ * normally walks past completed compounds and marks the FIRST incomplete
+ * instance of a step anywhere in the tree. For a trained-GA mission's active
+ * `Circuit` compound (which has no `FLY_FINAL` — it has
+ * `FLY_FINAL_TO_SHORT_FINAL` instead), `markComplete(FLY_FINAL)` would
+ * silently mark the recovery `FullStop` outcome's `FLY_FINAL` in the NEXT
+ * circuit, corrupting that future state. Scoping to the active compound
+ * makes ClearedToLand a no-op for steps the active circuit doesn't have,
+ * which is the correct semantic for trained-GA: the controller's clearance
+ * is recorded (`hasClearance=true`) but it can't fast-forward steps the
+ * pilot's plan doesn't include.
  */
 private fun handleLandingClearance(mission: PilotMission, now: SimTime): PilotMission {
     val stepsToMark = listOf(
         MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE,
         MissionStep.FLY_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE,
     )
-    val newRoot = stepsToMark.fold(mission.root) { root, step -> root.markComplete(step) }
+    val newRoot = markCompleteInActiveCompound(mission.root, stepsToMark)
     return mission.copy(hasClearance = true, root = newRoot, stepEnteredAt = now)
+}
+
+/**
+ * Like [CompoundTask.markComplete] but scoped to the active sub-tree of
+ * [root]. Marks every step in [steps] that appears within the leftmost-
+ * incomplete top-level child compound; steps the active compound doesn't
+ * carry are no-ops (NOT marked further along the tree).
+ *
+ * **Scoping semantics**:
+ *  - If the leftmost incomplete top-level child is a *compound* (e.g. an
+ *    active circuit in `CircuitTraining`'s outcome list, or
+ *    `groundDepartureTask` in `Transit`), scope to that compound.
+ *  - If the leftmost incomplete top-level child is a *primitive* (e.g.
+ *    Transit's flat `FLY_DEPARTURE`/`FLY_DOWNWIND`/.../`LAND` primitives
+ *    that are direct children of the root), scope to the **root** itself
+ *    — the root IS the smallest enclosing compound for those primitives.
+ *
+ * fn-11.1 (codex re-review round 4): replaces a per-step
+ * `root.markComplete` fold whose tree-walk could step past the active
+ * compound and corrupt future circuits when the active compound's step
+ * vocabulary differs from the marked steps. Critical for trained-GA: the
+ * active `Circuit` compound has no `FLY_FINAL` (it carries
+ * `FLY_FINAL_TO_SHORT_FINAL`), so a naive `root.markComplete(FLY_FINAL)`
+ * would walk past and mark the recovery `FullStop` circuit's `FLY_FINAL`,
+ * corrupting future state. The Transit-flat-primitives case continues to
+ * work because the scope falls back to root when the active child is a
+ * primitive.
+ */
+private fun markCompleteInActiveCompound(
+    root: CompoundTask,
+    steps: List<MissionStep>,
+): CompoundTask {
+    val activeChildIndex = root.children.indexOfFirst { !it.isComplete }
+    if (activeChildIndex < 0) return root
+    return when (val activeChild = root.children[activeChildIndex]) {
+        is CompoundTask -> {
+            val updatedActive = steps.fold(activeChild) { task, step -> task.markComplete(step) }
+            if (updatedActive == activeChild) return root
+            val newChildren = root.children.toMutableList()
+            newChildren[activeChildIndex] = updatedActive
+            root.copy(children = newChildren.toList())
+        }
+        // Active child is a primitive — root IS the smallest enclosing
+        // compound. Fall back to the original semantics: mark the first
+        // incomplete instance of each step across root's children. The
+        // step-walk only crosses outcome boundaries when the active outcome
+        // truly lacks that step shape (e.g. Transit's flat primitives).
+        is PrimitiveTask -> steps.fold(root) { task, step -> task.markComplete(step) }
+    }
 }
 
 /**
