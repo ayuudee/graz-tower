@@ -901,6 +901,14 @@ private fun deriveCompanionOutputs(
                 RegulationDatabase.ICAO4444_8_9_6_1_8,
                 RegulationDatabase.CAP413_4_65,
             )
+            // fn-13.1 (R3 — codex round 2 finding): description must NOT
+            // hardcode both §7.4.1.4.1(c) and §12.3.4.16(d) because they
+            // are doctrinally exclusive paths (post-clearance GA vs
+            // pre-clearance CONTINUE APPROACH). Read the action's
+            // `companionTraceDescription` when provided; fall back to the
+            // GA description (preserves fn-12's behaviour unchanged).
+            val description = info.companionTraceDescription
+                ?: "Inform aircraft of runway obstruction per ICAO 4444 §7.4.1.4.1(c)"
             companions.add(ControllerOutput.Respond(
                 target = output.target,
                 response = RunwayObstructionInformation(
@@ -910,7 +918,7 @@ private fun deriveCompanionOutputs(
                 ),
                 trace = DecisionTrace(
                     ruleId = "OBSTRUCTION-INFO",
-                    description = "Inform aircraft of runway obstruction per ICAO 4444 §7.4.1.4.1(c) / §12.3.4.16(d)",
+                    description = description,
                     regulations = regulations,
                 ),
             ))

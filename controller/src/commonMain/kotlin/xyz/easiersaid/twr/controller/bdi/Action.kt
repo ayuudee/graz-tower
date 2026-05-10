@@ -77,7 +77,7 @@ data class TrafficInfo(
  * slice, and the protocol leaf carries primitives, so passing primitives
  * through avoids a redundant unwrap at the companion-emit site.
  *
- * **fn-13.1 (R3) — companion trace regs split**: optional
+ * **fn-13.1 (R3) — companion trace regs + description split**: optional
  * [companionTraceRegs] overrides the regulation refs cited on the emitted
  * `RunwayObstructionInformation`'s `DecisionTrace`. Default-null preserves
  * fn-12's GA companion regs (`ICAO4444_7_4_1_4_1`, `ICAO4444_8_9_6_1_8`,
@@ -85,11 +85,20 @@ data class TrafficInfo(
  * pre-clearance refs (`CAP413_4_55`, `CAP413_4_56`, `ICAO4444_12_3_4_16`,
  * `ICAO4444_8_9_6_1_8`) — `CAP413_4_65` (missed-approach phraseology) and
  * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate) are explicitly excluded.
+ *
+ * Similarly, [companionTraceDescription] overrides the human-readable
+ * description on the companion's `DecisionTrace`. Default-null preserves
+ * fn-12's GA description ("Inform aircraft of runway obstruction per
+ * ICAO 4444 §7.4.1.4.1(c)"). The CONTINUE APPROACH path supplies a
+ * description anchored on the pre-clearance §12.3.4.16 path. Keeping both
+ * override fields together so trace text and trace refs cannot drift
+ * (the regs and description must reference the same doctrinal section).
  */
 data class ObstructionInfo(
     val runway: RunwayId,
     val clearsAt: SimTime,
     val companionTraceRegs: List<xyz.easiersaid.twr.protocol.RegulationRef>? = null,
+    val companionTraceDescription: String? = null,
 )
 
 /**
@@ -330,6 +339,7 @@ data object ObstructionContinueApproachAction : RuleAction {
                 runway = runway,
                 clearsAt = obstruction.clearsAt,
                 companionTraceRegs = CONTINUE_APPROACH_OBSTRUCTION_COMPANION_REGS,
+                companionTraceDescription = CONTINUE_APPROACH_OBSTRUCTION_COMPANION_DESCRIPTION,
             ),
         ).right()
     }
@@ -347,6 +357,14 @@ private val CONTINUE_APPROACH_OBSTRUCTION_COMPANION_REGS:
     xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_12_3_4_16,
     xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_8_9_6_1_8,
 )
+
+/**
+ * fn-13.1 (R3): CONTINUE APPROACH companion DecisionTrace description.
+ * Anchored on the pre-clearance §12.3.4.16 path; deliberately omits
+ * §7.4.1.4.1(c) (post-clearance GA mandate, wrong for CONTINUE APPROACH).
+ */
+private const val CONTINUE_APPROACH_OBSTRUCTION_COMPANION_DESCRIPTION: String =
+    "Inform aircraft of runway obstruction per ICAO 4444 §12.3.4.16(d)"
 
 data object VacateAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {

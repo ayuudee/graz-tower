@@ -335,11 +335,19 @@ class ObstructionContinueApproachSpec {
 
     @Test
     fun `escalation to GA — predicate flips false → GA fires and supersedes stale ContinueApproach coordination`() {
-        // Seed: CA witness already set (from a prior cycle), obstruction
-        // STILL active but now `clearsAt` is far enough that the predicate
-        // flips false → narrowed GA rule fires.
-        // Also seed a pending ContinueApproach coordination to verify
-        // supersession cleanup.
+        // Models the real post-CA escalation cycle (codex round-2
+        // strengthening): on a previous cycle, the CA rule fired (witness
+        // is set, coordination is pending). Now `clearsAt` slipped /
+        // groundSpeed dropped → `ObstructionClearsInTime` is false →
+        // narrowed GA rule's guard passes. The CA witness MUST NOT block
+        // the GA rule (different witnesses; the CA witness only gates
+        // re-firing of the CA rule itself), so the GA fires AND the stale
+        // CA coordination is superseded.
+        //
+        // Regression we guard against: a future refactor making the GA
+        // rule check `Not(ContinueApproachAlreadyIssuedThisAttempt)`
+        // would silently break escalation — this test catches it because
+        // the CA witness is `true` here.
         val obs = RunwayObstruction(clearsAt = SimTime.ofMillis(210_000))
         val caCoord = OutstandingCoordination(
             aircraft = AC,
@@ -354,21 +362,31 @@ class ObstructionContinueApproachSpec {
                 emptyList(),
             ),
         )
-        // Don't pre-set the witness — we want both rules to be eligible
-        // by witness (Not(...) gates pass for both); the predicate split
-        // is what decides which fires.
         val previous = baseBeliefs(
             stage = TowerArrivalStage.AwaitApproach,
             obstruction = obs,
             coordinations = mapOf(AC to listOf(caCoord)),
-        )
+        ).let { b ->
+            val c = b.commitments.getValue(AC).copy(
+                // Post-CA state — the witness was set on a prior cycle by
+                // the applyCommittedOutputWitnesses pass.
+                continueApproachIssuedThisAttempt = true,
+                // GA witness still false — we want the GA rule to be
+                // eligible by its own witness gate.
+                obstructionGoAroundIssuedThisAttempt = false,
+            )
+            b.copy(commitments = b.commitments + (AC to c))
+        }
         val view = baseView(groundSpeed = Knots.unsafe(80))
 
         val result = controllerDecide(view, previous, worldWithRunway())
 
         val ga = result.outputs.filterIsInstance<ControllerOutput.Instruct>()
             .firstOrNull { it.instruction is GoAround }
-            ?: error("Expected GoAround when predicate flips false; got ${result.outputs}")
+            ?: error(
+                "Expected GoAround when predicate flips false; got ${result.outputs}; " +
+                    "skipped=${result.trace.skippedActions}",
+            )
         check(ga.trace.ruleId == "ARR-GO-AROUND-RUNWAY-OBSTRUCTED") {
             "Expected obstruction GA; got ${ga.trace.ruleId}"
         }
@@ -379,6 +397,13 @@ class ObstructionContinueApproachSpec {
             .filter { it.instruction is ContinueApproach }
         check(remaining.isEmpty()) {
             "Stale ContinueApproach coordination must be superseded by GoAround; got $remaining"
+        }
+
+        // GA witness must be set on this cycle (committed-output path).
+        val updated = result.updatedBeliefs.commitments.getValue(AC)
+        check(updated.obstructionGoAroundIssuedThisAttempt) {
+            "GA witness must be set after committed-output escalation; " +
+                "got ${updated.obstructionGoAroundIssuedThisAttempt}"
         }
     }
 
@@ -565,6 +590,94 @@ class ObstructionContinueApproachSpec {
     }
 
     // ── Pin 12: pre-existing ARR-CONTINUE rule UNCHANGED ─────────────────
+
+    @Test
+    fun `existing ARR-CONTINUE rule still fires for non-obstruction trigger (positive case)`() {
+        // Direct guard-level pin (codex round-2 strengthening): exercise the
+        // existing `ARR-CONTINUE` rule's guard predicate against a
+        // non-obstruction fixture and assert it would fire. We bypass the
+        // full `controllerDecide` pipeline (which would also pick up
+        // `ARR-GO-AROUND` / `ARR-LAND` competition in this contrived
+        // single-aircraft fixture) and evaluate the rule's guard directly,
+        // which is the smallest possible regression check that the
+        // existing rule remains eligible.
+        val rules = xyz.easiersaid.twr.controller.procedure.towerArrivalProcedure()
+            .stageRules[TowerArrivalStage.AwaitApproach]
+            ?: error("Could not locate AwaitApproach rules")
+        val arrContinue = rules.firstOrNull { it.id == "ARR-CONTINUE" }
+            ?: error("ARR-CONTINUE rule not present in AwaitApproach stageRules")
+        val arrContinueObstruction = rules.firstOrNull {
+            it.id == "ARR-CONTINUE-APPROACH-OBSTRUCTION"
+        } ?: error("ARR-CONTINUE-APPROACH-OBSTRUCTION rule not present")
+
+        // Fixture: no obstruction, runway not granted to this aircraft,
+        // runway physically clear (default). The existing ARR-CONTINUE's
+        // `Not(RunwayAccessGranted)` arm should pass.
+        val commitment = Commitment(
+            aircraft = AC,
+            kind = CommitmentKind.TOWER_ARRIVAL,
+            stage = TowerArrivalStage.AwaitApproach,
+            runway = RWY,
+            formedAt = SimTime.ZERO,
+            contacted = true,
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            activeRunway = RWY,
+            commitments = mapOf(AC to commitment),
+            // NO runwayObstructions, NO runwayDuty → Not(RunwayAccessGranted)
+            // for AC.
+        )
+        val ac = AircraftObservation.fromTestPoint(
+            point = PointId("FINAL"),
+            worldIndex = TEST_INDEX,
+            id = AC,
+            callsign = Callsign("OEABC"),
+            altitude = Level.AltitudeFeet.unsafe(800),
+            groundSpeed = Knots.unsafe(80),
+            onGround = false,
+        )
+        val view = ControllerView(
+            time = SimTime.ofMillis(10_000),
+            controllerId = ControllerId("LOWG_TWR"),
+            role = RoleName.TOWER,
+            aerodromeId = ADRM,
+            responsibilities = setOf(AC),
+            aircraft = mapOf(AC to ac),
+            runways = mapOf(RWY to RunwayObservation(RWY, RunwayStatus.CLEAR, emptySet())),
+            activeClearances = emptyMap(),
+            receivedMessages = emptyList(),
+            weather = null,
+            worldIndex = TEST_INDEX,
+            flightStripIntents = mapOf(AC to AircraftIntent.Arriving),
+        )
+        val ctx = xyz.easiersaid.twr.controller.bdi.OperatorContext(
+            view = view,
+            beliefs = beliefs,
+            events = emptyList(),
+            world = worldWithRunway(),
+        )
+
+        // Pin: existing rule's guard passes for this aircraft / context.
+        check(arrContinue.guard.evaluate(ac, commitment, ctx)) {
+            "Existing ARR-CONTINUE rule's guard must pass for non-obstruction trigger " +
+                "(Not(RunwayAccessGranted) arm). Regression: fn-13.1 narrowing must not affect " +
+                "this rule's eligibility."
+        }
+        // Pin: new rule's guard FAILS (no obstruction).
+        check(!arrContinueObstruction.guard.evaluate(ac, commitment, ctx)) {
+            "New ARR-CONTINUE-APPROACH-OBSTRUCTION must NOT fire without obstruction in beliefs."
+        }
+        // Pin: existing action emits a ContinueApproach whose reason is
+        // NOT RUNWAY_OBSTRUCTED (it comes from `inferContinueApproachReason`,
+        // which returns RUNWAY_ACCESS_PENDING for this fixture).
+        val resolved = arrContinue.action!!.resolve(ac, commitment, ctx).getOrNull()
+            ?: error("Existing ARR-CONTINUE action must resolve for non-obstruction trigger")
+        val instr = resolved.instruction as ContinueApproach
+        check(instr.reason != ContinueApproachReason.RUNWAY_OBSTRUCTED) {
+            "Existing ARR-CONTINUE must NOT set RUNWAY_OBSTRUCTED reason " +
+                "(that's only for the new obstruction-specific action); got ${instr.reason}"
+        }
+    }
 
     @Test
     fun `new rule does NOT fire when no runway obstruction is declared`() {
