@@ -297,6 +297,115 @@ class ObstructionGoAroundSpec {
     }
 
     @Test
+    fun `commitment-replacement re-arm — fresh commitment defaults witness to false`() {
+        // Per R7-no-refire acceptance: the witness re-arms on commitment
+        // replacement (the fresh `Commitment(...)` built by `createCommitment`
+        // takes the default `false`). Pin the default at the type level —
+        // a regression that defaulted the witness to `true` would silently
+        // suppress every fresh-circuit obstruction GA.
+        val fresh = Commitment(
+            aircraft = AC,
+            kind = CommitmentKind.TOWER_ARRIVAL,
+            stage = TowerArrivalStage.AwaitDownwind,
+            runway = RWY,
+            formedAt = SimTime.ZERO,
+            contacted = true,
+        )
+        check(!fresh.obstructionGoAroundIssuedThisAttempt) {
+            "Commitment.obstructionGoAroundIssuedThisAttempt must default to false on fresh commitment"
+        }
+    }
+
+    @Test
+    fun `stale ClearedToLand readback after obstruction GA does not advance commitment back to AwaitLandedObserved`() {
+        // Per R7-supersession: a pending `ClearedToLand` coordination MUST
+        // be dropped from the ledger when the obstruction GA fires, so a
+        // late-arriving readback finds no matching coord and is silently
+        // dropped (not used to advance the commitment via
+        // `readbackAdvancesToStage`).
+        //
+        // This row exercises the post-GA state: the prior controllerDecide
+        // call has dropped the ClearedToLand coordination via supersession;
+        // a fresh cycle delivers a stale readback. The expected outcome is
+        // that `processReadback` finds no matching coord and emits no
+        // stage advancement.
+        val obs = RunwayObstruction(clearsAt = SimTime.ofSeconds(120))
+        // Post-GA state: AwaitDownwind, witness set, NO active landing
+        // coord (it was superseded by the prior cycle's GA). Late readback
+        // arrives.
+        val previous = baseBeliefs(
+            stage = TowerArrivalStage.AwaitDownwind,
+            obstruction = obs,
+        ).let { b ->
+            val c = b.commitments.getValue(AC).copy(
+                obstructionGoAroundIssuedThisAttempt = true,
+            )
+            b.copy(commitments = b.commitments + (AC to c))
+        }
+        val view = baseView(
+            receivedMessages = listOf(
+                ReceivedMessage.Clear(
+                    aircraft = AC,
+                    transmission = xyz.easiersaid.twr.protocol.Readback(
+                        elements = listOf(
+                            xyz.easiersaid.twr.protocol.SimpleElement(
+                                xyz.easiersaid.twr.protocol.ClearedToLandReadback(runway = RWY),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        val result = controllerDecide(view, previous, worldWithRunway())
+
+        // Stage MUST NOT regress to AwaitLandedObserved via the stale
+        // readback's `readbackAdvancesToStage`. (Forward stage advancement
+        // by other rules — e.g. observation-driven `ARR-DOWNWIND-ACK`
+        // moving `AwaitDownwind → AwaitApproach` based on the aircraft's
+        // geometry — is allowed; the failure mode this row guards against
+        // is the readback completing a coord that no longer exists in the
+        // ledger and pushing the commitment back into the landing-issued
+        // shape.)
+        val stage = result.updatedBeliefs.commitments.getValue(AC).stage
+        check(stage != TowerArrivalStage.AwaitLandedObserved) {
+            "Stale ClearedToLand readback after obstruction GA must NOT advance commitment to AwaitLandedObserved; got $stage"
+        }
+    }
+
+    @Test
+    fun `post-GA — issuedClearances has no active landing-class clearance for this aircraft`() {
+        // R7-supersession active-clearance pin: after the GA fires, no
+        // active ClearedToLand / ClearedTouchAndGo clearance survives in
+        // BeliefState.issuedClearances for this aircraft. Pre-fix
+        // applySupersessionCleanup only touched coordinations, leaving a
+        // stale issued-clearance in the ledger.
+        val obs = RunwayObstruction(clearsAt = SimTime.ofSeconds(120))
+        // Seed a stale issued ClearedToLand on the same aircraft.
+        val landingClearance = ClearanceSummary(
+            id = xyz.easiersaid.twr.protocol.ClearanceId("CLR-1"),
+            aircraft = AC,
+            domain = xyz.easiersaid.twr.protocol.ClearanceDomain.RUNWAY,
+            status = xyz.easiersaid.twr.protocol.ClearanceStatus.ACTIVE,
+            instruction = ClearedToLand(target = AC, runway = RWY),
+            issuedAt = SimTime.ofMillis(5_000),
+        )
+        val previous = baseBeliefs(
+            stage = TowerArrivalStage.LandingClearanceIssued,
+            obstruction = obs,
+        ).copy(issuedClearances = mapOf(landingClearance.id to landingClearance))
+        val view = baseView()
+
+        val result = controllerDecide(view, previous, worldWithRunway())
+
+        val activeLanding = result.updatedBeliefs.issuedClearances.values
+            .filter { it.aircraft == AC && (it.instruction is ClearedToLand || it.instruction is ClearedTouchAndGo) }
+        check(activeLanding.isEmpty()) {
+            "Post-GA: no active landing-class clearance must survive in issuedClearances; got $activeLanding"
+        }
+    }
+
+    @Test
     fun `obstruction-info companion DecisionTrace carries doctrine refs`() {
         val obs = RunwayObstruction(clearsAt = SimTime.ofSeconds(120))
         val previous = baseBeliefs(

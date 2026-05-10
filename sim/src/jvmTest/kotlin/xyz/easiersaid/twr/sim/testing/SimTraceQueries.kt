@@ -12,7 +12,9 @@ import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ResponsibilityState
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.controller.bdi.Stage
+import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.pilot.MissionStep
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.sim.SimEvent
 import xyz.easiersaid.twr.sim.SimState
 import xyz.easiersaid.twr.sim.Utterance
@@ -155,6 +157,29 @@ data class MissionStepTransition(val transition: Transition<Option<MissionStep>>
 /** Aircraft `positionPoint` transitions over the trace. */
 fun SimTrace.positionPointTransitions(aircraft: AircraftId): List<Transition<Option<PointId>>> =
     transitionsOf { st -> Option.fromNullable(st.aircraft[aircraft]?.positionPoint) }
+
+/**
+ * fn-12 (R3-observability): transitions of [BeliefState.runwayObstructions]
+ * for one [controller] / [runway] pair. The slice's transitions are the
+ * observability surface for `RunwayObstructionDetected` and
+ * `RunwayObstructionCleared` events:
+ *
+ *  - `from = None, to = Some(...)` corresponds to a `RunwayObstructionDetected`
+ *    event landing in the controller's belief on this cycle.
+ *  - `from = Some(...), to = None` corresponds to a `RunwayObstructionCleared`
+ *    event landing.
+ *
+ * The cursor `after.time` gives the controller's decision-cycle time when
+ * the belief slice transitioned — fn-12.3's Layer 1 pin shape:
+ * `RunwayObstructionDetected.decisionTime < GoAround_decision.time`.
+ *
+ * Returns transitions in time order. Empty when the slice is constant.
+ */
+fun SimTrace.runwayObstructionTransitions(
+    controller: ControllerId,
+    runway: RunwayId,
+): List<Transition<Option<RunwayObstruction>>> =
+    transitionsOf { st -> Option.fromNullable(st.beliefs[controller]?.runwayObstructions?.get(runway)) }
 
 // ── Doctrine predicates over ResponsibilityState transitions ─────────
 
