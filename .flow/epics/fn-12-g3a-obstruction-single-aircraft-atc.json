@@ -1,0 +1,22 @@
+{
+  "branch_name": "fn-12-g3a-obstruction-single-aircraft-atc",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-10T11:53:43.593986Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [
+    "fn-5-g2-cross-aerodrome-vfr-transit-lowg-ljmb",
+    "fn-8-g1-two-aircraft-vfr-circuits-at-lowg",
+    "fn-11-g3a-single-aircraft-pilot-trained-vfr"
+  ],
+  "id": "fn-12-g3a-obstruction-single-aircraft-atc",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-12-g3a-obstruction-single-aircraft-atc.md",
+  "status": "done",
+  "title": "G3a-obstruction \u2014 single-aircraft ATC-mandated VFR go-around on world-modeled runway obstruction",
+  "updated_at": "2026-05-10T19:45:23.195778Z"
+}

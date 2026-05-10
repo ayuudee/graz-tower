@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-10T11:58:58.113122Z",
+  "depends_on": [
+    "fn-12-g3a-obstruction-single-aircraft-atc.1"
+  ],
+  "epic": "fn-12-g3a-obstruction-single-aircraft-atc",
+  "id": "fn-12-g3a-obstruction-single-aircraft-atc.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-12-g3a-obstruction-single-aircraft-atc.2.md",
+  "status": "todo",
+  "title": "Pilot-side reactive ATC-GA in Circuit-mode: PilotEvent.AtcGoAroundOnFinal + applyAtcInitiatedGoAround Tick A + pilot-side unit tests",
+  "updated_at": "2026-05-10T12:39:40.068563Z"
+}

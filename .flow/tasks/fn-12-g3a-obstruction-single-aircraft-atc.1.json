@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-10T11:58:51.063833Z",
+  "depends_on": [],
+  "epic": "fn-12-g3a-obstruction-single-aircraft-atc",
+  "id": "fn-12-g3a-obstruction-single-aircraft-atc.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-12-g3a-obstruction-single-aircraft-atc.1.md",
+  "status": "todo",
+  "title": "Foundation: typed RunwayObstruction surface + sim-emitted Detected/Cleared events + controller fold + reactive rule + companion transmission",
+  "updated_at": "2026-05-10T12:39:39.865569Z"
+}
