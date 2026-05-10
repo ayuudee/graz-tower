@@ -98,11 +98,29 @@ data class StateTraceResult(
  * over 30 sim minutes; the trace fits in memory comfortably. The
  * [SimTrace] constructor enforces a 100k-entry cap as a defensive
  * fail-loud against tight loops.
+ *
+ * fn-12.3 (R10 — world-only test trigger): optional [onAfterEvent] hook
+ * runs **after each step** and may return a transformed [SimState]. The
+ * snapshot persisted in the trace is the post-hook state, so observers
+ * see the world as the controllers will on the next cycle. Default is
+ * identity (no mutation).
+ *
+ * The hook is the canonical injection point for **world-only**
+ * authorship triggers (per `feedback_world_only_test_triggers.md`) —
+ * e.g. setting `runway.obstruction = Some(RunwayObstruction(...))` when
+ * an aircraft reaches a target phase. The hook MUST NOT inject
+ * `ControllerEvent`s or mutate `BeliefState` directly; the sim's
+ * per-cycle world-diff producer handles event derivation from world
+ * state, preserving the firewall contract. Hook implementations should
+ * be idempotent or guarded (one-shot authorship) so they do not refresh
+ * fields that violate immutability invariants (e.g.
+ * [xyz.easiersaid.twr.core.world.RunwayObstruction]'s `clearsAt`).
  */
 fun runUntilWithStateTrace(
     initialState: SimState,
     initialEvents: List<SimEvent>,
     untilTime: SimTime,
+    onAfterEvent: (SimEvent, SimState) -> SimState = { _, st -> st },
 ): StateTraceResult {
     var state = initialState
     val (stamped, stampedEvents) = state.emit(initialEvents)
@@ -115,8 +133,9 @@ fun runUntilWithStateTrace(
     while (nextEvent != null && nextEvent.time <= untilTime) {
         eventTrace += nextEvent
         val (next, emitted) = step(state, nextEvent)
-        statesAfterEvent.add(nextEvent to next)
-        state = next
+        val postHook = onAfterEvent(nextEvent, next)
+        statesAfterEvent.add(nextEvent to postHook)
+        state = postHook
         emitted.forEach(queue::enqueue)
         nextEvent = queue.dequeueMin()
     }

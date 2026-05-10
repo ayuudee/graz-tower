@@ -57,6 +57,23 @@ The **controller layer** never sees audio, never blocks on an LLM, never reasons
 
 ## 2. The Unified Event Taxonomy
 
+The controller's typed `ControllerEvent` channel admits **two source classes**:
+1. **Radio-derived events** — derived from a `PilotUtterance` after physics +
+   interpretation resolves it. Most variants (`InitialContactReceived`,
+   `ReadbackReceived`, `PositionReported`, `GoAroundDetected`, etc.) live here.
+2. **World-state-derived events** — emitted directly by the sim's per-cycle
+   world-diff producer when a world-model field changes value. fn-12 added
+   the first two leaves of this class: `RunwayObstructionDetected` (on a
+   runway's `obstruction` field transitioning `None → Some(...)`) and
+   `RunwayObstructionCleared` (on `Some → None` via the expiry pass). They
+   carry no `AircraftId` payload — the producer is per-controller-scoped, so
+   each controller sees only events for runways within its `aerodromeId`.
+
+Both source classes are typed, both are pure, both flow through the same
+`ControllerView.worldEvents` and `BeliefState` fold pipeline. The firewall
+contract widens to "the controller receives **typed events from world or
+radio**, never raw audio, never blocking calls".
+
 Collapsing both layers' outputs by the controller's response behaviour yields five cases:
 
 | Case | Cause | Controller response |

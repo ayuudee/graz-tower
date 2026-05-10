@@ -28,12 +28,18 @@ import xyz.easiersaid.twr.protocol.Wind
  * **Per-fixture provenance** (G0 / G1 / G2 anchors):
  *  - [LOWG] — single-aircraft circuit training. Stand point
  *    `LOWG_STAND_1_POINT` from the LOWG world-candidate authoring.
- *    Drives G0 ([xyz.easiersaid.twr.sim.LowgGoldenTest]) and G3a
+ *    Drives G0 ([xyz.easiersaid.twr.sim.LowgGoldenTest]), G3a
  *    ([xyz.easiersaid.twr.sim.G3aPilotTrainedGoAroundTest] —
  *    single-aircraft trained go-around as circuit-training outcome;
  *    same fixture, distinguishing surface is the goal authorship
  *    `HighLevelGoal.CircuitTraining(outcomes = [GoAround, FullStop])`
- *    per `feedback_world_only_test_triggers.md`).
+ *    per `feedback_world_only_test_triggers.md`), and G3a-obstruction
+ *    ([xyz.easiersaid.twr.sim.G3aRunwayObstructionTest] — single-
+ *    aircraft ATC-instructed reactive go-around on a world-authored
+ *    runway obstruction; same fixture, distinguishing surface is the
+ *    one-shot `runway.obstruction = RunwayObstruction(clearsAt = ...)`
+ *    mutation via `runUntilWithStateTrace`'s `onAfterEvent` hook per
+ *    `feedback_world_only_test_triggers.md`).
  *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
  *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
  *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG

@@ -38,6 +38,7 @@ Contains everything about one airport: runways, taxiways, stands, aprons, circui
 
 Key relationships:
 - Runways have thresholds (must be first point of path) and exits (connecting to taxiways)
+- Runways optionally carry an `obstruction: RunwayObstruction?` field (fn-12) — a typed declaration that the runway is unavailable for landing/take-off until a specified `clearsAt: SimTime` deadline, consumed by the controller's reactive obstruction-GA rule and the pre-clearance landing gate. The `clearsAt` value is immutable for an obstruction's lifetime (`None → Some → None` only; `Some(old) → Some(new)` is a programming error caught by the sim's world-diff producer)
 - Taxiways have holding points (associated with specific runways)
 - Circuit procedures form closed loops with sequential legs
 - SIDs anchor at runway threshold; approaches end at runway threshold

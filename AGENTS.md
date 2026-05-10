@@ -131,9 +131,9 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G1, G1 minimal, G2, G3a)
+## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction)
 
-Five integration tests serve as the runtime golden anchors for end-to-end
+Six integration tests serve as the runtime golden anchors for end-to-end
 ATC flow. All follow the same shape: a single `@Test` method, a fixture-
 driven load, a deterministic event run, the run is the test, the assertions
 are what the run produced.
@@ -217,7 +217,62 @@ are what the run produced.
   Doctrinally faithful to CAP 413 §4.66/§4.67/§4.68 and ICAO Doc
   4444 §12.3.4.18.
 
-All five tests follow the no-corners-cut rule: a failing golden test is
+- **G3a-obstruction — `G3aRunwayObstructionTest` (`sim/jvmTest`)**:
+  single-aerodrome, single-aircraft VFR ATC-instructed go-around
+  triggered by a **world-authored runway obstruction**. C172 OE-ABC at
+  LOWG flies a single planned circuit
+  (`HighLevelGoal.CircuitTraining(outcomes = listOf(FullStop))`);
+  the recovery circuit is provided by `handleGoAround`'s mission-tree
+  rewrite. The test authors `runway.obstruction =
+  RunwayObstruction(clearsAt = now + 60.seconds)` one-shot via
+  `runUntilWithStateTrace`'s `onAfterEvent` hook when the aircraft is
+  on `phase=Final` with a post-clearance commitment stage
+  (`LandingClearanceIssued` or `AwaitLandedObserved`). The sim's
+  per-cycle world-diff producer derives a
+  `ControllerEvent.RunwayObstructionDetected`, the tower's belief folds
+  it into `BeliefState.runwayObstructions`, the reactive
+  `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule fires with `Immediate`
+  advancement back to `AwaitDownwind`, the controller transmits
+  `GoAround` + the mandatory `RunwayObstructionInformation` companion
+  (reason-on-radio per ICAO §7.4.1.4.1(c)), and the pilot's
+  ATC-initiated GA recognition + Tick A / Tick B (fn-12.2) executes
+  the recovery. Pins per fn-11.2's three-layer pattern extended with
+  separated decision-cycle / transmission-start timestamps:
+  **decision-cycle causal partial-order** (`Detected.decisionTime <=
+  GoAround.decisionTime == Stage_regression(<from-stage> →
+  AwaitDownwind).time`; `Cleared.decisionTime <
+  ClearedToLand(recovery).decisionTime`),
+  **radio-transmission partial-order**
+  (`ClearedToLand(c1) ≺ GoAround.txStart < RunwayObstructionInformation
+  .txStart < Report(GoingAround).txStart < ClearedToLand(recovery) <
+  Report(RunwayVacated)` — strict `<` between GoAround and companion
+  because `applyControllerOutputs` serializes outputs on the same
+  frequency), **sticky-witness regression via `Immediate` advancement**
+  (NOT via `GA-POST-CLEAR` interrupt — by the time `Report(GoingAround)`
+  arrives, the stage is already `AwaitDownwind`; exactly one
+  `<from-stage> → AwaitDownwind` transition with `<from-stage> ∈
+  {LandingClearanceIssued, AwaitLandedObserved}`; post-regression
+  `touchedDownDuringCommitment` and `observedReportsDuringCommitment`
+  reset; `obstructionGoAroundIssuedThisAttempt` no-refire witness set),
+  **kinematic non-event** (no `LandingRoll` or `Vacating` phase before
+  `Report(GoingAround)`), **per-controller event scoping** (exactly
+  one `None → Some(...)` and one `Some → None` transition in the
+  TOWER's `runwayObstructions[16C]` belief slice per fn-12 Decision
+  #3), **companion transmission** (`RunwayObstructionInformation`
+  emitted in same controller-output cycle as `GoAround` with matching
+  `runway` + `clearsAt`), R7 vacate-coordination closure after the
+  recovery landing, time band ±15% of the observed wall (~1399 s =
+  ~23.3 sim minutes). World-only test trigger per
+  `feedback_world_only_test_triggers.md` — no
+  `ControllerEvent.RunwayObstructionDetected` injection, no
+  `BeliefState` mutation. Doctrinally faithful to ICAO Doc 4444
+  §7.4.1.4.1 (runway obstruction GA mandate) + §8.9.6.1.8 (reason on
+  radio) + CAP 413 §4.65 (missed-approach phraseology). Closes the
+  third reactive-GA path: alongside G3a-trained (pilot-trained) and
+  the existing self-initiated GA (fn-10 era), G3a-obstruction
+  exercises the ATC-instructed reactive path.
+
+All six tests follow the no-corners-cut rule: a failing golden test is
 documented in its KDoc with the specific blocker and stays loudly
 failing. No `@Disabled`, skip-list, or exclusion set.
 

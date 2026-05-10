@@ -116,3 +116,51 @@ The "Any mission type that supports go-around must have a go-around
 integration test before merge" gap is closed: `CircuitTraining` with the
 `GoAround` outcome is exercised end-to-end. Future mission types that
 support go-around inherit the same requirement.
+
+**fn-12 (2026-05-10)** extends the closure to the **third reactive-GA
+path** — ATC-instructed go-around triggered by a world-state runway
+obstruction. The epic landed:
+
+- **fn-12.1** — typed `RunwayObstruction(clearsAt: SimTime)` rich-domain
+  field on `Runway.obstruction`; per-cycle world expiry pass + per-
+  controller world-diff producer emitting
+  `ControllerEvent.RunwayObstructionDetected` / `Cleared` (the first
+  world-state-derived event source class — see
+  `2026-04-16-transmission-reception-architecture.md` § Unified Event
+  Taxonomy); `BeliefState.runwayObstructions` fold; `RunwayObstructed`
+  guard + `Not(RunwayObstructed)` pre-clearance gate on
+  `LandingConditions`; reactive `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule
+  across the three on-final stages with `Immediate` advancement; companion
+  `RunwayObstructionInformation` transmission (reason on radio per ICAO
+  §7.4.1.4.1(c) + §8.9.6.1.8 — mandatory).
+- **fn-12.2** — pilot-side ATC-initiated reactive GA in Circuit-mode via
+  `PilotMission.pendingAtcGoAroundFrom: Option<MissionStep>` flag set by
+  `handleGoAround` BEFORE its tree rewrite and consumed by `pilotDecide`'s
+  `recognizeAtcInitiatedGoAround` + `applyAtcInitiatedGoAround` arm
+  (intent-only Tick A; Tick B reuses fn-11.1's `planCircuitTrainedGoAround`
+  — zero new route code).
+- **fn-12.3** — sim-level golden test
+  `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionTest.kt`.
+  World-only test trigger via `runUntilWithStateTrace`'s `onAfterEvent`
+  hook (one-shot authorship guarded against the `clearsAt` immutability
+  invariant). Three-layer pin pattern extended with separated decision-
+  cycle / transmission-start timestamps (`GoAround.txStart <
+  RunwayObstructionInformation.txStart` after radio serialization).
+
+The three reactive-GA paths are now triple-covered:
+1. **Self-initiated** — pilot decides to GA without instruction (fn-10
+   era; pilot-side `derivePilotEvent` → `applySelfInitiatedGoAround`).
+2. **Pilot-trained** — instructor authors `CircuitOutcome.GoAround` in
+   the mission goal; the mission compiler forks the tree statically;
+   pilot follows the plan autonomously (G3a / fn-11).
+3. **ATC-instructed-obstruction** — controller's reactive
+   `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule fires off a world-state-derived
+   `RunwayObstructionDetected` event; pilot's `pendingAtcGoAroundFrom`
+   flag-driven recognition arm consumes the resulting
+   `Instruction.GoAround` and produces a circuit-mode reactive GA
+   (G3a-obstruction / fn-12).
+
+Each path has dedicated unit-test coverage at the controller / pilot
+level **and** a sim-level golden test exercising the composition. The
+"reversal completeness" obligation is now load-bearing across the full
+reactive-GA surface.

@@ -63,8 +63,12 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  * sibling (instructor-authored `CircuitOutcome.GoAround` outcome on
  * circuit 1, full-stop on circuit 2 — closes the go-around integration-
  * test gap left by `wiki/design-decisions/2026-04-22-root-cause-go-
- * around-and-totality.md`). G2 is the single-aircraft **cross-aerodrome**
- * anchor.
+ * around-and-totality.md`); G3a-obstruction
+ * ([G3aRunwayObstructionTest]) is the single-aerodrome ATC-instructed-
+ * GA sibling (reactive go-around on a world-authored runway
+ * obstruction — `Runway.obstruction = RunwayObstruction(...)` one-shot
+ * via `runUntilWithStateTrace`'s `onAfterEvent` hook). G2 is the single-
+ * aircraft **cross-aerodrome** anchor.
  *
  * **Architectural anchors (R7 / R8):**
  * - The pilot reads only chart-equivalent data from `world.aerodromes[…]`;

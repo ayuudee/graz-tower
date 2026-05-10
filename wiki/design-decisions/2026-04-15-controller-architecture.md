@@ -151,7 +151,7 @@ AFIS must be structurally excluded from issuing `AtcInstruction`. It emits only 
 Replace the TWR1 "runway duty queue" with a dynamically interleaved priority model:
 - Runway state is a first-class concept (CLEAR, OCCUPIED_DEPARTURE, OCCUPIED_LANDING, OCCUPIED_CROSSING)
 - Sequence is a priority-ordered list of commitments, reorderable based on: time to threshold, departure performance, Land After viability, wake turbulence categories
-- The entity-referenced world model supports this: `Runway.path`, `threshold`, `exits`, `declaredDistances` give the information needed
+- The entity-referenced world model supports this: `Runway.path`, `threshold`, `exits`, `declaredDistances`, and `obstruction` (fn-12: optional `RunwayObstruction(clearsAt: SimTime)` declaration consumed by the controller's reactive `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule and the pre-clearance `Not(RunwayObstructed)` landing gate) give the information needed
 
 ### Workload model replaces one-per-tick
 

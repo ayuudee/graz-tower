@@ -65,6 +65,14 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    multi-aircraft commitment-stage closure pin.
  *  - G2 ([G2CrossAerodromeVfrTest]) — single-aircraft cross-aerodrome
  *    VFR transit (LOWG → LJMB).
+ *  - G3a-obstruction ([G3aRunwayObstructionTest]) — single-aerodrome,
+ *    single-aircraft **ATC-instructed reactive** go-around triggered
+ *    by a world-authored runway obstruction. The reactive-GA sibling
+ *    to this pilot-trained variant: the controller initiates the GA
+ *    in response to a world-state change (`runway.obstruction`)
+ *    rather than the pilot following a planned GA from the mission
+ *    tree. Closes the third reactive-GA path (self-initiated +
+ *    pilot-trained + ATC-instructed-obstruction).
  *
  * **What G3a distinctively pins:**
  *  - **Trained-GA fork at compile time:** the `outcomes` list authors

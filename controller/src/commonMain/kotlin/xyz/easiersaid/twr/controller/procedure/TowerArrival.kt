@@ -84,6 +84,33 @@ import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 /**
+ * Tower arrival procedure — the controller-side arrival flow's rule pipeline.
+ *
+ * **Two doctrinally distinct GA-guard predicates** (fn-12):
+ *  - `Not(RunwayPhysicallyClear)` — used by the generic `ARR-GO-AROUND` /
+ *    `ARR-GO-AROUND-CLEARANCE-ISSUED` rules. Reads
+ *    `BeliefState.runwayBeliefs[runway].status` for **physical occupancy** by
+ *    another aircraft (landing rolls in progress, lined-up departure, etc.).
+ *    Trigger source: aircraft-position observation + the runway-duty state.
+ *  - `RunwayObstructed` — used by the `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule
+ *    (and as `Not(RunwayObstructed)` on `LandingConditions`). Reads
+ *    `BeliefState.runwayObstructions` for a **declared obstruction**
+ *    (vehicle, debris, wildlife, surface contamination — modality-agnostic in
+ *    the v1 model). Trigger source: world-state-derived events
+ *    (`RunwayObstructionDetected` / `Cleared`) from the sim's per-cycle
+ *    world-diff producer; see
+ *    `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
+ *    § Unified Event Taxonomy on the two `ControllerEvent` source classes.
+ *
+ * The two predicates may both be true simultaneously (e.g. an aircraft on
+ * the runway AND a declared debris obstruction). The obstruction-specific
+ * rule wins by priority placement (per fn-12 R7) so the companion
+ * `RunwayObstructionInformation` transmission is emitted (reason on radio
+ * per ICAO §7.4.1.4.1(c) — mandatory). When only physical occupancy holds,
+ * the generic GA rule fires without the obstruction-info companion.
+ */
+
+/**
  * Maximum distance from threshold at which landing clearance may be issued.
  *
  * VFR circuit finals typically begin 1.5–2.5 nm out. A 5000m (~2.7 nm) outer gate

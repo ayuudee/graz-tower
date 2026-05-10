@@ -66,6 +66,10 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *      (instructor-authored `CircuitOutcome.GoAround` on circuit 1 — the
  *      closure pattern G1-minimal pioneered for vacate-coordinations is
  *      reused at the single-aircraft scale by G3a's R7 pin).
+ * @see G3aRunwayObstructionTest the single-aerodrome ATC-instructed-GA
+ *      sibling (reactive go-around on a world-authored runway obstruction;
+ *      same R7 vacate-coordination closure invariant on the recovery
+ *      landing).
  */
 class G1TwoAircraftMinimalSpec {
 

@@ -63,6 +63,12 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      `CircuitOutcome.GoAround` on circuit 1 followed by full-stop on
  *      circuit 2; closes the go-around integration-test gap left open by
  *      `wiki/design-decisions/2026-04-22-root-cause-go-around-and-totality.md`).
+ * @see G3aRunwayObstructionTest the single-aerodrome ATC-instructed-GA
+ *      sibling (reactive go-around triggered by a world-authored runway
+ *      obstruction — `Runway.obstruction = RunwayObstruction(...)` one-shot
+ *      via `runUntilWithStateTrace`'s `onAfterEvent` hook). Closes the
+ *      third reactive-GA path (self-initiated + pilot-trained + ATC-
+ *      instructed-obstruction).
  */
 class LowgGoldenTest {
 

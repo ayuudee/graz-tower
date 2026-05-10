@@ -115,6 +115,10 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *    single-aircraft pilot-trained go-around as circuit-training outcome.
  *    G1's vacate-coordination closure pattern (per fn-8.3 acceptance #5)
  *    is reused at the single-aircraft scale by G3a's R7 pin.
+ *  - G3a-obstruction — [G3aRunwayObstructionTest] — single-aerodrome,
+ *    single-aircraft ATC-instructed reactive go-around on a world-
+ *    authored runway obstruction. Reuses the same R7 vacate-
+ *    coordination closure invariant at the recovery-circuit landing.
  *
  * **What G1 distinctively pins (post fn-8.3 Phase 4 re-baseline):**
  *  - **Per-aircraft outcomes**: both aircraft complete their missions and
