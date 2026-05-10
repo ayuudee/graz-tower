@@ -5,6 +5,7 @@ import kotlin.test.Test
 import kotlin.test.fail
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.controller.bdi.OBSTRUCTION_CLEAR_SAFETY_MARGIN_MS
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.pilot.AircraftState
@@ -54,12 +55,19 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  * CAP 413 §4.55-4.56 + ICAO Doc 4444 §12.3.4.16(d).
  *
  * Single AI aircraft at LOWG flies a single planned circuit
- * (`HighLevelGoal.CircuitTraining(outcomes = [FullStop])`). After the
- * pilot reports Downwind and the tower's commitment advances to
- * `AwaitApproach` — but BEFORE any landing clearance is issued — the
- * test's per-step world hook authors `runway.obstruction =
- * RunwayObstruction(clearsAt = now + 5.seconds)` one-shot, sized so
- * that `(5s + 10s safety margin) ≤ ETA-to-threshold`. The sim's
+ * (`HighLevelGoal.CircuitTraining(outcomes = [FullStop])`). The test's
+ * per-step world hook authors `runway.obstruction =
+ * RunwayObstruction(clearsAt = now + 5.seconds)` one-shot at the FIRST
+ * post-event state where ALL preconditions hold simultaneously,
+ * mirroring the CA rule's guard predicate exactly:
+ * (a) commitment stage is `AwaitApproach` (post-Downwind ack, pre-
+ * `ClearedToLand`); (b) no `ClearedToLand` coordination exists for the
+ * aircraft; (c) the aircraft's `positionPoint` is on a FINAL-labelled
+ * leg (`worldIndex.circuitLegsByPoint[positionPoint].contains(FINAL)`)
+ * OR distance-to-threshold ≤ 5000m (mirrors the rule's geometric arm);
+ * (d) `speedMps > 0` (mirrors `groundSpeed` precondition of
+ * `ObstructionClearsInTime`); (e) `(5s + 10s safety margin) ≤
+ * distance-to-threshold / groundSpeed` (predicate-eligibility). The sim's
  * per-cycle world-diff producer derives a
  * `ControllerEvent.RunwayObstructionDetected`; the tower's belief folds
  * it into `BeliefState.runwayObstructions`; the `ObstructionClearsInTime`
@@ -225,9 +233,10 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *   - lower bound (×0.85): 761_600 ms (~12.7 min)
  *   - upper bound (×1.15): 1_030_400 ms (~17.2 min)
  *
- * Rationale: single-aircraft, single planned circuit (no recovery
- * circuit — CA does NOT regress the commitment; aircraft continues
- * approach and lands normally after obstruction clears). The wall is
+ * Rationale: single-aircraft, single planned circuit with a brief 5-
+ * second obstruction window at AwaitApproach. CA does NOT regress the
+ * commitment; the aircraft continues approach and lands normally on
+ * the same approach after the obstruction clears. The wall is
  * materially SHORTER than G3a-obstruction's GA test (~1399 s) because
  * the CA path does NOT add a recovery circuit. It is comparable to
  * G0's `LowgGoldenTest` plus a brief CA delay + radio serialization on
@@ -355,79 +364,86 @@ class G3aRunwayObstructionContinueApproachTest {
         // ── One-shot world-state authorship via `onAfterEvent` ──────────────
         //
         // The test authors `runway.obstruction = RunwayObstruction(clearsAt
-        // = now + 20.seconds)` AT the moment the tower's commitment for
-        // the aircraft has just advanced to `AwaitApproach` (post-Downwind
-        // ack) AND the aircraft is airborne. The pilot is typically still
-        // mid-pattern (Base or transitioning) at that instant; the
-        // obstruction sits in beliefs ahead of the aircraft reaching the
-        // FINAL leg geometrically.
+        // = now + 5.seconds)` at the strict pre-clearance / final-geometry
+        // window defined in the task spec's R9 acceptance text. Authorship
+        // fires at the FIRST post-event state where ALL of the following
+        // hold simultaneously, mirroring the CA rule's guard predicate
+        // shape so the very next controller cycle sees a satisfied guard:
         //
-        // **Why stage-only (not phase=Final)**: the on-final post-clearance
-        // window collapses immediately. Looking at the canonical G0 trace,
-        // `ARR-LAND` fires on the FIRST controller cycle where
-        // `OnCircuitLeg(FINAL)` lights up AND aircraft is within 5000m —
-        // typically the same controller cycle as the Downwind ack
-        // post-state. If we waited for `phase=Final`, the AwaitApproach
-        // window would already have collapsed past `LandingClearanceIssued`.
-        // Authoring at the `AwaitApproach` entry instead lets the
-        // obstruction's diff fold into beliefs BEFORE the cycle that
-        // would otherwise fire `ARR-LAND`; once `RunwayObstructed=true`
-        // is in beliefs, the `Not(RunwayObstructed)` gate on
-        // `LandingConditions` blocks `ARR-LAND`, and the CA rule wins
-        // when the geometric arm lights up.
-        //
-        // **Predicate eligibility check**: `(clearsAt - now) + 10s margin
-        // ≤ ETA-to-threshold`. At the cycle the CA fires (aircraft on
-        // FINAL leg geometrically, ~3-5 km out, groundSpeed ~70 kt =
-        // 36 m/s), ETA-to-threshold ≈ 80-140 s. The 30 s budget
-        // (`20 s + 10 s margin`) fits comfortably;
-        // `ObstructionClearsInTime` evaluates true; the CA rule wins
-        // arbitration over the obstruction GA variant (whose narrowed
-        // guard `Not(ObstructionClearsInTime)` fails).
+        //   (a) commitment stage is `AwaitApproach` — pins the rule's only
+        //       stage placement (Boundary #1: post-clearance variants
+        //       always escalate to GA).
+        //   (b) NO `ClearedToLand` coordination exists for the aircraft —
+        //       pins the pre-clearance constraint
+        //       (`T_obs < T_ClearedToLand`).
+        //   (c) `OnCircuitLeg(FINAL) == true` for the aircraft's current
+        //       `positionPoint` (i.e. `worldIndex.circuitLegsByPoint
+        //       [ac.positionPoint]` contains `LegName.FINAL`) OR the
+        //       Euclidean distance to runway threshold is ≤ 5000 m —
+        //       mirrors the CA rule's `AnyOf(OnApproach,
+        //       OnCircuitLeg(FINAL))` geometric arm. Authorship inside
+        //       this window ensures the rule's geometric guard is
+        //       satisfied at the next controller cycle.
+        //   (d) Aircraft has a positive `speedMps` — pins the
+        //       `groundSpeed` precondition of `ObstructionClearsInTime`
+        //       (the guard fails closed when `groundSpeed` is null /
+        //       non-positive).
+        //   (e) Predicate-eligibility check:
+        //       `(5 s + OBSTRUCTION_CLEAR_SAFETY_MARGIN_S(10 s)) ≤
+        //       distance-to-threshold / groundSpeed`. With a 5 s TTL,
+        //       the predicate holds when the aircraft is more than 15 s
+        //       of ETA from the threshold.
         //
         // **One-shot guard**: `var obstructionAuthored = false` ensures
         // `runway.obstruction` is set exactly once. Re-writing `Some →
         // Some(new clearsAt)` would refresh the `clearsAt` field and
-        // violate the immutability invariant (fn-12 epic Decision #4).
-        // The sim's world-diff producer `check(...)`s this invariant
-        // and throws an `IllegalStateException` on violation — defense-
-        // in-depth, but the hook guard is the first line of defense.
+        // violate the immutability invariant (fn-12 epic Decision #4);
+        // the sim's world-diff producer `check(...)`s this invariant and
+        // throws `IllegalStateException` on violation as defense-in-depth.
         //
-        // **20-second TTL** chosen so that (i) the obstruction persists
-        // long enough for the aircraft to reach the FINAL leg
-        // geometrically after AwaitApproach entry (Downwind → FINAL-leg-
-        // position is ~10-15 sim seconds at LOWG; controller cycle
-        // cadence may add a cycle), AND (ii) the predicate's positive
-        // window stays open at the CA decision cycle. The companion
-        // test `G3aRunwayObstructionTest` uses 60s on the post-clearance
-        // long-TTL GA branch.
+        // **5-second TTL** matches the task spec's R9 acceptance exactly.
+        // The companion `G3aRunwayObstructionTest` uses 60 s on the
+        // post-clearance long-TTL GA branch. The TTL is short enough to
+        // keep the predicate's positive eligibility window wide (the
+        // smaller the gap, the easier `(gap + 10 s) ≤ ETA` is to
+        // satisfy) and just barely long enough that the world-diff fold,
+        // the rule fire, and the expiry-then-ARR-LAND chain all occur
+        // before the aircraft reaches the threshold geometrically.
+        //
+        // **Fail-loud precondition validation**: at the END of the run,
+        // we explicitly assert the hook fired. If the predicate above
+        // never holds for any sim tick before the aircraft reaches a
+        // too-close-to-threshold point (i.e. the AwaitApproach +
+        // on-final-geometry window collapses), the test fails with a
+        // descriptive error pointing at the precondition mismatch — per
+        // the task spec's "FAIL LOUDLY (test setup error, not a
+        // behavioural failure)" rule.
         var obstructionAuthored = false
         val obstructionAuthoredAt = arrayOf<SimTime?>(null)
         val obstructionClearsAt = arrayOf<SimTime?>(null)
+        val authorshipDiagnostics = arrayOf<String?>(null)
         val onAfterEvent: (SimEvent, SimState) -> SimState = { _, st ->
             if (obstructionAuthored) {
                 st
-            } else if (!aircraftIsOnFinalWithAwaitApproach(st, aircraftId, tower.id)) {
-                st
             } else {
-                obstructionAuthored = true
-                // 20-second TTL: chosen so that (i) the obstruction persists
-                // long enough for the aircraft to reach the FINAL leg
-                // geometrically (post-Downwind to FINAL-leg-position ≈
-                // 10-15 sim seconds at LOWG; controller cycle cadence may
-                // add a cycle or two), AND (ii) at the moment the CA rule
-                // fires (FINAL-leg geometry + RunwayObstructed + stage
-                // = AwaitApproach), the `ObstructionClearsInTime`
-                // predicate evaluates true: at that cycle the aircraft
-                // is ~3-5 km out with ETA-to-threshold > 60 s, well
-                // above the (clearsAt - now) + 10 s margin budget. The
-                // shorter the TTL the tighter the predicate's positive
-                // window, but it must outlast the Downwind → FINAL-leg
-                // gap. 20 s is the empirically-validated middle ground.
-                val clearsAt = st.now + SimDuration.ofSeconds(20)
-                obstructionAuthoredAt[0] = st.now
-                obstructionClearsAt[0] = clearsAt
-                authorRunwayObstruction(st, lowg, rwy, RunwayObstruction(clearsAt = clearsAt))
+                val precond = checkAuthorshipPreconditions(
+                    st = st,
+                    aircraftId = aircraftId,
+                    towerId = tower.id,
+                    rwy = rwy,
+                    proposedClearsAtDuration = SimDuration.ofSeconds(5),
+                )
+                if (precond is AuthorshipDecision.Skip) {
+                    st
+                } else {
+                    val author = precond as AuthorshipDecision.Author
+                    obstructionAuthored = true
+                    val clearsAt = st.now + SimDuration.ofSeconds(5)
+                    obstructionAuthoredAt[0] = st.now
+                    obstructionClearsAt[0] = clearsAt
+                    authorshipDiagnostics[0] = author.diagnostic
+                    authorRunwayObstruction(st, lowg, rwy, RunwayObstruction(clearsAt = clearsAt))
+                }
             }
         }
 
@@ -446,6 +462,7 @@ class G3aRunwayObstructionContinueApproachTest {
         println("─── G3a-obstruction-continue-approach per-aircraft trace summary ───")
         println("Obstruction authored at: ${obstructionAuthoredAt[0]?.millis ?: "<NEVER>"}ms")
         println("Obstruction clearsAt:    ${obstructionClearsAt[0]?.millis ?: "<NEVER>"}ms")
+        println("Authorship preconditions: ${authorshipDiagnostics[0] ?: "<NEVER>"}")
         println("Responsibility transitions:")
         for (t in trace.responsibilityTransitions(aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it::class.simpleName ?: "?" })
@@ -514,14 +531,32 @@ class G3aRunwayObstructionContinueApproachTest {
         println("─── end G3a-obstruction-continue-approach per-aircraft trace summary ───")
         println()
 
-        // ── One-shot authorship pin (defensive) ─────────────────────────────
+        // ── One-shot authorship pin (FAIL LOUDLY per spec R9) ──────────────
+        //
+        // The task spec's R9 acceptance is explicit: if the authorship
+        // preconditions never align (commitment at AwaitApproach AND
+        // pre-ClearedToLand AND on-final-geometry AND groundSpeed > 0 AND
+        // (5s + 10s margin) ≤ ETA-to-threshold), the test fails LOUDLY
+        // as a test-setup error — NOT a silent skip and NOT a soft-pass.
+        // The five preconditions mirror the CA rule's guard predicate
+        // exactly; if none ever hold, the LOWG fixture's circuit
+        // geometry / cycle cadence / pilot timing has drifted relative
+        // to the rule's predicate shape, and the rest of the test's
+        // pins are not validating anything.
         check(obstructionAuthored) {
-            "World-authorship hook never fired — `aircraftIsOnFinalWithAwaitApproach` " +
-                "never returned true. Either the aircraft never reached phase=Final, or " +
-                "the tower's commitment never advanced to AwaitApproach before ClearedToLand " +
-                "was issued (post-Downwind window collapsed). This is a pre-condition " +
-                "regression — the rest of the test's pins assume the obstruction was authored " +
-                "in the AwaitApproach window.\n$journey"
+            "World-authorship hook never fired — `checkAuthorshipPreconditions` never " +
+                "returned `Author` across the entire 30 sim-minute run. The R9 acceptance " +
+                "predicate (stage=AwaitApproach AND no ClearedToLand coordination AND " +
+                "(OnCircuitLeg(FINAL) OR distance≤5km) AND speedMps>0 AND (5s+10s margin)≤ETA) " +
+                "did not align at any post-event state. Either (i) the AwaitApproach window " +
+                "is too narrow at LOWG for the hook to catch (ARR-LAND fires the same cycle " +
+                "the stage enters AwaitApproach, with no on-final-geometry tick in between), " +
+                "or (ii) the LOWG circuit geometry does not include FINAL-leg-labelled points " +
+                "before the threshold, OR the world index's `circuitLegsByPoint` is empty for " +
+                "the points the aircraft visits, OR groundSpeed never becomes positive in the " +
+                "window, OR the predicate-eligibility check always fails (e.g. ETA too short). " +
+                "This is a test-setup error per the spec's FAIL LOUDLY rule; the rest of the " +
+                "test's pins assume the obstruction was authored in the eligible window.\n$journey"
         }
 
         // ── Outcome pins: aircraft completes mission, parked at stand ──────
@@ -1190,49 +1225,92 @@ class G3aRunwayObstructionContinueApproachTest {
     }
 
     /**
-     * Predicate for the one-shot world-authorship hook: the tower's
-     * commitment for the aircraft sits at `AwaitApproach` (post-Downwind
-     * ack, pre-`ClearedToLand`) AND the aircraft is airborne (altitude > 0).
-     *
-     * Uses post-step belief state (the hook runs after the step that
-     * produced this state). Both conditions read from the post-step
-     * snapshot, so they are observed against the same instant.
-     *
-     * **Why stage-only (not phase=Final)**: the AwaitApproach window
-     * collapses immediately on the FIRST controller cycle where ARR-LAND's
-     * `LandingConditions` (which requires `AnyOf(OnApproach,
-     * OnCircuitLeg(FINAL))` AND `WithinDistanceOfThreshold(5000m)`) pass.
-     * Restricting authorship to `phase=Final` narrows the window to ~1
-     * controller cycle, which is too tight: by the post-hook snapshot's
-     * tick the next cycle has already fired ARR-LAND. By authoring
-     * earlier (right after `Report(Downwind)` advances the stage to
-     * AwaitApproach), the obstruction is folded into beliefs BEFORE the
-     * aircraft reaches the final leg; when the FINAL-leg geometric arm
-     * lights up on a subsequent cycle, `RunwayObstructed=true` is
-     * already in beliefs, the `Not(RunwayObstructed)` gate on
-     * `LandingConditions` blocks ARR-LAND, and the CA rule (placed first
-     * in `stageRules[AwaitApproach]`) wins arbitration.
-     *
-     * **Airborne check** filters out the pre-takeoff window (the very
-     * first cycle, before the pilot has filed via `RequestTaxi`, has a
-     * default-constructed empty commitment; we don't want to author
-     * obstructions then).
-     *
-     * **Predicate-eligibility**: at the Downwind moment, the aircraft is
-     * still ~3-4 km from threshold with groundSpeed ~70 kt (~36 m/s),
-     * giving ETA ~80-110 s. The 15s budget (5s `clearsAt` + 10s safety
-     * margin) fits comfortably; `ObstructionClearsInTime` evaluates true.
-     * Validated empirically by the test's GREEN outcome.
+     * Decision return shape for [checkAuthorshipPreconditions] — pure
+     * value-class disjunction (skip with a reason vs author with
+     * diagnostic), no exceptions or null tags.
      */
-    private fun aircraftIsOnFinalWithAwaitApproach(
+    private sealed interface AuthorshipDecision {
+        data object Skip : AuthorshipDecision
+        data class Author(val diagnostic: String) : AuthorshipDecision
+    }
+
+    /**
+     * Strict-spec predicate for the one-shot world-authorship hook —
+     * mirrors the CA rule's guard predicate exactly so that authoring
+     * here implies the rule will fire on the very next controller cycle.
+     *
+     * Returns [AuthorshipDecision.Author] when ALL of the following
+     * hold simultaneously, else [AuthorshipDecision.Skip]:
+     *
+     *  - commitment stage is `AwaitApproach`
+     *  - NO `ClearedToLand` coordination exists for the aircraft (pre-
+     *    clearance constraint `T_obs < T_ClearedToLand`)
+     *  - `OnCircuitLeg(FINAL) == true` for the aircraft's `positionPoint`
+     *    (i.e. `worldIndex.circuitLegsByPoint[positionPoint]` contains
+     *    `LegName.FINAL`) — mirrors the CA rule's geometric arm
+     *  - aircraft `speedMps > 0` — pins the `groundSpeed` precondition
+     *    of `ObstructionClearsInTime`
+     *  - predicate-eligibility: `(proposedClearsAt - now) + 10s safety
+     *    margin ≤ distance-to-threshold / groundSpeed` — pins
+     *    `ObstructionClearsInTime`'s arithmetic.
+     *
+     * The check uses the post-step `SimState` (the hook runs after each
+     * step). All preconditions read from the same post-step snapshot so
+     * they observe the same instant.
+     */
+    private fun checkAuthorshipPreconditions(
         st: SimState,
-        aircraft: AircraftId,
+        aircraftId: AircraftId,
         towerId: xyz.easiersaid.twr.protocol.ControllerId,
-    ): Boolean {
-        val ac = st.aircraft[aircraft] ?: return false
-        if (ac.altitudeM <= 0.0) return false
-        val commitment = st.beliefs[towerId]?.commitments?.get(aircraft) ?: return false
-        return commitment.stage == TowerArrivalStage.AwaitApproach
+        rwy: RunwayId,
+        proposedClearsAtDuration: SimDuration,
+    ): AuthorshipDecision {
+        val ac = st.aircraft[aircraftId] ?: return AuthorshipDecision.Skip
+        val commitment = st.beliefs[towerId]?.commitments?.get(aircraftId)
+            ?: return AuthorshipDecision.Skip
+        if (commitment.stage != TowerArrivalStage.AwaitApproach) {
+            return AuthorshipDecision.Skip
+        }
+        // Pre-clearance constraint: no ClearedToLand coordination yet.
+        val tower = st.beliefs[towerId] ?: return AuthorshipDecision.Skip
+        val hasClearedToLand = tower.coordinations[aircraftId].orEmpty().any {
+            it.instruction is ClearedToLand
+        }
+        if (hasClearedToLand) return AuthorshipDecision.Skip
+        // OnCircuitLeg(FINAL) — the aircraft's positionPoint must belong
+        // to a FINAL-labelled circuit leg in the world index.
+        val finalLegHere = st.worldIndex.circuitLegsByPoint[ac.positionPoint]
+            ?.contains(xyz.easiersaid.twr.core.world.LegName.FINAL) == true
+        // Distance to threshold (Euclidean) — fallback geometric eligibility
+        // when not yet on FINAL leg label, mirrors the CA rule's
+        // `AnyOf(OnApproach, OnCircuitLeg(FINAL))` arm.
+        val thresholdPoint = st.worldIndex.thresholdByRunway[rwy]
+            ?: return AuthorshipDecision.Skip
+        val thrPos = st.worldIndex.positions[thresholdPoint]
+            ?: return AuthorshipDecision.Skip
+        val dx = ac.position.xMeters - thrPos.xMeters
+        val dy = ac.position.yMeters - thrPos.yMeters
+        val distanceM = kotlin.math.sqrt(dx * dx + dy * dy)
+        if (!distanceM.isFinite() || distanceM < 0.0) return AuthorshipDecision.Skip
+        val onApproachGeometry = finalLegHere || distanceM <= 5000.0
+        if (!onApproachGeometry) return AuthorshipDecision.Skip
+        // groundSpeed precondition — must be positive for ETA arithmetic.
+        // The controller derives `groundSpeed: Knots?` from the
+        // aircraft's `speedMps` at observation time; an at-rest aircraft
+        // (speedMps == 0) yields null at the controller boundary and
+        // `ObstructionClearsInTime` fails closed. Mirror that here.
+        if (ac.speedMps <= 0.0) return AuthorshipDecision.Skip
+        // Predicate-eligibility check — exact arithmetic from the
+        // `ObstructionClearsInTime` guard.
+        val etaSeconds = distanceM / ac.speedMps
+        if (!etaSeconds.isFinite() || etaSeconds < 0.0) return AuthorshipDecision.Skip
+        val etaMs = (etaSeconds * 1000.0).toLong()
+        val gapMs = proposedClearsAtDuration.millis + OBSTRUCTION_CLEAR_SAFETY_MARGIN_MS
+        if (gapMs > etaMs) return AuthorshipDecision.Skip
+        val diagnostic = "phase=${ac.phase}, positionPoint=${ac.positionPoint.value}, " +
+            "finalLegLabel=$finalLegHere, distanceM=${"%.1f".format(distanceM)}, " +
+            "speedMps=${"%.2f".format(ac.speedMps)}, etaMs=$etaMs, gapMs=$gapMs"
+        return AuthorshipDecision.Author(diagnostic)
     }
 
     /**

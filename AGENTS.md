@@ -275,19 +275,26 @@ are what the run produced.
 - **G3a-obstruction-continue-approach —
   `G3aRunwayObstructionContinueApproachTest` (`sim/jvmTest`)**: single-
   aerodrome, single-aircraft VFR **CONTINUE APPROACH** triggered by a
-  short-TTL (20 s) world-authored runway obstruction at the
+  short-TTL (5 s) world-authored runway obstruction at the
   pre-clearance ladder middle state per CAP 413 §4.55-4.56 + ICAO Doc
   4444 §12.3.4.16(d). C172 OE-ABC at LOWG flies a single planned
   circuit (`HighLevelGoal.CircuitTraining(outcomes = listOf(FullStop))`).
-  At the moment the tower's commitment for the aircraft advances to
-  `AwaitApproach` (post-Downwind ack, pre-`ClearedToLand`), the test
-  authors `runway.obstruction = RunwayObstruction(clearsAt = now +
-  20.seconds)` one-shot via `runUntilWithStateTrace`'s `onAfterEvent`
-  hook. The sim's per-cycle world-diff producer derives a
-  `RunwayObstructionDetected`; the tower's belief folds it; the new
+  The test's per-step world hook authors `runway.obstruction =
+  RunwayObstruction(clearsAt = now + 5.seconds)` one-shot via
+  `runUntilWithStateTrace`'s `onAfterEvent` at the FIRST post-event
+  state where ALL of these hold (mirroring the CA rule's guard exactly):
+  commitment stage is `AwaitApproach`; no `ClearedToLand` coordination
+  exists for the aircraft; the aircraft's `positionPoint` is on a
+  FINAL-labelled circuit leg OR distance-to-threshold ≤ 5000 m;
+  `speedMps > 0`; and the predicate-eligibility check
+  `(5 s + 10 s margin) ≤ distance / groundSpeed` passes. If no
+  post-event state ever satisfies all preconditions, the test fails
+  loudly with the R9 precondition-mismatch error. The sim's per-cycle
+  world-diff producer derives a `RunwayObstructionDetected`; the
+  tower's belief folds it; the new
   `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule (placed before the narrowed
   obstruction-GA rule in `stageRules[AwaitApproach]`) wins selection
-  because `ObstructionClearsInTime` evaluates `true` ((20 s + 10 s
+  because `ObstructionClearsInTime` evaluates `true` ((5 s + 10 s
   margin) ≤ ETA-to-threshold); the tower transmits
   `Instruction.ContinueApproach(reason = RUNWAY_OBSTRUCTED)` plus the
   mandatory `RunwayObstructionInformation` companion (pre-clearance
