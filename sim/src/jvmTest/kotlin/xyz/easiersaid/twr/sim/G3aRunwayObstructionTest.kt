@@ -753,6 +753,33 @@ class G3aRunwayObstructionTest {
                 "originating decision was made before.)\n$journey"
         }
 
+        // ── Obstruction lifetime pin (R6/R10 — `clearsAt` semantics) ───────
+        //
+        // The obstruction was authored with a 60-second `clearsAt`. The
+        // sim's per-cycle expiry pass nulls `runway.obstruction` when
+        // `clearsAt <= now`, which then drives the `Some → None` diff and
+        // the `RunwayObstructionCleared` event. Therefore the belief
+        // slice's `Some → None` transition (`clearedMs`) must occur at or
+        // after the authored `clearsAt`. Without this pin, a regression
+        // that expires the obstruction immediately after detection would
+        // still produce exactly one `Some → None`, unblock
+        // `ClearedToLand(recovery)`, and pass the pre-clearance ungate
+        // pin above — bypassing the obstruction-lifetime semantics
+        // entirely. Pin shape: `clearedMs >= clearsAt` (no tolerance —
+        // expiry fires the cycle the obstruction reaches `clearsAt`, NOT
+        // before).
+        val clearsAtMs = obstructionClearsAt[0]!!.millis
+        check(clearedMs >= clearsAtMs) {
+            "Obstruction lifetime pin: RunwayObstructionCleared belief transition " +
+                "(${clearedMs}ms) must occur at-or-after the authored `clearsAt` " +
+                "(${clearsAtMs}ms). The sim's per-cycle expiry pass nulls " +
+                "`runway.obstruction` only when `clearsAt <= now`; a `Cleared` event before " +
+                "`clearsAt` would indicate one of (i) the expiry condition is wrong (firing on " +
+                "`clearsAt > now`), (ii) the world hook was re-fired and nulled the obstruction " +
+                "early, or (iii) a non-expiry code path is mutating `runway.obstruction`. All " +
+                "three violate the `RunwayObstruction(clearsAt)` lifetime contract.\n$journey"
+        }
+
         // ── Layer 2 — Sticky-witness regression pin ─────────────────────────
         //
         // The `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule fires with `Immediate`
@@ -840,6 +867,15 @@ class G3aRunwayObstructionTest {
                 "touchedDownDuringCommitment=${commitmentAfter.touchedDownDuringCommitment}. " +
                 "Without the reset, ARR-TNG-AIRBORNE could fire a stale touchdown decision on " +
                 "the recovery circuit.\n$journey"
+        }
+        check(!commitmentAfter.pilotReadyDuringCommitment) {
+            "pilotReadyDuringCommitment must be reset post-regression (stage transition at " +
+                "${regression.after.time.millis}ms); got " +
+                "pilotReadyDuringCommitment=${commitmentAfter.pilotReadyDuringCommitment}. " +
+                "Per fn-8.3 Phase 4 (B5-α), the pilot-ready sticky witness is one of the three " +
+                "commitment-scoped witnesses that reset on stage regression; a stale value here " +
+                "could let downstream readiness-gated rules fire prematurely on the recovery " +
+                "circuit.\n$journey"
         }
         check(commitmentAfter.observedReportsDuringCommitment.isEmpty()) {
             "observedReportsDuringCommitment must be reset post-regression (stage transition at " +
