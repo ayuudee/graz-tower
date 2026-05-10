@@ -113,7 +113,7 @@ class AtisLetterForCallInboundSpec {
         // continue to return the letter. This is the path G0's LowgGoldenTest
         // exercises; the Phase C tightening must not break it.
         val mission = missionAtCallInbound(
-            HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
         )
         val decision = pilotCognitiveDecide(
             aircraft = aircraft(),
@@ -151,7 +151,7 @@ class AtisLetterForCallInboundSpec {
     @Test
     fun `empty map returns null letter (preserves existing empty-ATIS semantics)`() {
         val mission = missionAtCallInbound(
-            HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
         )
         val decision = pilotCognitiveDecide(
             aircraft = aircraft(),

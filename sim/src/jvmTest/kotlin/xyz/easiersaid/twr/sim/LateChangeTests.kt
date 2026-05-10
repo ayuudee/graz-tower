@@ -69,8 +69,8 @@ class LateChangeTests {
     }
 
     /**
-     * Phase C4: multi-circuit (N≥2) with `fullStopOnLast=true` exercises both
-     * rule polarities in the same run.
+     * Phase C4: multi-circuit (N≥2) with terminal `CircuitOutcome.FullStop`
+     * (fn-11.1 typed shape) exercises both rule polarities in the same run.
      *
      * - Circuits 1..N-1: pilot reports "downwind, touch and go" → CircuitIntent
      *   = TOUCH_AND_GO → ARR-LAND-TNG fires → ClearedTouchAndGo issued.
@@ -86,7 +86,7 @@ class LateChangeTests {
     @Test
     fun `multi-circuit T&G then full-stop — belief overwrites cycle to cycle`() {
         // TODO: Phase C4.
-        // 1. Spawn AI aircraft with CircuitTraining(circuits = 2, fullStopOnLast = true).
+        // 1. Spawn AI aircraft with CircuitTraining(outcomes = listOf(TouchAndGo, FullStop)).
         // 2. Run until first circuit complete. Assert: ClearedTouchAndGo issued for
         //    circuit 1; circuitIntent[ac] cleared after T&G touchdown so the next
         //    circuit's downwind can re-declare.

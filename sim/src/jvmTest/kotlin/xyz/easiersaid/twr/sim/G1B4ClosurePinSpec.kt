@@ -5,6 +5,7 @@ import arrow.core.getOrElse
 import kotlin.test.Test
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
@@ -80,12 +81,16 @@ class G1B4ClosurePinSpec {
         val starts = fixture.requiredStartPoints()
 
         val missionA = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand, time = now,
             filedPlan = fixture.flightPlans.getValue(aId),
         )
         val missionB = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand, time = now,
             filedPlan = fixture.flightPlans.getValue(bId),
         )

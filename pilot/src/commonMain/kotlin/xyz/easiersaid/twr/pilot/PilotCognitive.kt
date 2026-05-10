@@ -319,6 +319,7 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     MissionStep.TAXI_TO_HOLDING, MissionStep.RUN_UP_CHECKS, MissionStep.AWAIT_LINE_UP,
     MissionStep.AWAIT_TAKEOFF_CLEARANCE, MissionStep.FLY_DEPARTURE, MissionStep.FLY_DOWNWIND,
     MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
+    MissionStep.FLY_FINAL_TO_SHORT_FINAL,
     MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND, MissionStep.AWAIT_VACATE_INSTRUCTION,
     MissionStep.TAXI_TO_STAND, MissionStep.SHUTDOWN, MissionStep.AWAIT_JOINING_INSTRUCTIONS,
     MissionStep.AWAITING_ATC_INSTRUCTION,
@@ -359,6 +360,20 @@ private fun isPhysicallyComplete(
         MissionStep.FLY_BASE -> LegName.FINAL in legs
         MissionStep.FLY_FINAL -> {
             LegName.FINAL in legs && aircraft.phase is PilotPhase.Final
+        }
+        // fn-11.1 (G3a-trained): the trained-GA final leg completes when
+        // the aircraft crosses short-final altitude (DECISION_ALTITUDE_M,
+        // ~100 m / ~330 ft AGL — mirrors `pilot/observe/PilotEvent.kt:48`).
+        // Phase-gated to PilotPhase.Final: this excludes the
+        // LandingRoll/Vacating/ClearOfRunway phases by construction (sealed
+        // PilotPhase hierarchy — the `is Final` check disjointly excludes
+        // every other phase). Trained GA must NOT fire after touchdown
+        // (that would model a balked landing — out of fn-11 scope per the
+        // epic's boundaries section); the Final-only gate is the structural
+        // enforcement.
+        MissionStep.FLY_FINAL_TO_SHORT_FINAL -> {
+            aircraft.phase is PilotPhase.Final &&
+                aircraft.altitudeM <= xyz.easiersaid.twr.pilot.observe.DECISION_ALTITUDE_M
         }
         MissionStep.LAND -> aircraft.phase is PilotPhase.LandingRoll ||
             aircraft.phase is PilotPhase.Vacating || aircraft.phase is PilotPhase.ClearOfRunway
@@ -579,6 +594,12 @@ private fun stepTransmission(
     MissionStep.AWAIT_SEQUENCING,
     MissionStep.FLY_BASE,
     MissionStep.FLY_FINAL,
+    // fn-11.1: trained-GA short-final descent leg has no pilot-initiated
+    // transmission of its own — Report(GoingAround) fires from the
+    // GOING_AROUND step that follows, per CAP 413 §4.67. The
+    // REPORT_DOWNWIND + REPORT_BASE steps already covered the position-
+    // call obligation for this circuit.
+    MissionStep.FLY_FINAL_TO_SHORT_FINAL,
     MissionStep.LAND,
     MissionStep.AWAIT_VACATE_INSTRUCTION,
     MissionStep.TAXI_TO_STAND,
@@ -835,6 +856,14 @@ private val TAXI_TO_STEPS = setOf(
  * [ClearedToLand] / [ClearedTouchAndGo]: mark sequencing and flying steps complete,
  * but NOT position reports — the pilot should still report turning base and final
  * even with an early clearance, so the controller maintains situational awareness.
+ *
+ * fn-11.1 (G3a-trained): [MissionStep.FLY_FINAL_TO_SHORT_FINAL] is **deliberately
+ * absent** from `stepsToMark`. The trained-GA short-final descent leg is altitude-
+ * gated, NOT clearance-gated — the pilot continues their planned go-around even
+ * after receiving `ClearedToLand`. If aliased here, clearance receipt would
+ * skip the trained step and advance straight to `GOING_AROUND`, defeating the
+ * trained-GA fork. Per the task's new-MissionStep audit pin (Acceptance R3
+ * audit, sub-bullet `handleLandingClearance`).
  */
 private fun handleLandingClearance(mission: PilotMission, now: SimTime): PilotMission {
     val stepsToMark = listOf(

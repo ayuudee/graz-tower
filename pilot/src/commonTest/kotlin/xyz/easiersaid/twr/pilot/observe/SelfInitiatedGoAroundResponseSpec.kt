@@ -4,6 +4,7 @@ import arrow.core.None
 import arrow.core.Some
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.CompletionMode
 import xyz.easiersaid.twr.pilot.CompoundTask
 import xyz.easiersaid.twr.pilot.HighLevelGoal
@@ -78,7 +79,7 @@ class SelfInitiatedGoAroundResponseSpec {
         hasClearance: Boolean = false,
         altitudeRestrictionM: arrow.core.Option<Double> = None,
     ): PilotMission = PilotMission(
-        goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+        goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
         root = CompoundTask(
             name = TaskName.CircuitTraining,
             children = listOf(circuitTask()),

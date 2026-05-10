@@ -4,6 +4,7 @@ import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.fail
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
@@ -173,15 +174,20 @@ class G1TwoAircraftCircuitsTest {
         val standPointA = startPoints.getValue(aircraftAId)
         val standPointB = startPoints.getValue(aircraftBId)
 
+        // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+        // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+        val twoCircuitTraining = HighLevelGoal.CircuitTraining(
+            outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop),
+        )
         val missionA = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            goal = twoCircuitTraining,
             startPhase = PilotPhase.AtStand,
             time = now,
             filedPlan = fixture.flightPlans[aircraftAId]
                 ?: fail("LOWG_TWO_AIRCRAFT fixture missing flight plan for $aircraftAId"),
         )
         val missionB = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            goal = twoCircuitTraining,
             startPhase = PilotPhase.AtStand,
             time = now,
             filedPlan = fixture.flightPlans[aircraftBId]

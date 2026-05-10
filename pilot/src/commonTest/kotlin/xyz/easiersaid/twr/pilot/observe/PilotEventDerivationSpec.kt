@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.pilot.observe
 
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.CompletionMode
 import xyz.easiersaid.twr.pilot.CompoundTask
 import xyz.easiersaid.twr.pilot.HighLevelGoal
@@ -60,7 +61,7 @@ class PilotEventDerivationSpec {
         step: MissionStep,
         hasClearance: Boolean = false,
     ): PilotMission = PilotMission(
-        goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+        goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
         root = CompoundTask(
             name = TaskName.Circuit,
             children = listOf(PrimitiveTask(step, CompletionMode.PHYSICAL)),

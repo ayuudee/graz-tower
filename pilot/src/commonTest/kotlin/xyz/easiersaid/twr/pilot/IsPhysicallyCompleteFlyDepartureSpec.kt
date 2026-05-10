@@ -169,7 +169,7 @@ class IsPhysicallyCompleteFlyDepartureSpec {
         // the aircraft's positionPoint mapped to DOWNWIND triggers it.
         val downwindPoint = PointId("CIRCUIT_DOWNWIND_1")
         val mission = PilotMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
             root = CompoundTask(
                 name = TaskName.Circuit,
                 children = listOf(

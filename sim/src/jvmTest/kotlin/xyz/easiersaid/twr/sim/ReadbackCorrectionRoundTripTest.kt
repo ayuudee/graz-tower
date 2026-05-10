@@ -16,6 +16,7 @@ import xyz.easiersaid.twr.core.world.PhysicalGeometry
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.buildWorldIndex
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
@@ -102,7 +103,9 @@ class ReadbackCorrectionRoundTripTest {
 
         val now = SimTime.ZERO
         val mission = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(FullStop) is the
+            // structurally equivalent shape for the old (circuits=1, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand,
             time = now,
         )

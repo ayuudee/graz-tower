@@ -69,7 +69,7 @@ class ProcessInstructionMissionStateSpec {
 
     private fun missionAt(step: MissionStep): PilotMission {
         val base = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand,
             time = SimTime.ZERO,
         )

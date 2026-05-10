@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
@@ -59,13 +60,17 @@ class G1ClosureDiveTest {
         val standB = starts.getValue(bId)
 
         val missionA = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand,
             time = now,
             filedPlan = fixture.flightPlans.getValue(aId),
         )
         val missionB = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand,
             time = now,
             filedPlan = fixture.flightPlans.getValue(bId),
@@ -231,12 +236,16 @@ class G1ClosureDiveTest {
         val standB = starts.getValue(bId)
 
         val missionA = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand, time = now,
             filedPlan = fixture.flightPlans.getValue(aId),
         )
         val missionB = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand, time = now,
             filedPlan = fixture.flightPlans.getValue(bId),
         )
@@ -467,12 +476,16 @@ class G1ClosureDiveTest {
         val standB = starts.getValue(bId)
 
         val missionA = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand, time = now,
             filedPlan = fixture.flightPlans.getValue(aId),
         )
         val missionB = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 2, fullStopOnLast = true),
+            // fn-11.1: typed-outcome migration — listOf(TouchAndGo, FullStop) is the
+            // structurally equivalent shape for the old (circuits=2, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand, time = now,
             filedPlan = fixture.flightPlans.getValue(bId),
         )

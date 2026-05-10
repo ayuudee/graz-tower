@@ -84,6 +84,12 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
         return PilotOutput(kinematicIntent, emptyList(), mission).right()
     }
 
+    // fn-11.1: capture the pre-cognitive step to detect the trained-GA
+    // Tick A transition (FLY_FINAL_TO_SHORT_FINAL → GOING_AROUND). The
+    // detection happens after `pilotCognitiveDecide` advances steps; see
+    // `applyPlannedGoAround` below for the response stage.
+    val preStep = mission.currentTask?.step
+
     // Cognitive layer: advance mission, generate transmissions.
     val cognitive = pilotCognitiveDecide(aircraft, mission, input.worldIndex, input.now, input.atisByAerodrome)
 
@@ -98,7 +104,24 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(aircraft, cognitive.updatedMission)
     val goAround = (pilotEvent as? xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance)
         ?.let { applySelfInitiatedGoAround(it, cognitive.updatedMission, aircraft, input.now) }
-    val effectiveMission = goAround?.mission ?: cognitive.updatedMission
+
+    // fn-11.1 (Tick A): trained-GA fork-point. When the cognitive layer
+    // just advanced past `FLY_FINAL_TO_SHORT_FINAL` to `GOING_AROUND`,
+    // apply the planned-GA response: clear the kinematic route (so Tick B
+    // hits the Circuit-mode go-around route special-case in `planRoute`)
+    // and reset phase-local mission state via `resetForGoAround`. This is
+    // structurally distinct from `applySelfInitiatedGoAround` (the
+    // reactive flow): trigger is the static mission tree, not a sensor
+    // event; no subtree replacement is needed (the GA was compiled into
+    // the tree at `createMission`). Per `feedback_world_only_test_triggers.md`.
+    val plannedGoAround = if (
+        goAround == null && preStep == MissionStep.FLY_FINAL_TO_SHORT_FINAL &&
+        cognitive.updatedMission.currentTask?.step == MissionStep.GOING_AROUND
+    ) {
+        applyPlannedGoAround(cognitive.updatedMission, aircraft, input.now)
+    } else null
+
+    val effectiveMission = goAround?.mission ?: plannedGoAround?.mission ?: cognitive.updatedMission
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
     // Plan execution: if the current task needs an airborne route the pilot
@@ -121,8 +144,16 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
             transmissions = cognitive.transmissions + goAroundTransmissions,
             updatedMission = planOutcome.mission,
         ).right()
+        // fn-11.1: trained-GA Tick A — `plannedGoAround.intent` clears the
+        // route (route=PilotRoute.None) and pins phase=Final so Tick B's
+        // Circuit-mode special-case fires. Reactive `goAround?.intent`
+        // takes precedence (separate code paths per
+        // `feedback_world_only_test_triggers.md` / practice-scout
+        // anti-pattern #6, but reactive is structurally exclusive to
+        // trained-GA via `derivePilotEvent`'s step-set).
         is PlanRouteOutcome.Skip -> PilotOutput(
             intent = goAround?.intent
+                ?: plannedGoAround?.intent
                 ?: applyCognitiveOverrides(kinematicIntent, effectiveMission),
             transmissions = cognitive.transmissions + goAroundTransmissions,
             updatedMission = effectiveMission,
@@ -162,55 +193,11 @@ internal fun planRoute(
 ): PlanRouteOutcome {
     val step = mission.currentTask?.step ?: return PlanRouteOutcome.Skip
 
-    // G2 Phase C: cross-aerodrome Transit cruise. The cruise route runs from
-    // current position to the destination's first published contact REP
-    // (resolved from world.aerodromes[destination].aip.publishedVfrProcedures).
-    // Fires BEFORE the activeRunway gate below — Transit cruise doesn't depend
-    // on a local runway assignment. Gated by `goal is HighLevelGoal.Transit`,
-    // so non-Transit goals fall through to the existing logic unchanged.
+    // G2 Phase C: cross-aerodrome Transit cruise. Fires BEFORE the activeRunway
+    // gate below — Transit cruise doesn't depend on a local runway assignment.
+    // See [planTransitCruise] for the cache + resolve logic.
     if (step == MissionStep.FLY_DEPARTURE && mission.goal is HighLevelGoal.Transit) {
-        val destination = mission.goal.destination ?: return PlanRouteOutcome.Skip
-        // Resolve once and cache on mission. The cached value is the
-        // canonical source on subsequent ticks (write-once per D-G2.4).
-        //
-        // D-G2.4 tripwire (set-once invariant): the cached REP is valid only
-        // for the goal-destination it was resolved for. Today
-        // `HighLevelGoal.Transit` is a data class with `val destination`, so
-        // a goal-destination change is unrepresentable in current code paths
-        // (every "change" produces a new PilotMission). Future fluid-replanning
-        // (D-G2.4 real-fix) MUST clear `mission.transitContactRep` whenever
-        // the destination changes — see the deferment register. The
-        // `mission.copy(transitContactRep = None)` clear-on-change is the
-        // contract that future code enforces; this code-site assumes it.
-        val cachedRep = mission.transitContactRep.getOrNull()
-        val rep: PointId
-        val updatedMission: PilotMission
-        if (cachedRep != null) {
-            rep = cachedRep
-            updatedMission = mission
-        } else {
-            when (val resolved = resolveTransitContactRep(world, destination)) {
-                is Either.Left -> return PlanRouteOutcome.Failed(resolved.value)
-                is Either.Right -> {
-                    rep = resolved.value
-                    updatedMission = mission.copy(transitContactRep = Some(rep))
-                }
-            }
-        }
-        val airborne = PilotRoute.Airborne(
-            waypoints = NonEmptyList(rep, emptyList()),
-            targetAltitudeM = aircraft.type.cruiseAltitudeM,
-            arrivalPhase = PilotPhase.Climbing,
-        )
-        return PlanRouteOutcome.Plan(
-            intent = PilotIntent(
-                targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
-                phase = if (aircraft.phase is PilotPhase.AtStand) aircraft.phase else PilotPhase.Climbing,
-                route = airborne,
-                targetAltitudeM = aircraft.type.cruiseAltitudeM,
-            ),
-            mission = updatedMission,
-        )
+        return planTransitCruise(mission, mission.goal, aircraft, world)
     }
 
     // The pilot's runway is on the mission, populated by `processInstruction`
@@ -232,9 +219,19 @@ internal fun planRoute(
         }
     }
 
+    // fn-11.1 (G3a-trained Tick B): Circuit-mode go-around route special-case.
+    // See [planCircuitTrainedGoAround] for the predicate + rationale.
+    if (isCircuitTrainedGoAroundTickB(step, mode, aircraft, kinematicRoute)) {
+        return planCircuitTrainedGoAround(mode as NavigationMode.Circuit, mission, aircraft, w)
+    }
+
     val airborneSteps = setOf(
         // Flying steps
         MissionStep.FLY_DOWNWIND, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
+        // fn-11.1 (G3a-trained): trained-GA short-final descent leg uses the
+        // same airborne-route requirement as FLY_FINAL — the route planner
+        // aliases it to the standard circuit pattern below.
+        MissionStep.FLY_FINAL_TO_SHORT_FINAL,
         MissionStep.FLY_DEPARTURE, MissionStep.FLY_SID, MissionStep.FLY_EN_ROUTE,
         MissionStep.FLY_STAR, MissionStep.FLY_APPROACH, MissionStep.FLY_MISSED_APPROACH,
         // Airborne report/sequencing steps — pilot needs a route while transmitting
@@ -301,6 +298,111 @@ internal fun planRoute(
         }
     }
 }
+
+/**
+ * G2 Phase C: cross-aerodrome Transit cruise route — runs from current
+ * position to the destination's first published contact REP (resolved
+ * from `world.aerodromes[destination].aip.publishedVfrProcedures`). Caches
+ * the resolved REP on `mission.transitContactRep` (write-once per D-G2.4).
+ *
+ * D-G2.4 tripwire (set-once invariant): the cached REP is valid only for
+ * the goal-destination it was resolved for. Today `HighLevelGoal.Transit`
+ * is a data class with `val destination`, so a goal-destination change is
+ * unrepresentable in current code paths (every "change" produces a new
+ * PilotMission). Future fluid-replanning (D-G2.4 real-fix) MUST clear
+ * `mission.transitContactRep` whenever the destination changes — see the
+ * deferment register.
+ */
+@Suppress("ReturnCount")
+private fun planTransitCruise(
+    mission: PilotMission,
+    goal: HighLevelGoal.Transit,
+    aircraft: AircraftState,
+    world: AviationWorld,
+): PlanRouteOutcome {
+    val destination = goal.destination ?: return PlanRouteOutcome.Skip
+    val cachedRep = mission.transitContactRep.getOrNull()
+    val rep: PointId
+    val updatedMission: PilotMission
+    if (cachedRep != null) {
+        rep = cachedRep
+        updatedMission = mission
+    } else {
+        when (val resolved = resolveTransitContactRep(world, destination)) {
+            is Either.Left -> return PlanRouteOutcome.Failed(resolved.value)
+            is Either.Right -> {
+                rep = resolved.value
+                updatedMission = mission.copy(transitContactRep = Some(rep))
+            }
+        }
+    }
+    val airborne = PilotRoute.Airborne(
+        waypoints = NonEmptyList(rep, emptyList()),
+        targetAltitudeM = aircraft.type.cruiseAltitudeM,
+        arrivalPhase = PilotPhase.Climbing,
+    )
+    return PlanRouteOutcome.Plan(
+        intent = PilotIntent(
+            targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+            phase = if (aircraft.phase is PilotPhase.AtStand) aircraft.phase else PilotPhase.Climbing,
+            route = airborne,
+            targetAltitudeM = aircraft.type.cruiseAltitudeM,
+        ),
+        mission = updatedMission,
+    )
+}
+
+/**
+ * fn-11.1 (G3a-trained Tick B) predicate: detect "we're sitting on Final
+ * with no airborne route at FLY_DEPARTURE in Circuit mode" — the signature
+ * of the trained-GA Tick A's route invalidation.
+ *
+ * **Discriminator**: ordinary `CircuitTraining` `FLY_DEPARTURE` happens
+ * on-ground (`PilotPhase.LandingRoll` for T&G between circuits, or
+ * `AtStand`/`HoldingShort`/`TakeoffRoll` for the first circuit's lift-off
+ * from the stand). Phase is never `Final` at that point. The conjunction
+ * `Final + no airborne route + FLY_DEPARTURE + Circuit` therefore matches
+ * only the post-trained-GA-Tick-A state in practice.
+ */
+private fun isCircuitTrainedGoAroundTickB(
+    step: MissionStep,
+    mode: NavigationMode,
+    aircraft: AircraftState,
+    kinematicRoute: PilotRoute,
+): Boolean = step == MissionStep.FLY_DEPARTURE && mode is NavigationMode.Circuit &&
+    aircraft.phase is PilotPhase.Final && kinematicRoute !is PilotRoute.Airborne
+
+/**
+ * fn-11.1 (G3a-trained Tick B): build the published go-around route after
+ * the trained-GA Tick A's route invalidation. Mirrors the Visual-mode
+ * special-case at `planVisualRoute` lines 339-370 (reactive flow). Without
+ * this, `buildAirborneRoute` for Circuit × FLY_DEPARTURE would build a
+ * NORMAL circuit pattern (via `buildCircuitPatternRoute`), causing the
+ * aircraft to fly a fresh pattern from the runway threshold instead of
+ * climbing out via the GA path.
+ */
+private fun planCircuitTrainedGoAround(
+    mode: NavigationMode.Circuit,
+    mission: PilotMission,
+    aircraft: AircraftState,
+    world: AviationWorld,
+): PlanRouteOutcome = buildGoAroundRoute(mode.runway, world, aircraft.type, CircuitLookup.ById(mode.procedure)).fold(
+    ifLeft = { PlanRouteOutcome.Failed(it) },
+    ifRight = { gaRoute ->
+        val patternAlt = aircraft.type.circuitPattern.altitudeAglM
+        val gaAlt = mission.altitudeRestrictionM.map { minOf(patternAlt, it) }
+            .getOrElse { patternAlt }
+        PlanRouteOutcome.Plan(
+            intent = PilotIntent(
+                targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+                phase = PilotPhase.Climbing,
+                route = gaRoute.copy(targetAltitudeM = gaAlt),
+                targetAltitudeM = gaAlt,
+            ),
+            mission = mission,
+        )
+    },
+)
 
 /**
  * Continuous route derivation for Visual mode.
@@ -559,6 +661,70 @@ internal fun applySelfInitiatedGoAround(
         ),
         mission = updatedMission,
         transmissions = listOf(Report(listOf(ReportEvent.GoingAround))),
+    )
+}
+
+/**
+ * Result of a planned (trained) go-around — fn-11.1's response stage for
+ * the static mission-tree fork. Sibling to [GoAroundResult] (the reactive
+ * flow's response). Both produce intent + mission deltas; trained-GA omits
+ * the `transmissions` field because the cognitive layer's `stepTransmission`
+ * already emits `Report(GoingAround)` for the GOING_AROUND step (the trained
+ * tree's compile-time arrangement makes that step the active leaf on Tick A).
+ */
+internal data class PlannedGoAroundResult(
+    val intent: PilotIntent,
+    val mission: PilotMission,
+)
+
+/**
+ * fn-11.1 (G3a-trained Tick A): apply the planned-GA response when the
+ * cognitive layer has just advanced past `FLY_FINAL_TO_SHORT_FINAL`.
+ *
+ * Distinct from [applySelfInitiatedGoAround]: the trained-GA path is plan-
+ * driven from the [HighLevelGoal.CircuitTraining.outcomes] list compiled at
+ * `createMission` time. No subtree replacement is needed — the GA primitive
+ * is already the active leaf within [plannedGoAroundCircuitTask]. This
+ * helper is responsible only for the **route invalidation** + **phase-
+ * local state reset** that the static tree cannot encode.
+ *
+ * Tick A's intent emits:
+ *  - `phase = Final` (NOT `Climbing`). Tick B's Circuit-mode `planRoute`
+ *    special-case predicates on `aircraft.phase is Final && route !is
+ *    Airborne`. If Tick A set `Climbing`, Tick B's `aircraft.phase` would
+ *    be `Climbing` and the special-case would not fire — the planner
+ *    would build a normal circuit route instead of the GA path.
+ *  - `route = PilotRoute.None`. Without this, the kinematic engine would
+ *    keep flying the old final route toward the threshold.
+ *  - `targetAltitudeM = patternAlt`. The pilot's intended climb-out
+ *    altitude (matched in Tick B's GA-route intent for stability).
+ *
+ * Mission delta:
+ *  - `resetForGoAround(now)` — clears `hasClearance`, `activeConstraints`,
+ *    `routeOverride`, `altitudeRestrictionM`, `joinLeg`, etc. Preserves
+ *    structural fields (goal, root, navigationMode, activeRunway) per the
+ *    function's named-field convention.
+ *  - Static mission root unchanged. The trained tree was compiled with the
+ *    GA at the right place; no subtree replacement is appropriate.
+ *
+ * Doctrine: CAP 413 §4.66/§4.67 — pilot-initiated go-around announcement
+ * at the decision-altitude gate, climb runway-heading, re-enter the
+ * normal traffic circuit.
+ */
+internal fun applyPlannedGoAround(
+    mission: PilotMission,
+    aircraft: AircraftState,
+    now: SimTime,
+): PlannedGoAroundResult {
+    val updatedMission = mission.resetForGoAround(now)
+    return PlannedGoAroundResult(
+        intent = PilotIntent(
+            targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+            phase = PilotPhase.Final,
+            route = PilotRoute.None,
+            targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
+        ),
+        mission = updatedMission,
     )
 }
 

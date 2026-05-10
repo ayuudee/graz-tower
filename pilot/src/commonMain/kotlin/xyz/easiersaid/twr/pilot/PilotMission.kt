@@ -11,14 +11,68 @@ import xyz.easiersaid.twr.protocol.SimTime
  * the controller; the controller learns broad service intent from the
  * [xyz.easiersaid.twr.sim.FlightStrip] back-channel and per-circuit intent
  * from the pilot's downwind radio call.
+ *
+ * fn-11.1: [CircuitTraining] now carries a typed list of [CircuitOutcome] —
+ * the per-circuit outcome the pilot's training plan dictates (touch-and-go /
+ * full-stop / planned go-around). Replaces the old `(circuits, fullStopOnLast)`
+ * constructor which couldn't express a planned go-around outcome at all.
+ * The mapping is lossless for the existing scenarios:
+ *  - old `(circuits=N, fullStopOnLast=true)` ≡ new
+ *    `List(N - 1) { TouchAndGo } + listOf(FullStop)`.
+ *  - old `(circuits=1)` ≡ new `listOf(FullStop)`.
+ *  - `fullStopOnLast=false` had no call sites; the new shape's terminal-
+ *    `FullStop` invariant excludes airborne-terminal sessions outright (they
+ *    would silently wedge `groundArrivalTask`).
  */
 sealed interface HighLevelGoal {
     data class Departure(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
     data class Arrival(val from: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
-    data class CircuitTraining(val circuits: Int, val fullStopOnLast: Boolean = true) : HighLevelGoal {
-        init { require(circuits > 0) { "CircuitTraining requires at least 1 circuit" } }
+
+    /**
+     * Circuit training — the pilot's instructor-authored per-circuit plan,
+     * one [CircuitOutcome] per circuit. List length determines circuit count.
+     *
+     * Invariants (enforced by [init]):
+     *  - non-empty (at least one circuit).
+     *  - terminal outcome must be [CircuitOutcome.FullStop] — the mission
+     *    appends `groundArrivalTask()` after the last circuit, which expects
+     *    the aircraft to be on the ground. Terminating airborne (TouchAndGo
+     *    or GoAround) would silently wedge that step.
+     */
+    data class CircuitTraining(val outcomes: List<CircuitOutcome>) : HighLevelGoal {
+        init {
+            require(outcomes.isNotEmpty()) { "CircuitTraining requires at least 1 outcome" }
+            require(outcomes.last() == CircuitOutcome.FullStop) {
+                "CircuitTraining must terminate with FullStop (got ${outcomes.last()})"
+            }
+        }
     }
     data class Transit(val destination: xyz.easiersaid.twr.protocol.AerodromeId? = null) : HighLevelGoal
+}
+
+/**
+ * Per-circuit outcome the pilot's training plan dictates — one element per
+ * circuit in [HighLevelGoal.CircuitTraining.outcomes]. The pilot's mission-
+ * tree compiler ([planMission]) decomposes each outcome into a per-circuit
+ * compound:
+ *  - [TouchAndGo] → [touchAndGoCircuitTask] (lands then lifts off again).
+ *  - [FullStop] → [circuitTask] (lands and rolls out — the only outcome
+ *    permitted as the terminal element).
+ *  - [GoAround] → [plannedGoAroundCircuitTask] (flies down to short-final
+ *    altitude, transmits "going around" per CAP 413 §4.67, climbs out via
+ *    the published go-around path, re-enters the circuit). Doctrinally
+ *    faithful to flight-school training: the instructor pre-arranges a
+ *    go-around at short-final to exercise the procedure without the pilot
+ *    needing a sensor trigger.
+ *
+ * Sealed `data object` leaves: payload-free today; future extensions (e.g.
+ * per-circuit altitude target, per-circuit runway selection) can be added
+ * by widening a leaf to `data class` without breaking call sites.
+ */
+sealed interface CircuitOutcome {
+    data object TouchAndGo : CircuitOutcome
+    data object FullStop : CircuitOutcome
+    data object GoAround : CircuitOutcome
 }
 
 /**
@@ -389,6 +443,20 @@ enum class MissionStep {
     // Airborne (VFR circuit)
     FLY_DEPARTURE, FLY_DOWNWIND, REPORT_DOWNWIND, AWAIT_SEQUENCING,
     FLY_BASE, REPORT_BASE, FLY_FINAL, REPORT_FINAL, AWAIT_LANDING_CLEARANCE,
+    /**
+     * fn-11.1 (G3a-trained): final leg whose PHYSICAL completion fires when
+     * the aircraft crosses short-final altitude (`DECISION_ALTITUDE_M`,
+     * ~100 m / ~330 ft AGL). Used only by [plannedGoAroundCircuitTask] —
+     * the pilot's training plan dictates a go-around at the short-final
+     * decision gate. Routes the same as [FLY_FINAL] (no per-leg altitude
+     * support is needed; the route planner aliases this step's airborne
+     * routing to FLY_FINAL's). MUST NOT be aliased into the
+     * `ClearedToLand`/`ClearedTouchAndGo` step-completion list — clearance
+     * receipt does NOT advance this step; only the altitude/phase gate
+     * does. Otherwise the pilot would skip the trained go-around and
+     * proceed straight to GOING_AROUND on clearance receipt.
+     */
+    FLY_FINAL_TO_SHORT_FINAL,
     // Airborne (IFR)
     FLY_SID, FLY_EN_ROUTE, FLY_STAR, FLY_APPROACH, FLY_MISSED_APPROACH,
     // Landing + post-landing
@@ -489,6 +557,13 @@ fun ifrGoAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
  * The controller never sees this tree. The pilot expresses their plan to
  * the controller through the radio (Reports, Requests, Acknowledgements);
  * the broad service intent is in the flight strip pre-briefing.
+ *
+ * fn-11.1: [HighLevelGoal.CircuitTraining]'s arm walks the typed
+ * [CircuitOutcome] list. Each outcome compiles to its per-circuit compound
+ * via an exhaustive sealed `when`: [CircuitOutcome.TouchAndGo] →
+ * [touchAndGoCircuitTask], [CircuitOutcome.FullStop] → [circuitTask],
+ * [CircuitOutcome.GoAround] → [plannedGoAroundCircuitTask] (the planned
+ * short-final go-around).
  */
 fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when (goal) {
     is HighLevelGoal.Departure -> if (!ifr) CompoundTask(TaskName.Depart, listOf(
@@ -513,10 +588,15 @@ fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when 
     ))
     is HighLevelGoal.CircuitTraining -> {
         // Circuit training is always VFR — ifr parameter is ignored.
-        val circuitTasks = (1..goal.circuits).map { i ->
-            val isLast = i == goal.circuits && goal.fullStopOnLast
-            if (isLast) circuitTask() // full stop: includes LAND
-            else touchAndGoCircuitTask() // T&G: includes LAND then lifts off
+        // fn-11.1: per-circuit branching on the typed [CircuitOutcome] list.
+        // Sealed `when` is exhaustive at compile time — adding a new outcome
+        // is a compile error, not a silent fallthrough.
+        val circuitTasks = goal.outcomes.map { outcome ->
+            when (outcome) {
+                is CircuitOutcome.TouchAndGo -> touchAndGoCircuitTask()
+                is CircuitOutcome.FullStop -> circuitTask()
+                is CircuitOutcome.GoAround -> plannedGoAroundCircuitTask()
+            }
         }
         CompoundTask(TaskName.CircuitTraining,
             listOf(groundDepartureTask()) + circuitTasks + listOf(groundArrivalTask()))
@@ -582,6 +662,55 @@ fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.TouchAndGo, li
     // ARR-TNG-AIRBORNE on the controller side completes the arrival
     // commitment so the next circuit can form a fresh one.
     PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+))
+
+/**
+ * fn-11.1: planned go-around circuit — fly the pattern down to short-final,
+ * then climb out via the published go-around path before re-entering the
+ * circuit for the next outcome.
+ *
+ * Doctrinally faithful to flight-school training (FAA AFH §9, CAP 413
+ * §4.66/§4.67): the instructor pre-arranges a go-around at the short-final
+ * decision gate to exercise the procedure. The pilot's mission tree is the
+ * sole trigger — no sensor event, no runtime subtree replacement (cf. the
+ * reactive [Pilot.applySelfInitiatedGoAround] path which fires on
+ * [xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance]).
+ *
+ * Outer compound name is [TaskName.Circuit] (NOT [TaskName.CircuitAfterGoAround]),
+ * because structurally this IS a circuit — the go-around does not begin
+ * until the inner [goAroundTask] subtree fires. Other consumers
+ * (`toFlightStrip`, `isCircuitLike`, route arms) see it as a regular
+ * circuit until the GA primitive becomes active.
+ *
+ * Step list:
+ *  - FLY_DEPARTURE → FLY_DOWNWIND → REPORT_DOWNWIND (per-circuit pattern)
+ *  - AWAIT_SEQUENCING → FLY_BASE → REPORT_BASE
+ *  - **FLY_FINAL_TO_SHORT_FINAL** (replaces FLY_FINAL — completes by altitude
+ *    at `DECISION_ALTITUDE_M`, NOT by reaching the threshold)
+ *  - [goAroundTask] (GOING_AROUND primitive: REPORTED — emits
+ *    `Report(GoingAround)` per CAP 413 §4.67).
+ *
+ * No `REPORT_FINAL` step: by short-final the pilot has already satisfied
+ * `HasReportedPositionCall` via REPORT_DOWNWIND + REPORT_BASE, so the
+ * controller's ARR-LAND rule can issue `ClearedToLand` proactively (this
+ * is the GA-POST-CLEAR regression-source case). No `AWAIT_LANDING_CLEARANCE`
+ * either — the pilot is going around, not waiting for clearance to land.
+ *
+ * After GOING_AROUND completes, the next outcome's compound takes over via
+ * the standard `outcomes.map` list-walk in [planMission]'s CircuitTraining
+ * arm. The Circuit-mode go-around route is built by the planner-side
+ * special-case in `Pilot.kt:planRoute` (mirrors the Visual-mode special-case
+ * for the reactive flow).
+ */
+fun plannedGoAroundCircuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
+    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_DOWNWIND, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.AWAIT_SEQUENCING, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.FLY_BASE, CompletionMode.PHYSICAL),
+    PrimitiveTask(MissionStep.REPORT_BASE, CompletionMode.REPORTED),
+    PrimitiveTask(MissionStep.FLY_FINAL_TO_SHORT_FINAL, CompletionMode.PHYSICAL),
+    goAroundTask(),
 ))
 
 /**
@@ -667,7 +796,14 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
     val preBase = preCircuit + setOf(
         MissionStep.REPORT_DOWNWIND, MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE,
     )
-    val preFinal = preBase + setOf(MissionStep.REPORT_BASE, MissionStep.FLY_FINAL)
+    // FLY_FINAL_TO_SHORT_FINAL (fn-11.1) is the trained-GA equivalent of
+    // FLY_FINAL — both are "I'm flying the FINAL leg" steps. A pilot who
+    // spawns already on PilotPhase.Final has flown past the FINAL-leg
+    // entry regardless of which variant the active circuit uses, so both
+    // are skipped together.
+    val preFinal = preBase + setOf(
+        MissionStep.REPORT_BASE, MissionStep.FLY_FINAL, MissionStep.FLY_FINAL_TO_SHORT_FINAL,
+    )
     val preLand = preFinal + setOf(
         MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND,
     )

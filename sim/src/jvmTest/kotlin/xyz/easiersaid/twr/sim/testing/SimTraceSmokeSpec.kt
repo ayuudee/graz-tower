@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.sim.testing
 
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
@@ -174,7 +175,9 @@ class SimTraceSmokeSpec {
         val now = SimTime.ZERO
         val aircraftId = AircraftId("OE-ABC")
         val mission = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1),
+            // fn-11.1: typed-outcome migration — listOf(FullStop) is the
+            // structurally equivalent shape for the old default-arg (circuits=1, fullStopOnLast=true).
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
             startPhase = PilotPhase.AtStand,
             time = now,
         )

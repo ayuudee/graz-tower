@@ -6,6 +6,7 @@ import kotlin.test.fail
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
@@ -55,12 +56,12 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  * reaching G1.
  *
  * Mission shape: both aircraft fly **one** full-stop circuit
- * (`circuits = 1, fullStopOnLast = true` -> first circuit IS full-stop,
- * no T&G). This avoids the `TouchAndGoCircuitTask` / mid-circuit
- * intent flip that fn-8.3 fixed in B5-α; the goal here is pure multi-
- * aircraft sequencing on a single runway.
+ * (`outcomes = listOf(CircuitOutcome.FullStop)` — first and only circuit
+ * IS full-stop, no T&G). This avoids the `TouchAndGoCircuitTask` /
+ * mid-circuit intent flip that fn-8.3 fixed in B5-α; the goal here is
+ * pure multi-aircraft sequencing on a single runway.
  *
- * @see G1TwoAircraftCircuitsTest the `circuits=2` sibling.
+ * @see G1TwoAircraftCircuitsTest the two-circuit sibling.
  */
 class G1TwoAircraftMinimalSpec {
 
@@ -87,16 +88,19 @@ class G1TwoAircraftMinimalSpec {
         val standPointA = startPoints.getValue(aircraftAId)
         val standPointB = startPoints.getValue(aircraftBId)
 
-        // circuits=1, fullStopOnLast=true → ONE full-stop circuit per aircraft.
+        // fn-11.1: typed-outcome migration — listOf(FullStop) is the
+        // structurally equivalent shape for the old (circuits=1, fullStopOnLast=true).
+        // ONE full-stop circuit per aircraft.
+        val oneFullStopCircuit = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop))
         val missionA = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            goal = oneFullStopCircuit,
             startPhase = PilotPhase.AtStand,
             time = now,
             filedPlan = fixture.flightPlans[aircraftAId]
                 ?: fail("LOWG_TWO_AIRCRAFT fixture missing flight plan for $aircraftAId"),
         )
         val missionB = createMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            goal = oneFullStopCircuit,
             startPhase = PilotPhase.AtStand,
             time = now,
             filedPlan = fixture.flightPlans[aircraftBId]

@@ -108,7 +108,7 @@ class AtisLetterPropagationSpec {
         // Assert: with REPORT_DOWNWIND active and ATIS published, no
         // emitted transmission carries `atisCode`.
         val mission = PilotMission(
-            goal = HighLevelGoal.CircuitTraining(circuits = 1, fullStopOnLast = true),
+            goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
             root = CompoundTask(
                 name = TaskName.Circuit,
                 children = listOf(
