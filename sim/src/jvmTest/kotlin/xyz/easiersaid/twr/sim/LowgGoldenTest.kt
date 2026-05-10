@@ -71,7 +71,7 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      instructed-obstruction).
  * @see G3aRunwayObstructionContinueApproachTest the single-aerodrome
  *      pre-clearance CONTINUE APPROACH sibling (fn-13 — same fixture as
- *      G3a-obstruction, but with a 20s `clearsAt` TTL authored at the
+ *      G3a-obstruction, but with a 5s `clearsAt` TTL authored at the
  *      AwaitApproach stage; the `ObstructionClearsInTime` predicate
  *      holds and the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule fires
  *      instead of the GA, exercising the pre-clearance ladder middle

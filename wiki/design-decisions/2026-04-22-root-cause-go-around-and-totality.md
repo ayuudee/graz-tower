@@ -196,7 +196,7 @@ controller delays landing clearance via `Instruction.ContinueApproach`
 - **fn-13.2** — sim-level golden test
   `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt`.
   Same fixture as G3a-obstruction; the distinguishing surface is the
-  20s `clearsAt` TTL (vs G3a-obstruction's 60s) and the authorship
+  5s `clearsAt` TTL (vs G3a-obstruction's 60s) and the authorship
   predicate (stage = AwaitApproach pre-clearance vs G3a-obstruction's
   post-clearance phase=Final). Three-layer pin pattern extended with
   **stage NON-regression** as the KEY behavioural signature: CA has

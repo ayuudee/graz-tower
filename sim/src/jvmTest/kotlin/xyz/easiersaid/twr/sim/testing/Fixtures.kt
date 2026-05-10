@@ -45,7 +45,7 @@ import xyz.easiersaid.twr.protocol.Wind
  *    — single-aircraft pre-clearance CONTINUE APPROACH on a short-TTL
  *    world-authored runway obstruction that clears in time per fn-13's
  *    `ObstructionClearsInTime` predicate; same fixture, distinguishing
- *    surface is the 20-second `clearsAt` TTL + pre-clearance authorship
+ *    surface is the 5-second `clearsAt` TTL + pre-clearance authorship
  *    stage versus G3a-obstruction's 60-second post-clearance variant —
  *    the two tests together cover the three-state pre-clearance ladder
  *    of CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)).

@@ -1204,7 +1204,7 @@ class G3aRunwayObstructionContinueApproachTest {
         val completionMs = completionCursor.time.millis
         // First-GREEN observed wall (fn-13.2 calibration run): 896_000 ms
         // (~14.9 sim minutes). Single-aircraft, single planned circuit,
-        // pre-clearance CONTINUE APPROACH (20s obstruction window). The
+        // pre-clearance CONTINUE APPROACH (5s obstruction window). The
         // wall is materially SHORTER than G3a-obstruction's GA test
         // (~1399 s) because the CA path does NOT regress the commitment
         // — the aircraft continues the same approach and lands on the
