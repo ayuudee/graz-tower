@@ -134,11 +134,16 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *      `<from-stage> ∈ {LandingClearanceIssued, AwaitLandedObserved}`
  *      (post-clearance because `T_obs > T_ClearedToLand`; which
  *      specific post-clearance stage depends on radio queue / tick
- *      cadence — both are valid per Decision Context #3a). Post-
- *      regression sticky witnesses
- *      (`touchedDownDuringCommitment`,
+ *      cadence — both are valid per Decision Context #3a). The
+ *      regression time **equals** the GoAround decision-cycle time
+ *      (the `SimEvent.ControllerCycle` event that emitted the GA
+ *      instruction) — equality, not `<=`, since `Immediate`
+ *      advancement updates the commitment in the same
+ *      `controllerDecide` invocation. Post-regression sticky
+ *      witnesses (`touchedDownDuringCommitment`,
  *      `observedReportsDuringCommitment`) are reset via fn-8.3's
- *      reset machinery.
+ *      reset machinery; `obstructionGoAroundIssuedThisAttempt`
+ *      no-refire witness is set.
  *    - Layer 3 — **Kinematic non-event**: the aircraft does NOT enter
  *      `LandingRoll` or `Vacating` phase before
  *      `Report(GoingAround).time` — the obstruction-driven GA
@@ -149,13 +154,19 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    Detected per obstruction lifetime). Per fn-12 Decision #3 the
  *    events are per-controller-scoped; this pin scopes to the TOWER's
  *    belief slice rather than a global trace count.
- *  - **Companion transmission pin:** alongside the `GoAround`
- *    instruction, a `RunwayObstructionInformation` companion is emitted
- *    in the same controller-output cycle (both come from the same
- *    `deriveCompanionOutputs` invocation), with `GoAround.txStart <
- *    RunwayObstructionInformation.txStart` after radio serialization.
- *    Per ICAO Doc 4444 §7.4.1.4.1(c) and §8.9.6.1.8, the reason for the
- *    GA is mandatory.
+ *  - **Companion transmission pin (same decision cycle):** alongside
+ *    the `GoAround` instruction, a `RunwayObstructionInformation`
+ *    companion is emitted by the **same** `controllerDecide`
+ *    invocation (both outputs are produced by the same
+ *    `deriveCompanionOutputs` call inside one `SimEvent.ControllerCycle`
+ *    step). The pin asserts that the GoAround's decision-cycle time
+ *    equals the companion's decision-cycle time (`==`, not just
+ *    "ordered close together") — preventing a later standalone
+ *    obstruction-info response from satisfying the pin. Radio
+ *    serialization then produces `GoAround.txStart <
+ *    RunwayObstructionInformation.txStart` (strict `<`). Per ICAO Doc
+ *    4444 §7.4.1.4.1(c) and §8.9.6.1.8, the reason for the GA is
+ *    mandatory and doctrinally bound to the GA instruction.
  *  - **R7 vacate-coordination closure** (per fn-8.3 discipline): after
  *    the recovery circuit's full-stop landing, the tower's coordination
  *    ledger contains no leftover `AfterLandingVacateVia` /
@@ -402,6 +413,38 @@ class G3aRunwayObstructionTest {
         for (t in trace.transitionsOf { st -> st.aircraft[aircraftId]?.phase }) {
             println("  [${t.after.time.millis}ms] ${t.from} → ${t.to}")
         }
+        println("Tower controller transmissions (id, startedAt, decision-cycle):")
+        for (step in trace.steps) {
+            val ev = step.event
+            if (ev is SimEvent.TransmissionStart && ev.transmission.speaker is SpeakerRef.Controller &&
+                (ev.transmission.speaker as SpeakerRef.Controller).id == tower.id
+            ) {
+                val tx = ev.transmission
+                val klass = when (val u = tx.utterance) {
+                    is Utterance.FromController -> u.output::class.simpleName +
+                        when (val o = u.output) {
+                            is ControllerOutput.Instruct -> ":" + o.instruction::class.simpleName
+                            is ControllerOutput.Respond -> ":" + o.response::class.simpleName
+                        }
+                    else -> "?"
+                }
+                // Find decision cycle for diagnostic (don't fail on the test path).
+                var priorNextId = trace.initial.nextTransmissionId
+                var cycleMs: Long? = null
+                for (s in trace.steps) {
+                    val e = s.event
+                    val post = s.state.nextTransmissionId
+                    if (e is SimEvent.ControllerCycle && e.controllerId == tower.id &&
+                        priorNextId <= tx.id.value && tx.id.value < post
+                    ) {
+                        cycleMs = e.time.millis
+                        break
+                    }
+                    priorNextId = post
+                }
+                println("  id=${tx.id.value} startedAt=${tx.startedAt.millis}ms decisionCycle=${cycleMs ?: "<none>"}ms $klass")
+            }
+        }
         println("─── end G3a-obstruction per-aircraft trace summary ───")
         println()
 
@@ -513,6 +556,29 @@ class G3aRunwayObstructionTest {
             }
         val goAroundMs = goAroundInstrRecord.time.millis
 
+        // Resolve the controller decision-cycle time that EMITTED the GoAround.
+        // `applyControllerOutputs` mints the `InFlightTransmission` and writes
+        // it into `state.inFlightTransmissions` inside the same
+        // `SimEvent.ControllerCycle` step that produced the output. The
+        // resulting post-cycle state therefore contains the transmission's
+        // `TransmissionId` while the prior state does not. The cycle's
+        // `event.time` is the canonical "decision-cycle time" — distinct
+        // from the transmission's `startedAt` (which may be later when
+        // outputs serialize across multi-second utterance durations,
+        // possibly past the next `CONTROLLER_CYCLE_INTERVAL`).
+        //
+        // Per the task spec's Layer 2 pin: `Stage_regression.time ==
+        // GoAround_decision.time`. We need this as a separate value because
+        // `goAroundMs` is the radio start time, not the decision time.
+        val goAroundTxId = extractTransmissionId(trace, goAroundInstrRecord, "GoAround instruction", journey)
+        val goAroundDecisionCycleMs = findEmittingCycleMs(
+            trace = trace,
+            controller = tower.id,
+            txId = goAroundTxId,
+            txDescription = "GoAround instruction",
+            journey = journey,
+        )
+
         // Find the RunwayObstructionInformation companion record.
         val companionRecord = records.firstOrNull { rec ->
             val out = (rec.utterance as? Utterance.FromController)?.output ?: return@firstOrNull false
@@ -535,6 +601,39 @@ class G3aRunwayObstructionTest {
                 "authored ${obstructionClearsAt[0]}. The companion's clearsAt is the obstruction's " +
                 "clearsAt from the BeliefState.runwayObstructions slice; drift here indicates the " +
                 "ObstructionInfo carrier on the ProposedAction dropped or mutated the field.\n$journey"
+        }
+
+        // Resolve the controller decision-cycle time that emitted the companion.
+        val companionTxId = extractTransmissionId(trace, companionRecord, "RunwayObstructionInformation companion", journey)
+        val companionDecisionCycleMs = findEmittingCycleMs(
+            trace = trace,
+            controller = tower.id,
+            txId = companionTxId,
+            txDescription = "RunwayObstructionInformation companion",
+            journey = journey,
+        )
+
+        // ── R8 — Same controller decision/output cycle pin ─────────────────
+        //
+        // The companion is required to be emitted in the SAME controllerDecide
+        // invocation as the GoAround instruction (per epic R8 + Decision #9
+        // — ICAO §7.4.1.4.1(c) treats the reason as part of the GA, not a
+        // standalone advisory). Both outputs come from a single
+        // `deriveCompanionOutputs` call inside one `ControllerCycle` step;
+        // they MUST share that step's decision-cycle time. Without this pin,
+        // a later standalone `RunwayObstructionInformation` response —
+        // unrelated to the GA — would satisfy a tx-only ordering check.
+        check(goAroundDecisionCycleMs == companionDecisionCycleMs) {
+            "Same-decision-cycle pin: GoAround and RunwayObstructionInformation companion must " +
+                "be emitted in the same controllerDecide cycle (same `SimEvent.ControllerCycle` " +
+                "step for the tower). GoAround decision-cycle=${goAroundDecisionCycleMs}ms, " +
+                "companion decision-cycle=${companionDecisionCycleMs}ms. Mismatch indicates the " +
+                "companion was emitted by a different cycle than the GA — either (i) a later " +
+                "standalone obstruction-info response from a different rule fire, or (ii) the " +
+                "`deriveCompanionOutputs` invocation split GoAround and companion across cycles. " +
+                "The mandatory reason-on-radio (ICAO §7.4.1.4.1(c)) is doctrinally bound to the " +
+                "GA instruction; emitting them in separate cycles allows the pilot to act on the " +
+                "GA without the reason.\n$journey"
         }
 
         // Pilot's GoingAround report.
@@ -648,12 +747,17 @@ class G3aRunwayObstructionTest {
         //
         // Pin assertion: exactly one regression transition with from-stage
         // in `{LandingClearanceIssued, AwaitLandedObserved}` to
-        // `AwaitDownwind`. The regression time equals the GoAround's
-        // controller-output-cycle time (`Stage_regression.time ==
-        // GoAround_decision.time`). We assert `Stage_regression.time <=
-        // GoAround.txStart` (decision-cycle is at-or-before transmission-
-        // start; the controller decides first, then the radio queue
-        // begins serializing).
+        // `AwaitDownwind`. **`Stage_regression.time == GoAround.decisionTime`**
+        // (equality, not <=). `Immediate` advancement updates the commitment
+        // in the same `controllerDecide` invocation that emits the GoAround
+        // output, so the post-`ControllerCycle` state snapshot (which is what
+        // `commitmentStageTransitions` reads) shows the new stage at exactly
+        // the cycle's `event.time`. Strict `<` or strict `>` would indicate
+        // a different code path: a strict `<` would mean a separate earlier
+        // cycle advanced the stage (decoupling rule fire from
+        // commitment update); a strict `>` would mean `GA-POST-CLEAR`
+        // interrupt advanced the stage on a later cycle (a different code
+        // path). Both invalidate the `Immediate` advancement contract.
 
         val stageTransitions = trace.commitmentStageTransitions(aircraftId, tower.id)
         val postClearStages = setOf<TowerArrivalStage>(
@@ -675,13 +779,29 @@ class G3aRunwayObstructionTest {
         }
         val regression = regressions.single()
 
-        check(regression.after.time.millis <= goAroundMs) {
-            "Decision-cycle pin: stage regression at ${regression.after.time.millis}ms must " +
-                "be at-or-before GoAround.txStart (${goAroundMs}ms). `Immediate` advancement " +
-                "happens in the same controllerDecide cycle as the rule fire; the radio " +
-                "transmission queue then starts. Regression strictly AFTER GoAround.txStart " +
-                "would indicate the stage advanced via the `GA-POST-CLEAR` interrupt instead " +
-                "of `Immediate` advancement — a different code path.\n$journey"
+        check(regression.after.time.millis == goAroundDecisionCycleMs) {
+            "Decision-cycle equality pin: stage regression at ${regression.after.time.millis}ms " +
+                "must equal GoAround decision-cycle time (${goAroundDecisionCycleMs}ms). " +
+                "`Immediate` advancement updates the commitment in the SAME `controllerDecide` " +
+                "invocation that emits the GoAround output — the post-cycle state snapshot " +
+                "must show the new stage at exactly the cycle's `event.time`. " +
+                "Strict < would indicate a separate earlier cycle advanced the stage (decoupling " +
+                "rule fire from commitment update); strict > would indicate `GA-POST-CLEAR` " +
+                "interrupt advanced the stage on a later cycle. Both invalidate the `Immediate` " +
+                "advancement contract. (GoAround.txStart=${goAroundMs}ms; the radio " +
+                "transmission's start follows the decision cycle.)\n$journey"
+        }
+
+        // Defensive: decision-cycle is at-or-before tx-start (the controller
+        // decides first, then `applyControllerOutputs` queues the radio
+        // transmission). Strict > would indicate the radio transmission
+        // was queued at a time before its originating cycle — a sim-engine
+        // invariant violation.
+        check(goAroundDecisionCycleMs <= goAroundMs) {
+            "Decision-vs-tx ordering pin: GoAround decision-cycle " +
+                "(${goAroundDecisionCycleMs}ms) must be at-or-before GoAround.txStart " +
+                "(${goAroundMs}ms). Reversal indicates a sim-engine invariant violation — " +
+                "transmissions cannot start before the cycle that emitted them.\n$journey"
         }
 
         // Post-regression sticky witnesses are reset. Same shape as
@@ -831,6 +951,110 @@ class G3aRunwayObstructionTest {
         val stage = commitment.stage
         return stage == TowerArrivalStage.LandingClearanceIssued ||
             stage == TowerArrivalStage.AwaitLandedObserved
+    }
+
+    /**
+     * Extract the [xyz.easiersaid.twr.sim.TransmissionId] for a controller
+     * transmission record by scanning the trace's `TransmissionStart` events
+     * for the matching `(startedAt, utterance)` pair.
+     *
+     * The test-side `TransmissionRecord` is a projection over the
+     * `InFlightTransmission` that drops the id; the id lives only on
+     * `SimEvent.TransmissionStart.transmission.id`. We need the id to walk
+     * back to the originating `ControllerCycle` step (the cycle whose
+     * post-state newly contains the id).
+     *
+     * Matches by `(startedAt, utterance)` — those two uniquely identify a
+     * transmission within the run (the runner emits one
+     * `SimEvent.TransmissionStart` per minted `InFlightTransmission`, and
+     * each carries a distinct id even when utterances repeat).
+     */
+    private fun extractTransmissionId(
+        trace: xyz.easiersaid.twr.sim.testing.SimTrace,
+        record: xyz.easiersaid.twr.sim.testing.TransmissionRecord,
+        description: String,
+        journey: String,
+    ): xyz.easiersaid.twr.sim.TransmissionId {
+        for (step in trace.steps) {
+            val ev = step.event
+            if (ev is SimEvent.TransmissionStart &&
+                ev.transmission.startedAt == record.time &&
+                ev.transmission.utterance == record.utterance
+            ) {
+                return ev.transmission.id
+            }
+        }
+        fail(
+            "Could not locate `SimEvent.TransmissionStart` matching $description at " +
+                "${record.time.millis}ms. The record was projected from the trace but the " +
+                "underlying event is missing — sim-engine invariant violation or a record/" +
+                "event projection drift.\n$journey"
+        )
+    }
+
+    /**
+     * Walk the trace to find the controller decision-cycle time that EMITTED
+     * a given transmission, identified by its [txId]. `applyControllerOutputs`
+     * mints the `InFlightTransmission` inside the same `controllerDecide`
+     * invocation that produced the output: it calls `state.mintTransmissionId()`
+     * which increments `state.nextTransmissionId`. The transmission itself
+     * is NOT yet written to `state.inFlightTransmissions` (that happens later,
+     * when the queued `SimEvent.TransmissionStart` fires) — but the
+     * `nextTransmissionId` counter IS bumped past [txId] in the originating
+     * cycle's post-state.
+     *
+     * The originating cycle is therefore the **first** `SimEvent.ControllerCycle`
+     * for [controller] whose post-state has `nextTransmissionId > txId.value`
+     * AND whose pre-state had `nextTransmissionId <= txId.value`. The cycle's
+     * `event.time` is the canonical "decision-cycle time" for outputs produced
+     * in that cycle — distinct from the transmission's `startedAt`, which
+     * may be later when outputs serialize past the next
+     * `CONTROLLER_CYCLE_INTERVAL` (e.g. when one output's utterance duration
+     * exceeds the cycle gap and the next output's `startedAt` lands inside
+     * the following cycle's window).
+     *
+     * The decision-cycle invariant we want is "GoAround + companion were
+     * emitted by the SAME `controllerDecide` invocation"; the cycle that
+     * minted the txId is that invocation.
+     *
+     * Returns the `event.time` of that cycle. Fails loudly if no cycle for
+     * [controller] minted [txId] — that would indicate the transmission was
+     * minted by a different controller's cycle, by a non-cycle code path
+     * (sim-engine invariant violation), or the trace is missing the cycle's
+     * post-state.
+     */
+    private fun findEmittingCycleMs(
+        trace: xyz.easiersaid.twr.sim.testing.SimTrace,
+        controller: xyz.easiersaid.twr.protocol.ControllerId,
+        txId: xyz.easiersaid.twr.sim.TransmissionId,
+        txDescription: String,
+        journey: String,
+    ): Long {
+        // The minted id satisfies `pre.nextTransmissionId <= txId.value <
+        // post.nextTransmissionId` for exactly one step (the one that
+        // mints it via `mintTransmissionId`). For a `ControllerCycle`
+        // event, that step is the cycle whose `controllerDecide` +
+        // `applyControllerOutputs` produced this output.
+        var priorNextId = trace.initial.nextTransmissionId
+        for (step in trace.steps) {
+            val postNextId = step.state.nextTransmissionId
+            val ev = step.event
+            if (ev is SimEvent.ControllerCycle &&
+                ev.controllerId == controller &&
+                priorNextId <= txId.value &&
+                txId.value < postNextId
+            ) {
+                return ev.time.millis
+            }
+            priorNextId = postNextId
+        }
+        fail(
+            "No `SimEvent.ControllerCycle` for controller $controller minted transmission id " +
+                "${txId.value} (looking for $txDescription's emitting cycle). Either the " +
+                "transmission was minted by a different controller, by a non-cycle code path, " +
+                "or the trace is missing the cycle's post-state — all sim-engine invariant " +
+                "violations.\n$journey"
+        )
     }
 
     /**
