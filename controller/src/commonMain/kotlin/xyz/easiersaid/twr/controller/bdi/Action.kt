@@ -76,10 +76,20 @@ data class TrafficInfo(
  * downstream callers already have `clearsAt` extracted from the belief
  * slice, and the protocol leaf carries primitives, so passing primitives
  * through avoids a redundant unwrap at the companion-emit site.
+ *
+ * **fn-13.1 (R3) — companion trace regs split**: optional
+ * [companionTraceRegs] overrides the regulation refs cited on the emitted
+ * `RunwayObstructionInformation`'s `DecisionTrace`. Default-null preserves
+ * fn-12's GA companion regs (`ICAO4444_7_4_1_4_1`, `ICAO4444_8_9_6_1_8`,
+ * `CAP413_4_65`). The CONTINUE APPROACH path populates the field with
+ * pre-clearance refs (`CAP413_4_55`, `CAP413_4_56`, `ICAO4444_12_3_4_16`,
+ * `ICAO4444_8_9_6_1_8`) — `CAP413_4_65` (missed-approach phraseology) and
+ * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate) are explicitly excluded.
  */
 data class ObstructionInfo(
     val runway: RunwayId,
     val clearsAt: SimTime,
+    val companionTraceRegs: List<xyz.easiersaid.twr.protocol.RegulationRef>? = null,
 )
 
 /**
@@ -261,6 +271,82 @@ data object ObstructionGoAroundAction : RuleAction {
         ).right()
     }
 }
+
+/**
+ * fn-13.1 (R3): action for `ARR-CONTINUE-APPROACH-OBSTRUCTION`. Issues a
+ * `ContinueApproach` instruction with `reason = RUNWAY_OBSTRUCTED` AND
+ * populates `obstructionInfo` so `Controller.deriveCompanionOutputs` emits
+ * the `RunwayObstructionInformation` companion (per CAP 413 §4.55-4.56 +
+ * ICAO Doc 4444 §12.3.4.16(d) — pre-clearance reason-on-radio for delayed
+ * landing clearance).
+ *
+ * **Reason set directly** (R2 / codex iter 2): the existing
+ * `inferContinueApproachReason` helper has signature
+ * `(AircraftObservation, OperatorContext)` — no `Commitment` parameter —
+ * so it cannot read per-aircraft obstruction belief without scope leak.
+ * This action sets `RUNWAY_OBSTRUCTED` inline; the existing
+ * `ContinueApproachAction` (traffic-driven path) continues to use
+ * `inferContinueApproachReason` unchanged.
+ *
+ * **Companion trace regs split** (R3): populates
+ * `obstructionInfo.companionTraceRegs` with the pre-clearance regulation
+ * refs (`CAP413_4_55`, `CAP413_4_56`, `ICAO4444_12_3_4_16`,
+ * `ICAO4444_8_9_6_1_8`). `CAP413_4_65` (missed-approach phraseology) AND
+ * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate) are EXCLUDED — they
+ * are wrong for the pre-clearance CONTINUE APPROACH case.
+ *
+ * Returns `Either<ActionResolutionFailure, ProposedAction>` — typed-error
+ * path. Two failure modes surface as `Left` (same defensive pattern as
+ * [ObstructionGoAroundAction]):
+ *  - No runway in commitment or active beliefs.
+ *  - Runway not in `runwayObstructions` slice (stale-belief race — the
+ *    guard reads the same slice, so a guard-passed → action-fail sequence
+ *    indicates the belief drifted between guard evaluation and action
+ *    resolution).
+ *
+ * Both fail closed (rule emits no candidate; arbitration logs the skipped
+ * action). No `!!`; no silent swallow.
+ */
+data object ObstructionContinueApproachAction : RuleAction {
+    override fun resolve(
+        ac: AircraftObservation,
+        commitment: Commitment,
+        ctx: OperatorContext,
+    ): Either<ActionResolutionFailure, ProposedAction> {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway
+            ?: return ActionResolutionFailure(
+                "ObstructionContinueApproachAction: no runway in commitment or active beliefs for ${ac.id}",
+            ).left()
+        val obstruction = ctx.beliefs.runwayObstructions[runway]
+            ?: return ActionResolutionFailure(
+                "ObstructionContinueApproachAction: runway $runway not in runwayObstructions for ${ac.id}",
+            ).left()
+        return ProposedAction(
+            instruction = ContinueApproach(
+                target = ac.id,
+                reason = ContinueApproachReason.RUNWAY_OBSTRUCTED,
+            ),
+            obstructionInfo = ObstructionInfo(
+                runway = runway,
+                clearsAt = obstruction.clearsAt,
+                companionTraceRegs = CONTINUE_APPROACH_OBSTRUCTION_COMPANION_REGS,
+            ),
+        ).right()
+    }
+}
+
+/**
+ * fn-13.1 (R3): CONTINUE APPROACH companion trace regs — pre-clearance
+ * doctrinal refs. Excludes `CAP413_4_65` (missed-approach phraseology) and
+ * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate).
+ */
+private val CONTINUE_APPROACH_OBSTRUCTION_COMPANION_REGS:
+    List<xyz.easiersaid.twr.protocol.RegulationRef> = listOf(
+    xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_55,
+    xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_56,
+    xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_12_3_4_16,
+    xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_8_9_6_1_8,
+)
 
 data object VacateAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> {

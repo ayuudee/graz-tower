@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-10T20:48:20.844198Z",
+  "depends_on": [
+    "fn-13-g3a-obstruction-continue-approach-three.1"
+  ],
+  "epic": "fn-13-g3a-obstruction-continue-approach-three",
+  "id": "fn-13-g3a-obstruction-continue-approach-three.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-13-g3a-obstruction-continue-approach-three.2.md",
+  "status": "todo",
+  "title": "G3aRunwayObstructionContinueApproachTest sim test + cross-reference doc updates",
+  "updated_at": "2026-05-10T20:51:01.838106Z"
+}

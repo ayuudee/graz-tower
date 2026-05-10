@@ -371,11 +371,75 @@ object RegulationDatabase {
         category = RegulationCategory.PHRASEOLOGY,
     )
 
+    /**
+     * fn-13.1 (R7): CONTINUE APPROACH — runway obstructed at final.
+     *
+     * Upgraded in place from a placeholder. Tighter principle per docs-scout
+     * guidance: this regulation describes the pre-clearance CONTINUE APPROACH
+     * surface — runway obstructed at/after the 4 NM final report but
+     * expected to be available in good time for a safe landing. Distinct
+     * from CAP 413 §4.53 (cancellation of issued landing clearance, which
+     * is post-clearance).
+     */
     val CAP413_4_55 = RegulationRef(
         document = "CAP_413", edition = "27th ed. (2023)", section = "§4.55",
-        title = "Continue approach — delayed landing clearance",
-        principle = "When runway is occupied but expected to clear, controller delays landing clearance with continue approach",
+        title = "Continue approach — runway obstructed at final",
+        principle = "When the runway is obstructed at or after the 4 NM final report but is expected to be " +
+            "available in good time for a safe landing, the controller delays landing clearance and " +
+            "instructs CONTINUE APPROACH; pilot reads back",
         category = RegulationCategory.GUIDANCE,
+    )
+
+    /**
+     * fn-13.1 (R7): cancellation of issued landing clearance.
+     *
+     * Post-clearance counterpart to §4.55: when a controller cancels an
+     * already-issued landing clearance but expects re-issue in good time
+     * for a safe landing, the phraseology is CONTINUE APPROACH, CANCEL
+     * LANDING CLEARANCE (reason), ACKNOWLEDGE with pilot readback.
+     *
+     * Entry added for future-proofing — fn-13.1 itself fires the
+     * pre-clearance variant (AwaitApproach stage only). The post-clearance
+     * cancellation path is a future deferment.
+     */
+    val CAP413_4_53 = RegulationRef(
+        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.53",
+        title = "Cancellation of issued landing clearance",
+        principle = "Where a controller cancels an issued landing clearance but expects re-issue in good time " +
+            "for a safe landing, the reason should be given if time permits; phraseology is " +
+            "CONTINUE APPROACH, CANCEL LANDING CLEARANCE (reason), ACKNOWLEDGE with pilot readback",
+        category = RegulationCategory.PHRASEOLOGY,
+    )
+
+    /**
+     * fn-13.1 (R7): CONTINUE APPROACH is not a landing clearance.
+     *
+     * The instruction tells the pilot to continue the approach pending a
+     * landing decision. The pilot must NOT treat it as an invitation to
+     * land — they wait for the landing clearance proper or initiate a
+     * missed approach if the clearance does not materialise.
+     */
+    val CAP413_4_56 = RegulationRef(
+        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.56",
+        title = "CONTINUE APPROACH is not a landing clearance",
+        principle = "The instruction CONTINUE APPROACH is not an invitation to land; the pilot must wait " +
+            "for landing clearance or initiate a missed approach",
+        category = RegulationCategory.PHRASEOLOGY,
+    )
+
+    /**
+     * fn-13.1 (R7): ICAO Doc 4444 §12.3.4.16 — landing-clearance phraseology
+     * including CONTINUE APPROACH variants. Captures the formal phraseology
+     * `CONTINUE APPROACH [PREPARE FOR POSSIBLE GO AROUND]` used when
+     * landing clearance is delayed. Explicitly stipulates that this is NOT
+     * a landing clearance (mirrors CAP 413 §4.56).
+     */
+    val ICAO4444_12_3_4_16 = RegulationRef(
+        document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§12.3.4.16",
+        title = "Landing clearance phraseology — approach instructions",
+        principle = "CONTINUE APPROACH [PREPARE FOR POSSIBLE GO AROUND] is the approach-instruction phraseology " +
+            "used when landing clearance is delayed; it is not a landing clearance",
+        category = RegulationCategory.PHRASEOLOGY,
     )
 
     /**

@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-10T20:48:20.703767Z",
+  "depends_on": [],
+  "epic": "fn-13-g3a-obstruction-continue-approach-three",
+  "id": "fn-13-g3a-obstruction-continue-approach-three.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-13-g3a-obstruction-continue-approach-three.1.md",
+  "status": "todo",
+  "title": "Foundation: ObstructionClearsInTime guard + reason enum + action + new rule + GA rule narrowing + witness + RegulationDatabase + controller-level tests",
+  "updated_at": "2026-05-10T20:51:01.696142Z"
+}

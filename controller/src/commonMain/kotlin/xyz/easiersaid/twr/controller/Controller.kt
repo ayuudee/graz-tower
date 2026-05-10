@@ -1,3 +1,10 @@
+@file:Suppress("TooManyFunctions") // Controller.kt is the pipeline orchestration root —
+// every stage (advanceCommittedStages, applyCommittedOutputWitnesses,
+// applySupersessionCleanup callers, readback validation, escalation,
+// reactive interventions, handoff re-issue, etc.) is a small focused
+// function. Extracting them into separate files would fragment the
+// pipeline's single-cycle narrative.
+
 package xyz.easiersaid.twr.controller
 
 import arrow.core.Either
@@ -161,11 +168,17 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
     val reactiveInstructs = reactiveOutputs.filterIsInstance<ControllerOutput.Instruct>()
 
     val stageAdvancedBeliefs = advanceCommittedStages(beliefs, runs, committedAircraft)
+    // fn-13.1 (R6): set committed-output-only witnesses for rules that
+    // either advance with nextStage = null (cannot be hosted inside
+    // advanceCommittedStages) or whose witness semantics are independent
+    // of stage progression. Walks only `committedAircraft` runs — the
+    // failure-mode suppression is structurally impossible.
+    val witnessedBeliefs = applyCommittedOutputWitnesses(stageAdvancedBeliefs, runs, committedAircraft)
 
     // Supersession cleanup: procedural outputs first, then reactive outputs.
     val proceduralInstructions = outputs.map { it.target to it.instruction }
     val reactiveInstructions = reactiveInstructs.map { it.target to it.instruction }
-    val afterProceduralSupersession = applySupersessionCleanup(stageAdvancedBeliefs, proceduralInstructions)
+    val afterProceduralSupersession = applySupersessionCleanup(witnessedBeliefs, proceduralInstructions)
     val afterReactiveSupersession = applySupersessionCleanup(afterProceduralSupersession, reactiveInstructions)
 
     val (responses, afterValidation) = validatedReadbackResponses(view, afterReactiveSupersession)
@@ -528,14 +541,31 @@ private fun reconcileTowerArrival(
     // approach. The clear happens in the same event-processing tick as
     // the Downwind report folds, so the next cycle's rule evaluation
     // sees the cleared witness.
+    //
+    // fn-13.1 (R6 — re-arm hook extension): the CONTINUE APPROACH
+    // witness shares the same lifecycle (commitment-attempt-scoped,
+    // re-armed on next Downwind report). Clear BOTH witnesses on the
+    // same trigger so the fresh recovery approach can drive both a fresh
+    // obstruction GA and a fresh CONTINUE APPROACH if the obstruction
+    // pattern recurs.
     val downwindReportedThisCycle = events.any { ev ->
         ev is xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported &&
             ev.aircraft == acId &&
             ev.event is xyz.easiersaid.twr.protocol.ReportEvent.Downwind
     }
-    return if (downwindReportedThisCycle && withReports.obstructionGoAroundIssuedThisAttempt) {
-        withReports.copy(obstructionGoAroundIssuedThisAttempt = false)
-    } else withReports
+    val needsObstructionGaRearm =
+        downwindReportedThisCycle && withReports.obstructionGoAroundIssuedThisAttempt
+    val needsContinueApproachRearm =
+        downwindReportedThisCycle && withReports.continueApproachIssuedThisAttempt
+    return when {
+        needsObstructionGaRearm && needsContinueApproachRearm -> withReports.copy(
+            obstructionGoAroundIssuedThisAttempt = false,
+            continueApproachIssuedThisAttempt = false,
+        )
+        needsObstructionGaRearm -> withReports.copy(obstructionGoAroundIssuedThisAttempt = false)
+        needsContinueApproachRearm -> withReports.copy(continueApproachIssuedThisAttempt = false)
+        else -> withReports
+    }
 }
 
 /**
@@ -728,26 +758,69 @@ private fun advanceCommittedStages(
         pilotReadyDuringCommitment = false,
         observedReportsDuringCommitment = emptySet(),
     ) else advanced
-    // fn-12 (R7-no-refire): set the obstruction-GA witness ONLY when this
-    // rule's candidate has cleared arbitration + certification (i.e. the
-    // aircraft IS in `committedAircraft` for this run). Stage-progression
-    // alone is insufficient as a no-refire mechanism — reconciliation may
-    // re-advance the aircraft back through eligible stages while the
-    // obstruction persists. Setting AFTER the regression-reset ensures
-    // the witness survives the regression's witness-reset (the regression
-    // resets touched-down / pilot-ready / observed-reports; the
-    // obstruction witness is approach-attempt-scoped and is meaningful on
-    // the regressed commitment).
-    val withObstructionWitness = if (
-        wasCommitted && result.trace.ruleId == "ARR-GO-AROUND-RUNWAY-OBSTRUCTED"
-    ) {
-        resetAdvanced.copy(obstructionGoAroundIssuedThisAttempt = true)
-    } else {
-        resetAdvanced
-    }
+    // fn-13.1: obstruction-witness setting was previously inlined here
+    // (fn-12 R7-no-refire); it now lives in [applyCommittedOutputWitnesses]
+    // because the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule has
+    // `nextStage = null` and `advanceCommittedStages` early-returns when
+    // `nextStage` is null (line above) — the witness pass would never run
+    // for CONTINUE APPROACH if it stayed here. Both obstruction-class
+    // witnesses (GA + CA) are set in the same dedicated pass after
+    // `advanceCommittedStages` returns, walking only committed runs.
     acc.copy(
-        commitments = acc.commitments + (run.aircraft to withObstructionWitness),
+        commitments = acc.commitments + (run.aircraft to resetAdvanced),
     )
+}
+
+/**
+ * fn-13.1 (R6 — witness-set timing): set commitment-scoped sticky
+ * witnesses for committed-output rules whose witnesses are not gated by
+ * stage advancement.
+ *
+ * Two cases today:
+ *  - `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` (fn-12) → sets
+ *    `obstructionGoAroundIssuedThisAttempt = true`. Has `nextStage =
+ *    AwaitDownwind` so [advanceCommittedStages] sees it, but the witness
+ *    semantics are independent of stage advancement (the witness re-arms
+ *    on `Report(Downwind)`, not on stage transitions).
+ *  - `ARR-CONTINUE-APPROACH-OBSTRUCTION` (fn-13.1) → sets
+ *    `continueApproachIssuedThisAttempt = true`. Has `nextStage = null`
+ *    so [advanceCommittedStages] cannot host the witness set
+ *    (early-returns when nextStage is null).
+ *
+ * **Set-only-on-committed-output discipline**: walks only runs where the
+ * aircraft appears in `committedAircraft` — by construction, candidates
+ * that lost arbitration OR failed certification are NOT in this set, so
+ * failed-arbitration suppression of legitimate next-cycle firings is
+ * structurally impossible.
+ *
+ * Runs AFTER [advanceCommittedStages] so the witness writes layer on top
+ * of any stage transitions; runs BEFORE supersession + readback validation
+ * + escalation so downstream stages see the updated witness state.
+ */
+private fun applyCommittedOutputWitnesses(
+    beliefs: BeliefState,
+    runs: List<ProcedureRun>,
+    committedAircraft: Set<AircraftId>,
+): BeliefState = runs.fold(beliefs) { acc, run ->
+    if (run.aircraft !in committedAircraft) return@fold acc
+    val ruleId = run.result.trace.ruleId
+    val current = acc.commitments[run.aircraft] ?: return@fold acc
+    val updated = when (ruleId) {
+        "ARR-GO-AROUND-RUNWAY-OBSTRUCTED" ->
+            // Setting AFTER `advanceCommittedStages`'s regression-reset (which
+            // resets touched-down / pilot-ready / observed-reports) ensures
+            // the witness survives — the obstruction witness is
+            // approach-attempt-scoped and is meaningful on the regressed
+            // commitment.
+            current.copy(obstructionGoAroundIssuedThisAttempt = true)
+        "ARR-CONTINUE-APPROACH-OBSTRUCTION" ->
+            // nextStage = null on this rule → commitment stage unchanged →
+            // the witness is the only suppression mechanism preventing the
+            // rule from re-firing every cycle while both predicates persist.
+            current.copy(continueApproachIssuedThisAttempt = true)
+        else -> return@fold acc
+    }
+    acc.copy(commitments = acc.commitments + (run.aircraft to updated))
 }
 
 /**
@@ -809,12 +882,25 @@ private fun deriveCompanionOutputs(
         }
 
         // fn-12 (R8): obstruction-info companion. Mirrors the trafficInfo
-        // block above. Emitted alongside the dispatched `GoAround`
-        // instruction when the rule was `ARR-GO-AROUND-RUNWAY-OBSTRUCTED`
-        // (per ICAO §7.4.1.4.1(c) + §8.9.6.1.8 — reason on radio is MUST).
-        // The companion's DecisionTrace carries the same regulation refs
-        // as the rule for trace-correlation parity.
+        // block above. Emitted alongside the dispatched `GoAround` or
+        // `ContinueApproach` instruction when the rule populated
+        // `obstructionInfo` (per ICAO §7.4.1.4.1(c) + §8.9.6.1.8 — reason
+        // on radio is MUST for GA; CAP 413 §4.55-4.56 + ICAO 4444
+        // §12.3.4.16(d) for CONTINUE APPROACH).
+        //
+        // fn-13.1 (R3 — companion trace regs split): when the action
+        // populates `info.companionTraceRegs`, use those refs instead of
+        // the fn-12 GA defaults. CONTINUE APPROACH must NOT cite
+        // `CAP413_4_65` (missed-approach phraseology) or `ICAO4444_7_4_1_4_1`
+        // (post-clearance GA mandate). The fallback preserves fn-12's GA
+        // companion behaviour (regression check: GA companion still cites
+        // §7.4.1.4.1, §8.9.6.1.8, §4.65).
         action?.obstructionInfo?.let { info ->
+            val regulations = info.companionTraceRegs ?: listOf(
+                RegulationDatabase.ICAO4444_7_4_1_4_1,
+                RegulationDatabase.ICAO4444_8_9_6_1_8,
+                RegulationDatabase.CAP413_4_65,
+            )
             companions.add(ControllerOutput.Respond(
                 target = output.target,
                 response = RunwayObstructionInformation(
@@ -824,12 +910,8 @@ private fun deriveCompanionOutputs(
                 ),
                 trace = DecisionTrace(
                     ruleId = "OBSTRUCTION-INFO",
-                    description = "Inform aircraft of runway obstruction per ICAO 4444 §7.4.1.4.1(c)",
-                    regulations = listOf(
-                        RegulationDatabase.ICAO4444_7_4_1_4_1,
-                        RegulationDatabase.ICAO4444_8_9_6_1_8,
-                        RegulationDatabase.CAP413_4_65,
-                    ),
+                    description = "Inform aircraft of runway obstruction per ICAO 4444 §7.4.1.4.1(c) / §12.3.4.16(d)",
+                    regulations = regulations,
                 ),
             ))
         }

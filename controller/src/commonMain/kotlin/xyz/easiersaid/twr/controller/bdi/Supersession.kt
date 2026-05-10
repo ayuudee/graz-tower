@@ -5,6 +5,7 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ContinueApproach
 import xyz.easiersaid.twr.protocol.Disregard
 import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.ExtendDownwind
@@ -69,6 +70,27 @@ val SUPERSESSION_RELATIONS: List<SupersessionRelation> = listOf(
     // post-regression must NOT advance the commitment back out of
     // `AwaitDownwind`.
     SupersessionRelation(GoAround::class, ClearedTouchAndGo::class, PendingReadbackPolicy.ABANDON),
+
+    // fn-13.1 (R5b — supersession extension): escalation path — when an
+    // obstruction-driven CONTINUE APPROACH is in flight and the
+    // `ObstructionClearsInTime` predicate flips false on a subsequent
+    // cycle (obstruction slipped, ETA shrunk, groundSpeed dropped),
+    // `obstructionGoAroundRuleAwaitApproach` fires the GA. The stale
+    // ContinueApproach coordination MUST be cleaned up so it does not
+    // (a) appear in the coordination ledger after the regression to
+    // AwaitDownwind, or (b) gate downstream rules via `NoPendingReadback`.
+    SupersessionRelation(GoAround::class, ContinueApproach::class, PendingReadbackPolicy.ABANDON),
+
+    // fn-13.1 (R5b — supersession extension): normal-success path — when
+    // the obstruction clears (predicate stops being relevant), `ARR-LAND`
+    // / `ARR-LAND-TNG` fire the landing clearance. The stale
+    // ContinueApproach coordination MUST be cleaned up; without this the
+    // ledger retains a non-terminal CONTINUE APPROACH coordination across
+    // the landing, and `NoPendingReadback(instructionOfType<ContinueApproach>())`
+    // on the existing `ARR-CONTINUE` rule would otherwise gate-block
+    // future rule firings unsafely.
+    SupersessionRelation(ClearedToLand::class, ContinueApproach::class, PendingReadbackPolicy.ABANDON),
+    SupersessionRelation(ClearedTouchAndGo::class, ContinueApproach::class, PendingReadbackPolicy.ABANDON),
 
     // Speed: new speed control absorbs (replaces) the old — readback obligation transfers
     SupersessionRelation(ReduceSpeedTo::class, MaintainSpeed::class, PendingReadbackPolicy.ABSORB),

@@ -184,6 +184,32 @@ data class Commitment(
      * `feedback_no_corners.md`.
      */
     val obstructionGoAroundIssuedThisAttempt: Boolean = false,
+    /**
+     * fn-13.1 (R6): approach-attempt-scoped witness that the controller has
+     * already issued an obstruction-driven `ContinueApproach` for this
+     * aircraft on the **current** approach attempt. Read by the
+     * [xyz.easiersaid.twr.controller.bdi.ContinueApproachAlreadyIssuedThisAttempt]
+     * guard (negated in `ARR-CONTINUE-APPROACH-OBSTRUCTION`'s guard) to
+     * prevent re-firing on subsequent rule-evaluation cycles while both
+     * the obstruction and the clears-in-time predicate persist.
+     *
+     * **Set timing — committed-output path only**. Set in the new
+     * `applyCommittedOutputWitnesses` pass (Controller.kt) after
+     * arbitration and certification have accepted the rule's candidate
+     * output. NOT set at candidate-emit time. Stage progression CANNOT
+     * gate re-fire because the rule has `nextStage = null` — the witness
+     * is the only suppression mechanism.
+     *
+     * **Re-arm sites** (clears back to `false`):
+     *  - Next `Report(Downwind)` arrival from this aircraft on this
+     *    commitment, in `reconcileTowerArrival`. Same trigger as the
+     *    sibling GA witness.
+     *  - Commitment replacement (a fresh `Commitment(...)` via
+     *    `createCommitment` takes the default `false`).
+     *
+     * Mirrors [obstructionGoAroundIssuedThisAttempt]'s lifecycle.
+     */
+    val continueApproachIssuedThisAttempt: Boolean = false,
 ) {
     val isComplete: Boolean get() = stage.isComplete
 }

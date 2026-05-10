@@ -574,6 +574,118 @@ data object ObstructionGoAroundAlreadyIssuedThisAttempt : RuleGuard {
         commitment.obstructionGoAroundIssuedThisAttempt
 }
 
+/**
+ * fn-13.1 (R6): the controller has already issued an obstruction-driven
+ * CONTINUE APPROACH for this aircraft on the **current** approach attempt.
+ * Reads [Commitment.continueApproachIssuedThisAttempt] — the sticky witness
+ * set in the new `applyCommittedOutputWitnesses` pass (post-arbitration +
+ * certification) when `ARR-CONTINUE-APPROACH-OBSTRUCTION` survives.
+ *
+ * Used by `ARR-CONTINUE-APPROACH-OBSTRUCTION` to prevent re-firing on
+ * subsequent rule-evaluation cycles while both the obstruction and the
+ * clears-in-time predicate persist. The rule has `nextStage = null` (no
+ * stage advancement), so stage progression alone CANNOT gate re-fire —
+ * the witness is the only suppression mechanism. Re-armed on
+ * `Report(Downwind)` in `reconcileTowerArrival` and on commitment
+ * replacement (fresh `Commitment` takes the default `false`).
+ *
+ * Same lifecycle as [ObstructionGoAroundAlreadyIssuedThisAttempt] — both
+ * witnesses re-arm on the same trigger.
+ */
+data object ContinueApproachAlreadyIssuedThisAttempt : RuleGuard {
+    override val failureMessage = "Obstruction-driven CONTINUE APPROACH has not been issued this approach attempt"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean =
+        commitment.continueApproachIssuedThisAttempt
+}
+
+/**
+ * fn-13.1 (R1): safety margin added to obstruction-clears-in-time predicate
+ * to absorb pilot-reaction-time variance + sensor-update-cycle latency.
+ *
+ * 10 seconds is a doctrinally-defensible buffer:
+ *  - Pilot perception-action time on an unexpected runway clear ≈ 3-5s
+ *  - Sim sensor cadence is 1 Hz; clearsAt may land mid-cycle (≈1s slack)
+ *  - Threshold reaches ground-speed-derived ETA before clearsAt; the gap
+ *    closes within the margin so the controller doesn't risk a borderline
+ *    "clears just-in-time" CONTINUE APPROACH that GA-recovers anyway.
+ *
+ * Fail-closed direction: margin is ADDED to the gap (clearsAt - now), so
+ * any missing input or marginal arithmetic biases the predicate toward
+ * `false` → GA wins.
+ */
+const val OBSTRUCTION_CLEAR_SAFETY_MARGIN_S: Long = 10L
+
+/** Derived ms form. Kept as a separate constant to avoid recomputation in the guard. */
+const val OBSTRUCTION_CLEAR_SAFETY_MARGIN_MS: Long = OBSTRUCTION_CLEAR_SAFETY_MARGIN_S * 1000L
+
+/**
+ * fn-13.1 (R1): the runway obstruction (per
+ * [BeliefState.runwayObstructions]) is expected to clear in time for a
+ * safe landing — i.e. `(clearsAt - now) + safetyMargin <= eta-to-threshold`
+ * (all in milliseconds). When this predicate holds, the new
+ * `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule fires (delay landing clearance
+ * via CONTINUE APPROACH per CAP 413 §4.55-4.56 / ICAO Doc 4444 §12.3.4.16);
+ * when it does NOT hold, the `Not(ObstructionClearsInTime)` arm in
+ * `obstructionGoAroundRuleAwaitApproach` lets the GA rule fire.
+ *
+ * **Inputs**:
+ *  - `runway` from `commitment.runway ?: ctx.beliefs.activeRunway`
+ *  - `obstruction` from `ctx.beliefs.runwayObstructions[runway]`
+ *  - `groundSpeed` from `ac.groundSpeed` (nullable `Knots?`; `Knots.value`
+ *    is constrained to `> 0` at construction, but null surfaces as
+ *    fail-closed false)
+ *  - aircraft kinematic position from `ac.coords` (continuous surveillance
+ *    position) — **NOT** `worldIndex.positions[ac.position]` (the
+ *    graph-snapped point can mislead the predicate by tens of metres,
+ *    enough to flip the clears-in-time decision unsafely)
+ *  - threshold point from `ctx.worldIndex.thresholdByRunway[runway]`,
+ *    coordinate from `ctx.worldIndex.positions[thresholdPoint]`
+ *
+ * **Predicate** (in ms):
+ *  ```
+ *  groundSpeedMps = groundSpeed.value * 1852.0 / 3600.0   // knots → m/s
+ *  etaMs          = (distanceToThresholdM / groundSpeedMps * 1000.0).toLong()
+ *  (clearsAt.millis - ctx.time.millis) + OBSTRUCTION_CLEAR_SAFETY_MARGIN_MS <= etaMs
+ *  ```
+ *
+ * **Fail-closed direction**: any missing input → `false` → GA wins. This is
+ * the doctrinally conservative direction: a CONTINUE APPROACH issued onto
+ * an obstruction that turns out NOT to clear ends in a late GA; a GA fired
+ * onto an obstruction that DOES clear is recoverable in the next approach
+ * attempt. The asymmetry is intentional.
+ */
+data object ObstructionClearsInTime : RuleGuard {
+    override val failureMessage = "Runway obstruction will not clear in time for a safe landing"
+    @Suppress("ReturnCount") // explicit fail-closed early returns; folding obscures the predicate.
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway ?: return false
+        val obstruction = ctx.beliefs.runwayObstructions[runway] ?: return false
+        val groundSpeed = ac.groundSpeed ?: return false
+        // Knots.value is Int and constrained > 0 at construction — defensive
+        // belt-and-suspenders for any future construction path that relaxes
+        // the invariant.
+        if (groundSpeed.value <= 0) return false
+        val thresholdPoint = ctx.worldIndex.thresholdByRunway[runway] ?: return false
+        val thrPos = ctx.worldIndex.positions[thresholdPoint] ?: return false
+        // Use `ac.coords` (continuous surveillance position), NOT
+        // `worldIndex.positions[ac.position]` (graph-snapped). Snap error
+        // of even tens of metres could flip the predicate unsafely.
+        val dx = ac.coords.xMeters - thrPos.xMeters
+        val dy = ac.coords.yMeters - thrPos.yMeters
+        val distanceM = kotlin.math.sqrt(dx * dx + dy * dy)
+        if (!distanceM.isFinite() || distanceM < 0.0) return false
+        val groundSpeedMps = groundSpeed.value.toDouble() * 1852.0 / 3600.0
+        // groundSpeed.value > 0 by construction + the check above, so this
+        // division cannot produce NaN/Infinity unless distanceM is non-finite
+        // (already screened) — defensive.
+        val etaSeconds = distanceM / groundSpeedMps
+        if (!etaSeconds.isFinite() || etaSeconds < 0.0) return false
+        val etaMs = (etaSeconds * 1000.0).toLong()
+        val gapMs = obstruction.clearsAt.millis - ctx.time.millis + OBSTRUCTION_CLEAR_SAFETY_MARGIN_MS
+        return gapMs <= etaMs
+    }
+}
+
 // ── Weather ──────────────────────────────────────────────────────────
 
 /** Weather permits VFR operations — visibility >= 5000m. */

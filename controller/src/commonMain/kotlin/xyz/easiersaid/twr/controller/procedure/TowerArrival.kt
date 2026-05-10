@@ -28,6 +28,9 @@ import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.CoordinationIssued
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.ContinueApproachAlreadyIssuedThisAttempt
+import xyz.easiersaid.twr.controller.bdi.ObstructionClearsInTime
+import xyz.easiersaid.twr.controller.bdi.ObstructionContinueApproachAction
 import xyz.easiersaid.twr.controller.bdi.ObstructionGoAroundAction
 import xyz.easiersaid.twr.controller.bdi.ObstructionGoAroundAlreadyIssuedThisAttempt
 import xyz.easiersaid.twr.controller.bdi.OnApproach
@@ -54,6 +57,8 @@ import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
 import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_55
+import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_56
+import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_12_3_4_16
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_5
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_CIRCUIT_JOIN
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_CIRCUIT_REPORTS
@@ -208,21 +213,129 @@ private val LandingConditions = AllOf(listOf(
  * + §8.9.6.1.8 (reason on radio) + CAP 413 §4.65 (missed approach
  * phraseology).
  */
-private val obstructionGoAroundRule: AtcRule = AtcRule(
+/**
+ * fn-13.1 (R5): split out for the `AwaitApproach` stage placement.
+ *
+ * **Why two rule objects**: fn-13.1 narrows the AwaitApproach-stage GA
+ * placement with `Not(ObstructionClearsInTime)` for mutual exclusion with
+ * `ARR-CONTINUE-APPROACH-OBSTRUCTION` (which fires when the predicate is
+ * `true`). Post-clearance placements (`LandingClearanceIssued`,
+ * `AwaitLandedObserved`) are UNCHANGED per fn-13 epic Boundary #1 — once
+ * landing clearance is issued, the doctrine flips to GA-on-obstruction
+ * (CAP 413 §4.53 cancel-clearance path is a future deferment).
+ *
+ * **Shared rule id** (`ARR-GO-AROUND-RUNWAY-OBSTRUCTED`): both variants
+ * share the id because the [applyCommittedOutputWitnesses] pass in
+ * Controller.kt pattern-matches on `result.trace.ruleId` to set the
+ * obstruction-GA witness. Two ids would require duplicating the witness
+ * branch. Stage scope disambiguates which variant fires at runtime —
+ * `executeProcedure` uses the stage's rule list.
+ */
+private val obstructionGoAroundRuleAwaitApproach: AtcRule = AtcRule(
     id = "ARR-GO-AROUND-RUNWAY-OBSTRUCTED",
-    description = "Instruct go-around — runway obstructed during approach",
+    description = "Instruct go-around — runway obstructed during approach (clears too late)",
     regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_65),
     guard = AllOf(listOf(
         AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
         RunwayObstructed,
+        // fn-13.1 (R5): AwaitApproach-stage narrowing. When the
+        // obstruction is expected to clear in time, the new
+        // ARR-CONTINUE-APPROACH-OBSTRUCTION rule wins (placed BEFORE
+        // this rule in `stageRules[AwaitApproach]`); this rule fires
+        // only when the predicate is false (clears too late, missing
+        // groundSpeed, unknown threshold, etc. — fail-closed false → GA).
+        Not(ObstructionClearsInTime),
         // No-refire guard. Witness is set ONLY on the committed-output
-        // path (`advanceCommittedStages`), NOT at candidate-emit time —
-        // see fn-12 task spec § R7-no-refire.
+        // path (`applyCommittedOutputWitnesses`), NOT at candidate-emit
+        // time — see fn-12 task spec § R7-no-refire.
         Not(ObstructionGoAroundAlreadyIssuedThisAttempt),
     )),
     action = ObstructionGoAroundAction,
     nextStage = TowerArrivalStage.AwaitDownwind,
     urgency = Urgency.SAFETY,
+    advancementPolicy = AdvancementPolicy.Immediate,
+)
+
+/**
+ * fn-13.1 (R5): post-clearance placement — `LandingClearanceIssued` and
+ * `AwaitLandedObserved`. Original fn-12 shape, UNCHANGED per Boundary #1.
+ * Post-clearance obstructions always escalate to GA; the CONTINUE APPROACH
+ * surface is pre-clearance-only.
+ */
+private val obstructionGoAroundRulePostClearance: AtcRule = AtcRule(
+    id = "ARR-GO-AROUND-RUNWAY-OBSTRUCTED",
+    description = "Instruct go-around — runway obstructed during approach (post-clearance)",
+    regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_65),
+    guard = AllOf(listOf(
+        AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
+        RunwayObstructed,
+        // No-refire guard. Witness is set ONLY on the committed-output
+        // path (`applyCommittedOutputWitnesses`), NOT at candidate-emit
+        // time — see fn-12 task spec § R7-no-refire.
+        Not(ObstructionGoAroundAlreadyIssuedThisAttempt),
+    )),
+    action = ObstructionGoAroundAction,
+    nextStage = TowerArrivalStage.AwaitDownwind,
+    urgency = Urgency.SAFETY,
+    advancementPolicy = AdvancementPolicy.Immediate,
+)
+
+/**
+ * fn-13.1 (R4): obstruction-driven CONTINUE APPROACH — pre-clearance ladder
+ * middle state per CAP 413 §4.55-4.56 + ICAO Doc 4444 §12.3.4.16(d).
+ *
+ * Fires from `AwaitApproach` ONLY (Boundary #1: post-clearance always
+ * escalates to GA). Priority-placed BEFORE `obstructionGoAroundRuleAwaitApproach`
+ * in the stage rule list so that when the predicate holds, the CA rule
+ * wins selection-order. The GA rule's narrowed guard
+ * (`Not(ObstructionClearsInTime)`) provides defence-in-depth mutual
+ * exclusion: even if rule-selection priority changed, both rules would
+ * not pass their guards simultaneously.
+ *
+ * **No `nextStage`** (stays at `AwaitApproach`): once the obstruction
+ * clears or the predicate flips, the existing `ARR-LAND` / `ARR-LAND-TNG`
+ * rules (or the GA rule on escalation) take over without commitment
+ * re-formation. The `continueApproachIssuedThisAttempt` witness is the
+ * only suppression mechanism — set by the
+ * [applyCommittedOutputWitnesses] pass post-arbitration + certification.
+ * Re-armed on the next `Report(Downwind)` arrival in
+ * [reconcileTowerArrival] (shared lifecycle with the GA witness).
+ *
+ * **Urgency = TIME_SENSITIVE**: matches the existing traffic-driven
+ * `ARR-CONTINUE` rule. `PROGRESSION` would let arbitration's
+ * one-per-urgency budget delay the CA behind routine progression work,
+ * which is wrong on final. `SAFETY` is wrong doctrinally — CONTINUE
+ * APPROACH is not an emergency; it is the pre-clearance delay surface.
+ *
+ * **Regulations**: pre-clearance refs only. Excludes `CAP413_4_65`
+ * (missed-approach phraseology) and `ICAO4444_7_4_1_4_1` (post-clearance
+ * GA mandate). Same exclusion list as the companion-trace regs the action
+ * populates.
+ */
+private val obstructionContinueApproachRule: AtcRule = AtcRule(
+    id = "ARR-CONTINUE-APPROACH-OBSTRUCTION",
+    description = "Delay landing clearance via CONTINUE APPROACH — runway obstructed but expected to clear in time",
+    regulations = listOf(CAP413_4_55, CAP413_4_56, ICAO4444_12_3_4_16, ICAO4444_8_9_6_1_8),
+    guard = AllOf(listOf(
+        AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
+        RunwayObstructed,
+        ObstructionClearsInTime,
+        // GA witness check: if the GA fired earlier in this approach
+        // attempt, we don't issue a CA on top (the GA already regressed
+        // the commitment; a fresh CA on an aircraft mid-recovery would
+        // be doctrinally wrong).
+        Not(ObstructionGoAroundAlreadyIssuedThisAttempt),
+        // CA witness check: the rule has `nextStage = null` (stays at
+        // AwaitApproach), so without this gate the rule would re-fire
+        // every cycle while both predicates persist.
+        Not(ContinueApproachAlreadyIssuedThisAttempt),
+    )),
+    action = ObstructionContinueApproachAction,
+    // nextStage = null: stay at AwaitApproach. The witness is the
+    // suppression mechanism; downstream rules (ARR-LAND when the
+    // obstruction clears, the GA when it doesn't) re-fire from the
+    // same stage.
+    urgency = Urgency.TIME_SENSITIVE,
     advancementPolicy = AdvancementPolicy.Immediate,
 )
 
@@ -333,11 +446,25 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
         ),
         // ── AwaitApproach: sequence, delay, or clear to land ─────────
         TowerArrivalStage.AwaitApproach to listOf(
+            // fn-13.1 (R4): obstruction-driven CONTINUE APPROACH — fires
+            // FIRST when the obstruction is expected to clear in time
+            // (per CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)). When
+            // the predicate fails (clears too late / missing inputs),
+            // `obstructionGoAroundRuleAwaitApproach`'s narrowed guard
+            // (`Not(ObstructionClearsInTime)`) lets the GA fire instead.
+            // Priority placement matters: rule-selection is list-order
+            // (per `executeProcedure` first-match-wins).
+            obstructionContinueApproachRule,
             // fn-12 (R7): obstruction-driven GA — fires BEFORE the broader
             // generic GA rule so when the runway is BOTH obstructed AND
             // physically-not-clear, the obstruction-specific rule wins
             // and the obstruction-info companion is emitted.
-            obstructionGoAroundRule,
+            //
+            // fn-13.1 (R5): AwaitApproach-stage variant. Narrowed with
+            // `Not(ObstructionClearsInTime)` so the GA fires only when
+            // the CONTINUE APPROACH predicate fails — mutual exclusion
+            // with the new rule above.
+            obstructionGoAroundRuleAwaitApproach,
             // Controller-initiated go-around: runway was granted but is no longer clear
             AtcRule(
                 id = "ARR-GO-AROUND",
@@ -483,7 +610,13 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // fn-12 (R7): obstruction-driven GA — placed BEFORE the generic
             // GA rule so the obstruction-specific reason-on-radio companion
             // wins when both rules' guards would pass.
-            obstructionGoAroundRule,
+            //
+            // fn-13.1 (R5): post-clearance variant — UNCHANGED from fn-12.
+            // Boundary #1: once landing clearance is issued, the doctrine
+            // flips to GA-on-obstruction; the CONTINUE APPROACH surface
+            // is pre-clearance-only (CAP 413 §4.53 cancel-clearance path
+            // is a future deferment).
+            obstructionGoAroundRulePostClearance,
             // Controller-initiated go-around: runway was cleared but is no longer safe
             AtcRule(
                 id = "ARR-GO-AROUND-CLEARANCE-ISSUED",
@@ -576,7 +709,9 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // both of which are airborne predicates). Once the aircraft is
             // on-runway-on-ground, the existing `ARR-TNG-AIRBORNE` /
             // `ARR-VACATE` paths take over and this rule's guard fails.
-            obstructionGoAroundRule,
+            //
+            // fn-13.1 (R5): post-clearance variant — UNCHANGED from fn-12.
+            obstructionGoAroundRulePostClearance,
             // Touch-and-go: aircraft rolled, lifted off again — commitment completes
             // so reconciliation forms a fresh arrival for the next circuit. No vacate,
             // no handoff: the aircraft stays with Tower.

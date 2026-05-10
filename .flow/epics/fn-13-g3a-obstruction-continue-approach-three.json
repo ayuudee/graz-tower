@@ -1,0 +1,22 @@
+{
+  "branch_name": "fn-13-g3a-obstruction-continue-approach-three",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-10T20:45:37.057287Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [
+    "fn-12-g3a-obstruction-single-aircraft-atc",
+    "fn-8-g1-two-aircraft-vfr-circuits-at-lowg",
+    "fn-5-g2-cross-aerodrome-vfr-transit-lowg-ljmb"
+  ],
+  "id": "fn-13-g3a-obstruction-continue-approach-three",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-13-g3a-obstruction-continue-approach-three.md",
+  "status": "open",
+  "title": "G3a-obstruction-continue-approach \u2014 three-state ATC ladder per CAP 413 \u00a74.55-4.56",
+  "updated_at": "2026-05-10T20:48:12.603161Z"
+}

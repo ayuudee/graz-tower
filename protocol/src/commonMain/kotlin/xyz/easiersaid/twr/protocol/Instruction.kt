@@ -876,6 +876,21 @@ enum class ContinueApproachReason {
 
     /** Runway access has not yet been granted (queue position pending). */
     RUNWAY_ACCESS_PENDING,
+
+    /**
+     * fn-13.1 (R2): runway is declared obstructed (debris, vehicle, wildlife,
+     * etc. per `BeliefState.runwayObstructions`) but the obstruction is
+     * expected to clear in good time for a safe landing — CAP 413 §4.55-4.56
+     * + ICAO Doc 4444 §12.3.4.16(d). The companion
+     * `RunwayObstructionInformation` transmission carries the structured
+     * reason; verbalising it in the primary CONTINUE APPROACH transmission
+     * is optional per §4.56 ("may or may not explain why").
+     *
+     * Set directly by `ObstructionContinueApproachAction` — NOT inferred by
+     * `inferContinueApproachReason` (whose signature lacks `Commitment` and
+     * cannot read per-aircraft obstruction belief without scope leak).
+     */
+    RUNWAY_OBSTRUCTED,
 }
 
 data class JoinCircuit(
