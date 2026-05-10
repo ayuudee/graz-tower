@@ -197,11 +197,26 @@ class PlannedGoAroundSpec {
     // ── Test 1: Two-tick sequence ──────────────────────────────────────────
 
     @Test
-    fun `Tick A — FLY_FINAL_TO_SHORT_FINAL completion at decision altitude clears route + transmits GoingAround`() {
-        // Pilot at decision altitude on Final, FLY_FINAL_TO_SHORT_FINAL active,
-        // no airborne route (route value irrelevant here — DefaultPilot's
-        // onAirborneLeg with no route returns idle airborne intent).
-        val mission = missionAtFinalToShortFinalStep()
+    fun `Tick A — FLY_FINAL_TO_SHORT_FINAL completion at decision altitude clears route + state + transmits GoingAround`() {
+        // Pilot at decision altitude on Final, FLY_FINAL_TO_SHORT_FINAL active.
+        // Seed the mission with stale phase-local state that
+        // `resetForGoAround` is responsible for clearing — `hasClearance`
+        // (set by a prior ClearedToLand), `activeConstraints`
+        // (`ExtendingDownwind` from an earlier extend), `routeOverride`
+        // (vector from earlier ATC instruction), `altitudeRestrictionM`
+        // (StopClimbAt cap). The Tick A response must clear ALL of these
+        // so the next circuit attempt starts clean. Without seeding,
+        // a regression that removed `resetForGoAround(now)` could pass
+        // a tautological `hasClearance == false` assertion.
+        val mission = missionAtFinalToShortFinalStep().copy(
+            hasClearance = true,
+            activeConstraints = setOf(ActiveConstraint.ExtendingDownwind),
+            routeOverride = Some(
+                RouteOverride.Vectoring(xyz.easiersaid.twr.protocol.Heading.unsafe(180)),
+            ),
+            altitudeRestrictionM = Some(80.0),
+        )
+        val staticRootBeforeTickA = mission.root // pin: trained tree must NOT be replaced
         val world = syntheticWorld()
         val worldIndex = world.buildWorldIndex()
         val aircraft = aircraftAt(
@@ -232,13 +247,46 @@ class PlannedGoAroundSpec {
             output.transmissions.any { it is Report && it.events.any { e -> e is ReportEvent.GoingAround } },
             "Tick A: Report(GoingAround) per CAP 413 §4.67",
         )
-        // Mission state delta: hasClearance cleared (resetForGoAround applied).
+        // Mission state delta — every field that `resetForGoAround` covers,
+        // pinned independently. Together these prove the reset was applied
+        // (not just one cherry-picked field that might happen to coincide
+        // with default values).
         val newMission = output.updatedMission ?: fail("updatedMission must be non-null")
-        assertEquals(
-            false,
-            newMission.hasClearance,
-            "Tick A: resetForGoAround clears hasClearance",
+        assertEquals(false, newMission.hasClearance, "Tick A: resetForGoAround clears hasClearance")
+        assertTrue(
+            newMission.activeConstraints.isEmpty(),
+            "Tick A: resetForGoAround clears activeConstraints (got ${newMission.activeConstraints})",
         )
+        assertEquals(
+            None,
+            newMission.routeOverride,
+            "Tick A: resetForGoAround clears routeOverride (got ${newMission.routeOverride})",
+        )
+        assertEquals(
+            None,
+            newMission.altitudeRestrictionM,
+            "Tick A: resetForGoAround clears altitudeRestrictionM",
+        )
+        // Static mission root invariant: trained-GA Tick A does NOT call
+        // `replaceChild` (unlike the reactive `applySelfInitiatedGoAround`).
+        // The root structure is preserved — only the GOING_AROUND primitive
+        // becomes complete (via the cognitive layer's transmission update on
+        // a subsequent tick) within the already-compiled trained-GA tree.
+        // Comparing roots structurally proves no subtree replacement.
+        // (The pre-Tick-A mission has FLY_FINAL_TO_SHORT_FINAL active; Tick
+        // A advances to GOING_AROUND. The shape of the tree — every step
+        // primitive — is the same; only `completed` flags differ.)
+        assertEquals(
+            collectStepShape(staticRootBeforeTickA),
+            collectStepShape(newMission.root),
+            "Tick A must NOT call replaceChild — trained-GA tree was compiled with the GA at the right place",
+        )
+    }
+
+    /** Walk a TaskNode tree, collecting every primitive's MissionStep in order (ignoring `completed`). */
+    private fun collectStepShape(task: TaskNode): List<MissionStep> = when (task) {
+        is PrimitiveTask -> listOf(task.step)
+        is CompoundTask -> task.children.flatMap { collectStepShape(it) }
     }
 
     @Test
@@ -414,6 +462,42 @@ class PlannedGoAroundSpec {
             updated.hasClearance,
             "ClearedToLand still sets hasClearance — only the step-completion arm is decoupled",
         )
+    }
+
+    // ── Skip-set regression: post-final spawn must not wedge ───────────────
+
+    @Test
+    fun `trained-GA mission spawned in LandingRoll advances past FLY_FINAL_TO_SHORT_FINAL via skip set`() {
+        // Per fn-11.1 codex re-review finding #1: a trained-GA mission
+        // spawned post-final (LandingRoll / Vacating / ClearOfRunway) MUST
+        // NOT wedge with FLY_FINAL_TO_SHORT_FINAL active. The altitude gate
+        // in `isPhysicallyComplete` only fires for `phase is Final`
+        // (sealed-disjoint from LandingRoll), so without `preLand`
+        // including the new step, the mission could never advance.
+        val goal = HighLevelGoal.CircuitTraining(
+            outcomes = listOf(CircuitOutcome.GoAround, CircuitOutcome.FullStop),
+        )
+        val mission = createMission(
+            goal = goal,
+            startPhase = PilotPhase.LandingRoll,
+            time = now0,
+        )
+        // Walk the tree: every airborne step (including the trained-GA
+        // FLY_FINAL_TO_SHORT_FINAL primitive in the GA outcome's compound)
+        // must be marked complete by the skip-set.
+        val incompleteSteps = collectIncompleteSteps(mission.root)
+        assertTrue(
+            MissionStep.FLY_FINAL_TO_SHORT_FINAL !in incompleteSteps,
+            "Trained-GA spawn in LandingRoll must skip past FLY_FINAL_TO_SHORT_FINAL " +
+                "(else `isPhysicallyComplete`'s phase=Final guard wedges the mission). " +
+                "Got incomplete steps: $incompleteSteps",
+        )
+    }
+
+    /** Collect MissionSteps of all incomplete primitive leaves in a subtree, in tree order. */
+    private fun collectIncompleteSteps(task: TaskNode): List<MissionStep> = when (task) {
+        is PrimitiveTask -> if (!task.completed) listOf(task.step) else emptyList()
+        is CompoundTask -> task.children.flatMap { collectIncompleteSteps(it) }
     }
 
     // ── Test 4: Trained-GA REPORT_DOWNWIND carries CircuitIntent.FULL_STOP ──

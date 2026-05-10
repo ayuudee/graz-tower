@@ -796,18 +796,28 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
     val preBase = preCircuit + setOf(
         MissionStep.REPORT_DOWNWIND, MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE,
     )
+    // FLY_FINAL_TO_SHORT_FINAL (fn-11.1) is **deliberately absent** from
+    // `preFinal`. Unlike FLY_FINAL (which completes by reaching the FINAL-leg
+    // waypoint), the trained-GA short-final descent step completes by
+    // ALTITUDE (`DECISION_ALTITUDE_M`). A spawn on PilotPhase.Final at, say,
+    // 500m AGL has not yet crossed the decision gate; pre-completing the
+    // step would skip the trained-GA fork entirely and advance straight to
+    // GOING_AROUND. The altitude predicate in `isPhysicallyComplete` is the
+    // only correct trigger for a Final-phase spawn. Per fn-11.1 codex
+    // review finding #1.
     val preFinal = preBase + setOf(MissionStep.REPORT_BASE, MissionStep.FLY_FINAL)
-    // FLY_FINAL_TO_SHORT_FINAL (fn-11.1) is **deliberately absent** from the
-    // pre-final/pre-land skip sets. Unlike FLY_FINAL (which completes by
-    // reaching the FINAL-leg waypoint), the trained-GA short-final descent
-    // step completes by ALTITUDE (`DECISION_ALTITUDE_M`). A spawn on
-    // PilotPhase.Final at, say, 500m AGL has not yet crossed the decision
-    // gate; pre-completing the step would skip the trained-GA fork entirely
-    // and advance straight to GOING_AROUND. The altitude predicate in
-    // `isPhysicallyComplete` is the only correct trigger. Per fn-11.1
-    // codex review finding #1.
+    // FLY_FINAL_TO_SHORT_FINAL **is** included in `preLand` (for
+    // LandingRoll / Vacating / ClearOfRunway spawns). Symmetric to FLY_FINAL
+    // here: a post-touchdown / post-vacate spawn is past every airborne
+    // approach step. Without this, a trained-GA mission spawned on the
+    // runway would silently wedge: `isPhysicallyComplete` only completes
+    // FLY_FINAL_TO_SHORT_FINAL when `phase is Final` (sealed-disjoint from
+    // LandingRoll / Vacating / ClearOfRunway), so the mission could never
+    // advance. Per fn-11.1 codex re-review finding #1 (post-final spawn
+    // wedge).
     val preLand = preFinal + setOf(
         MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND,
+        MissionStep.FLY_FINAL_TO_SHORT_FINAL,
     )
 
     val stepsToSkip = when (startPhase) {
