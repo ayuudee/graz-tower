@@ -33,13 +33,22 @@ import xyz.easiersaid.twr.protocol.Wind
  *    single-aircraft trained go-around as circuit-training outcome;
  *    same fixture, distinguishing surface is the goal authorship
  *    `HighLevelGoal.CircuitTraining(outcomes = [GoAround, FullStop])`
- *    per `feedback_world_only_test_triggers.md`), and G3a-obstruction
+ *    per `feedback_world_only_test_triggers.md`), G3a-obstruction
  *    ([xyz.easiersaid.twr.sim.G3aRunwayObstructionTest] — single-
  *    aircraft ATC-instructed reactive go-around on a world-authored
  *    runway obstruction; same fixture, distinguishing surface is the
  *    one-shot `runway.obstruction = RunwayObstruction(clearsAt = ...)`
  *    mutation via `runUntilWithStateTrace`'s `onAfterEvent` hook per
- *    `feedback_world_only_test_triggers.md`).
+ *    `feedback_world_only_test_triggers.md`), and G3a-obstruction-
+ *    continue-approach
+ *    ([xyz.easiersaid.twr.sim.G3aRunwayObstructionContinueApproachTest]
+ *    — single-aircraft pre-clearance CONTINUE APPROACH on a short-TTL
+ *    world-authored runway obstruction that clears in time per fn-13's
+ *    `ObstructionClearsInTime` predicate; same fixture, distinguishing
+ *    surface is the 20-second `clearsAt` TTL + pre-clearance authorship
+ *    stage versus G3a-obstruction's 60-second post-clearance variant —
+ *    the two tests together cover the three-state pre-clearance ladder
+ *    of CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)).
  *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
  *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
  *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG

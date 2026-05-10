@@ -67,8 +67,14 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  * ([G3aRunwayObstructionTest]) is the single-aerodrome ATC-instructed-
  * GA sibling (reactive go-around on a world-authored runway
  * obstruction — `Runway.obstruction = RunwayObstruction(...)` one-shot
- * via `runUntilWithStateTrace`'s `onAfterEvent` hook). G2 is the single-
- * aircraft **cross-aerodrome** anchor.
+ * via `runUntilWithStateTrace`'s `onAfterEvent` hook); G3a-obstruction-
+ * continue-approach ([G3aRunwayObstructionContinueApproachTest]) is the
+ * single-aerodrome pre-clearance CONTINUE APPROACH sibling (fn-13 — same
+ * fixture as G3a-obstruction, short-TTL obstruction authored at
+ * AwaitApproach so the `ObstructionClearsInTime` predicate holds and
+ * the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule fires the
+ * pre-clearance ladder middle state per CAP 413 §4.55-4.56 / ICAO 4444
+ * §12.3.4.16(d)). G2 is the single-aircraft **cross-aerodrome** anchor.
  *
  * **Architectural anchors (R7 / R8):**
  * - The pilot reads only chart-equivalent data from `world.aerodromes[…]`;

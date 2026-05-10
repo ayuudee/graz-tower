@@ -69,6 +69,13 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      via `runUntilWithStateTrace`'s `onAfterEvent` hook). Closes the
  *      third reactive-GA path (self-initiated + pilot-trained + ATC-
  *      instructed-obstruction).
+ * @see G3aRunwayObstructionContinueApproachTest the single-aerodrome
+ *      pre-clearance CONTINUE APPROACH sibling (fn-13 — same fixture as
+ *      G3a-obstruction, but with a 20s `clearsAt` TTL authored at the
+ *      AwaitApproach stage; the `ObstructionClearsInTime` predicate
+ *      holds and the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule fires
+ *      instead of the GA, exercising the pre-clearance ladder middle
+ *      state per CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)).
  */
 class LowgGoldenTest {
 

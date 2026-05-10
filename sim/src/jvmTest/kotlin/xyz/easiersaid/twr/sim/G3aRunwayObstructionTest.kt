@@ -81,6 +81,16 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    reactive-ATC sibling: the controller initiates the GA in response
  *    to a world-state change rather than the pilot following a planned
  *    GA from the mission tree.
+ *  - G3a-obstruction-continue-approach
+ *    ([G3aRunwayObstructionContinueApproachTest]) — the **predicate-
+ *    fails-the-other-way** companion test (fn-13). Same fixture, same
+ *    world-authoring surface; the distinguishing surface is the TTL +
+ *    authorship stage: G3a-obstruction's 60s post-clearance TTL fails
+ *    `ObstructionClearsInTime` and fires GA; G3a-obstruction-continue-
+ *    approach's 20s pre-clearance TTL passes the predicate and fires
+ *    `Instruction.ContinueApproach(RUNWAY_OBSTRUCTED)` + companion
+ *    instead. The two tests together cover the three-state pre-
+ *    clearance ladder per CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d).
  *
  * **What G3a-obstruction distinctively pins:**
  *  - **World-only test trigger:** the test authors `runway.obstruction`

@@ -851,12 +851,49 @@ data class ClearedVisualApproach(
     val runway: RunwayId
 ) : Clearance, ApproachInstruction
 
+/**
+ * CONTINUE APPROACH — pre-clearance ladder middle state. The controller
+ * delays issuing landing clearance but does NOT instruct the pilot to
+ * go around; the pilot continues the approach and waits for either a
+ * landing clearance or a missed-approach instruction (CAP 413 §4.55-4.56;
+ * ICAO Doc 4444 §12.3.4.16(d)).
+ *
+ * **Consumers** — two distinct rules at `TowerArrival.stageRules[AwaitApproach]`:
+ *  - `ARR-CONTINUE` (existing) — fires on traffic-driven delays
+ *    (preceding traffic, runway access pending, preceding go-around).
+ *    Reason inferred via `inferContinueApproachReason(observation, ctx)`;
+ *    one of `TRAFFIC_LANDING`, `TRAFFIC_DEPARTING`, `TRAFFIC_CROSSING`,
+ *    `PRECEDING_GO_AROUND`, `RUNWAY_ACCESS_PENDING`.
+ *  - `ARR-CONTINUE-APPROACH-OBSTRUCTION` (fn-13) — fires on declared
+ *    runway obstruction when the `ObstructionClearsInTime` predicate
+ *    holds. Reason set inline by `ObstructionContinueApproachAction` to
+ *    `RUNWAY_OBSTRUCTED` (the `inferContinueApproachReason` helper
+ *    cannot read per-aircraft obstruction belief without scope leak).
+ *
+ * **Readback** — CONTINUE APPROACH has empty `requiredReadbackAtoms`
+ * per [InstructionReadback]: the pilot does NOT transmit a readback
+ * (out-of-scope per `D-PASS-continue-approach-pilot-readback`). The
+ * instruction nevertheless creates an `OutstandingCoordination` ledger
+ * entry on the controller side, superseded later by `ClearedToLand` /
+ * `ClearedTouchAndGo` (normal-success path; fn-13.1 supersession edges)
+ * or by `GoAround` (escalation path).
+ */
 data class ContinueApproach(
     override val target: AircraftId,
     /**
      * Optional reason shared with the pilot so they know *why* the landing clearance
      * is being withheld (CAP 413 §4.55 — "continue approach, [traffic rolling / runway
      * occupied / etc.]"). Null when the controller has no specific reason to share.
+     *
+     * **Four reason families** (post fn-13):
+     *  - Traffic delays — `TRAFFIC_LANDING`, `TRAFFIC_DEPARTING`,
+     *    `TRAFFIC_CROSSING`, `PRECEDING_GO_AROUND` (inferred from beliefs
+     *    by `inferContinueApproachReason`).
+     *  - Runway access pending — `RUNWAY_ACCESS_PENDING` (queue position
+     *    pending; inferred).
+     *  - Runway obstructed — `RUNWAY_OBSTRUCTED` (fn-13.1; declared
+     *    obstruction with predicted clearance in time; set inline by
+     *    `ObstructionContinueApproachAction`).
      */
     val reason: ContinueApproachReason? = null,
 ) : ApproachInstruction

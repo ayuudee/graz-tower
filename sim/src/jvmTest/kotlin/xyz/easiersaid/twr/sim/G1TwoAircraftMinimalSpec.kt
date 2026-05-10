@@ -70,6 +70,10 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *      sibling (reactive go-around on a world-authored runway obstruction;
  *      same R7 vacate-coordination closure invariant on the recovery
  *      landing).
+ * @see G3aRunwayObstructionContinueApproachTest the single-aerodrome
+ *      pre-clearance CONTINUE APPROACH sibling (fn-13 — short-TTL
+ *      obstruction at AwaitApproach; aircraft continues approach and
+ *      lands normally; same R7 vacate-coordination closure invariant).
  */
 class G1TwoAircraftMinimalSpec {
 

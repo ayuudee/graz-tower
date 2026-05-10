@@ -119,6 +119,12 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *    single-aircraft ATC-instructed reactive go-around on a world-
  *    authored runway obstruction. Reuses the same R7 vacate-
  *    coordination closure invariant at the recovery-circuit landing.
+ *  - G3a-obstruction-continue-approach —
+ *    [G3aRunwayObstructionContinueApproachTest] — single-aerodrome,
+ *    single-aircraft pre-clearance CONTINUE APPROACH on a short-TTL
+ *    world-authored runway obstruction that clears in time per fn-13.
+ *    Companion to G3a-obstruction: same fixture, predicate-eligible
+ *    branch fires the CA path instead of the GA.
  *
  * **What G1 distinctively pins (post fn-8.3 Phase 4 re-baseline):**
  *  - **Per-aircraft outcomes**: both aircraft complete their missions and

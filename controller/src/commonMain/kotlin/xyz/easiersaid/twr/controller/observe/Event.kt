@@ -73,6 +73,19 @@ import xyz.easiersaid.twr.protocol.Wilco
  * or controller-side state, never raw audio, never blocking calls" — see
  * `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
  * § Unified Event Taxonomy.
+ *
+ * **Note on fn-13 CONTINUE APPROACH (no new event source class).** The
+ * fn-13 epic adds the pre-clearance CONTINUE APPROACH ladder middle
+ * state but does NOT introduce a new `ControllerEvent` source class.
+ * `Instruction.ContinueApproach(reason = RUNWAY_OBSTRUCTED)` is a
+ * **controller output** (an `AtcInstruction` leaf emitted via
+ * `ControllerOutput.Instruct`), not a `ControllerEvent`. The trigger
+ * source remains the existing class-3 `RunwayObstructionDetected` /
+ * `RunwayObstructionCleared` world-state-derived events from fn-12; the
+ * new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule consumes those events
+ * via the `RunwayObstructed` + `ObstructionClearsInTime` guard
+ * conjunction and produces the CA + companion outputs. No event
+ * taxonomy widening is required.
  */
 sealed interface ControllerEvent {
     data class ReadyForDepartureReceived(val aircraft: AircraftId) : ControllerEvent

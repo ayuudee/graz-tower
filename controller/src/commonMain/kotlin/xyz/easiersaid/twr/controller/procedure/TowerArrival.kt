@@ -91,9 +91,10 @@ import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 /**
  * Tower arrival procedure — the controller-side arrival flow's rule pipeline.
  *
- * **Two doctrinally distinct GA-guard predicates** (fn-12):
- *  - `Not(RunwayPhysicallyClear)` — used by the generic `ARR-GO-AROUND` /
- *    `ARR-GO-AROUND-CLEARANCE-ISSUED` rules. Reads
+ * **Three doctrinally distinct guard predicates at `AwaitApproach`** (fn-13
+ * extends fn-12's two-predicate model):
+ *  - `RunwayPhysicallyClear` — used by the generic `ARR-GO-AROUND` /
+ *    `ARR-GO-AROUND-CLEARANCE-ISSUED` rules (negated). Reads
  *    `BeliefState.runwayBeliefs[runway].status` for **physical occupancy** by
  *    another aircraft (landing rolls in progress, lined-up departure, etc.).
  *    Trigger source: aircraft-position observation + the runway-duty state.
@@ -105,14 +106,43 @@ import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
  *    (`RunwayObstructionDetected` / `Cleared`) from the sim's per-cycle
  *    world-diff producer; see
  *    `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
- *    § Unified Event Taxonomy on the two `ControllerEvent` source classes.
+ *    § Unified Event Taxonomy on the three `ControllerEvent` source classes.
+ *  - `ObstructionClearsInTime` (fn-13) — kinematic predicate over a declared
+ *    obstruction: `(clearsAt - now) + OBSTRUCTION_CLEAR_SAFETY_MARGIN_S(10s)
+ *    ≤ ETA-to-threshold`. Fail-closed (any missing input → false → GA wins).
+ *    Reads `BeliefState.runwayObstructions[runway]`, `ac.coords`,
+ *    `ac.groundSpeed`, and `ctx.worldIndex.thresholdByRunway[runway]`.
  *
- * The two predicates may both be true simultaneously (e.g. an aircraft on
- * the runway AND a declared debris obstruction). The obstruction-specific
- * rule wins by priority placement (per fn-12 R7) so the companion
- * `RunwayObstructionInformation` transmission is emitted (reason on radio
- * per ICAO §7.4.1.4.1(c) — mandatory). When only physical occupancy holds,
- * the generic GA rule fires without the obstruction-info companion.
+ * **Three-way priority ordering at `AwaitApproach`** (fn-13):
+ *  1. `ARR-CONTINUE-APPROACH-OBSTRUCTION` — gated on `RunwayObstructed AND
+ *     ObstructionClearsInTime`. Pre-clearance ladder middle state per CAP
+ *     413 §4.55-4.56 + ICAO 4444 §12.3.4.16(d). Emits
+ *     `Instruction.ContinueApproach(RUNWAY_OBSTRUCTED)` + companion
+ *     `RunwayObstructionInformation`. `nextStage = null` (commitment stays
+ *     at AwaitApproach); witness `continueApproachIssuedThisAttempt`
+ *     suppresses re-fire.
+ *  2. `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` (AwaitApproach variant, narrowed
+ *     in fn-13) — gated on `RunwayObstructed AND
+ *     Not(ObstructionClearsInTime)`. Mutually exclusive with the rule
+ *     above via guard disjointness; priority placement is defence-in-depth.
+ *  3. `ARR-GO-AROUND` (generic, fn-10 era) — gated on `RunwayAccessGranted
+ *     AND Not(RunwayPhysicallyClear)`. Physical-occupancy path; no
+ *     obstruction companion.
+ *
+ * Post-clearance (`LandingClearanceIssued`, `AwaitLandedObserved`), the
+ * obstruction-GA variant is UNCHANGED from fn-12 (Boundary #1 of fn-13:
+ * once landing clearance is issued, the doctrine flips to GA-on-obstruction;
+ * the CONTINUE APPROACH surface is pre-clearance-only — CAP 413 §4.53
+ * cancel-clearance path is a future deferment).
+ *
+ * The `RunwayPhysicallyClear` and `RunwayObstructed` predicates may both
+ * be true simultaneously (e.g. an aircraft on the runway AND a declared
+ * debris obstruction). The obstruction-specific rule wins by priority
+ * placement (per fn-12 R7) so the companion `RunwayObstructionInformation`
+ * transmission is emitted (reason on radio per ICAO §7.4.1.4.1(c) for GA
+ * / §12.3.4.16(d) for CA — mandatory in both cases). When only physical
+ * occupancy holds, the generic GA rule fires without the obstruction-info
+ * companion.
  */
 
 /**

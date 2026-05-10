@@ -73,6 +73,16 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    rather than the pilot following a planned GA from the mission
  *    tree. Closes the third reactive-GA path (self-initiated +
  *    pilot-trained + ATC-instructed-obstruction).
+ *  - G3a-obstruction-continue-approach
+ *    ([G3aRunwayObstructionContinueApproachTest]) — single-aerodrome,
+ *    single-aircraft **pre-clearance CONTINUE APPROACH** on a short-
+ *    TTL world-authored runway obstruction that clears in time
+ *    (fn-13). The non-GA sibling: the controller delays landing
+ *    clearance via `Instruction.ContinueApproach(RUNWAY_OBSTRUCTED)`
+ *    rather than firing GA, and the aircraft lands normally after the
+ *    obstruction expires. The two G3a-obstruction tests together
+ *    cover the three-state pre-clearance ladder per CAP 413
+ *    §4.55-4.56 / ICAO 4444 §12.3.4.16(d).
  *
  * **What G3a distinctively pins:**
  *  - **Trained-GA fork at compile time:** the `outcomes` list authors

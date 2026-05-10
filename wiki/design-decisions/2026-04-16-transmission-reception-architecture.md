@@ -74,6 +74,40 @@ Both source classes are typed, both are pure, both flow through the same
 contract widens to "the controller receives **typed events from world or
 radio**, never raw audio, never blocking calls".
 
+**Note on `Instruction.ContinueApproach` consumers (fn-13).** The
+`ContinueApproach` instruction leaf is now consumed by two distinct
+rules at `TowerArrival.stageRules[AwaitApproach]`:
+
+- **`ARR-CONTINUE`** (existing, pre-fn-13) — fires on traffic-driven
+  delays: preceding traffic on the runway, runway access pending,
+  preceding go-around. Reason inferred via
+  `inferContinueApproachReason(observation, ctx)`. Cites generic
+  phraseology (ICAO Doc 9432 Ch.4) + arrival sequencing (ICAO 4444
+  §7.10). **Gated by `Not(RunwayObstructed)`** — yields the obstruction
+  case to the new rule below.
+- **`ARR-CONTINUE-APPROACH-OBSTRUCTION`** (new in fn-13) — fires on
+  declared obstruction when `ObstructionClearsInTime` holds. Reason
+  set inline by `ObstructionContinueApproachAction` to
+  `ContinueApproachReason.RUNWAY_OBSTRUCTED` (the
+  `inferContinueApproachReason` helper lacks the `Commitment`
+  parameter and cannot read per-aircraft obstruction belief without
+  scope leak). Emits the mandatory `RunwayObstructionInformation`
+  companion alongside, with pre-clearance regs (CAP 413 §4.55, §4.56,
+  ICAO §12.3.4.16, §8.9.6.1.8). Does NOT cite `CAP413_4_65`
+  (missed-approach phraseology) or `ICAO4444_7_4_1_4_1`
+  (post-clearance GA mandate) — those are the GA companion's
+  post-clearance refs.
+
+`ContinueApproachReason` enum extended with `RUNWAY_OBSTRUCTED` to
+support the typed reason on the protocol payload. CONTINUE APPROACH has
+empty `requiredReadbackAtoms` (per `InstructionReadback.kt:115`): the
+pilot does NOT transmit a readback for either rule's CA — out-of-scope
+per `D-PASS-continue-approach-pilot-readback`. The instruction
+nevertheless creates an `OutstandingCoordination` ledger entry on the
+controller side, superseded later by `ClearedToLand` /
+`ClearedTouchAndGo` (fn-13.1 supersession edges) on the normal-success
+path, or by `GoAround` on the escalation path.
+
 Collapsing both layers' outputs by the controller's response behaviour yields five cases:
 
 | Case | Cause | Controller response |

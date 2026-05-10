@@ -164,3 +164,67 @@ Each path has dedicated unit-test coverage at the controller / pilot
 level **and** a sim-level golden test exercising the composition. The
 "reversal completeness" obligation is now load-bearing across the full
 reactive-GA surface.
+
+**fn-13 (2026-05-10) — pre-clearance CONTINUE APPROACH ladder.**
+Extends the obstruction-handling coverage from two-state (clear / GA)
+to three-state (clear / CONTINUE APPROACH / GA) per CAP 413 §4.55-4.56
++ ICAO Doc 4444 §12.3.4.16(d). When the runway is obstructed at final
+but **expected to be available in good time for a safe landing**, the
+controller delays landing clearance via `Instruction.ContinueApproach`
+(`reason = RUNWAY_OBSTRUCTED`) rather than firing GA. The epic landed:
+
+- **fn-13.1** — `ObstructionClearsInTime` guard atom (kinematic
+  predicate: `(clearsAt - now) + OBSTRUCTION_CLEAR_SAFETY_MARGIN_S(10s)
+  ≤ ETA-to-threshold`); new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule
+  at `stageRules[AwaitApproach]` (priority-placed before the narrowed
+  obstruction-GA variant); split of `obstructionGoAroundRule` into
+  `AwaitApproach`-narrowed (`Not(ObstructionClearsInTime)` arm added)
+  + `PostClearance`-unchanged variants (Boundary #1 — post-clearance
+  always escalates to GA); `ContinueApproachReason.RUNWAY_OBSTRUCTED`
+  enum variant; `ObstructionContinueApproachAction` populating
+  `obstructionInfo` with CONTINUE-APPROACH-specific
+  `companionTraceRegs` (`CAP413_4_55, CAP413_4_56, ICAO4444_12_3_4_16,
+  ICAO4444_8_9_6_1_8`; explicit exclusion of `CAP413_4_65` /
+  `ICAO4444_7_4_1_4_1` which are the GA companion's wrong-path refs);
+  `continueApproachIssuedThisAttempt` witness with `Report(Downwind)`
+  re-arm; existing traffic-driven `ARR-CONTINUE` rule narrowed with
+  `Not(RunwayObstructed)` gate (codex round-2 fix — prevents a stale
+  traffic-CA from firing on top of an active obstruction window);
+  supersession edges added: `GoAround → ContinueApproach`,
+  `ClearedToLand → ContinueApproach`, `ClearedTouchAndGo →
+  ContinueApproach`.
+- **fn-13.2** — sim-level golden test
+  `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt`.
+  Same fixture as G3a-obstruction; the distinguishing surface is the
+  20s `clearsAt` TTL (vs G3a-obstruction's 60s) and the authorship
+  predicate (stage = AwaitApproach pre-clearance vs G3a-obstruction's
+  post-clearance phase=Final). Three-layer pin pattern extended with
+  **stage NON-regression** as the KEY behavioural signature: CA has
+  `nextStage = null`; the commitment stays at AwaitApproach across the
+  CA decision cycle; only `continueApproachIssuedThisAttempt` flips
+  on the commitment. The absence of a `<from-stage> → AwaitDownwind`
+  regression is what distinguishes CA from GA in the sim trace.
+
+The pre-clearance approach decision space is now **quadruple-covered**:
+
+1. **Clear** — `ARR-LAND` fires when no obstruction and landing
+   conditions hold.
+2. **Continue-traffic** — existing `ARR-CONTINUE` rule (`reason ∈
+   {TRAFFIC_LANDING, TRAFFIC_DEPARTING, TRAFFIC_CROSSING,
+   PRECEDING_GO_AROUND, RUNWAY_ACCESS_PENDING}`) fires when runway
+   access pending OR not physically clear AND not obstructed.
+3. **Continue-obstruction** — new `ARR-CONTINUE-APPROACH-OBSTRUCTION`
+   rule (fn-13) fires when `RunwayObstructed AND
+   ObstructionClearsInTime`.
+4. **Go-around** — `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` fires when
+   `RunwayObstructed AND Not(ObstructionClearsInTime)` (AwaitApproach
+   variant) OR `RunwayObstructed` alone (post-clearance variants —
+   Boundary #1).
+
+`ARR-CONTINUE-APPROACH-OBSTRUCTION` is priority-ordered against
+`ARR-GO-AROUND-RUNWAY-OBSTRUCTED` at `AwaitApproach` via
+mutually-exclusive guards (`ObstructionClearsInTime` vs
+`Not(ObstructionClearsInTime)`); priority placement is defence-in-depth.
+The companion regulation refs split by path: CA cites the pre-clearance
+refs (CAP 413 §4.55, §4.56, ICAO §12.3.4.16, §8.9.6.1.8); GA cites the
+post-clearance refs (CAP 413 §4.65, ICAO §7.4.1.4.1, §8.9.6.1.8).

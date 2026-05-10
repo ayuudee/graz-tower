@@ -38,7 +38,28 @@ Obligation: "Maintain prescribed separation" (ICAO 4444 s5, SERA.8005)
   Practice A: ExtendDownwind (least disruptive, Urgency.PROGRESSION)
   Practice B: Orbit (moderate, Urgency.TIME_SENSITIVE)
   Practice C: GoAround (last resort, Urgency.SAFETY)
+
+Obligation: "Do not clear an aircraft to land onto an obstructed runway" (ICAO 4444 §7.10, §7.4.1.4.1; CAP 413 §4.55-4.56)
+  Practice D: ContinueApproach (pre-clearance, obstruction-clears-in-time, Urgency.TIME_SENSITIVE)
+  Practice E: GoAround-obstruction (predicate fails or post-clearance, Urgency.SAFETY)
 ```
+
+The runway-obstruction case at `AwaitApproach` has three guard predicates
+forming a mutually-exclusive ladder: `RunwayPhysicallyClear` (occupancy
+— generic `ARR-GO-AROUND` on `Not(RunwayPhysicallyClear)`),
+`RunwayObstructed` (declared obstruction in beliefs), and
+`ObstructionClearsInTime` (kinematic predicate: `(clearsAt - now) +
+safetyMargin ≤ ETA-to-threshold`). Priority placement at `AwaitApproach`
+is `ARR-CONTINUE-APPROACH-OBSTRUCTION` (Practice D, fn-13) before
+`ARR-GO-AROUND-RUNWAY-OBSTRUCTED` (Practice E, fn-12 — narrowed at this
+stage with `Not(ObstructionClearsInTime)`) before the generic
+`ARR-GO-AROUND`. Mutual exclusion is enforced by guard disjointness
+(`ObstructionClearsInTime` vs `Not(ObstructionClearsInTime)`); priority
+is defence-in-depth. Post-clearance (`LandingClearanceIssued`,
+`AwaitLandedObserved`), Boundary #1 of the fn-13 epic flips the doctrine:
+the post-clearance variant of `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` always
+escalates to GA (CAP 413 §4.53 cancel-clearance path is a future
+deferment).
 
 A ProcedureRule fulfills one or more obligations. The procedure is the recipe; the obligations are the ingredients. This makes the controller's behaviour auditable ("why did it do X?") and composable (obligations interact naturally when multiple aircraft create overlapping demands).
 

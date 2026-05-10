@@ -131,9 +131,9 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction)
+## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach)
 
-Six integration tests serve as the runtime golden anchors for end-to-end
+Seven integration tests serve as the runtime golden anchors for end-to-end
 ATC flow. All follow the same shape: a single `@Test` method, a fixture-
 driven load, a deterministic event run, the run is the test, the assertions
 are what the run produced.
@@ -272,7 +272,72 @@ are what the run produced.
   the existing self-initiated GA (fn-10 era), G3a-obstruction
   exercises the ATC-instructed reactive path.
 
-All six tests follow the no-corners-cut rule: a failing golden test is
+- **G3a-obstruction-continue-approach —
+  `G3aRunwayObstructionContinueApproachTest` (`sim/jvmTest`)**: single-
+  aerodrome, single-aircraft VFR **CONTINUE APPROACH** triggered by a
+  short-TTL (20 s) world-authored runway obstruction at the
+  pre-clearance ladder middle state per CAP 413 §4.55-4.56 + ICAO Doc
+  4444 §12.3.4.16(d). C172 OE-ABC at LOWG flies a single planned
+  circuit (`HighLevelGoal.CircuitTraining(outcomes = listOf(FullStop))`).
+  At the moment the tower's commitment for the aircraft advances to
+  `AwaitApproach` (post-Downwind ack, pre-`ClearedToLand`), the test
+  authors `runway.obstruction = RunwayObstruction(clearsAt = now +
+  20.seconds)` one-shot via `runUntilWithStateTrace`'s `onAfterEvent`
+  hook. The sim's per-cycle world-diff producer derives a
+  `RunwayObstructionDetected`; the tower's belief folds it; the new
+  `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule (placed before the narrowed
+  obstruction-GA rule in `stageRules[AwaitApproach]`) wins selection
+  because `ObstructionClearsInTime` evaluates `true` ((20 s + 10 s
+  margin) ≤ ETA-to-threshold); the tower transmits
+  `Instruction.ContinueApproach(reason = RUNWAY_OBSTRUCTED)` plus the
+  mandatory `RunwayObstructionInformation` companion (pre-clearance
+  reason-on-radio per ICAO §12.3.4.16(d) + §8.9.6.1.8). The pilot
+  continues unchanged (CA has empty `requiredReadbackAtoms` — no
+  `Report(ContinueApproach)`); the obstruction expires at `clearsAt`;
+  the runway-obstructions slice flips back to `None`; the pre-clearance
+  `Not(RunwayObstructed)` gate on `LandingConditions` ungates; ARR-LAND
+  fires `ClearedToLand`; the pilot reads back, lands, vacates. Pins:
+  **decision-cycle causal partial-order** (`Detected.decisionTime <=
+  CA.decisionTime == Companion.decisionTime < Cleared.decisionTime
+  <= ClearedToLand.decisionTime` — same-cycle CA + companion, fold-
+  then-rule equality on clear-and-re-clear), **radio-transmission
+  partial-order** (`CA.txStart < Companion.txStart < ClearedToLand <
+  Report(RunwayVacated)`; strict `<` between CA and companion via
+  `applyControllerOutputs` serialization), **stage NON-regression**
+  (KEY behavioural signature: ZERO `<from-stage> → AwaitDownwind`
+  regressions during the obstruction window; CA's `nextStage = null`
+  keeps the commitment at `AwaitApproach`; only the
+  `continueApproachIssuedThisAttempt` witness flips false → true; full
+  forward progression `AwaitApproach → LandingClearanceIssued →
+  AwaitLandedObserved`), **kinematic non-event** (no `Climbing` phase
+  entry AFTER the CA decision cycle — distinguishes from GA),
+  **per-controller event scoping** (exactly one `None → Some(...)` and
+  one `Some → None` transition in TOWER's `runwayObstructions[16C]`
+  belief slice), **companion content** (regs cite exactly
+  `CAP413_4_55, CAP413_4_56, ICAO4444_12_3_4_16, ICAO4444_8_9_6_1_8`
+  with explicit absence assertions for `CAP413_4_65` and
+  `ICAO4444_7_4_1_4_1` — those are the GA companion's wrong-path
+  refs), **CA reason payload pin**
+  (`Instruction.ContinueApproach.reason == RUNWAY_OBSTRUCTED` set
+  inline by `ObstructionContinueApproachAction`), **supersession pin**
+  (no leftover `ContinueApproach` coordination after `ClearedToLand`
+  re-issued — fn-13.1's `ClearedToLand → ContinueApproach`
+  supersession edge), **no-GA absence pin** (zero `GoAround`
+  instructions — mutual exclusion via `ObstructionClearsInTime` /
+  `Not(ObstructionClearsInTime)`), **no-readback absence pin** (no
+  pilot `Readback` referencing `ContinueApproach` in the window
+  between CA and ClearedToLand — empty required atoms per
+  `InstructionReadback.kt:115`), R7 vacate-coordination closure pin,
+  obstruction lifetime pin (`Cleared.decisionTime >= clearsAt`), time
+  band ±15% of the observed wall (~896 s = ~14.9 sim minutes —
+  materially shorter than G3a-obstruction's GA test ~1399 s because
+  the CA path adds no recovery circuit). World-only test trigger per
+  `feedback_world_only_test_triggers.md`. Companion to
+  `G3aRunwayObstructionTest` — same fixture, same world-authoring
+  surface; the TTL + authorship stage select the GA vs CA branch of
+  the three-state pre-clearance ladder. Closes the fn-13 epic.
+
+All seven tests follow the no-corners-cut rule: a failing golden test is
 documented in its KDoc with the specific blocker and stays loudly
 failing. No `@Disabled`, skip-list, or exclusion set.
 
