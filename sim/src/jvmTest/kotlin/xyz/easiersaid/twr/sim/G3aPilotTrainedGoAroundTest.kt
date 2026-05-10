@@ -3,6 +3,8 @@ package xyz.easiersaid.twr.sim
 import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.fail
+import xyz.easiersaid.twr.controller.ControllerOutput
+import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.CircuitOutcome
@@ -326,11 +328,18 @@ class G3aPilotTrainedGoAroundTest {
         val goingAroundMs = goingAroundRecord.time.millis
 
         // Find ALL ClearedToLand records targeting this aircraft (in time
-        // order — `records` is monotonically time-ordered).
+        // order — `records` is monotonically time-ordered). Walk through
+        // `Dispatch.Direct.instruction` (matching the surrounding G0 / G2
+        // test patterns at `LowgGoldenTest.kt:412-418` / `G2CrossAerodromeVfrTest`)
+        // — codex review pass-1 finding. This is more precise than the
+        // derived `Instruct.instruction` property because it only matches
+        // direct dispatches, excluding any hypothetical `Dispatch.Conditional`
+        // ClearedToLand.
         val landRecords = records.filter { rec ->
             val out = (rec.utterance as? Utterance.FromController)?.output
-                as? xyz.easiersaid.twr.controller.ControllerOutput.Instruct ?: return@filter false
-            out.target == aircraftId && out.instruction is ClearedToLand
+                as? ControllerOutput.Instruct ?: return@filter false
+            val instr = (out.dispatch as? Dispatch.Direct)?.instruction ?: return@filter false
+            out.target == aircraftId && instr is ClearedToLand
         }
 
         // First ClearedToLand precedes the trained-GA — this is circuit 1's
