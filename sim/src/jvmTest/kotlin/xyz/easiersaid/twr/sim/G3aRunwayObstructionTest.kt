@@ -656,6 +656,20 @@ class G3aRunwayObstructionTest {
                     "the obstruction expires.\n$journey"
             )
         val landRecoveryMs = landRecoveryRecord.time.millis
+        // Decision-cycle time for the recovery clearance — needed for the
+        // Layer 1a `Cleared.decisionTime < ClearedToLand(recovery).decisionTime`
+        // pin. Without this, a queued transmission could start after a later
+        // belief transition while its decision was made too early, and the
+        // tx-only pin would falsely pass.
+        val landRecoveryTxId = extractTransmissionId(trace, landRecoveryRecord,
+            "ClearedToLand(recovery) instruction", journey)
+        val landRecoveryDecisionCycleMs = findEmittingCycleMs(
+            trace = trace,
+            controller = tower.id,
+            txId = landRecoveryTxId,
+            txDescription = "ClearedToLand(recovery) instruction",
+            journey = journey,
+        )
 
         // Report(RunwayVacated) — the canonical landing-complete observable.
         val vacatedMs = records.firstPilotReportOf<ReportEvent.RunwayVacated>(aircraftId)
@@ -704,33 +718,39 @@ class G3aRunwayObstructionTest {
         //
         // The decision-cycle timestamps live on `BeliefState.runwayObstructions`
         // transitions (the belief slice flips on the controller-cycle event
-        // that folds the world-diff event into beliefs) and on the commitment-
-        // stage transitions (the rule fires within the same cycle).
+        // that folds the world-diff event into beliefs) and on the
+        // controller-cycle events that emit transmissions (mint-id walk).
         //
-        // Two pins here:
+        // Two pins here — both compared against **decision-cycle** times,
+        // NOT transmission-start times. Comparing belief transitions against
+        // tx-start times leaves a gap: a queued transmission could start
+        // after a later belief transition while its originating decision
+        // was made too early, and the pin would falsely pass.
         //   1. `Detected.decisionTime <= GoAround.decisionTime` — the rule
-        //      fires in the cycle that sees RunwayObstructed=true. The
-        //      controller's decision happens at the same tick as the belief
-        //      fold (same `controllerDecide` invocation), and the radio
-        //      transmission queue starts at that tick. So
-        //      `Detected.decisionTime <= GoAround.txStart`.
+        //      fires in the cycle that sees RunwayObstructed=true.
         //   2. `Cleared.decisionTime < ClearedToLand(recovery).decisionTime`
         //      — the pre-clearance landing gate (`Not(RunwayObstructed)`)
         //      requires the obstruction to be absent from beliefs before
         //      `ARR-LAND` can re-issue clearance.
-        check(detectedMs <= goAroundMs) {
+        check(detectedMs <= goAroundDecisionCycleMs) {
             "Decision-cycle pin: RunwayObstructionDetected belief transition " +
-                "(${detectedMs}ms) must occur at-or-before GoAround.txStart (${goAroundMs}ms). " +
-                "Equality is allowed (belief fold + rule fire in same controllerDecide cycle); " +
-                "strict > would indicate the rule fired before the belief was updated — a " +
-                "fold-vs-rule ordering regression.\n$journey"
+                "(${detectedMs}ms) must occur at-or-before GoAround decision-cycle " +
+                "(${goAroundDecisionCycleMs}ms). Equality is allowed (belief fold + rule fire " +
+                "in same controllerDecide cycle); strict > would indicate the rule fired before " +
+                "the belief was updated — a fold-vs-rule ordering regression. (GoAround.txStart" +
+                "=${goAroundMs}ms is later, but tx-start is not the right comparand here — a " +
+                "queued transmission could start after a later belief transition while its " +
+                "originating decision was made too early.)\n$journey"
         }
-        check(clearedMs < landRecoveryMs) {
+        check(clearedMs < landRecoveryDecisionCycleMs) {
             "Pre-clearance ungate pin: RunwayObstructionCleared belief transition " +
-                "(${clearedMs}ms) must precede ClearedToLand(recovery).txStart (${landRecoveryMs}ms). " +
-                "If recovery clearance fires before the obstruction clears in beliefs, the " +
-                "Not(RunwayObstructed) gate on LandingConditions did not block — a doctrine " +
-                "regression on the landing gate.\n$journey"
+                "(${clearedMs}ms) must precede ClearedToLand(recovery) decision-cycle " +
+                "(${landRecoveryDecisionCycleMs}ms). If recovery clearance fires before the " +
+                "obstruction clears in beliefs, the Not(RunwayObstructed) gate on " +
+                "LandingConditions did not block — a doctrine regression on the landing gate. " +
+                "(ClearedToLand(recovery).txStart=${landRecoveryMs}ms; tx-start is not the right " +
+                "comparand here — the queued transmission could start after `Cleared` while its " +
+                "originating decision was made before.)\n$journey"
         }
 
         // ── Layer 2 — Sticky-witness regression pin ─────────────────────────
