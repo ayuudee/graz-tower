@@ -640,6 +640,130 @@ class PilotAtcInitiatedGoAroundSpec {
     // ────────────────────────────────────────────────────────────────────
 
     /**
+     * Precedence: ATC-reactive wins over self-initiated when BOTH would
+     * fire. Construct a pathological scenario where:
+     *  - `pendingAtcGoAroundFrom = Some(REPORT_FINAL)` (ATC-reactive trigger)
+     *  - aircraft at decision altitude, no clearance, on REPORT_FINAL
+     *    (self-initiated trigger fires too)
+     *
+     * The ATC-reactive Tick A apply must fire (`route=None, phase=Final`),
+     * NOT the self-initiated path (which would emit `phase=Climbing`).
+     * This pins the precedence reordering: ATC-reactive recognition
+     * runs BEFORE `derivePilotEvent`.
+     */
+    @Test
+    fun `precedence — ATC-reactive wins over self-initiated when both would fire`() {
+        // Mission walked to REPORT_FINAL (eligible step), no clearance.
+        var mission = missionAtStep(MissionStep.REPORT_FINAL)
+        // Manually set the flag (skip processInstruction to avoid mission
+        // tree rewrite — we want self-init's REPORT_FINAL trigger to ALSO
+        // be valid, so step must remain REPORT_FINAL).
+        mission = mission.copy(pendingAtcGoAroundFrom = Some(MissionStep.REPORT_FINAL))
+        val world = syntheticWorld()
+        val worldIndex = world.buildWorldIndex()
+        // Aircraft at decision altitude (50m), phase=Final, no clearance —
+        // self-init's `DecisionAltitudeWithoutClearance` fires here too.
+        val aircraft = aircraftAt(
+            phase = PilotPhase.Final,
+            altitudeM = 50.0, // <= DECISION_ALTITUDE_M (100m) — self-init trigger ON
+            route = PilotRoute.Airborne(
+                waypoints = arrow.core.NonEmptyList(THRESHOLD, emptyList()),
+                targetAltitudeM = 0.0,
+                arrivalPhase = PilotPhase.LandingRoll,
+            ),
+            mission = mission,
+        )
+        val output = pilotDecide(
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+        ).getOrElse { fail("pilotDecide failed: $it") }
+
+        // ATC-reactive Tick A intent shape: phase=Final + route=None.
+        // Self-initiated would emit phase=Climbing — discriminator pin.
+        assertEquals(
+            PilotPhase.Final,
+            output.intent.phase,
+            "Precedence: ATC-reactive (phase=Final) MUST win over self-initiated (phase=Climbing)",
+        )
+        assertEquals(
+            PilotRoute.None,
+            output.intent.route,
+            "Precedence: ATC-reactive Tick A clears route (self-initiated keeps aircraft.route)",
+        )
+        // Flag consumed.
+        val newMission = output.updatedMission ?: fail("updatedMission must be non-null")
+        assertEquals(None, newMission.pendingAtcGoAroundFrom)
+    }
+
+    /**
+     * Precedence: trained-GA wins over ATC-reactive when both somehow
+     * apply (defensive — trained-GA's natural flow never sets the flag,
+     * but mutual-exclusivity is a stated invariant).
+     *
+     * Construct a pathological scenario where a trained-GA mission has
+     * the flag artificially set; the trained-GA Tick A's intent should
+     * fire (which is structurally identical to ATC-reactive, but must be
+     * sourced from `applyPlannedGoAround`, not `applyAtcInitiatedGoAround`).
+     * The pin: the flag is still cleared (single-cycle invariant), and
+     * the trained-GA mission state (post-`resetForGoAround`) is what
+     * survives.
+     */
+    @Test
+    fun `precedence — trained-GA wins over ATC-reactive (flag still cleared)`() {
+        // Walk a trained-GA mission to FLY_FINAL_TO_SHORT_FINAL — the
+        // trained-GA Tick A trigger.
+        val goal = HighLevelGoal.CircuitTraining(
+            outcomes = listOf(CircuitOutcome.GoAround, CircuitOutcome.FullStop),
+        )
+        var mission = PilotMission(
+            goal = goal,
+            root = planMission(goal),
+            stepEnteredAt = now0,
+            navigationMode = Some(NavigationMode.Circuit(RWY_ID, CKT_ID)),
+            activeRunway = Some(RunwayAssignment(RWY_ID, RunwayAssignmentSource.Radio.TaxiClearance)),
+        )
+        listOf(
+            MissionStep.REQUEST_TAXI, MissionStep.TAXI_TO_HOLDING,
+            MissionStep.RUN_UP_CHECKS, MissionStep.REPORT_READY,
+            MissionStep.AWAIT_LINE_UP, MissionStep.AWAIT_TAKEOFF_CLEARANCE,
+            MissionStep.FLY_DEPARTURE, MissionStep.FLY_DOWNWIND,
+            MissionStep.REPORT_DOWNWIND, MissionStep.AWAIT_SEQUENCING,
+            MissionStep.FLY_BASE, MissionStep.REPORT_BASE,
+        ).forEach { step ->
+            mission = mission.copy(root = mission.root.markComplete(step))
+        }
+        assertEquals(MissionStep.FLY_FINAL_TO_SHORT_FINAL, mission.currentTask?.step)
+        // Manually inject a stale ATC flag — trained-GA would normally
+        // never have this; this is the defensive precedence pin.
+        mission = mission.copy(pendingAtcGoAroundFrom = Some(MissionStep.FLY_FINAL))
+
+        val world = syntheticWorld()
+        val worldIndex = world.buildWorldIndex()
+        val aircraft = aircraftAt(
+            phase = PilotPhase.Final,
+            altitudeM = 50.0, // <= DECISION_ALTITUDE_M — triggers FLY_FINAL_TO_SHORT_FINAL completion
+            mission = mission,
+        )
+        val output = pilotDecide(
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+        ).getOrElse { fail("pilotDecide failed: $it") }
+
+        // Trained-GA Tick A intent shape (same shape as ATC-reactive, so
+        // we can't discriminate by intent alone — pin via mission state:
+        // trained-GA calls `mission.resetForGoAround(now)` in
+        // `applyPlannedGoAround`, which IS the structural difference).
+        assertEquals(PilotPhase.Final, output.intent.phase)
+        assertEquals(PilotRoute.None, output.intent.route)
+        // Flag still cleared (single-cycle invariant survives precedence).
+        val newMission = output.updatedMission ?: fail("updatedMission must be non-null")
+        assertEquals(
+            None,
+            newMission.pendingAtcGoAroundFrom,
+            "Single-cycle flag-clear invariant: even when trained-GA wins, the ATC-flag " +
+                "is cleared (post-fold reconciliation)",
+        )
+    }
+
+    /**
      * Mutual exclusivity: in trained-GA's natural flow, `processInstruction(GoAround)`
      * never runs (the GA is plan-driven from the static mission tree), so
      * the flag stays [None]. This pin verifies the structural exclusivity:

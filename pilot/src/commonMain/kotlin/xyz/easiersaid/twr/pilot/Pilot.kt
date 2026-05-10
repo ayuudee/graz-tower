@@ -93,80 +93,84 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     // Cognitive layer: advance mission, generate transmissions.
     val cognitive = pilotCognitiveDecide(aircraft, mission, input.worldIndex, input.now, input.atisByAerodrome)
 
-    // Pass 16 (D-AUDIT.9 partial closure): typed PilotEvent channel.
-    // Recognition (event derivation) is pure and lives in
-    // `:pilot/observe`; response (mission update + intent override)
-    // lives here as `applySelfInitiatedGoAround`.
+    // ── GA-path precedence (deterministic, additive) ─────────────────────
     //
-    // Today the channel has one leaf — `as? Cast` resolves it. When
-    // the second leaf lands (D-AUDIT.9.II–V-FOLLOWUP), this shifts to
-    // a sealed `when`-fold and `derivePilotEvent` returns `List<PilotEvent>`.
-    val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(aircraft, cognitive.updatedMission)
-    val goAround = (pilotEvent as? xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance)
-        ?.let { applySelfInitiatedGoAround(it, cognitive.updatedMission, aircraft, input.now) }
+    // Three GA paths share `pilotDecide`'s fork point. Order is essential:
+    // trained-GA wins on the static-tree transition; ATC-reactive wins on
+    // the flag-on-mission signal; self-initiated runs only when neither
+    // fired. Per task spec §"Exact intended control flow":
+    //
+    //  1. Trained-GA (fn-11.1, plan-driven): preStep ==
+    //     FLY_FINAL_TO_SHORT_FINAL && currentStep == GOING_AROUND.
+    //  2. ATC-reactive (fn-12.2, post-cognitive flag): see
+    //     [recognizeAtcInitiatedGoAround]. Always inspects the flag (so
+    //     it can clear it defensively) regardless of whether trained-GA
+    //     fired; trained-GA's natural flow leaves the flag None.
+    //  3. Self-initiated (Pass 16, sensor event): pilot has descended to
+    //     decision altitude with no clearance. Only invoked when neither
+    //     trained-GA nor ATC-reactive fired (per spec R9c — preserves
+    //     `SelfInitiatedGoAroundResponseSpec`'s trigger tick + emission
+    //     contract unchanged).
 
-    // fn-11.1 (Tick A): trained-GA fork-point. When the cognitive layer
-    // just advanced past `FLY_FINAL_TO_SHORT_FINAL` to `GOING_AROUND`,
-    // apply the planned-GA response: clear the kinematic route (so Tick B
-    // hits the Circuit-mode go-around route special-case in `planRoute`)
-    // and reset phase-local mission state via `resetForGoAround`. This is
-    // structurally distinct from `applySelfInitiatedGoAround` (the
-    // reactive flow): trigger is the static mission tree, not a sensor
-    // event; no subtree replacement is needed (the GA was compiled into
-    // the tree at `createMission`). Per `feedback_world_only_test_triggers.md`.
+    // 1. Trained-GA (fn-11.1).
     val plannedGoAround = if (
-        goAround == null && preStep == MissionStep.FLY_FINAL_TO_SHORT_FINAL &&
+        preStep == MissionStep.FLY_FINAL_TO_SHORT_FINAL &&
         cognitive.updatedMission.currentTask?.step == MissionStep.GOING_AROUND
     ) {
         applyPlannedGoAround(cognitive.updatedMission, aircraft, input.now)
     } else null
 
-    // fn-12.2 (Tick A): ATC-issued reactive GA recognition. Reads the
-    // transient `pendingAtcGoAroundFrom` flag set by `handleGoAround` BEFORE
-    // its tree rewrite. Recognition lives in `pilotDecide`, NOT in
-    // `derivePilotEvent`, because the trigger is a post-cognitive flag
-    // written by the cycle that just ran. See [PilotEvent.AtcGoAroundOnFinal].
+    // 2. ATC-reactive (fn-12.2). Inspects [PilotMission.pendingAtcGoAroundFrom]
+    //    set by `handleGoAround` BEFORE its tree rewrite. Two-layer flag-
+    //    clear defense: layer 1 — `handleGoAround` only sets the flag when
+    //    on-final-eligible; layer 2 — this arm clears the flag on every
+    //    inspection, regardless of whether the discriminator fires. The
+    //    single-cycle lifetime invariant must survive across all three GA
+    //    paths' precedence — see post-fold flag re-clear below.
     //
-    // **Two-layer flag-clear defense**: this arm runs on EVERY cycle when
-    // the flag is Some, regardless of whether self-init (`goAround`) or
-    // trained-GA (`plannedGoAround`) already fired. This guarantees the
-    // single-cycle lifetime contract: the flag NEVER persists across more
-    // than one `pilotDecide` invocation. Layer 1 — `handleGoAround` only
-    // sets the flag when on-final-eligible. Layer 2 — this arm clears the
-    // flag on every inspection.
-    //
-    // **Intent-precedence**: trained-GA and self-init still win for the
-    // intent override; `atcGoAroundOutcome.intent` is consulted ONLY when
-    // both `goAround` and `plannedGoAround` are null. The mission delta
-    // (flag clear) always applies — see `applyAtcFlagClear` below for the
-    // post-fold reconciliation. Mutual exclusivity with trained-GA is
-    // structural: trained-GA's natural flow never sets the flag (no
-    // `processInstruction(GoAround)` happens).
+    //    Constructs [PilotEvent.AtcGoAroundOnFinal] at the recognition
+    //    site (NOT in `derivePilotEvent`) for trace coherence; the apply
+    //    function does not consume the event payload but the leaf
+    //    formalises the typed channel parallel to fn-11.1.
     val atcGoAroundOutcome = recognizeAtcInitiatedGoAround(
         aircraft = aircraft,
         mission = cognitive.updatedMission,
         world = input.world,
-        now = input.now,
     )
 
-    // Effective mission: thread the flag-cleared mission through regardless
-    // of which GA path's intent wins. Self-init / trained-GA's missions are
-    // built from `cognitive.updatedMission` and do NOT carry the flag-clear
-    // write that the ATC arm produced; we re-apply the flag-clear after
-    // selecting whichever mission won. Idempotent (None.copy(flag = None) ==
-    // None) so applying it unconditionally is safe.
+    // 3. Self-initiated (Pass 16). Only when neither trained-GA nor
+    //    ATC-reactive fired. Self-init's trigger predicate is independent
+    //    of trained-GA / ATC-reactive flags, so guard explicitly.
+    val goAround: GoAroundResult? = if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
+        val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(aircraft, cognitive.updatedMission)
+        (pilotEvent as? xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance)
+            ?.let { applySelfInitiatedGoAround(it, cognitive.updatedMission, aircraft, input.now) }
+    } else null
+
+    // Effective mission: trained-GA → ATC-reactive (only when it fired
+    // intent) → self-init → cognitive baseline. The post-fold flag re-clear
+    // below restores the single-cycle invariant for any path that doesn't
+    // already carry the flag-clear write.
     val effectiveMission = (
-        goAround?.mission
-            ?: plannedGoAround?.mission
-            ?: atcGoAroundOutcome?.mission
+        plannedGoAround?.mission
+            ?: (atcGoAroundOutcome?.mission?.takeIf { atcGoAroundOutcome.intent != null })
+            ?: goAround?.mission
+            ?: atcGoAroundOutcome?.mission  // discriminator-fail path: flag-cleared mission
             ?: cognitive.updatedMission
-        ).let { mission ->
-            // If the ATC recognition arm ran AND inspected the flag, it
-            // ALWAYS produces a mission with the flag cleared. Re-apply
-            // that write to whichever mission won, so the flag-clear
-            // single-cycle invariant survives regardless of intent
-            // precedence. Idempotent for the None case.
-            if (atcGoAroundOutcome != null) mission.copy(pendingAtcGoAroundFrom = None) else mission
+        ).let { selectedMission ->
+            // Single-cycle flag-clear invariant: if the ATC recognition arm
+            // ran (i.e. flag was Some on entry), it ALWAYS produces a
+            // mission with the flag cleared. Re-apply that write to
+            // whichever mission won, so trained-GA / self-init paths
+            // (which build their missions from `cognitive.updatedMission`,
+            // unaware of the flag) cannot accidentally let the flag
+            // survive across cycles. Idempotent — `.copy(flag = None)` on a
+            // None field is a no-op.
+            if (atcGoAroundOutcome != null) {
+                selectedMission.copy(pendingAtcGoAroundFrom = None)
+            } else {
+                selectedMission
+            }
         }
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
@@ -190,23 +194,24 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
             transmissions = cognitive.transmissions + goAroundTransmissions,
             updatedMission = planOutcome.mission,
         ).right()
-        // fn-11.1: trained-GA Tick A — `plannedGoAround.intent` clears the
-        // route (route=PilotRoute.None) and pins phase=Final so Tick B's
-        // Circuit-mode special-case fires. Reactive `goAround?.intent`
-        // takes precedence (separate code paths per
-        // `feedback_world_only_test_triggers.md` / practice-scout
-        // anti-pattern #6, but reactive is structurally exclusive to
-        // trained-GA via `derivePilotEvent`'s step-set).
-        //
-        // fn-12.2: ATC-issued reactive Tick A — `atcGoAroundOutcome.intent`
-        // mirrors trained-GA's shape (route=PilotRoute.None, phase=Final),
-        // so Tick B's same `isCircuitTrainedGoAroundTickB` predicate fires
-        // and `planCircuitTrainedGoAround` builds the GA route via the
-        // reused planner. Zero new route-planning code.
+        // GA-path intent precedence (mirrors the recognition order above):
+        //  1. Trained-GA (fn-11.1) — `plannedGoAround.intent` clears the
+        //     route + pins phase=Final so Tick B's Circuit-mode special-
+        //     case fires.
+        //  2. ATC-reactive (fn-12.2) — `atcGoAroundOutcome.intent` mirrors
+        //     trained-GA's shape (route=None, phase=Final), so Tick B's
+        //     same `isCircuitTrainedGoAroundTickB` predicate fires and
+        //     `planCircuitTrainedGoAround` builds the GA route via the
+        //     reused planner. Zero new route-planning code.
+        //  3. Self-initiated (Pass 16) — `goAround?.intent` is the
+        //     reactive sensor-event response, identical trigger tick +
+        //     emission contract as before fn-12.2 (only invoked when
+        //     trained-GA and ATC-reactive both did not fire).
+        //  4. Fallthrough — kinematic + cognitive overrides.
         is PlanRouteOutcome.Skip -> PilotOutput(
-            intent = goAround?.intent
-                ?: plannedGoAround?.intent
+            intent = plannedGoAround?.intent
                 ?: atcGoAroundOutcome?.intent
+                ?: goAround?.intent
                 ?: applyCognitiveOverrides(kinematicIntent, effectiveMission),
             transmissions = cognitive.transmissions + goAroundTransmissions,
             updatedMission = effectiveMission,
@@ -845,13 +850,16 @@ internal fun applyAtcInitiatedGoAround(
  *  1. If the flag is [None], return `null` — nothing to do.
  *  2. If the flag is [Some] and the discriminator passes (flag value in
  *     the on-final eligible set, effective navigation mode is Circuit,
- *     `aircraft.phase is Final`), fire [applyAtcInitiatedGoAround] which
- *     clears the flag and emits the Tick A intent.
+ *     `aircraft.phase is Final`), construct
+ *     [xyz.easiersaid.twr.pilot.observe.PilotEvent.AtcGoAroundOnFinal] (the
+ *     typed event leaf for trace coherence) and fire
+ *     [applyAtcInitiatedGoAround] which clears the flag and emits the Tick
+ *     A intent.
  *  3. If the flag is [Some] but the discriminator fails, return an
- *     [AtcGoAroundResult] whose `intent` is `null` (caller falls through
- *     to normal route-planning) but whose `mission` has the flag CLEARED
- *     anyway. Without this defensive clear, a stale flag could fire the
- *     apply on a later cycle when the aircraft happens to be in
+ *     [RecognizedAtcGoAround] whose `intent` is `null` (caller falls
+ *     through to normal route-planning) but whose `mission` has the flag
+ *     CLEARED anyway. Without this defensive clear, a stale flag could
+ *     fire the apply on a later cycle when the aircraft happens to be in
  *     phase=Final via some other path.
  *
  * **Effective Circuit-mode discriminator**: `mission.navigationMode` is
@@ -864,17 +872,16 @@ internal fun applyAtcInitiatedGoAround(
  *
  * Returns:
  *  - `null` when the flag is [None] (no signal — the common case).
- *  - [AtcGoAroundResult] with non-null `intent` when the predicate fires
- *    (Tick A apply).
- *  - [AtcGoAroundResult] with `null` `intent` when the flag is [Some] but
- *    the discriminator fails — `mission` carries the cleared flag.
+ *  - [RecognizedAtcGoAround] with non-null `intent` when the predicate
+ *    fires (Tick A apply).
+ *  - [RecognizedAtcGoAround] with `null` `intent` when the flag is [Some]
+ *    but the discriminator fails — `mission` carries the cleared flag.
  *    Caller treats this as "use the cleared mission, no intent override."
  */
 private fun recognizeAtcInitiatedGoAround(
     aircraft: AircraftState,
     mission: PilotMission,
     world: AviationWorld,
-    @Suppress("UnusedParameter") now: SimTime,
 ): RecognizedAtcGoAround? {
     val flag = mission.pendingAtcGoAroundFrom.getOrNull() ?: return null
     val flagValid = flag in setOf(
@@ -886,6 +893,18 @@ private fun recognizeAtcInitiatedGoAround(
     val phaseFinal = aircraft.phase is PilotPhase.Final
     val effectiveCircuit = isEffectiveCircuitMode(mission, world)
     return if (flagValid && phaseFinal && effectiveCircuit) {
+        // Construct the typed event leaf at the recognition site (NOT in
+        // `derivePilotEvent`) — this is the post-cognitive flag-driven
+        // axis of `PilotEvent`, parallel to but distinct from
+        // `derivePilotEvent`'s pure-derivation axis. Currently the leaf
+        // is consumed only as a typed witness of recognition (no payload
+        // dispatch beyond the apply call); future trace consumers will
+        // read it like fn-11.1's `DecisionAltitudeWithoutClearance`.
+        @Suppress("UNUSED_VARIABLE")
+        val event = xyz.easiersaid.twr.pilot.observe.PilotEvent.AtcGoAroundOnFinal(
+            aircraft = aircraft.id,
+            originalStep = flag,
+        )
         val applied = applyAtcInitiatedGoAround(mission, aircraft)
         RecognizedAtcGoAround(intent = applied.intent, mission = applied.mission)
     } else {
