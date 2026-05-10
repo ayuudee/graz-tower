@@ -613,7 +613,17 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             AtcRule(
                 id = "ARR-CONTINUE",
                 description = "Continue approach when on final but runway not yet clear",
-                regulations = listOf(ICAO9432_CONTINUE_APPROACH, CAP413_4_55),
+                // fn-13.1 (codex round-3): dropped `CAP413_4_55` from this
+                // rule's regulations list. CAP 413 §4.55 was upgraded by
+                // fn-13.1 R7 to specifically describe the runway-obstructed
+                // pre-clearance case (the new rule above). The traffic-
+                // driven CONTINUE APPROACH path is grounded in ICAO Doc
+                // 9432 Ch.4 (generic phraseology) + ICAO Doc 4444 §7.10
+                // (arrival sequencing — the controller delays landing
+                // clearance to maintain spacing). Citing §4.55 here would
+                // attach the obstruction-specific principle to outputs
+                // that have nothing to do with obstructions.
+                regulations = listOf(ICAO9432_CONTINUE_APPROACH, ICAO4444_7_10),
                 guard = AllOf(listOf(
                     AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
                     AnyOf(listOf(Not(RunwayAccessGranted), Not(RunwayPhysicallyClear))),
