@@ -730,6 +730,112 @@ class ObstructionContinueApproachSpec {
         }
     }
 
+    // ── codex round-2 regression: ARR-CONTINUE must not double-fire under obstruction
+
+    @Test
+    fun `existing ARR-CONTINUE does not fire while obstruction is active even when its other arms pass`() {
+        // Codex round-2 finding: without `Not(RunwayObstructed)` on the
+        // existing ARR-CONTINUE rule, the following race surfaces:
+        //  1. Obstruction-CA fires, sets `continueApproachIssuedThisAttempt`.
+        //  2. CA coordination escalates past `Issued`
+        //     (Querying / Reissued / LostCommsDeclared).
+        //  3. `NoPendingReadback(ContinueApproach)` might no longer block
+        //     (depending on the matcher's specifics — it inspects
+        //     `requiredReadbackAtoms`, which is empty for ContinueApproach,
+        //     making the gate effectively true when there are no
+        //     `Issued` ContinueApproach coords).
+        //  4. The existing ARR-CONTINUE would then fire AGAIN, emitting a
+        //     ContinueApproach with reason RUNWAY_ACCESS_PENDING (or
+        //     TRAFFIC_*) and NO obstruction companion — doctrinally
+        //     wrong phraseology.
+        //
+        // We pin the fix at the rule-guard level: with `RunwayObstructed`
+        // in beliefs, the existing rule's guard must FAIL.
+        val rules = xyz.easiersaid.twr.controller.procedure.towerArrivalProcedure()
+            .stageRules[TowerArrivalStage.AwaitApproach]
+            ?: error("Could not locate AwaitApproach rules")
+        val arrContinue = rules.firstOrNull { it.id == "ARR-CONTINUE" }
+            ?: error("ARR-CONTINUE rule not present")
+
+        // Construct the exact race: obstruction active, runway access NOT
+        // granted to AC (Not(RunwayAccessGranted) would pass), but the CA
+        // witness is set (from a prior committed-output fire) and the
+        // CA coordination has escalated past `Issued`.
+        val obs = RunwayObstruction(clearsAt = SimTime.ofMillis(15_000))
+        val escalatedCaCoord = OutstandingCoordination(
+            aircraft = AC,
+            dispatch = Dispatch.Direct(
+                ContinueApproach(target = AC, reason = ContinueApproachReason.RUNWAY_OBSTRUCTED),
+            ),
+            issuedAt = SimTime.ofMillis(2_000),
+            // Escalated past Issued → NoPendingReadback's Issued-state check
+            // no longer suppresses re-firing.
+            state = CoordinationState.Reissued(
+                reissuedAt = SimTime.ofMillis(5_000),
+                attemptCount = 1,
+                emittedAt = SimTime.ofMillis(5_000),
+            ),
+            expectedReadback = emptySet(),
+            certificationEvidence = NonEmptyList(
+                CertificationEvidence.RuntimeChecked(checkId = "test", summary = "test"),
+                emptyList(),
+            ),
+        )
+        val commitment = Commitment(
+            aircraft = AC,
+            kind = CommitmentKind.TOWER_ARRIVAL,
+            stage = TowerArrivalStage.AwaitApproach,
+            runway = RWY,
+            formedAt = SimTime.ZERO,
+            contacted = true,
+            continueApproachIssuedThisAttempt = true,
+        )
+        val beliefs = BeliefState.EMPTY.copy(
+            activeRunway = RWY,
+            commitments = mapOf(AC to commitment),
+            runwayObstructions = mapOf(RWY to obs),
+            coordinations = mapOf(AC to listOf(escalatedCaCoord)),
+            // No runwayDuty → Not(RunwayAccessGranted) is true.
+        )
+        val ac = AircraftObservation.fromTestPoint(
+            point = PointId("FINAL"),
+            worldIndex = TEST_INDEX,
+            id = AC,
+            callsign = Callsign("OEABC"),
+            altitude = Level.AltitudeFeet.unsafe(800),
+            groundSpeed = Knots.unsafe(80),
+            onGround = false,
+        )
+        val view = ControllerView(
+            time = SimTime.ofMillis(10_000),
+            controllerId = ControllerId("LOWG_TWR"),
+            role = RoleName.TOWER,
+            aerodromeId = ADRM,
+            responsibilities = setOf(AC),
+            aircraft = mapOf(AC to ac),
+            runways = mapOf(RWY to RunwayObservation(RWY, RunwayStatus.CLEAR, emptySet())),
+            activeClearances = emptyMap(),
+            receivedMessages = emptyList(),
+            weather = null,
+            worldIndex = TEST_INDEX,
+            flightStripIntents = mapOf(AC to AircraftIntent.Arriving),
+        )
+        val ctx = xyz.easiersaid.twr.controller.bdi.OperatorContext(
+            view = view,
+            beliefs = beliefs,
+            events = emptyList(),
+            world = worldWithRunway(),
+        )
+
+        // The fix: existing ARR-CONTINUE must NOT fire while obstruction
+        // is active. Without `Not(RunwayObstructed)`, this guard would
+        // evaluate true and emit a doctrinally-wrong CA.
+        check(!arrContinue.guard.evaluate(ac, commitment, ctx)) {
+            "Existing ARR-CONTINUE must NOT fire while RunwayObstructed is true " +
+                "(codex round-2 regression: the obstruction-specific rule owns this case)"
+        }
+    }
+
     // ── Pin 13: companion-trace regs split ───────────────────────────────
 
     @Test

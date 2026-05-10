@@ -587,6 +587,29 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Continue approach when runway not yet clear
+            //
+            // fn-13.1 (codex round-2): the existing traffic-driven CONTINUE
+            // APPROACH rule MUST NOT fire when a runway obstruction is in
+            // play — the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule
+            // (placed earlier in this list) owns the obstruction case.
+            //
+            // Without `Not(RunwayObstructed)`: after the obstruction-
+            // specific CA fires and its coordination escalates past
+            // `Issued` (Querying/Reissued/LostCommsDeclared), the
+            // `NoPendingReadback(ContinueApproach)` matcher might stop
+            // blocking (depending on coordination state), and this rule
+            // could emit a SECOND ContinueApproach with the wrong reason
+            // (RUNWAY_ACCESS_PENDING / TRAFFIC_*) and NO companion. That
+            // violates the no-refire intent for the obstruction window
+            // and emits doctrinally-wrong phraseology.
+            //
+            // The new `Not(RunwayObstructed)` gate is structurally
+            // simpler than checking `ContinueApproachAlreadyIssuedThisAttempt`:
+            // when an obstruction is in beliefs, the obstruction-specific
+            // path is the only correct CA path. Once the obstruction
+            // clears, the runway-access/physically-clear arms might still
+            // delay landing clearance (preceding traffic) and this rule
+            // fires correctly with `inferContinueApproachReason`.
             AtcRule(
                 id = "ARR-CONTINUE",
                 description = "Continue approach when on final but runway not yet clear",
@@ -594,6 +617,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
                     AnyOf(listOf(Not(RunwayAccessGranted), Not(RunwayPhysicallyClear))),
+                    Not(RunwayObstructed),
                     NoPendingReadback(instructionOfType<ContinueApproach>()),
                 )),
                 action = ContinueApproachAction,
