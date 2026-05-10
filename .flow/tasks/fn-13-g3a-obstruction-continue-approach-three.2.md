@@ -170,9 +170,106 @@ Per docs-gap-scout findings:
 - [ ] Companion same-cycle pin: `GoAround`/`ContinueApproach` and `RunwayObstructionInformation` same `decisionCycleId`, `txStart` strictly ordered `primary < companion`.
 
 ## Done summary
+fn-13.2 ships the closing piece of the fn-13 epic: a sim-level golden
+test `G3aRunwayObstructionContinueApproachTest` exercising the
+pre-clearance CONTINUE APPROACH ladder middle state per CAP 413
+§4.55-4.56 + ICAO Doc 4444 §12.3.4.16(d), plus a fn-13.1 controller-
+side fix that codex round-3 surfaced (witness re-arm hook firing on
+the same Downwind report that caused the AwaitApproach entry).
 
-_(filled by worker)_
+The sim test composes fn-13.1's `ObstructionClearsInTime` guard +
+`ARR-CONTINUE-APPROACH-OBSTRUCTION` rule + `Instruction.ContinueApproach
+(RUNWAY_OBSTRUCTED)` + `RunwayObstructionInformation` companion into a
+single deterministic run pinning the entire pre-clearance stack —
+world author → sim diff/event → controller belief fold →
+`ObstructionClearsInTime` predicate evaluation → CA rule fires + same-
+decision-cycle companion → no `nextStage` (commitment stays at
+`AwaitApproach`) → witness `continueApproachIssuedThisAttempt = true`
+→ obstruction expires → `Not(RunwayObstructed)` gate ungates → ARR-LAND
+fires `ClearedToLand` → land + vacate.
 
+Three-layer pin pattern with **stage NON-regression** as the KEY
+behavioural signature distinguishing CA from GA: CA has `nextStage =
+null`; the commitment stays at `AwaitApproach` across the CA decision
+cycle; only `continueApproachIssuedThisAttempt` flips on the
+commitment; the four other sticky witnesses are unchanged; the absence
+of `<from-stage> → AwaitDownwind` regression is itself a load-bearing
+pin. Companion regs pin asserts exactly `CAP413_4_55, CAP413_4_56,
+ICAO4444_12_3_4_16, ICAO4444_8_9_6_1_8` with explicit absence
+assertions for `CAP413_4_65` and `ICAO4444_7_4_1_4_1` (the GA
+companion's wrong-path refs). Exactly-one-CA + exactly-one-companion
+pins catch duplicate fires at the sim level. No-GoAround absence pin
+proves mutual exclusion at `AwaitApproach`. No-pilot-readback absence
+pin proves CA's empty `requiredReadbackAtoms` discipline. Supersession
+pin proves the `ClearedToLand → ContinueApproach` edge closes the
+stale CA coordination on normal-success. Time band ±15% around the
+observed wall 896 s (~14.9 sim minutes) — materially shorter than
+G3a-obstruction's GA test (~1399 s) because the CA path adds no
+recovery circuit.
+
+World-only test trigger via `runUntilWithStateTrace`'s `onAfterEvent`
+hook with one-shot `var obstructionAuthored` guard authoring
+`runway.obstruction = RunwayObstruction(clearsAt = now + 5.seconds)`
+at the FIRST post-event state where ALL five preconditions hold
+simultaneously (mirroring the CA rule's guard exactly): commitment
+stage = `AwaitApproach`, no `ClearedToLand` coordination, on FINAL
+leg label OR distance ≤ 5000m, `speedMps > 0`, and `(5s + 10s margin)
+≤ distance/groundSpeed`. If preconditions never align, the test fails
+LOUDLY per the spec's R9 acceptance. No `ControllerEvent` injection,
+no `BeliefState` mutation. Decision-cycle pins via
+`nextTransmissionId` mint-id walk per the
+`sim-test-pins-must-compare-against-2026-05-10` memory.
+
+**Codex review converged in three rounds:**
+
+- Round 1 (NEEDS_WORK → 5s TTL): initial implementation used a 20-
+  second TTL + loose authorship predicate (stage + airborne only),
+  drifting from the spec's R9 acceptance. Fixed by restoring the
+  strict five-precondition predicate (mirroring the CA rule's guard)
+  with explicit fail-loud validation.
+
+- Round 2 (NEEDS_WORK → 5s sweep): five cross-reference docs still
+  said "20-second TTL". Doc-only sweep across
+  `G3aRunwayObstructionContinueApproachTest.kt`, `LowgGoldenTest.kt`,
+  `G3aRunwayObstructionTest.kt`, `Fixtures.kt`, and the
+  totality-and-go-around wiki design decision.
+
+- Round 3 (NEEDS_WORK → witness re-arm gate): the sim test was
+  emitting two ContinueApproach + two companion transmissions on the
+  same approach attempt. Investigation traced the cause to fn-13.1's
+  re-arm hook firing on the SAME Downwind report that originally
+  caused the AwaitApproach commitment to form. The fix gates the re-
+  arm on the commitment's stage being `AwaitDownwind` (so the late-
+  arriving original Downwind on `AwaitApproach` doesn't reset the
+  witness; only a fresh recovery-circuit Downwind on `AwaitDownwind`
+  does). The recovery-circuit re-arm behaviour is preserved.
+  Controller-level Pin 6b regression test added to
+  `ObstructionContinueApproachSpec`. Memory entry captured at
+  `bug/runtime-errors/fn-131-ca-witness-re-arm-fires-on-late-2026-05-10`
+  documenting the bug class for future witness-re-arm hook designs.
+
+- Round 4 SHIP.
+
+Cross-reference doc updates land the seventh golden test across:
+`AGENTS.md` (G3a-obstruction-continue-approach bullet + 7-test
+heading), `STRATEGY.md` (quadruple-covered approach decision space),
+`wiki/design-decisions/2026-04-15-controller-architecture.md`
+(Practice D: ContinueApproach + three-way priority ordering), `wiki/
+design-decisions/2026-04-22-root-cause-go-around-and-totality.md`
+(fn-13 closure subsection), `wiki/design-decisions/2026-04-16-
+transmission-reception-architecture.md` (two ContinueApproach
+consumers + `RUNWAY_OBSTRUCTED` enum extension), `TowerArrival.kt`
+file-level KDoc (three guard predicates + three-way priority + fn-13
+Boundary #1), `Event.kt` KDoc (CA is a controller output — no new
+event source class), `Instruction.kt ContinueApproach` class KDoc
+(four reason families + empty-atoms note), `Fixtures.kt` LOWG
+provenance (fourth consumer), and `@see` cross-refs on five sibling
+test class docstrings.
+
+All seven golden tests (G0 / G1 / G1-min / G2 / G3a-trained /
+G3a-obstruction / G3a-obstruction-continue-approach) GREEN. detekt
+baseline unchanged. fn-13 epic closed.
 ## Evidence
-
-_(filled by worker)_
+- Commits: 5033b9cd996254119c5a86ec822d27bea731e083, 5ef5c480f76bed61b183a8f4a715320342982dd2, b53e810ca9f68cd29328f4779d3ffd24ae0cea75, f33cd546bc47b822f89252faa2711096b9dadc43
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt
+- PRs:

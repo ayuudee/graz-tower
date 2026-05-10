@@ -265,9 +265,8 @@ Run `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :p
 - [ ] Witness set timing: verified by code inspection (the new `applyCommittedOutputWitnesses(...)` pass at Step 7 walks ONLY committed `ProcedureRun`s — by construction, failed-arbitration candidates do not appear in the committed run list and thus cannot set the witness). Step 9's pin #5 (witness suppression) implicitly validates that the witness IS set on the successful path; the no-set-on-failure case is structurally guaranteed by the new pass's input domain (committed runs only).
 
 ## Done summary
-
-_(filled by worker)_
-
+Added the three-state obstruction-handling ladder's middle state (CAP 413 §4.55-4.56 / ICAO Doc 4444 §12.3.4.16(d)): when the runway is obstructed but expected to clear in time, the controller now delays landing clearance via CONTINUE APPROACH rather than immediately firing GA. Implementation adds an `ObstructionClearsInTime` guard, an `ObstructionContinueApproachAction`, a new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule at `AwaitApproach` (priority-placed before the existing GA rule), narrows the fn-12 obstruction GA rule with `Not(ObstructionClearsInTime)` at the AwaitApproach stage only (post-clearance unchanged per Boundary #1), adds the `continueApproachIssuedThisAttempt` commitment witness with shared re-arm lifecycle, extends supersession with three new entries (GA→CA, ClearedToLand→CA, ClearedTouchAndGo→CA), and lands four regulation refs (`CAP413_4_53`/`_4_55` upgraded/`_4_56`/`ICAO4444_12_3_4_16`). Three codex rounds caught: (1) instruction-specific companion description, (2) existing `ARR-CONTINUE` re-fire race after coordination escalation, (3) stale `CAP413_4_55` citation on the non-obstruction rule. All 6 pre-existing goldens stay GREEN; new `ObstructionContinueApproachSpec` adds 17 pins covering all 13 task-spec acceptance pins plus the codex round-2 escalation regression.
 ## Evidence
-
-_(filled by worker)_
+- Commits: b09aae2, 2db399c, dde66ac, fa6477a, 03df1b2
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt
+- PRs:
