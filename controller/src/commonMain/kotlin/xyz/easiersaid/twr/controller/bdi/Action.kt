@@ -14,6 +14,8 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
@@ -64,6 +66,23 @@ data class TrafficInfo(
 )
 
 /**
+ * fn-12 (R8): obstruction info to emit alongside a `GoAround` instruction
+ * (companion-transmission shape). Read by `Controller.deriveCompanionOutputs`
+ * to construct a `RunwayObstructionInformation` `ControllerResponse`.
+ *
+ * **Primitives only** — `runway: RunwayId, clearsAt: SimTime`. Mirrors the
+ * protocol-side `RunwayObstructionInformation` shape. The controller bdi
+ * module CAN import `core.world.RunwayObstruction` (no cycle), but the
+ * downstream callers already have `clearsAt` extracted from the belief
+ * slice, and the protocol leaf carries primitives, so passing primitives
+ * through avoids a redundant unwrap at the companion-emit site.
+ */
+data class ObstructionInfo(
+    val runway: RunwayId,
+    val clearsAt: SimTime,
+)
+
+/**
  * How the controller wants the instruction dispatched — directly, or gated on a
  * visible surface condition ("behind the landing 737, line up runway 27").
  *
@@ -87,6 +106,15 @@ data class ProposedAction(
     val dispatch: Dispatch,
     val sequenceInfo: SequenceInfo? = null,
     val trafficInfo: TrafficInfo? = null,
+    /**
+     * fn-12 (R8): obstruction-info companion. When set, `deriveCompanionOutputs`
+     * emits a `RunwayObstructionInformation` `ControllerResponse` alongside
+     * the dispatched instruction (per ICAO Doc 4444 §7.4.1.4.1(c) +
+     * §8.9.6.1.8 — reason-on-radio is mandatory for obstruction GAs).
+     * Default-null preserves existing actions that produce no obstruction
+     * companion (every existing action).
+     */
+    val obstructionInfo: ObstructionInfo? = null,
 ) {
     val instruction: AtcInstruction get() = dispatch.instruction
     val aircraft: AircraftId get() = instruction.target
@@ -97,10 +125,12 @@ fun ProposedAction(
     instruction: AtcInstruction,
     sequenceInfo: SequenceInfo? = null,
     trafficInfo: TrafficInfo? = null,
+    obstructionInfo: ObstructionInfo? = null,
 ): ProposedAction = ProposedAction(
     dispatch = Dispatch.Direct(instruction),
     sequenceInfo = sequenceInfo,
     trafficInfo = trafficInfo,
+    obstructionInfo = obstructionInfo,
 )
 
 /**
@@ -191,6 +221,45 @@ data object CancelTakeoffAction : RuleAction {
 data object GoAroundAction : RuleAction {
     override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         ProposedAction(GoAround(ac.id)).right()
+}
+
+/**
+ * fn-12 (R7, R8): action for `ARR-GO-AROUND-RUNWAY-OBSTRUCTED`. Issues a
+ * `GoAround` instruction AND populates `obstructionInfo` so
+ * `Controller.deriveCompanionOutputs` emits the `RunwayObstructionInformation`
+ * companion transmission (per ICAO §7.4.1.4.1(c) — reason-on-radio is MUST).
+ *
+ * Returns `Either<ActionResolutionFailure, ProposedAction>` — typed-error
+ * path. Two failure modes surface as `Left`:
+ *  - No runway in commitment or active beliefs (defensive — should not
+ *    happen at the rule's guarded site, since `RunwayObstructed` only
+ *    fires when a runway exists in beliefs).
+ *  - Runway not in `runwayObstructions` slice (defensive — same reason;
+ *    the guard reads the same slice, so a guard-passed → action-fail
+ *    sequence indicates a stale-belief race).
+ *
+ * Both paths fail closed (rule emits no candidate; arbitration logs the
+ * skipped action). No `!!`; no silent swallow.
+ */
+data object ObstructionGoAroundAction : RuleAction {
+    override fun resolve(
+        ac: AircraftObservation,
+        commitment: Commitment,
+        ctx: OperatorContext,
+    ): Either<ActionResolutionFailure, ProposedAction> {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway
+            ?: return ActionResolutionFailure(
+                "ObstructionGoAroundAction: no runway in commitment or active beliefs for ${ac.id}",
+            ).left()
+        val obstruction = ctx.beliefs.runwayObstructions[runway]
+            ?: return ActionResolutionFailure(
+                "ObstructionGoAroundAction: runway $runway not in runwayObstructions for ${ac.id}",
+            ).left()
+        return ProposedAction(
+            instruction = GoAround(ac.id),
+            obstructionInfo = ObstructionInfo(runway = runway, clearsAt = obstruction.clearsAt),
+        ).right()
+    }
 }
 
 data object VacateAction : RuleAction {

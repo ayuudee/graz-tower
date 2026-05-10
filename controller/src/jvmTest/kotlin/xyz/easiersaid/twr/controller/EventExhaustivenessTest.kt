@@ -34,7 +34,7 @@ class EventExhaustivenessTest {
             file = "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/observe/Observe.kt",
             functionName = "aircraftIdOf",
             sealedRoot = ControllerEvent::class,
-            minLeafCount = 13,
+            minLeafCount = 15,
         )
     }
 
@@ -44,7 +44,7 @@ class EventExhaustivenessTest {
             file = "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/observe/Observe.kt",
             functionName = "intentFromRadio",
             sealedRoot = ControllerEvent::class,
-            minLeafCount = 13,
+            minLeafCount = 15,
         )
     }
 

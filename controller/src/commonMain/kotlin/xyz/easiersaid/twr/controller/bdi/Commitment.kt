@@ -155,6 +155,35 @@ data class Commitment(
      * after T&G completion) gets the default-empty value structurally.
      */
     val observedReportsDuringCommitment: Set<ReportEvent> = emptySet(),
+    /**
+     * fn-12 (R7-no-refire): approach-attempt-scoped witness that the
+     * controller has already issued an obstruction-driven `GoAround` for
+     * this aircraft on the **current** approach attempt. Read by the
+     * [xyz.easiersaid.twr.controller.bdi.ObstructionGoAroundAlreadyIssuedThisAttempt]
+     * guard (negated in the `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule's
+     * guard) to prevent re-firing while the obstruction persists.
+     *
+     * **Set timing — committed-output path only**. Set in
+     * `advanceCommittedStages` (Controller.kt) after arbitration and
+     * certification have accepted the rule's candidate output. NOT set at
+     * candidate-emit time in `executeProcedure` — if the candidate loses
+     * arbitration or fails certification, the witness MUST NOT be set;
+     * otherwise the controller would suppress the legitimate obstruction
+     * GA on the next cycle.
+     *
+     * **Re-arm sites** (clears back to `false`):
+     *  - Next `Report(Downwind)` arrival from this aircraft on this
+     *    commitment, in `reconcileTowerArrival`.
+     *  - Commitment replacement (a fresh `Commitment(...)` via
+     *    `createCommitment` takes the default `false`).
+     *
+     * Stage-progression alone is INSUFFICIENT for re-fire prevention —
+     * reconciliation may re-advance the aircraft back through eligible
+     * stages while the obstruction persists. The witness is the actual
+     * suppression mechanism. See fn-12 task spec § R7-no-refire and
+     * `feedback_no_corners.md`.
+     */
+    val obstructionGoAroundIssuedThisAttempt: Boolean = false,
 ) {
     val isComplete: Boolean get() = stage.isComplete
 }

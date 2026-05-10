@@ -28,6 +28,8 @@ import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.CoordinationIssued
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
+import xyz.easiersaid.twr.controller.bdi.ObstructionGoAroundAction
+import xyz.easiersaid.twr.controller.bdi.ObstructionGoAroundAlreadyIssuedThisAttempt
 import xyz.easiersaid.twr.controller.bdi.OnApproach
 import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.OnGround
@@ -40,6 +42,7 @@ import xyz.easiersaid.twr.controller.bdi.ReportFinalAction
 import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
 import xyz.easiersaid.twr.controller.bdi.RunwayLengthOperation
 import xyz.easiersaid.twr.controller.bdi.RunwayLengthSufficient
+import xyz.easiersaid.twr.controller.bdi.RunwayObstructed
 import xyz.easiersaid.twr.controller.bdi.RunwayPhysicallyClear
 import xyz.easiersaid.twr.controller.bdi.SeparationConcernAbove
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
@@ -70,6 +73,9 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_FREQUENCY_CHANGE
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_GO_AROUND
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_EXTEND_DOWNWIND
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_LANDING
+import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_4_1_4_1
+import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_8_9_6_1_8
+import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_65
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.ContinueApproach
@@ -95,6 +101,17 @@ private val LandingConditions = AllOf(listOf(
     WeatherPermitsVfr,
     RunwayAccessGranted,
     RunwayPhysicallyClear,
+    // fn-12 (R6): typed runway-obstruction gate. Doctrinally distinct from
+    // RunwayPhysicallyClear (which reads runwayBeliefs[runway].status for
+    // physical occupancy by another aircraft) — RunwayObstructed reads the
+    // BeliefState.runwayObstructions slice populated by the world-diff
+    // producer's typed declarations (vehicle, debris, wildlife, etc.).
+    // Defensive belt-and-suspenders alongside the post-clearance reactive
+    // rule: even if the rule fires in the same cycle as the obstruction
+    // first appears, this gate prevents `ClearedToLand` from being issued
+    // onto a known-obstructed runway. Transitively gates ARR-LAND,
+    // ARR-LAND-TNG, ARR-LAND-REISSUE, and ARR-LAND-TNG-REISSUE.
+    Not(RunwayObstructed),
     // Pass 13 (D-AUDIT.4.A-FOLLOWUP closure): runway must be long enough
     // for the aircraft's landing LDA. Shared by ARR-LAND, ARR-LAND-TNG,
     // and their re-issue rules. Fails closed for unknown designator or
@@ -131,6 +148,56 @@ private val LandingConditions = AllOf(listOf(
         PositionReportKind.ESTABLISHED_GLIDEPATH,
     )),
 ))
+
+/**
+ * fn-12 (R7): single AtcRule reused across all three on-final stages
+ * (`AwaitApproach`, `LandingClearanceIssued`, `AwaitLandedObserved`).
+ * Together they cover the entire on-final window: pre-clearance,
+ * post-clearance pre-readback, post-readback pre-touchdown.
+ *
+ * **Priority placement** (per fn-12 epic R7 acceptance): inserted BEFORE
+ * broader generic GA rules (`ARR-GO-AROUND`, `ARR-CONTINUE`,
+ * `ARR-GO-AROUND-CLEARANCE-ISSUED`) so that when a runway is BOTH
+ * obstructed AND physically-not-clear (or access-not-granted), the
+ * obstruction-specific rule wins — the obstruction-info companion is
+ * emitted (per ICAO §7.4.1.4.1(c) — reason-on-radio is mandatory).
+ *
+ * **Regression at issuance** (`Immediate` advancement): the commitment
+ * moves to `AwaitDownwind` in the same tick the rule fires. The existing
+ * `GA-POST-CLEAR` interrupt does NOT re-fire for this path (its
+ * `fromStages` no longer matches by the time `Report(GoingAround)`
+ * arrives). The witness `obstructionGoAroundIssuedThisAttempt` (set in
+ * `advanceCommittedStages` when the rule fires from a committed-output
+ * path) is the actual no-refire mechanism — stage-progression alone is
+ * insufficient because reconciliation may re-advance the aircraft back
+ * through eligible stages while the obstruction persists.
+ *
+ * **Re-arm**: the witness clears on the next `Report(Downwind)` arrival
+ * in `reconcileTowerArrival`, OR on commitment replacement (fresh
+ * `Commitment` takes the default `false`).
+ *
+ * **Regulatory grounding** (R7 acceptance): explicit refs, not
+ * placeholders — ICAO Doc 4444 §7.4.1.4.1 (runway obstruction GA mandate)
+ * + §8.9.6.1.8 (reason on radio) + CAP 413 §4.65 (missed approach
+ * phraseology).
+ */
+private val obstructionGoAroundRule: AtcRule = AtcRule(
+    id = "ARR-GO-AROUND-RUNWAY-OBSTRUCTED",
+    description = "Instruct go-around — runway obstructed during approach",
+    regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_65),
+    guard = AllOf(listOf(
+        AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
+        RunwayObstructed,
+        // No-refire guard. Witness is set ONLY on the committed-output
+        // path (`advanceCommittedStages`), NOT at candidate-emit time —
+        // see fn-12 task spec § R7-no-refire.
+        Not(ObstructionGoAroundAlreadyIssuedThisAttempt),
+    )),
+    action = ObstructionGoAroundAction,
+    nextStage = TowerArrivalStage.AwaitDownwind,
+    urgency = Urgency.SAFETY,
+    advancementPolicy = AdvancementPolicy.Immediate,
+)
 
 @Suppress("LongMethod") // procedure spec is a flat list of rules — splitting into smaller
 // procedures is a behavioural decision (separate APPROACH/AFIS/etc. flows), not a stylistic one.
@@ -239,6 +306,11 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
         ),
         // ── AwaitApproach: sequence, delay, or clear to land ─────────
         TowerArrivalStage.AwaitApproach to listOf(
+            // fn-12 (R7): obstruction-driven GA — fires BEFORE the broader
+            // generic GA rule so when the runway is BOTH obstructed AND
+            // physically-not-clear, the obstruction-specific rule wins
+            // and the obstruction-info companion is emitted.
+            obstructionGoAroundRule,
             // Controller-initiated go-around: runway was granted but is no longer clear
             AtcRule(
                 id = "ARR-GO-AROUND",
@@ -381,6 +453,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
         // touch down (handled by observation reconciliation).
         // Go-around from this stage is handled by the GA-POST-CLEAR interrupt.
         TowerArrivalStage.LandingClearanceIssued to listOf(
+            // fn-12 (R7): obstruction-driven GA — placed BEFORE the generic
+            // GA rule so the obstruction-specific reason-on-radio companion
+            // wins when both rules' guards would pass.
+            obstructionGoAroundRule,
             // Controller-initiated go-around: runway was cleared but is no longer safe
             AtcRule(
                 id = "ARR-GO-AROUND-CLEARANCE-ISSUED",
@@ -467,6 +543,13 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
         ),
         // ── AwaitLandedObserved: aircraft on runway → handoff ────────
         TowerArrivalStage.AwaitLandedObserved to listOf(
+            // fn-12 (R7): obstruction-driven GA — covers the post-readback,
+            // pre-touchdown window. Fires only while the aircraft is still
+            // airborne (rule's guard is `OnApproach OR OnCircuitLeg(FINAL)`,
+            // both of which are airborne predicates). Once the aircraft is
+            // on-runway-on-ground, the existing `ARR-TNG-AIRBORNE` /
+            // `ARR-VACATE` paths take over and this rule's guard fails.
+            obstructionGoAroundRule,
             // Touch-and-go: aircraft rolled, lifted off again — commitment completes
             // so reconciliation forms a fresh arrival for the next circuit. No vacate,
             // no handoff: the aircraft stays with Tower.

@@ -2,9 +2,11 @@ package xyz.easiersaid.twr.controller.observe
 
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.RequestApproach
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.RequestRightBase
 import xyz.easiersaid.twr.protocol.RequestShortApproach
@@ -96,10 +98,56 @@ fun BeliefState.withCircuitIntentEvents(events: List<ControllerEvent>): BeliefSt
             is ControllerEvent.UnableReceived,
             is ControllerEvent.TrafficInSightReceived,
             is ControllerEvent.PilotRequestReceived,
-            is ControllerEvent.AircraftArrivalCommitted -> acc
+            is ControllerEvent.AircraftArrivalCommitted,
+            // fn-12 (R2): runway-scoped world events — not aircraft-scoped,
+            // not circuit-intent-bearing. Explicit no-op arms preserve the
+            // totality discipline.
+            is ControllerEvent.RunwayObstructionDetected,
+            is ControllerEvent.RunwayObstructionCleared -> acc
         }
     }
     return if (updated === circuitIntent) this else copy(circuitIntent = updated)
+}
+
+/**
+ * fn-12 (R4): fold [ControllerEvent.RunwayObstructionDetected] /
+ * [ControllerEvent.RunwayObstructionCleared] events into
+ * [BeliefState.runwayObstructions]. Single-write site enforced by
+ * [xyz.easiersaid.twr.controller.FirewallBeliefWriteTest].
+ *
+ * Detected → set the entry; Cleared → drop the entry. The events are
+ * already per-controller-scoped (the sim's world-diff producer iterates
+ * `state.world.aerodromes[view.aerodromeId].runways` per controller view),
+ * so the fold can write directly with no aerodrome filter.
+ *
+ * Mirrors [withCircuitIntentEvents]'s shape — explicit per-leaf arms,
+ * identity-equality short-circuit when no event-leaf changed the slice.
+ */
+fun BeliefState.withRunwayObstructionEvents(events: List<ControllerEvent>): BeliefState {
+    if (events.isEmpty()) return this
+    val updated = events.fold(runwayObstructions) { acc, ev ->
+        when (ev) {
+            is ControllerEvent.RunwayObstructionDetected -> acc + (ev.runway to ev.obstruction)
+            is ControllerEvent.RunwayObstructionCleared -> acc - ev.runway
+            // Non-obstruction leaves are no-ops on this slice. Listed
+            // explicitly so the compiler forces a decision when new
+            // ControllerEvent variants are added.
+            is ControllerEvent.ReadyForDepartureReceived,
+            is ControllerEvent.InitialContactReceived,
+            is ControllerEvent.PositionReported,
+            is ControllerEvent.ReadbackReceived,
+            is ControllerEvent.StartupRequested,
+            is ControllerEvent.TaxiRequested,
+            is ControllerEvent.GoAroundDetected,
+            is ControllerEvent.ResponsibilityTaken,
+            is ControllerEvent.UnableReceived,
+            is ControllerEvent.TrafficInSightReceived,
+            is ControllerEvent.PilotRequestReceived,
+            is ControllerEvent.CircuitIntentReported,
+            is ControllerEvent.AircraftArrivalCommitted -> acc
+        }
+    }
+    return if (updated === runwayObstructions) this else copy(runwayObstructions = updated)
 }
 
 /**
@@ -145,6 +193,13 @@ internal fun aircraftIdOf(event: ControllerEvent): AircraftId? = when (event) {
     is ControllerEvent.TrafficInSightReceived -> event.aircraft
     is ControllerEvent.PilotRequestReceived -> event.aircraft
     is ControllerEvent.CircuitIntentReported -> event.aircraft
+    // fn-12 (R2): runway-scoped events have no aircraft id. The
+    // recentRadio fold (which uses this lookup) skips events with no
+    // aircraft via `?: return@fold acc`, so these contribute nothing
+    // to per-aircraft radio history — correct: an obstruction event
+    // is not radio.
+    is ControllerEvent.RunwayObstructionDetected -> null
+    is ControllerEvent.RunwayObstructionCleared -> null
 }
 
 /**
@@ -217,7 +272,11 @@ internal fun intentFromRadio(event: ControllerEvent): arrow.core.Option<Aircraft
     is ControllerEvent.ResponsibilityTaken,
     is ControllerEvent.UnableReceived,
     is ControllerEvent.TrafficInSightReceived,
-    is ControllerEvent.CircuitIntentReported -> arrow.core.None
+    is ControllerEvent.CircuitIntentReported,
+    // fn-12 (R2): runway-scoped world events carry no aircraft intent —
+    // an obstruction is a runway condition, not a per-aircraft signal.
+    is ControllerEvent.RunwayObstructionDetected,
+    is ControllerEvent.RunwayObstructionCleared -> arrow.core.None
 }
 
 internal fun intentFromRequestType(rt: RequestType): AircraftIntent? = when (rt) {

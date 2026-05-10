@@ -8,10 +8,12 @@ import xyz.easiersaid.twr.controller.ReceivedMessage
 import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 
 /**
@@ -118,6 +120,24 @@ data class SimState(
      * at their call time, so they don't need the per-aircraft tracker.
      */
     val pilotRadioFreeAt: Map<AircraftId, SimTime> = emptyMap(),
+    /**
+     * fn-12 (R3b): per-controller snapshot of the obstructions visible to
+     * that controller AS OF the prior controller cycle. Updated at the
+     * end of each controller cycle (after the world-diff producer runs)
+     * to reflect that controller's currently-known obstruction state for
+     * the next cycle's diff.
+     *
+     * Per-controller (not per-aerodrome) because the diff is per-cycle
+     * per-controller and a controller's "what did I see last cycle" is
+     * its own state. Empty initially (no prior cycle); populated lazily
+     * as the world authors obstructions and the diff producer runs.
+     *
+     * Only obstruction-state-bearing runways have entries (null
+     * obstructions are filtered out at snapshot time — the diff
+     * producer treats absent keys as `None`, which is structurally the
+     * same).
+     */
+    val priorObstructionsByController: Map<ControllerId, Map<RunwayId, RunwayObstruction>> = emptyMap(),
 ) {
     companion object {
         /**

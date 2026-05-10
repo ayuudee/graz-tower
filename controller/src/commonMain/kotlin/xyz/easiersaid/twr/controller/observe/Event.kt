@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.protocol.Emergency
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.Negative
 import xyz.easiersaid.twr.protocol.NegativeContact
+import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
@@ -27,6 +28,7 @@ import xyz.easiersaid.twr.protocol.RequestTaxi
 import xyz.easiersaid.twr.protocol.RequestType
 import xyz.easiersaid.twr.protocol.RequestVisualApproach
 import xyz.easiersaid.twr.protocol.Roger
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SayAgain
 import xyz.easiersaid.twr.protocol.StandbyAck
 import xyz.easiersaid.twr.protocol.TrafficInSight
@@ -88,6 +90,38 @@ sealed interface ControllerEvent {
      * Departing → Arriving transition.
      */
     data class AircraftArrivalCommitted(val aircraft: AircraftId) : ControllerEvent
+
+    /**
+     * fn-12 (R2): the world has declared the active runway obstructed —
+     * sim-side detection (modality-agnostic; tower-visual / surface sensor /
+     * ground inspection are all valid sources). Emitted by the per-cycle
+     * world-diff producer in `sim/.../ControllerWiring.kt` on the
+     * `runway.obstruction` field's `None → Some(new)` transition.
+     *
+     * No `AerodromeId` payload — the producer is per-controller-scoped:
+     * events in `ControllerView.worldEvents` reference only `RunwayId`s
+     * within `view.aerodromeId`'s runway set. Cross-aerodrome routing is
+     * filed as `D-PASS-g3a-obstruction-aerodrome-payload`.
+     *
+     * Folded into [BeliefState.runwayObstructions] via
+     * `withRunwayObstructionEvents`. Read by the [RunwayObstructed] guard
+     * and the `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule.
+     */
+    data class RunwayObstructionDetected(
+        val runway: RunwayId,
+        val obstruction: RunwayObstruction,
+    ) : ControllerEvent
+
+    /**
+     * fn-12 (R2): the world has cleared the runway obstruction — sim-side
+     * expiry. Emitted by the world-diff producer on the
+     * `runway.obstruction` field's `Some → None` transition (from the
+     * per-cycle expiry pass nulling expired obstructions where
+     * `clearsAt <= now`).
+     *
+     * Folded into [BeliefState.runwayObstructions] (drops the entry).
+     */
+    data class RunwayObstructionCleared(val runway: RunwayId) : ControllerEvent
 }
 
 /** Derive semantic events from channel-resolved received messages. */

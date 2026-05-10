@@ -4,6 +4,7 @@ import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.Disregard
 import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.ExtendDownwind
@@ -61,6 +62,13 @@ val SUPERSESSION_RELATIONS: List<SupersessionRelation> = listOf(
     SupersessionRelation(ClearedToLand::class, Orbit::class, PendingReadbackPolicy.ABANDON),
     SupersessionRelation(ClearedToLand::class, ExtendDownwind::class, PendingReadbackPolicy.ABANDON),
     SupersessionRelation(GoAround::class, ClearedToLand::class, PendingReadbackPolicy.ABANDON),
+    // fn-12 (R7-supersession): a GA also supersedes a ClearedTouchAndGo
+    // — symmetric to the ClearedToLand case. The obstruction-driven GA
+    // can fire from `LandingClearanceIssued` after a `ClearedTouchAndGo`
+    // (declared T&G intent path), and a stale T&G readback arriving
+    // post-regression must NOT advance the commitment back out of
+    // `AwaitDownwind`.
+    SupersessionRelation(GoAround::class, ClearedTouchAndGo::class, PendingReadbackPolicy.ABANDON),
 
     // Speed: new speed control absorbs (replaces) the old — readback obligation transfers
     SupersessionRelation(ReduceSpeedTo::class, MaintainSpeed::class, PendingReadbackPolicy.ABSORB),
@@ -120,6 +128,42 @@ fun applySupersessionCleanup(
         }
         if (cleaned.isEmpty()) acc - aircraft else acc + (aircraft to cleaned)
     }
-    return if (coordinations === beliefs.coordinations) beliefs
-        else beliefs.copy(coordinations = coordinations)
+
+    // fn-12 (R7-supersession): the issued-clearances ledger MUST also drop
+    // superseded clearances. Without this, an active `ClearedToLand` /
+    // `ClearedTouchAndGo` clearance survives in `BeliefState.issuedClearances`
+    // even after an obstruction GA — `NoActiveInstruction(...)`-gated
+    // downstream rules would silently sleep against a dead disposition.
+    // The cleanup walks the same supersession-relation table as the
+    // coordinations cleanup above; for each committed superseding
+    // instruction we drop matching active clearances on the same aircraft.
+    val issued = committedInstructions.fold(beliefs.issuedClearances) { acc, (aircraft, instruction) ->
+        if (instruction is Disregard) {
+            return@fold acc.filterValues { clr -> clr.aircraft != aircraft }
+        }
+        val relations = relationsIndex[instruction::class] ?: return@fold acc
+        val abandonTypes = relations
+            .filter { it.pendingReadbackPolicy == PendingReadbackPolicy.ABANDON }
+            .map { it.superseded }
+            .toSet()
+        if (abandonTypes.isEmpty()) return@fold acc
+        acc.filterValues { clr ->
+            // Keep clearances for OTHER aircraft, or that don't match a
+            // superseded type. Clearances of the matching type for this
+            // aircraft are dropped regardless of clearance domain — the
+            // supersession-relation table is the authority.
+            clr.aircraft != aircraft ||
+                abandonTypes.none { type -> type.isInstance(clr.instruction) }
+        }
+    }
+
+    val coordsChanged = coordinations !== beliefs.coordinations
+    val issuedChanged = issued !== beliefs.issuedClearances
+    return when {
+        coordsChanged && issuedChanged -> beliefs.copy(coordinations = coordinations, issuedClearances = issued)
+        coordsChanged -> beliefs.copy(coordinations = coordinations)
+        issuedChanged -> beliefs.copy(issuedClearances = issued)
+        else -> beliefs
+    }
 }
+

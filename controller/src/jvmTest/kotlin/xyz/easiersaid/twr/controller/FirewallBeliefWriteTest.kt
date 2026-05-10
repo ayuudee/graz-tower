@@ -43,7 +43,12 @@ class FirewallBeliefWriteTest {
         // BeliefState.kt is implicitly allowlisted for all slices (declaration
         // site + projection getters).
         val sliceAllowlist: Map<String, Set<String>> = mapOf(
-            "Observe.kt" to setOf("recentRadio", "circuitIntent", "coordinations"),
+            // fn-12 (R4): Observe.kt's `withRunwayObstructionEvents` is the
+            // single write site for `runwayObstructions` (mirrors
+            // `circuitIntent`'s single-writer discipline).
+            "Observe.kt" to setOf(
+                "recentRadio", "circuitIntent", "coordinations", "runwayObstructions",
+            ),
             "Readback.kt" to setOf("coordinations"),
             "CoordinationEscalation.kt" to setOf("coordinations"),
             "Supersession.kt" to setOf("coordinations"),
@@ -58,6 +63,9 @@ class FirewallBeliefWriteTest {
             // Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS letter
             // belief slice. Single-write site `Controller.withExpectedAtisLetter`.
             "expectedAtisLetter",
+            // fn-12 (R4): per-runway obstruction belief slice. Single-write
+            // site `Observe.withRunwayObstructionEvents`.
+            "runwayObstructions",
         )
         val mutationPattern = Regex(
             """\.copy\s*\([^)]*\b(${sliceNames.joinToString("|")})\s*=""",

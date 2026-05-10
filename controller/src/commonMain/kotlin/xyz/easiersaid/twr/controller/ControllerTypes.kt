@@ -129,6 +129,30 @@ data class ControllerView(
      * **Doctrine**: ICAO Annex 11 §4.3 (ATIS service).
      */
     val atis: Map<AerodromeId, xyz.easiersaid.twr.protocol.Atis> = emptyMap(),
+    /**
+     * fn-12 (R3c): world-state-derived events for this controller's
+     * aerodrome, populated by the sim's per-cycle world-diff producer at
+     * `sim/.../ControllerWiring.kt`. Currently carries
+     * [xyz.easiersaid.twr.controller.observe.ControllerEvent.RunwayObstructionDetected]
+     * /
+     * [xyz.easiersaid.twr.controller.observe.ControllerEvent.RunwayObstructionCleared]
+     * — the first world-state-derived sensing channel in the codebase
+     * (foundational for future surface-incursion / FOD / wildlife /
+     * leader-not-vacated scenarios).
+     *
+     * **Per-controller scoping invariant**: every event in this list
+     * references only `RunwayId`s within `aerodromeId`'s runway set; no
+     * AerodromeId payload qualification is needed on the event leaves.
+     * Cross-aerodrome routing is filed as
+     * `D-PASS-g3a-obstruction-aerodrome-payload`.
+     *
+     * Concatenated with `deriveEventsFromMessages(receivedMessages)` at
+     * `Controller.kt`'s event-assembly site. Default-empty preserves all
+     * existing call sites and keeps existing G0-G3a goldens GREEN
+     * (vacuously empty list folds to identity). Added as the final
+     * constructor parameter to avoid positional-arg call-site churn.
+     */
+    val worldEvents: List<xyz.easiersaid.twr.controller.observe.ControllerEvent> = emptyList(),
 )
 
 /**

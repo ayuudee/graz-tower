@@ -153,7 +153,21 @@ data class Runway(
     val path: Path,
     val threshold: PointId,
     val exits: List<RunwayExit> = emptyList(),
-    val declaredDistances: DeclaredDistances? = null
+    val declaredDistances: DeclaredDistances? = null,
+    /**
+     * fn-12 (R1): typed runway-obstruction declaration. Default-null preserves
+     * existing constructor sites (production loader at `WorldCandidateLoader`,
+     * test fixtures). When present, the controller's reactive
+     * obstruction-GA rule fires for aircraft on final and the pre-clearance
+     * landing gate is closed via `Not(RunwayObstructed)`. See
+     * [RunwayObstruction] KDoc for the `clearsAt` immutability invariant.
+     *
+     * Mutation contract: `None → Some(new)` (initial set) and
+     * `Some → None` (expiry pass nulls it) are the only allowed transitions
+     * for the field. `Some(old) → Some(new)` is an invariant violation
+     * caught by the sim's world-diff producer.
+     */
+    val obstruction: RunwayObstruction? = null,
 ) {
     init {
         require(path.points.first() == threshold) { "Runway threshold must be the first path point" }

@@ -147,6 +147,7 @@ import xyz.easiersaid.twr.protocol.ReadBackCorrect
 import xyz.easiersaid.twr.protocol.ReadbackCorrection
 import xyz.easiersaid.twr.protocol.TransmittingBlind
 import xyz.easiersaid.twr.protocol.Standby
+import xyz.easiersaid.twr.protocol.RunwayObstructionInformation
 import xyz.easiersaid.twr.protocol.TrafficInformation
 
 /**
@@ -219,6 +220,12 @@ fun processControllerResponse(
     is RadarContact -> ResponseReaction.silent(mission)
     is AcknowledgeEmergency -> ResponseReaction.silent(mission)
     is TrafficInformation -> ResponseReaction.silent(mission)
+    // fn-12 (R8): obstruction-info companion. The pilot's actionable input
+    // is the separate `Instruction.GoAround` the controller dispatches
+    // alongside this transmission — the GA reaction is driven there. The
+    // obstruction-info itself is cognitive-only (situational awareness;
+    // no PilotMission field captures it today, mirroring TrafficInformation).
+    is RunwayObstructionInformation -> ResponseReaction.silent(mission)
     is CautionWakeTurbulence -> ResponseReaction.silent(mission)
     is ExpectApproach -> ResponseReaction.silent(mission)
     is ExpectVectors -> ResponseReaction.silent(mission)

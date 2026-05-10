@@ -39,6 +39,7 @@ import xyz.easiersaid.twr.controller.observe.escalateOverdueCoordinations
 import xyz.easiersaid.twr.controller.observe.markCoordinationEscalationsEmitted
 import xyz.easiersaid.twr.controller.observe.withRecentRadio
 import xyz.easiersaid.twr.controller.observe.withCircuitIntentEvents
+import xyz.easiersaid.twr.controller.observe.withRunwayObstructionEvents
 import xyz.easiersaid.twr.controller.observe.deriveEventsFromMessages
 import xyz.easiersaid.twr.controller.observe.recordCoordinations
 import xyz.easiersaid.twr.controller.observe.updateBeliefs
@@ -58,6 +59,7 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.RunwayObstructionInformation
 import xyz.easiersaid.twr.protocol.TrafficInformation
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.procedure.approachArrivalProcedure
@@ -84,7 +86,14 @@ private val PROCEDURES: Map<CommitmentKind, ProcedureSpec> by lazy {
  * Controller decision function. Pure: (View, State) -> (Output, State).
  */
 fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: AviationWorld): ControllerDecisionResult {
-    val events = deriveEventsFromMessages(view.receivedMessages)
+    // fn-12 (R3c): event-assembly concatenates world-state-derived events
+    // (sim's world-diff producer per cycle) with radio-derived events. The
+    // world events are folded into BeliefState BEFORE the radio events
+    // would consult that slice — though current radio-folds don't read
+    // runwayObstructions, so the ordering is structural rather than
+    // load-bearing. World events cover only the per-controller scoped
+    // runway set (see ControllerView.worldEvents KDoc).
+    val events: List<ControllerEvent> = view.worldEvents + deriveEventsFromMessages(view.receivedMessages)
 
     val contactedAircraft = events.contactedAircraft()
 
@@ -96,6 +105,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
         .withActiveRunway(view)
         .withRecentRadio(events, view.time)
         .withCircuitIntentEvents(events)
+        .withRunwayObstructionEvents(events)
         .let { b ->
             val commitments = reconcileCommitments(
                 existing = b.commitments, role = view.role, aircraft = b.trackedAircraft,
@@ -229,12 +239,36 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
 
 private fun List<ControllerEvent>.contactedAircraft(): Set<AircraftId> =
     mapNotNull { event ->
+        // fn-12 (R2): explicit per-leaf coverage — the prior `else -> null`
+        // would silently swallow newly-added leaves. Per the no-corners rule,
+        // every ControllerEvent leaf gets an explicit arm. Non-contact-bearing
+        // leaves (intent / sequencing / world-state events) return null.
         when (event) {
             is ControllerEvent.ReadyForDepartureReceived -> event.aircraft
             is ControllerEvent.InitialContactReceived -> event.aircraft
             is ControllerEvent.ReadbackReceived -> event.aircraft
             is ControllerEvent.PositionReported -> event.aircraft
-            else -> null
+            // Other leaves do NOT count as a fresh radio contact for the
+            // contacted-this-cycle witness. StartupRequested / TaxiRequested
+            // / GoAroundDetected / ResponsibilityTaken / UnableReceived /
+            // TrafficInSightReceived / PilotRequestReceived /
+            // CircuitIntentReported / AircraftArrivalCommitted are emitted
+            // alongside an InitialContact / Request / Acknowledge / Report
+            // that already covers the contact, OR they're internal
+            // controller-state transitions (ResponsibilityTaken).
+            // RunwayObstructionDetected / RunwayObstructionCleared are
+            // runway-scoped world events — no aircraft to mark.
+            is ControllerEvent.StartupRequested,
+            is ControllerEvent.TaxiRequested,
+            is ControllerEvent.GoAroundDetected,
+            is ControllerEvent.ResponsibilityTaken,
+            is ControllerEvent.UnableReceived,
+            is ControllerEvent.TrafficInSightReceived,
+            is ControllerEvent.PilotRequestReceived,
+            is ControllerEvent.CircuitIntentReported,
+            is ControllerEvent.AircraftArrivalCommitted,
+            is ControllerEvent.RunwayObstructionDetected,
+            is ControllerEvent.RunwayObstructionCleared -> null
         }
     }.toSet()
 
@@ -484,9 +518,24 @@ private fun reconcileTowerArrival(
     val withTouchdown = if (touchdownFlag != baseStage.touchedDownDuringCommitment) {
         baseStage.copy(touchedDownDuringCommitment = touchdownFlag)
     } else baseStage
-    return if (reportsFlag != withTouchdown.observedReportsDuringCommitment) {
+    val withReports = if (reportsFlag != withTouchdown.observedReportsDuringCommitment) {
         withTouchdown.copy(observedReportsDuringCommitment = reportsFlag)
     } else withTouchdown
+    // fn-12 (R7-no-refire — re-arm hook): clear the
+    // obstruction-GA-issued-this-attempt witness on the next Downwind
+    // report from this aircraft on this commitment. After the witness
+    // clears, a fresh obstruction can drive a fresh GA on the recovery
+    // approach. The clear happens in the same event-processing tick as
+    // the Downwind report folds, so the next cycle's rule evaluation
+    // sees the cleared witness.
+    val downwindReportedThisCycle = events.any { ev ->
+        ev is xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported &&
+            ev.aircraft == acId &&
+            ev.event is xyz.easiersaid.twr.protocol.ReportEvent.Downwind
+    }
+    return if (downwindReportedThisCycle && withReports.obstructionGoAroundIssuedThisAttempt) {
+        withReports.copy(obstructionGoAroundIssuedThisAttempt = false)
+    } else withReports
 }
 
 /**
@@ -679,8 +728,25 @@ private fun advanceCommittedStages(
         pilotReadyDuringCommitment = false,
         observedReportsDuringCommitment = emptySet(),
     ) else advanced
+    // fn-12 (R7-no-refire): set the obstruction-GA witness ONLY when this
+    // rule's candidate has cleared arbitration + certification (i.e. the
+    // aircraft IS in `committedAircraft` for this run). Stage-progression
+    // alone is insufficient as a no-refire mechanism — reconciliation may
+    // re-advance the aircraft back through eligible stages while the
+    // obstruction persists. Setting AFTER the regression-reset ensures
+    // the witness survives the regression's witness-reset (the regression
+    // resets touched-down / pilot-ready / observed-reports; the
+    // obstruction witness is approach-attempt-scoped and is meaningful on
+    // the regressed commitment).
+    val withObstructionWitness = if (
+        wasCommitted && result.trace.ruleId == "ARR-GO-AROUND-RUNWAY-OBSTRUCTED"
+    ) {
+        resetAdvanced.copy(obstructionGoAroundIssuedThisAttempt = true)
+    } else {
+        resetAdvanced
+    }
     acc.copy(
-        commitments = acc.commitments + (run.aircraft to resetAdvanced),
+        commitments = acc.commitments + (run.aircraft to withObstructionWitness),
     )
 }
 
@@ -738,6 +804,32 @@ private fun deriveCompanionOutputs(
                 trace = DecisionTrace(
                     ruleId = "TRAFFIC-INFO", description = info.description,
                     regulations = listOf(RegulationDatabase.ICAO4444_7_10),
+                ),
+            ))
+        }
+
+        // fn-12 (R8): obstruction-info companion. Mirrors the trafficInfo
+        // block above. Emitted alongside the dispatched `GoAround`
+        // instruction when the rule was `ARR-GO-AROUND-RUNWAY-OBSTRUCTED`
+        // (per ICAO §7.4.1.4.1(c) + §8.9.6.1.8 — reason on radio is MUST).
+        // The companion's DecisionTrace carries the same regulation refs
+        // as the rule for trace-correlation parity.
+        action?.obstructionInfo?.let { info ->
+            companions.add(ControllerOutput.Respond(
+                target = output.target,
+                response = RunwayObstructionInformation(
+                    target = output.target,
+                    runway = info.runway,
+                    clearsAt = info.clearsAt,
+                ),
+                trace = DecisionTrace(
+                    ruleId = "OBSTRUCTION-INFO",
+                    description = "Inform aircraft of runway obstruction per ICAO 4444 §7.4.1.4.1(c)",
+                    regulations = listOf(
+                        RegulationDatabase.ICAO4444_7_4_1_4_1,
+                        RegulationDatabase.ICAO4444_8_9_6_1_8,
+                        RegulationDatabase.CAP413_4_65,
+                    ),
                 ),
             ))
         }

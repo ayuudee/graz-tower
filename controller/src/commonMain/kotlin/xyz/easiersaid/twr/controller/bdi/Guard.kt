@@ -531,6 +531,49 @@ data object RunwayPhysicallyClear : RuleGuard {
     }
 }
 
+/**
+ * fn-12 (R5): the commitment's runway has been declared obstructed by the
+ * world (per-cycle world-diff producer in sim folded into
+ * [BeliefState.runwayObstructions]). Doctrinally distinct from
+ * [RunwayPhysicallyClear] which reads `runwayBeliefs[runway].status` for
+ * physical occupancy by another aircraft — `RunwayObstructed` is for typed
+ * world-state declarations (vehicle, debris, wildlife, surface contamination,
+ * etc., though v1 carries only an opaque [RunwayObstruction] with `clearsAt`).
+ *
+ * **Parameterless `data object`** mirroring [RunwayPhysicallyClear]'s shape.
+ * Derives the runway from `commitment.runway ?: ctx.beliefs.activeRunway`.
+ * Map-membership (`containsKey`) is the existence check.
+ */
+data object RunwayObstructed : RuleGuard {
+    override val failureMessage = "Runway is declared obstructed"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway ?: return false
+        return ctx.beliefs.runwayObstructions.containsKey(runway)
+    }
+}
+
+/**
+ * fn-12 (R7-no-refire): the controller has already issued an
+ * obstruction-driven go-around for this aircraft on the **current**
+ * approach attempt. Reads
+ * [Commitment.obstructionGoAroundIssuedThisAttempt] (the
+ * approach-attempt-scoped sticky witness, set in `advanceCommittedStages`
+ * after arbitration + certification accepted the candidate output, NOT at
+ * candidate-emit time).
+ *
+ * Used by `ARR-GO-AROUND-RUNWAY-OBSTRUCTED` to prevent re-firing on
+ * subsequent rule-evaluation cycles while the obstruction persists. Stage
+ * progression alone is insufficient: reconciliation may re-advance the
+ * aircraft back through eligible stages. The witness is the no-refire
+ * mechanism. Re-armed by the next `Report(Downwind)` arrival in
+ * `reconcileTowerArrival` or by commitment replacement.
+ */
+data object ObstructionGoAroundAlreadyIssuedThisAttempt : RuleGuard {
+    override val failureMessage = "Obstruction-driven GA has not been issued this approach attempt"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean =
+        commitment.obstructionGoAroundIssuedThisAttempt
+}
+
 // ── Weather ──────────────────────────────────────────────────────────
 
 /** Weather permits VFR operations — visibility >= 5000m. */

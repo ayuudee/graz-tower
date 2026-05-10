@@ -9,10 +9,13 @@ import xyz.easiersaid.twr.controller.observe.RecentRadio
 import xyz.easiersaid.twr.controller.observe.deriveCurrentIntent
 import xyz.easiersaid.twr.controller.observe.withCircuitIntentEvents
 import xyz.easiersaid.twr.controller.observe.withRecentRadio
+import xyz.easiersaid.twr.controller.observe.withRunwayObstructionEvents
+import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.protocol.RequestTaxi
 import xyz.easiersaid.twr.protocol.RequestVisualApproach
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 import kotlin.test.Test
 
@@ -130,6 +133,51 @@ class BeliefFoldSpec {
         val derived = deriveCurrentIntent(None, RecentRadio.EMPTY)
         check(derived == AircraftIntent.Transit) {
             "Expected Transit default; got $derived"
+        }
+    }
+
+    // ── fn-12 (R4): runwayObstructions fold ──────────────────────────
+
+    @Test
+    fun `RunwayObstructionDetected writes the obstruction into the slice`() {
+        val rwy = RunwayId("16C")
+        val obs = RunwayObstruction(clearsAt = SimTime.ofSeconds(60))
+        val updated = BeliefState.EMPTY.withRunwayObstructionEvents(listOf(
+            ControllerEvent.RunwayObstructionDetected(rwy, obs),
+        ))
+        check(updated.runwayObstructions[rwy] == obs) {
+            "Expected runwayObstructions[$rwy] = $obs; got ${updated.runwayObstructions}"
+        }
+    }
+
+    @Test
+    fun `RunwayObstructionCleared drops the entry from the slice`() {
+        val rwy = RunwayId("16C")
+        val obs = RunwayObstruction(clearsAt = SimTime.ofSeconds(60))
+        val seeded = BeliefState.EMPTY.copy(runwayObstructions = mapOf(rwy to obs))
+        val cleared = seeded.withRunwayObstructionEvents(listOf(
+            ControllerEvent.RunwayObstructionCleared(rwy),
+        ))
+        check(rwy !in cleared.runwayObstructions) {
+            "Expected runwayObstructions to drop $rwy after Cleared; got ${cleared.runwayObstructions}"
+        }
+    }
+
+    @Test
+    fun `non-obstruction events leave the runwayObstructions slice unchanged (identity)`() {
+        // The fold short-circuits on identity equality when no event-leaf
+        // touched the slice. A regression that returned a new map for
+        // every event would still be functionally correct but waste an
+        // allocation per cycle.
+        val rwy = RunwayId("16C")
+        val obs = RunwayObstruction(clearsAt = SimTime.ofSeconds(60))
+        val seeded = BeliefState.EMPTY.copy(runwayObstructions = mapOf(rwy to obs))
+        val updated = seeded.withRunwayObstructionEvents(listOf(
+            ControllerEvent.InitialContactReceived(aircraft, RequestTaxi()),
+            ControllerEvent.AircraftArrivalCommitted(aircraft),
+        ))
+        check(updated === seeded) {
+            "Expected identity short-circuit when no obstruction-event modified the slice"
         }
     }
 

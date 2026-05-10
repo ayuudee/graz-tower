@@ -157,6 +157,38 @@ object RegulationDatabase {
         category = RegulationCategory.PROCEDURE,
     )
 
+    /**
+     * fn-12 (R7): runway obstruction / incursion go-around mandate.
+     *
+     * "If a runway-incursion / obstruction situation is observed, the
+     * aircraft on final shall be instructed to go around. In all cases the
+     * pilot shall be informed of the runway incursion or obstruction."
+     *
+     * Note (4444 commentary): "Animals and flocks of birds may constitute
+     * an obstruction with regard to runway operations." The reason on
+     * radio is MUST, not optional — see also §8.9.6.1.8.
+     */
+    val ICAO4444_7_4_1_4_1 = RegulationRef(
+        document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§7.4.1.4.1",
+        title = "Runway obstruction — go-around mandate",
+        principle = "If a runway is observed obstructed, the aircraft on final shall be instructed to go around; " +
+            "pilot shall be informed of the obstruction",
+        category = RegulationCategory.PROCEDURE,
+    )
+
+    /**
+     * fn-12 (R7): reason on radio is mandatory.
+     *
+     * "In all such cases, the reason for the instruction or the advice
+     * should be given to the pilot."
+     */
+    val ICAO4444_8_9_6_1_8 = RegulationRef(
+        document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§8.9.6.1.8",
+        title = "Reason for instruction given to pilot",
+        principle = "In all such cases, the reason for the instruction or the advice shall be given to the pilot",
+        category = RegulationCategory.PROCEDURE,
+    )
+
     val ICAO4444_7_11 = RegulationRef(
         document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§7.11",
         title = "Post-landing taxi",
@@ -344,5 +376,21 @@ object RegulationDatabase {
         title = "Continue approach — delayed landing clearance",
         principle = "When runway is occupied but expected to clear, controller delays landing clearance with continue approach",
         category = RegulationCategory.GUIDANCE,
+    )
+
+    /**
+     * fn-12 (R7): missed approach phraseology.
+     *
+     * "GO AROUND, [reason], …" — controller-initiated missed approach.
+     * The phraseology mandates the reason; the companion
+     * `RunwayObstructionInformation` carries the structured
+     * obstruction-info that renders the reason ("runway obstructed,
+     * runway 09").
+     */
+    val CAP413_4_65 = RegulationRef(
+        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.65",
+        title = "Missed approach phraseology",
+        principle = "GO AROUND [reason] — controller-initiated missed approach with the reason",
+        category = RegulationCategory.PHRASEOLOGY,
     )
 }

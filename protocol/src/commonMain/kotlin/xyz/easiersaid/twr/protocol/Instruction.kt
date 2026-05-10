@@ -1289,6 +1289,33 @@ data class TrafficInformation(
     val movement: String? = null
 ) : ControllerResponse
 
+/**
+ * fn-12 (R8): companion transmission to a `GoAround` instruction for a
+ * runway obstruction (per ICAO Doc 4444 §7.4.1.4.1(c) — "in all cases
+ * inform the aircraft of the runway incursion or obstruction" — and
+ * §8.9.6.1.8 — "in all such cases, the reason for the instruction or the
+ * advice should be given to the pilot"). The reason is **MUST**, not
+ * optional.
+ *
+ * Sibling to [TrafficInformation]: an information transmission rather than
+ * a directive. Pilot has no readback obligation; the actionable input is
+ * the separate [GoAround] instruction.
+ *
+ * **Primitives only** — `runway: RunwayId, clearsAt: SimTime`. The protocol
+ * module cannot import `core.world.RunwayObstruction` (would create a
+ * cycle since `core` imports `protocol`). The controller-side carrier
+ * `ObstructionInfo` has the same primitive shape.
+ *
+ * Emitted by `Controller.deriveCompanionOutputs` reading
+ * `ProposedAction.obstructionInfo` — same shape as the existing
+ * `trafficInfo → TrafficInformation` companion-emission block.
+ */
+data class RunwayObstructionInformation(
+    override val target: AircraftId,
+    val runway: RunwayId,
+    val clearsAt: SimTime,
+) : ControllerResponse
+
 data class CautionWakeTurbulence(
     override val target: AircraftId,
     val causedBy: TrafficRef? = null

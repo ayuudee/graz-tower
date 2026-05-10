@@ -642,17 +642,32 @@ private fun handleControllerTick(
     // If the controller has been de-registered (e.g. responsibility transfer
     // cleared it in a later slice), drop the tick rather than fail loudly —
     // the queue is expected to carry stale self-schedules.
-    state.controllers[event.controllerId] ?: return state to emptyList()
+    val spec = state.controllers[event.controllerId] ?: return state to emptyList()
 
-    val view = buildControllerView(state, event.controllerId)
-    val prior = state.beliefs[event.controllerId] ?: BeliefState.EMPTY
-    val decision = controllerDecide(view, prior, state.world)
+    // fn-12 (R3a): world expiry pass — null any obstruction past clearsAt.
+    // Runs BEFORE the world-diff producer so the Cleared event fires the
+    // cycle the obstruction expires. Pure: no PRNG, no side effects.
+    val expiredState = expireRunwayObstructions(state, state.now)
+
+    // fn-12 (R3b): per-controller world-diff producer — compute
+    // RunwayObstructionDetected/Cleared events for this controller's
+    // aerodrome by comparing the prior-cycle obstruction snapshot
+    // against the current (post-expiry) world. The event list is
+    // delivered to the controller via `view.worldEvents`; the
+    // controller's fold writes BeliefState.runwayObstructions.
+    val priorObs = expiredState.priorObstructionsByController[event.controllerId] ?: emptyMap()
+    val worldEvents = runwayObstructionEvents(spec.aerodromeId, priorObs, expiredState.world)
+
+    val view = buildControllerView(expiredState, event.controllerId)
+        .copy(worldEvents = worldEvents)
+    val prior = expiredState.beliefs[event.controllerId] ?: BeliefState.EMPTY
+    val decision = controllerDecide(view, prior, expiredState.world)
 
     // Each message in the view corresponds to an inbox entry that must be
     // consumed exactly once. Clear the controller's inbox before applying
     // outputs so nothing double-delivers on a later cycle.
-    val inboxCleared = state.copy(
-        controllerInbox = state.controllerInbox - event.controllerId,
+    val inboxCleared = expiredState.copy(
+        controllerInbox = expiredState.controllerInbox - event.controllerId,
     )
 
     val (afterOutputs, commEvents) = applyControllerOutputs(
@@ -660,8 +675,15 @@ private fun handleControllerTick(
         event.controllerId,
         decision.outputs,
     )
+    // fn-12 (R3b): persist this controller's post-cycle obstruction
+    // snapshot for the next cycle's diff. The snapshot is taken from
+    // the post-expiry world (the same world the diff producer just
+    // consumed), so the next cycle's diff sees the correct prior state.
+    val postCycleSnapshot = obstructionsSnapshot(spec.aerodromeId, afterOutputs.world)
     val withBeliefs = afterOutputs.copy(
         beliefs = afterOutputs.beliefs + (event.controllerId to decision.updatedBeliefs),
+        priorObstructionsByController = afterOutputs.priorObstructionsByController +
+            (event.controllerId to postCycleSnapshot),
     )
 
     val next = SimEvent.ControllerCycle(

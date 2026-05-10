@@ -6,6 +6,7 @@ import xyz.easiersaid.twr.controller.RunwayObservation
 import xyz.easiersaid.twr.controller.assess.ArrivalSequence
 import xyz.easiersaid.twr.controller.assess.RunwayDutyState
 import xyz.easiersaid.twr.controller.bdi.Commitment
+import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.protocol.ClearanceId
@@ -111,6 +112,24 @@ data class BeliefState(
      * touch-and-go for circuit traffic that hasn't declared.
      */
     val circuitIntent: Map<AircraftId, CircuitIntent> = emptyMap(),
+    /**
+     * fn-12 (R4): per-runway active obstructions, populated by
+     * [withRunwayObstructionEvents] from
+     * [ControllerEvent.RunwayObstructionDetected] /
+     * [ControllerEvent.RunwayObstructionCleared] events. The events are
+     * already per-controller-scoped (the sim's world-diff producer iterates
+     * `state.world.aerodromes[view.aerodromeId].runways`), so every key is
+     * a runway in this controller's aerodrome.
+     *
+     * Read by [xyz.easiersaid.twr.controller.bdi.RunwayObstructed] (the
+     * `data object` guard) and by `ObstructionGoAroundAction` to populate
+     * the companion-info transmission. Map-membership (`containsKey`) is
+     * the existence check.
+     *
+     * **Single-write site**: `withRunwayObstructionEvents` in `Observe.kt`.
+     * `FirewallBeliefWriteTest` enforces this.
+     */
+    val runwayObstructions: Map<RunwayId, RunwayObstruction> = emptyMap(),
     /**
      * Pass 12 (D-PF.9): per-aircraft last-time we re-issued
      * `ContactFrequency` after a missed-handoff notice. Cycle-level
