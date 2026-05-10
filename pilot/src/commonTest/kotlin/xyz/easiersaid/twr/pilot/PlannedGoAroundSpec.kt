@@ -467,31 +467,57 @@ class PlannedGoAroundSpec {
     // ── Skip-set regression: post-final spawn must not wedge ───────────────
 
     @Test
-    fun `trained-GA mission spawned in LandingRoll advances past FLY_FINAL_TO_SHORT_FINAL via skip set`() {
-        // Per fn-11.1 codex re-review finding #1: a trained-GA mission
-        // spawned post-final (LandingRoll / Vacating / ClearOfRunway) MUST
-        // NOT wedge with FLY_FINAL_TO_SHORT_FINAL active. The altitude gate
-        // in `isPhysicallyComplete` only fires for `phase is Final`
-        // (sealed-disjoint from LandingRoll), so without `preLand`
-        // including the new step, the mission could never advance.
+    fun `trained-GA mission spawned post-final skips the entire trained-GA outcome`() {
+        // Per fn-11.1 codex re-reviews #1 + #1-followup: a trained-GA
+        // mission spawned post-final (LandingRoll / Vacating /
+        // ClearOfRunway) MUST skip past the ENTIRE trained-GA outcome
+        // (FLY_FINAL_TO_SHORT_FINAL + the goAroundTask's GOING_AROUND
+        // announcement), not just the altitude-gated leg. Otherwise:
+        //  - leaving FLY_FINAL_TO_SHORT_FINAL active wedges the mission
+        //    (altitude gate requires `phase is Final`, sealed-disjoint
+        //    from on-the-runway phases).
+        //  - leaving GOING_AROUND active causes the pilot to transmit
+        //    `Report(GoingAround)` from the runway — incoherent.
+        // Pin the post-spawn `currentTask` directly across all three
+        // post-final phases.
         val goal = HighLevelGoal.CircuitTraining(
             outcomes = listOf(CircuitOutcome.GoAround, CircuitOutcome.FullStop),
         )
-        val mission = createMission(
-            goal = goal,
-            startPhase = PilotPhase.LandingRoll,
-            time = now0,
-        )
-        // Walk the tree: every airborne step (including the trained-GA
-        // FLY_FINAL_TO_SHORT_FINAL primitive in the GA outcome's compound)
-        // must be marked complete by the skip-set.
-        val incompleteSteps = collectIncompleteSteps(mission.root)
-        assertTrue(
-            MissionStep.FLY_FINAL_TO_SHORT_FINAL !in incompleteSteps,
-            "Trained-GA spawn in LandingRoll must skip past FLY_FINAL_TO_SHORT_FINAL " +
-                "(else `isPhysicallyComplete`'s phase=Final guard wedges the mission). " +
-                "Got incomplete steps: $incompleteSteps",
-        )
+        listOf(
+            PilotPhase.LandingRoll,
+            PilotPhase.Vacating,
+            PilotPhase.ClearOfRunway,
+        ).forEach { startPhase ->
+            val mission = createMission(
+                goal = goal,
+                startPhase = startPhase,
+                time = now0,
+            )
+            // No incomplete trained-GA steps should remain.
+            val incompleteSteps = collectIncompleteSteps(mission.root)
+            assertTrue(
+                MissionStep.FLY_FINAL_TO_SHORT_FINAL !in incompleteSteps,
+                "post-final spawn ($startPhase): FLY_FINAL_TO_SHORT_FINAL must be skipped " +
+                    "(altitude gate requires phase=Final). Got: $incompleteSteps",
+            )
+            assertTrue(
+                MissionStep.GOING_AROUND !in incompleteSteps,
+                "post-final spawn ($startPhase): GOING_AROUND must be skipped — pilot must " +
+                    "NOT transmit Report(GoingAround) from a post-touchdown phase. " +
+                    "Got: $incompleteSteps",
+            )
+            // Direct currentTask pin: the active leaf must be past the
+            // trained-GA outcome — i.e. either in the next outcome's
+            // FullStop circuitTask or in the groundArrivalTask, but
+            // NOT inside the trained-GA compound.
+            val activeStep = mission.currentTask?.step
+            assertTrue(
+                activeStep != MissionStep.FLY_FINAL_TO_SHORT_FINAL &&
+                    activeStep != MissionStep.GOING_AROUND,
+                "post-final spawn ($startPhase): currentTask must not be inside the " +
+                    "trained-GA compound (got $activeStep)",
+            )
+        }
     }
 
     /** Collect MissionSteps of all incomplete primitive leaves in a subtree, in tree order. */

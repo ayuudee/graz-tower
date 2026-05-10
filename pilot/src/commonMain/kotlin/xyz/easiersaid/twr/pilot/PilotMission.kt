@@ -806,18 +806,27 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
     // only correct trigger for a Final-phase spawn. Per fn-11.1 codex
     // review finding #1.
     val preFinal = preBase + setOf(MissionStep.REPORT_BASE, MissionStep.FLY_FINAL)
-    // FLY_FINAL_TO_SHORT_FINAL **is** included in `preLand` (for
-    // LandingRoll / Vacating / ClearOfRunway spawns). Symmetric to FLY_FINAL
-    // here: a post-touchdown / post-vacate spawn is past every airborne
-    // approach step. Without this, a trained-GA mission spawned on the
-    // runway would silently wedge: `isPhysicallyComplete` only completes
-    // FLY_FINAL_TO_SHORT_FINAL when `phase is Final` (sealed-disjoint from
-    // LandingRoll / Vacating / ClearOfRunway), so the mission could never
-    // advance. Per fn-11.1 codex re-review finding #1 (post-final spawn
-    // wedge).
+    // FLY_FINAL_TO_SHORT_FINAL **and** GOING_AROUND are both included in
+    // `preLand` (for LandingRoll / Vacating / ClearOfRunway spawns). For
+    // trained-GA missions, the planned go-around is structurally a leg of
+    // the airborne pattern — once the aircraft is on the runway, the
+    // entire trained-GA outcome (final descent + the goAroundTask's
+    // GOING_AROUND announcement) is conceptually past, symmetric to how
+    // `LAND`, `REPORT_FINAL`, `AWAIT_LANDING_CLEARANCE` are skipped here.
+    // Including only FLY_FINAL_TO_SHORT_FINAL would leave GOING_AROUND
+    // active in a post-touchdown phase, causing the pilot to transmit
+    // `Report(GoingAround)` while on the runway — incoherent. Per fn-11.1
+    // codex re-re-review finding #1 (post-final spawn must skip the entire
+    // trained-GA outcome, not just the altitude-gated leg).
+    //
+    // This also covers regular `Arrival`/`CircuitTraining` missions
+    // spawned post-touchdown: those compounds never carry a GOING_AROUND
+    // primitive at `createMission` time (GOING_AROUND only appears via
+    // runtime `replaceChild` from `applySelfInitiatedGoAround` or
+    // `handleGoAround`), so this skip-set entry is a no-op for them.
     val preLand = preFinal + setOf(
         MissionStep.REPORT_FINAL, MissionStep.AWAIT_LANDING_CLEARANCE, MissionStep.LAND,
-        MissionStep.FLY_FINAL_TO_SHORT_FINAL,
+        MissionStep.FLY_FINAL_TO_SHORT_FINAL, MissionStep.GOING_AROUND,
     )
 
     val stepsToSkip = when (startPhase) {
