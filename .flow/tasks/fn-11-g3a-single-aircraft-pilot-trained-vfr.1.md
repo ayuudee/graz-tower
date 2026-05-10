@@ -559,5 +559,8 @@ verified by grep, no existing call site uses `fullStopOnLast = false`):
       referenced in any KDoc.
 
 ## Done summary
-
+fn-11.1 lands the typed `CircuitOutcome` ADT + `planMission` compiler arm + the trained-GA Tick A/Tick B fork-point primitives + 23-call-site migration. New `MissionStep.FLY_FINAL_TO_SHORT_FINAL` is altitude-gated (`DECISION_ALTITUDE_M`); `applyPlannedGoAround` (Tick A) clears the route + resets phase-local mission state; the Circuit-mode `planRoute` special-case (Tick B) builds the published GA path mirroring the Visual-mode reactive-flow predecessor. New `PlannedGoAroundSpec` covers Tick A/B sequence, discriminator regression, ClearedToLand non-advancement, post-final-spawn skip, and future-circuit preservation. All four golden tests (G0/G1/G1-minimal/G2) stay green; codex SHIP after 4 fix rounds (skip-set wedge, reset-state pin, post-final-skip-also-GOING_AROUND, future-circuit-preservation via active-compound scoping).
 ## Evidence
+- Commits: d54c29c5b4d7a96fdf07c7bd69f3a2ea8f8b9f5e, 597b158, 52c1219, b927088, f9a2a88c973bb1ccacc4525dd2bfd48e726862e6
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest detekt
+- PRs:

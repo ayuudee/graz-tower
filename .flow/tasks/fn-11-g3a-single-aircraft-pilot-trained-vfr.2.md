@@ -451,5 +451,8 @@ fork-point shifts.
       adds resolution note: gap closed by G3a.
 
 ## Done summary
-
+G3aPilotTrainedGoAroundTest landed: single AI aircraft at LOWG flies CircuitTraining(outcomes=[GoAround, FullStop]) — circuit 1 trained-GA at short-final, circuit 2 full-stop. Three-layer pin pattern (causal partial-order + GA-POST-CLEAR sticky-witness regression + kinematic non-event), R7 vacate-coordination closure pin, time band tightened to ±15% of 1393 s observed wall. Cross-reference doc updates landed (AGENTS.md, four golden test KDocs, Fixtures.kt, two wiki design-decisions). All five golden tests (G0/G1/G1-min/G2/G3a) green; codex SHIP after one round of style-consistency fix. Closes the go-around integration-test gap from wiki/design-decisions/2026-04-22-root-cause-go-around-and-totality.md.
 ## Evidence
+- Commits: 3bb775e, a2c6219b81a278895d380174f42606fd63fb7717
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest detekt
+- PRs:
