@@ -104,6 +104,132 @@ data object AnomalousTransition : RuleGuard {
         commitment.lastTransition == xyz.easiersaid.twr.controller.procedure.TransitionKind.ANOMALOUS
 }
 
+/**
+ * fn-8.3 Phase 2 (B2): sticky witness that the aircraft has been observed
+ * on a runway entity AND on the ground at least once during the **current**
+ * commitment lifetime. Reads [Commitment.touchedDownDuringCommitment] (set
+ * by `reconcileObservedStages` in the controller). Pass-through guard —
+ * the witness flag is the load-bearing state.
+ *
+ * Used to gate `ARR-TNG-AIRBORNE` so that airborne-only observations
+ * cannot complete a touch-and-go arrival. Pre-fix, `ARR-TNG-AIRBORNE`
+ * fired on bare `Airborne` and combined with `readbackAdvancesToStage =
+ * AwaitLandedObserved` produced a runaway commitment ping-pong any time
+ * `ARR-LAND-TNG` was issued at a non-runway pattern point — even if the
+ * aircraft never reached the runway during this circuit. See fn-8.3 spec
+ * § Evidence § Phase 1 + Phase 2 for the empirical loop trace.
+ */
+data object TouchedDownDuringCommitment : RuleGuard {
+    override val failureMessage =
+        "Aircraft has not been observed on the runway on-ground during this commitment"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        commitment.touchedDownDuringCommitment
+}
+
+/**
+ * fn-8.3 Phase 2 (B3): sticky witness that the pilot has reported "Ready
+ * for departure" at least once during the **current** commitment lifetime.
+ * Reads [Commitment.pilotReadyDuringCommitment] (set by
+ * `reconcileObservedStages` in the controller from the
+ * `ReadyForDepartureReceived` controller event).
+ *
+ * Replaces the single-cycle [PilotReady] gate on `DEP-LUAW`. Pilots
+ * report Ready once; the controller retains that on the strip. With
+ * sequential departures behind a circuit-traffic arrival, the runway
+ * is granted to the second departure long after the pilot's one-shot
+ * Ready event has aged out of `ctx.events`. Pre-fix `DEP-LUAW` would
+ * never fire for the second departure → wedge at AwaitReady. See fn-8.3
+ * spec § Evidence § Phase 2 (post-B2-fix) for the empirical wedge.
+ */
+data object PilotReadyDuringCommitment : RuleGuard {
+    override val failureMessage =
+        "Pilot has not reported ready for departure during this commitment"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        commitment.pilotReadyDuringCommitment
+}
+
+/**
+ * fn-8.3 Phase 4 (B5-α): the controller has observed the pilot reporting
+ * a position-call during the **current** commitment lifetime that
+ * matches at least one of [acceptedReports]. Reads
+ * [Commitment.observedReportsDuringCommitment] (set by
+ * `reconcileObservedStages` from `ControllerEvent.PositionReported`).
+ *
+ * The gate covers both VFR circuit-pattern position calls (Downwind /
+ * Base / Final / LongFinal — CAP 413 §4.45-4.49) and instrument-approach
+ * equivalents (Established / EstablishedLocaliser / EstablishedGlidepath
+ * — ICAO Doc 4444 §7.10). The caller picks the set appropriate for the
+ * gating rule; today the shared `LandingConditions` accepts any of those
+ * because both VFR and instrument arrivals reach the same ARR-LAND rule.
+ *
+ * Used to gate `ARR-LAND` / `ARR-LAND-TNG` and their re-issue siblings.
+ * Doctrine: landing clearance follows the pilot's position call. Pre-fix,
+ * those rules fired on observed geometry + strip-derived
+ * `IsCircuitTrafficByStrip` (C2/C3) without waiting for the pilot's
+ * report; a stepped-on Downwind transmission led to the controller
+ * clearing the aircraft to land before the pilot's position call had
+ * been delivered (G1 B5 mechanism M1, fn-8.3 spec § Phase 3 round 2
+ * evidence).
+ *
+ * **Failure-closed default**: empty witness set means the rule does NOT
+ * fire — a future scenario where reports are mis-populated surfaces as
+ * "ARR-LAND never fires" (live wedge, surfaces in tests) rather than
+ * "ARR-LAND fires too eagerly" (dangerous silent regression).
+ */
+data class HasReportedPositionCall(
+    val acceptedReports: Set<PositionReportKind>,
+) : RuleGuard {
+    override val failureMessage =
+        "Pilot has not reported a qualifying position call " +
+            "(${acceptedReports.joinToString(", ") { it.name }}) during this commitment"
+
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        if (commitment.observedReportsDuringCommitment.isEmpty()) return false
+        return commitment.observedReportsDuringCommitment.any { event -> matches(event) }
+    }
+
+    private fun matches(event: xyz.easiersaid.twr.protocol.ReportEvent): Boolean = when (event) {
+        is xyz.easiersaid.twr.protocol.ReportEvent.Downwind -> PositionReportKind.DOWNWIND in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.Base -> PositionReportKind.BASE in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.Final -> PositionReportKind.FINAL in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.LongFinal -> PositionReportKind.LONG_FINAL in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.Established -> PositionReportKind.ESTABLISHED in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.EstablishedLocaliser ->
+            PositionReportKind.ESTABLISHED_LOCALISER in acceptedReports
+        is xyz.easiersaid.twr.protocol.ReportEvent.EstablishedGlidepath ->
+            PositionReportKind.ESTABLISHED_GLIDEPATH in acceptedReports
+        // All other ReportEvent variants are observation reports but not
+        // pre-clearance position calls in the CAP 413 / ICAO Doc 4444
+        // sense. The exhaustive listing forces a decision when new
+        // variants are added.
+        is xyz.easiersaid.twr.protocol.ReportEvent.Airborne,
+        is xyz.easiersaid.twr.protocol.ReportEvent.EstablishedInHold,
+        is xyz.easiersaid.twr.protocol.ReportEvent.RunwayVacated,
+        is xyz.easiersaid.twr.protocol.ReportEvent.Ready,
+        is xyz.easiersaid.twr.protocol.ReportEvent.GoingAround,
+        is xyz.easiersaid.twr.protocol.ReportEvent.VisualWithField,
+        is xyz.easiersaid.twr.protocol.ReportEvent.TcasRa,
+        is xyz.easiersaid.twr.protocol.ReportEvent.MinimumFuel,
+        is xyz.easiersaid.twr.protocol.ReportEvent.PassingLevel,
+        is xyz.easiersaid.twr.protocol.ReportEvent.LeavingLevel,
+        is xyz.easiersaid.twr.protocol.ReportEvent.DistanceDme,
+        is xyz.easiersaid.twr.protocol.ReportEvent.OverFix -> false
+    }
+}
+
+/**
+ * fn-8.3 Phase 4 (B5-α): typed accepted-report kind for
+ * [HasReportedPositionCall]. Distinct from [LegName] (which is
+ * geometric / world-graph topology) — these are protocol-level position
+ * reports the pilot can transmit. The 1:1 mapping to
+ * [xyz.easiersaid.twr.protocol.ReportEvent] is intentional; the guard's
+ * `matches` arm is exhaustive on `ReportEvent`.
+ */
+enum class PositionReportKind {
+    DOWNWIND, BASE, FINAL, LONG_FINAL,
+    ESTABLISHED, ESTABLISHED_LOCALISER, ESTABLISHED_GLIDEPATH,
+}
+
 /** Aircraft is at a known holding point for the commitment's runway. */
 data object AtHoldingPoint : RuleGuard {
     override val failureMessage = "Aircraft is not at a holding point for this runway"
@@ -159,6 +285,38 @@ data class NoPendingReadback(val matcher: InstructionMatcher) : RuleGuard {
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         ctx.beliefs.coordinations[ac.id].orEmpty()
             .none { it.state is xyz.easiersaid.twr.controller.observe.CoordinationState.Issued && matcher.matches(it.instruction) }
+}
+
+/**
+ * fn-8.3 Phase 3 round 1 (codex review iteration 4): an instruction
+ * matching [matcher] has been issued by the controller for this aircraft
+ * at any point — fresh-Issued, in escalation (Querying / Reissued /
+ * LostCommsDeclared), or recently terminal-but-not-yet-pruned.
+ *
+ * Use this guard for **disposition-locking** semantics: once the
+ * controller has committed to a particular instruction (e.g.
+ * `ClearedToLand` for a full-stop landing), downstream rules need to
+ * stay aligned with that disposition even if the pilot's later radio
+ * traffic would otherwise reclassify the aircraft.
+ *
+ * Concrete trigger that motivated this guard: a circuit-traffic
+ * aircraft whose first-circuit Downwind was stepped on receives
+ * `ClearedToLand` per the C4 default-flip ("clear-to-land when intent
+ * unknown"). The pilot reads back, touches down. THEN the delayed
+ * Downwind transmission delivers `CircuitIntent=TOUCH_AND_GO`. Without
+ * this guard, `ARR-VACATE`'s gate
+ * `AnyOf(CircuitIntentIs(FULL_STOP), Not(IsCircuitTraffic))` evaluates
+ * false (intent is now T&G; aircraft IS circuit traffic), and the
+ * aircraft wedges on the runway even though it was cleared to land.
+ *
+ * Reads `ctx.beliefs.coordinations[ac.id]` and matches on instruction
+ * type. Symmetric to [NoPendingReadback] but state-agnostic.
+ */
+data class CoordinationIssued(val matcher: InstructionMatcher) : RuleGuard {
+    override val failureMessage = "No coordination for the matching instruction has been issued"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.beliefs.coordinations[ac.id].orEmpty()
+            .any { matcher.matches(it.instruction) }
 }
 
 // ── Pilot events ─────────────────────────────────────────────────────
@@ -240,6 +398,46 @@ data object IsCircuitTraffic : RuleGuard {
     override val failureMessage = "Aircraft has not declared circuit intent"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
         ac.id in ctx.beliefs.circuitIntent
+}
+
+/**
+ * fn-8.3 Phase 3 (B4 closure): the aircraft is filed as a **VFR local
+ * flight** — the strip carries no onward destination aerodrome. Real ATC
+ * strips for circuit-training and other local flights are marked "VFR LCL"
+ * (or equivalent kind-of-flight indicator) so the controller knows from
+ * the AFTN-distributed strip — *before any radio contact* — that this
+ * flight is not transiting anywhere else.
+ *
+ * Distinct from [IsCircuitTraffic] (which keys off the radio-derived
+ * Downwind circuit-intent declaration). The two together cover:
+ *  - **Strip-known local**: the controller has the filed plan in hand and
+ *    knows this is a local flight before the pilot's first transmission.
+ *  - **Radio-confirmed circuit**: the pilot has reported a Downwind with
+ *    explicit T&G or full-stop intent.
+ *
+ * The pre-existing `IsCircuitTraffic` is the only signal currently fed to
+ * `DEP-CIRCUIT-COMPLETE`'s gate, which causes a wedge when the Downwind
+ * transmission is stepped on (multi-aircraft frequency contention) — the
+ * controller never sees the radio-derived signal and the commitment never
+ * advances out of `TOWER_DEPARTURE`. The strip-based fallback keeps
+ * commitment-stage advancement robust to lost radio reports without
+ * paving over the radio-side defect (cross-aircraft step-on stays as a
+ * separately-tracked deferment).
+ *
+ * Reads [ControllerView.flightStripDestinations]; absence ↔ local flight
+ * (the projection filters non-null on write). Doctrine: ICAO Annex 11
+ * §4.3 (flight rules), AIP / AIC kind-of-flight markings (VFR LCL).
+ */
+data object IsCircuitTrafficByStrip : RuleGuard {
+    override val failureMessage = "Aircraft strip carries an onward destination — not a local flight"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        // Tighten "no destination" to "has a strip AND no destination".
+        // A controller without a strip for the aircraft has no doctrinal
+        // grounds to call it local — guard fails closed.
+        val hasStrip = ac.id in ctx.view.flightStripIntents
+        val hasDestination = ac.id in ctx.view.flightStripDestinations
+        return hasStrip && !hasDestination
+    }
 }
 
 /**
@@ -412,48 +610,70 @@ data class WithinDistanceOfThreshold(val maxMetres: Meters) : RuleGuard {
  * Aircraft is more than [thresholdMetres] from the aerodrome reference point —
  * a **radial-distance approximation** of "outside the CTR boundary."
  *
- * Pass 7 (D-PF.7 closure): used by the boundary-release rules to gate
- * `TerminateRadarServiceAction`. The conservative 12 NM (~22.2 km) default
- * fails closed: aircraft past the actual CTR but inside 12 NM stay with
- * the controller until they reach the threshold (under-fires the release
- * rather than over-firing inside controlled airspace, which would be
- * regulatorily wrong).
+ * Reads the aircraft's kinematic position ([AircraftObservation.coords], set
+ * by `AircraftObservationFactory.from` from sim-side
+ * `AircraftState.position` via [SensorReading.coords]); the radius gate fires
+ * when the aircraft physically crosses the configured ring. The earlier
+ * snap-point read (`worldIndex.positions[ac.position]`) was off by half-snap
+ * -distance in the worst case, leaving cross-aerodrome release events
+ * bunched against the destination's first published REP — fn-5's R4 gap pin
+ * had to be relaxed from `>= 30s` to `> 0` to accommodate that bunching.
+ * fn-6 restores the doctrinal physical-ring semantics; fn-6.3 tightens the
+ * gap pin back.
  *
- * Real CTR boundaries are typed polygons — `OutsideAerodromeRadius` flags
- * the approximation in its name so a future polygon guard
- * `OutsideAirspaceVolume(AirspaceVolume)` reads as a sibling, not a
- * rename. **D-AUDIT.7** owns the polygon-membership upgrade.
+ * Real CTR boundaries are typed polygons (FM/Lean campaign territory, fn-4
+ * lineage); the circular-radius approximation is intentional pending that
+ * work. **`D-AUDIT-polygon-ctr`** owns the polygon-membership upgrade.
+ * Today the radius is anisotropic-wrong: short on the approach axis,
+ * generous abeam. Per-aerodrome authoring from AIP AD 2.17 polygon data
+ * (rounded up, with proxy-offset margin) under fn-7 closes the
+ * one-radius-fits-all rot at LOWG; LJMB still uses a conservative
+ * placeholder pending real-polygon transcription (`D-AUDIT-ljmb-polygon`).
  *
- * Reads the aerodrome's reference point or threshold; conservatively
- * returns false when the position cannot be resolved (unknown position =
- * do not release).
+ * fn-7: rule shape is `data object` — the per-aerodrome radius lives on
+ * [Aerodrome.ctrApproximationRadius] and is read at evaluate time. Rule
+ * equality changes from `data class` content equality to singleton
+ * identity; consumers look up rules by class, not value, so this is a
+ * runtime-no-op. Failure message is static (no longer interpolates a
+ * removed constructor field); per-aerodrome variance is no longer a
+ * concern at the rule level.
+ *
+ * The defensive `return false` paths preserve the "do not release on
+ * unresolvable ARP" semantics — the aerodrome lookup or its proxy ARP
+ * point may be missing in malformed worlds.
  */
-data class OutsideAerodromeRadius(val thresholdMetres: Meters) : RuleGuard {
-    override val failureMessage = "Aircraft within ${thresholdMetres.value}m radial of aerodrome (still in CTR scope)"
+data object OutsideAerodromeRadius : RuleGuard {
+    override val failureMessage = "Aircraft within aerodrome CTR approximation radius (still in CTR scope)"
     override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
         val aerodrome = ctx.world.aerodromes[ctx.view.aerodromeId] ?: return false
         // Use the lexicographically-first runway's threshold as a stand-in
         // for the aerodrome reference point. Real ARPs come with the airport
         // manifest under a separate `referencePoint` field; today the field
         // exists on Aerodrome but isn't populated for every aerodrome (some
-        // are null until D-AUDIT.7's CTR-polygon work). The threshold is a
-        // reasonable proxy at small fields.
+        // are null until `D-AUDIT-polygon-ctr`'s CTR-polygon work). The
+        // threshold is a reasonable proxy at small fields, with the
+        // proxy-offset budget folded into the per-aerodrome radius
+        // authoring (`D-AUDIT-arp-proxy-runtime` tracks the runtime ARP).
         //
         // Pass 7 post-impl Impact-M.2: sort by `RunwayId.value` before
         // taking the first to make the proxy stable against manifest edits
         // (a new runway added at the head of the manifest would otherwise
         // shift the proxy point). Threshold offsets between runways at
         // multi-runway airports (e.g. LOWG 16C/16L/16R/28) can be hundreds
-        // of metres — small relative to the 12 NM (22.2 km) gate but not
+        // of metres — small relative to the per-aerodrome radius but not
         // negligible; a stable proxy is required for deterministic-replay.
         val arpPointId = aerodrome.runways.entries
             .sortedBy { it.key.value }
             .firstOrNull()?.value?.threshold ?: return false
-        val acPos = ctx.worldIndex.positions[ac.position] ?: return false
         val arpPos = ctx.worldIndex.positions[arpPointId] ?: return false
-        val dx = acPos.xMeters - arpPos.xMeters
-        val dy = acPos.yMeters - arpPos.yMeters
-        val limit = thresholdMetres.value
+        // fn-6.2 (R3): kinematic read. ac.coords is the primary-surveillance
+        // projection of AircraftState.position (continuous Cartesian), not
+        // the snap-derived `positionPoint`. Compare against the ARP proxy
+        // in the same metric space.
+        // fn-7: per-aerodrome radius — read from world data.
+        val dx = ac.coords.xMeters - arpPos.xMeters
+        val dy = ac.coords.yMeters - arpPos.yMeters
+        val limit = aerodrome.ctrApproximationRadius.value
         return (dx * dx + dy * dy) > limit * limit
     }
 }

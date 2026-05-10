@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim
 
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Callsign
@@ -30,6 +31,23 @@ data class SensorReading(
     val id: AircraftId,
     val callsign: Callsign,
     val position: PointId,
+    /**
+     * Kinematic position of the radar return, projected directly from
+     * [AircraftState.position] (the sim's continuous Cartesian truth) — the
+     * primary-surveillance equivalent the controller's geometric guards
+     * (e.g. `OutsideAerodromeRadius`) need.
+     *
+     * Distinct from [position], which is the same return projected onto the
+     * published-fix graph (`AircraftState.positionPoint`) for chart-anchored
+     * consumers (route-progress, entity membership). Two fields because
+     * airspace-boundary semantics need geometry and graph-progress semantics
+     * need fix identity.
+     *
+     * Doctrine: ICAO Annex 11 §6 / Doc 4444 §8 — surveillance returns are
+     * positional. The "snap to nearest published fix" projection is a
+     * sim-internal artefact of the world graph, not a real radar feature.
+     */
+    val coords: Position,
     val altitude: Level.AltitudeFeet?,
     val groundSpeed: Knots?,
     val onGround: Boolean,
@@ -79,6 +97,13 @@ internal fun AircraftState.toSensorReading(@Suppress("UNUSED_PARAMETER") state: 
         id = id,
         callsign = callsign,
         position = positionPoint,
+        // fn-6.1 (R1): primary-surveillance kinematic position projected
+        // directly from the receiver's continuous Cartesian field. Bare
+        // identifier `position` resolves to AircraftState.position — the
+        // kinematic field — distinct from the existing `positionPoint` snap
+        // read above. The FirewallSensorReadingTest forbidden-name list does
+        // not include `position` (sensor-observable).
+        coords = position,
         altitude = toAltitudeFeet(altitudeM),
         groundSpeed = gsKt,
         onGround = isGroundFromPhysics(altitudeM),

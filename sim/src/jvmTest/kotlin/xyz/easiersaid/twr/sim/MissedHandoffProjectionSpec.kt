@@ -59,6 +59,7 @@ class MissedHandoffProjectionSpec {
             now = now1,
             seq = 0L,
             rng = SimRandom(0L),
+            rngByAircraft = mapOf(ac to SimRandom(1L)),
             aircraft = LinkedHashMap<AircraftId, AircraftState>().apply { put(ac, aircraft()) },
             controllers = linkedMapOf(ctrlGndId to gnd, ctrlTwrId to twr),
             beliefs = emptyMap(),

@@ -491,6 +491,7 @@
           "sourceLoop": "main_14_32"
         }
       },
+      "ctrApproximationRadiusNauticalMiles": 18,
       "elevationFeet": 876,
       "holdingPatterns": {},
       "icao": "LJMB",

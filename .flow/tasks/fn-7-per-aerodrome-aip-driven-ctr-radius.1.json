@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-08T20:10:56.063131Z",
+  "depends_on": [],
+  "epic": "fn-7-per-aerodrome-aip-driven-ctr-radius",
+  "id": "fn-7-per-aerodrome-aip-driven-ctr-radius.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-7-per-aerodrome-aip-driven-ctr-radius.1.md",
+  "status": "todo",
+  "title": "Per-aerodrome ctrApproximationRadius: smart constructor + JSON schema + guard switch + LOWG/LJMB authoring",
+  "updated_at": "2026-05-09T05:16:50.422698Z"
+}

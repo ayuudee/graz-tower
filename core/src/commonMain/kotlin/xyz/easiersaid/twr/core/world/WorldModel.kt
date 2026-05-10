@@ -29,6 +29,15 @@ data class Meters(val value: Double) {
     init {
         require(value >= 0.0) { "Meters must be >= 0" }
     }
+
+    companion object {
+        /**
+         * Convert nautical miles to metres using the international NM
+         * (1 NM = 1852 m exactly). Self-documents doctrine numbers like
+         * `Meters.fromNauticalMiles(12)` (= 22 224 m) at the call site.
+         */
+        fun fromNauticalMiles(nm: Int): Meters = Meters(nm * 1852.0)
+    }
 }
 
 data class Feet(val value: Int) {
@@ -337,6 +346,31 @@ data class Aerodrome(
      * (G1-DEF-11).
      */
     val referencePoint: LatLon? = null,
+    /**
+     * Circular approximation of this aerodrome's CTR boundary, used by
+     * the controller's `OutsideAerodromeRadius` rule to decide when an
+     * outbound aircraft has crossed the boundary and is eligible for
+     * radar-service termination / cross-aerodrome release.
+     *
+     * **This is a single-radius stand-in for a polygonal boundary.**
+     * Real CTR shapes are published as polygons in AIP AD 2.17 and
+     * routinely vary several NM in extent between approach axes (LOWG's
+     * polygon ranges 6.7–16.25 NM from ARP, for example). The circular
+     * approximation is anisotropic-wrong: short on the approach axis,
+     * generous abeam. Polygon containment is the planned replacement —
+     * see `D-AUDIT-polygon-ctr` (FM/Lean territory, fn-4 lineage).
+     *
+     * **Per-aerodrome authoring.** Loaded from the JSON schema field
+     * `ctrApproximationRadiusNauticalMiles` when present (with a
+     * sub-floor `require(n >= CTR_FLOOR_NAUTICAL_MILES)` rejection in
+     * the loader), otherwise defaulted to
+     * [Doctrine.IcaoAnnex11.CTR_FLOOR_5NM]. The default is a
+     * regulatory floor — at most controlled aerodromes the actual
+     * polygon extends further on the approach axis, so authoring a
+     * tighter per-aerodrome value from AIP polygon data (rounded up,
+     * with proxy-offset margin) is the doctrinally-correct shape.
+     */
+    val ctrApproximationRadius: Meters = Doctrine.IcaoAnnex11.CTR_FLOOR_5NM,
 )
 
 data class AviationWorld(

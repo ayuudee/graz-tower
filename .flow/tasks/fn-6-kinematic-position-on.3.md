@@ -52,11 +52,17 @@ the OSMOT snap.
    block). Spec'd-out replacement for the "R4 gap-magnitude pin relaxed
    (this file)" subsection bullet — replace it with:
 
-   > **R4 gap-magnitude pin restored to ≥ 30 s.** fn-6's kinematic-coords
-   > change makes the release ring fire at the physical 12 NM crossing
-   > (~9 min into the flight at C172 cruise), not at the OSMOT snap;
-   > multi-minute Class-G transit is now empirically reachable (~480 s
-   > observed at plan time).
+   > **R4 gap-magnitude pin restored to ≥ 30 s.** fn-6 lands kinematic
+   > coordinates on the firewall at four production sites — (a) `coords`
+   > field on `SensorReading` + `AircraftObservation`, (b) the
+   > `AircraftObservationFactory.from` factory plus its `fromTestPoint`
+   > test helper, (c) `OutsideAerodromeRadius.evaluate` reads `ac.coords`
+   > directly, (d) typed `Meters.fromNauticalMiles(Int)` helper at both
+   > `TowerDeparture` call sites. The release ring now fires at the
+   > physical 12 NM crossing (~9 min into the flight at C172 cruise),
+   > not at the OSMOT snap; multi-minute Class-G transit is now
+   > empirically reachable (~480 s observed at plan time).
+   <!-- Updated by plan-sync: fn-6.2 doctrinal precision — class docstring should enumerate the four production sites that fn-6 touched, not the single "kinematic-coords change" phrase -->
 
    Also remove any "deferred to a future pass" / "until the geometric
    upgrade lands" language elsewhere in the class docstring. Don't gut
@@ -107,6 +113,13 @@ the OSMOT snap.
   R4 deferral note needs removing). Don't gut the docstring.
 - The grep gate `'fn-6\b'` (word boundary) prevents future false positives
   from epic IDs like `fn-65`. Use `\b`, not bare `fn-6`.
+- fn-6.2 landed `OutsideAerodromeRadiusSpec` (3 rows: inside-ring/outside-ring
+  /ARP-not-found) at `controller/src/commonTest/kotlin/.../bdi/`. fn-6.3's
+  closure narrative may want to cite it as the unit-level pin on the
+  kinematic gate: G2 verifies the gate fires in the cross-aerodrome flow,
+  the spec verifies the geometric semantics in isolation. Co-cite in
+  `## Evidence` if the closure framing benefits.
+  <!-- Updated by plan-sync: fn-6.2 evidence references OutsideAerodromeRadiusSpec — fn-6.3 closure narrative may want to cite it -->
 
 ## Acceptance
 
@@ -128,5 +141,8 @@ the OSMOT snap.
       R4 is no longer relaxed (one-line edit per §Approach 5).
 
 ## Done summary
-
+Tightened G2CrossAerodromeVfrTest's R4 gap-magnitude pin from the relaxed `> 0L` back to the doctrinal `>= 30_000L` with an updated failure message citing ICAO Doc 4444 §10.1 + SERA Section 6; replaced the inline "tentative band, retune on geometric upgrade" comment block (lines 455-478) with a one-paragraph doctrine reference recording the ~374.6 s observed gap; updated the class docstring's "R4 pin relaxed" subsection to "R4 pin restored to >= 30 s" with enumeration of the four production sites where fn-6's kinematic-coordinates lift landed (coords field, factory + fromTestPoint helper, OutsideAerodromeRadius read, typed Meters.fromNauticalMiles helper) and co-citation of OutsideAerodromeRadiusSpec; reworded two fn-6.x comment references in FirewallSensorReadingTest so the grep gate returns zero matches; updated the user's project_g2_status.md memory entry to reflect that R4 is no longer relaxed and that fn-6 has closed the geometric-routing upgrade. All R7 regression suites green; detekt baseline unchanged at 10.
 ## Evidence
+- Commits: cbd8f7c2d8a70338652b77ab25acee752cc715c2
+- Tests: ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest --tests xyz.easiersaid.twr.sim.LowgGoldenTest --tests xyz.easiersaid.twr.sim.FirewallSensorReadingTest, ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:jvmTest :protocol:jvmTest, ./gradlew detekt
+- PRs:

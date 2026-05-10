@@ -65,6 +65,7 @@ class RadarServiceTerminatedSpec {
         now = time,
         seq = 0L,
         rng = SimRandom(0L),
+        rngByAircraft = mapOf(ac to SimRandom(1L)),
         aircraft = LinkedHashMap<AircraftId, xyz.easiersaid.twr.pilot.AircraftState>().apply {
             put(ac, aircraft())
         },

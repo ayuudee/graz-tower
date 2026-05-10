@@ -131,18 +131,52 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G2)
+## Golden tests (G0, G1, G2)
 
-Two integration tests serve as the runtime golden anchors for end-to-end ATC
-flow. Both follow the same shape: a single `@Test` method, a fixture-driven
-load, a deterministic event run, the run is the test, the assertions are
-what the run produced.
+Three integration tests serve as the runtime golden anchors for end-to-end
+ATC flow. All follow the same shape: a single `@Test` method, a fixture-
+driven load, a deterministic event run, the run is the test, the assertions
+are what the run produced.
 
 - **G0 — `LowgGoldenTest` (`sim/jvmTest`)**: single-aerodrome circuit
   training. C172 OE-ABC files at LOWG, taxis to RWY 16C, takes off,
   flies the circuit pattern, lands, taxis back to a stand. Pins the
   intra-aerodrome handoff chain (GROUND → TOWER → arrival → GROUND)
   and the full clearance lifecycle. **Must remain green at all times.**
+
+- **G1 — `G1TwoAircraftCircuitsTest` (`sim/jvmTest`)**: single-aerodrome,
+  **two-aircraft** circuit training. Two C172s (OE-ABC + OE-DEF) start
+  at adjacent LOWG GA stands and fly two circuits each. B's mission-
+  start is offset by 2 sim-minutes so the lead-trail ordering is
+  structural; the single-runway duty machine then serializes them
+  (A holds the runway across her circuit-training session, releasing
+  to B after she vacates). **Green** as of fn-8.3 Phase 4.
+  Pins per-aircraft outcomes (both complete + parked), causal
+  partial-orders (taxi-clearance order, single-runway gate, A's
+  `ClearedToLand` precedes B's, A's vacate precedes B's first
+  Downwind), the wake-category sanity (both C172 / L), and the
+  fn-8.3-acceptance multi-aircraft commitment-stage closure
+  invariants (vacate / `BacktrackRunway` coordinations close;
+  `RunwayDutyState.holder` null after both vacate). Time band
+  tightened to ±15% of the observed wall (~50 sim minutes) per
+  fn-8.3 decision #11. Closure history: A-side wedge closed Phase 2
+  round 1 (`33833a2`, `a6249c9`) via sticky
+  `touchedDownDuringCommitment` + `pilotReadyDuringCommitment`;
+  Phase 3 round 1 (`bddff1b`-`8e0a3ec`) closed B4 (DEP-CIRCUIT-
+  COMPLETE wedge) via same-aircraft pilot radio-busy tracking,
+  strip-based circuit-traffic recognition, and ARR-LAND default
+  flip; Phase 4 closed B5-α via the commitment-scoped
+  `observedReportsDuringCommitment` sticky witness gating ARR-LAND /
+  ARR-LAND-TNG on the pilot's pre-clearance position call.
+
+- **G1 minimal — `G1TwoAircraftMinimalSpec` (`sim/jvmTest`)**: scope-
+  narrower for G1, two C172s with `circuits=1` (full-stop only — no
+  T&G mid-flip). Pins the multi-aircraft commitment-stage closure
+  invariants (vacate coordinations close, runway-duty holder
+  released, B receives a runway slot, A's `ClearedToLand` precedes
+  B's) at the smaller scenario shape. Catches regressions to the
+  multi-aircraft serialization path before they reach G1's
+  `circuits=2` scope.
 
 - **G2 — `G2CrossAerodromeVfrTest` (`sim/jvmTest`)**: cross-aerodrome
   VFR transit. C172 OE-XYZ files VFR LOWG → LJMB, taxis at LOWG, takes

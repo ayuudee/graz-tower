@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.controller
 
 import arrow.core.NonEmptyList
 import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.certify.CertificationEvidence
@@ -166,11 +167,29 @@ data class MissedHandoffNotice(
  * `controller/src/commonTest/.../FirewallObservationTest.kt` enforces
  * this — adding a non-sensor field fails to compile against the test's
  * canonical-constructor allowlist.
+ *
+ * **Position vs. coords (fn-6.1).** [coords] carries the kinematic position
+ * from primary surveillance (per ICAO Annex 11 §6 / Doc 4444 §8 —
+ * surveillance returns are positional); [position] carries the same return
+ * projected onto the published-fix graph for chart-anchored consumers
+ * (route-progress, entity membership). Two fields because airspace-boundary
+ * semantics need geometry and graph-progress semantics need fix identity.
+ * A future tightening (`D-PASS-fn6-snap-derived`) derives one from the
+ * other; today both are free arguments and the
+ * `AircraftObservation.fromTestPoint(...)` test helper structurally prevents
+ * fixture-level divergence.
  */
 data class AircraftObservation internal constructor(
     val id: AircraftId,
     val callsign: Callsign,
     val position: PointId,
+    /**
+     * Kinematic position from primary surveillance. See the type-level KDoc
+     * "Position vs. coords" paragraph for the full disambiguation against
+     * [position]. Threaded from [xyz.easiersaid.twr.sim.SensorReading.coords]
+     * via the [from] factory; not derived from [position].
+     */
+    val coords: Position,
     val entities: Set<EntityRef>,
     val altitude: Level?,
     val speed: Speed?,

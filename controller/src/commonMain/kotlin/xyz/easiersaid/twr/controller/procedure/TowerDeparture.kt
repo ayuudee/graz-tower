@@ -18,6 +18,7 @@ import xyz.easiersaid.twr.controller.bdi.HandoffAction
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.HoldPositionAction
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
+import xyz.easiersaid.twr.controller.bdi.IsCircuitTrafficByStrip
 import xyz.easiersaid.twr.controller.bdi.LineUpAction
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
@@ -30,6 +31,7 @@ import xyz.easiersaid.twr.controller.bdi.OnGround
 import xyz.easiersaid.twr.controller.bdi.OnRunway
 import xyz.easiersaid.twr.controller.bdi.OtherTrafficOnShortFinal
 import xyz.easiersaid.twr.controller.bdi.PilotReady
+import xyz.easiersaid.twr.controller.bdi.PilotReadyDuringCommitment
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
 import xyz.easiersaid.twr.controller.bdi.RunwayAccessGranted
 import xyz.easiersaid.twr.controller.bdi.RunwayLengthOperation
@@ -57,7 +59,26 @@ import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 // AI pilots emit Report(Ready) the same way human pilots do, so PilotReady
 // alone is sufficient. Removing AiProactive closes a firewall leak — the
 // controller no longer reads `humanPiloted`.
+//
+// Two trigger flavours, deliberate split (fn-8.3 Phase 2 round 2 — codex
+// review correction):
+//
+// • [DepartureTrigger] (single-cycle) — used by *response-shape* rules
+//   that fire once IN RESPONSE to the pilot's Ready report (e.g.
+//   `DEP-HOLD-IMC` instructs Hold Position when weather is below VMC at
+//   the moment Ready is reported). Sticky-witness here would re-fire
+//   the response every cycle while weather stays bad, which is wrong.
+//
+// • [RunwaySlotTrigger] (sticky `PilotReadyDuringCommitment`) — used by
+//   *runway-slot-grant* rules (`DEP-LUAW`, `DEP-LUAW-COND`) that gate
+//   on the runway becoming available. Pilots report Ready ONCE; for
+//   sequential departures behind a circuit-traffic arrival, the runway
+//   grant can land many cycles after the one-shot Ready event has
+//   aged out. Pre-B3, `DEP-LUAW` would never fire for the second
+//   departure → wedge at AwaitReady. The sticky witness models the
+//   strip-state real controllers retain ("pilot's still ready").
 private val DepartureTrigger = PilotReady
+private val RunwaySlotTrigger = PilotReadyDuringCommitment
 
 /** Shared guard: conditions for issuing or re-issuing a takeoff clearance. */
 private val TakeoffConditions = AllOf(listOf(
@@ -105,7 +126,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 description = "Line up and wait when pilot ready and runway available",
                 regulations = listOf(ICAO4444_7_9, ICAO4444_7_9_3, ICAO9432_LINEUP),
                 guard = AllOf(listOf(
-                    DepartureTrigger,
+                    RunwaySlotTrigger,
                     ContactEstablished,
                     WeatherPermitsVfr,
                     RunwayAccessGranted,
@@ -129,7 +150,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 description = "Conditional line-up behind landing/departing traffic",
                 regulations = listOf(ICAO4444_7_9_3, ICAO9432_CONDITIONAL),
                 guard = AllOf(listOf(
-                    DepartureTrigger,
+                    RunwaySlotTrigger,
                     ContactEstablished,
                     WeatherPermitsVfr,
                     RunwayAccessGranted,
@@ -250,15 +271,37 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "DEP-CIRCUIT-COMPLETE",
                 description = "Departure complete — circuit traffic reaching downwind, tower retains",
                 // Fires for any aircraft the controller has identified as
-                // circuit traffic — i.e. the pilot has reported a Downwind
-                // call carrying a CircuitIntent. The intent value (T&G or
-                // FULL_STOP) is irrelevant here; the relevance is "the
-                // aircraft is in the circuit pattern, retain at tower."
+                // circuit traffic, by either signal:
+                //  • [IsCircuitTraffic] — the pilot has reported a Downwind
+                //    call carrying a CircuitIntent (radio-derived, requires
+                //    the Downwind transmission to have been delivered to
+                //    the controller; vulnerable to step-on on a busy
+                //    multi-aircraft frequency).
+                //  • [IsCircuitTrafficByStrip] — the AFTN-distributed strip
+                //    carries no onward destination aerodrome; real ATC's
+                //    "VFR LCL" kind-of-flight tag, available to the
+                //    controller before any radio contact. Robust to lost
+                //    radio reports.
+                //
+                // fn-8.3 Phase 3 (B4 closure): adds the strip-derived
+                // signal alongside the radio-derived one. Pre-fix, a
+                // multi-aircraft circuit pattern could lose B's first
+                // Downwind transmission to a same-instant collision with
+                // A's Readback (both at the moment the frequency just
+                // became free), leaving the controller's
+                // `circuitIntent[B]` permanently empty and B wedged at
+                // `TOWER_DEPARTURE@AwaitTakeoffObserved` for the run.
+                // The strip already carried "B is a local flight";
+                // teaching the rule to read it lets DEP-CIRCUIT-COMPLETE
+                // fire on observation alone.
+                //
+                // Doctrine: ICAO Doc 4444 §7.9 (aerodrome local control),
+                // AIP / AIC kind-of-flight markings (VFR LCL).
                 regulations = listOf(ICAO4444_7_9),
                 guard = AllOf(listOf(
                     Airborne,
                     OnCircuitLeg(LegName.DOWNWIND),
-                    IsCircuitTraffic,
+                    AnyOf(listOf(IsCircuitTraffic, IsCircuitTrafficByStrip)),
                 )),
                 nextStage = TowerDepartureStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
@@ -299,10 +342,11 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             // Pass 7 (D-PF.7 closure): boundary release sibling for the
             // unstaffed-APPROACH case. Same compatibility set as DEP-HANDOFF
             // except `Not(IsTransferTargetStaffed)` and the aircraft has
-            // crossed the CTR boundary (12 NM radial conservative). Per
-            // ICAO Doc 4444 §10.1.4: "radar service terminated, squawk
-            // 7000, frequency change approved." E17 architectural test
-            // pairs this with DEP-HANDOFF.
+            // crossed the per-aerodrome CTR-approximation radius (fn-7;
+            // `Aerodrome.ctrApproximationRadius`). Per ICAO Doc 4444
+            // §10.1.4: "radar service terminated, squawk 7000, frequency
+            // change approved." E17 architectural test pairs this with
+            // DEP-HANDOFF.
             AtcRule(
                 id = "DEP-RADAR-SERVICE-TERMINATED",
                 description = "Terminate radar service when APPROACH unstaffed and local traffic past CTR boundary",
@@ -319,7 +363,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.APPROACH)),
                     Not(DestinationDifferentAerodrome),
-                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM — D-AUDIT.7
+                    OutsideAerodromeRadius,  // fn-7: per-aerodrome radius read from world data
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(
@@ -348,12 +392,20 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
             //    points at all; the radius gate is the load-bearing geometric
             //    check).
             //
-            // Geometry note: 12 NM = 22 224 m (D-AUDIT.7 conservative). Verified
-            // reachable for the G2 LOWG → LJMB fixture: OSMOT (LJMB's first
-            // VFR contact REP) is ~25 NM from LOWG ARP; the 12 NM ring is
-            // crossed well before the aircraft reaches the destination's REP.
-            // A future "per-aerodrome CTR boundary from world data" pass
-            // tightens this to LOWG's actual ~7 NM CTR.
+            // Geometry note: per-aerodrome `Aerodrome.ctrApproximationRadius`
+            // (fn-7) — read at evaluate time, defaulted to the ICAO Annex 11
+            // §2.11 5 NM floor (`Doctrine.IcaoAnnex11.CTR_FLOOR_5NM`) when
+            // the JSON schema field is null. LOWG authors 18 NM (max-edge
+            // 16.25 NM rounded up + ~1 NM ARP-proxy-offset margin from the
+            // AIP AD 2.17 polygon); LJMB authors the same conservative
+            // 18 NM placeholder pending real-polygon transcription
+            // (`D-AUDIT-ljmb-polygon`). Both LOWG (18 NM) and LJMB (18 NM)
+            // remain reachable for the G2 LOWG → LJMB fixture: OSMOT
+            // (LJMB's first VFR contact REP) is ~25 NM from LOWG ARP;
+            // the LOWG 18 NM ring is crossed well before the aircraft
+            // reaches the destination's REP. Polygon containment
+            // (`D-AUDIT-polygon-ctr`) is the future replacement for the
+            // circular approximation.
             //
             // Squawk 7000 (VFR conspicuity) per ICAO Doc 4444 §10.1.4 boundary
             // release. `forRole = APPROACH` mirrors the unstaffed-APPROACH
@@ -367,7 +419,7 @@ fun towerDepartureProcedure(): ProcedureSpec = ProcedureSpec(
                     Not(IsCircuitTraffic),
                     AircraftIntentIs(xyz.easiersaid.twr.protocol.AircraftIntent.Departing),
                     DestinationDifferentAerodrome,
-                    OutsideAerodromeRadius(xyz.easiersaid.twr.core.world.Meters(22_224.0)),  // 12 NM
+                    OutsideAerodromeRadius,  // fn-7: per-aerodrome radius read from world data
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),
                 action = TerminateRadarServiceAction(

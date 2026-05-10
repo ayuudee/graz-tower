@@ -20,6 +20,7 @@ Primary test airport. Complex enough to exercise most features.
 - **Magnetic variation:** 5 degrees (2022)
 - **Transition altitude:** 10,000ft
 - **CTR:** Class D, SFC-4500ft AMSL (code LO585)
+- **ctrApproximationRadius:** 18 NM (max polygon edge 16.25 NM rounded UP + ~1 NM ARP-proxy-offset margin, circular sim approximation). Source: AIP Austria, AD 2 LOWG §2.17 (control zone lateral limits), effective 2026-04-01 (AIRAC 2604), via Austro Control / OpenFlightMaps Austria mirror at [data/ofm/austria/ofmx_extracted/ofmx_lo/isolated/ofmx_lo.ofmx](/home/andrew/dev/projects/twr2/data/ofm/austria/ofmx_extracted/ofmx_lo/isolated/ofmx_lo.ofmx). Polygon ranges 6.7–16.25 NM from ARP. Rounding up + proxy margin keeps the rule from releasing inside the polygon under worst-case threshold-proxy offset. Real CTR is polygonal; the circular value is a stand-in pending polygon containment (`D-AUDIT-polygon-ctr`).
 - **TMA layers:** LOWG 1-5 with Class C/D/E segments up to FL245
 - **Frequencies:** GRAZ TOWER 118.200, GRAZ RADAR 119.300/120.440, ATIS 126.130
 - **VFR reporting points:** GRAZ-NORD (MRP), SENDER DOBL, KALSDORF, AUTOBAHN-OST, AUTOBAHN-WEST, GREEN CITY (all RP), GLEISDORF (MRP), LASSNITZHÖHE (MRP)

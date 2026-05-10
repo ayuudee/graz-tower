@@ -4,6 +4,7 @@ import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.CoordinationState
 import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.controller.observe.updateBeliefs
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -65,16 +66,25 @@ class CoordinationsCleanupSpec {
         worldIndex = WorldIndex(),
     )
 
+    // fn-6.1: seed positions on a local WorldIndex so the from() call below
+    // can pass `coords = worldIndex.positions[<position>]!!` non-divergently.
+    // CoordinationsCleanupSpec exercises updateBeliefs's prune logic; coords
+    // are not load-bearing here.
+    private val testWorldIndex = WorldIndex(
+        positions = mapOf(PointId("P") to Position(xMeters = 0.0, yMeters = 0.0)),
+    )
+
     private fun observation(): AircraftObservation = AircraftObservation.from(
         id = ac,
         callsign = Callsign("OEABC"),
         position = PointId("P"),
+        coords = testWorldIndex.positions.getValue(PointId("P")),
         altitude = null,
         groundSpeed = null,
         onGround = true,
         wakeCategory = null,
         icaoTypeDesignator = null,
-        worldIndex = WorldIndex(),
+        worldIndex = testWorldIndex,
     )
 
     @Test

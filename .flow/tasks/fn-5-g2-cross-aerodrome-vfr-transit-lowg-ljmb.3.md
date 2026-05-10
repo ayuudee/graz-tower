@@ -58,9 +58,8 @@ Phase G of the G2 multi-phase plan + closing doc updates. Three small additions,
 
 
 ## Done summary
-
-_Populated at task completion via `flowctl done <id> --summary-file ...`_
-
+Phase G architectural tests + closing doc updates landed in commit 7c6636f (G2 Phase G: architectural enforcement + closing doc updates). FirewallNoCrossAerodromeHandoffTest pins the {Peer, Released} sealed-leaf set; FixtureAerodromeStaffingDoctrineSpec pins LOWG_LJMB_VFR's exact (role, aerodrome) set; AGENTS.md + LJMB wiki + g2 plan docs updated.
 ## Evidence
-
-_Populated at task completion via `flowctl done <id> --evidence-json ...`_
+- Commits:
+- Tests:
+- PRs:

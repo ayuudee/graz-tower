@@ -15,20 +15,24 @@ import xyz.easiersaid.twr.controller.bdi.ExtendDownwindAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
+import xyz.easiersaid.twr.controller.bdi.HasReportedPositionCall
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
 import xyz.easiersaid.twr.controller.bdi.JoinCircuitAction
+import xyz.easiersaid.twr.controller.bdi.PositionReportKind
 import xyz.easiersaid.twr.controller.bdi.TaxiToStandAction
 import xyz.easiersaid.twr.controller.bdi.TerminateRadarServiceAction
 import xyz.easiersaid.twr.controller.bdi.InCircuit
 import xyz.easiersaid.twr.controller.bdi.InstructionMatcher
 import xyz.easiersaid.twr.controller.bdi.IsCircuitTraffic
 import xyz.easiersaid.twr.controller.bdi.NoActiveInstruction
+import xyz.easiersaid.twr.controller.bdi.CoordinationIssued
 import xyz.easiersaid.twr.controller.bdi.NoPendingReadback
 import xyz.easiersaid.twr.controller.bdi.Not
 import xyz.easiersaid.twr.controller.bdi.OnApproach
 import xyz.easiersaid.twr.controller.bdi.OnCircuitLeg
 import xyz.easiersaid.twr.controller.bdi.OnGround
 import xyz.easiersaid.twr.controller.bdi.OnRunway
+import xyz.easiersaid.twr.controller.bdi.TouchedDownDuringCommitment
 import xyz.easiersaid.twr.controller.bdi.PositionReported
 import xyz.easiersaid.twr.controller.bdi.ProcedureInterrupt
 import xyz.easiersaid.twr.controller.bdi.ProcedureSpec
@@ -96,6 +100,36 @@ private val LandingConditions = AllOf(listOf(
     // and their re-issue rules. Fails closed for unknown designator or
     // absent declared distances.
     RunwayLengthSufficient(RunwayLengthOperation.LANDING),
+    // fn-8.3 Phase 4 (B5-α): the controller has observed at least one
+    // circuit-position pilot call (Downwind / Base / Final / LongFinal)
+    // during the **current** commitment lifetime. Doctrine: CAP 413
+    // §4.45-4.49 / ICAO Doc 4444 §7.10 — landing clearance follows the
+    // pilot's position call.
+    //
+    // Pre-fix, ARR-LAND / ARR-LAND-TNG fired purely on observed geometry
+    // + strip-derived `IsCircuitTrafficByStrip` (C2/C3) — a stepped-on
+    // Downwind didn't block landing-clearance issuance, so the controller
+    // could clear the aircraft to land BEFORE the pilot's position call
+    // had been delivered. The pilot's mission tree (T&G shape) then
+    // mismatched the controller's clearance disposition (full-stop), and
+    // M3/M4 surfaced (BacktrackRunway dropped, aircraft lifts off again).
+    // See fn-8.3 spec § Evidence § Phase 3 round 2 for the empirical
+    // four-mechanism trace (M1 — same-tick race).
+    //
+    // Reset points (mirrors B2 / B3 patterns): commitment formation
+    // (`createCommitment` → default empty), stage regression (e.g.
+    // go-around `LandingClearanceIssued`/`AwaitLandedObserved` →
+    // `AwaitDownwind` per `GA-POST-CLEAR` — handled by the regression
+    // detection in `advanceCommittedStages`).
+    HasReportedPositionCall(setOf(
+        PositionReportKind.DOWNWIND,
+        PositionReportKind.BASE,
+        PositionReportKind.FINAL,
+        PositionReportKind.LONG_FINAL,
+        PositionReportKind.ESTABLISHED,
+        PositionReportKind.ESTABLISHED_LOCALISER,
+        PositionReportKind.ESTABLISHED_GLIDEPATH,
+    )),
 ))
 
 @Suppress("LongMethod") // procedure spec is a flat list of rules — splitting into smaller
@@ -285,24 +319,41 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 urgency = Urgency.PROGRESSION,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Clear to land — VFR, full-stop intent declared
+            // Clear to land — VFR, full-stop intent OR no circuit intent
+            // signal received (radio default is "full-stop unless explicit
+            // T&G heard"). fn-8.3 Phase 3 (B4 closure follow-on): the
+            // strip-based DEP-CIRCUIT-COMPLETE broadening can advance the
+            // commitment to TOWER_ARRIVAL before any Downwind transmission
+            // is delivered (e.g. cross-aircraft step-on lost the radio
+            // call). Without this default-to-full-stop semantic, ARR-LAND-TNG
+            // would fire with `Not(CircuitIntentIs(FULL_STOP))=true` when
+            // intent is empty, issuing a T&G clearance against a pilot who
+            // never declared T&G. Reality-anchored: a real controller
+            // hearing no Downwind call but seeing the aircraft on final
+            // would clear to land (safe default), not offer T&G.
             AtcRule(
                 id = "ARR-LAND",
-                description = "Clear to land when on final and runway available, pilot declared full-stop",
+                description = "Clear to land when on final and runway available — full-stop or unknown intent",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(LandingConditions, CircuitIntentIs(CircuitIntent.FULL_STOP))),
+                guard = AllOf(listOf(
+                    LandingConditions,
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                    )),
+                )),
                 action = ClearLandAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 urgency = Urgency.TIME_SENSITIVE,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Clear touch-and-go — default for circuit traffic that has not declared full-stop
+            // Clear touch-and-go — only on explicit T&G intent declaration
             AtcRule(
                 id = "ARR-LAND-TNG",
-                description = "Clear touch-and-go when on final and runway available (default for circuit traffic)",
+                description = "Clear touch-and-go when on final and runway available — explicit T&G intent",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
-                guard = AllOf(listOf(LandingConditions, Not(CircuitIntentIs(CircuitIntent.FULL_STOP)))),
+                guard = AllOf(listOf(LandingConditions, CircuitIntentIs(CircuitIntent.TOUCH_AND_GO))),
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
@@ -345,13 +396,38 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
             // Re-issue: ClearedToLand was stepped on → coordination GC'd → re-issue.
+            // Gate matches ARR-LAND: explicit FULL_STOP OR no circuit-intent
+            // signal received (default-to-full-stop for unknown intent).
+            //
+            // fn-8.3 Phase 3 round 1 (codex review iteration 3): the
+            // `NoPendingReadback` matcher widens to BOTH landing-clearance
+            // types so a fresh land-reissue cannot land on top of a pilot
+            // who is currently reading back a `ClearedTouchAndGo` (and
+            // vice versa for the T&G reissue). Limiting the cross-type
+            // block to the narrow `Issued` state preserves liveness — if
+            // the opposite-type coordination escalates past `Issued`
+            // (Querying / Reissued / LostCommsDeclared), the COORD-REISSUE
+            // / lost-comms flows have effectively superseded the prior
+            // clearance in the eyes of the lifecycle, and a fresh
+            // intent-aligned clearance is the doctrinally correct next
+            // step. Iteration-2's wider `NoOpenCoordination` gate caused
+            // a deadlock when intent flipped post-issuance and the prior
+            // coordination escalated — neither rule could fire.
+            //
+            // Net invariant: at most one *fresh-issued* (state=Issued)
+            // landing-class coordination at a time. Multiple coordinations
+            // in escalated states can coexist in the ledger; the
+            // escalation flow + supersession-by-readback handle resolution.
             AtcRule(
                 id = "ARR-LAND-REISSUE",
                 description = "Re-issue landing clearance after readback timeout",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
                 guard = AllOf(listOf(
                     LandingConditions,
-                    CircuitIntentIs(CircuitIntent.FULL_STOP),
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                    )),
                     NoPendingReadback(InstructionMatcher.AnyOf(listOf(
                         instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
                         instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
@@ -362,15 +438,26 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 readbackAdvancesToStage = TowerArrivalStage.AwaitLandedObserved,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
-            // Re-issue T&G variant
+            // Re-issue T&G variant — gate matches ARR-LAND-TNG (explicit T&G only).
+            //
+            // fn-8.3 Phase 3 round 1 (codex review iteration 3): symmetric
+            // to ARR-LAND-REISSUE. The `NoPendingReadback` matcher blocks
+            // on either landing-clearance type in `Issued` state only;
+            // escalated states allow the rule to fire and supersede the
+            // prior unresolved clearance via the standard escalation
+            // lifecycle. See ARR-LAND-REISSUE doc above for liveness vs
+            // safety reasoning.
             AtcRule(
                 id = "ARR-LAND-TNG-REISSUE",
                 description = "Re-issue touch-and-go clearance after readback timeout",
                 regulations = listOf(ICAO4444_7_10, ICAO9432_LANDING),
                 guard = AllOf(listOf(
                     LandingConditions,
-                    Not(CircuitIntentIs(CircuitIntent.FULL_STOP)),
-                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>()),
+                    CircuitIntentIs(CircuitIntent.TOUCH_AND_GO),
+                    NoPendingReadback(InstructionMatcher.AnyOf(listOf(
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedTouchAndGo>(),
+                        instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>(),
+                    ))),
                 )),
                 action = ClearTouchAndGoAction,
                 nextStage = TowerArrivalStage.LandingClearanceIssued,
@@ -396,8 +483,32 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 // T&G intent (or no intent → defaults to T&G). Without
                 // IsCircuitTraffic, a non-circuit airborne arrival could
                 // trigger spurious completion.
+                //
+                // fn-8.3 Phase 2 (B2): also requires that the aircraft was
+                // actually observed on the runway on-ground during this
+                // commitment lifetime ([TouchedDownDuringCommitment]).
+                // Pre-fix, this rule fired on bare `Airborne` and produced
+                // a runaway commitment ping-pong: each `ARR-LAND-TNG`
+                // readback advanced the stage to `AwaitLandedObserved`,
+                // `ARR-TNG-AIRBORNE` fired immediately because the aircraft
+                // was airborne (even though it had never touched the
+                // runway), the commitment completed, a fresh one re-formed,
+                // and the cycle repeated every ~10s — saturating the
+                // frequency and stepping on the pilot's FULL_STOP downwind
+                // (fn-8.3 spec § Evidence § Phase 1).
+                //
+                // The gate matches the doctrinal definition of "touch-and-
+                // go": the aircraft must have actually touched down on the
+                // runway. Without the witness, the controller cannot in
+                // good faith claim the arrival commitment is fulfilled by
+                // the aircraft being airborne again.
                 regulations = listOf(ICAO4444_7_10),
-                guard = AllOf(listOf(IsCircuitTraffic, Not(CircuitIntentIs(CircuitIntent.FULL_STOP)), Airborne)),
+                guard = AllOf(listOf(
+                    IsCircuitTraffic,
+                    Not(CircuitIntentIs(CircuitIntent.FULL_STOP)),
+                    Airborne,
+                    TouchedDownDuringCommitment,
+                )),
                 nextStage = TowerArrivalStage.Complete,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
@@ -415,13 +526,35 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 id = "ARR-VACATE",
                 description = "Vacate the runway via assigned exit or backtrack",
                 regulations = listOf(ICAO4444_7_11),
-                // Vacate fires for full-stop arrivals (declared FULL_STOP) and
+                // Vacate fires for full-stop arrivals (declared FULL_STOP),
                 // for non-circuit arrivals (no circuit intent declared at all —
-                // a one-shot Arrival mission). T&G traffic that has declared
-                // touch-and-go is excluded.
+                // a one-shot Arrival mission), and for aircraft the
+                // controller has already committed to a full-stop landing
+                // for via `ClearedToLand`. T&G traffic that has declared
+                // touch-and-go and that the controller has not yet
+                // committed to a full-stop is excluded.
+                //
+                // fn-8.3 Phase 3 round 1 (codex review iteration 4): the
+                // third disjunct (`CoordinationIssued(ClearedToLand)`)
+                // closes a wedge where a delayed Downwind delivers
+                // `TOUCH_AND_GO` *after* the controller has already
+                // committed to full-stop via the C4 default-flip. Without
+                // it, the aircraft is on the runway with no firing rule:
+                // `ARR-TNG-AIRBORNE` is false (on ground, not airborne)
+                // and the original two disjuncts of `ARR-VACATE` flip to
+                // false when `circuitIntent` updates to T&G. The
+                // disposition-locking semantic (real ATC: "I cleared this
+                // pilot to land; their disposition is now full-stop
+                // regardless of any late report") is encoded by checking
+                // the controller's own issued-coordination ledger rather
+                // than the mutable circuit-intent belief.
                 guard = AllOf(listOf(
                     OnRunway, OnGround,
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     NoPendingReadback(InstructionMatcher.AnyOf(listOf(
                         instructionOfType<AfterLandingVacateVia>(),
                         instructionOfType<xyz.easiersaid.twr.protocol.BacktrackRunway>(),
@@ -454,7 +587,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    // fn-8.3 Phase 3 round 1 (codex review iteration 4):
+                    // sibling of ARR-VACATE — `CoordinationIssued(ClearedToLand)`
+                    // closes the late-T&G-Downwind wedge symmetrically.
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     NoPendingReadback(instructionOfType<ContactFrequency>()),
                     IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND),
                 )),
@@ -476,7 +616,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_7_11, ICAO4444_7_6, SERA_8005_C, ICAO9432_TAXI),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    // fn-8.3 Phase 3 round 1 (codex review iteration 4):
+                    // sibling of ARR-VACATE — `CoordinationIssued(ClearedToLand)`
+                    // closes the late-T&G-Downwind wedge symmetrically.
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND)),
                     NoActiveInstruction(instructionOfType<xyz.easiersaid.twr.protocol.TaxiToStand>()),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TaxiToStand>()),
@@ -507,7 +654,14 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 regulations = listOf(ICAO4444_10_1, ICAO9432_FREQUENCY_CHANGE),
                 guard = AllOf(listOf(
                     OnGround, Not(OnRunway),
-                    AnyOf(listOf(CircuitIntentIs(CircuitIntent.FULL_STOP), Not(IsCircuitTraffic))),
+                    // fn-8.3 Phase 3 round 1 (codex review iteration 4):
+                    // sibling of ARR-VACATE — `CoordinationIssued(ClearedToLand)`
+                    // closes the late-T&G-Downwind wedge symmetrically.
+                    AnyOf(listOf(
+                        CircuitIntentIs(CircuitIntent.FULL_STOP),
+                        Not(IsCircuitTraffic),
+                        CoordinationIssued(instructionOfType<xyz.easiersaid.twr.protocol.ClearedToLand>()),
+                    )),
                     Not(IsTransferTargetStaffed(xyz.easiersaid.twr.protocol.RoleName.GROUND)),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.RadarServiceTerminated>()),
                 )),

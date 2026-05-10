@@ -47,6 +47,7 @@ class FlightPlanFilingSpec {
         now = now0,
         seq = 0L,
         rng = SimRandom(0L),
+        rngByAircraft = aircraft.associate { it.id to SimRandom(it.id.value.hashCode().toLong()) },
         aircraft = LinkedHashMap<AircraftId, AircraftState>().apply { aircraft.forEach { put(it.id, it) } },
         controllers = ctrls,
         beliefs = emptyMap(),

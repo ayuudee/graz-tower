@@ -121,6 +121,132 @@ class FixtureLoadSpec {
         assertEquals(AerodromeId("LJMB"), ljmbTower.aerodromeId)
     }
 
+    // ── fn-8.1: LOWG_TWO_AIRCRAFT fixture + per-aircraft startPoints validation ──
+
+    @Test
+    fun `LOWG_TWO_AIRCRAFT loads cleanly with two distinct startPoints and two filings`() {
+        val loaded = Fixtures.LOWG_TWO_AIRCRAFT.load().getOrElse {
+            fail("LOWG_TWO_AIRCRAFT fixture failed to load: $it")
+        }
+        // Two filings — one per aircraft, both to LOWG_GROUND (single-
+        // aerodrome circuit training; routeFiledPlan returns 1 recipient).
+        val filings = loaded.initialEvents.filterIsInstance<SimEvent.FlightPlanFiled>()
+        assertEquals(2, filings.size, "two aircraft, each with one filed plan, single-aerodrome routing")
+        assertEquals(
+            listOf(AircraftId("OE-ABC"), AircraftId("OE-DEF")),
+            filings.map { it.aircraft },
+            "loader sorts by AircraftId.value ascending: OE-ABC before OE-DEF",
+        )
+        // requiredStartPoints helper returns the non-null map.
+        val starts = Fixtures.LOWG_TWO_AIRCRAFT.requiredStartPoints()
+        assertEquals(
+            mapOf(
+                AircraftId("OE-ABC") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT"),
+                AircraftId("OE-DEF") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_2_POINT"),
+            ),
+            starts,
+            "two distinct adjacent GA stands authored from world-candidate",
+        )
+    }
+
+    @Test
+    fun `requiredStartPoints throws on a single-aircraft fixture`() {
+        // G0 LOWG fixture has startPoints = null. Calling requiredStartPoints
+        // on it must fail loud rather than NPE on a downstream getValue.
+        val ex = kotlin.runCatching { Fixtures.LOWG.requiredStartPoints() }.exceptionOrNull()
+            ?: fail("requiredStartPoints must throw on a single-aircraft fixture")
+        assertTrue(
+            ex.message?.contains("single-aircraft fixture") == true,
+            "loud error must name the failure mode; got: ${ex.message}",
+        )
+    }
+
+    @Test
+    fun `validate flags StartPointWithoutFlightPlan for orphan startPoints entry`() {
+        val fixture = Fixtures.LOWG_TWO_AIRCRAFT.copy(
+            // OE-XYZ has a start point but no flight plan.
+            startPoints = mapOf(
+                AircraftId("OE-ABC") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT"),
+                AircraftId("OE-XYZ") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_2_POINT"),
+            ),
+            // OE-DEF stays in flightPlans → triggers the inverse violation too.
+        )
+        val result = fixture.load()
+        val violations = (result as? arrow.core.Either.Left)?.value as? LoadError.ValidationFailed
+            ?: fail("expected ValidationFailed Left; got $result")
+        assertTrue(
+            violations.violations.any {
+                it == FixtureViolation.StartPointWithoutFlightPlan(
+                    aircraft = AircraftId("OE-XYZ"),
+                    point = xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_2_POINT"),
+                )
+            },
+            "must surface StartPointWithoutFlightPlan for OE-XYZ; got ${violations.violations}",
+        )
+    }
+
+    @Test
+    fun `validate flags FlightPlanMissingStartPoint for orphan plan`() {
+        val fixture = Fixtures.LOWG_TWO_AIRCRAFT.copy(
+            startPoints = mapOf(
+                // Only OE-ABC has a start point; OE-DEF's plan is orphaned.
+                AircraftId("OE-ABC") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT"),
+            ),
+        )
+        val result = fixture.load()
+        val violations = (result as? arrow.core.Either.Left)?.value as? LoadError.ValidationFailed
+            ?: fail("expected ValidationFailed Left; got $result")
+        assertTrue(
+            violations.violations.any {
+                it == FixtureViolation.FlightPlanMissingStartPoint(AircraftId("OE-DEF"))
+            },
+            "must surface FlightPlanMissingStartPoint for OE-DEF; got ${violations.violations}",
+        )
+    }
+
+    @Test
+    fun `validate flags DuplicateStartPoint when two aircraft share a point`() {
+        val fixture = Fixtures.LOWG_TWO_AIRCRAFT.copy(
+            startPoints = mapOf(
+                AircraftId("OE-ABC") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT"),
+                AircraftId("OE-DEF") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT"),
+            ),
+        )
+        val result = fixture.load()
+        val violations = (result as? arrow.core.Either.Left)?.value as? LoadError.ValidationFailed
+            ?: fail("expected ValidationFailed Left; got $result")
+        assertTrue(
+            violations.violations.any {
+                it is FixtureViolation.DuplicateStartPoint &&
+                    it.point == xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT") &&
+                    it.aircraft.toSet() == setOf(AircraftId("OE-ABC"), AircraftId("OE-DEF"))
+            },
+            "must surface DuplicateStartPoint; got ${violations.violations}",
+        )
+    }
+
+    @Test
+    fun `validate flags StartPointMissing for an unknown PointId`() {
+        val fixture = Fixtures.LOWG_TWO_AIRCRAFT.copy(
+            startPoints = mapOf(
+                AircraftId("OE-ABC") to xyz.easiersaid.twr.protocol.PointId("LOWG_STAND_1_POINT"),
+                AircraftId("OE-DEF") to xyz.easiersaid.twr.protocol.PointId("LOWG_DOES_NOT_EXIST"),
+            ),
+        )
+        val result = fixture.load()
+        val violations = (result as? arrow.core.Either.Left)?.value as? LoadError.ValidationFailed
+            ?: fail("expected ValidationFailed Left; got $result")
+        assertTrue(
+            violations.violations.any {
+                it == FixtureViolation.StartPointMissing(
+                    aircraft = AircraftId("OE-DEF"),
+                    point = xyz.easiersaid.twr.protocol.PointId("LOWG_DOES_NOT_EXIST"),
+                )
+            },
+            "must surface StartPointMissing for OE-DEF's bogus point; got ${violations.violations}",
+        )
+    }
+
     @Test
     fun `LOWG_LJMB_VFR distributes one filed plan to LOWG_GROUND and LJMB_TOWER`() {
         // G2 Phase A: the cross-aerodrome filing distribution path (Pass 14

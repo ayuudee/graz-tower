@@ -4,6 +4,7 @@ import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.controller.bdi.determineServiceKind
 import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.core.world.EntityRef
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ApproachId
 import xyz.easiersaid.twr.protocol.Callsign
@@ -46,82 +47,106 @@ class DetermineServiceKindSpec {
     private val standId = StandId("STAND_1")
 
     /** Aircraft on the ground at a stand. */
-    private fun parkedOnGround(): AircraftObservation = AircraftObservation.from(
-        id = aircraftId,
-        callsign = Callsign("OEABC"),
-        position = PointId("STAND_PT"),
-        altitude = null,
-        groundSpeed = null,
-        onGround = true,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = worldIndexWithEntities(setOf(EntityRef.StandRef(standId))),
-    )
+    private fun parkedOnGround(): AircraftObservation {
+        val world = worldIndexWithEntities(setOf(EntityRef.StandRef(standId)))
+        return AircraftObservation.from(
+            id = aircraftId,
+            callsign = Callsign("OEABC"),
+            position = PointId("STAND_PT"),
+            coords = world.positions.getValue(PointId("STAND_PT")),
+            altitude = null,
+            groundSpeed = null,
+            onGround = true,
+            wakeCategory = null,
+            icaoTypeDesignator = null,
+            worldIndex = world,
+        )
+    }
 
     /** Aircraft on the ground on a runway. */
-    private fun onRunwayGround(): AircraftObservation = AircraftObservation.from(
-        id = aircraftId,
-        callsign = Callsign("OEABC"),
-        position = PointId("RWY_PT"),
-        altitude = null,
-        groundSpeed = null,
-        onGround = true,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = worldIndexWithEntities(setOf(EntityRef.RunwayRef(rwy))),
-    )
+    private fun onRunwayGround(): AircraftObservation {
+        val world = worldIndexWithEntities(setOf(EntityRef.RunwayRef(rwy)))
+        return AircraftObservation.from(
+            id = aircraftId,
+            callsign = Callsign("OEABC"),
+            position = PointId("RWY_PT"),
+            coords = world.positions.getValue(PointId("RWY_PT")),
+            altitude = null,
+            groundSpeed = null,
+            onGround = true,
+            wakeCategory = null,
+            icaoTypeDesignator = null,
+            worldIndex = world,
+        )
+    }
 
     /** Aircraft on the ground off the runway, off any stand (taxiway). */
-    private fun onTaxiwayGround(): AircraftObservation = AircraftObservation.from(
-        id = aircraftId,
-        callsign = Callsign("OEABC"),
-        position = PointId("TWY_PT"),
-        altitude = null,
-        groundSpeed = null,
-        onGround = true,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = worldIndexWithEntities(emptySet()),
-    )
+    private fun onTaxiwayGround(): AircraftObservation {
+        val world = worldIndexWithEntities(emptySet())
+        return AircraftObservation.from(
+            id = aircraftId,
+            callsign = Callsign("OEABC"),
+            position = PointId("TWY_PT"),
+            coords = world.positions.getValue(PointId("TWY_PT")),
+            altitude = null,
+            groundSpeed = null,
+            onGround = true,
+            wakeCategory = null,
+            icaoTypeDesignator = null,
+            worldIndex = world,
+        )
+    }
 
     /** Aircraft airborne in the circuit. */
-    private fun airborneInCircuit(): AircraftObservation = AircraftObservation.from(
-        id = aircraftId,
-        callsign = Callsign("OEABC"),
-        position = PointId("CIRCUIT_PT"),
-        altitude = null,
-        groundSpeed = null,
-        onGround = false,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = worldIndexWithEntities(setOf(EntityRef.CircuitProcedureRef(CircuitProcedureId("CIRC")))),
-    )
+    private fun airborneInCircuit(): AircraftObservation {
+        val world = worldIndexWithEntities(setOf(EntityRef.CircuitProcedureRef(CircuitProcedureId("CIRC"))))
+        return AircraftObservation.from(
+            id = aircraftId,
+            callsign = Callsign("OEABC"),
+            position = PointId("CIRCUIT_PT"),
+            coords = world.positions.getValue(PointId("CIRCUIT_PT")),
+            altitude = null,
+            groundSpeed = null,
+            onGround = false,
+            wakeCategory = null,
+            icaoTypeDesignator = null,
+            worldIndex = world,
+        )
+    }
 
     /** Aircraft airborne on approach. */
-    private fun airborneOnApproach(): AircraftObservation = AircraftObservation.from(
-        id = aircraftId,
-        callsign = Callsign("OEABC"),
-        position = PointId("APP_PT"),
-        altitude = null,
-        groundSpeed = null,
-        onGround = false,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = worldIndexWithEntities(setOf(EntityRef.ApproachRef(ApproachId("APP")))),
-    )
+    private fun airborneOnApproach(): AircraftObservation {
+        val world = worldIndexWithEntities(setOf(EntityRef.ApproachRef(ApproachId("APP"))))
+        return AircraftObservation.from(
+            id = aircraftId,
+            callsign = Callsign("OEABC"),
+            position = PointId("APP_PT"),
+            coords = world.positions.getValue(PointId("APP_PT")),
+            altitude = null,
+            groundSpeed = null,
+            onGround = false,
+            wakeCategory = null,
+            icaoTypeDesignator = null,
+            worldIndex = world,
+        )
+    }
 
     /** Aircraft airborne, no approach/circuit entity (en-route). */
-    private fun airborneEnRoute(): AircraftObservation = AircraftObservation.from(
-        id = aircraftId,
-        callsign = Callsign("OEABC"),
-        position = PointId("ER_PT"),
-        altitude = null,
-        groundSpeed = null,
-        onGround = false,
-        wakeCategory = null,
-        icaoTypeDesignator = null,
-        worldIndex = worldIndexWithEntities(emptySet()),
-    )
+    private fun airborneEnRoute(): AircraftObservation {
+        val world = worldIndexWithEntities(emptySet())
+        return AircraftObservation.from(
+            id = aircraftId,
+            callsign = Callsign("OEABC"),
+            position = PointId("ER_PT"),
+            coords = world.positions.getValue(PointId("ER_PT")),
+            altitude = null,
+            groundSpeed = null,
+            onGround = false,
+            wakeCategory = null,
+            icaoTypeDesignator = null,
+            worldIndex = world,
+        )
+    }
 
     private fun worldIndexWithEntities(entities: Set<EntityRef>): xyz.easiersaid.twr.core.world.WorldIndex =
         xyz.easiersaid.twr.core.world.WorldIndex(
@@ -132,6 +157,19 @@ class DetermineServiceKindSpec {
                 PointId("CIRCUIT_PT") to entities,
                 PointId("APP_PT") to entities,
                 PointId("ER_PT") to entities,
+            ),
+            // fn-6.1: seed positions for every fixture point so each
+            // `AircraftObservation.from(...)` call below can pass
+            // `coords = worldIndex.positions[<position>]!!` non-divergently.
+            // determineServiceKind reads no geometric field; coords are
+            // not load-bearing here.
+            positions = mapOf(
+                PointId("STAND_PT") to Position(xMeters = 0.0, yMeters = 0.0),
+                PointId("RWY_PT") to Position(xMeters = 0.0, yMeters = 0.0),
+                PointId("TWY_PT") to Position(xMeters = 0.0, yMeters = 0.0),
+                PointId("CIRCUIT_PT") to Position(xMeters = 0.0, yMeters = 0.0),
+                PointId("APP_PT") to Position(xMeters = 0.0, yMeters = 0.0),
+                PointId("ER_PT") to Position(xMeters = 0.0, yMeters = 0.0),
             ),
         )
 

@@ -64,6 +64,13 @@ private fun assessPair(
     // Required separation: wake-based if applicable, otherwise radar minimum.
     val wake = requiredWakeSeparation(leaderAc.wakeCategory, followerAc.wakeCategory)
     val requiredNm = wake.distanceNm
+    // fn-8.1: classify which wake rule applied for diagnostic carry-along.
+    // The numeric `requiredNm` above is load-bearing; `wakeRule` is additive
+    // and surfaces *why* (table hit / fallback / unknown). Uses the raw
+    // (nullable) categories so UnknownCategory is preserved — `requiredNm`'s
+    // worst-case-Heavy default is the runtime fallback, but the rule should
+    // expose the unknown.
+    val wakeRule = classifyWakeRule(leaderAc.wakeCategory, followerAc.wakeCategory)
 
     // Current separation: from arrival sequence distances.
     val leaderDist = beliefs.arrivalSequence?.slots?.firstOrNull { it.aircraft == leaderId }?.distanceToThresholdM
@@ -97,6 +104,7 @@ private fun assessPair(
         closureRateKt = closureRateKt,
         timeToMinimumSeconds = timeToMin,
         concern = concern,
+        wakeRule = wakeRule,
     )
 }
 

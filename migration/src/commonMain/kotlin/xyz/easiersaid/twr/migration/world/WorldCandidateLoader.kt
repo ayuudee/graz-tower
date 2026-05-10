@@ -24,6 +24,7 @@ import xyz.easiersaid.twr.core.world.ContactRequirement
 import xyz.easiersaid.twr.core.world.ContactTiming
 import xyz.easiersaid.twr.core.world.DeclaredDistances
 import xyz.easiersaid.twr.core.world.Degrees
+import xyz.easiersaid.twr.core.world.Doctrine
 import xyz.easiersaid.twr.core.world.Feet
 import xyz.easiersaid.twr.core.world.Fix
 import xyz.easiersaid.twr.core.world.FixType
@@ -281,11 +282,28 @@ object WorldCandidateLoader {
             )
         }.mapKeys { (id, _) -> FirId(id) }
 
+        // R8: per-aerodrome ctrApproximationRadius — sub-floor authoring is
+        // rejected at load time against the ICAO Annex 11 §2.11 5 NM floor.
+        // Match the loader's existing throwing-validation convention
+        // (`require(n >= ...) { msg }`); not Either.Left.
+        val authoredCtrRadiusNm = world.aerodrome.ctrApproximationRadiusNauticalMiles
+        if (authoredCtrRadiusNm != null) {
+            require(authoredCtrRadiusNm >= Doctrine.IcaoAnnex11.CTR_FLOOR_NAUTICAL_MILES) {
+                "ctrApproximationRadiusNauticalMiles must be >= " +
+                    "${Doctrine.IcaoAnnex11.CTR_FLOOR_NAUTICAL_MILES} NM " +
+                    "(ICAO Annex 11 §2.11 control-zone-lateral-limits floor): " +
+                    "got $authoredCtrRadiusNm"
+            }
+        }
+
         val aerodrome = Aerodrome(
             icao = AerodromeId(world.aerodrome.icao),
             elevation = Feet(world.aerodrome.elevationFeet),
             magneticVariation = Degrees(world.aerodrome.magneticVariationDegrees.toDouble()),
             transitionAltitude = Level.AltitudeFeet.unsafe(world.aerodrome.transitionAltitudeFeet),
+            ctrApproximationRadius = authoredCtrRadiusNm
+                ?.let(Meters::fromNauticalMiles)
+                ?: Doctrine.IcaoAnnex11.CTR_FLOOR_5NM,
             aip = AerodromeAip(
                 operationalSectors = operationalSectors,
                 publishedVfrProcedures = publishedVfrProcedures,
