@@ -947,8 +947,39 @@ private fun markCompleteInActiveCompound(
  * [GoAround] / [BreakOff]: replace the active (incomplete) circuit compound
  * with GO_AROUND + fresh CIRCUIT. Matches Circuit, CircuitAfterGoAround, and
  * TouchAndGo — all circuit pattern variants.
+ *
+ * fn-12.2 (G3a-obstruction): captures the pre-rewrite `currentTask?.step`
+ * BEFORE the tree rewrite and stamps it onto the new mission via
+ * [PilotMission.pendingAtcGoAroundFrom] when the original step is in the
+ * on-final eligible set `{FLY_FINAL, REPORT_FINAL, AWAIT_LANDING_CLEARANCE,
+ * LAND}`. Otherwise leaves the flag [None] — non-on-final paths (e.g. GA
+ * arriving during downwind from a separation conflict) use the existing
+ * Visual-mode reactive special-case at `Pilot.kt:planVisualRoute`. The
+ * recognition arm in `pilotDecide` reads this flag (post-cognitive mission
+ * state) to decide whether to fire `applyAtcInitiatedGoAround`.
+ *
+ * **Eligible-step set rationale**: by the time a post-`ClearedToLand`
+ * obstruction GA arrives, [handleLandingClearance] has already advanced
+ * `AWAIT_LANDING_CLEARANCE → LAND`, so `currentTask.step` is `LAND`, not
+ * `AWAIT_LANDING_CLEARANCE`. Including `LAND` keeps the post-clearance
+ * obstruction-GA case covered. `FLY_FINAL` and `REPORT_FINAL` cover the
+ * on-final pre-clearance window.
+ *
+ * **Flag-set sequencing**: `resetForGoAround(now)` does NOT touch
+ * `pendingAtcGoAroundFrom` (per its KDoc). The flag is stamped onto the
+ * `.copy(root = ...)` result AFTER the reset, so the new value survives.
  */
 private fun handleGoAround(mission: PilotMission, now: SimTime): PilotMission {
+    // Capture the pre-rewrite step BEFORE replacing the tree — once
+    // replaceChild runs, the active leaf is GOING_AROUND and the original
+    // on-final step is unrecoverable.
+    val originalStep = mission.currentTask?.step
+    val pendingFlag: Option<MissionStep> = if (originalStep != null && originalStep in ATC_GO_AROUND_ELIGIBLE_STEPS) {
+        Some(originalStep)
+    } else {
+        None
+    }
+
     val gaTask = if (mission.navigationMode.getOrNull() is NavigationMode.Instrument) ifrGoAroundTask()
         else goAroundTask()
     val newRoot = mission.root.replaceChild(
@@ -958,8 +989,27 @@ private fun handleGoAround(mission: PilotMission, now: SimTime): PilotMission {
             circuitTask(),
         )),
     )
-    return mission.resetForGoAround(now).copy(root = newRoot)
+    return mission.resetForGoAround(now).copy(
+        root = newRoot,
+        pendingAtcGoAroundFrom = pendingFlag,
+    )
 }
+
+/**
+ * fn-12.2 (G3a-obstruction): on-final step set where ATC-issued reactive
+ * GA recognition is meaningful. `LAND` is included because
+ * [handleLandingClearance] advances `AWAIT_LANDING_CLEARANCE → LAND` after
+ * `ClearedToLand` — by the time a post-clearance obstruction GA arrives,
+ * `currentTask.step` is `LAND`. Shared by [handleGoAround] (set-site) and
+ * `Pilot.kt`'s `pilotDecide` recognition arm (read-and-clear-site) so the
+ * two stay in sync.
+ */
+internal val ATC_GO_AROUND_ELIGIBLE_STEPS: Set<MissionStep> = setOf(
+    MissionStep.FLY_FINAL,
+    MissionStep.REPORT_FINAL,
+    MissionStep.AWAIT_LANDING_CLEARANCE,
+    MissionStep.LAND,
+)
 
 /**
  * Phase C of the pilot-firewall plan: extract the runway from a radio-derived

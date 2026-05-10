@@ -247,6 +247,60 @@ data class PilotMission(
      * the controller-side reconciliation.
      */
     val recentAnomalies: List<xyz.easiersaid.twr.protocol.AnomalousAssignment> = emptyList(),
+
+    /**
+     * fn-12.2 (G3a-obstruction): transient signaling state for ATC-issued
+     * reactive go-around recognition in Circuit-mode, with a **single-cycle
+     * lifetime**.
+     *
+     * **Set by** [xyz.easiersaid.twr.pilot.PilotCognitive.handleGoAround]
+     * BEFORE the mission-tree rewrite, when the original `currentTask?.step`
+     * is one of the on-final eligible steps:
+     * `{FLY_FINAL, REPORT_FINAL, AWAIT_LANDING_CLEARANCE, LAND}`. (`LAND` is
+     * included because [xyz.easiersaid.twr.pilot.PilotCognitive.handleLandingClearance]
+     * marks `AWAIT_LANDING_CLEARANCE` complete after `ClearedToLand`, so by
+     * the time a post-clearance obstruction GoAround arrives, `currentTask.step`
+     * is already `LAND`.) Otherwise stays [None] — the GA arrived during a
+     * non-on-final step (e.g. mid-downwind reactive separation) and the
+     * existing Visual-mode reactive special-case at `Pilot.kt:planVisualRoute`
+     * handles it.
+     *
+     * **Read and consumed by** [xyz.easiersaid.twr.pilot.applyAtcInitiatedGoAround]
+     * in `pilotDecide`, which clears the flag (`pendingAtcGoAroundFrom = None`)
+     * and emits the Tick A intent (`route = PilotRoute.None`,
+     * `phase = PilotPhase.Final` retained — same shape as fn-11.1's
+     * trained-GA Tick A). The next tick's `planRoute` then hits the existing
+     * `isCircuitTrainedGoAroundTickB` predicate and builds the GA route via
+     * the reused `planCircuitTrainedGoAround` planner — zero new
+     * route-planning code.
+     *
+     * **Two-layer flag-clear defense**:
+     *  1. `handleGoAround` only sets when on-final-eligible.
+     *  2. `pilotDecide`'s recognition arm clears the flag on EVERY inspection
+     *     — even when the discriminator (Circuit-mode + phase=Final) fails.
+     *     Prevents the flag lingering and incorrectly firing later if the
+     *     aircraft transitions back to phase=Final via some other path.
+     *
+     * **Why a flag, not a `preStep + currentStep` recognition predicate**:
+     * `processInstruction(GoAround)` runs in `pilotCognitiveDecide` and
+     * rewrites the mission tree before the next `pilotDecide` cycle captures
+     * `preStep`. By that next cycle, `preStep` is already `GOING_AROUND` and
+     * the original on-final step is unrecoverable. The flag captures the
+     * pre-rewrite step at the moment the rewrite happens, so recognition is
+     * robust regardless of cycle ordering.
+     *
+     * **Lifecycle invariants**:
+     *  - Default-[None] preserves existing call sites (Kotlin data-class
+     *    `copy(...)` semantics: omitted fields preserve current value).
+     *  - The unique set-site is `handleGoAround`; the unique clear-sites are
+     *    `applyAtcInitiatedGoAround` (consume on fire) and `pilotDecide`'s
+     *    discriminator-fail arm (clear on miss). [resetForGoAround] does NOT
+     *    touch the flag — `handleGoAround` calls `resetForGoAround` first
+     *    and stamps the flag onto the reset result.
+     *  - Single-cycle lifetime — the flag must NOT survive across more than
+     *    one `pilotDecide` invocation.
+     */
+    val pendingAtcGoAroundFrom: Option<MissionStep> = None,
 ) {
     companion object {
         const val MAX_ANOMALY_HISTORY: Int = 8
@@ -267,6 +321,17 @@ data class PilotMission(
  * and updating the call sites here. There is no compile-time guarantee
  * the new field is named — reviewers touching this function should
  * re-check the comment block matches the current field set.
+ *
+ * fn-12.2 (G3a-obstruction): [pendingAtcGoAroundFrom] is **deliberately
+ * not touched here**. The unique set-site is
+ * [xyz.easiersaid.twr.pilot.PilotCognitive.handleGoAround], which calls
+ * [resetForGoAround] FIRST and then stamps the flag onto the reset result
+ * via `.copy(pendingAtcGoAroundFrom = ...)`. If `resetForGoAround` cleared
+ * the flag, that stamp would be wiped on the same call. Preserving it
+ * here keeps `handleGoAround`'s set semantics the unique authority.
+ * The unique clear-sites are
+ * [xyz.easiersaid.twr.pilot.applyAtcInitiatedGoAround] (consume on fire)
+ * and `pilotDecide`'s discriminator-fail arm (defensive clear).
  */
 fun PilotMission.resetForGoAround(now: SimTime): PilotMission = copy(
     // Phase-local — reset to defaults.
@@ -290,6 +355,8 @@ fun PilotMission.resetForGoAround(now: SimTime): PilotMission = copy(
     // navigationMode: unchanged (still VFR/IFR)
     // activeRunway: unchanged (same runway)
     // contactedOnFrequency: unchanged (still on same frequency)
+    // pendingAtcGoAroundFrom: NOT reset — see KDoc above. The set-site
+    //     `handleGoAround` calls resetForGoAround first then stamps the flag.
 )
 
 // ── Task tree ────────────────────────────────────────────────────────

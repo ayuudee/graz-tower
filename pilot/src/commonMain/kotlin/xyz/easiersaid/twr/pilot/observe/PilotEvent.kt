@@ -13,19 +13,34 @@ import xyz.easiersaid.twr.protocol.AircraftId
  * [DecisionAltitudeWithoutClearance]. Future leaves land with their
  * consumers (filed as D-AUDIT.9.II–V-FOLLOWUP).
  *
- * **Recognition vs response**: derivation (observation → event) is
- * pure and total over `(AircraftState, PilotMission)` — no time
- * dependency today; the next time-dependent leaf adds the parameter.
- * Response (event → mission update + transmission) is
- * `Pilot.applySelfInitiatedGoAround` (renamed from
- * `checkSelfInitiatedGoAround`). Spec tests pin both stages
- * independently.
+ * **Two recognition axes** (per fn-12.2 G3a-obstruction):
+ *  - **Self-initiated events** are derived purely from `(AircraftState,
+ *    PilotMission)` by [derivePilotEvent] — observation-to-event derivation
+ *    with no time dependency today. [DecisionAltitudeWithoutClearance] is
+ *    the canonical example.
+ *  - **Post-cognitive flag-driven events** are constructed at decision time
+ *    in `pilotDecide` from transient mission flags written by the cognitive
+ *    layer (`pilotCognitiveDecide` / `processInstruction`). The recognition
+ *    site is `pilotDecide`, NOT [derivePilotEvent], because the trigger
+ *    state — e.g. [PilotMission.pendingAtcGoAroundFrom] — is set by the
+ *    cognitive cycle that just ran. [AtcGoAroundOnFinal] is the canonical
+ *    example: ATC issued `Instruction.GoAround`, `processInstruction`
+ *    rewrote the mission tree, and `handleGoAround` stamped the
+ *    pre-rewrite step onto the mission for the recognition arm in
+ *    `pilotDecide` to consume.
  *
- * **Doctrine**: CAP 413 §4.55 (continue approach vs go-around
- * decision-altitude discipline — the pilot's recognition predicate).
- * The transmission produced by the response stage cites
- * ICAO Doc 4444 §7.10.2 (missed approach / go-around — the
- * controller-side response).
+ * **Recognition vs response**: response (event → mission update +
+ * transmission/intent) is `Pilot.applySelfInitiatedGoAround` for the
+ * self-initiated path and `Pilot.applyAtcInitiatedGoAround` for the
+ * ATC-initiated reactive path. Spec tests pin both stages independently.
+ *
+ * **Doctrine**:
+ *  - [DecisionAltitudeWithoutClearance]: CAP 413 §4.55 (continue approach
+ *    vs go-around decision-altitude discipline). Response transmission
+ *    cites ICAO Doc 4444 §7.10.2 (missed approach / go-around).
+ *  - [AtcGoAroundOnFinal]: CAP 413 §4.65 (pilot compliance with ATC
+ *    go-around instruction); ICAO Doc 4444 §7.4.1.4.1(c) (controller's
+ *    runway-incursion / obstruction-driven GA).
  */
 sealed interface PilotEvent {
     val aircraft: AircraftId
@@ -41,6 +56,27 @@ sealed interface PilotEvent {
         override val aircraft: AircraftId,
         val altitudeM: Double,
         val currentStep: MissionStep,
+    ) : PilotEvent
+
+    /**
+     * fn-12.2 (G3a-obstruction): the pilot's reactive recognition that ATC
+     * has issued a `GoAround` instruction during one of the on-final
+     * eligible steps `{FLY_FINAL, REPORT_FINAL, AWAIT_LANDING_CLEARANCE,
+     * LAND}` while the aircraft is in Circuit-mode and `phase = Final`.
+     * Constructed at the recognition site in `pilotDecide` (NOT in
+     * [derivePilotEvent]) from the transient mission flag
+     * [PilotMission.pendingAtcGoAroundFrom] written by `handleGoAround`
+     * BEFORE the mission-tree rewrite.
+     *
+     * Carries `originalStep` for diagnostic clarity — the step the aircraft
+     * was on when the GA instruction arrived. The Tick A response
+     * (`applyAtcInitiatedGoAround`) does not consume this field; the
+     * intent override (`route = None`, `phase = Final` retained) is
+     * unconditional.
+     */
+    data class AtcGoAroundOnFinal(
+        override val aircraft: AircraftId,
+        val originalStep: MissionStep,
     ) : PilotEvent
 }
 
