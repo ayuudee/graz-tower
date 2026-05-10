@@ -58,6 +58,11 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      (two C172s at LOWG, conflict-resolution chain, wake-rule pin).
  * @see G2CrossAerodromeVfrTest the cross-aerodrome single-aircraft sibling
  *      (LOWG → LJMB transit, autonomous arrival contact).
+ * @see G3aPilotTrainedGoAroundTest the single-aerodrome trained-GA sibling
+ *      (planned go-around as circuit-training outcome — instructor-authored
+ *      `CircuitOutcome.GoAround` on circuit 1 followed by full-stop on
+ *      circuit 2; closes the go-around integration-test gap left open by
+ *      `wiki/design-decisions/2026-04-22-root-cause-go-around-and-totality.md`).
  */
 class LowgGoldenTest {
 

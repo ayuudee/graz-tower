@@ -131,9 +131,9 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G1, G2)
+## Golden tests (G0, G1, G1 minimal, G2, G3a)
 
-Three integration tests serve as the runtime golden anchors for end-to-end
+Five integration tests serve as the runtime golden anchors for end-to-end
 ATC flow. All follow the same shape: a single `@Test` method, a fixture-
 driven load, a deterministic event run, the run is the test, the assertions
 are what the run produced.
@@ -190,7 +190,34 @@ are what the run produced.
   cross-aerodrome staffing shape is pinned by
   `FixtureAerodromeStaffingDoctrineSpec`.
 
-Both tests follow the no-corners-cut rule: a failing golden test is
+- **G3a — `G3aPilotTrainedGoAroundTest` (`sim/jvmTest`)**: single-
+  aerodrome, single-aircraft VFR pilot-trained go-around as circuit-
+  training outcome. C172 OE-ABC at LOWG flies a two-circuit mission
+  with `HighLevelGoal.CircuitTraining(outcomes = listOf(GoAround,
+  FullStop))` — circuit 1 is explicitly authored as a planned
+  go-around at short-final, circuit 2 is a full-stop landing. The
+  trigger is mission-tree authorship at compile time (per
+  `feedback_world_only_test_triggers.md`) — no event injection, no
+  rigged decision. Pins per fn-11.2's three-layer pattern:
+  **causal partial-order** (`ClearedToLand(c1) ≺ Report(GoingAround)
+  ≺ ClearedToLand(c2) ≺ Report(RunwayVacated)`),
+  **sticky-witness regression via GA-POST-CLEAR** (exactly one
+  stage transition `{LandingClearanceIssued, AwaitLandedObserved}
+  → AwaitDownwind` observed; post-regression
+  `touchedDownDuringCommitment` and `observedReportsDuringCommitment`
+  are reset per fn-8.3's witness-reset machinery), **kinematic
+  non-event** (no `LandingRoll` phase before the GoingAround
+  transmission), plus the R7 vacate-coordination closure pin
+  (no leftover `AfterLandingVacateVia` / `BacktrackRunway` entries
+  after circuit 2's landing). Time band tightened to ±15% of the
+  observed wall (~1393 s = ~23.2 sim minutes) per fn-8.3 decision
+  #11. Closes `wiki/design-decisions/2026-04-22-root-cause-go-around-
+  and-totality.md`'s open ask: "Any mission type that supports
+  go-around must have a go-around integration test before merge."
+  Doctrinally faithful to CAP 413 §4.66/§4.67/§4.68 and ICAO Doc
+  4444 §12.3.4.18.
+
+All five tests follow the no-corners-cut rule: a failing golden test is
 documented in its KDoc with the specific blocker and stays loudly
 failing. No `@Disabled`, skip-list, or exclusion set.
 

@@ -62,6 +62,10 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  * pure multi-aircraft sequencing on a single runway.
  *
  * @see G1TwoAircraftCircuitsTest the two-circuit sibling.
+ * @see G3aPilotTrainedGoAroundTest the single-aerodrome trained-GA sibling
+ *      (instructor-authored `CircuitOutcome.GoAround` on circuit 1 — the
+ *      closure pattern G1-minimal pioneered for vacate-coordinations is
+ *      reused at the single-aircraft scale by G3a's R7 pin).
  */
 class G1TwoAircraftMinimalSpec {
 

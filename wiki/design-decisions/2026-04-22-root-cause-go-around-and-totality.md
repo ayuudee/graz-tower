@@ -89,3 +89,30 @@ The initial root causes were challenged. Key corrections:
 | 3 | Go-around integration test for every mission type | No reversal test |
 | 4 | Adversarial review checklist: "what state does this reversal invalidate?" | AI pattern-matching |
 | 5 | Consider: clearance token scoped to tree node (auto-discarded on subtree replacement) | Structural fix for reversal state |
+
+## Resolution (2026-05-10)
+
+Closed by **fn-11** (`G3a — pilot-trained VFR go-around as circuit-training
+outcome`). The fn-11 epic landed:
+
+- **fn-11.1** — typed `CircuitOutcome` ADT (`TouchAndGo / FullStop /
+  GoAround`) replacing `(circuits: Int, fullStopOnLast: Boolean)`. The
+  `planMission` compiler walks the `outcomes` list with an exhaustive
+  sealed `when`; the `GoAround` outcome compiles into a static
+  `plannedGoAroundCircuitTask()` subtree. Tick A (`applyPlannedGoAround`)
+  emits `phase=Final + route=PilotRoute.None + Report(GoingAround) +
+  resetForGoAround(now)`; Tick B's Circuit-mode `planRoute` special-case
+  builds the published GA path via `buildGoAroundRoute`. 23-call-site
+  migration; G0/G1/G1-minimal/G2 all stay green.
+- **fn-11.2** — sim-level golden test
+  `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotTrainedGoAroundTest.kt`.
+  Exercises the full reversal — approach → trained GA at short-final →
+  re-enter circuit → approach again → land — per the actionable change
+  #3 above. Three-layer pin pattern (causal partial-order +
+  sticky-witness regression via `GA-POST-CLEAR` +
+  kinematic non-event) plus the R7 vacate-coordination closure pin.
+
+The "Any mission type that supports go-around must have a go-around
+integration test before merge" gap is closed: `CircuitTraining` with the
+`GoAround` outcome is exercised end-to-end. Future mission types that
+support go-around inherit the same requirement.

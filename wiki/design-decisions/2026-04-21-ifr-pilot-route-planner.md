@@ -4,7 +4,7 @@
 
 The pilot route planner (`PilotRoutePlanner.kt`) ships with two implemented navigation modes:
 
-- **Circuit** — full circuit pattern, go-around, T&G departure. Used by `HighLevelGoal.CircuitTraining`.
+- **Circuit** — full circuit pattern, go-around (reactive + planned via fn-11), T&G departure. Used by `HighLevelGoal.CircuitTraining(outcomes: List<CircuitOutcome>)` (sealed `TouchAndGo / FullStop / GoAround` outcomes).
 - **Visual** — VFR departure climb-out, arrival circuit join (from DOWNWIND), go-around. Used by Departure, Arrival, Transit goals.
 
 Both dispatch on `NavigationMode x TaskName` with exhaustive sealed matching. The `Instrument` mode is defined in the sealed hierarchy but every cell returns `Left(NotYetImplemented)`.

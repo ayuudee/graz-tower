@@ -111,6 +111,10 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *  - G2 — [G2CrossAerodromeVfrTest] — multi-aerodrome (LOWG → LJMB)
  *    transit, single-aircraft. G1's multi-aircraft sibling at a single
  *    aerodrome.
+ *  - G3a — [G3aPilotTrainedGoAroundTest] — single-aerodrome,
+ *    single-aircraft pilot-trained go-around as circuit-training outcome.
+ *    G1's vacate-coordination closure pattern (per fn-8.3 acceptance #5)
+ *    is reused at the single-aircraft scale by G3a's R7 pin.
  *
  * **What G1 distinctively pins (post fn-8.3 Phase 4 re-baseline):**
  *  - **Per-aircraft outcomes**: both aircraft complete their missions and
