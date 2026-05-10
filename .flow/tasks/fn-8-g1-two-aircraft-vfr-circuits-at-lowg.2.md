@@ -481,5 +481,8 @@ authoring shifts.
       speculative AIP claim).
 
 ## Done summary
-
+- Task completed
 ## Evidence
+- Commits:
+- Tests:
+- PRs:
