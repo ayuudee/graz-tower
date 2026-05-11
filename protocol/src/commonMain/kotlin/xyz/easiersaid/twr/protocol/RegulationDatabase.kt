@@ -641,4 +641,62 @@ object RegulationDatabase {
             "printed sources (METAR/TAF) use True degrees",
         category = RegulationCategory.GUIDANCE,
     )
+
+    // ── fn-15.1 (G3a-react-tailwind R13): POH/AFH tailwind reactive-GA anchors ──
+
+    /**
+     * fn-15.1 (R13): FAA Airplane Flying Handbook (FAA-H-8083-3C)
+     * Chapter 9 — tailwind landings classified as high-risk operations.
+     * Sibling of [FAA_AFH_CH9_CROSSWIND_ERRORS] (fn-14.1). The principle
+     * is the AFH-derived industry-standard advisory anchor for the
+     * [xyz.easiersaid.twr.protocol.AircraftType.C172]'s
+     * `maxTailwindKnots = 10 kt` (the Cessna 172S/172R POH §2 does NOT
+     * publish an explicit hard tailwind limitation — see AircraftType.kt
+     * C172 leaf KDoc).
+     *
+     * **Per-type doctrinal severity asymmetry** (load-bearing for
+     * RegulationDatabase scope): manufacturer-published per-aircraft
+     * tailwind values are NOT regulations and live in [AircraftType]
+     * KDoc, not here. This entry captures only the **AFH guidance**
+     * framing that motivates the pilot's reactive-GA decision when the
+     * advisory value is exceeded — the same modelling rationale as the
+     * crosswind sibling.
+     *
+     * Note: paired with [ICAO4444_7_11_6_REDUCED_RUNWAY_TAILWIND] (peer
+     * procedural anchor, distinct scope — separation minima, not POH
+     * performance) and [ICAO_ANNEX_6_PII_2_4_PIC] (PIC authority to
+     * make the decision). NOT paired with a FAR/CS tailwind certification
+     * clause — no specific tailwind cert clause is verifiable in §23.51
+     * / §25.105 / CS-25.105 at v1 scope per fn-15 Decision #8.
+     */
+    val FAA_AFH_CH9_TAILWIND_RISK = RegulationRef(
+        document = "FAA_AFH", edition = "FAA-H-8083-3C (2021)", section = "Ch 9 (Tailwind landing)",
+        title = "Tailwind landing — high-risk operation",
+        principle = "Tailwind landings increase touchdown distance and reduce go-around margin; the operation " +
+            "is classified as high-risk; the AFH-derived industry-standard advisory is the modelling anchor " +
+            "for pilot reactive go-around when no explicit POH limitation is published",
+        category = RegulationCategory.GUIDANCE,
+    )
+
+    /**
+     * fn-15.1 (R13): ICAO Doc 4444 §7.11.6 — 5 kt tailwind component
+     * limit for **reduced runway separation minima**. Peer doctrinal
+     * anchor for completeness; **SCOPE IS DISTINCT** from per-aircraft
+     * POH/FCOM tailwind limitation (separation minima ≠ aircraft-type
+     * tailwind limit). Cited here so that the codebase's tailwind
+     * doctrine surface is complete — NOT the trigger anchor for
+     * [xyz.easiersaid.twr.pilot.observe.PilotEvent.TailwindLimitExceeded]
+     * recognition.
+     *
+     * Symbol name distinct from existing [ICAO4444_7_11] ("Post-landing
+     * taxi" at line 212) — uses a `_7_11_6_REDUCED_RUNWAY_TAILWIND`
+     * suffix.
+     */
+    val ICAO4444_7_11_6_REDUCED_RUNWAY_TAILWIND = RegulationRef(
+        document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§7.11.6",
+        title = "Tailwind 5 kt limit for reduced runway separation minima",
+        principle = "Reduced runway separation minima shall not apply when the tailwind component exceeds 5 kt; " +
+            "peer doctrinal anchor (separation scope, distinct from POH performance)",
+        category = RegulationCategory.GUIDANCE,
+    )
 }

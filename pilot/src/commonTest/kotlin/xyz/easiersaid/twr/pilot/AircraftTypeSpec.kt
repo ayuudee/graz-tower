@@ -65,6 +65,18 @@ class AircraftTypeSpec {
             t.maxCrosswindKnots.value > 0,
             "maxCrosswindKnots must be positive (Knots positive-only)",
         )
+        // fn-15.1 (R1): C172 POH §2 does NOT publish a hard tailwind limitation;
+        // the 10 kt value is the FAA AFH Ch 9 (FAA-H-8083-3C) industry-standard
+        // advisory for light singles. See AircraftType.kt C172 KDoc.
+        assertEquals(
+            Knots.unsafe(10),
+            t.maxTailwindKnots,
+            "FAA AFH Ch 9 — C172 industry-standard advisory tailwind 10 kt",
+        )
+        assertTrue(
+            t.maxTailwindKnots.value > 0,
+            "maxTailwindKnots must be positive (Knots positive-only)",
+        )
     }
 
     @Test
@@ -100,6 +112,14 @@ class AircraftTypeSpec {
             t.maxCrosswindKnots,
             "FCOM Limitations — B738 33 kt steady crosswind",
         )
+        // fn-15.1 (R1): Boeing 737-800 FCOM Limitations §1 — 15 kt steady tailwind
+        // (dry runway). Hard operational limitation, distinct doctrinal severity
+        // from the C172 leaf's AFH advisory. See AircraftType.kt B738 KDoc.
+        assertEquals(
+            Knots.unsafe(15),
+            t.maxTailwindKnots,
+            "FCOM Limitations §1 — B738 15 kt steady tailwind (hard operational limitation)",
+        )
     }
 
     @Test
@@ -114,6 +134,19 @@ class AircraftTypeSpec {
         // file, so a per-leaf row is the right form rather than reflection.)
         assertTrue(AircraftType.C172.maxCrosswindKnots.value > 0, "C172 maxCrosswindKnots > 0")
         assertTrue(AircraftType.B738.maxCrosswindKnots.value > 0, "B738 maxCrosswindKnots > 0")
+    }
+
+    @Test
+    fun `every AircraftType leaf has a positive maxTailwindKnots — fn-15_1 R1 invariant`() {
+        // Parametric invariant over every leaf: tailwind values are always
+        // >= 1 kt (Knots positive-smart type). 0 kt "no tailwind allowed"
+        // would force GA on dead headwind with zero margin — operationally
+        // nonsensical. A new leaf landing without honoring the invariant
+        // fails here. Doctrinal severity varies per type (C172 advisory /
+        // B738 hard limit) — see AircraftType.maxTailwindKnots KDoc — but
+        // the positivity invariant is uniform.
+        assertTrue(AircraftType.C172.maxTailwindKnots.value > 0, "C172 maxTailwindKnots > 0")
+        assertTrue(AircraftType.B738.maxTailwindKnots.value > 0, "B738 maxTailwindKnots > 0")
     }
 
     @Test

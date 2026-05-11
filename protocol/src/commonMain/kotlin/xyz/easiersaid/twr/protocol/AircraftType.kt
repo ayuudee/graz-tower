@@ -85,6 +85,52 @@ sealed class AircraftType(
      */
     val maxCrosswindKnots: Knots,
     /**
+     * fn-15.1 (G3a-react-tailwind R1): maximum tailwind component the
+     * type's operating handbook (POH / FCOM) or industry guidance
+     * recognises as the operational maximum. Read by the pilot's
+     * reactive-GA recognition `derivePilotEvent` tailwind branch — when
+     * the tailwind component computed from the world's wind report
+     * against the active runway exceeds this value while the aircraft is
+     * on final, the pilot self-initiates a go-around.
+     *
+     * **Doctrinal severity varies per type** — load-bearing for KDoc /
+     * commit message / RegulationDatabase scope:
+     *  - for some types (e.g. [C172] light single) the current POH does
+     *    NOT publish an explicit tailwind limitation; the value used here
+     *    is the **FAA AFH (FAA-H-8083-3C) industry-standard advisory**
+     *    operating maximum for light singles (AFH Ch 9 frames tailwind
+     *    landings as high-risk operations);
+     *  - for others (e.g. [B738] narrow-body twinjet) the FCOM publishes
+     *    a **hard operational limitation** (Limitations §1).
+     *
+     * Per-leaf KDocs cite the source. The pilot's reactive-GA recognition
+     * fires on exceedance regardless of doctrinal severity — modelling
+     * a competent pilot's go-around decision (same rationale as fn-14.1
+     * for crosswind: AC 23-8B / AFH Ch 9 Common Error #1 — a competent
+     * pilot goes around when the demonstrated / advisory value is
+     * exceeded). Personal-minimums judgement layer below the typed value
+     * is filed as `D-PASS-g3a-react-tailwind-personal-minimums`. No
+     * generic "POH = hard limit" framing — manufacturer values are not
+     * regulations, per codex round-1 closure on `RegulationDatabase`
+     * scope.
+     *
+     * Reuses [Knots] (positive-only smart type from
+     * [xyz.easiersaid.twr.protocol.Instruction]); every POH / advisory
+     * tailwind value is ≥ 1 kt by construction. Cross-reference
+     * [maxCrosswindKnots] — sibling typed datum, complementary axis
+     * (lateral control authority vs. touchdown energy / runway remaining
+     * / go-around margin).
+     *
+     * End-to-end sim coverage:
+     * `xyz.easiersaid.twr.sim.G3aPilotReactiveTailwindTest` (fn-15.2 —
+     * world hook authors a wind shift past `C172.maxTailwindKnots`;
+     * pilot reactive-GA path is exercised composition-end). Pilot-side
+     * unit coverage: `xyz.easiersaid.twr.pilot.observe
+     * .PilotEventTailwindTest` + `xyz.easiersaid.twr.pilot
+     * .PilotTailwindHysteresisTest` (fn-15.1).
+     */
+    val maxTailwindKnots: Knots,
+    /**
      * Engineering-tuning cruise-altitude default for IFR route-planner
      * fallback. Pass 17 (D-PASS-13.2 closure): when an IFR procedure
      * has no published altitude (e.g., a SID with no last-waypoint
@@ -224,6 +270,19 @@ sealed class AircraftType(
      *  - POH §2 (Limitations / Operating Limitations): "Maximum
      *    demonstrated crosswind velocity is 15 knots (not a limitation)" —
      *    consumed by fn-14.1's reactive-GA recognition.
+     *  - **Tailwind (fn-15.1)**: the Cessna 172S NAV III / 172R POH §2
+     *    Operating Limitations does **NOT** publish an explicit hard
+     *    tailwind component limitation (POH §2 addresses crosswind only —
+     *    "15 knots demonstrated", not a limitation). The 10 kt value used
+     *    here is the **FAA AFH Ch 9 (FAA-H-8083-3C) industry-standard
+     *    advisory** operating maximum for light singles; the AFH frames
+     *    tailwind landings as high-risk operations and 10 kt is the common
+     *    operating advisory. Modelling: a competent VFR pilot goes around
+     *    when the advisory is exceeded — same rationale as fn-14's
+     *    crosswind modelling (AC 23-8B's demonstrated value is similarly
+     *    performance information, but a competent pilot treats it as the
+     *    trigger). Personal-minimums judgement layer filed as
+     *    `D-PASS-g3a-react-tailwind-personal-minimums`.
      *  - Capture radius: engineering tuning at 80 m (≈ 4× half-tick at
      *    Vy = 40 m/s; rounded for safety margin). See [Kinematics.waypointRadiusM].
      */
@@ -243,6 +302,9 @@ sealed class AircraftType(
         cruiseAltitudeM = 1000.0, // engineering tuning — typical VFR cruise; sub-FL180.
         // POH Section 2: "Maximum demonstrated crosswind velocity is 15 knots (not a limitation)."
         maxCrosswindKnots = Knots.unsafe(15),
+        // fn-15.1: FAA AFH Ch 9 industry-standard advisory for light singles
+        // (POH §2 does NOT publish a hard tailwind limitation — see C172 KDoc above).
+        maxTailwindKnots = Knots.unsafe(10),
         runUpDurationMs = 60_000L,
     )
 
@@ -263,6 +325,12 @@ sealed class AircraftType(
      *  - Boeing 737-800 FCOM (Limitations §1, "Crosswind Guidelines"):
      *    33 kt steady-crosswind limit on dry / grooved runway — consumed
      *    by fn-14.1's reactive-GA recognition.
+     *  - **Tailwind (fn-15.1)**: Boeing 737-800 FCOM Limitations §1
+     *    publishes **15 kt steady tailwind on dry runway** as a **hard
+     *    operational limitation** (Limitations section, no exception).
+     *    Distinct doctrinal severity from the C172 leaf's AFH advisory:
+     *    for jet-class types the value IS a hard limitation. Verify
+     *    edition at task time when updating.
      *  - Capture radius: engineering tuning at 250 m (≈ 4× half-tick at
      *    cruise climb 130 m/s; matches the C172 ratio).
      */
@@ -282,6 +350,9 @@ sealed class AircraftType(
         cruiseAltitudeM = 3000.0, // engineering tuning — typical below-FL100 climb plateau.
         // Boeing 737-800 FCOM Limitations: 33 kt steady crosswind (dry/grooved runway).
         maxCrosswindKnots = Knots.unsafe(33),
+        // fn-15.1: Boeing 737-800 FCOM Limitations §1 — 15 kt steady tailwind
+        // (dry runway). Hard operational limitation; see B738 KDoc above.
+        maxTailwindKnots = Knots.unsafe(15),
         runUpDurationMs = 600_000L,
     )
 

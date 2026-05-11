@@ -95,14 +95,14 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
 
     // ── GA-path precedence (deterministic, additive) ─────────────────────
     //
-    // FOUR GA paths share `pilotDecide`'s fork point (post fn-14.1 —
-    // pilot-reactive crosswind closes the G3a trilogy). Order is
+    // FIVE GA paths share `pilotDecide`'s fork point (post fn-15.1 —
+    // pilot-reactive tailwind closes the G3a-react trilogy). Order is
     // essential: trained-GA wins on the static-tree transition;
     // ATC-reactive wins on the flag-on-mission signal; self-initiated
     // runs only when neither fired AND the pure-derivation arm produces
-    // an event (one of two leaves — DA-without-clearance or
-    // crosswind-exceeded). Per task spec §"Exact intended control flow"
-    // (extended by fn-14.1):
+    // an event (one of three leaves — DA-without-clearance,
+    // tailwind-exceeded, or crosswind-exceeded). Per task spec
+    // §"Exact intended control flow" (extended by fn-14.1 + fn-15.1):
     //
     //  1. Trained-GA (fn-11.1, plan-driven): preStep ==
     //     FLY_FINAL_TO_SHORT_FINAL && currentStep == GOING_AROUND.
@@ -116,16 +116,30 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     //     ATC-reactive fired (per spec R9c — preserves
     //     `SelfInitiatedGoAroundResponseSpec`'s trigger tick + emission
     //     contract unchanged).
-    //  4. Self-initiated — pilot-reactive crosswind (fn-14.1, world-
+    //  4. Self-initiated — pilot-reactive tailwind (fn-15.1, world-
+    //     weather pure derivation): pilot reads world wind via
+    //     `PilotInput.weatherByAerodrome`; `derivePilotEvent`'s
+    //     tailwind branch fires `TailwindLimitExceeded` when the
+    //     tailwind component exceeds the aircraft type's POH/AFH-derived
+    //     `maxTailwindKnots` while on final. Per-type doctrinal severity
+    //     asymmetry (C172 AFH advisory / B738 FCOM hard limit) documented
+    //     in the type's `maxTailwindKnots` KDoc; recognition predicate
+    //     is uniform.
+    //  5. Self-initiated — pilot-reactive crosswind (fn-14.1, world-
     //     weather pure derivation): pilot reads world wind via
     //     `PilotInput.weatherByAerodrome`; `derivePilotEvent`'s
     //     crosswind branch fires `CrosswindLimitExceeded` when the
     //     crosswind component exceeds the aircraft type's POH-derived
-    //     `maxCrosswindKnots` while on final. Shares the self-initiated
-    //     arm with path 3 — within `derivePilotEvent` the DA branch
-    //     evaluates first (DA wins when both apply same tick; pinned
-    //     by the ordering test row in
-    //     `PilotEventDerivationSpec`).
+    //     `maxCrosswindKnots` while on final.
+    //
+    // Self-initiated paths 3 / 4 / 5 share this arm — within
+    // `derivePilotEvent` branch ordering is DA → tailwind → crosswind
+    // (pinned by ordering tests in `PilotEventTailwindTest` and
+    // `PilotEventCrosswindTest`; doctrinal rationale per fn-15
+    // Decision #5: DA = lowest-altitude / hardest-stop trigger;
+    // tailwind = physically stronger constraint, doctrinally hard limit
+    // on jet-class types; crosswind = control-authority constraint per
+    // AC 23-8B).
 
     // 1. Trained-GA (fn-11.1).
     val plannedGoAround = if (
@@ -162,17 +176,26 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
         )
     } else null
 
-    // 3. Self-initiated (Pass 16 + fn-14.1). Only when neither trained-GA
-    //    nor ATC-reactive fired. Self-init's trigger predicate is
-    //    independent of trained-GA / ATC-reactive flags, so guard
+    // 3. Self-initiated (Pass 16 + fn-14.1 + fn-15.1). Only when neither
+    //    trained-GA nor ATC-reactive fired. Self-init's trigger predicate
+    //    is independent of trained-GA / ATC-reactive flags, so guard
     //    explicitly.
     //
-    //    fn-14.1 (G3a-react): `derivePilotEvent` now returns one of two
-    //    leaves — `DecisionAltitudeWithoutClearance` (DA path) or
-    //    `CrosswindLimitExceeded` (POH crosswind path). Both dispatch
-    //    through the self-initiated arm; ordering (DA wins when both
-    //    apply) is enforced inside `derivePilotEvent` (DA branch
-    //    evaluates first; pinned by the ordering test row).
+    //    fn-15.1 (G3a-react-tailwind): `derivePilotEvent` now returns one
+    //    of three leaves — `DecisionAltitudeWithoutClearance` (DA path),
+    //    `TailwindLimitExceeded` (POH/AFH tailwind path), or
+    //    `CrosswindLimitExceeded` (POH crosswind path). All three
+    //    dispatch through the self-initiated arm; ordering (DA wins, then
+    //    tailwind wins, then crosswind) is enforced inside
+    //    `derivePilotEvent` (DA → tailwind → crosswind branch order;
+    //    pinned by the ordering test rows in
+    //    `PilotEventTailwindTest` + `PilotEventCrosswindTest`).
+    //
+    //    The `when` arms below are written in the **same dispatch order**
+    //    (DA → tailwind → crosswind) so the visual ordering aligns with
+    //    the documented branch order. Functionally the dispatch is
+    //    order-independent — only one event surfaces per call — but the
+    //    visual alignment aids reader clarity.
     val goAround: GoAroundResult? = if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
         val weather = windForMission(cognitive.updatedMission, input.weatherByAerodrome)
         when (val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(
@@ -180,6 +203,8 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
         )) {
             is xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance ->
                 applySelfInitiatedGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
+            is xyz.easiersaid.twr.pilot.observe.PilotEvent.TailwindLimitExceeded ->
+                applyTailwindGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
             is xyz.easiersaid.twr.pilot.observe.PilotEvent.CrosswindLimitExceeded ->
                 applyCrosswindGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
             // AtcGoAroundOnFinal is constructed only at the recognition site
@@ -904,6 +929,127 @@ internal fun applyCrosswindGoAround(
             // (planCircuitTrainedGoAround) builds the GA route on the
             // next tick — load-bearing reuse pinned by
             // PilotCrosswindTickATickBTest.
+            phase = PilotPhase.Final,
+            route = PilotRoute.None,
+            targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
+        ),
+        mission = updatedMission,
+        transmissions = listOf(Report(listOf(ReportEvent.GoingAround))),
+    )
+}
+
+/**
+ * fn-15.1 (G3a-react-tailwind): apply the pilot-reactive tailwind-
+ * exceedance GA. Sibling of [applyCrosswindGoAround]; **body identical**
+ * to the crosswind applier (same Tick A intent shape: `route = None`,
+ * `phase = Final` retained; same subtree replacement via
+ * `replaceChild { isCircuitLike }`; same `resetForGoAround(now)` call;
+ * same `Report(GoingAround)` transmission).
+ *
+ * **Distinct function, not a shared core helper** (anti-decision pinned
+ * in KDoc — mirrors fn-14.1's anti-decision):
+ *  - **Trace readability** — stack traces / log breadcrumbs show
+ *    `applyTailwindGoAround` distinctly. A single shared applier (e.g.
+ *    `applyReactiveWindGoAround(event: PilotEvent, ...)`) would lose the
+ *    at-a-glance distinction.
+ *  - **Future-proofing for doctrine divergence** — if tailwind doctrine
+ *    diverges per-type (e.g. distinct climb-gradient target for jet-class
+ *    hard-limit tailwind GAs per FCOM, vs the AFH-advisory regime for
+ *    light singles), the body of `applyTailwindGoAround` can move without
+ *    touching the crosswind path. Shared body would either silently
+ *    change crosswind (rejected) or require parameterising the
+ *    divergence (over-abstraction).
+ *  - **Per-type doctrinal severity asymmetry** lives in
+ *    [xyz.easiersaid.twr.protocol.AircraftType.maxTailwindKnots] KDoc
+ *    (C172 = FAA AFH Ch 9 industry-standard advisory; B738 = Boeing
+ *    737-800 FCOM Limitations §1 hard limit). The applier is uniform;
+ *    the doctrinal anchor cited per-leaf differs.
+ *
+ * **Subtree predicate**: [TaskName.isCircuitLike] (defined at
+ * `PilotMission.kt:790`) — covers `Circuit`, `CircuitAfterGoAround`,
+ * AND `TouchAndGo`. A tailwind exceedance during a Touch-and-Go circuit
+ * must rewrite the active T&G subtree the same way it rewrites a regular
+ * `Circuit` (precedent: `handleGoAround` at `PilotCognitive.kt:986`).
+ *
+ * **`now: SimTime` explicit parameter** is consumed by
+ * [PilotMission.resetForGoAround] which clears `hasClearance`,
+ * `activeConstraints`, `routeOverride`, `altitudeRestrictionM`,
+ * `joinLeg`, etc. — every approach-phase mutation invalidated by the
+ * GA decision.
+ *
+ * **Tick A intent** mirrors [applyCrosswindGoAround] / [applyPlannedGoAround]
+ * (the trained-GA Tick A) / [applyAtcInitiatedGoAround] (the ATC-reactive
+ * Tick A) — NOT [applySelfInitiatedGoAround]:
+ *  - `phase = PilotPhase.Final` retained (NOT `Climbing`). Tick B's
+ *    [isCircuitTrainedGoAroundTickB] predicate requires it.
+ *  - `route = PilotRoute.None` invalidates the kinematic route so the
+ *    pilot does not continue toward the threshold of the runway that
+ *    is no longer landable.
+ *  - `targetAltitudeM = circuitPattern.altitudeAglM` — the climb-out
+ *    pattern altitude target.
+ *
+ * Transmits `Report(GoingAround)` so the controller-side
+ * `GA-POST-CLEAR` (or `GA-PRE-CLEAR`) interrupt fires; the controller
+ * has no awareness of the trigger source (POH/AFH tailwind vs POH
+ * crosswind vs DA-without-clearance vs ATC-issued vs trained) — only
+ * that the pilot is going around. CAP 413 §4.66 / ICAO Doc 4444
+ * §12.3.4.18: pilot has standalone phraseology authority (no ATC
+ * permission needed). (CAP 413 §4.66 in Ed 24 = §4.67 in Ed 23,
+ * renumbered per fn-17.1.)
+ *
+ * **Do NOT modify [applyCrosswindGoAround] or [applySelfInitiatedGoAround]**
+ * — fn-14.1's crosswind body shape and the DA path's
+ * `phase = Climbing` / retained-route semantics are unchanged. The
+ * fn-14.1 `PilotCrosswindGoAroundTest` and the pre-fn-14 spec
+ * `SelfInitiatedGoAroundResponseSpec` are the regression checks.
+ *
+ * **Doctrine**: FAA AFH (FAA-H-8083-3C) Chapter 9 (tailwind landings as
+ * high-risk operations — modelling anchor for the C172 advisory regime);
+ * Boeing 737-800 FCOM Limitations §1 (hard limit anchor for the B738
+ * leaf); 14 CFR §23.233(a) (sibling certification framing for the
+ * crosswind axis only — no FAR/CS tailwind cert clause is verifiable at
+ * v1 scope per fn-15 Decision #8); ICAO Annex 6 Part II §2.4 (PIC final
+ * authority); ICAO Doc 4444 §7.10.2 (missed-approach handling); ICAO Doc
+ * 4444 §7.11.6 (peer doctrinal anchor — 5 kt tailwind for reduced runway
+ * separation minima, scope distinct from POH performance).
+ */
+@Suppress("UnusedParameter") // event field names available to future leaves; keeps the typed shape explicit.
+internal fun applyTailwindGoAround(
+    event: xyz.easiersaid.twr.pilot.observe.PilotEvent.TailwindLimitExceeded,
+    mission: PilotMission,
+    aircraft: AircraftState,
+    now: SimTime,
+): GoAroundResult {
+    val gaTask = if (mission.navigationMode.getOrNull() is NavigationMode.Instrument) ifrGoAroundTask()
+        else goAroundTask()
+    // Subtree predicate mirrors `applyCrosswindGoAround` /
+    // `handleGoAround` (PilotCognitive.kt:986) — use `isCircuitLike()`
+    // so the rewrite covers `Circuit`, `CircuitAfterGoAround`, AND
+    // `TouchAndGo`. There is no `planCircuitAfterGoAround` helper in the
+    // codebase; the inline pattern is the precedent.
+    val newRoot = mission.root.replaceChild(
+        predicate = { it is CompoundTask && !it.isComplete && it.name.isCircuitLike() },
+        replacement = CompoundTask(TaskName.CircuitAfterGoAround, listOf(
+            gaTask,
+            circuitTask(),
+        )),
+    )
+    // resetForGoAround clears hasClearance + every approach-phase
+    // mutation. Distinct from applyAtcInitiatedGoAround which does NOT
+    // re-call reset (handleGoAround already did it pre-rewrite for the
+    // ATC path); the tailwind path's rewrite is the unique apply site,
+    // so we own the reset — same as the crosswind path.
+    val updatedMission = mission.resetForGoAround(now).copy(root = newRoot)
+
+    return GoAroundResult(
+        intent = PilotIntent(
+            targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+            // Reactive Tick A intent (mirrors crosswind / trained / ATC-
+            // reactive): phase = Final retained; route = None. Tick B's
+            // planRoute Circuit-mode FLY_DEPARTURE + Final + no-route
+            // special case (planCircuitTrainedGoAround) builds the GA
+            // route on the next tick — load-bearing reuse pinned by
+            // PilotTailwindTickATickBTest.
             phase = PilotPhase.Final,
             route = PilotRoute.None,
             targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
