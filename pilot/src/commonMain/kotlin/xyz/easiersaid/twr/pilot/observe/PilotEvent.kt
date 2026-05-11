@@ -4,6 +4,8 @@ import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.MissionStep
 import xyz.easiersaid.twr.pilot.PilotMission
 import xyz.easiersaid.twr.pilot.PilotPhase
+import xyz.easiersaid.twr.pilot.activeCompound
+import xyz.easiersaid.twr.pilot.isCircuitLike
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.WindReport
@@ -274,6 +276,19 @@ private fun deriveCrosswindEvent(
     // Step guard: final-eligible steps. Independent of mission.hasClearance.
     val step = mission.currentTask?.step ?: return null
     if (step !in CROSSWIND_ELIGIBLE_STEPS) return null
+
+    // Mission-shape guard (fn-14.1 codex review fix): only fire when the
+    // pilot's active compound is circuit-like, i.e. a tree the response
+    // applier (`applyCrosswindGoAround` → `replaceChild { isCircuitLike }`)
+    // can rewrite. `Transit`-arrival missions today carry the FINAL
+    // primitive directly under the `Transit` compound (no inner Circuit
+    // wrapper); firing here without a rewrite would emit `Report(GoingAround)`
+    // while leaving the mission tree intact — `currentStep` would stay on
+    // a crosswind-eligible step and the event would re-fire every tick.
+    // Multi-aerodrome / Transit-arrival crosswind recognition is filed as
+    // `D-PASS-g3b-react-cross-aerodrome-crosswind`. Fail-closed here.
+    val activeCompoundName = mission.root.activeCompound()?.name
+    if (activeCompoundName == null || !activeCompoundName.isCircuitLike()) return null
 
     // Weather guard: fail-closed on null + NotReported.
     val report = weather as? WindReport.Available ?: return null

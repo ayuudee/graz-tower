@@ -71,9 +71,19 @@ class PilotEventCrosswindTest {
         runway: RunwayId? = runway27,
     ): PilotMission = PilotMission(
         goal = HighLevelGoal.CircuitTraining(outcomes = listOf(CircuitOutcome.FullStop)),
+        // Realistic shape: root is the goal-level compound (CircuitTraining),
+        // wrapping a circuit-like inner compound (Circuit) that carries the
+        // primitive `step`. Mirrors `planMission(CircuitTraining)` and is what
+        // the mission-shape guard in `derivePilotEvent` looks for via
+        // `root.activeCompound().name.isCircuitLike()`.
         root = CompoundTask(
-            name = TaskName.Circuit,
-            children = listOf(PrimitiveTask(step, CompletionMode.PHYSICAL)),
+            name = TaskName.CircuitTraining,
+            children = listOf(
+                CompoundTask(
+                    name = TaskName.Circuit,
+                    children = listOf(PrimitiveTask(step, CompletionMode.PHYSICAL)),
+                ),
+            ),
         ),
         stepEnteredAt = SimTime.ZERO,
         hasClearance = hasClearance,
@@ -237,6 +247,39 @@ class PilotEventCrosswindTest {
                 weather = availableWind(directionDegrees = 360, speedKnots = 15),
             ),
             "boundary: crosswind == POH limit returns null (strict >)",
+        )
+    }
+
+    @Test
+    fun `crosswind does NOT fire when active compound is NOT circuit-like — fail-closed mission-shape guard`() {
+        // fn-14.1 codex review fix: a Transit-arrival mission carries
+        // FLY_FINAL directly under the Transit compound (no inner
+        // Circuit wrapper). `applyCrosswindGoAround`'s subtree-rewrite
+        // predicate uses `isCircuitLike()` and would find no match —
+        // firing here would emit `Report(GoingAround)` without
+        // rewriting the tree, breaking hysteresis. Multi-aerodrome /
+        // Transit-arrival reactive crosswind is filed as
+        // `D-PASS-g3b-react-cross-aerodrome-crosswind`. Recognition
+        // fails closed at the derivation stage.
+        val transitMission = PilotMission(
+            goal = HighLevelGoal.Transit(destination = null),
+            // Transit's typical shape: FLY_FINAL is a direct primitive
+            // child of the Transit compound (no inner Circuit).
+            root = CompoundTask(
+                name = TaskName.Transit,
+                children = listOf(PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL)),
+            ),
+            stepEnteredAt = SimTime.ZERO,
+            activeRunway = Some(RunwayAssignment(runway27, RunwayAssignmentSource.Filing)),
+        )
+        assertNull(
+            derivePilotEvent(
+                aircraftOnFinal(),
+                transitMission,
+                weather = availableWind(directionDegrees = 360, speedKnots = 20),
+            ),
+            "Transit mission with FLY_FINAL as direct primitive child of Transit (non-circuit-like " +
+                "active compound) → no event (G3b-react deferred)",
         )
     }
 

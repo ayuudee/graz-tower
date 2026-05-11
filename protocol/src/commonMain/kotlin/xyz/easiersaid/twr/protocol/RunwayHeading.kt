@@ -12,8 +12,11 @@ package xyz.easiersaid.twr.protocol
  * parsed.
  *
  * **Fail-closed parse**: returns `null` when
- *  - the first two characters of [RunwayId.value] are not an integer
- *    (e.g. `HX`, empty, single-digit length);
+ *  - the [RunwayId.value] is shorter than two characters (a real
+ *    runway designator is two digits per ICAO Annex 14 §5.2, with an
+ *    optional `L`/`C`/`R` suffix; single-digit values like `"5"` or
+ *    empty strings are not valid runway designators);
+ *  - the first two characters are not an integer (e.g. `HX`);
  *  - the parsed designator is outside the real-runway range `01..36`
  *    (e.g. `00`, `37`, `99` — these are nonsense designators).
  *
@@ -42,4 +45,8 @@ package xyz.easiersaid.twr.protocol
  *  - `RunwayId("").headingDegreesMagnetic() == null` (parse fail)
  */
 fun RunwayId.headingDegreesMagnetic(): Int? =
-    value.take(2).toIntOrNull()?.takeIf { it in 1..36 }?.let { it * 10 }
+    value.take(2)
+        .takeIf { it.length == 2 }            // require both designator digits — no single-char tolerance
+        ?.toIntOrNull()
+        ?.takeIf { it in 1..36 }              // real-runway range — fail closed on 00 / 37 / 99
+        ?.let { it * 10 }

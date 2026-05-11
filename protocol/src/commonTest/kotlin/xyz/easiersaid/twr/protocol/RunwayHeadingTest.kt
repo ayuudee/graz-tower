@@ -54,20 +54,20 @@ class RunwayHeadingTest {
     }
 
     @Test
-    fun `single-character designator returns null — first two chars cannot parse to in-range integer`() {
-        // `take(2)` on a single char gives the char; `toIntOrNull` on a
-        // single digit succeeds (e.g. `"5".toIntOrNull() == 5`). 5 is in
-        // 1..36, so it parses to 50 — pin that the contract returns
-        // the natural single-digit reading (treats `5` like `05`).
-        // Documents the edge case: real runway designators are always
-        // two digits per Annex 14, but a tolerant parse of `5` to 50 is
-        // less surprising than returning null on what looks like a typo
-        // for a real digit. Test pins the explicit behavior so a future
-        // tightening to "must be 2 digits" lands here visibly.
-        assertEquals(
-            50,
+    fun `single-character designator returns null — fail-closed on incomplete designator`() {
+        // Per ICAO Annex 14 §5.2, runway designators are two digits with
+        // an optional suffix (`L`/`C`/`R`). A single character is
+        // structurally incomplete — fail closed rather than guess that
+        // `"5"` means `"05"`. A typo'd fixture or a synthetic identifier
+        // surfaces as `null` and propagates to the pilot's recognition
+        // as "no event" rather than silently picking heading 50°.
+        assertNull(
             RunwayId("5").headingDegreesMagnetic(),
-            "single digit 5 → 50 (tolerant parse); real designators are 2 digits per Annex 14",
+            "single digit is not a valid Annex 14 runway designator — fail closed",
+        )
+        assertNull(
+            RunwayId("9").headingDegreesMagnetic(),
+            "single digit is not a valid Annex 14 runway designator — fail closed",
         )
     }
 }
