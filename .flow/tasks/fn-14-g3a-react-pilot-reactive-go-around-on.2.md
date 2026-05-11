@@ -137,9 +137,8 @@ If the GA interrupt path regresses for an unexpected reason, root-cause (do NOT 
 Once shipped, the G3a trilogy + react closes (G3a-trained / G3a-obstruction-ATC / G3a-continue / G3a-react). Sibling deferments (multi-aircraft, cross-aerodrome G3b-react, tailwind/gust variants, ATIS-cadence sensing) remain in the deferments register and become candidate epics in their own right.
 
 ## Done summary
-
-_(filled by worker on completion)_
-
+Ships G3a-react closure (4th reactive-GA path, closing the G3a trilogy): new sim integration test `G3aPilotReactiveCrosswindTest` at LOWG (single C172, two-transition world-weather authorship: 20 kt direct crosswind then return to 10 kt headwind once `Report(GoingAround)` transmitted + aircraft off final) with three-layer pins (causal partial-order, `GA-POST-CLEAR` sticky-witness regression, kinematic non-event) + aerodrome-keyed `weatherTransitions` extractor + recovery + R7 vacate-coordination closure. All 10 epic R13 doc cross-reference sites + 7 sibling test class docstrings updated. R15 full-verify GREEN with all eight golden tests passing; detekt baseline unchanged. First-GREEN wall ~1333s, ±15% band locked. Codex impl-review SHIP on round 2 (round 1 NEEDS_WORK was a scoped-diff visibility issue on R13 doc sites first authored in fn-14.1 — addressed inline by sharpening file KDocs with the new sim-test anchor; memory entry captured).
 ## Evidence
-
-_(filled by worker on completion)_
+- Commits: 8468fa401d20f9b81b8c80c2e58c34b75de10f70, cb96c27d4dbf237a8075afa56a0b33b1b7675e2e
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt, ./gradlew :sim:jvmTest --tests 'xyz.easiersaid.twr.sim.G3aPilotReactiveCrosswindTest'
+- PRs:
