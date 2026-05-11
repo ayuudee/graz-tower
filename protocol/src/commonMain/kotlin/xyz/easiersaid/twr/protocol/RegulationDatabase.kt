@@ -358,8 +358,19 @@ object RegulationDatabase {
 
     // ── CAP 413 (guidance / national) ────────────────────────────────
 
+    /**
+     * fn-17.1 (R9): UNREVIEWED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Ed 24 §2.7 retains
+     * the same SAFETYCOM content as Ed 23 §2.7, but the codebase principle
+     * here ("Frequency change and two-way communication") matches neither
+     * Ed 23 §2.7 nor Ed 24 §2.7 — pre-existing principle-vs-cite drift
+     * unrelated to the renumbering scope of fn-17. Edition string pinned
+     * to Ed 23 Corr inline literal per the universal hard gate (Ed 24
+     * metadata would produce an unverified citation triple); separate
+     * audit deferred to `D-PASS-cap413-2_7-principle-cite-audit`.
+     */
     val CAP413_2_7 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§2.7",
+        document = "CAP_413", edition = "Edition 23 Corr (effective 21 January 2021)", section = "§2.7",
         title = "Frequency change and two-way communication",
         principle =
             "When instructed to change frequency the pilot shall establish two-way communication " +
@@ -367,8 +378,19 @@ object RegulationDatabase {
         category = RegulationCategory.GUIDANCE,
     )
 
+    /**
+     * fn-17.1 (R9): UNREVIEWED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Codebase principle
+     * ("readback of ground movement / hold short") matches neither Ed 23
+     * §4.46 (= "traffic information prior to joining circuit") nor Ed 24
+     * §4.46 (= "routine reports as required by local procedures"). Pre-
+     * existing principle-vs-cite drift unrelated to fn-17's renumbering
+     * scope. Edition string pinned to Ed 23 Corr inline literal per the
+     * universal hard gate; separate audit deferred to
+     * `D-PASS-cap413-4_46-principle-cite-audit`.
+     */
     val CAP413_4_46 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.46",
+        document = "CAP_413", edition = "Edition 23 Corr (effective 21 January 2021)", section = "§4.46",
         title = "Readback of ground movement instructions",
         principle =
             "Hold short / hold position instructions relating to runways must be read back in full " +
@@ -376,15 +398,33 @@ object RegulationDatabase {
         category = RegulationCategory.PHRASEOLOGY,
     )
 
+    /**
+     * fn-17.1 (R9): RENUMBERED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Ed 23 §4.49
+     * ("co-ordinate traffic in the circuit, to issue a pilot their number
+     * in the sequence") → Ed 24 §4.48 (verbatim-identical content; spelling
+     * shift "co-ordinate" → "coordinate"). Section field updated; principle
+     * unchanged.
+     */
     val CAP413_4_49 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.49",
+        document = "CAP_413", edition = RegulationRef.CAP_413_EDITION, section = "§4.48",
         title = "Circuit sequencing and spacing",
         principle = "Controller issues sequence number, traffic information, and delaying action to coordinate circuit traffic",
         category = RegulationCategory.GUIDANCE,
     )
 
+    /**
+     * fn-17.1 (R9): UNCHANGED (in Ed 24) per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Codebase principle
+     * ("REPORT FINAL RUNWAY [designator]... 'final' / 'long final' report")
+     * matches Ed 24 §4.51 exactly. (Note: in Ed 23 this content lived at
+     * §4.52, not §4.51; the codebase appears to have pre-emptively cited
+     * the upcoming Ed 24 §-number. Ed 24's `-1` renumbering across the
+     * §4.5x range makes the existing `§4.51` cite correct against Ed 24
+     * content.) No section change needed; edition string updated.
+     */
     val CAP413_4_51 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.51",
+        document = "CAP_413", edition = RegulationRef.CAP_413_EDITION, section = "§4.51",
         title = "Report final",
         principle = "REPORT FINAL RUNWAY [designator] — ATC requests pilot report when turning final; " +
             "used to time landing clearance and sequence departing traffic",
@@ -398,11 +438,19 @@ object RegulationDatabase {
      * guidance: this regulation describes the pre-clearance CONTINUE APPROACH
      * surface — runway obstructed at/after the 4 NM final report but
      * expected to be available in good time for a safe landing. Distinct
-     * from CAP 413 §4.53 (cancellation of issued landing clearance, which
+     * from CAP 413 §4.52 (cancellation of issued landing clearance, which
      * is post-clearance).
+     *
+     * fn-17.1 (R9): RENUMBERED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Ed 23 §4.55 →
+     * Ed 24 §4.54 (verbatim-identical content). Section field updated;
+     * principle unchanged. Symbol name `CAP413_4_55` intentionally
+     * retained for Kotlin source stability (renaming would explode the
+     * downstream call-site change list without aiding citation
+     * correctness — the `section` field carries the Ed 24 number).
      */
     val CAP413_4_55 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.55",
+        document = "CAP_413", edition = RegulationRef.CAP_413_EDITION, section = "§4.54",
         title = "Continue approach — runway obstructed at final",
         principle = "When the runway is obstructed at or after the 4 NM final report but is expected to be " +
             "available in good time for a safe landing, the controller delays landing clearance and " +
@@ -413,17 +461,23 @@ object RegulationDatabase {
     /**
      * fn-13.1 (R7): cancellation of issued landing clearance.
      *
-     * Post-clearance counterpart to §4.55: when a controller cancels an
-     * already-issued landing clearance but expects re-issue in good time
+     * Post-clearance counterpart to CAP413_4_55: when a controller cancels
+     * an already-issued landing clearance but expects re-issue in good time
      * for a safe landing, the phraseology is CONTINUE APPROACH, CANCEL
      * LANDING CLEARANCE (reason), ACKNOWLEDGE with pilot readback.
      *
      * Entry added for future-proofing — fn-13.1 itself fires the
      * pre-clearance variant (AwaitApproach stage only). The post-clearance
      * cancellation path is a future deferment.
+     *
+     * fn-17.1 (R9): RENUMBERED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Ed 23 §4.53 →
+     * Ed 24 §4.52 (verbatim-identical content). Section field updated;
+     * principle unchanged. Symbol name `CAP413_4_53` intentionally
+     * retained for Kotlin source stability.
      */
     val CAP413_4_53 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.53",
+        document = "CAP_413", edition = RegulationRef.CAP_413_EDITION, section = "§4.52",
         title = "Cancellation of issued landing clearance",
         principle = "Where a controller cancels an issued landing clearance but expects re-issue in good time " +
             "for a safe landing, the reason should be given if time permits; phraseology is " +
@@ -438,9 +492,15 @@ object RegulationDatabase {
      * landing decision. The pilot must NOT treat it as an invitation to
      * land — they wait for the landing clearance proper or initiate a
      * missed approach if the clearance does not materialise.
+     *
+     * fn-17.1 (R9): RENUMBERED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Ed 23 §4.56 →
+     * Ed 24 §4.55 (verbatim-identical content). Section field updated;
+     * principle unchanged. Symbol name `CAP413_4_56` intentionally
+     * retained for Kotlin source stability.
      */
     val CAP413_4_56 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.56",
+        document = "CAP_413", edition = RegulationRef.CAP_413_EDITION, section = "§4.55",
         title = "CONTINUE APPROACH is not a landing clearance",
         principle = "The instruction CONTINUE APPROACH is not an invitation to land; the pilot must wait " +
             "for landing clearance or initiate a missed approach",
@@ -452,7 +512,8 @@ object RegulationDatabase {
      * including CONTINUE APPROACH variants. Captures the formal phraseology
      * `CONTINUE APPROACH [PREPARE FOR POSSIBLE GO AROUND]` used when
      * landing clearance is delayed. Explicitly stipulates that this is NOT
-     * a landing clearance (mirrors CAP 413 §4.56).
+     * a landing clearance (mirrors CAP 413 §4.55 in Ed 24 — formerly
+     * §4.56 in Ed 23; renumbered per fn-17.1).
      */
     val ICAO4444_12_3_4_16 = RegulationRef(
         document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§12.3.4.16",
@@ -470,9 +531,19 @@ object RegulationDatabase {
      * `RunwayObstructionInformation` carries the structured
      * obstruction-info that renders the reason ("runway obstructed,
      * runway 09").
+     *
+     * fn-17.1 (R3 / R9): RENUMBERED per Table 2 audit in
+     * `wiki/data-sources/cap413-edition-24-capture.md`. Ed 23 §4.65 →
+     * **Ed 24 §4.64** (verbatim-identical content; ATC-initiated GA
+     * phraseology block "go around, I say again, go around, acknowledge"
+     * preserved). Symbol renamed from `CAP413_4_65` to `CAP413_4_64`
+     * (compiler-driven rename across consumers per R4 — see
+     * `controller/.../TowerArrival.kt` import + call sites and
+     * `controller/.../Controller.kt` call site). The `section` field
+     * also reflects the new §4.64 number for citation-triple coherence.
      */
-    val CAP413_4_65 = RegulationRef(
-        document = "CAP_413", edition = "27th ed. (2023)", section = "§4.65",
+    val CAP413_4_64 = RegulationRef(
+        document = "CAP_413", edition = RegulationRef.CAP_413_EDITION, section = "§4.64",
         title = "Missed approach phraseology",
         principle = "GO AROUND [reason] — controller-initiated missed approach with the reason",
         category = RegulationCategory.PHRASEOLOGY,
@@ -535,8 +606,9 @@ object RegulationDatabase {
      * aircraft type's demonstrated POH value).
      *
      * Anchors the pilot's autonomous transmission of `Report(GoingAround)`
-     * — no ATC permission is required (also CAP 413 §4.67 / ICAO Doc
-     * 4444 §12.3.4.18 for the phraseology side).
+     * — no ATC permission is required (also CAP 413 §4.66 (Ed 24 — formerly
+     * §4.67 in Ed 23, renumbered per fn-17.1) / ICAO Doc 4444 §12.3.4.18 for
+     * the phraseology side).
      */
     val ICAO_ANNEX_6_PII_2_4_PIC = RegulationRef(
         document = "ICAO_ANNEX_6_PII", edition = "10th ed. (2018)", section = "§2.4",

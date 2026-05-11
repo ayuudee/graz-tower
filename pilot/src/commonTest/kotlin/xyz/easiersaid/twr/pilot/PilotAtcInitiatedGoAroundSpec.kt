@@ -66,8 +66,10 @@ import kotlin.test.fail
  * Doctrine refs:
  *  - ICAO Doc 4444 §7.4.1.4.1(c) — controller's runway-incursion /
  *    obstruction-driven GoAround instruction.
- *  - CAP 413 §4.65 — pilot compliance with ATC GoAround.
- *  - CAP 413 §4.66/§4.67 — climb runway-heading, re-enter circuit.
+ *  - CAP 413 §4.64 — pilot compliance with ATC GoAround (Ed 24 — formerly
+ *    §4.65 in Ed 23, renumbered per fn-17.1).
+ *  - CAP 413 §4.65/§4.66 — climb runway-heading, re-enter circuit
+ *    (Ed 24 — formerly §4.66/§4.67 in Ed 23, renumbered per fn-17.1).
  */
 class PilotAtcInitiatedGoAroundSpec {
 

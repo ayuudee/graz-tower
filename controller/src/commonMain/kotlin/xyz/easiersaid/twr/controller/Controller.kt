@@ -920,15 +920,16 @@ private fun deriveCompanionOutputs(
         // fn-13.1 (R3 — companion trace regs split): when the action
         // populates `info.companionTraceRegs`, use those refs instead of
         // the fn-12 GA defaults. CONTINUE APPROACH must NOT cite
-        // `CAP413_4_65` (missed-approach phraseology) or `ICAO4444_7_4_1_4_1`
-        // (post-clearance GA mandate). The fallback preserves fn-12's GA
-        // companion behaviour (regression check: GA companion still cites
-        // §7.4.1.4.1, §8.9.6.1.8, §4.65).
+        // `CAP413_4_64` (missed-approach phraseology — formerly §4.65 in
+        // Ed 23, renumbered to §4.64 in Ed 24 per fn-17.1) or
+        // `ICAO4444_7_4_1_4_1` (post-clearance GA mandate). The fallback
+        // preserves fn-12's GA companion behaviour (regression check: GA
+        // companion still cites §7.4.1.4.1, §8.9.6.1.8, §4.64).
         action?.obstructionInfo?.let { info ->
             val regulations = info.companionTraceRegs ?: listOf(
                 RegulationDatabase.ICAO4444_7_4_1_4_1,
                 RegulationDatabase.ICAO4444_8_9_6_1_8,
-                RegulationDatabase.CAP413_4_65,
+                RegulationDatabase.CAP413_4_64,
             )
             // fn-13.1 (R3 — codex round 2 finding): description must NOT
             // hardcode both §7.4.1.4.1(c) and §12.3.4.16(d) because they

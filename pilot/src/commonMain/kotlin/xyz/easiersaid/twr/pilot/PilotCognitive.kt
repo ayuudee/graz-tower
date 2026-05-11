@@ -603,7 +603,8 @@ private fun stepTransmission(
     MissionStep.FLY_FINAL,
     // fn-11.1: trained-GA short-final descent leg has no pilot-initiated
     // transmission of its own — Report(GoingAround) fires from the
-    // GOING_AROUND step that follows, per CAP 413 §4.67. The
+    // GOING_AROUND step that follows, per CAP 413 §4.66 (Ed 24 — formerly
+    // §4.67 in Ed 23, renumbered per fn-17.1). The
     // REPORT_DOWNWIND + REPORT_BASE steps already covered the position-
     // call obligation for this circuit.
     MissionStep.FLY_FINAL_TO_SHORT_FINAL,

@@ -47,6 +47,33 @@ data class RegulationRef(
         const val ICAO_9432_EDITION = "7th ed. (2020)"
         const val SERA_EDITION = "EU 923/2012 as amended"
 
+        /**
+         * fn-17 (R9): CAP 413 Edition 24 effective 1 July 2026 — verified
+         * against the CAA primary-source PDF SHA
+         * `c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac`
+         * (captured 2026-05-11 from
+         * `https://www.caa.co.uk/publication/download/18165`).
+         *
+         * Branch A verdict per fn-17.1 verification artifact at
+         * `wiki/data-sources/cap413-edition-24-capture.md`: §4.65 (Ed 23
+         * ATC-initiated GA) → §4.64 (Ed 24); §4.66 (Ed 23 VFR-continue)
+         * → §4.65 (Ed 24); §4.67 (Ed 23 pilot-initiated GA) → §4.66
+         * (Ed 24); §4.68 (Ed 23 military) → §4.67 (Ed 24). The full
+         * pattern is a uniform `-1` shift across the §4.5x-§4.6x range
+         * with §4.49 also renumbered to §4.48.
+         *
+         * Per-entry application gate (codex round-3/14/18 finding cascade):
+         * an entry uses `edition = RegulationRef.CAP_413_EDITION` (Ed 24)
+         * only if its R1 Table 2 row in the verification artifact
+         * classifies as UNCHANGED, RENUMBERED-updated, or REFINED-updated.
+         * For UNREVIEWED rows (currently `CAP413_2_7` and `CAP413_4_46`,
+         * pre-existing principle-cite drift unrelated to fn-17's
+         * renumbering scope) the entry keeps an inline literal
+         * `edition = "Edition 23 Corr (effective 21 January 2021)"`
+         * with KDoc citing the corresponding per-entry deferment.
+         */
+        const val CAP_413_EDITION = "Edition 24 (effective 1 July 2026)"
+
         private val AUTHORITY_NAMES = mapOf(
             "SERA" to "SERA",
             "ICAO_ANNEX_2" to "ICAO Annex 2",

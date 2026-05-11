@@ -19,7 +19,7 @@ The novelty is **the first pilot-side reactive recognition driven by world weath
 - **Out: pilot judgement / personal minimums layer.** Real PICs apply margins below the POH demo value based on experience, fatigue, runway condition, etc. v1 uses POH demo value as the trigger directly. Filed as `D-PASS-g3a-react-personal-minimums`.
 - **Out: ATIS-broadcast-only wind sensing.** v1 sources wind from world weather observation (real-time visual/instrument modelling). Receiving wind via ATIS broadcast cadence (slower, coarser) is a different sensing path. Filed as `D-PASS-g3a-react-atis-cadence-sensing`.
 - **Out: wind migration from `SimState.weatherByAerodrome` to `Aerodrome.weather`.** v1 uses the existing flat-map shape (pre-existing from before `project_rich_world_domain.md` was filed). Migration to the entity-on-aerodrome shape is a separate refactor pass affecting many call sites. Filed as `D-PASS-wind-state-migrate-to-aerodrome`.
-- **Out: CAP 413 Edition 24 §4.65/§4.66 renumbering.** docs-scout caught Edition 24 renumbered §4.66→§4.65 (VFR-continue) and §4.67→§4.66 (pilot-initiated GA). fn-11/fn-12 cite the older numbering. Edition reconciliation is a separate cleanup pass. Filed as `D-PASS-cap413-edition-24-reconciliation`.
+- **Out: CAP 413 Edition 24 §-renumbering** (reconciled by fn-17, 2026-05-11): Ed 24 (effective 1 July 2026) renumbers §4.65 (ATC-initiated GA) → §4.64, §4.66 (VFR-continue) → §4.65, §4.67 (pilot-initiated GA) → §4.66, §4.68 (military) → §4.67 — uniform `-1` shift across the §4.5x-§4.6x range. Primary-source verified against the CAA Ed 24 PDF (SHA `c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac`); see `wiki/data-sources/cap413-edition-24-capture.md`. Codebase citations are now Ed 24-coherent.
 
 ## Strategy Alignment
 
@@ -151,7 +151,7 @@ Within #3, the new event dispatches to `applyCrosswindGoAround`; the existing ev
 
 **Compile-impact only** for the controller: when `WindReport` moves from `:controller` to `:protocol` (Decision #1), existing `:controller` consumers re-import. `WeatherObservation` stays in `:controller`. No semantic change.
 
-The pilot autonomously transmits `Report(GoingAround)` without requesting ATC permission (per CAP 413 §4.67 / ICAO Doc 4444 §12.3.4.18 — pilot has standalone phraseology authority).
+The pilot autonomously transmits `Report(GoingAround)` without requesting ATC permission (per CAP 413 §4.66 (Ed 24 — formerly §4.67 in Ed 23, renumbered per fn-17.1) / ICAO Doc 4444 §12.3.4.18 — pilot has standalone phraseology authority).
 
 ### 8. No-refire / hysteresis (high confidence — refined per practice-scout)
 
@@ -353,7 +353,7 @@ The sim test (Task .2) follows the **three-layer pin pattern** from fn-11.2 / fn
 ## References
 
 ### Doctrinal
-- **CAP 413 §4.66** / §4.67 (existing fn-11/fn-12 cite; verify against Edition 23.1 vs 24 numbering at task time — see `D-PASS-cap413-edition-24-reconciliation`) — pilot-initiated GA phraseology `(callsign), GOING AROUND`
+- **CAP 413 §4.65** / §4.66 (existing fn-11/fn-12 cite; Ed 24 numbering — formerly §4.66/§4.67 in Ed 23; reconciled by fn-17, 2026-05-11 — see `wiki/data-sources/cap413-edition-24-capture.md`) — pilot-initiated GA phraseology `(callsign), GOING AROUND`
 - **ICAO Doc 4444 §12.3.4.18** — `GO AROUND` / `GOING AROUND` minimal phraseology (pilot has standalone authority; no ATC permission needed)
 - **FAA AFH (FAA-H-8083-3C) Chapter 9** — Common Error #1: attempting landing in crosswinds exceeding max demonstrated component
 - **14 CFR §23.233(a)** (pre-Amendment 64) — `0.2 VSO` certification floor for crosswind demonstration
@@ -401,7 +401,7 @@ Deferments from this epic file in `~/.claude/plans/pilot-firewall.md` § Deferme
 - **`D-PASS-g3a-react-atis-cadence-sensing`** — wind via ATIS broadcast (slower, coarser cadence). v1 uses world-truth weather observation.
 - **`D-PASS-g3a-react-vrb-handling`** — `Wind.variable: Boolean` field for VRB direction; crosswind=0 in v1.
 - **`D-PASS-wind-state-migrate-to-aerodrome`** — migrate `SimState.weatherByAerodrome` flat map to `Aerodrome.weather` per `project_rich_world_domain.md`. Affects many call sites; v1 keeps existing shape.
-- **`D-PASS-cap413-edition-24-reconciliation`** — Edition 24 renumbered §4.66→§4.65 (VFR-continue) and §4.67→§4.66 (pilot-initiated GA). fn-11/fn-12 cite older numbering. Reconciliation pass.
+- **`D-PASS-cap413-edition-24-reconciliation`** — **CLOSED 2026-05-11 by fn-17.1** (epic `fn-17-cap-413-edition-24-numbering`). Ed 24 primary-source verified against CAA PDF SHA `c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac`. Actual renumbering: uniform `-1` shift across §4.5x-§4.6x range — §4.65 (ATC-initiated GA) → §4.64, §4.66 (VFR-continue) → §4.65, §4.67 (pilot-initiated GA) → §4.66, §4.68 (military) → §4.67. Codebase typed entry `CAP413_4_65` renamed to `CAP413_4_64`; section fields on `CAP413_4_49`/`CAP413_4_53`/`CAP413_4_55`/`CAP413_4_56` updated. See `wiki/data-sources/cap413-edition-24-capture.md` for full mapping table + verification artifact.
 
 ## Closures
 

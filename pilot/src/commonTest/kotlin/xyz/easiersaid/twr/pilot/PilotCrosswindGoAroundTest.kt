@@ -35,8 +35,8 @@ import kotlin.test.assertTrue
  * `handleGoAround` at `PilotCognitive.kt:986`.
  *
  * Doctrine: ICAO Doc 4444 §7.10.2 (missed-approach handling); FAA
- * AFH Ch 9; CAP 413 §4.67 / ICAO Doc 4444 §12.3.4.18 (pilot
- * standalone phraseology).
+ * AFH Ch 9; CAP 413 §4.66 (Ed 24 — formerly §4.67 in Ed 23, renumbered
+ * per fn-17.1) / ICAO Doc 4444 §12.3.4.18 (pilot standalone phraseology).
  */
 class PilotCrosswindGoAroundTest {
 

@@ -81,9 +81,10 @@ data class TrafficInfo(
  * [companionTraceRegs] overrides the regulation refs cited on the emitted
  * `RunwayObstructionInformation`'s `DecisionTrace`. Default-null preserves
  * fn-12's GA companion regs (`ICAO4444_7_4_1_4_1`, `ICAO4444_8_9_6_1_8`,
- * `CAP413_4_65`). The CONTINUE APPROACH path populates the field with
+ * `CAP413_4_64`). The CONTINUE APPROACH path populates the field with
  * pre-clearance refs (`CAP413_4_55`, `CAP413_4_56`, `ICAO4444_12_3_4_16`,
- * `ICAO4444_8_9_6_1_8`) — `CAP413_4_65` (missed-approach phraseology) and
+ * `ICAO4444_8_9_6_1_8`) — `CAP413_4_64` (missed-approach phraseology —
+ * formerly §4.65 in Ed 23, renumbered per fn-17.1) and
  * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate) are explicitly excluded.
  *
  * Similarly, [companionTraceDescription] overrides the human-readable
@@ -285,7 +286,8 @@ data object ObstructionGoAroundAction : RuleAction {
  * fn-13.1 (R3): action for `ARR-CONTINUE-APPROACH-OBSTRUCTION`. Issues a
  * `ContinueApproach` instruction with `reason = RUNWAY_OBSTRUCTED` AND
  * populates `obstructionInfo` so `Controller.deriveCompanionOutputs` emits
- * the `RunwayObstructionInformation` companion (per CAP 413 §4.55-4.56 +
+ * the `RunwayObstructionInformation` companion (per CAP 413 §4.54-4.55
+ * (Ed 24 — formerly §4.55-4.56 in Ed 23, renumbered per fn-17.1) +
  * ICAO Doc 4444 §12.3.4.16(d) — pre-clearance reason-on-radio for delayed
  * landing clearance).
  *
@@ -300,7 +302,8 @@ data object ObstructionGoAroundAction : RuleAction {
  * **Companion trace regs split** (R3): populates
  * `obstructionInfo.companionTraceRegs` with the pre-clearance regulation
  * refs (`CAP413_4_55`, `CAP413_4_56`, `ICAO4444_12_3_4_16`,
- * `ICAO4444_8_9_6_1_8`). `CAP413_4_65` (missed-approach phraseology) AND
+ * `ICAO4444_8_9_6_1_8`). `CAP413_4_64` (missed-approach phraseology —
+ * formerly §4.65 in Ed 23, renumbered per fn-17.1) AND
  * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate) are EXCLUDED — they
  * are wrong for the pre-clearance CONTINUE APPROACH case.
  *
@@ -347,7 +350,8 @@ data object ObstructionContinueApproachAction : RuleAction {
 
 /**
  * fn-13.1 (R3): CONTINUE APPROACH companion trace regs — pre-clearance
- * doctrinal refs. Excludes `CAP413_4_65` (missed-approach phraseology) and
+ * doctrinal refs. Excludes `CAP413_4_64` (missed-approach phraseology —
+ * formerly §4.65 in Ed 23, renumbered per fn-17.1) and
  * `ICAO4444_7_4_1_4_1` (post-clearance GA mandate).
  */
 private val CONTINUE_APPROACH_OBSTRUCTION_COMPANION_REGS:

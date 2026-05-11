@@ -59,7 +59,8 @@ sealed interface HighLevelGoal {
  *  - [FullStop] → [circuitTask] (lands and rolls out — the only outcome
  *    permitted as the terminal element).
  *  - [GoAround] → [plannedGoAroundCircuitTask] (flies down to short-final
- *    altitude, transmits "going around" per CAP 413 §4.67, climbs out via
+ *    altitude, transmits "going around" per CAP 413 §4.66 (Ed 24 — formerly
+ *    §4.67 in Ed 23, renumbered per fn-17.1), climbs out via
  *    the published go-around path, re-enters the circuit). Doctrinally
  *    faithful to flight-school training: the instructor pre-arranges a
  *    go-around at short-final to exercise the procedure without the pilot
@@ -737,7 +738,8 @@ fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.TouchAndGo, li
  * circuit for the next outcome.
  *
  * Doctrinally faithful to flight-school training (FAA AFH §9, CAP 413
- * §4.66/§4.67): the instructor pre-arranges a go-around at the short-final
+ * §4.65/§4.66 — Ed 24 numbering; formerly §4.66/§4.67 in Ed 23, renumbered
+ * per fn-17.1): the instructor pre-arranges a go-around at the short-final
  * decision gate to exercise the procedure. The pilot's mission tree is the
  * sole trigger — no sensor event, no runtime subtree replacement (cf. the
  * reactive [Pilot.applySelfInitiatedGoAround] path which fires on
@@ -755,7 +757,8 @@ fun touchAndGoCircuitTask(): CompoundTask = CompoundTask(TaskName.TouchAndGo, li
  *  - **FLY_FINAL_TO_SHORT_FINAL** (replaces FLY_FINAL — completes by altitude
  *    at `DECISION_ALTITUDE_M`, NOT by reaching the threshold)
  *  - [goAroundTask] (GOING_AROUND primitive: REPORTED — emits
- *    `Report(GoingAround)` per CAP 413 §4.67).
+ *    `Report(GoingAround)` per CAP 413 §4.66 (Ed 24 — formerly §4.67 in
+ *    Ed 23, renumbered per fn-17.1)).
  *
  * No `REPORT_FINAL` step: by short-final the pilot has already satisfied
  * `HasReportedPositionCall` via REPORT_DOWNWIND + REPORT_BASE, so the

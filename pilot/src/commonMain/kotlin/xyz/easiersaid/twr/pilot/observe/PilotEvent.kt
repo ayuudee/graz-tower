@@ -72,8 +72,9 @@ import xyz.easiersaid.twr.protocol.headingDegreesMagnetic
  *  - [DecisionAltitudeWithoutClearance]: CAP 413 §4.55 (continue approach
  *    vs go-around decision-altitude discipline). Response transmission
  *    cites ICAO Doc 4444 §7.10.2 (missed approach / go-around).
- *  - [AtcGoAroundOnFinal]: CAP 413 §4.65 (pilot compliance with ATC
- *    go-around instruction); ICAO Doc 4444 §7.4.1.4.1(c) (controller's
+ *  - [AtcGoAroundOnFinal]: CAP 413 §4.64 (pilot compliance with ATC
+ *    go-around instruction — Ed 24 numbering; formerly §4.65 in Ed 23,
+ *    renumbered per fn-17.1); ICAO Doc 4444 §7.4.1.4.1(c) (controller's
  *    runway-incursion / obstruction-driven GA).
  */
 sealed interface PilotEvent {

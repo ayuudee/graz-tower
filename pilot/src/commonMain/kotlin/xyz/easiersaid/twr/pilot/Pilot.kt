@@ -847,8 +847,9 @@ internal fun applySelfInitiatedGoAround(
  * `GA-POST-CLEAR` (or `GA-PRE-CLEAR`) interrupt fires; the controller
  * has no awareness of the trigger source (POH crosswind vs DA-
  * without-clearance vs ATC-issued vs trained) — only that the pilot
- * is going around. CAP 413 §4.67 / ICAO Doc 4444 §12.3.4.18: pilot
+ * is going around. CAP 413 §4.66 / ICAO Doc 4444 §12.3.4.18: pilot
  * has standalone phraseology authority (no ATC permission needed).
+ * (CAP 413 §4.66 in Ed 24 = §4.67 in Ed 23, renumbered per fn-17.1.)
  *
  * **Do NOT modify [applySelfInitiatedGoAround]** — its DA-trigger
  * `phase = Climbing` / retained-route semantics are unchanged. The
@@ -955,9 +956,10 @@ internal data class PlannedGoAroundResult(
  *  - Static mission root unchanged. The trained tree was compiled with the
  *    GA at the right place; no subtree replacement is appropriate.
  *
- * Doctrine: CAP 413 §4.66/§4.67 — pilot-initiated go-around announcement
+ * Doctrine: CAP 413 §4.65/§4.66 — pilot-initiated go-around announcement
  * at the decision-altitude gate, climb runway-heading, re-enter the
- * normal traffic circuit.
+ * normal traffic circuit. (Ed 24 numbering — formerly §4.66/§4.67 in
+ * Ed 23, renumbered per fn-17.1.)
  */
 internal fun applyPlannedGoAround(
     mission: PilotMission,
@@ -1014,8 +1016,9 @@ internal data class AtcGoAroundResult(
  * `resetForGoAround + .copy(root = ...)` already established the
  * post-rewrite mission state.
  *
- * Doctrine: ICAO Doc 4444 §7.4.1.4.1(c), CAP 413 §4.65 — pilot complies
- * with ATC go-around instruction.
+ * Doctrine: ICAO Doc 4444 §7.4.1.4.1(c), CAP 413 §4.64 — pilot complies
+ * with ATC go-around instruction. (Ed 24 numbering — formerly §4.65 in
+ * Ed 23, renumbered per fn-17.1.)
  */
 internal fun applyAtcInitiatedGoAround(
     mission: PilotMission,

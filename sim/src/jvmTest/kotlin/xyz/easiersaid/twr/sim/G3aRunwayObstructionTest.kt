@@ -236,7 +236,8 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *  - **ICAO Doc 4444 §8.9.6.1.8**: *"in all such cases, the reason for
  *    the instruction or the advice should be given to the pilot."* The
  *    `RunwayObstructionInformation` companion carries the reason.
- *  - **CAP 413 §4.65**: missed-approach / go-around phraseology.
+ *  - **CAP 413 §4.64**: missed-approach / go-around phraseology
+ *    (Ed 24 — formerly §4.65 in Ed 23, renumbered per fn-17.1).
  *
  * Verbatim verifications anchor on the same research/txt extracts as
  * the controller-level `ObstructionGoAroundSpec`.
@@ -670,7 +671,7 @@ class G3aRunwayObstructionTest {
                     "Pilot never transmitted Report(GoingAround) — the ATC-reactive GA " +
                         "recognition did not fire. Expected: `applyAtcInitiatedGoAround` Tick A " +
                         "produces phase=Final + route=None; the existing GOING_AROUND step then " +
-                        "emits Report(GoingAround) per CAP 413 §4.67 phraseology.\n$journey"
+                        "emits Report(GoingAround) per CAP 413 §4.66 phraseology.\n$journey"
                 )
             }
         val goingAroundMs = goingAroundRecord.time.millis
@@ -729,7 +730,7 @@ class G3aRunwayObstructionTest {
             "Radio chain pin: RunwayObstructionInformation.txStart (${companionMs}ms) must " +
                 "precede Report(GoingAround).txStart (${goingAroundMs}ms). The pilot reads the " +
                 "GA instruction (after both controller transmissions arrive), executes Tick A, " +
-                "and then transmits the GoingAround report per CAP 413 §4.67.\n$journey"
+                "and then transmits the GoingAround report per CAP 413 §4.66.\n$journey"
         }
         check(goingAroundMs < landRecoveryMs && landRecoveryMs < vacatedMs) {
             "Recovery chain pin: expected " +

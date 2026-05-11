@@ -190,7 +190,8 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *    floor), not a limitation. Modelling choice: a competent VFR pilot
  *    in the sim does GA when the demonstrated value is exceeded.
  *  - **ICAO Annex 6 Part II §2.4**: PIC final authority (GA without
- *    ATC permission per CAP 413 §4.67 / ICAO Doc 4444 §12.3.4.18).
+ *    ATC permission per CAP 413 §4.66 (Ed 24 — formerly §4.67 in Ed 23,
+ *    renumbered per fn-17.1) / ICAO Doc 4444 §12.3.4.18).
  *  - **FAA AIM §7-1-12.d.3**: ATC-voice winds in Magnetic degrees;
  *    runway designators are Magnetic; same reference frame.
  *

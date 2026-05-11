@@ -61,7 +61,8 @@ import kotlin.test.Test
  *    cleaned up across all four coordination states.
  *  - **Companion-info** (R8): the obstruction-info companion carries the
  *    correct runway + clearsAt, with regulation refs ICAO §7.4.1.4.1,
- *    §8.9.6.1.8, CAP 413 §4.65.
+ *    §8.9.6.1.8, CAP 413 §4.64 (Ed 24 — formerly §4.65 in Ed 23,
+ *    renumbered per fn-17.1).
  */
 class ObstructionGoAroundSpec {
 
@@ -421,8 +422,8 @@ class ObstructionGoAroundSpec {
             .firstOrNull { it.response is RunwayObstructionInformation }
             ?: error("Expected RunwayObstructionInformation companion; got ${result.outputs}")
         val regs = companion.trace.regulations.map { it.section }
-        check(regs.containsAll(listOf("§7.4.1.4.1", "§8.9.6.1.8", "§4.65"))) {
-            "Companion DecisionTrace must include ICAO §7.4.1.4.1, §8.9.6.1.8, CAP 413 §4.65; got $regs"
+        check(regs.containsAll(listOf("§7.4.1.4.1", "§8.9.6.1.8", "§4.64"))) {
+            "Companion DecisionTrace must include ICAO §7.4.1.4.1, §8.9.6.1.8, CAP 413 §4.64; got $regs"
         }
         check(companion.trace.ruleId == "OBSTRUCTION-INFO") {
             "Companion ruleId must be OBSTRUCTION-INFO; got ${companion.trace.ruleId}"

@@ -92,11 +92,12 @@ rules at `TowerArrival.stageRules[AwaitApproach]`:
   `inferContinueApproachReason` helper lacks the `Commitment`
   parameter and cannot read per-aircraft obstruction belief without
   scope leak). Emits the mandatory `RunwayObstructionInformation`
-  companion alongside, with pre-clearance regs (CAP 413 §4.55, §4.56,
-  ICAO §12.3.4.16, §8.9.6.1.8). Does NOT cite `CAP413_4_65`
-  (missed-approach phraseology) or `ICAO4444_7_4_1_4_1`
-  (post-clearance GA mandate) — those are the GA companion's
-  post-clearance refs.
+  companion alongside, with pre-clearance regs (CAP 413 §4.54, §4.55,
+  ICAO §12.3.4.16, §8.9.6.1.8 — Ed 24 numbering; pre-fn-17.1 these were
+  §4.55, §4.56). Does NOT cite `CAP413_4_64` (Ed 24 — formerly
+  `CAP413_4_65` in Ed 23, renumbered per fn-17.1; missed-approach
+  phraseology) or `ICAO4444_7_4_1_4_1` (post-clearance GA mandate) —
+  those are the GA companion's post-clearance refs.
 
 `ContinueApproachReason` enum extended with `RUNWAY_OBSTRUCTED` to
 support the typed reason on the protocol payload. CONTINUE APPROACH has

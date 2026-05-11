@@ -202,8 +202,9 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    - Companion's `DecisionTrace.regulations` cites exactly
  *      `[CAP413_4_55, CAP413_4_56, ICAO4444_12_3_4_16,
  *      ICAO4444_8_9_6_1_8]` — pre-clearance refs.
- *    - **Explicit absence assertions**: `CAP413_4_65` (missed-approach
- *      phraseology — wrong for CONTINUE APPROACH) is NOT cited;
+ *    - **Explicit absence assertions**: `CAP413_4_64` (missed-approach
+ *      phraseology — Ed 24 numbering; formerly `CAP413_4_65` in Ed 23,
+ *      renumbered per fn-17.1; wrong for CONTINUE APPROACH) is NOT cited;
  *      `ICAO4444_7_4_1_4_1` (post-clearance GA mandate — wrong for
  *      pre-clearance CA) is NOT cited. Catches a hypothetical
  *      regression where the companion drifted back to the fn-12 GA
@@ -771,7 +772,8 @@ class G3aRunwayObstructionContinueApproachTest {
         // fn-13.1 R3: the companion's `DecisionTrace.regulations` must cite
         // EXACTLY the four pre-clearance refs. Explicit absence assertions
         // catch a regression to the fn-12 GA default regs list (which
-        // cites `CAP413_4_65` and `ICAO4444_7_4_1_4_1`, both wrong for
+        // cites `CAP413_4_64` (Ed 24 — formerly `CAP413_4_65` in Ed 23,
+        // renumbered per fn-17.1) and `ICAO4444_7_4_1_4_1`, both wrong for
         // pre-clearance CONTINUE APPROACH).
         val expectedCompanionRegs = setOf(
             RegulationDatabase.CAP413_4_55,
@@ -785,8 +787,8 @@ class G3aRunwayObstructionContinueApproachTest {
                 "  expected: $expectedCompanionRegs\n" +
                 "  observed: $observedCompanionRegs\n" +
                 "fn-13.1 R3 split the companion regs by path: CONTINUE APPROACH cites the " +
-                "pre-clearance refs (CAP413 §4.55, §4.56, ICAO §12.3.4.16, §8.9.6.1.8); GA " +
-                "cites the post-clearance refs (CAP413 §4.65, ICAO §7.4.1.4.1, §8.9.6.1.8). " +
+                "pre-clearance refs (CAP413 §4.54, §4.55, ICAO §12.3.4.16, §8.9.6.1.8); GA " +
+                "cites the post-clearance refs (CAP413 §4.64, ICAO §7.4.1.4.1, §8.9.6.1.8). " +
                 "Drift here indicates `obstructionInfo.companionTraceRegs` was not set by " +
                 "`ObstructionContinueApproachAction`, OR `deriveCompanionOutputs` fell back to " +
                 "the GA default branch when it shouldn't.\n$journey"
@@ -794,8 +796,9 @@ class G3aRunwayObstructionContinueApproachTest {
         // Explicit absence — even if the set equality above changes shape
         // in a future refactor, these two specific exclusions are
         // load-bearing and must never appear in CA companion regs.
-        check(RegulationDatabase.CAP413_4_65 !in companionRespond.trace.regulations) {
-            "CAP 413 §4.65 (missed-approach phraseology) MUST NOT appear in the CONTINUE " +
+        check(RegulationDatabase.CAP413_4_64 !in companionRespond.trace.regulations) {
+            "CAP 413 §4.64 (missed-approach phraseology — Ed 24; formerly §4.65 in Ed 23, " +
+                "renumbered per fn-17.1) MUST NOT appear in the CONTINUE " +
                 "APPROACH companion's DecisionTrace.regulations — it is the GA companion's " +
                 "regulation, doctrinally wrong for a CONTINUE APPROACH (which is NOT a missed " +
                 "approach).\n$journey"

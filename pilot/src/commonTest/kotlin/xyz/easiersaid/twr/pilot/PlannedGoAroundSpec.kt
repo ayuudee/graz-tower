@@ -55,11 +55,13 @@ import kotlin.test.fail
  *     (NOT `TOUCH_AND_GO`, NOT `null`). Pilot announces a normal landing
  *     intent at downwind; the GA at short-final is the instructor's
  *     pre-arranged training exercise, private to the pilot's mission tree
- *     until the announcement at decision altitude per CAP 413 §4.67.
+ *     until the announcement at decision altitude per CAP 413 §4.66
+ *     (Ed 24 — formerly §4.67 in Ed 23, renumbered per fn-17.1).
  *
  * Doctrine refs:
- *  - CAP 413 §4.66/§4.67: pilot-initiated go-around announcement at the
- *    decision-altitude gate.
+ *  - CAP 413 §4.65/§4.66: pilot-initiated go-around announcement at the
+ *    decision-altitude gate (Ed 24 — formerly §4.66/§4.67 in Ed 23,
+ *    renumbered per fn-17.1).
  *  - ICAO Doc 4444 §12.3.4.18: pilot transmission `GOING AROUND`.
  *  - FAA AFH §9: any approach or landing may result in a go-around;
  *    flight-school doctrine pre-arranges trained GAs.
@@ -245,7 +247,7 @@ class PlannedGoAroundSpec {
         // step's first-tick (advanced from FLY_FINAL_TO_SHORT_FINAL).
         assertTrue(
             output.transmissions.any { it is Report && it.events.any { e -> e is ReportEvent.GoingAround } },
-            "Tick A: Report(GoingAround) per CAP 413 §4.67",
+            "Tick A: Report(GoingAround) per CAP 413 §4.66",
         )
         // Mission state delta — every field that `resetForGoAround` covers,
         // pinned independently. Together these prove the reset was applied
@@ -337,7 +339,7 @@ class PlannedGoAroundSpec {
         assertEquals(
             PilotPhase.Climbing,
             output.intent.phase,
-            "Tick B: phase=Climbing — pilot is climbing out via the GA path per CAP 413 §4.66",
+            "Tick B: phase=Climbing — pilot is climbing out via the GA path per CAP 413 §4.65",
         )
         // Route is built from CircuitProcedure.goAroundPath. The synthetic
         // world's go-around path is `Path(THRESHOLD, UPWIND_END)`, so the
@@ -607,8 +609,9 @@ class PlannedGoAroundSpec {
         // and `deriveCircuitIntent` maps TaskName.Circuit → FULL_STOP. The
         // pilot announces a full-stop intent at downwind; the GA at
         // short-final is the instructor's pre-arranged training exercise,
-        // private to the mission tree until CAP 413 §4.67's announcement at
-        // decision altitude.
+        // private to the mission tree until CAP 413 §4.66's announcement at
+        // decision altitude (Ed 24 — formerly §4.67 in Ed 23, renumbered
+        // per fn-17.1).
         val world = syntheticWorld()
         val worldIndex = world.buildWorldIndex()
         val aircraft = aircraftAt(
@@ -632,7 +635,7 @@ class PlannedGoAroundSpec {
             downwindEvent.circuitIntent,
             "Trained-GA Report(Downwind) carries FULL_STOP per pass-9 plan-review finding #4 " +
                 "(NOT TOUCH_AND_GO, NOT null). Pilot announces landing intent; the trained " +
-                "go-around at short-final is private until CAP 413 §4.67's announcement.",
+                "go-around at short-final is private until CAP 413 §4.66's announcement.",
         )
     }
 }

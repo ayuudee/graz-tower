@@ -514,6 +514,38 @@ Impact: H | Effort: M
 
 ---
 
+### fn-17.1 CAP 413 Edition 24 reconciliation (filed + closed 2026-05-11)
+
+**D-PASS-cap413-edition-24-reconciliation — DONE (CLOSED by fn-17.1)**
+*Filed*: fn-14 (line 404 of `.flow/specs/fn-14-g3a-react-pilot-reactive-go-around-on.md`), pending primary-source verification of the docs-scout's Ed 24 §-renumbering hypothesis.
+*Closure verdict*: **Branch A — Confirmed (with Edition #1 quirk)**. Ed 24 primary-source verified against CAA PDF (URL `https://www.caa.co.uk/publication/download/18165`, SHA-256 `c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac`, captured 2026-05-11). Ed 23 comparison source: SHA-256 `f3b4839e885cd554740f664a55d3732cd7284789e0b5f808970cfdbc21e746e7` (planning-time match).
+*Actual mapping*: uniform `-1` shift across §4.5x-§4.6x range — §4.65 (ATC-initiated GA) → §4.64; §4.66 (VFR-continue) → §4.65; §4.67 (pilot-initiated GA) → §4.66; §4.68 (military) → §4.67. Plus §4.49 → §4.48 (circuit sequencing), §4.53 → §4.52 (cancellation of landing clearance), §4.55 → §4.54 (continue approach), §4.56 → §4.55 (CA not landing clearance). The docs-scout hypothesis was partially correct on §4.66→§4.65 and §4.67→§4.66 but missed that §4.65 ATC-initiated GA also moves to §4.64.
+*Closure evidence*: see `wiki/data-sources/cap413-edition-24-capture.md` (verification artifact with Tables 1 + 2 + mapping table + local extraction procedure) and `.flow/tasks/fn-17-cap-413-edition-24-numbering.1.md ## Evidence` for the primary-implementation-commit SHA + R11 verification status.
+Impact: M | Effort: M
+
+**D-PASS-cap413-2_7-principle-cite-audit — OPEN**
+*What today*: `CAP413_2_7.principle` field reads "When instructed to change frequency the pilot shall establish two-way communication on the new frequency; an initial call identifies the aircraft to the receiving unit" but the actual content of CAP 413 §2.7 in **both** Ed 23 (effective 2021-01-21) and Ed 24 (effective 2026-07-01) is "SAFETYCOM transmissions shall be made only within a maximum range of 10 NM... below 2,000 ft above aerodrome elevation". The codebase principle and the cited §-number don't refer to the same content.
+*Why wrong*: pre-existing principle-vs-cite drift discovered during fn-17.1's Table 2 audit. The codebase's `CAP413_2_7` cite is internally incoherent; either the principle is wrong (the entry should describe SAFETYCOM range), or the §-number is wrong (the entry should cite the actual frequency-change-and-two-way-communication section, which the fn-17.1 audit could not locate via grep — may live in a different chapter under "Subsequent Frequency Changes" but lacking a single load-bearing paragraph).
+*Real-fix contract*: comprehensive content-vs-cite audit of `CAP413_2_7`; either rewrite the principle to match Ed 24 §2.7 SAFETYCOM content (and check whether `CAP413_2_7` consumers still make sense — they may need a different ref entirely), or locate the actual Ed 24 §-number whose content matches the existing "two-way communication on new frequency" principle and update the section field. **In the interim** (per fn-17.1): edition string is pinned to inline Ed 23 Corr literal so the citation triple (document, edition, section, principle-content) doesn't claim Ed 24 metadata it can't substantiate.
+*Trigger*: a future principle-audit pass; or a consumer call site discovers `CAP413_2_7` returns the wrong principle in a DecisionTrace.
+Impact: L | Effort: S
+
+**D-PASS-cap413-4_46-principle-cite-audit — OPEN**
+*What today*: `CAP413_4_46.principle` field reads "Hold short / hold position instructions relating to runways must be read back in full including the runway designator or holding point; silent acknowledgement is not acceptable" but Ed 23 §4.46 content is "Pilots will receive traffic information prior to joining the traffic circuit" and Ed 24 §4.46 content is "The pilot having joined the traffic circuit makes routine reports as required by local procedures" (Ed 23 §4.47 content shifted to §4.46 in Ed 24's `-1` renumbering). Neither matches the codebase principle (which is about hold-short readback).
+*Why wrong*: pre-existing principle-vs-cite drift discovered during fn-17.1's Table 2 audit. Same shape as `D-PASS-cap413-2_7-principle-cite-audit` above.
+*Real-fix contract*: locate Ed 24's actual section number for the "hold-short readback" content the codebase principle describes (most likely under §4.30-§4.40 range — "Aerodrome Phraseology" / "Ground Movements" sections), update `CAP413_4_46.section` accordingly, and re-classify per the universal hard gate. **In the interim** (per fn-17.1): edition string is pinned to inline Ed 23 Corr literal.
+*Trigger*: a future principle-audit pass; or a consumer call site discovers `CAP413_4_46` returns the wrong principle in a DecisionTrace.
+Impact: L | Effort: S
+
+**D-PASS-cap413-edition-24-r11-verify-sandbox-block — OPEN**
+*What today*: fn-17.1's R11 acceptance criterion (`./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt` exits 0) could not be exercised in the implementer's harness sandbox at task time because Gradle wrapper writes to `/Users/andrew/.gradle/` are blocked by the sandbox filesystem policy (read-only mount with explicit allow-list that does NOT include the Gradle cache dirs). The wrapper exits with "Operation not permitted" on `gradle-8.14.4-bin.zip.lck` and (separately) on the native-platform `.dylib.lock` files.
+*Why wrong*: the substantive content of fn-17.1 (typed-symbol rename + KDoc/prose sweep + edition-string correction + verification artifact + closed-spec errata footers) is complete and self-consistent (Kotlin's compiler-driven rename surfaces stale references at every consumer; no silent failures possible). The verify pass is the safety net to confirm the eight goldens stayed GREEN, but the safety net itself can't be exercised in this environment.
+*Real-fix contract*: a human pilot (or a CI environment with full Gradle write access) re-runs the full verify command and records the eight-golden test-result XML paths plus Gradle exit status in `.flow/tasks/fn-17-cap-413-edition-24-numbering.1.md ## Evidence`. If the verify exits 0 and the eight goldens are GREEN, this deferment closes immediately. If any test fails, the failure is investigated against the fn-17.1 rename diff (most likely class of failure: a string-literal pin in a test file that fn-17.1's grep walk missed — easy to triage).
+*Trigger*: fn-17 epic closure (fn-17 cannot mark done until R11 evidence is recorded); OR the next pilot session in an unrestricted environment.
+Impact: M | Effort: S
+
+---
+
 ### Controller backlog (future scope, no imminent ETA)
 
 **CB-1** — Approach sequencing: "number N", speed control, vectoring, essential traffic

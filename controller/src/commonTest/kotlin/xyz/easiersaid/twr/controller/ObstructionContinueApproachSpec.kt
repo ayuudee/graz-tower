@@ -70,9 +70,11 @@ import kotlin.test.Test
  * 12. Pre-existing `ARR-CONTINUE` rule UNCHANGED for non-obstruction
  *      triggers.
  * 13. Companion-trace regs split: companion's `DecisionTrace.regulations`
- *      cites `§4.55, §4.56, §12.3.4.16, §8.9.6.1.8` AND does NOT cite
- *      `§4.65` or `§7.4.1.4.1`. Regression check on fn-12's GA path
- *      (companion still cites `§4.65` + `§7.4.1.4.1`) is in
+ *      cites `§4.54, §4.55, §12.3.4.16, §8.9.6.1.8` AND does NOT cite
+ *      `§4.64` or `§7.4.1.4.1`. (Ed 24 numbering — pre-fn-17.1 the cited
+ *      sections were §4.55, §4.56 and the absence pin was §4.65;
+ *      renumbered per fn-17.1.) Regression check on fn-12's GA path
+ *      (companion still cites `§4.64` + `§7.4.1.4.1`) is in
  *      [ObstructionGoAroundSpec].
  */
 @Suppress("LargeClass") // 13 pins per task spec; splitting into multiple spec files
@@ -918,11 +920,11 @@ class ObstructionContinueApproachSpec {
             .firstOrNull { it.response is RunwayObstructionInformation }
             ?: error("Expected RunwayObstructionInformation companion; got ${result.outputs}")
         val regs = companion.trace.regulations.map { it.section }
-        check(regs.containsAll(listOf("§4.55", "§4.56", "§12.3.4.16", "§8.9.6.1.8"))) {
-            "CONTINUE APPROACH companion must cite §4.55, §4.56, §12.3.4.16, §8.9.6.1.8; got $regs"
+        check(regs.containsAll(listOf("§4.54", "§4.55", "§12.3.4.16", "§8.9.6.1.8"))) {
+            "CONTINUE APPROACH companion must cite §4.54, §4.55, §12.3.4.16, §8.9.6.1.8; got $regs"
         }
-        check("§4.65" !in regs) {
-            "CONTINUE APPROACH companion must NOT cite §4.65 (missed-approach phraseology); got $regs"
+        check("§4.64" !in regs) {
+            "CONTINUE APPROACH companion must NOT cite §4.64 (missed-approach phraseology); got $regs"
         }
         check("§7.4.1.4.1" !in regs) {
             "CONTINUE APPROACH companion must NOT cite §7.4.1.4.1 (post-clearance GA mandate); got $regs"

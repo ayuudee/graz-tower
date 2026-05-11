@@ -214,7 +214,8 @@ are what the run produced.
   #11. Closes `wiki/design-decisions/2026-04-22-root-cause-go-around-
   and-totality.md`'s open ask: "Any mission type that supports
   go-around must have a go-around integration test before merge."
-  Doctrinally faithful to CAP 413 §4.66/§4.67/§4.68 and ICAO Doc
+  Doctrinally faithful to CAP 413 §4.65/§4.66/§4.67 (Ed 24 — formerly
+  §4.66/§4.67/§4.68 in Ed 23, renumbered per fn-17.1) and ICAO Doc
   4444 §12.3.4.18.
 
 - **G3a-obstruction — `G3aRunwayObstructionTest` (`sim/jvmTest`)**:
@@ -267,7 +268,8 @@ are what the run produced.
   `ControllerEvent.RunwayObstructionDetected` injection, no
   `BeliefState` mutation. Doctrinally faithful to ICAO Doc 4444
   §7.4.1.4.1 (runway obstruction GA mandate) + §8.9.6.1.8 (reason on
-  radio) + CAP 413 §4.65 (missed-approach phraseology). Closes the
+  radio) + CAP 413 §4.64 (missed-approach phraseology — Ed 24; formerly
+  §4.65 in Ed 23, renumbered per fn-17.1). Closes the
   third reactive-GA path: alongside G3a-trained (pilot-trained) and
   the existing self-initiated GA (fn-10 era), G3a-obstruction
   exercises the ATC-instructed reactive path.
@@ -322,7 +324,8 @@ are what the run produced.
   one `Some → None` transition in TOWER's `runwayObstructions[16C]`
   belief slice), **companion content** (regs cite exactly
   `CAP413_4_55, CAP413_4_56, ICAO4444_12_3_4_16, ICAO4444_8_9_6_1_8`
-  with explicit absence assertions for `CAP413_4_65` and
+  with explicit absence assertions for `CAP413_4_64` (Ed 24 — formerly
+  `CAP413_4_65` in Ed 23, renumbered per fn-17.1) and
   `ICAO4444_7_4_1_4_1` — those are the GA companion's wrong-path
   refs), **CA reason payload pin**
   (`Instruction.ContinueApproach.reason == RUNWAY_OBSTRUCTED` set
@@ -388,7 +391,8 @@ are what the run produced.
   (`PilotCrosswindHysteresisTest`). Doctrinally faithful to FAA AFH
   Chapter 9 (Common Error #1), 14 CFR §23.233(a) / AC 23-8B (POH
   demonstrated crosswind as performance information), ICAO Annex 6 Part
-  II §2.4 (PIC final authority), and CAP 413 §4.67 / ICAO Doc 4444
+  II §2.4 (PIC final authority), and CAP 413 §4.66 (Ed 24 — formerly
+  §4.67 in Ed 23, renumbered per fn-17.1) / ICAO Doc 4444
   §12.3.4.18 (pilot-initiated GA phraseology). Closes the **fourth**
   reactive-GA path and the G3a trilogy: alongside self-initiated
   (pre-fn-11 DA-without-clearance), pilot-trained (G3a-trained / fn-11),

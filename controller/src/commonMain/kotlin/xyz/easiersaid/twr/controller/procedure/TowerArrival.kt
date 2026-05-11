@@ -80,7 +80,7 @@ import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_EXTEND_DOWNWIND
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO9432_LANDING
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_7_4_1_4_1
 import xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO4444_8_9_6_1_8
-import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_65
+import xyz.easiersaid.twr.protocol.RegulationDatabase.CAP413_4_64
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ExtendDownwind
 import xyz.easiersaid.twr.protocol.ContinueApproach
@@ -240,8 +240,8 @@ private val LandingConditions = AllOf(listOf(
  *
  * **Regulatory grounding** (R7 acceptance): explicit refs, not
  * placeholders — ICAO Doc 4444 §7.4.1.4.1 (runway obstruction GA mandate)
- * + §8.9.6.1.8 (reason on radio) + CAP 413 §4.65 (missed approach
- * phraseology).
+ * + §8.9.6.1.8 (reason on radio) + CAP 413 §4.64 (missed approach
+ * phraseology — formerly §4.65 in Ed 23, renumbered per fn-17.1).
  */
 /**
  * fn-13.1 (R5): split out for the `AwaitApproach` stage placement.
@@ -264,7 +264,7 @@ private val LandingConditions = AllOf(listOf(
 private val obstructionGoAroundRuleAwaitApproach: AtcRule = AtcRule(
     id = "ARR-GO-AROUND-RUNWAY-OBSTRUCTED",
     description = "Instruct go-around — runway obstructed during approach (clears too late)",
-    regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_65),
+    regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_64),
     guard = AllOf(listOf(
         AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
         RunwayObstructed,
@@ -295,7 +295,7 @@ private val obstructionGoAroundRuleAwaitApproach: AtcRule = AtcRule(
 private val obstructionGoAroundRulePostClearance: AtcRule = AtcRule(
     id = "ARR-GO-AROUND-RUNWAY-OBSTRUCTED",
     description = "Instruct go-around — runway obstructed during approach (post-clearance)",
-    regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_65),
+    regulations = listOf(ICAO4444_7_4_1_4_1, ICAO4444_8_9_6_1_8, CAP413_4_64),
     guard = AllOf(listOf(
         AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
         RunwayObstructed,
@@ -337,7 +337,7 @@ private val obstructionGoAroundRulePostClearance: AtcRule = AtcRule(
  * which is wrong on final. `SAFETY` is wrong doctrinally — CONTINUE
  * APPROACH is not an emergency; it is the pre-clearance delay surface.
  *
- * **Regulations**: pre-clearance refs only. Excludes `CAP413_4_65`
+ * **Regulations**: pre-clearance refs only. Excludes `CAP413_4_64`
  * (missed-approach phraseology) and `ICAO4444_7_4_1_4_1` (post-clearance
  * GA mandate). Same exclusion list as the companion-trace regs the action
  * populates.

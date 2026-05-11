@@ -413,7 +413,7 @@ Follows the **three-layer pin pattern** (per fn-11.2 / fn-12.3 / fn-14.2):
 - **FAA Airplane Flying Handbook (FAA-H-8083-3C) Chapter 9** — tailwind landing high-risk operations; the industry-standard advisory anchor for the C172 leaf.
 - **ICAO Doc 4444 §7.11.6** — 5 kt tailwind for reduced runway separation minima (peer doctrine; scope distinct from POH performance).
 - **ICAO Annex 6 Part II §2.4** — PIC final authority (anchor for autonomous GA transmission). Already in `RegulationDatabase` via fn-14.
-- **CAP 413 §4.67** / **ICAO Doc 4444 §12.3.4.18** — pilot-initiated GA phraseology (no ATC permission needed). Already in `RegulationDatabase` via fn-14.
+- **CAP 413 §4.66** (Ed 24 — formerly §4.67 in Ed 23, renumbered per fn-17.1) / **ICAO Doc 4444 §12.3.4.18** — pilot-initiated GA phraseology (no ATC permission needed). Already in `RegulationDatabase` via fn-14.
 - **FAA AIM §7-1-12.d.3** — wind reference frame (Magnetic for ATC voice; same anchor as fn-14). Already in `RegulationDatabase`.
 
 ### Codebase prior art

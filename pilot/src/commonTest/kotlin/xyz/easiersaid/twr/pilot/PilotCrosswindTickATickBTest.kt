@@ -60,7 +60,8 @@ import kotlin.test.fail
  *     waypoints.head = UPWIND_END, ...)` per the synthetic
  *     `CircuitProcedure.goAroundPath = Path(THRESHOLD, UPWIND_END)`.
  *
- * Doctrine: FAA AFH Ch 9; ICAO Doc 4444 §7.10.2; CAP 413 §4.67.
+ * Doctrine: FAA AFH Ch 9; ICAO Doc 4444 §7.10.2; CAP 413 §4.66
+ * (Ed 24 — formerly §4.67 in Ed 23, renumbered per fn-17.1).
  */
 class PilotCrosswindTickATickBTest {
 
@@ -224,7 +225,7 @@ class PilotCrosswindTickATickBTest {
         // Transmission emitted.
         assertTrue(
             Report(listOf(ReportEvent.GoingAround)) in output.transmissions,
-            "Tick A: pilotDecide must include Report(GoingAround) per CAP 413 §4.67 / Doc 4444 §12.3.4.18; " +
+            "Tick A: pilotDecide must include Report(GoingAround) per CAP 413 §4.66 / Doc 4444 §12.3.4.18; " +
                 "got ${output.transmissions}",
         )
         // Mission tree rewritten via subtree replacement.

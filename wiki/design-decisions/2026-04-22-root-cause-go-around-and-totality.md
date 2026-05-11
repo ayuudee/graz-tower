@@ -167,7 +167,8 @@ reactive-GA surface.
 
 **fn-13 (2026-05-10) — pre-clearance CONTINUE APPROACH ladder.**
 Extends the obstruction-handling coverage from two-state (clear / GA)
-to three-state (clear / CONTINUE APPROACH / GA) per CAP 413 §4.55-4.56
+to three-state (clear / CONTINUE APPROACH / GA) per CAP 413 §4.54-4.55
+(Ed 24 — formerly §4.55-4.56 in Ed 23, renumbered per fn-17.1)
 + ICAO Doc 4444 §12.3.4.16(d). When the runway is obstructed at final
 but **expected to be available in good time for a safe landing**, the
 controller delays landing clearance via `Instruction.ContinueApproach`
@@ -184,7 +185,8 @@ controller delays landing clearance via `Instruction.ContinueApproach`
   enum variant; `ObstructionContinueApproachAction` populating
   `obstructionInfo` with CONTINUE-APPROACH-specific
   `companionTraceRegs` (`CAP413_4_55, CAP413_4_56, ICAO4444_12_3_4_16,
-  ICAO4444_8_9_6_1_8`; explicit exclusion of `CAP413_4_65` /
+  ICAO4444_8_9_6_1_8`; explicit exclusion of `CAP413_4_64` (Ed 24 —
+  formerly `CAP413_4_65` in Ed 23, renumbered per fn-17.1) /
   `ICAO4444_7_4_1_4_1` which are the GA companion's wrong-path refs);
   `continueApproachIssuedThisAttempt` witness with `Report(Downwind)`
   re-arm; existing traffic-driven `ARR-CONTINUE` rule narrowed with
@@ -226,8 +228,9 @@ The pre-clearance approach decision space is now **quadruple-covered**:
 mutually-exclusive guards (`ObstructionClearsInTime` vs
 `Not(ObstructionClearsInTime)`); priority placement is defence-in-depth.
 The companion regulation refs split by path: CA cites the pre-clearance
-refs (CAP 413 §4.55, §4.56, ICAO §12.3.4.16, §8.9.6.1.8); GA cites the
-post-clearance refs (CAP 413 §4.65, ICAO §7.4.1.4.1, §8.9.6.1.8).
+refs (CAP 413 §4.54, §4.55, ICAO §12.3.4.16, §8.9.6.1.8); GA cites the
+post-clearance refs (CAP 413 §4.64, ICAO §7.4.1.4.1, §8.9.6.1.8).
+(Ed 24 numbering — pre-fn-17.1 these were §4.55/§4.56 and §4.65.)
 
 **fn-14 (2026-05-11) — pilot-reactive crosswind GA closes the G3a
 trilogy.** The fourth reactive-GA path: pilot-side autonomous GA off the

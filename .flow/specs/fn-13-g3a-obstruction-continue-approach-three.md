@@ -336,3 +336,18 @@ _(filled per task during implementation)_
 ## Evidence
 
 _(filled per task during implementation)_
+
+## Errata
+
+- 2026-05-11 (fn-17): CAP 413 §-cites in this spec were authored
+  against the then-current Edition 23 numbering. Per fn-17.1's
+  primary-source verification (artifact:
+  `wiki/data-sources/cap413-edition-24-capture.md`; CAA PDF SHA
+  `c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac`),
+  Ed 24 (effective 2026-07-01) maps as follows: §4.55 (continue
+  approach — runway obstructed at final) → §4.54; §4.56 (CONTINUE
+  APPROACH is not a landing clearance) → §4.55; §4.65 (ATC-initiated
+  GA / missed-approach phraseology) → §4.64. Current-doctrine
+  citations live in `protocol/.../RegulationDatabase.kt` (Ed 24-
+  coherent post-fn-17.1); this spec's prose is preserved as-is for
+  historical fidelity.

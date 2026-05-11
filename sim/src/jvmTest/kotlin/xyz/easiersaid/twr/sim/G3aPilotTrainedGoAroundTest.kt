@@ -102,7 +102,8 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    tree statically; from there decisions are autonomous. The world-
  *    only trigger is the goal authorship — no event injection, no
  *    rigged decisions.
- *  - **CAP 413 §4.66/§4.67/§4.68 phraseology:** pilot transmits
+ *  - **CAP 413 §4.65/§4.66/§4.67 phraseology** (Ed 24 — formerly
+ *    §4.66/§4.67/§4.68 in Ed 23, renumbered per fn-17.1): pilot transmits
  *    `Report(GoingAround)` at short-final on circuit 1; the
  *    sticky-witness regression path fires off the controller's
  *    `GoAroundEvent` on receipt.
@@ -163,10 +164,12 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  * retightened on closure-pass calibration.
  *
  * **Doctrinal anchors:**
- *  - **CAP 413 §4.67**: *"In the event of missed approach being
+ *  - **CAP 413 §4.66**: *"In the event of missed approach being
  *    initiated by the pilot, the phrase 'going around' shall be used."*
- *  - **CAP 413 §4.66**: VFR aircraft is to continue into the normal
+ *    (Ed 24 — formerly §4.67 in Ed 23, renumbered per fn-17.1.)
+ *  - **CAP 413 §4.65**: VFR aircraft is to continue into the normal
  *    traffic circuit unless instructions are issued to the contrary.
+ *    (Ed 24 — formerly §4.66 in Ed 23, renumbered per fn-17.1.)
  *  - **ICAO Doc 4444 §12.3.4.18**: pilot transmission `*GOING AROUND.`,
  *    controller acknowledgement `<callsign>, Roger`.
  *
