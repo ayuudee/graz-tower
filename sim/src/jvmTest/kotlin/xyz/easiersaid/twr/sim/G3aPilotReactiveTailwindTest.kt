@@ -158,7 +158,19 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *    shift past limit (triggers GA), then one-shot wind return within
  *    limit (enables recovery landing). Guards `var tailwindAuthored
  *    = false` and `var tailwindClearedToLimit = false` ensure each
- *    transition fires exactly once.
+ *    transition fires exactly once. Transition-2 gate is **tighter than
+ *    the fn-14.2 crosswind sibling** (codex round-2 strengthening):
+ *    instead of `phase != Final` (which fires during GA climbout
+ *    before the recovery pattern is reached), it watches the radio for
+ *    the post-GA recovery `Report(events=[Downwind(...)])`
+ *    transmission. This is the load-bearing observable: the pilot
+ *    transmits the downwind position only when physically re-entering
+ *    downwind on the recovery circuit. Pins R11's "aircraft back on
+ *    downwind" intent exactly — the exceedance window persists through
+ *    genuine recovery-pattern re-entry, not the brief immediate-
+ *    post-regression climbout window. Pure observation surface: no
+ *    peek into pilot state or controller belief beyond what crosses
+ *    the radio.
  *  - **End-to-end pilot-side reactive stack** (tailwind axis): world
  *    weather author → `state.weatherByAerodrome` mutation →
  *    `PilotWiring.buildPilotInput` projects to `WindReport` →
@@ -422,6 +434,7 @@ class G3aPilotReactiveTailwindTest {
         val tailwindAuthoredAt = arrayOf<SimTime?>(null)
         val tailwindClearedAt = arrayOf<SimTime?>(null)
         val goingAroundTransmittedFlag = arrayOf(false)
+        val recoveryDownwindReportedFlag = arrayOf(false)
         val onAfterEvent: (SimEvent, SimState) -> SimState = { ev, st ->
             // Track `Report(GoingAround)` emission via the event stream so
             // the recovery-wind transition's gate is consistent with the
@@ -432,44 +445,56 @@ class G3aPilotReactiveTailwindTest {
             // itself a `PilotTransmission` leaf (NOT a
             // `PilotTransmissionElement`); the aircraft id lives on
             // `SpeakerRef.Pilot.aircraftId`, not the transmission.
-            if (!goingAroundTransmittedFlag[0] && ev is SimEvent.TransmissionStart) {
+            if (ev is SimEvent.TransmissionStart) {
                 val tx = ev.transmission
                 val speakerAc = (tx.speaker as? SpeakerRef.Pilot)?.aircraftId
                 val pilotTransmission =
                     (tx.utterance as? Utterance.FromPilot)?.transmission
                 val report = pilotTransmission as? xyz.easiersaid.twr.protocol.Report
-                if (speakerAc == aircraftId &&
-                    report != null &&
-                    report.events.any { it is ReportEvent.GoingAround }
-                ) {
-                    goingAroundTransmittedFlag[0] = true
+                if (speakerAc == aircraftId && report != null) {
+                    if (!goingAroundTransmittedFlag[0] &&
+                        report.events.any { it is ReportEvent.GoingAround }
+                    ) {
+                        goingAroundTransmittedFlag[0] = true
+                    }
+                    // Codex round-2 strengthening: the wind-recovery gate
+                    // pins on the **second** (recovery-circuit)
+                    // `Report(events=[Downwind(...)])` transmission — the
+                    // pilot has physically re-entered the recovery pattern
+                    // and broadcast the downwind position to the tower.
+                    // This is the load-bearing recovery observable; it
+                    // strictly postdates the GA transmission (the original
+                    // downwind precedes the GA cycle) and proves the
+                    // exceedance window persisted through real downwind
+                    // re-entry, not just the immediate-post-regression
+                    // climbout window. Pure observation surface — no peek
+                    // into pilot state or controller belief beyond what
+                    // crosses the radio.
+                    if (goingAroundTransmittedFlag[0] &&
+                        !recoveryDownwindReportedFlag[0] &&
+                        report.events.any { it is ReportEvent.Downwind }
+                    ) {
+                        recoveryDownwindReportedFlag[0] = true
+                    }
                 }
             }
 
             when {
                 // Transition 2 — wind returns within limit (one-shot).
-                // Gated on THREE conditions (codex round-1 strengthening over
-                // the fn-14.2 crosswind sibling's two-gate pattern):
-                //   (i) `Report(GoingAround)` already transmitted,
-                //  (ii) aircraft off final (back on a non-final leg /
-                //       climbout — physical re-entry into the pattern), AND
-                // (iii) tower commitment is back at a **recovery-pattern**
-                //       stage (`AwaitDownwind` or `AwaitApproach`) — proof
-                //       that the GA-POST-CLEAR regression has actually
-                //       executed AND the recovery circuit has settled into
-                //       the downwind / approach lifecycle, not the brief
-                //       Climbing window right after the GA transmission.
-                // Without gate (iii), an aggressive `phase != Final` flip
-                // during climb-out could clear the wind before the
-                // recovery circuit reaches downwind, shortening the
-                // exceedance window and weakening the recovery pin's
-                // semantics. Mirrors the task spec literally:
-                // "controller commitment stage ∈ {AwaitDownwind,
-                // AwaitApproach} after the regression".
+                // Gated on the recovery-circuit Downwind report
+                // (codex round-2 strengthening; round-1 used commitment
+                // stage which fires too early since the controller
+                // advances `AwaitDownwind → AwaitApproach` on
+                // `ArrivalPosition.OnBase/OnFinal` observation at the GA
+                // climbout, BEFORE the aircraft actually re-enters
+                // downwind). The post-GA Downwind report is the load-
+                // bearing recovery observable — pilot transmits it only
+                // when physically re-entering downwind on the recovery
+                // circuit. Pins R11's "aircraft back on downwind"
+                // intent exactly: the exceedance window persists through
+                // genuine recovery-pattern re-entry.
                 !tailwindClearedToLimit &&
-                    goingAroundTransmittedFlag[0] &&
-                    aircraftIsOffFinal(st, aircraftId) &&
-                    towerCommitmentInRecoveryPattern(st, aircraftId, tower.id) -> {
+                    recoveryDownwindReportedFlag[0] -> {
                     tailwindClearedToLimit = true
                     tailwindClearedAt[0] = st.now
                     authorWeather(st, lowg, initialWeather)
@@ -933,40 +958,16 @@ class G3aPilotReactiveTailwindTest {
             stage == TowerArrivalStage.AwaitLandedObserved
     }
 
-    /**
-     * Predicate for transition-2 authorship: the aircraft is NOT on
-     * final (i.e. has climbed out / re-entered the circuit). Used
-     * together with the `Report(GoingAround)` already-transmitted gate
-     * and the recovery-pattern stage gate to fire the wind-recovery
-     * transition only after the GA path has actually started executing.
-     */
-    private fun aircraftIsOffFinal(st: SimState, aircraft: AircraftId): Boolean {
-        val ac = st.aircraft[aircraft] ?: return false
-        return ac.phase != PilotPhase.Final
-    }
-
-    /**
-     * Predicate for transition-2 authorship (codex round-1
-     * strengthening): the tower's commitment for the aircraft is back at
-     * a **recovery-pattern** stage — `AwaitDownwind` (immediately after
-     * the `GA-POST-CLEAR` regression) or `AwaitApproach` (after the
-     * recovery circuit's downwind report). Pins that the GA path has
-     * actually progressed through the commitment lifecycle and not just
-     * climbed out briefly. Distinguishes a real recovery-circuit
-     * re-entry from the transient `phase != Final` window during
-     * GA-applier execution before the GA-POST-CLEAR regression cycle
-     * has fired.
-     */
-    private fun towerCommitmentInRecoveryPattern(
-        st: SimState,
-        aircraft: AircraftId,
-        towerId: xyz.easiersaid.twr.protocol.ControllerId,
-    ): Boolean {
-        val commitment = st.beliefs[towerId]?.commitments?.get(aircraft) ?: return false
-        val stage = commitment.stage
-        return stage == TowerArrivalStage.AwaitDownwind ||
-            stage == TowerArrivalStage.AwaitApproach
-    }
+    // Note: transition-2 authorship used to use phase/commitment-stage
+    // helpers (`aircraftIsOffFinal`, `towerCommitmentInRecoveryPattern`).
+    // Codex round-2 review surfaced that both fire too early — the
+    // controller's `reconcileAwaitDownwind` advances `AwaitDownwind →
+    // AwaitApproach` on `ArrivalPosition.OnBase/OnFinal` observation
+    // during the GA climbout, BEFORE the recovery circuit physically
+    // reaches downwind. The new gate watches the radio for the post-GA
+    // recovery `Report(events=[Downwind(...)])` transmission — the
+    // load-bearing observable. Helpers removed to keep the test
+    // discipline focused on what crosses the wire.
 
     /**
      * Pure world-state mutation: replace `state.weatherByAerodrome
