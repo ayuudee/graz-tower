@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-11T08:34:39.023145Z",
+  "depends_on": [
+    "fn-18-deferment-register-reorganization-four.1",
+    "fn-18-deferment-register-reorganization-four.2"
+  ],
+  "epic": "fn-18-deferment-register-reorganization-four",
+  "id": "fn-18-deferment-register-reorganization-four.3",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-18-deferment-register-reorganization-four.3.md",
+  "status": "todo",
+  "title": "Migrate fn-14/15/17 epic-spec siblings + inline-only IDs + epic-spec redirects",
+  "updated_at": "2026-05-11T10:02:25.084868Z"
+}
