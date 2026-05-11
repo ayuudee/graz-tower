@@ -194,9 +194,8 @@ If the GA interrupt path regresses for an unexpected reason, root-cause (do NOT 
 Once shipped, the G3a-react second axis closes (POH/AFH crosswind + POH/AFH tailwind, both pilot-reactive). Sibling deferments (multi-aircraft, cross-aerodrome, gust, combined-vector, ATIS-cadence) remain in the deferments register and become candidate epics in their own right. The per-type doctrinal severity asymmetry (advisory vs hard limitation) becomes a first-class surface in the codebase — the precedent for future POH/FCOM-derived reactive triggers (density altitude, weight limits, temperature) to follow.
 
 ## Done summary
-
-_(filled during implementation)_
-
+fn-15.2 Sim integration test + doc cross-references for G3a-react-tailwind shipped: new `G3aPilotReactiveTailwindTest` (ninth golden) at LOWG with single C172, two-transition world-only wind authorship (10 kt headwind → 15 kt pure tailwind, then back to headwind via post-GA recovery-Downwind report gate — strictly tighter than the fn-14.2 crosswind sibling's off-final gate per codex round-2/3 review). Three-layer pin pattern (causal partial-order + sticky-witness regression via `GA-POST-CLEAR` + kinematic non-event) + recovery touchdown pin (R11) + recovery-clearance safety pin + R7 vacate-coordination closure + ±15% time band. R12 doc cross-references updated across 9 sites (AGENTS.md, STRATEGY.md, wiki/design-decisions/2026-04-22, wiki/domain/aviation-world.md, Fixtures.kt provenance) + 8 sibling test class docstrings (bidirectional cross-ref to G3aPilotReactiveCrosswindTest). Codex impl-review SHIP after three rounds (transition-2 gate tightening + R11 touchdown pin + AGENTS count + Layer 1 tx-start documentation). All nine goldens GREEN; detekt baseline unchanged; per-type doctrinal severity asymmetry (C172 AFH-advisory tailwind vs B738 FCOM hard-limit tailwind) surfaced as a first-class modelling distinction. R11 + R12 + R14 closed at the epic level.
 ## Evidence
-
-_(filled during implementation)_
+- Commits: eed7b2820bbb9676f73c2c5bbcca97e88e1a9aa7, 77710c750cb1f8a8df3b1057dd0a17ce4ed8a2c5, 767f4625f4e3eb5c9c6ce6e4f9bd5e16a23a3c2e, 6454d7301f916f29c65a5a39cbc77e489d062b9d
+- Tests: ./gradlew --offline --no-daemon :sim:jvmTest --tests *G3aPilotReactiveTailwindTest* --rerun-tasks, ./gradlew --offline --no-daemon :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt
+- PRs:

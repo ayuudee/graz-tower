@@ -394,9 +394,8 @@ Extend `AircraftTypeSpec` with the `maxTailwindKnots > 0` invariant row.
 Sim integration test (`G3aPilotReactiveTailwindTest`) + doc cross-references ride on this foundation. fn-15.2's pins are observable behaviour only — `Report(GoingAround)`, commitment stage regression (`LandingClearanceIssued`/`AwaitLandedObserved` → `AwaitDownwind`), no touchdown, recovery landing. Event-counting / hysteresis pins live in fn-15.1 unit tests (R10).
 
 ## Done summary
-
-_(filled during implementation)_
-
+fn-15.1 Foundation pass for G3a-react-tailwind shipped: typed `AircraftType.maxTailwindKnots` (C172 = 10 kt FAA AFH advisory; B738 = 15 kt FCOM hard limit), `tailwindComponentKnots` pure helper colocated with crosswind in renamed `WindComponents.kt`, `PilotEvent.TailwindLimitExceeded` leaf + `deriveTailwindEvent` branch (third independent recognition branch with shared `WIND_REACTIVE_ELIGIBLE_STEPS` + `isReactiveGoAroundEligible`), distinct `applyTailwindGoAround` (no shared core helper — anti-decision pinned), `pilotDecide` extended in DA → tailwind → crosswind dispatch order, two narrow-scope `RegulationDatabase` entries (FAA_AFH_CH9_TAILWIND_RISK + ICAO4444_7_11_6_REDUCED_RUNWAY_TAILWIND), five new pilot-side test files (31 cases) covering helper math / recognition matrix / applier post-conditions / hysteresis / Tick-A→B integration. Codex impl-review SHIP after one round (TouchAndGo absence assertion + 11 kt boundary row). All eight existing goldens GREEN; detekt baseline unchanged; every fn-14 spec unchanged.
 ## Evidence
-
-_(filled during implementation)_
+- Commits: feeb35b39df9a3eafe40b1bbe88c2b71be99a4d2, a36ac0953642265b991f3dcac077543b531b86c6
+- Tests: ./gradlew :pilot:jvmTest :protocol:allTests :controller:jvmTest :core:allTests :sim:jvmTest detekt --offline --no-daemon
+- PRs:

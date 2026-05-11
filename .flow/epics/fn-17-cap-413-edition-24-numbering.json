@@ -1,6 +1,11 @@
 {
   "branch_name": "master",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-11T16:30:00.025141Z",
   "created_at": "2026-05-11T08:16:04.319502Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [
     "fn-11-g3a-single-aircraft-pilot-trained-vfr",
     "fn-12-g3a-obstruction-single-aircraft-atc",
@@ -14,5 +19,5 @@
   "spec_path": ".flow/specs/fn-17-cap-413-edition-24-numbering.md",
   "status": "open",
   "title": "CAP 413 Edition 24 numbering reconciliation",
-  "updated_at": "2026-05-11T10:41:04.952693Z"
+  "updated_at": "2026-05-11T16:30:00.025249Z"
 }
