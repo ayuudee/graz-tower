@@ -1,6 +1,11 @@
 {
   "branch_name": "master",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-11T17:53:51.006766Z",
   "created_at": "2026-05-11T08:16:04.031393Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [
     "fn-14-g3a-react-pilot-reactive-go-around-on",
     "fn-11-g3a-single-aircraft-pilot-trained-vfr",
@@ -14,5 +19,5 @@
   "spec_path": ".flow/specs/fn-15-g3a-react-tailwind-pilot-reactive-go.md",
   "status": "open",
   "title": "G3a-react-tailwind \u2014 pilot-reactive go-around on POH tailwind limit exceeded",
-  "updated_at": "2026-05-11T08:39:06.851889Z"
+  "updated_at": "2026-05-11T17:53:51.006875Z"
 }
