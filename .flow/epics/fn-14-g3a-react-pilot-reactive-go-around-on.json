@@ -1,0 +1,23 @@
+{
+  "branch_name": "fn-14-g3a-react-pilot-reactive-go-around-on",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-11T06:19:58.279119Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [
+    "fn-11-g3a-single-aircraft-pilot-trained-vfr",
+    "fn-12-g3a-obstruction-single-aircraft-atc",
+    "fn-8-g1-two-aircraft-vfr-circuits-at-lowg",
+    "fn-5-g2-cross-aerodrome-vfr-transit-lowg-ljmb"
+  ],
+  "id": "fn-14-g3a-react-pilot-reactive-go-around-on",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-14-g3a-react-pilot-reactive-go-around-on.md",
+  "status": "open",
+  "title": "G3a-react \u2014 pilot-reactive go-around on POH crosswind limit exceeded",
+  "updated_at": "2026-05-11T07:01:14.616824Z"
+}

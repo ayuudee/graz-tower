@@ -69,6 +69,7 @@ import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.RunwayObstructionInformation
 import xyz.easiersaid.twr.protocol.TrafficInformation
 import xyz.easiersaid.twr.protocol.Urgency
+import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.controller.procedure.approachArrivalProcedure
 import xyz.easiersaid.twr.controller.procedure.classifyArrivalPosition
 import xyz.easiersaid.twr.controller.procedure.classifyDeparturePosition

@@ -120,6 +120,31 @@ data class Minutes private constructor(val value: Int) {
     }
 }
 
+/**
+ * Sensed surface wind.
+ *
+ * **Reference frame** (fn-14.1 R7 pin per FAA AIM §7-1-12.d.3):
+ *  - [directionDegrees] is **Magnetic, FROM-degrees** in twr2 — matches the
+ *    ATIS / ATC voice sensing path that the pilot and controller share.
+ *  - Runway designators (e.g. `27`, `36L`) are themselves Magnetic by
+ *    convention (ICAO Annex 14 §5.2), so crosswind computations against
+ *    a runway heading run in a single reference frame.
+ *  - METAR / TAF / printed text uses **True** degrees. Reconciling that
+ *    channel against this type requires conversion (Magnetic = True −
+ *    declination) at the boundary; today's sim authors `Wind` values
+ *    directly in Magnetic via [Wind.unsafe] in test fixtures and via
+ *    [WindReport.Available] in `WeatherObservation`.
+ *  - The valid range is `0..360` (the `360 == North` allowance preserves
+ *    the aviation convention for runway-36-aligned wind).
+ *
+ * **VRB handling** (deferred): METAR `VRB` (variable direction) is used
+ * when speed ≤ 6 kt or direction shifts > 60° in low wind. v1 treats
+ * direction as always defined. Filed as `D-PASS-g3a-react-vrb-handling`.
+ *
+ * **Doctrine cite**: FAA AIM §7-1-12 — "Wind information broadcasted by
+ * Air Traffic Control facilities is converted from True to Magnetic
+ * North."
+ */
 @ConsistentCopyVisibility
 data class Wind private constructor(
     val directionDegrees: Int,

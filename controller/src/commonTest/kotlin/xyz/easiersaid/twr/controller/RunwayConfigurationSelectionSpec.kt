@@ -4,6 +4,7 @@ import xyz.easiersaid.twr.controller.assess.RunwayConfigurationFailure
 import xyz.easiersaid.twr.controller.assess.selectRunwayConfiguration
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.Wind
+import xyz.easiersaid.twr.protocol.WindReport
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

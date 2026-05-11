@@ -53,6 +53,30 @@ sealed class AircraftType(
      */
     val circuitPattern: CircuitPattern,
     /**
+     * fn-14.1 (G3a-react R1): POH-derived maximum demonstrated
+     * crosswind component. Read by the pilot's reactive-GA recognition
+     * `derivePilotEvent` crosswind branch — when the
+     * crosswind component computed from the world's wind report
+     * exceeds this value while the aircraft is on final, the pilot
+     * self-initiates a go-around.
+     *
+     * **Doctrine note**: per FAA AC 23-8B / 14 CFR §23.233 (pre-Amd 64),
+     * the POH "maximum demonstrated crosswind" is **performance
+     * information** (`0.2 V_SO` certification floor), NOT a formal
+     * limitation. FAA AFH (FAA-H-8083-3C) Chapter 9 lists "attempting
+     * a landing in crosswinds that exceed the airplane's maximum
+     * demonstrated crosswind component" as Common Error #1. v1 models
+     * a competent VFR pilot as going around when the demonstrated
+     * value is exceeded; the personal-minimums judgement layer is
+     * filed as `D-PASS-g3a-react-personal-minimums`. Cited per-leaf
+     * below.
+     *
+     * Reuses [Knots] (positive-only smart type from
+     * [xyz.easiersaid.twr.protocol.Instruction]); every POH
+     * crosswind value is ≥ 1 kt by construction.
+     */
+    val maxCrosswindKnots: Knots,
+    /**
      * Engineering-tuning cruise-altitude default for IFR route-planner
      * fallback. Pass 17 (D-PASS-13.2 closure): when an IFR procedure
      * has no published altitude (e.g., a SID with no last-waypoint
@@ -189,6 +213,9 @@ sealed class AircraftType(
      *    downwind offset ≈ 0.5 nm ≈ 925 m (FAA AIM 4-3-3 / AC 90-66B).
      *  - POH §4 (Run-Up): 60 s typical (mag check, carb-heat verify,
      *    instrument scan).
+     *  - POH §2 (Limitations / Operating Limitations): "Maximum
+     *    demonstrated crosswind velocity is 15 knots (not a limitation)" —
+     *    consumed by fn-14.1's reactive-GA recognition.
      *  - Capture radius: engineering tuning at 80 m (≈ 4× half-tick at
      *    Vy = 40 m/s; rounded for safety margin). See [Kinematics.waypointRadiusM].
      */
@@ -206,6 +233,8 @@ sealed class AircraftType(
         runwayLengthM = RunwayLengthRequirements(takeoffMinM = 305, landingMinM = 407),
         circuitPattern = CircuitPattern(altitudeAglM = 305.0, downwindOffsetM = 925.0),
         cruiseAltitudeM = 1000.0, // engineering tuning — typical VFR cruise; sub-FL180.
+        // POH Section 2: "Maximum demonstrated crosswind velocity is 15 knots (not a limitation)."
+        maxCrosswindKnots = Knots.unsafe(15),
         runUpDurationMs = 60_000L,
     )
 
@@ -223,6 +252,9 @@ sealed class AircraftType(
      *    ≈ 1850 m.
      *  - FCOM NP (Normal Procedures): cold-start before-takeoff sequence
      *    ≈ 10 minutes (engine warmup, FMC entry, before-takeoff checklist).
+     *  - Boeing 737-800 FCOM (Limitations §1, "Crosswind Guidelines"):
+     *    33 kt steady-crosswind limit on dry / grooved runway — consumed
+     *    by fn-14.1's reactive-GA recognition.
      *  - Capture radius: engineering tuning at 250 m (≈ 4× half-tick at
      *    cruise climb 130 m/s; matches the C172 ratio).
      */
@@ -240,6 +272,8 @@ sealed class AircraftType(
         runwayLengthM = RunwayLengthRequirements(takeoffMinM = 2280, landingMinM = 1700),
         circuitPattern = CircuitPattern(altitudeAglM = 457.0, downwindOffsetM = 1850.0),
         cruiseAltitudeM = 3000.0, // engineering tuning — typical below-FL100 climb plateau.
+        // Boeing 737-800 FCOM Limitations: 33 kt steady crosswind (dry/grooved runway).
+        maxCrosswindKnots = Knots.unsafe(33),
         runUpDurationMs = 600_000L,
     )
 

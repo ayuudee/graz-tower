@@ -341,7 +341,7 @@ private fun arrivalCommittedToRunway(
  * logic that needs an active runway must defer instruction issuance
  * rather than substituting an arbitrary fallback.
  */
-fun selectRunwayIntoWind(runways: Set<RunwayId>, wind: xyz.easiersaid.twr.controller.WindReport): RunwayId? =
+fun selectRunwayIntoWind(runways: Set<RunwayId>, wind: xyz.easiersaid.twr.protocol.WindReport): RunwayId? =
     selectRunwayConfiguration(runways.toList(), wind).fold({ null }, { it.primary })
 
 /**
@@ -392,13 +392,13 @@ sealed interface RunwayConfigurationFailure {
  */
 fun selectRunwayConfiguration(
     runways: List<RunwayId>,
-    wind: xyz.easiersaid.twr.controller.WindReport,
+    wind: xyz.easiersaid.twr.protocol.WindReport,
 ): arrow.core.Either<RunwayConfigurationFailure, xyz.easiersaid.twr.protocol.RunwayConfiguration> {
     if (runways.isEmpty()) return arrow.core.Either.Left(RunwayConfigurationFailure.NoRunwaysPublished)
     return when (wind) {
-        is xyz.easiersaid.twr.controller.WindReport.NotReported ->
+        is xyz.easiersaid.twr.protocol.WindReport.NotReported ->
             arrow.core.Either.Left(RunwayConfigurationFailure.WindNotReported)
-        is xyz.easiersaid.twr.controller.WindReport.Available -> {
+        is xyz.easiersaid.twr.protocol.WindReport.Available -> {
             val windDir = wind.wind.directionDegrees
             val bucket = runways
                 .map { rwy ->

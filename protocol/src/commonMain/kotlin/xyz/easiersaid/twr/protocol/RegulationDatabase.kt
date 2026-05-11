@@ -477,4 +477,96 @@ object RegulationDatabase {
         principle = "GO AROUND [reason] — controller-initiated missed approach with the reason",
         category = RegulationCategory.PHRASEOLOGY,
     )
+
+    // ── fn-14.1 (G3a-react R14): POH crosswind reactive-GA anchors ──
+
+    /**
+     * fn-14.1 (R14): FAA Airplane Flying Handbook (FAA-H-8083-3C)
+     * Chapter 9 — "Common Errors" #1 for crosswind approaches:
+     * attempting a landing in crosswinds exceeding the airplane's
+     * maximum demonstrated crosswind component.
+     *
+     * The principle is the modelling anchor for the pilot's reactive
+     * go-around in `applyCrosswindGoAround`: when the world's wind
+     * report against the active runway produces a crosswind component
+     * greater than [xyz.easiersaid.twr.protocol.AircraftType.maxCrosswindKnots],
+     * a competent VFR pilot initiates a go-around (per AFH guidance,
+     * Common Error #1 is the failure mode of NOT doing so).
+     *
+     * Note: the AFH framing pairs with [FAA_FAR_23_233_CROSSWIND_CERT]
+     * (the certification floor) and [ICAO_ANNEX_6_PII_2_4_PIC] (PIC
+     * authority to make the decision).
+     */
+    val FAA_AFH_CH9_CROSSWIND_ERRORS = RegulationRef(
+        document = "FAA_AFH", edition = "FAA-H-8083-3C (2021)", section = "Ch 9 Common Errors #1",
+        title = "Common error: landing in crosswinds exceeding max demonstrated",
+        principle = "Attempting a landing in crosswinds that exceed the airplane's maximum demonstrated " +
+            "crosswind component is a common error — a competent pilot goes around instead",
+        category = RegulationCategory.GUIDANCE,
+    )
+
+    /**
+     * fn-14.1 (R14): 14 CFR §23.233(a) (pre-Amendment 64) — crosswind
+     * certification floor. Small airplanes must demonstrate
+     * controllable handling in a 90° crosswind of at least
+     * `0.2 V_SO` (the type's stall speed with full flaps at MTOW).
+     * Pairs with FAA AC 23-8B: the demonstrated value is **performance
+     * information, not a limitation**.
+     *
+     * Models the typed datum
+     * [xyz.easiersaid.twr.protocol.AircraftType.maxCrosswindKnots]
+     * itself — the POH-cited demonstrated crosswind for each type
+     * carries forward this certification anchor.
+     */
+    val FAA_FAR_23_233_CROSSWIND_CERT = RegulationRef(
+        document = "FAA_FAR_23", edition = "14 CFR §23.233(a) (pre-Amd 64)", section = "§23.233(a)",
+        title = "Crosswind certification floor — 0.2 V_SO",
+        principle = "Small airplanes must demonstrate controllable handling in a 90° crosswind of at least " +
+            "0.2 V_SO; the demonstrated value is performance information, not a formal limitation",
+        category = RegulationCategory.LAW,
+    )
+
+    /**
+     * fn-14.1 (R14): ICAO Annex 6 Part II §2.4 (General Aviation
+     * Operations) — Pilot-in-Command final authority. The PIC has
+     * final authority over the operation of the aircraft, including
+     * the decision to initiate a go-around when conditions on the
+     * approach are not acceptable (e.g. crosswind exceeds the
+     * aircraft type's demonstrated POH value).
+     *
+     * Anchors the pilot's autonomous transmission of `Report(GoingAround)`
+     * — no ATC permission is required (also CAP 413 §4.67 / ICAO Doc
+     * 4444 §12.3.4.18 for the phraseology side).
+     */
+    val ICAO_ANNEX_6_PII_2_4_PIC = RegulationRef(
+        document = "ICAO_ANNEX_6_PII", edition = "10th ed. (2018)", section = "§2.4",
+        title = "PIC final authority — general aviation operations",
+        principle = "The pilot-in-command has final authority over the operation of the aircraft, including " +
+            "the decision to initiate a go-around when approach conditions are not acceptable",
+        category = RegulationCategory.LAW,
+    )
+
+    /**
+     * fn-14.1 (R14): FAA AIM §7-1-12.d.3 — wind reference frame
+     * convention. ATC-broadcast surface winds are converted from True
+     * to **Magnetic** at the controller; printed sources (METAR, TAF)
+     * use **True**. Runway designators are themselves Magnetic by
+     * convention (ICAO Annex 14 §5.2).
+     *
+     * Anchors the type contract on
+     * [xyz.easiersaid.twr.protocol.Wind.directionDegrees] (twr2 stores
+     * Magnetic FROM-degrees, matching the ATIS/ATC voice sensing path
+     * the pilot reads). Same reference frame as
+     * [xyz.easiersaid.twr.protocol.headingDegreesMagnetic] — single-
+     * frame crosswind computation in
+     * `pilot.observe.crosswindComponentKnots` does not need a
+     * True/Magnetic conversion in v1.
+     */
+    val FAA_AIM_7_1_12_WIND_MAGNETIC = RegulationRef(
+        document = "FAA_AIM", edition = "AIM (current)", section = "§7-1-12.d.3",
+        title = "ATC-voice surface wind in Magnetic degrees",
+        principle = "Surface wind broadcast by ATC is reported in Magnetic degrees, FROM-direction; " +
+            "printed sources (METAR/TAF) use True degrees",
+        category = RegulationCategory.GUIDANCE,
+    )
 }

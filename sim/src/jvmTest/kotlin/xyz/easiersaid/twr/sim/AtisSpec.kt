@@ -1,7 +1,7 @@
 package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.controller.WeatherObservation
-import xyz.easiersaid.twr.controller.WindReport
+import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AerodromeId

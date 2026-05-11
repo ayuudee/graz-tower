@@ -4,7 +4,7 @@ import arrow.core.NonEmptyList
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.WeatherObservation
-import xyz.easiersaid.twr.controller.WindReport
+import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AerodromeAip
 import xyz.easiersaid.twr.core.world.AerodromeRole

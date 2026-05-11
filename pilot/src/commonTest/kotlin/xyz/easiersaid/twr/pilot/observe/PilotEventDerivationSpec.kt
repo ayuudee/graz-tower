@@ -72,7 +72,7 @@ class PilotEventDerivationSpec {
 
     @Test
     fun `aircraft at 50m on REPORT_FINAL with no clearance emits go-around event per CAP 413 sec4dot55`() {
-        val event = derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.REPORT_FINAL))
+        val event = derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.REPORT_FINAL), weather = null)
         assertEquals(
             PilotEvent.DecisionAltitudeWithoutClearance(
                 aircraft = ac, altitudeM = 50.0, currentStep = MissionStep.REPORT_FINAL,
@@ -87,7 +87,7 @@ class PilotEventDerivationSpec {
         // Pinning the inclusion set extends to FLY_BASE; a regression
         // narrowing to only FINAL would silently drop go-arounds during
         // base-leg low-altitude scenarios.
-        val event = derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.FLY_BASE))
+        val event = derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.FLY_BASE), weather = null)
         assertEquals(
             MissionStep.FLY_BASE,
             (event as? PilotEvent.DecisionAltitudeWithoutClearance)?.currentStep,
@@ -98,7 +98,7 @@ class PilotEventDerivationSpec {
     @Test
     fun `aircraft at 200m above decision altitude emits no event`() {
         assertNull(
-            derivePilotEvent(aircraftAt(200.0), missionAtStep(MissionStep.REPORT_FINAL)),
+            derivePilotEvent(aircraftAt(200.0), missionAtStep(MissionStep.REPORT_FINAL), weather = null),
             "CAP 413 §4.55: above decision altitude (100m) the pilot continues approach",
         )
     }
@@ -110,7 +110,7 @@ class PilotEventDerivationSpec {
         // specification of `aircraft.altitudeM <= DECISION_ALTITUDE_M`.
         assertEquals(
             100.0,
-            (derivePilotEvent(aircraftAt(100.0), missionAtStep(MissionStep.REPORT_FINAL))
+            (derivePilotEvent(aircraftAt(100.0), missionAtStep(MissionStep.REPORT_FINAL), weather = null)
                 as? PilotEvent.DecisionAltitudeWithoutClearance)?.altitudeM,
             "altitude == DECISION_ALTITUDE_M (100m) is at the boundary; closed-inclusive specification fires",
         )
@@ -119,7 +119,7 @@ class PilotEventDerivationSpec {
     @Test
     fun `aircraft at 50m with landing clearance emits no event`() {
         assertNull(
-            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.REPORT_FINAL, hasClearance = true)),
+            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.REPORT_FINAL, hasClearance = true), weather = null),
             "CAP 413 §4.55: with clearance the pilot lands; go-around not triggered",
         )
     }
@@ -127,7 +127,7 @@ class PilotEventDerivationSpec {
     @Test
     fun `aircraft at 50m on REPORT_DOWNWIND emits no event — wrong approach step`() {
         assertNull(
-            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.REPORT_DOWNWIND)),
+            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.REPORT_DOWNWIND), weather = null),
             "REPORT_DOWNWIND is not in the approach-step inclusion set",
         )
     }
@@ -142,6 +142,7 @@ class PilotEventDerivationSpec {
             derivePilotEvent(
                 aircraftAt(50.0, phase = PilotPhase.LandingRoll),
                 missionAtStep(MissionStep.REPORT_FINAL),
+                weather = null,
             ),
             "Phase guard: LandingRoll/Vacating excluded — no go-around after touchdown",
         )
@@ -152,11 +153,11 @@ class PilotEventDerivationSpec {
         // The transition has already entered — a second fire would
         // double-replace the subtree.
         assertNull(
-            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.GOING_AROUND)),
+            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.GOING_AROUND), weather = null),
             "VFR re-fire prevention: GOING_AROUND step → already going around",
         )
         assertNull(
-            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.AWAITING_ATC_INSTRUCTION)),
+            derivePilotEvent(aircraftAt(50.0), missionAtStep(MissionStep.AWAITING_ATC_INSTRUCTION), weather = null),
             "IFR re-fire prevention: AWAITING_ATC_INSTRUCTION step → already on missed approach",
         )
     }

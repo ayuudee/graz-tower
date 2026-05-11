@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.pilot
 
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
+import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.UnknownDesignator
 import xyz.easiersaid.twr.protocol.WakeCategory
 import kotlin.test.Test
@@ -51,6 +52,19 @@ class AircraftTypeSpec {
             t.cruiseAltitudeM,
             "engineering tuning — typical VFR cruise (~3300 ft); sim default for IFR fallback",
         )
+        // fn-14.1 (R1): POH §2 — Maximum demonstrated crosswind velocity is 15 knots (not a limitation).
+        assertEquals(
+            Knots.unsafe(15),
+            t.maxCrosswindKnots,
+            "POH §2 — C172 maximum demonstrated crosswind 15 kt",
+        )
+        // Positivity invariant: every POH crosswind value is >= 1 kt by `Knots`'
+        // positive-smart-type construction. The invariant test (parametric over
+        // every leaf) lives below in `every leaf has positive maxCrosswindKnots`.
+        assertTrue(
+            t.maxCrosswindKnots.value > 0,
+            "maxCrosswindKnots must be positive (Knots positive-only)",
+        )
     }
 
     @Test
@@ -80,6 +94,26 @@ class AircraftTypeSpec {
             t.cruiseAltitudeM,
             "engineering tuning — ~10000 ft below-FL100 plateau; sub-FL180 sim default",
         )
+        // fn-14.1 (R1): Boeing 737-800 FCOM Limitations — 33 kt steady-crosswind (dry/grooved runway).
+        assertEquals(
+            Knots.unsafe(33),
+            t.maxCrosswindKnots,
+            "FCOM Limitations — B738 33 kt steady crosswind",
+        )
+    }
+
+    @Test
+    fun `every AircraftType leaf has a positive maxCrosswindKnots — fn-14_1 R1 invariant`() {
+        // Parametric invariant over every leaf: POH crosswind values are always
+        // >= 1 kt; the `Knots` positive-smart type enforces this at construction
+        // time, but a regression that constructed via `Knots.unsafe(0)` or `-N`
+        // would error at class-load. This test pins the contract behaviorally:
+        // every leaf is referenced and reading `maxCrosswindKnots.value` is
+        // positive. A new leaf landing without honoring the invariant fails
+        // here. (Sealed `AircraftType` is closed; new leaves are added in this
+        // file, so a per-leaf row is the right form rather than reflection.)
+        assertTrue(AircraftType.C172.maxCrosswindKnots.value > 0, "C172 maxCrosswindKnots > 0")
+        assertTrue(AircraftType.B738.maxCrosswindKnots.value > 0, "B738 maxCrosswindKnots > 0")
     }
 
     @Test

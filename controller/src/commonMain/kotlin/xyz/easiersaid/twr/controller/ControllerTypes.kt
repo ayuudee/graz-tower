@@ -259,31 +259,21 @@ data class ClearanceSummary(
 )
 
 /**
- * Sealed wind-report state. Replaces the earlier `Wind?` field on
- * [WeatherObservation] so consumers must explicitly handle the
- * "no wind report yet" case rather than treating null as a silent
- * fallback. Resolves G1-DEF-7 (pre-G1.6 must-fix).
- */
-sealed interface WindReport {
-    /** A current wind report is available. */
-    data class Available(val wind: Wind) : WindReport
-
-    /**
-     * No wind report has been received yet — typically before the first
-     * METAR cycle, or in the controller's belief state when the weather
-     * observation hasn't been refreshed. Downstream selection logic
-     * (e.g. [selectRunwayIntoWind]) returns null/no-decision rather
-     * than picking a default.
-     */
-    data object NotReported : WindReport
-}
-
-/**
  * Observed weather at a single aerodrome. The [wind] field is a sealed
- * [WindReport] (not nullable) so every consumer must handle the
- * "no report" case explicitly.
+ * [xyz.easiersaid.twr.protocol.WindReport] (not nullable) so every consumer
+ * must handle the "no report" case explicitly.
+ *
+ * fn-14.1 (G3a-react): the [WindReport] sealed type lifted to `:protocol`
+ * so the pilot can consume the wind projection through the firewall
+ * without depending on `:controller`. `WeatherObservation` (the full
+ * `(WindReport, qnh, visibility)` triple) stays here — only the
+ * `wind` projection crosses to `:pilot`.
  */
-data class WeatherObservation(val wind: WindReport, val qnh: PressureSetting?, val visibility: Int?)
+data class WeatherObservation(
+    val wind: xyz.easiersaid.twr.protocol.WindReport,
+    val qnh: PressureSetting?,
+    val visibility: Int?,
+)
 
 /** Channel-resolved pilot message — what was actually heard. Wraps PilotTransmission. */
 sealed interface ReceivedMessage {

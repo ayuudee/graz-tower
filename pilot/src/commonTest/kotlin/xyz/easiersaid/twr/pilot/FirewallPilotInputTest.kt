@@ -6,7 +6,9 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.SimTime
+import kotlin.reflect.full.memberProperties
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * Architectural enforcement test (E2) — `PilotInput` construction-time field shape.
@@ -48,8 +50,68 @@ class FirewallPilotInputTest {
             // contact and reads the letter into the cockpit). Adding non-
             // cockpit data to this map is a firewall regression.
             atisByAerodrome = emptyMap(),
+            // fn-14.1 (G3a-react R3): per-aerodrome wind state — a real-world
+            // cockpit input (windsock / ASI / instrument scan). The pilot
+            // consumes only the WindReport projection from each
+            // WeatherObservation; QNH/visibility stay controller-side.
+            weatherByAerodrome = emptyMap(),
         )
         @Suppress("UNUSED_VARIABLE")
         val _check = canonical.aircraft
+    }
+
+    /**
+     * fn-14.1 (G3a-react R3) — reflection-based property scan. The
+     * canonical-constructor block above is necessary but not sufficient:
+     * a future field added with a default value would slip past the
+     * canonical call (call sites don't have to name defaulted args).
+     *
+     * This test enumerates every public property of `PilotInput` via
+     * Kotlin reflection and compares against a hard-coded allowlist of
+     * cockpit-input field names. A new field added without updating
+     * `allowedFields` fails this test — forcing a deliberate review
+     * against the firewall principle (real-world cockpit input?
+     * justified in PilotInput KDoc? added to the canonical-constructor
+     * test?).
+     *
+     * **No-suppression rule** applies as to the canonical block.
+     */
+    @Test
+    fun `PilotInput property names match the firewall allowlist`() {
+        val allowedFields = setOf(
+            "aircraft",
+            "worldIndex",
+            "world",
+            "now",
+            "atisByAerodrome",
+            "weatherByAerodrome",
+        )
+        val actualFields = PilotInput::class.memberProperties.map { it.name }.toSet()
+        assertEquals(
+            allowedFields,
+            actualFields,
+            """
+            FIREWALL VIOLATION: PilotInput field set does not match the
+            allowlist. Every PilotInput field must map to a real-world
+            cockpit input (own kinematic state, filed plan, visual
+            observation, chart data).
+
+            Expected (allowlist): $allowedFields
+            Actual (PilotInput):  $actualFields
+
+            Resolution paths:
+              - If the new field IS a cockpit input: add it to
+                `allowedFields` here AND add a named-argument entry to
+                the canonical-constructor block above AND justify in
+                the field's KDoc.
+              - If the new field IS NOT a cockpit input (e.g. anything
+                reachable from BeliefState / ControllerSpec /
+                ControllerView): remove it. Smuggling controller-side
+                state through PilotInput is the firewall regression
+                Phase C deleted.
+
+            No `@Suppress`, no `@Disabled`, no test removal.
+            """.trimIndent(),
+        )
     }
 }

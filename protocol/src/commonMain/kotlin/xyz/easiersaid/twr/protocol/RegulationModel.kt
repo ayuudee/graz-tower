@@ -50,11 +50,17 @@ data class RegulationRef(
         private val AUTHORITY_NAMES = mapOf(
             "SERA" to "SERA",
             "ICAO_ANNEX_2" to "ICAO Annex 2",
+            "ICAO_ANNEX_6_PII" to "ICAO Annex 6 Part II",
             "ICAO_ANNEX_11" to "ICAO Annex 11",
             "ICAO_4444" to "ICAO Doc 4444",
             "ICAO_9432" to "ICAO Doc 9432",
             "ICAO_9870" to "ICAO Doc 9870",
             "CAP_413" to "CAP 413",
+            // fn-14.1 (R14): FAA citations needed for the G3a-react POH-
+            // crosswind reactive-GA regulatory anchor set.
+            "FAA_AFH" to "FAA Airplane Flying Handbook",
+            "FAA_FAR_23" to "14 CFR Part 23",
+            "FAA_AIM" to "FAA AIM",
         )
     }
 }
