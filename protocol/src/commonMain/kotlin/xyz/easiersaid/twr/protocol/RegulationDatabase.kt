@@ -150,10 +150,27 @@ object RegulationDatabase {
         category = RegulationCategory.PROCEDURE,
     )
 
+    /**
+     * ICAO Doc 4444 §7.10.2 — "Clearance to land". Source text:
+     * "An aircraft may be cleared to land when there is reasonable assurance
+     * that the separation in 7.10.1, or prescribed in accordance with 7.11,
+     * will exist when the aircraft crosses the runway threshold, provided
+     * that a clearance to land shall not be issued until a preceding landing
+     * aircraft has crossed the runway threshold."
+     *
+     * Consumers (`GA-PRE-CLEAR`, `GA-POST-CLEAR`, `ARR-GO-AROUND`,
+     * `ARR-GO-AROUND-CLEARANCE-ISSUED`, reactive-separation GA emission) cite
+     * §7.10.2 because the go-around is the operational *consequence* of the
+     * reasonable-assurance test failing: if assurance cannot be re-established
+     * before threshold crossing, clearance is withheld / withdrawn and a
+     * go-around is issued.
+     */
     val ICAO4444_7_10_2 = RegulationRef(
         document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§7.10.2",
-        title = "Go-around instruction",
-        principle = "If controller considers aircraft cannot safely complete approach, instructions to go around shall be given",
+        title = "Clearance to land — reasonable assurance",
+        principle = "Landing clearance may be issued only when there is reasonable assurance the required " +
+            "separation will exist at threshold crossing; absent that assurance the clearance is withheld " +
+            "or withdrawn and a go-around follows",
         category = RegulationCategory.PROCEDURE,
     )
 
@@ -177,15 +194,18 @@ object RegulationDatabase {
     )
 
     /**
-     * fn-12 (R7): reason on radio is mandatory.
+     * fn-12 (R7): reason on radio is reason-on-radio convention.
      *
-     * "In all such cases, the reason for the instruction or the advice
-     * should be given to the pilot."
+     * Source text: "In all such cases, the reason for the instruction or the
+     * advice **should** be given to the pilot." (Note: "should", not "shall"
+     * — recommendatory, not mandatory. fn-12.1's original transcription said
+     * "shall"; corrected in fn-14 cleanup pass per docs-scout finding in
+     * fn-13 planning.)
      */
     val ICAO4444_8_9_6_1_8 = RegulationRef(
         document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§8.9.6.1.8",
         title = "Reason for instruction given to pilot",
-        principle = "In all such cases, the reason for the instruction or the advice shall be given to the pilot",
+        principle = "In all such cases, the reason for the instruction or the advice should be given to the pilot",
         category = RegulationCategory.PROCEDURE,
     )
 
