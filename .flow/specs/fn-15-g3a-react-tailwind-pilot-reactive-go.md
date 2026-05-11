@@ -156,7 +156,7 @@ Each branch is independent (no shared early returns; mirror fn-14's split). When
 - Set `tailwindClearedToLimit = true`.
 
 **Three-layer pin pattern** (same shape as fn-14 R12):
-- **Layer 1** — causal partial-order: wind-shift cycle ≤ `Report(GoingAround)` cycle ≤ commitment regression cycle < wind-return cycle < recovery `ClearedToLand` cycle < `Report(RunwayVacated)` cycle. Same-cycle: `≤` on `SimTime.millis` + mint-id sequence tiebreak; strict `<` across cycles.
+- **Layer 1** — causal partial-order: wind-shift cycle ≤ `Report(GoingAround)` cycle ≤ commitment regression cycle < wind-return cycle < recovery `ClearedToLand` cycle < `Report(RunwayVacated)` cycle. **Timestamp source**: this test's Layer 1 chain crosses cycles by construction (pilot-emits-GA → controller-issues-recovery-CTL → pilot-emits-vacate, each on separate cycles via cross-radio delivery), so there are no same-cycle pairs needing the mint-id tiebreak. Pins use `record.time.millis` (transmission-start timestamps) — codex impl-review-validated 2026-05-11 against the mint-id discipline at `sim-test-pins-must-compare-against-2026-05-10`, which becomes load-bearing only when same-cycle controller outputs need ordering (e.g. fn-12.3 G3a-obstruction's GA-instruction + companion `RunwayObstructionInformation` from the same controller decision). The general partial-order discipline still applies: `≤` on `SimTime.millis` + mint-id sequence tiebreak for same-cycle pairs (none in this test), strict `<` across cycles.
 - **Layer 2** — sticky-witness regression: commitment regresses from `{LandingClearanceIssued, AwaitLandedObserved}` to `TowerArrivalStage.AwaitDownwind` via `GA-POST-CLEAR`. Sticky witnesses reset per fn-8.3.
 - **Layer 3** — kinematic non-event: no `LandingRoll` phase / `TouchdownDetected` between wind-shift and wind-recovery cycles.
 
@@ -238,7 +238,7 @@ This is a clean "additive within existing surface" pass — the firewall widenin
     2. 15 kt tailwind → 10 kt headwind (back to initial direction = `runwayHeading`). Predicate: `Report(GoingAround)` has been transmitted AND aircraft back on downwind AND `!tailwindClearedToLimit`. One-shot `var tailwindClearedToLimit = false`.
   - Authorship predicate validated (FAIL LOUDLY if preconditions don't hold within some sim tick — test setup error, not retry-loop).
   - **Three-layer pin pattern** (per Decision #6):
-    - Layer 1 (causal partial-order): wind-shift cycle `≤` `Report(GoingAround)` cycle `≤` commitment regression cycle `<` wind-return cycle `<` recovery `ClearedToLand` cycle `<` `Report(RunwayVacated)` cycle. Same-cycle: `<=` on `SimTime.millis` + mint-id sequence tiebreak; strict `<` across cycles.
+    - Layer 1 (causal partial-order): wind-shift cycle `≤` `Report(GoingAround)` cycle `≤` commitment regression cycle `<` wind-return cycle `<` recovery `ClearedToLand` cycle `<` `Report(RunwayVacated)` cycle. **Timestamp source**: tx-start (`record.time.millis`) — this test's Layer 1 chain crosses cycles by construction (no same-cycle pairs needing the mint-id tiebreak; see R11 narrative in section "Three-layer pin pattern" above + the load-bearing-cycle pin `regression.after.time.millis < weatherClearMs` in the test). The mint-id discipline (`sim-test-pins-must-compare-against-2026-05-10`) remains authoritative for same-cycle pairs; this test simply doesn't have any.
     - Layer 2 (sticky-witness regression): commitment regresses from `{LandingClearanceIssued, AwaitLandedObserved}` to `TowerArrivalStage.AwaitDownwind` via `GA-POST-CLEAR` (NOT `Immediate` — same as fn-14). Sticky witnesses reset per fn-8.3.
     - Layer 3 (kinematic non-event): no `LandingRoll` phase between wind-shift and wind-recovery cycles; exactly one `TouchdownDetected` after wind returns within limit.
   - Vacate-coordination closure pin per fn-8.3 R7.
@@ -325,15 +325,15 @@ _(none — plan aligns with Runtime simulator track and is a clean additive sibl
 
 Follows the **three-layer pin pattern** (per fn-11.2 / fn-12.3 / fn-14.2):
 
-- **Layer 1 (causal partial-order)** — decision-cycle pins via `findEmittingCycleMs` mint-id walk. Same-cycle events use `<=` on `SimTime.millis` plus mint-id sequence tiebreak; strict `<` only across cycles:
+- **Layer 1 (causal partial-order)** — partial-order pins on tx-start timestamps (`record.time.millis`). This test's chain crosses cycles by construction (pilot-emits-GA → controller-issues-recovery-CTL → pilot-emits-vacate are each separate cycles via cross-radio delivery; weather-shift/return cycles are world-authored independently of pilot/controller cycles), so there are no same-cycle pairs needing the mint-id tiebreak from `sim-test-pins-must-compare-against-2026-05-10`. The mint-id discipline remains authoritative for tests that order same-cycle outputs (e.g. fn-12.3 G3a-obstruction's same-cycle GA-instruction + companion `RunwayObstructionInformation`); this scenario simply doesn't have them. Required pins:
   ```
-  Weather_shift.decisionTime
-      <= Report(GoingAround).decisionTime               // same-cycle OK
-      <= Stage_regression(LandingClearanceIssued|AwaitLandedObserved → AwaitDownwind).time
-      <  Weather_return.decisionTime
-      <  ClearedToLand_recovery.decisionTime
-      <  Report(RunwayVacated).decisionTime
+  Weather_shift.tx          <= Report(GoingAround).tx
+                            <  Stage_regression(LandingClearanceIssued|AwaitLandedObserved → AwaitDownwind).time
+                            <  Weather_return.tx
+                            <  ClearedToLand_recovery.tx
+                            <  Report(RunwayVacated).tx
   ```
+  Plus the load-bearing-cycle bracket: `Stage_regression.time < Weather_return.tx` (pinned explicitly in test — guarantees the `GA-POST-CLEAR` interrupt fires within the exceedance window, not after the wind already returned).
 - **Layer 2 (sticky-witness regression)** — exactly one stage transition `<from-stage> → AwaitDownwind` via `GA-POST-CLEAR`. Sticky-witness reset per fn-8.3.
 - **Layer 3 (kinematic non-event)** — no `LandingRoll` phase before `Report(GoingAround)`; aircraft does NOT touch down on the GA'd approach.
 
