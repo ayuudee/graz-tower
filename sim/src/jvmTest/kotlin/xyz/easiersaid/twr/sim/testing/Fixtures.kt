@@ -77,10 +77,15 @@ import xyz.easiersaid.twr.protocol.Wind
  *    via `onAfterEvent`; first one-shot authors 15 kt direct tailwind
  *    `((runwayHeading + 180) % 360 clamped 0→360)` to trigger
  *    recognition (5 kt margin above C172's 10 kt advisory), second
- *    one-shot returns wind to the initial 10 kt headwind once
- *    `Report(GoingAround)` has been transmitted and the aircraft is
- *    off final; closes the second pilot-reactive POH/AFH recognition
- *    axis as the fifth reactive-GA path).
+ *    one-shot returns wind to the initial 10 kt headwind once the
+ *    post-GA **recovery-circuit
+ *    `Report(events=[Downwind(...)])`** transmission is observed —
+ *    the load-bearing recovery observable; strictly tighter than the
+ *    crosswind sibling's `off-final` gate per fn-15.2 codex round-2/3
+ *    review since the recovery downwind report only fires when the
+ *    aircraft has physically re-entered the recovery pattern, not
+ *    merely climbed out from the GA; closes the second pilot-reactive
+ *    POH/AFH recognition axis as the fifth reactive-GA path).
  *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
  *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
  *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG

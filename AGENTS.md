@@ -427,9 +427,14 @@ are what the run produced.
   received `GoAroundEvent` regressing the commitment from
   `{LandingClearanceIssued, AwaitLandedObserved}` to `AwaitDownwind`,
   the aircraft GAs and re-enters circuit. A second one-shot transition
-  returns the wind to within limits once `Report(GoingAround)` has been
-  transmitted and the aircraft is off final; the recovery circuit's
-  final is therefore within the advisory and the aircraft lands. Pins:
+  returns the wind to within limits once the **recovery-circuit
+  `Report(events=[Downwind(...)])` transmission** is observed on the
+  radio (the post-GA recovery downwind report — strictly tighter than
+  the crosswind sibling's `off-final` gate per fn-15.2 codex round-2/3
+  review; the recovery downwind report is the load-bearing observable
+  that the aircraft has physically re-entered the recovery pattern,
+  not just climbed out from the GA). The recovery circuit's final is
+  therefore within the advisory and the aircraft lands. Pins:
   same three-layer pattern as G3a-react-crosswind (Layer 1 causal
   partial-order — exactly one `Report(GoingAround)`; Layer 2
   sticky-witness regression via `GA-POST-CLEAR` strictly AFTER the

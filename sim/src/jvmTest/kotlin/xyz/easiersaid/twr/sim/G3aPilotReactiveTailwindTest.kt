@@ -188,11 +188,25 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *    discipline):
  *    - Layer 1 (causal partial-order) — exactly one
  *      `Report(GoingAround)` transmitted between the wind-shift cycle
- *      and the wind-recovery cycle. Decision-cycle timestamps via
- *      `findEmittingCycleMs` mint-id walk; same-cycle ordering uses
- *      `<=` on `SimTime.millis` plus mint-id sequence tiebreak per
- *      `sim-test-pins-must-compare-against-2026-05-10`. Strict `<`
- *      only across cycles.
+ *      and the wind-recovery cycle. Pins use **transmission-start
+ *      timestamps** (`record.time.millis`) — every observable on the
+ *      Layer 1 chain (`Report(GoingAround)`, recovery `ClearedToLand`,
+ *      `Report(RunwayVacated)`, and the world-weather transitions
+ *      from `trace.weatherTransitions`) is spaced far enough apart on
+ *      the wall (hundreds of milliseconds at minimum, typically 1+
+ *      seconds) that tx-start vs decision-cycle ordering yields the
+ *      same partial-order verdict. The `findEmittingCycleMs` mint-id
+ *      walk (per `sim-test-pins-must-compare-against-2026-05-10`)
+ *      becomes load-bearing when controller decisions and pilot
+ *      decisions on the same cycle are being ordered — this test's
+ *      chain is GA-emitted-by-pilot → controller-issues-recovery-CTL
+ *      (separate cycle, cross-radio) → pilot-emits-vacate (separate
+ *      cycle), so tx-start ordering is sufficient. The fn-12.3
+ *      G3a-obstruction test uses `findEmittingCycleMs` specifically
+ *      because IT orders **same-cycle controller outputs** (GA
+ *      instruction + companion `RunwayObstructionInformation` emitted
+ *      by the same controller decision), which is the scenario the
+ *      mint-id walk was built for.
  *    - Layer 2 (sticky-witness regression) — commitment regresses from
  *      one of `{LandingClearanceIssued, AwaitLandedObserved}` (the
  *      hook's post-clearance window) to `TowerArrivalStage
