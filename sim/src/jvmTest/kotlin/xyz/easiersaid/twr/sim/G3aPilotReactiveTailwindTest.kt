@@ -448,15 +448,28 @@ class G3aPilotReactiveTailwindTest {
 
             when {
                 // Transition 2 — wind returns within limit (one-shot).
-                // Gated on `Report(GoingAround)` already transmitted AND
-                // aircraft off final (back on a non-final leg / climbout).
-                // Both gates required: the report alone would fire
-                // immediately at the GA transmission instant, before the
-                // aircraft has actually climbed and re-entered downwind;
-                // the off-final gate gives the GA path room to execute.
+                // Gated on THREE conditions (codex round-1 strengthening over
+                // the fn-14.2 crosswind sibling's two-gate pattern):
+                //   (i) `Report(GoingAround)` already transmitted,
+                //  (ii) aircraft off final (back on a non-final leg /
+                //       climbout — physical re-entry into the pattern), AND
+                // (iii) tower commitment is back at a **recovery-pattern**
+                //       stage (`AwaitDownwind` or `AwaitApproach`) — proof
+                //       that the GA-POST-CLEAR regression has actually
+                //       executed AND the recovery circuit has settled into
+                //       the downwind / approach lifecycle, not the brief
+                //       Climbing window right after the GA transmission.
+                // Without gate (iii), an aggressive `phase != Final` flip
+                // during climb-out could clear the wind before the
+                // recovery circuit reaches downwind, shortening the
+                // exceedance window and weakening the recovery pin's
+                // semantics. Mirrors the task spec literally:
+                // "controller commitment stage ∈ {AwaitDownwind,
+                // AwaitApproach} after the regression".
                 !tailwindClearedToLimit &&
                     goingAroundTransmittedFlag[0] &&
-                    aircraftIsOffFinal(st, aircraftId) -> {
+                    aircraftIsOffFinal(st, aircraftId) &&
+                    towerCommitmentInRecoveryPattern(st, aircraftId, tower.id) -> {
                     tailwindClearedToLimit = true
                     tailwindClearedAt[0] = st.now
                     authorWeather(st, lowg, initialWeather)
@@ -783,6 +796,64 @@ class G3aPilotReactiveTailwindTest {
                 "ClearedToLand(recovery) (${landRecoveryMs}ms) < " +
                 "Report(RunwayVacated) (${vacatedMs}ms).\n$journey"
         }
+        // Codex round-1 strengthening: the recovery ClearedToLand must
+        // fire AFTER the wind has returned within the advisory. Without
+        // this, a regression that issued the recovery clearance while
+        // the tailwind exceedance was still active would slip through
+        // the chain pin above (which only orders GoingAround → recovery
+        // CTL → vacate, not wind-clear → recovery CTL). The doctrinal
+        // intent is "recovery cleared once the runway condition is
+        // safe again"; pin it explicitly.
+        check(weatherClearMs < landRecoveryMs) {
+            "Recovery-clearance safety pin: recovery ClearedToLand at " +
+                "${landRecoveryMs}ms must fire strictly AFTER the wind-recovery " +
+                "cycle at ${weatherClearMs}ms. A recovery clearance issued while " +
+                "the tailwind exceedance is still active would be a doctrinal " +
+                "regression — the controller's `ARR-LAND` would re-clear an " +
+                "unsafe runway.\n$journey"
+        }
+
+        // ── Recovery touchdown pin (R11 — exactly one TouchdownDetected) ────
+        //
+        // R11 acceptance: "exactly one `TouchdownDetected` after the wind
+        // returns within limit". The sim has no distinct
+        // `TouchdownDetected` event type; touchdown surfaces as the
+        // `Final → LandingRoll` phase transition. We pin **exactly one**
+        // such transition over the whole run AND its time strictly after
+        // `weatherClearMs`. This catches:
+        //  (a) duplicate touchdown-event production (multiple
+        //      Final → LandingRoll transitions) — would indicate a
+        //      regression in the GA-applier (e.g. mission tree rewrite
+        //      not preventing the first attempt's LandingRoll entry from
+        //      latching), or in the recovery-circuit kinematics.
+        //  (b) missing touchdown — would indicate the recovery circuit
+        //      never actually completed (caught more weakly by the
+        //      mission-complete pin above but pinned explicitly here).
+        //  (c) touchdown before wind cleared — would indicate either
+        //      the recognition fired late or the kinematic non-event pin
+        //      above is too narrow.
+        val touchdownTransitions = phaseTransitions.filter { t ->
+            val fromFinal = t.from == PilotPhase.Final
+            val toLanding = t.to == PilotPhase.LandingRoll
+            fromFinal && toLanding
+        }
+        check(touchdownTransitions.size == 1) {
+            "Expected exactly one Final → LandingRoll touchdown transition " +
+                "for $aircraftId, observed ${touchdownTransitions.size}. " +
+                "More than one indicates the GA-applier failed to prevent " +
+                "circuit 1's touchdown OR a recovery touchdown re-fired; " +
+                "zero indicates the recovery circuit never landed.\n$journey"
+        }
+        val touchdownMs = touchdownTransitions.single().after.time.millis
+        check(touchdownMs > weatherClearMs) {
+            "Recovery touchdown must occur AFTER wind returned within " +
+                "advisory: touchdown at ${touchdownMs}ms vs weatherClearMs " +
+                "${weatherClearMs}ms. Touchdown during the exceedance window " +
+                "would indicate either (i) the recognition fired too late, " +
+                "(ii) the applier's Tick A intent didn't propagate, or " +
+                "(iii) the kinematic non-event pin above is too narrow " +
+                "(check phaseTransitions[].to ∈ {LandingRoll, Vacating}).\n$journey"
+        }
 
         // ── R7 — Vacate-coordination closure pin ────────────────────────────
         //
@@ -866,12 +937,35 @@ class G3aPilotReactiveTailwindTest {
      * Predicate for transition-2 authorship: the aircraft is NOT on
      * final (i.e. has climbed out / re-entered the circuit). Used
      * together with the `Report(GoingAround)` already-transmitted gate
-     * to fire the wind-recovery transition only after the GA path has
-     * actually started executing.
+     * and the recovery-pattern stage gate to fire the wind-recovery
+     * transition only after the GA path has actually started executing.
      */
     private fun aircraftIsOffFinal(st: SimState, aircraft: AircraftId): Boolean {
         val ac = st.aircraft[aircraft] ?: return false
         return ac.phase != PilotPhase.Final
+    }
+
+    /**
+     * Predicate for transition-2 authorship (codex round-1
+     * strengthening): the tower's commitment for the aircraft is back at
+     * a **recovery-pattern** stage — `AwaitDownwind` (immediately after
+     * the `GA-POST-CLEAR` regression) or `AwaitApproach` (after the
+     * recovery circuit's downwind report). Pins that the GA path has
+     * actually progressed through the commitment lifecycle and not just
+     * climbed out briefly. Distinguishes a real recovery-circuit
+     * re-entry from the transient `phase != Final` window during
+     * GA-applier execution before the GA-POST-CLEAR regression cycle
+     * has fired.
+     */
+    private fun towerCommitmentInRecoveryPattern(
+        st: SimState,
+        aircraft: AircraftId,
+        towerId: xyz.easiersaid.twr.protocol.ControllerId,
+    ): Boolean {
+        val commitment = st.beliefs[towerId]?.commitments?.get(aircraft) ?: return false
+        val stage = commitment.stage
+        return stage == TowerArrivalStage.AwaitDownwind ||
+            stage == TowerArrivalStage.AwaitApproach
     }
 
     /**

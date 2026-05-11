@@ -131,9 +131,9 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach, G3a-react)
+## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach, G3a-react, G3a-react-tailwind)
 
-Eight integration tests serve as the runtime golden anchors for end-to-end
+Nine integration tests serve as the runtime golden anchors for end-to-end
 ATC flow. All follow the same shape: a single `@Test` method, a fixture-
 driven load, a deterministic event run, the run is the test, the assertions
 are what the run produced.
