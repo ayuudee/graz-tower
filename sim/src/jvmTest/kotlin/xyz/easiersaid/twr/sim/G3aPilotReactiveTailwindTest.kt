@@ -749,6 +749,27 @@ class G3aPilotReactiveTailwindTest {
                 "`Immediate` advancement which is the G3a-obstruction path, not the " +
                 "pilot-reactive path).\n$journey"
         }
+        // Causal-chain pin: the commitment regression must fire strictly
+        // BEFORE the wind returns. The R11 chain is
+        // `Report(GoingAround) <= commitment regression < wind_return <
+        // recovery ClearedToLand < Report(RunwayVacated)`. The earlier
+        // `regression > goingAroundMs` check pins the left edge; this
+        // pins the right edge. A regression AT-OR-AFTER `weatherClearMs`
+        // would mean the controller hadn't yet observed/processed the
+        // pilot-initiated GA when the world's wind already returned to
+        // limits — i.e. the recovery clearance could (incorrectly) fire
+        // on the original commitment slot rather than after the
+        // sticky-witness reset, masking a hysteresis or interrupt-
+        // timing regression.
+        check(regression.after.time.millis < weatherClearMs) {
+            "Causal-chain ordering: stage regression at ${regression.after.time.millis}ms " +
+                "must fire strictly BEFORE wind-recovery cycle at ${weatherClearMs}ms. " +
+                "The R11 chain pins commitment regression to fall in the exceedance window " +
+                "(between Report(GoingAround) and wind_return); a regression after wind_return " +
+                "indicates the `GA-POST-CLEAR` interrupt was delayed past the wind's recovery, " +
+                "or that something else (re-armed clearance, second-cycle GA) is being measured.\n" +
+                "$journey"
+        }
 
         // Post-regression sticky witnesses are reset (fn-8.3 R7-style).
         val commitmentAfter = regression.after.state.beliefs[tower.id]
