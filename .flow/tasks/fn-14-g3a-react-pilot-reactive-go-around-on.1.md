@@ -264,9 +264,20 @@ Add tests for R1, R2, R3, R4, R5, R6, R8, R9, R10, R11, R14, R15. R7 (Wind KDoc)
 Sim integration test (`G3aPilotReactiveCrosswindTest`) + doc cross-references ride on this foundation. fn-14.2's pins are observable behavior only — `Report(GoingAround)`, commitment stage regression (`LandingClearanceIssued`/`AwaitLandedObserved` → `AwaitDownwind`), no touchdown, recovery landing. Event-counting / hysteresis pins live in fn-14.1 unit tests (R11).
 
 ## Done summary
-
-_(filled by worker on completion)_
-
+Foundation pass for G3a-react landed: `AircraftType.maxCrosswindKnots`
++ `WindReport` lifted to `:protocol` + `PilotInput.weatherByAerodrome`
+firewall widening (with reflection-based property scan) + `RunwayId.
+headingDegreesMagnetic()` fail-closed parser + `crosswindComponentKnots`
+helper + `PilotEvent.CrosswindLimitExceeded` leaf + split-branch
+`derivePilotEvent` + distinct `applyCrosswindGoAround` (third reactive
+GA shape: reactive Tick A intent + inline subtree replacement using
+`isCircuitLike`) + `windForMission` aerodrome helper + four
+RegulationDatabase entries (FAA AFH / FAR §23.233 / Annex 6 PII §2.4 /
+AIM §7-1-12.d.3). Two codex round-1 findings (single-char runway
+designator tolerance, recognition firing on non-circuit-like mission
+shapes) addressed before SHIP. Seven existing goldens green;
+`SelfInitiatedGoAroundResponseSpec` unchanged.
 ## Evidence
-
-_(filled by worker on completion)_
+- Commits: bb7bb0c5ffb2605b5884a02942d0ec3723f21892, 5e7548aef466d4da1db9bd00ae523f29f07cf3b5
+- Tests: ./gradlew :pilot:jvmTest :protocol:allTests :controller:jvmTest :core:allTests :sim:jvmTest detekt, ./gradlew :sim:jvmTest --tests "*LowgGoldenTest*" --tests "*G1TwoAircraftCircuitsTest*" --tests "*G1TwoAircraftMinimalSpec*" --tests "*G2CrossAerodromeVfrTest*" --tests "*G3aPilotTrainedGoAroundTest*" --tests "*G3aRunwayObstructionTest*" --tests "*G3aRunwayObstructionContinueApproachTest*" --tests "*SelfInitiatedGoAroundResponseSpec*"
+- PRs:
