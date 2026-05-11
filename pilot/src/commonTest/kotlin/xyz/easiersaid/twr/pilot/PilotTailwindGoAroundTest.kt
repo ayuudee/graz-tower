@@ -193,11 +193,16 @@ class PilotTailwindGoAroundTest {
             TaskName.CircuitAfterGoAround in compounds,
             "T&G tailwind GA replaces TouchAndGo subtree with CircuitAfterGoAround; got $compounds",
         )
-        // The pre-rewrite TouchAndGo compound must be replaced — not
-        // augmented.
+        // The pre-rewrite TouchAndGo compound must be **absent** after
+        // the rewrite (replaced, not augmented alongside the new
+        // CircuitAfterGoAround compound). Codex round-1 fix: the prior
+        // `assertFalse(any { TouchAndGo && count CAGA == 0 })` form
+        // passed vacuously when both remained — direct absence assertion
+        // is the correct shape.
         assertFalse(
-            compounds.any { it is TaskName.TouchAndGo && (compounds.count { c -> c is TaskName.CircuitAfterGoAround } == 0) },
-            "after rewrite, the TouchAndGo subtree has been replaced (not left alongside CircuitAfterGoAround)",
+            compounds.any { it is TaskName.TouchAndGo },
+            "after rewrite, the TouchAndGo subtree has been replaced (no TouchAndGo compound remains); " +
+                "got $compounds",
         )
         val subtreeSteps = collectSteps(result.mission.root)
         assertTrue(

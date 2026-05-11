@@ -258,6 +258,31 @@ class PilotEventTailwindTest {
     }
 
     @Test
+    fun `tailwind boundary — just above advisory (11 kt) fires (strict gt)`() {
+        // Sibling to the at-the-limit row above: at 11 kt dead tailwind
+        // against the 10 kt C172 AFH advisory, the recognition fires.
+        // Pins the upper half of the strict `>` boundary so a regression
+        // to `<` or `<=` (which would never fire) surfaces. We use 11
+        // (not the spec's notional `10.0001 kt`) because `Wind.speedKnots`
+        // is an Int — the smallest representable above-advisory value
+        // is 11 kt. The recognition layer's component vs. limit
+        // comparison is Double vs Double (`component > limit.toDouble()`),
+        // so finer-grain math discrimination is exercised at the helper
+        // layer in `TailwindHelperTest.boundary — wind 10 kt direct
+        // tailwind ... — exact 10.0`.
+        val event = derivePilotEvent(
+            aircraftOnFinal(),
+            mission(MissionStep.FLY_FINAL),
+            weather = availableWind(directionDegrees = 90, speedKnots = 11),
+        )
+        assertTrue(
+            event is PilotEvent.TailwindLimitExceeded,
+            "boundary: 11 kt dead tailwind > 10 kt advisory fires (strict >); got $event",
+        )
+        assertEquals(11.0, event.componentKnots, 1e-9, "component carries the precise value")
+    }
+
+    @Test
     fun `tailwind does NOT fire when active compound is NOT circuit-like — fail-closed mission-shape guard`() {
         // fn-14.1 codex review fix, lifted to a shared helper in fn-15.1:
         // a Transit-arrival mission carries FLY_FINAL directly under the
