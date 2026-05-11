@@ -39,7 +39,7 @@ import xyz.easiersaid.twr.protocol.Wind
  *    runway obstruction; same fixture, distinguishing surface is the
  *    one-shot `runway.obstruction = RunwayObstruction(clearsAt = ...)`
  *    mutation via `runUntilWithStateTrace`'s `onAfterEvent` hook per
- *    `feedback_world_only_test_triggers.md`), and G3a-obstruction-
+ *    `feedback_world_only_test_triggers.md`), G3a-obstruction-
  *    continue-approach
  *    ([xyz.easiersaid.twr.sim.G3aRunwayObstructionContinueApproachTest]
  *    — single-aircraft pre-clearance CONTINUE APPROACH on a short-TTL
@@ -48,7 +48,20 @@ import xyz.easiersaid.twr.protocol.Wind
  *    surface is the 5-second `clearsAt` TTL + pre-clearance authorship
  *    stage versus G3a-obstruction's 60-second post-clearance variant —
  *    the two tests together cover the three-state pre-clearance ladder
- *    of CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)).
+ *    of CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)), and **G3a-react**
+ *    ([xyz.easiersaid.twr.sim.G3aPilotReactiveCrosswindTest] — single-
+ *    aircraft pilot-reactive go-around triggered by a world-authored
+ *    wind shift whose crosswind component on the active runway exceeds
+ *    the aircraft type's POH-derived `AircraftType.maxCrosswindKnots`
+ *    (C172 = 15 kt); same fixture, distinguishing surface is the two-
+ *    transition `state.weatherByAerodrome[LOWG]` mutation via
+ *    `runUntilWithStateTrace`'s `onAfterEvent` hook per
+ *    `feedback_world_only_test_triggers.md` — first one-shot authors
+ *    20 kt direct crosswind to trigger the recognition, second one-shot
+ *    returns wind to within limits once `Report(GoingAround)` has been
+ *    transmitted and the aircraft is off final; closes the G3a trilogy
+ *    by adding the fourth reactive-GA path — the first pilot-side
+ *    reactive recognition driven by world weather).
  *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
  *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
  *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG

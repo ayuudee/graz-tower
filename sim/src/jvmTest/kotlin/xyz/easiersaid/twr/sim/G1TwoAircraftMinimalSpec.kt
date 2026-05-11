@@ -74,6 +74,10 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *      pre-clearance CONTINUE APPROACH sibling (fn-13 — short-TTL
  *      obstruction at AwaitApproach; aircraft continues approach and
  *      lands normally; same R7 vacate-coordination closure invariant).
+ * @see G3aPilotReactiveCrosswindTest the single-aerodrome pilot-reactive
+ *      crosswind GA sibling (fn-14 — world hook authors wind past C172's
+ *      15 kt POH limit; pilot autonomously GAs; same R7 vacate-coordination
+ *      closure invariant on the recovery landing).
  */
 class G1TwoAircraftMinimalSpec {
 

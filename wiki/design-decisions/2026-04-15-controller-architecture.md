@@ -354,6 +354,29 @@ Per ATC law review:
 | Reactive go-around | (none) | ICAO 4444 s7.10.2 (mandatory go-around instruction) |
 | Reactive spacing | (none) | ICAO 4444 s5 + SERA.8005(c) (separation obligation) |
 
+## Note (2026-05-11 — fn-14 G3a-react)
+
+The reactive go-around surface is now **quadruple-covered** at the
+pilot-side (self-initiated DA-without-clearance, pilot-trained mission,
+ATC-instructed-obstruction, pilot-reactive crosswind off world weather).
+**No controller behaviour change** for fn-14: the existing
+`GA-PRE-CLEAR` / `GA-POST-CLEAR` interrupts (see *§2 Controller
+Architecture* above) are trigger-agnostic — they fire on
+`ControllerEvent.GoAroundDetected` which derives from any pilot-emitted
+`Report(GoingAround)` regardless of the source path (mission-authored,
+ATC-instruction-driven, or pilot's autonomous crosswind reading). The
+only controller-side compile-impact was the relocation of `WindReport`
+from `:controller` (`ControllerTypes.kt`) to `:protocol` so `:pilot`
+can consume the wind projection through the firewall without depending
+on `:controller`; `WeatherObservation` stays in `:controller`. Existing
+`:controller` consumers re-import from `:protocol`. Per
+`feedback_firewall_principle.md`: the pilot's new
+`PilotInput.weatherByAerodrome: Map<AerodromeId, WindReport>` widening
+is a deliberate firewall change — real pilots read wind via windsock +
+ASI crosscheck + instrument + ATIS (multiple channels); the world-
+weather projection models the visual/instrument sensing path. The
+`FirewallPilotInputTest` allowlist scan was extended as the gate.
+
 ## What this supersedes
 
 The TWR1 controller architecture (ObligationController.kt, BDI procedures, reactive layer). The concepts are preserved and evolved; the implementation will be new.

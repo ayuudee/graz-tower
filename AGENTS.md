@@ -131,9 +131,9 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach)
+## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach, G3a-react)
 
-Seven integration tests serve as the runtime golden anchors for end-to-end
+Eight integration tests serve as the runtime golden anchors for end-to-end
 ATC flow. All follow the same shape: a single `@Test` method, a fixture-
 driven load, a deterministic event run, the run is the test, the assertions
 are what the run produced.
@@ -344,7 +344,59 @@ are what the run produced.
   surface; the TTL + authorship stage select the GA vs CA branch of
   the three-state pre-clearance ladder. Closes the fn-13 epic.
 
-All seven tests follow the no-corners-cut rule: a failing golden test is
+- **G3a-react — `G3aPilotReactiveCrosswindTest` (`sim/jvmTest`)**:
+  single-aerodrome, single-aircraft VFR **pilot-reactive** go-around
+  triggered by a world-authored wind shift whose crosswind component on
+  the active runway exceeds the aircraft type's POH-derived
+  `maxCrosswindKnots`. C172 OE-ABC at LOWG flies a single planned
+  circuit (`HighLevelGoal.CircuitTraining(outcomes = listOf(FullStop))`)
+  with initial wind = 10 kt headwind from runway heading (zero
+  crosswind). After `ClearedToLand` issues, the test's per-tick world
+  hook authors a one-shot transition `weatherByAerodrome[LOWG] =
+  WeatherObservation(wind = Available(Wind(direction = runwayHeading +
+  90°, speed = 20 kt)))` — pure crosswind, 20 kt > C172's 15 kt POH
+  limit. The pilot reads the new wind via `PilotInput.weatherByAerodrome`
+  on the next decision tick (fn-14.1's `PilotWiring` projection),
+  `derivePilotEvent`'s crosswind branch fires
+  `PilotEvent.CrosswindLimitExceeded`, `applyCrosswindGoAround` rewrites
+  the mission tree + transmits `Report(GoingAround)`, the controller's
+  existing `GA-POST-CLEAR` interrupt fires off the received `GoAroundEvent`
+  regressing the commitment from `{LandingClearanceIssued,
+  AwaitLandedObserved}` to `AwaitDownwind`, the aircraft GAs and re-enters
+  circuit. A second one-shot transition returns the wind to within
+  limits once `Report(GoingAround)` has been transmitted and the aircraft
+  is off final; the recovery circuit's final is therefore within the POH
+  limit and the aircraft lands. Pins: **three-layer pattern**
+  (Layer 1 causal partial-order — exactly one `Report(GoingAround)`
+  between the wind-shift and wind-recovery cycles; Layer 2 sticky-witness
+  regression via `GA-POST-CLEAR` — strictly AFTER the GoingAround
+  transmission, NOT `Immediate` advancement like G3a-obstruction;
+  Layer 3 kinematic non-event — no `LandingRoll`/`Vacating` phase in the
+  exceedance window), **two-transition world-weather pin** (exactly two
+  transitions in the aerodrome-keyed `SimState.weatherByAerodrome[LOWG]`
+  slice — aerodrome-keyed only, NO controller-belief slice because the
+  GA is pilot-side and weather is world-state not a belief projection),
+  **recovery chain** (`Report(GoingAround) < ClearedToLand(recovery) <
+  Report(RunwayVacated)`), R7 vacate-coordination closure pin, time band
+  ±15% of the observed wall (~1333 s = ~22.2 sim minutes — comparable to
+  G3a-trained's 1393 s and G3a-obstruction's 1399 s). World-only test
+  trigger per `feedback_world_only_test_triggers.md` — author the wind
+  on the world surface, NO `PilotEvent.CrosswindLimitExceeded` injection,
+  NO direct `PilotInput.weatherByAerodrome` mutation outside the sim
+  wiring. **No event-count pin on `CrosswindLimitExceeded` in this sim
+  test** — that pin lives in fn-14.1's pilot-side unit tests
+  (`PilotCrosswindHysteresisTest`). Doctrinally faithful to FAA AFH
+  Chapter 9 (Common Error #1), 14 CFR §23.233(a) / AC 23-8B (POH
+  demonstrated crosswind as performance information), ICAO Annex 6 Part
+  II §2.4 (PIC final authority), and CAP 413 §4.67 / ICAO Doc 4444
+  §12.3.4.18 (pilot-initiated GA phraseology). Closes the **fourth**
+  reactive-GA path and the G3a trilogy: alongside self-initiated
+  (pre-fn-11 DA-without-clearance), pilot-trained (G3a-trained / fn-11),
+  ATC-instructed-obstruction (G3a-obstruction / fn-12), G3a-react adds
+  the first **pilot-side reactive recognition driven by world weather**.
+  Closes the fn-14 epic.
+
+All eight tests follow the no-corners-cut rule: a failing golden test is
 documented in its KDoc with the specific blocker and stays loudly
 failing. No `@Disabled`, skip-list, or exclusion set.
 

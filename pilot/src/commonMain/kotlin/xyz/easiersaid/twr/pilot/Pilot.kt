@@ -95,10 +95,14 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
 
     // ── GA-path precedence (deterministic, additive) ─────────────────────
     //
-    // Three GA paths share `pilotDecide`'s fork point. Order is essential:
-    // trained-GA wins on the static-tree transition; ATC-reactive wins on
-    // the flag-on-mission signal; self-initiated runs only when neither
-    // fired. Per task spec §"Exact intended control flow":
+    // FOUR GA paths share `pilotDecide`'s fork point (post fn-14.1 —
+    // pilot-reactive crosswind closes the G3a trilogy). Order is
+    // essential: trained-GA wins on the static-tree transition;
+    // ATC-reactive wins on the flag-on-mission signal; self-initiated
+    // runs only when neither fired AND the pure-derivation arm produces
+    // an event (one of two leaves — DA-without-clearance or
+    // crosswind-exceeded). Per task spec §"Exact intended control flow"
+    // (extended by fn-14.1):
     //
     //  1. Trained-GA (fn-11.1, plan-driven): preStep ==
     //     FLY_FINAL_TO_SHORT_FINAL && currentStep == GOING_AROUND.
@@ -106,11 +110,22 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     //     [recognizeAtcInitiatedGoAround]. Always inspects the flag (so
     //     it can clear it defensively) regardless of whether trained-GA
     //     fired; trained-GA's natural flow leaves the flag None.
-    //  3. Self-initiated (Pass 16, sensor event): pilot has descended to
-    //     decision altitude with no clearance. Only invoked when neither
-    //     trained-GA nor ATC-reactive fired (per spec R9c — preserves
+    //  3. Self-initiated — DA-without-clearance (Pass 16, kinematic
+    //     pure derivation): pilot has descended to decision altitude
+    //     with no clearance. Only invoked when neither trained-GA nor
+    //     ATC-reactive fired (per spec R9c — preserves
     //     `SelfInitiatedGoAroundResponseSpec`'s trigger tick + emission
     //     contract unchanged).
+    //  4. Self-initiated — pilot-reactive crosswind (fn-14.1, world-
+    //     weather pure derivation): pilot reads world wind via
+    //     `PilotInput.weatherByAerodrome`; `derivePilotEvent`'s
+    //     crosswind branch fires `CrosswindLimitExceeded` when the
+    //     crosswind component exceeds the aircraft type's POH-derived
+    //     `maxCrosswindKnots` while on final. Shares the self-initiated
+    //     arm with path 3 — within `derivePilotEvent` the DA branch
+    //     evaluates first (DA wins when both apply same tick; pinned
+    //     by the ordering test row in
+    //     `PilotEventDerivationSpec`).
 
     // 1. Trained-GA (fn-11.1).
     val plannedGoAround = if (

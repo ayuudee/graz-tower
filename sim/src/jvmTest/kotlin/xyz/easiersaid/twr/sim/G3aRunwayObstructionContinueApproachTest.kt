@@ -110,6 +110,16 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    tests together cover the three-state CONTINUE APPROACH /
  *    `ObstructionClearsInTime` decision ladder per CAP 413 §4.55-4.56 /
  *    ICAO 4444 §12.3.4.16.
+ *  - G3a-react ([G3aPilotReactiveCrosswindTest]) — single-aircraft
+ *    single-aerodrome **pilot-reactive** go-around triggered by a
+ *    world-authored wind shift past the C172's POH-derived 15 kt
+ *    maximum demonstrated crosswind (fn-14 — closes the G3a trilogy as
+ *    the fourth reactive-GA path). Same fixture, same world-only-
+ *    trigger discipline; distinguishing surface is the world-state
+ *    slice mutated (`state.weatherByAerodrome[LOWG]` vs
+ *    `runway.obstruction`) and the rule path (pilot-side
+ *    `derivePilotEvent` crosswind branch vs controller-side
+ *    `ARR-CONTINUE-APPROACH-OBSTRUCTION`).
  *
  * **What this test distinctively pins (vs G3a-obstruction GA test):**
  *  - **Pre-clearance, predicate-eligible**: the test authors the

@@ -125,6 +125,13 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *    world-authored runway obstruction that clears in time per fn-13.
  *    Companion to G3a-obstruction: same fixture, predicate-eligible
  *    branch fires the CA path instead of the GA.
+ *  - G3a-react — [G3aPilotReactiveCrosswindTest] — single-aerodrome,
+ *    single-aircraft **pilot-reactive** go-around triggered by a world-
+ *    authored wind shift past the C172's POH-derived 15 kt maximum
+ *    demonstrated crosswind (fn-14). Closes the G3a trilogy as the
+ *    fourth reactive-GA path — the first pilot-side reactive
+ *    recognition driven by world weather. Reuses G1's R7 vacate-
+ *    coordination closure invariant on the recovery-circuit landing.
  *
  * **What G1 distinctively pins (post fn-8.3 Phase 4 re-baseline):**
  *  - **Per-aircraft outcomes**: both aircraft complete their missions and

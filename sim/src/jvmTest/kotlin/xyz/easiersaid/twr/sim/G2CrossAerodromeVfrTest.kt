@@ -74,7 +74,14 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  * AwaitApproach so the `ObstructionClearsInTime` predicate holds and
  * the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule fires the
  * pre-clearance ladder middle state per CAP 413 §4.55-4.56 / ICAO 4444
- * §12.3.4.16(d)). G2 is the single-aircraft **cross-aerodrome** anchor.
+ * §12.3.4.16(d)); G3a-react ([G3aPilotReactiveCrosswindTest]) is the
+ * single-aerodrome **pilot-reactive crosswind** sibling (fn-14 — closes
+ * the G3a trilogy as the fourth reactive-GA path; world hook authors a
+ * two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
+ * C172's 15 kt POH `maxCrosswindKnots` and pilot autonomously GAs via
+ * `derivePilotEvent`'s crosswind branch + `applyCrosswindGoAround`; the
+ * first pilot-side reactive recognition driven by world weather). G2 is
+ * the single-aircraft **cross-aerodrome** anchor.
  *
  * **Architectural anchors (R7 / R8):**
  * - The pilot reads only chart-equivalent data from `world.aerodromes[…]`;

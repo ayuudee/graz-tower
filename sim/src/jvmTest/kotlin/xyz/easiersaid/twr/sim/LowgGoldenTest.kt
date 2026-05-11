@@ -76,6 +76,14 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      holds and the new `ARR-CONTINUE-APPROACH-OBSTRUCTION` rule fires
  *      instead of the GA, exercising the pre-clearance ladder middle
  *      state per CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)).
+ * @see G3aPilotReactiveCrosswindTest the single-aerodrome pilot-reactive
+ *      crosswind GA sibling (fn-14 — same fixture; world hook authors a
+ *      two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
+ *      C172's 15 kt POH `maxCrosswindKnots`; pilot's `derivePilotEvent`
+ *      crosswind branch fires `CrosswindLimitExceeded` and
+ *      `applyCrosswindGoAround` produces the reactive GA. Closes the G3a
+ *      trilogy as the fourth reactive-GA path — the first pilot-side
+ *      reactive recognition driven by world weather).
  */
 class LowgGoldenTest {
 

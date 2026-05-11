@@ -83,6 +83,17 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    obstruction expires. The two G3a-obstruction tests together
  *    cover the three-state pre-clearance ladder per CAP 413
  *    §4.55-4.56 / ICAO 4444 §12.3.4.16(d).
+ *  - G3a-react ([G3aPilotReactiveCrosswindTest]) — single-aerodrome,
+ *    single-aircraft **pilot-reactive** go-around triggered by a
+ *    world-authored wind shift past the C172's POH-derived 15 kt
+ *    maximum demonstrated crosswind (fn-14). Closes the G3a trilogy
+ *    as the fourth reactive-GA path. Same fixture, same world-only-
+ *    trigger discipline; distinguishing surface is the
+ *    `state.weatherByAerodrome[LOWG]` mutation (vs trained's mission
+ *    goal authorship; vs obstruction's `runway.obstruction` mutation).
+ *    The first pilot-side reactive recognition driven by world
+ *    weather, via `derivePilotEvent`'s crosswind branch +
+ *    `applyCrosswindGoAround`.
  *
  * **What G3a distinctively pins:**
  *  - **Trained-GA fork at compile time:** the `outcomes` list authors

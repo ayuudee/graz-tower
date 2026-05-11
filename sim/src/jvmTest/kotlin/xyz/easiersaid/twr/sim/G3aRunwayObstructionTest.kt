@@ -91,6 +91,23 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    `Instruction.ContinueApproach(RUNWAY_OBSTRUCTED)` + companion
  *    instead. The two tests together cover the three-state pre-
  *    clearance ladder per CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d).
+ *  - G3a-react ([G3aPilotReactiveCrosswindTest]) — the **pilot-side
+ *    reactive** sibling (fn-14 — closes the G3a trilogy as the fourth
+ *    reactive-GA path). Same fixture, same world-only-trigger
+ *    discipline (one-shot `onAfterEvent` authorship). Distinguishing
+ *    surface is the world-state slice mutated: G3a-react authors
+ *    `state.weatherByAerodrome[LOWG]` (a two-transition pattern —
+ *    20 kt crosswind, then back to headwind) while G3a-obstruction
+ *    authors `runway.obstruction`. Distinguishing rule path: G3a-react
+ *    is **pilot-side** (`derivePilotEvent`'s crosswind branch +
+ *    `applyCrosswindGoAround` produces the GA autonomously; no
+ *    controller-side reactive rule), while G3a-obstruction is
+ *    **controller-side** (`ARR-GO-AROUND-RUNWAY-OBSTRUCTED` rule fires
+ *    with `Immediate` advancement off the obstruction belief slice).
+ *    G3a-react's regression therefore fires via `GA-POST-CLEAR`
+ *    interrupt (strictly AFTER the pilot's `Report(GoingAround)`), NOT
+ *    via `Immediate` advancement equality with the GoAround
+ *    decision-cycle.
  *
  * **What G3a-obstruction distinctively pins:**
  *  - **World-only test trigger:** the test authors `runway.obstruction`

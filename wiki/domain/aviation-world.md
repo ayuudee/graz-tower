@@ -63,3 +63,49 @@ Key relationships:
 ## Construction
 
 Currently: `buildValidatedWorld(world)` wraps validation in `Either`. The existing test fixture (`sampleWorld()` in `WorldConstructionTest.kt`) hand-builds a complete valid world with 21 points, 23 segments, 1 aerodrome.
+
+## AircraftType (`:protocol`)
+
+Aircraft types are doctrine-anchored data both the pilot and the
+controller reference (sealed catalogue in
+`protocol/.../AircraftType.kt`). The pilot reads `kinematics`,
+`circuitPattern`, `runUpDurationMs`, and (fn-14) `maxCrosswindKnots`
+directly; the controller sees only the strip-projected
+`icaoDesignator` + sensor-projected `wakeCategory` + the firewall-
+narrow `runwayRequirementsFor(designator)` lookup. The type itself
+never crosses the firewall.
+
+Doctrine-anchored fields (per-leaf KDoc cites the source):
+- `icaoDesignator: IcaoTypeDesignator` — ICAO Doc 8643.
+- `wakeCategory: WakeCategory` — ICAO Doc 8643.
+- `kinematics: Kinematics` — POH / FCOM (taxi / rotation / climb /
+  approach speed; climb rate; waypoint-capture radius).
+- `runwayLengthM: RunwayLengthRequirements` — TCDS / AFM.
+- `circuitPattern: CircuitPattern` — POH §4 / FAA AIM 4-3-3 (pattern
+  altitude AGL; downwind lateral offset).
+- `cruiseAltitudeM: Double` — engineering tuning (sim default).
+- `runUpDurationMs: Long` — POH §4 procedural duration.
+- **`maxCrosswindKnots: Knots`** (fn-14) — POH "maximum demonstrated
+  crosswind component" per 14 CFR §23.233(a) (pre-Amendment 64) /
+  FAA AC 23-8B. Consumed by the pilot's reactive-GA recognition
+  `derivePilotEvent`'s crosswind branch — when the crosswind component
+  computed from the world's wind report exceeds this value while the
+  aircraft is on final, the pilot self-initiates a go-around. Per FAA
+  AFH (FAA-H-8083-3C) Chapter 9, attempting a landing in crosswinds
+  exceeding the demonstrated value is Common Error #1. Per-leaf
+  values:
+  - **C172** = 15 kt (POH §2: "Maximum demonstrated crosswind velocity
+    is 15 knots (not a limitation)").
+  - **B738** = 33 kt (FCOM Limitations §1: 33 kt steady crosswind on
+    dry/grooved runway).
+
+Reuses the positive-only `Knots` smart type (`protocol/.../Instruction
+.kt:80`); every POH crosswind value is ≥ 1 kt by construction.
+
+The POH "maximum demonstrated crosswind" is **performance information,
+NOT a limitation** in the certification sense. The sim models a
+competent VFR pilot as going around when the demonstrated value is
+exceeded; this is the correct modelling choice even though it
+overstates real-world strictness (real PICs sometimes attempt and
+succeed beyond). The personal-minimums judgement layer is filed as a
+deferment (`D-PASS-g3a-react-personal-minimums`) per the fn-14 epic.

@@ -228,3 +228,75 @@ mutually-exclusive guards (`ObstructionClearsInTime` vs
 The companion regulation refs split by path: CA cites the pre-clearance
 refs (CAP 413 §4.55, §4.56, ICAO §12.3.4.16, §8.9.6.1.8); GA cites the
 post-clearance refs (CAP 413 §4.65, ICAO §7.4.1.4.1, §8.9.6.1.8).
+
+**fn-14 (2026-05-11) — pilot-reactive crosswind GA closes the G3a
+trilogy.** The fourth reactive-GA path: pilot-side autonomous GA off the
+world's wind state when the crosswind component on the active runway
+exceeds the aircraft type's POH-derived `maxCrosswindKnots`. Unlike the
+preceding three paths — DA-without-clearance (pre-fn-11 era; pure
+kinematic predicate), pilot-trained (fn-11; mission-authored), and
+ATC-instructed-obstruction (fn-12; ATC-issued instruction received) —
+G3a-react is the **first pilot-side reactive recognition driven by
+world state directly observed via a new pilot sensing channel**. The
+epic landed:
+
+- **fn-14.1** — `AircraftType.maxCrosswindKnots: Knots` POH-derived
+  field (C172 = 15 kt per Cessna 172S NAV III POH §2; B738 = 33 kt per
+  Boeing 737-800 FCOM Limitations §1); `WindReport` sealed interface
+  lifted from `:controller` to `:protocol` so `:pilot` can consume the
+  wind projection through the firewall; `PilotInput.weatherByAerodrome:
+  Map<AerodromeId, WindReport>` widening + `FirewallPilotInputTest`
+  update + `PilotWiring.buildPilotInput` projection;
+  `RunwayId.headingDegreesMagnetic(): Int?` fail-closed two-digit
+  parse helper; `crosswindComponentKnots(...): Double` pure function;
+  `PilotEvent.CrosswindLimitExceeded` leaf + split `derivePilotEvent`
+  branches (independent guards; no shared early returns) + mission-shape
+  guard (`activeCompound().isCircuitLike()` to prevent the recognition
+  firing on Transit-shaped missions the applier cannot rewrite);
+  `applyCrosswindGoAround` distinct applier mirroring fn-12.2's
+  reactive-GA Tick A pattern (route=None, phase=Final retained, mission
+  tree subtree-replaced inline via `isCircuitLike` predicate);
+  hysteresis test pinning per-attempt suppression via the mission-tree
+  rewrite (no flag-driven state needed — distinct from fn-12.2 / fn-13
+  witnesses); four `RegulationDatabase` entries (FAA AFH Ch 9, FAR
+  §23.233, ICAO Annex 6 Part II §2.4, FAA AIM §7-1-12.d.3).
+- **fn-14.2** — sim-level golden test
+  `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveCrosswindTest.kt`.
+  World-only test trigger via `runUntilWithStateTrace`'s `onAfterEvent`
+  hook — two-transition pattern (wind shift past limit, then wind
+  return within limits) one-shot guarded. Three-layer pin pattern with
+  decision-cycle timestamps and an aerodrome-keyed
+  `weatherTransitions(aerodromeId)` extractor (NO controller-belief
+  slice — weather is world-state, not a belief projection).
+  Sticky-witness regression fires via `GA-POST-CLEAR` interrupt
+  (strictly AFTER the GoingAround transmission — distinct from
+  G3a-obstruction's `Immediate` advancement which equals the GoAround
+  decision cycle).
+
+The reactive-GA surface is now **quadruple-covered**:
+
+1. **Self-initiated** (pre-fn-11 era) — `DecisionAltitudeWithoutClearance`
+   fires when the pilot is below decision altitude on approach without
+   a landing clearance.
+2. **Pilot-trained** (fn-11; G3a-trained) — `CircuitOutcome.GoAround`
+   in the mission goal forks the tree statically at `createMission`.
+3. **ATC-instructed-obstruction** (fn-12; G3a-obstruction) —
+   `pendingAtcGoAroundFrom` flag set by `handleGoAround` on the
+   pilot's mission BEFORE the tree rewrite; consumed by
+   `recognizeAtcInitiatedGoAround` + `applyAtcInitiatedGoAround`.
+4. **Pilot-reactive crosswind** (fn-14; G3a-react) —
+   `CrosswindLimitExceeded` derived by `derivePilotEvent`'s crosswind
+   branch from `(aircraft, mission, weather: WindReport?)`; consumed
+   by `applyCrosswindGoAround`. Pure derivation; no flag, no
+   asynchronous arrival channel.
+
+The non-GA "continue approach" path (G3a-continue / fn-13) completes
+the pre-clearance approach-decision space at quadruple coverage. The
+G3a trilogy is closed: every reactive-GA path now has dedicated
+pilot- and controller-level unit tests **plus** a sim-level golden
+exercising the composition. Sibling deferments (multi-aircraft
+crosswind, cross-aerodrome G3b-react, tailwind/gust variants,
+ATIS-cadence sensing, personal-minimums judgement layer, POH
+density-altitude / temperature / weight reactive triggers) remain
+filed in the deferments register and become candidate epics in their
+own right.

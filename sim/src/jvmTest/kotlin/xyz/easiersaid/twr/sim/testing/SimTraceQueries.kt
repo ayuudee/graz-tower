@@ -11,9 +11,11 @@ import xyz.easiersaid.twr.protocol.HandoffTarget
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ResponsibilityState
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.bdi.Stage
 import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.pilot.MissionStep
+import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.sim.SimEvent
 import xyz.easiersaid.twr.sim.SimState
@@ -180,6 +182,33 @@ fun SimTrace.runwayObstructionTransitions(
     runway: RunwayId,
 ): List<Transition<Option<RunwayObstruction>>> =
     transitionsOf { st -> Option.fromNullable(st.beliefs[controller]?.runwayObstructions?.get(runway)) }
+
+/**
+ * fn-14.2 (G3a-react R12 — world-only test trigger discipline):
+ * transitions of [SimState.weatherByAerodrome] for one [aerodrome]. The
+ * slice's transitions are the **world-state** observability surface for
+ * wind shifts authored via [runUntilWithStateTrace]'s `onAfterEvent`
+ * hook.
+ *
+ * **Aerodrome-keyed only — NO controller-belief slice.** Unlike
+ * [runwayObstructionTransitions] (which projects over
+ * `BeliefState.runwayObstructions` because the controller's reactive
+ * obstruction rule is belief-gated), weather lives at the world-state
+ * surface directly. The crosswind reactive-GA recognition is
+ * **pilot-side** (`PilotInput.weatherByAerodrome ← SimState
+ * .weatherByAerodrome.mapValues { obs.wind }` via `PilotWiring`); the
+ * controller's belief shape does not project weather as a separate
+ * slice, so a controller-keyed extractor would have no consumer.
+ *
+ * Each transition's `after.time` is the cursor time at which the
+ * world-state weather changed (post-step state where the hook fired).
+ * Returns transitions in time order. Empty when weather is constant
+ * across the whole trace.
+ */
+fun SimTrace.weatherTransitions(
+    aerodrome: AerodromeId,
+): List<Transition<Option<WeatherObservation>>> =
+    transitionsOf { st -> Option.fromNullable(st.weatherByAerodrome[aerodrome]) }
 
 // ── Doctrine predicates over ResponsibilityState transitions ─────────
 
