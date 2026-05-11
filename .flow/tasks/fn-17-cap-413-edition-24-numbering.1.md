@@ -1253,66 +1253,8 @@ missing-XML output; record loudly.
   silent skip / retry / exclusion.
 
 ## Done summary
-
-**Branch verdict**: Branch A — Confirmed (with Edition #1 quirk per Step 2 / epic R2).
-
-**Primary-source verification**:
-- Ed 24 PDF URL: `https://www.caa.co.uk/publication/download/18165` (the CAA landing page's "CAP 413 Future" link at `/our-work/publications/documents/content/cap-413/`; Path 1's `/27609` advertised endpoint still served Ed 23 Corr at task time, so the load-bearing primary-source had to come from Path 2's landing page).
-- Ed 24 PDF SHA-256: `c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac` (Edition 24, "Incorporating amendments to 31 March 2026", Effective date 1 July 2026; captured 2026-05-11).
-- Ed 23 comparison source SHA-256: `f3b4839e885cd554740f664a55d3732cd7284789e0b5f808970cfdbc21e746e7` (matches planning-time capture exactly).
-
-**Mapping** (uniform `-1` shift; deeper than the docs-scout hypothesis caught — Ed 23 §4.65 ATC-initiated GA also moves backward):
-- Ed 23 §4.49 → Ed 24 §4.48 (circuit sequencing; RENUMBERED — `CAP413_4_49.section` updated)
-- Ed 23 §4.53 → Ed 24 §4.52 (cancellation of issued landing clearance; RENUMBERED — `CAP413_4_53.section` updated)
-- Ed 23 §4.55 → Ed 24 §4.54 (continue approach — runway obstructed; RENUMBERED — `CAP413_4_55.section` updated)
-- Ed 23 §4.56 → Ed 24 §4.55 (CA is not landing clearance; RENUMBERED — `CAP413_4_56.section` updated)
-- Ed 23 §4.65 → Ed 24 §4.64 (ATC-initiated GA; RENUMBERED — `val CAP413_4_65` renamed to `val CAP413_4_64`; consumer call sites updated in `Controller.kt`, `TowerArrival.kt`)
-- Ed 23 §4.66/§4.67/§4.68 → Ed 24 §4.65/§4.66/§4.67 (VFR-continue / pilot GA / military; prose-only — no typed entries)
-- Ed 23 §2.7 (SAFETYCOM) → Ed 24 §2.7 (UNCHANGED — but codebase principle pre-existing miscite; flagged UNREVIEWED, inline Ed 23 Corr literal retained, deferment `D-PASS-cap413-2_7-principle-cite-audit` filed)
-- Ed 23 §4.46 → Ed 24 §4.46 with shifted content (codebase principle pre-existing miscite; UNREVIEWED, inline Ed 23 Corr literal, deferment `D-PASS-cap413-4_46-principle-cite-audit` filed)
-- Ed 23 §4.51 → Ed 24 §4.51 (UNCHANGED in Ed 24 — codebase principle "REPORT FINAL RUNWAY" coincidentally matches Ed 24 §4.51 content; in Ed 23 this content lived at §4.52)
-
-**Files touched** (29 in the primary commit + 2 in the R11-verify-evidence follow-up = 31 total; the research/tools/requirements-spike modifications from a separate spike are intentionally excluded per parent agent instruction):
-- Protocol model + database (2): `RegulationModel.kt` (added `CAP_413_EDITION` const), `RegulationDatabase.kt` (rename + section field + KDoc updates per Table 2 verdicts).
-- Controller production (3): `Controller.kt`, `bdi/Action.kt`, `procedure/TowerArrival.kt`.
-- Controller tests (2): `ObstructionGoAroundSpec.kt`, `ObstructionContinueApproachSpec.kt`.
-- Pilot production (4): `Pilot.kt`, `PilotMission.kt`, `PilotCognitive.kt`, `observe/PilotEvent.kt`.
-- Pilot tests (4): `PilotCrosswindTickATickBTest.kt`, `PilotAtcInitiatedGoAroundSpec.kt`, `PilotCrosswindGoAroundTest.kt`, `PlannedGoAroundSpec.kt`.
-- Sim tests (4): `G3aRunwayObstructionTest.kt`, `G3aPilotTrainedGoAroundTest.kt`, `G3aRunwayObstructionContinueApproachTest.kt`, `G3aPilotReactiveCrosswindTest.kt`.
-- Wiki / data-sources (3): NEW `cap413-edition-24-capture.md`, plus `wiki/design-decisions/2026-04-22-root-cause-go-around-and-totality.md` and `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`.
-- AGENTS / .plan (2): `AGENTS.md`, `.plan` (closure entry + 3 new deferments — 2 still open for principle-cite audit, 1 CLOSED for the R11-verify workaround).
-- Closed-epic spec errata (3): `fn-11-...md`, `fn-12-...md`, `fn-13-...md` — `## Errata` footers appended.
-- Active-epic spec inline (1): `fn-14-...md` lines 22 / 154 / 356 / 404 rewritten with verified verdict.
-- Next-session spec inline (1): `fn-15-...md` line 416.
-
-**Eight goldens stayed GREEN** (R11 satisfied — Gradle ran in the sandbox via `GRADLE_USER_HOME=$TMPDIR/gradle-user-home` workaround, see `## Evidence` below for the exact command + per-class XML verification).
-
-**Deferments closed**:
-- `D-PASS-cap413-edition-24-reconciliation` (filed in fn-14) — CLOSED by this task per the verification artifact at `wiki/data-sources/cap413-edition-24-capture.md`.
-- `D-PASS-cap413-edition-24-r11-verify-sandbox-block` (filed during this task at codex round 1 NEEDS_WORK; closed during round 2 via the cloned-Gradle-user-home workaround documented in `.plan`).
-
-**Deferments opened**:
-- `D-PASS-cap413-2_7-principle-cite-audit` — `CAP413_2_7.principle` references "frequency change / two-way communication" but cited §2.7 content is SAFETYCOM in both Ed 23 and Ed 24. Pre-existing principle-vs-cite drift; out of fn-17 renumbering scope.
-- `D-PASS-cap413-4_46-principle-cite-audit` — `CAP413_4_46.principle` references "hold-short readback" but cited §4.46 content is traffic info (Ed 23) / routine reports (Ed 24). Same pre-existing drift shape.
-
+fn-17.1 closed: Branch A — Confirmed (with Edition #1 quirk). CAP 413 Ed 24 (effective 1 July 2026, CAA PDF SHA c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac) renumbers §4.5x-§4.6x by uniform `-1`; `CAP413_4_65` renamed to `CAP413_4_64` (compiler-driven across Controller.kt / TowerArrival.kt consumers), `.section` fields updated on CAP413_4_49/4_53/4_55/4_56, `CAP_413_EDITION` constant added, KDoc/wiki/AGENTS.md/test KDoc/test-string-pin sweep applied across the production + closed-epic-spec + active-spec surfaces, eight goldens stayed GREEN under the full Gradle verify. Codex round 1-3 NEEDS_WORK findings (R11 verify gap, R10 evidence gap, stale §4.55-4.56 prose + incomplete errata footers) all addressed; round 4 SHIP verdict.
 ## Evidence
-
-- Commits (chronological, all on `main`):
-  - Primary implementation: `68dc375a02b3b2fde95d44bd74238377e648cfbb` — "fn-17.1: CAP 413 Edition 24 numbering reconciliation (Branch A)" — the load-bearing rename + KDoc/prose sweep + edition-string correction + verification artifact + closed-spec errata footers.
-  - R11-verify-evidence follow-up: `3bfe9ce` — "fn-17.1: R11 verify completed — eight goldens GREEN, close R11-verify-sandbox-block deferment".
-  - Task-evidence population: HEAD-1 (this file) — "fn-17.1: populate Done summary + Evidence sections (R10b)".
-  - Final `flowctl done` state-transition commit follows immediately after the last review SHIP per fn-17.1 Step 9.2 ("Follow-up metadata via `flowctl done`"). The `flowctl done` invocation patches the task spec's status field and produces the small follow-up commit recording the primary SHA; the chicken-and-egg recurrence ends there per the spec's explicit "the task IS done at this point" note.
-- Tests run: `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt --offline --no-daemon` exited **0** (BUILD SUCCESSFUL in 40s, 25 actionable tasks executed). Eight-golden evidence per the robust per-class XML check in Step 10:
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.LowgGoldenTest.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G1TwoAircraftMinimalSpec.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G3aPilotTrainedGoAroundTest.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G3aRunwayObstructionTest.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G3aRunwayObstructionContinueApproachTest.xml` — failures=0 errors=0 skipped=0 tests>0
-  - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G3aPilotReactiveCrosswindTest.xml` — failures=0 errors=0 skipped=0 tests>0
-- Verification artifact: `wiki/data-sources/cap413-edition-24-capture.md` (contains Ed 24 PDF SHA-256 + section titles + ≤ 1-sentence excerpts + Table 1 focal renumbering map + Table 2 typed-entry audit + retained historical cites + local extraction procedure).
-- Branch: `main` (per parent agent context — branch choice was current branch; user's epic spec listed `master` as `branch_name` but the actual repository branch is `main`).
-- Sandbox-workaround pattern (R11 enablement): `GRADLE_USER_HOME=$TMPDIR/gradle-user-home` (clone of `/Users/andrew/.gradle/{caches,native,wrapper}` with lock files stripped) + `_JAVA_OPTIONS=-Djava.io.tmpdir=$TMPDIR` (Kotlin compiler intermediate files) + `--offline --no-daemon`. Recorded in `.plan` deferment closure for future implementers in similarly-restricted environments.
-- Sister register: `~/.claude/plans/pilot-firewall.md` not touched in this run (off-repo bookkeeping; sandbox-allowed but no deferment-register section discovered there relevant to CAP 413).
-- PRs: _(none — task closure does not require PR per fn-17 epic configuration; subsequent epic close will roll up via the parent agent's `/flow-next:make-pr` if desired)._
+- Commits: 68dc375a02b3b2fde95d44bd74238377e648cfbb, 3bfe9ce, HEAD-1, 12344c56c9f4954fa5dff4919a087ee800a76e9a
+- Tests: ./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt --offline --no-daemon — BUILD SUCCESSFUL in 40s (25 actionable tasks executed), Eight goldens GREEN per per-class JUnit XML verification at sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.{LowgGoldenTest,G1TwoAircraftCircuitsTest,G1TwoAircraftMinimalSpec,G2CrossAerodromeVfrTest,G3aPilotTrainedGoAroundTest,G3aRunwayObstructionTest,G3aRunwayObstructionContinueApproachTest,G3aPilotReactiveCrosswindTest}.xml — each: failures=0 errors=0 skipped=0 tests>0
+- PRs:
