@@ -25,10 +25,22 @@ import xyz.easiersaid.twr.protocol.headingDegreesMagnetic
  *    `handleGoAround` recorded the pre-rewrite on-final step on the
  *    mission flag (ATC-reactive GA trigger).
  *  - [CrosswindLimitExceeded] — world's reported wind on the active
- *    runway exceeds the aircraft type's POH-derived
- *    `maxCrosswindKnots` while on final (fn-14.1 G3a-react pilot-side
- *    reactive GA trigger). Pure derivation; recognition in
- *    [derivePilotEvent]'s crosswind branch.
+ *    runway produces a crosswind component exceeding the aircraft
+ *    type's POH-derived
+ *    [xyz.easiersaid.twr.protocol.AircraftType.maxCrosswindKnots] while
+ *    on final (fn-14.1 G3a-react pilot-side reactive GA trigger). Pure
+ *    derivation; recognition in [derivePilotEvent]'s crosswind branch.
+ *    POH source: C172 = 15 kt per Cessna 172S NAV III POH §2
+ *    ("Maximum demonstrated crosswind velocity is 15 knots — not a
+ *    limitation"); B738 = 33 kt per Boeing 737-800 FCOM Limitations §1
+ *    (steady crosswind on dry/grooved runway). Modelling note: POH
+ *    "demonstrated crosswind" is performance information per 14 CFR
+ *    §23.233(a) (pre-Amd 64) / FAA AC 23-8B, NOT a limitation in the
+ *    certification sense; the sim treats the demonstrated value as the
+ *    trigger per FAA AFH Ch 9 Common Error #1, with personal-minimums
+ *    judgement layer deferred (`D-PASS-g3a-react-personal-minimums`).
+ *    End-to-end sim coverage:
+ *    [xyz.easiersaid.twr.sim.G3aPilotReactiveCrosswindTest] (fn-14.2).
  *
  * Future leaves land with their consumers (filed as
  * D-AUDIT.9.II–V-FOLLOWUP) — the sealed shape is open to extension via

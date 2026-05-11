@@ -74,6 +74,14 @@ sealed class AircraftType(
      * Reuses [Knots] (positive-only smart type from
      * [xyz.easiersaid.twr.protocol.Instruction]); every POH
      * crosswind value is ≥ 1 kt by construction.
+     *
+     * End-to-end sim coverage:
+     * `xyz.easiersaid.twr.sim.G3aPilotReactiveCrosswindTest` (fn-14.2 —
+     * world hook authors a wind shift past `C172.maxCrosswindKnots`;
+     * pilot reactive-GA path is exercised composition-end). Pilot-side
+     * unit coverage: `xyz.easiersaid.twr.pilot.observe
+     * .CrosswindLimitExceededSpec` + `xyz.easiersaid.twr.pilot
+     * .PilotCrosswindHysteresisTest` (fn-14.1).
      */
     val maxCrosswindKnots: Knots,
     /**
