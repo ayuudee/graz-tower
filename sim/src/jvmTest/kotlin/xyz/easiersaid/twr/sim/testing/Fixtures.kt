@@ -48,7 +48,7 @@ import xyz.easiersaid.twr.protocol.Wind
  *    surface is the 5-second `clearsAt` TTL + pre-clearance authorship
  *    stage versus G3a-obstruction's 60-second post-clearance variant —
  *    the two tests together cover the three-state pre-clearance ladder
- *    of CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)), and **G3a-react**
+ *    of CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)), **G3a-react**
  *    ([xyz.easiersaid.twr.sim.G3aPilotReactiveCrosswindTest] — single-
  *    aircraft pilot-reactive go-around triggered by a world-authored
  *    wind shift whose crosswind component on the active runway exceeds
@@ -61,7 +61,26 @@ import xyz.easiersaid.twr.protocol.Wind
  *    returns wind to within limits once `Report(GoingAround)` has been
  *    transmitted and the aircraft is off final; closes the G3a trilogy
  *    by adding the fourth reactive-GA path — the first pilot-side
- *    reactive recognition driven by world weather).
+ *    reactive recognition driven by world weather), and
+ *    **G3a-react-tailwind**
+ *    ([xyz.easiersaid.twr.sim.G3aPilotReactiveTailwindTest] — single-
+ *    aircraft pilot-reactive go-around triggered by a world-authored
+ *    wind shift whose **tailwind component** on the active runway
+ *    exceeds the aircraft type's `AircraftType.maxTailwindKnots`
+ *    (C172 = 10 kt **FAA AFH-advisory** — Cessna 172R/172S POH §2 does
+ *    NOT publish a hard tailwind limitation, so 10 kt is the FAA AFH
+ *    Ch 9 industry-standard advisory for light singles; B738 = 15 kt
+ *    FCOM Limitations §1 hard operational limitation — the per-type
+ *    doctrinal severity asymmetry surfaces only on the tailwind axis,
+ *    not on the crosswind axis); same fixture, same two-transition
+ *    `state.weatherByAerodrome[LOWG]` discipline as G3a-react-crosswind
+ *    via `onAfterEvent`; first one-shot authors 15 kt direct tailwind
+ *    `((runwayHeading + 180) % 360 clamped 0→360)` to trigger
+ *    recognition (5 kt margin above C172's 10 kt advisory), second
+ *    one-shot returns wind to the initial 10 kt headwind once
+ *    `Report(GoingAround)` has been transmitted and the aircraft is
+ *    off final; closes the second pilot-reactive POH/AFH recognition
+ *    axis as the fifth reactive-GA path).
  *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
  *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
  *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG

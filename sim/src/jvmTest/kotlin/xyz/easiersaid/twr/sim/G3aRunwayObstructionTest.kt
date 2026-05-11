@@ -108,6 +108,21 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    interrupt (strictly AFTER the pilot's `Report(GoingAround)`), NOT
  *    via `Immediate` advancement equality with the GoAround
  *    decision-cycle.
+ *  - G3a-react-tailwind ([G3aPilotReactiveTailwindTest]) — the second
+ *    **pilot-side reactive** axis (fn-15 — closes the second pilot-
+ *    reactive POH/AFH recognition axis as the fifth reactive-GA path).
+ *    Same fixture, same world-only-trigger discipline; same
+ *    `state.weatherByAerodrome[LOWG]` two-transition pattern as
+ *    G3a-react-crosswind. Distinguishing surface is the recognition
+ *    axis (`derivePilotEvent`'s tailwind branch +
+ *    `applyTailwindGoAround` vs the crosswind sibling's branch +
+ *    applier) and the doctrinal regime (C172 **AFH-advisory** 10 kt
+ *    tailwind vs C172 POH-demonstrated 15 kt crosswind — the per-type
+ *    doctrinal severity asymmetry, C172 AFH advisory vs B738 FCOM
+ *    hard limit, surfaces only on the tailwind axis). Same
+ *    `GA-POST-CLEAR` regression discipline (strictly AFTER the pilot's
+ *    `Report(GoingAround)`, NOT `Immediate` advancement as in this
+ *    test's controller-side path).
  *
  * **What G3a-obstruction distinctively pins:**
  *  - **World-only test trigger:** the test authors `runway.obstruction`

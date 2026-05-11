@@ -80,8 +80,15 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  * two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
  * C172's 15 kt POH `maxCrosswindKnots` and pilot autonomously GAs via
  * `derivePilotEvent`'s crosswind branch + `applyCrosswindGoAround`; the
- * first pilot-side reactive recognition driven by world weather). G2 is
- * the single-aircraft **cross-aerodrome** anchor.
+ * first pilot-side reactive recognition driven by world weather);
+ * G3a-react-tailwind ([G3aPilotReactiveTailwindTest]) is the immediate
+ * sibling (fn-15 — closes the second pilot-reactive POH/AFH recognition
+ * axis as the fifth reactive-GA path; same fixture / same two-transition
+ * pattern; recognition axis is tailwind component vs C172's 10 kt
+ * **AFH-advisory** `maxTailwindKnots`; per-type doctrinal severity
+ * asymmetry — C172 AFH advisory vs B738 FCOM hard limit — surfaces only
+ * on the tailwind axis). G2 is the single-aircraft **cross-aerodrome**
+ * anchor.
  *
  * **Architectural anchors (R7 / R8):**
  * - The pilot reads only chart-equivalent data from `world.aerodromes[…]`;

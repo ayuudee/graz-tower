@@ -303,3 +303,76 @@ ATIS-cadence sensing, personal-minimums judgement layer, POH
 density-altitude / temperature / weight reactive triggers) remain
 filed in the deferments register and become candidate epics in their
 own right.
+
+**fn-15 (2026-05-11) — pilot-reactive tailwind GA closes the second
+pilot-reactive POH/AFH recognition axis.** Sibling of fn-14 (crosswind
+axis). The reactive-GA surface is now **quintuple-covered**:
+
+5. **Pilot-reactive tailwind** (fn-15; G3a-react-tailwind) —
+   `TailwindLimitExceeded` derived by `derivePilotEvent`'s tailwind
+   branch from `(aircraft, mission, weather: WindReport?)`; consumed
+   by `applyTailwindGoAround`. Pure derivation; same recognition shape
+   as the crosswind branch (no flag, no asynchronous arrival channel)
+   but a **distinct event leaf** and a **distinct applier function**
+   (no shared "wind-reactive GA" supertype — see Decision-Type-Asymmetry
+   rationale below). `derivePilotEvent`'s branch order is DA → tailwind
+   → crosswind; tailwind is the physically stronger constraint
+   (touchdown energy, runway remaining, go-around margin) and demotes
+   crosswind one position when both apply on the same cycle.
+
+**Per-type doctrinal severity asymmetry (load-bearing modelling
+choice, fn-15.1 codex round-1 closure).** The crosswind axis (fn-14)
+cites POH-demonstrated values for both leaves (C172 = 15 kt POH §2;
+B738 = 33 kt FCOM Limitations §1) — the same doctrinal category
+applies to both. The tailwind axis (fn-15) does **not**:
+
+- The Cessna 172R/172S POH §2 (Operating Limitations) does NOT publish
+  an explicit tailwind component limitation. The 10 kt value the C172
+  leaf carries is the **FAA AFH Ch 9 (FAA-H-8083-3C) industry-standard
+  advisory** for light singles — performance information, not a
+  certification limitation.
+- The Boeing 737-800 FCOM Limitations §1 publishes 15 kt steady
+  tailwind on dry runway as a **hard operational limitation** — same
+  doctrinal severity as the FCOM crosswind clause.
+
+The sim surfaces this asymmetry by **(i)** carrying a per-leaf KDoc
+that explicitly notes the doctrinal regime, **(ii)** giving the
+tailwind axis its own typed `RegulationDatabase` entries
+(`FAA_AFH_CH9_TAILWIND_RISK`, `ICAO4444_7_11_6_REDUCED_RUNWAY_TAILWIND`)
+narrow-scoped to the public regulatory citations and **NOT** carrying
+manufacturer POH/FCOM values (manufacturer values are not regulations
+— `RegulationDatabase` is the citation database, not a doctrine
+catalogue), and **(iii)** keeping the recognition predicate strict-`>`
+on the typed value regardless of regime — the pilot models a competent
+operator who goes around when the AFH-advisory threshold is exceeded
+just as the operator does when the FCOM hard-limit is exceeded; the
+distinction is doctrinal severity (what the source says), not
+behavioural severity (what the simulated pilot does).
+
+**Decision-Type-Asymmetry rationale (no shared supertype).** A naive
+refactor might collapse `CrosswindLimitExceeded` and
+`TailwindLimitExceeded` into a single `WindReactiveExceedance` event
+with a `axis: WindAxis` field, sharing a single `applyWindReactiveGA`
+applier. We deliberately did NOT do this. The two axes are physically
+distinct (lateral control authority vs touchdown energy / go-around
+margin), doctrinally distinct (the C172 leaf surfaces an absence on
+the tailwind axis and a POH-demonstrated value on the crosswind axis),
+and operationally distinct in future decompositions (multi-engine,
+contaminated-runway, weight-and-balance tailwind concerns have no
+crosswind analogue and vice versa). A shared supertype would hide
+these distinctions in pattern matches and bias future doctrine
+divergence toward the lowest-common-denominator framing; the explicit
+two-leaf surface keeps each axis's evolution independent and visible.
+
+**fn-15.2** added the sim-level golden test
+`sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveTailwindTest.kt`.
+World-only test trigger via the same `runUntilWithStateTrace`
+`onAfterEvent` hook the crosswind sibling uses — two-transition
+authorship (wind shift past advisory, then wind return within
+advisory) one-shot guarded. Three-layer pin pattern with decision-cycle
+timestamps and the same aerodrome-keyed `weatherTransitions(aerodromeId)`
+extractor (NO controller-belief slice — weather is world-state, not a
+belief projection). Sticky-witness regression fires via `GA-POST-CLEAR`
+interrupt (strictly AFTER the `Report(GoingAround)` transmission —
+same discipline as the crosswind sibling; same trigger-agnostic
+interrupt surface).

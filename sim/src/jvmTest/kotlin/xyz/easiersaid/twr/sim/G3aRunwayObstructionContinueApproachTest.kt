@@ -120,6 +120,17 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    `runway.obstruction`) and the rule path (pilot-side
  *    `derivePilotEvent` crosswind branch vs controller-side
  *    `ARR-CONTINUE-APPROACH-OBSTRUCTION`).
+ *  - G3a-react-tailwind ([G3aPilotReactiveTailwindTest]) — single-
+ *    aircraft single-aerodrome **pilot-reactive** go-around triggered
+ *    by a world-authored wind shift past the C172's **AFH-advisory**
+ *    10 kt tailwind value (fn-15 — closes the second pilot-reactive
+ *    POH/AFH recognition axis as the fifth reactive-GA path). Same
+ *    fixture / same world-only-trigger discipline / same world-state
+ *    slice (`state.weatherByAerodrome[LOWG]`) as G3a-react-crosswind;
+ *    distinguishing surface is the recognition axis (tailwind vs
+ *    crosswind component) and the doctrinal regime — the per-type
+ *    doctrinal severity asymmetry, C172 AFH advisory vs B738 FCOM hard
+ *    limit, surfaces only on the tailwind axis.
  *
  * **What this test distinctively pins (vs G3a-obstruction GA test):**
  *  - **Pre-clearance, predicate-eligible**: the test authors the

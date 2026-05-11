@@ -94,6 +94,19 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    The first pilot-side reactive recognition driven by world
  *    weather, via `derivePilotEvent`'s crosswind branch +
  *    `applyCrosswindGoAround`.
+ *  - G3a-react-tailwind ([G3aPilotReactiveTailwindTest]) — single-
+ *    aerodrome, single-aircraft **pilot-reactive** go-around triggered
+ *    by a world-authored wind shift past the C172's **AFH-advisory**
+ *    10 kt tailwind value (fn-15). Closes the second pilot-reactive
+ *    POH/AFH recognition axis as the fifth reactive-GA path. Same
+ *    fixture / same two-transition `state.weatherByAerodrome[LOWG]`
+ *    discipline; distinguishing surface from G3a-react-crosswind is
+ *    the recognition axis (tailwind vs crosswind component) and the
+ *    doctrinal regime (AFH-advisory tailwind for the C172 vs POH-
+ *    demonstrated crosswind for the C172 — the per-type doctrinal
+ *    severity asymmetry, C172 AFH advisory vs B738 FCOM hard limit,
+ *    surfaces only on the tailwind axis). Recognition fires via
+ *    `derivePilotEvent`'s tailwind branch + `applyTailwindGoAround`.
  *
  * **What G3a distinctively pins:**
  *  - **Trained-GA fork at compile time:** the `outcomes` list authors

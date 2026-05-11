@@ -166,6 +166,19 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  * decision #11. Observed wall on the post-fn-8.3-Phase-4 sim is
  * ~50 sim minutes (B's mission completion at ~2975 s); the band is
  * authored around that observed value with explicit ±15% tolerance.
+ *
+ * @see G3aPilotReactiveCrosswindTest the single-aerodrome pilot-reactive
+ *      crosswind GA sibling (fn-14 — same fixture; world hook authors
+ *      wind past C172's 15 kt POH `maxCrosswindKnots`; pilot autonomously
+ *      GAs). G1's vacate-coordination closure invariants extend
+ *      naturally to G3a-react's R7 pin.
+ * @see G3aPilotReactiveTailwindTest the single-aerodrome pilot-reactive
+ *      tailwind GA sibling (fn-15 — same fixture; world hook authors
+ *      wind past C172's 10 kt AFH-advisory `maxTailwindKnots`; pilot
+ *      autonomously GAs; per-type doctrinal severity asymmetry — C172
+ *      AFH advisory vs B738 FCOM hard limit — surfaces only on the
+ *      tailwind axis). G1's vacate-coordination closure invariants
+ *      extend to G3a-react-tailwind's R7 pin.
  */
 class G1TwoAircraftCircuitsTest {
 

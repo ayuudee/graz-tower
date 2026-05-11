@@ -78,6 +78,12 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *      crosswind GA sibling (fn-14 — world hook authors wind past C172's
  *      15 kt POH limit; pilot autonomously GAs; same R7 vacate-coordination
  *      closure invariant on the recovery landing).
+ * @see G3aPilotReactiveTailwindTest the single-aerodrome pilot-reactive
+ *      tailwind GA sibling (fn-15 — world hook authors wind past C172's
+ *      10 kt AFH-advisory tailwind value; pilot autonomously GAs; same R7
+ *      vacate-coordination closure invariant on the recovery landing.
+ *      Per-type doctrinal severity asymmetry — C172 AFH advisory vs B738
+ *      FCOM hard limit — surfaces only on the tailwind axis).
  */
 class G1TwoAircraftMinimalSpec {
 

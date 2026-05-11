@@ -84,6 +84,16 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      `applyCrosswindGoAround` produces the reactive GA. Closes the G3a
  *      trilogy as the fourth reactive-GA path — the first pilot-side
  *      reactive recognition driven by world weather).
+ * @see G3aPilotReactiveTailwindTest the single-aerodrome pilot-reactive
+ *      tailwind GA sibling (fn-15 — same fixture; world hook authors a
+ *      two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
+ *      C172's 10 kt **AFH-advisory** `maxTailwindKnots`; pilot's
+ *      `derivePilotEvent` tailwind branch fires `TailwindLimitExceeded`
+ *      and `applyTailwindGoAround` produces the reactive GA. Closes the
+ *      second pilot-reactive POH/AFH recognition axis — fifth reactive-GA
+ *      path; **per-type doctrinal severity asymmetry** surfaces here
+ *      (C172 AFH advisory / B738 FCOM hard limit) in contrast to the
+ *      crosswind axis where both leaves cite POH-demonstrated values).
  */
 class LowgGoldenTest {
 

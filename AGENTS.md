@@ -401,7 +401,66 @@ are what the run produced.
   the first **pilot-side reactive recognition driven by world weather**.
   Closes the fn-14 epic.
 
-All eight tests follow the no-corners-cut rule: a failing golden test is
+- **G3a-react-tailwind — `G3aPilotReactiveTailwindTest` (`sim/jvmTest`)**:
+  single-aerodrome, single-aircraft VFR **pilot-reactive** go-around
+  triggered by a world-authored wind shift whose **tailwind component**
+  on the active runway exceeds the aircraft type's `maxTailwindKnots`.
+  Closes the **fifth** reactive-GA path and the second pilot-reactive
+  POH/AFH recognition axis (sibling of G3a-react-crosswind / fn-14;
+  identical fixture, two-transition pattern, three-layer pin shape).
+  C172 OE-ABC at LOWG flies a single planned circuit
+  (`HighLevelGoal.CircuitTraining(outcomes = listOf(FullStop))`) with
+  initial wind = 10 kt headwind from runway heading (zero tailwind, zero
+  crosswind). After `ClearedToLand` issues, the test's per-tick world
+  hook authors a one-shot transition `weatherByAerodrome[LOWG] =
+  WeatherObservation(wind = Available(Wind(direction =
+  (runwayHeading + 180) % 360 clamped 0→360, speed = 15 kt)))` — pure
+  tailwind on the active runway, 15 kt > C172's 10 kt **AFH-advisory**
+  tailwind value (5 kt margin against any per-edition advisory
+  adjustment). The pilot reads the new wind via
+  `PilotInput.weatherByAerodrome` on the next decision tick (fn-14.1's
+  `PilotWiring` projection, reused unchanged for tailwind),
+  `derivePilotEvent`'s tailwind branch fires
+  `PilotEvent.TailwindLimitExceeded`, `applyTailwindGoAround` rewrites
+  the mission tree + transmits `Report(GoingAround)`, the controller's
+  existing trigger-agnostic `GA-POST-CLEAR` interrupt fires off the
+  received `GoAroundEvent` regressing the commitment from
+  `{LandingClearanceIssued, AwaitLandedObserved}` to `AwaitDownwind`,
+  the aircraft GAs and re-enters circuit. A second one-shot transition
+  returns the wind to within limits once `Report(GoingAround)` has been
+  transmitted and the aircraft is off final; the recovery circuit's
+  final is therefore within the advisory and the aircraft lands. Pins:
+  same three-layer pattern as G3a-react-crosswind (Layer 1 causal
+  partial-order — exactly one `Report(GoingAround)`; Layer 2
+  sticky-witness regression via `GA-POST-CLEAR` strictly AFTER the
+  GoingAround transmission; Layer 3 kinematic non-event — no
+  `LandingRoll`/`Vacating` in the exceedance window), two-transition
+  world-weather pin (aerodrome-keyed slice only — NO controller-belief
+  expansion), recovery chain + R7 vacate-coordination closure pin, time
+  band ±15% centred on the crosswind sibling's 1333 s anchor (tailwind
+  sibling's first-GREEN observed wall is ~1397 s = ~23.3 sim minutes,
+  well within band). World-only test trigger per
+  `feedback_world_only_test_triggers.md`. **No event-count pin on
+  `TailwindLimitExceeded` in this sim test** — that pin lives in
+  fn-15.1's pilot-side `PilotTailwindHysteresisTest`. **Per-type
+  doctrinal severity asymmetry** (load-bearing, codex round-1 closure
+  from fn-15.1): the C172 leaf models the **AFH-advisory regime** —
+  Cessna 172R/172S POH §2 does NOT publish a hard tailwind limitation,
+  and 10 kt is the FAA AFH Ch 9 industry-standard advisory for light
+  singles. The B738 leaf models the **FCOM hard-limit regime** (15 kt
+  steady tailwind on dry runway, FCOM Limitations §1). This test
+  exercises the C172 leaf only; the B738 hard-limit regime is covered
+  by pilot-side unit tests (fn-15.1). Doctrinal anchors: FAA AFH
+  (FAA-H-8083-3C) Chapter 9 (tailwind landings as high-risk
+  operations); ICAO Doc 4444 §7.11.6 (5 kt reduced-runway tailwind
+  peer anchor); Cessna 172R/172S POH §2 (explicit absence of a
+  published tailwind limitation); Boeing 737-800 FCOM Limitations §1
+  (15 kt hard limit, contrasted); ICAO Annex 6 Part II §2.4 / CAP 413
+  §4.66 (Ed 24 — formerly §4.67 in Ed 23, renumbered per fn-17.1) /
+  ICAO Doc 4444 §12.3.4.18 (PIC-initiated GA authority +
+  phraseology). Closes the fn-15 epic.
+
+All nine tests follow the no-corners-cut rule: a failing golden test is
 documented in its KDoc with the specific blocker and stays loudly
 failing. No `@Disabled`, skip-list, or exclusion set.
 

@@ -44,39 +44,71 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
 import xyz.easiersaid.twr.sim.testing.weatherTransitions
 
 /**
- * G3a-react — single-aerodrome single-aircraft VFR **pilot-reactive**
- * go-around triggered by a world-authored wind shift whose crosswind
- * component on the active runway exceeds the aircraft type's POH-derived
- * `maxCrosswindKnots`.
+ * G3a-react-tailwind — single-aerodrome single-aircraft VFR
+ * **pilot-reactive** go-around triggered by a world-authored wind shift
+ * whose tailwind component on the active runway exceeds the aircraft
+ * type's POH/AFH-derived `maxTailwindKnots`.
  *
- * Single AI aircraft at LOWG (C172, POH max demonstrated crosswind =
- * 15 kt) flies a single planned circuit
- * (`HighLevelGoal.CircuitTraining(outcomes = [FullStop])`). Initial wind
- * is 10 kt headwind from runway heading (zero crosswind). After the
- * tower issues `ClearedToLand`, the test's per-tick world hook authors
- * `weatherByAerodrome[LOWG] = WeatherObservation(wind = Available(Wind(
- * directionDegrees = runwayHeading + 90°, speedKnots = 20)))` one-shot —
- * pure direct crosswind, 20 kt > C172's 15 kt limit. The pilot reads the
- * new wind via `PilotInput.weatherByAerodrome` on the next decision
- * cycle (fn-14.1 wiring), `derivePilotEvent`'s crosswind branch fires
- * `PilotEvent.CrosswindLimitExceeded`, `applyCrosswindGoAround` rewrites
+ * Sibling of [G3aPilotReactiveCrosswindTest] (fn-14.2 — crosswind axis).
+ * Same shape, second pilot-reactive POH/AFH recognition axis: world
+ * authors a wind shift that breaches `AircraftType.maxTailwindKnots`,
+ * pilot's `derivePilotEvent` tailwind branch fires
+ * `PilotEvent.TailwindLimitExceeded`, `applyTailwindGoAround` rewrites
  * the mission tree + transmits `Report(GoingAround)`, the controller's
- * existing `GA-POST-CLEAR` interrupt fires off the received GoingAround
- * report regressing the commitment from `{LandingClearanceIssued,
- * AwaitLandedObserved}` to `AwaitDownwind`, the aircraft GAs and
- * re-enters circuit. The hook then authors a second one-shot returning
- * wind to the initial 10 kt headwind once Report(GoingAround) has been
- * transmitted; the recovery circuit's final is therefore within the
- * POH limit and the aircraft lands.
+ * existing trigger-agnostic `GA-POST-CLEAR` interrupt regresses the
+ * commitment, the aircraft GAs and re-enters the circuit. World then
+ * returns wind within limits and the recovery circuit lands.
  *
- * **Closes the G3a trilogy** (4th reactive-GA path; epic R12 + R13):
- * G3a-trained (fn-11 — pilot-trained mission), G3a-obstruction (fn-12
- * — ATC-mandated obstruction), G3a-continue (fn-13 — ATC CONTINUE
- * APPROACH non-GA), and now G3a-react (fn-14 — pilot-side reactive
- * recognition off world weather). The first path where pilot
- * recognition is driven by **world state directly observed via a new
- * pilot sensing channel** (vs mission-tree authorship or instruction
- * receipt).
+ * Single AI aircraft at LOWG (C172, max-tailwind = 10 kt **FAA AFH
+ * Ch 9 industry-standard advisory** — POH §2 does NOT publish a hard
+ * tailwind limitation for the 172, so 10 kt is the modelling anchor
+ * from FAA-H-8083-3C, not a certification limit). Mission
+ * `HighLevelGoal.CircuitTraining(outcomes = [FullStop])` — one planned
+ * circuit; the recovery circuit (after the pilot-reactive GA) is
+ * produced by `applyTailwindGoAround`'s `replaceChild { it
+ * .isCircuitLike() }` rewrite, mirroring the crosswind sibling's shape
+ * for the `CircuitAfterGoAround` subtree.
+ *
+ * **Doctrinal severity asymmetry (load-bearing, codex round-1 closure
+ * inherited from fn-15.1):** the C172 leaf models the **AFH-advisory
+ * regime** — the Cessna 172S/172R POH does NOT publish a hard tailwind
+ * limitation, and 10 kt is the FAA AFH Ch 9 industry-standard advisory
+ * for light singles. This is **distinct** from the B738 leaf's
+ * **FCOM hard-limit regime** (15 kt steady tailwind, dry runway, FCOM
+ * Limitations §1). The sim test uses the C172 advisory regime; the
+ * doctrinal anchor surfaced in `wiki/design-decisions/2026-04-22-root-
+ * cause-go-around-and-totality.md` distinguishes the two. No generic
+ * "POH = hard limit" framing — manufacturer values are not regulations,
+ * per `RegulationDatabase` scope discipline.
+ *
+ * Initial wind = 10 kt headwind from runway heading (zero tailwind,
+ * zero crosswind). After the tower issues `ClearedToLand`, the test's
+ * per-tick world hook authors `weatherByAerodrome[LOWG] =
+ * WeatherObservation(wind = Available(Wind(directionDegrees =
+ * (runwayHeading + 180) % 360 clamped 0→360, speedKnots = 15)))`
+ * one-shot — 15 kt pure tailwind on the runway in use. 15 kt > C172's
+ * 10 kt AFH-advisory; the 5 kt margin guards against any per-edition
+ * adjustment to the advisory itself. The pilot reads the new wind via
+ * `PilotInput.weatherByAerodrome` on the next decision cycle (fn-14.1
+ * wiring; reused unchanged for tailwind), `derivePilotEvent`'s tailwind
+ * branch fires `PilotEvent.TailwindLimitExceeded`,
+ * `applyTailwindGoAround` rewrites the mission tree + transmits
+ * `Report(GoingAround)`, the controller's existing `GA-POST-CLEAR`
+ * interrupt fires off the received `GoAroundEvent` regressing the
+ * commitment from `{LandingClearanceIssued, AwaitLandedObserved}` to
+ * `AwaitDownwind`, the aircraft GAs and re-enters circuit. The hook
+ * then authors a second one-shot returning wind to the initial 10 kt
+ * headwind once `Report(GoingAround)` has been transmitted; the
+ * recovery circuit's final is therefore within the advisory and the
+ * aircraft lands.
+ *
+ * **Closes the G3a-react second axis** (fifth reactive-GA path; epic
+ * R11 + R12 + R14): the pilot-reactive recognition surface is now
+ * doubled (POH/AFH crosswind via fn-14, POH/AFH tailwind via fn-15).
+ * `derivePilotEvent` runs DA → tailwind → crosswind in branch order;
+ * the tailwind axis is physically the stronger constraint (touchdown
+ * energy, runway remaining, go-around margin) and demoted crosswind one
+ * position per fn-15.1's compound-exceedance discriminator.
  *
  * **Sibling tests:**
  *  - G0 ([LowgGoldenTest]) — single-aircraft single-aerodrome circuit
@@ -95,42 +127,53 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *  - G3a-obstruction ([G3aRunwayObstructionTest]) — single-aerodrome
  *    ATC-instructed reactive GA off a world-authored runway
  *    obstruction. Same fixture / same world-only-trigger discipline as
- *    G3a-react; distinguishing surface is the controller-side rule
- *    fire vs pilot-side recognition.
+ *    G3a-react-tailwind; distinguishing surface is the controller-side
+ *    rule fire vs pilot-side recognition.
  *  - G3a-continue ([G3aRunwayObstructionContinueApproachTest]) — the
  *    non-GA sibling of G3a-obstruction. Pre-clearance CONTINUE
  *    APPROACH on a short-TTL runway obstruction.
+ *  - G3a-react-crosswind ([G3aPilotReactiveCrosswindTest]) — the
+ *    immediate sibling of this test. Same fixture / same two-transition
+ *    world-state authorship pattern / same three-layer pin shape;
+ *    distinguishing surface is the recognition axis (crosswind
+ *    component vs tailwind component) and the doctrinal regime
+ *    (POH-demonstrated crosswind for the C172 vs AFH-advisory tailwind
+ *    for the C172 — the per-type doctrinal severity asymmetry only
+ *    surfaces on the tailwind axis, since crosswind has a POH value
+ *    for both C172 and B738).
  *
- * **What G3a-react distinctively pins:**
+ * **What G3a-react-tailwind distinctively pins:**
  *  - **World-only test trigger via wind:** the test authors
  *    `state.weatherByAerodrome[LOWG]` directly through
  *    `runUntilWithStateTrace`'s `onAfterEvent` hook. The pilot reads
  *    the new wind on the next `PilotDecisionTick` via `buildPilotInput`'s
  *    `weatherByAerodrome = state.weatherByAerodrome.mapValues { obs.wind }`
- *    projection (fn-14.1's `PilotWiring` wiring). No
- *    `PilotEvent.CrosswindLimitExceeded` injection, no direct
- *    `PilotInput.weatherByAerodrome` mutation outside the sim wiring,
- *    no `mission` mutation bypassing the recognition→apply pipeline.
- *    Per `feedback_world_only_test_triggers.md`.
+ *    projection (fn-14.1's `PilotWiring` wiring, reused unchanged for
+ *    the tailwind axis). No `PilotEvent.TailwindLimitExceeded`
+ *    injection, no direct `PilotInput.weatherByAerodrome` mutation
+ *    outside the sim wiring, no `mission` mutation bypassing the
+ *    recognition→apply pipeline. Per
+ *    `feedback_world_only_test_triggers.md`.
  *  - **Two-transition world-weather authorship pattern:** one-shot wind
  *    shift past limit (triggers GA), then one-shot wind return within
- *    limits (enables recovery landing). Guards `var crosswindAuthored
- *    = false` and `var crosswindClearedToLimit = false` ensure each
+ *    limit (enables recovery landing). Guards `var tailwindAuthored
+ *    = false` and `var tailwindClearedToLimit = false` ensure each
  *    transition fires exactly once.
- *  - **End-to-end pilot-side reactive stack:** world weather author →
- *    `state.weatherByAerodrome` mutation → `PilotWiring.buildPilotInput`
- *    projects to `WindReport` → `pilotDecide`'s `windForMission`
- *    resolves aerodrome key → `derivePilotEvent`'s crosswind branch
- *    fires `CrosswindLimitExceeded` → `applyCrosswindGoAround` Tick A
- *    (route=None, phase=Final retained, mission tree rewritten to
- *    CircuitAfterGoAround, `Report(GoingAround)` emitted) → controller
- *    `GA-POST-CLEAR` interrupt fires off `GoAroundEvent` → commitment
- *    regression → recovery clearance → landing. Pilot-side unit tests
- *    ([xyz.easiersaid.twr.pilot.observe.CrosswindLimitExceededSpec],
- *    [xyz.easiersaid.twr.pilot.PilotCrosswindHysteresisTest]) pin
- *    recognition discriminator + Tick A intent + hysteresis; this test
- *    pins the composition.
- *  - **Three-layer pin pattern** (per fn-11.2 / fn-12.3 discipline):
+ *  - **End-to-end pilot-side reactive stack** (tailwind axis): world
+ *    weather author → `state.weatherByAerodrome` mutation →
+ *    `PilotWiring.buildPilotInput` projects to `WindReport` →
+ *    `pilotDecide`'s `windForMission` resolves aerodrome key →
+ *    `derivePilotEvent`'s tailwind branch fires `TailwindLimitExceeded`
+ *    → `applyTailwindGoAround` Tick A (route=None, phase=Final
+ *    retained, mission tree rewritten to CircuitAfterGoAround,
+ *    `Report(GoingAround)` emitted) → controller `GA-POST-CLEAR`
+ *    interrupt fires off `GoAroundEvent` → commitment regression →
+ *    recovery clearance → landing. Pilot-side unit tests
+ *    (`PilotEventTailwindTest`, `PilotTailwindGoAroundTest`,
+ *    `PilotTailwindHysteresisTest`) pin recognition discriminator +
+ *    Tick A intent + hysteresis; this test pins the composition.
+ *  - **Three-layer pin pattern** (per fn-11.2 / fn-12.3 / fn-14.2
+ *    discipline):
  *    - Layer 1 (causal partial-order) — exactly one
  *      `Report(GoingAround)` transmitted between the wind-shift cycle
  *      and the wind-recovery cycle. Decision-cycle timestamps via
@@ -142,8 +185,8 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *      one of `{LandingClearanceIssued, AwaitLandedObserved}` (the
  *      hook's post-clearance window) to `TowerArrivalStage
  *      .AwaitDownwind` via `GA-POST-CLEAR` (NOT `Immediate` advancement
- *      — unlike G3a-obstruction, the trigger here is a pilot-emitted
- *      `Report(GoingAround)` which the tower receives via
+ *      — like the crosswind sibling, the trigger here is a pilot-
+ *      emitted `Report(GoingAround)` which the tower receives via
  *      `GoAroundEvent` and the `GA-POST-CLEAR` interrupt consumes;
  *      regression therefore fires strictly AFTER the GoingAround
  *      transmission). Post-regression sticky witnesses
@@ -154,47 +197,79 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *      the aircraft does NOT touch down on the GA'd approach.
  *  - **World-weather transition pin:** exactly two transitions in the
  *    aerodrome-keyed `SimState.weatherByAerodrome[LOWG]` slice — wind
- *    crosses past limit (triggers GA), wind returns within limits
+ *    crosses past limit (triggers GA), wind returns within limit
  *    (enables recovery). Via [weatherTransitions]; **aerodrome-keyed
  *    only — NO controller belief slice** (weather is world-state, not
  *    a controller belief projection; the GA is pilot-side and does
- *    not need controller observability expansion).
+ *    not need controller observability expansion). Mirrors the
+ *    crosswind sibling's discipline.
  *  - **Recovery + R7 vacate-coordination closure:** exactly one
  *    `TouchdownDetected` after wind returns within limit; recovery
  *    vacate transmission (`Report(RunwayVacated)`) present; tower's
  *    coordination ledger holds no leftover `AfterLandingVacateVia` /
  *    `BacktrackRunway` entries after vacate per fn-8.3 R7-style.
- *  - **No event-count pin on `CrosswindLimitExceeded` in this sim
- *    test** (per codex review issue #8 — that pin lives in fn-14.1's
- *    pilot-side `PilotCrosswindHysteresisTest`). Sim asserts only
- *    externally observable behavior.
+ *  - **No event-count pin on `TailwindLimitExceeded` in this sim
+ *    test** — that pin lives in fn-15.1's pilot-side
+ *    `PilotTailwindHysteresisTest` (mirroring fn-14 issue #8 closure
+ *    inherited from the crosswind sibling). Sim asserts only
+ *    externally observable behaviour.
  *
- * **Time band** (R12 — ±15% per fn-8.3 decision #11 inheritance): the
- * first-GREEN observed wall on the LOWG single-aircraft single-planned-
- * circuit + reactive-GA + recovery-circuit scenario is ~1333 sim seconds
- * (comparable to G3a-trained's 1393 s and G3a-obstruction's 1399 s —
- * same structural shape: one planned circuit, one GA detour, one
- * recovery circuit). The ±15% band catches doctrine timing regressions
- * while absorbing run-to-run jitter.
+ * **Time band** (R12 — ±15% per fn-8.3 decision #11 inheritance,
+ * mirroring the crosswind sibling): same structural shape as
+ * G3a-react-crosswind (one planned circuit, one reactive GA detour,
+ * one recovery circuit). The first-GREEN observed wall on this fixture
+ * is ~1_397_000 ms (~23.3 sim minutes — comparable to the crosswind
+ * sibling's 1_333_000 ms / 22.2 sim minutes and G3a-trained's
+ * 1_393_000 ms; the small uptick is the recovery-circuit re-entry
+ * geometry settling for the tailwind authorship cycle). The ±15% band
+ * is centred on the **crosswind sibling's** 1_333_000 ms (same shape
+ * pin used by every G3a sibling so the band is exactly comparable
+ * across the trilogy + tailwind axis); 1_397_000 ms sits well within
+ * the ±15% window [1_133_050, 1_532_950]. Rebaseline if doctrine
+ * shifts (per fn-8.3 decision #11 inheritance).
  *
- *   - observed completion wall: 1_333_000 ms (~22.2 sim minutes)
- *   - lower bound (×0.85): 1_133_050 ms (~18.9 min)
- *   - upper bound (×1.15): 1_532_950 ms (~25.5 min)
+ *   - observed completion wall: 1_397_000 ms (~23.3 sim minutes)
+ *   - lower bound (×0.85 of crosswind anchor): 1_133_050 ms (~18.9 min)
+ *   - upper bound (×1.15 of crosswind anchor): 1_532_950 ms (~25.5 min)
  *
- * **Doctrinal anchors:**
- *  - **FAA AFH (FAA-H-8083-3C) Chapter 9**: Common Error #1 —
- *    attempting a landing in crosswinds that exceed the airplane's
- *    maximum demonstrated crosswind component.
- *  - **14 CFR §23.233(a)** (pre-Amendment 64) + **FAA AC 23-8B**: POH
- *    "demonstrated crosswind" is performance information (0.2 V_SO
- *    floor), not a limitation. Modelling choice: a competent VFR pilot
- *    in the sim does GA when the demonstrated value is exceeded.
+ * **Doctrinal anchors (tailwind axis):**
+ *  - **FAA AFH (FAA-H-8083-3C) Chapter 9**: tailwind landings framed
+ *    as high-risk operations; the 10 kt advisory used for the C172
+ *    derives from the AFH industry-standard guidance for light
+ *    singles. The AFH frames tailwind as a touchdown-energy /
+ *    go-around-margin axis distinct from the lateral-control crosswind
+ *    axis — same chapter, different physical mechanism.
+ *  - **ICAO Doc 4444 §7.11.6**: reduced-runway-separation tailwind
+ *    threshold (5 kt) — peer doctrinal anchor for the "tailwind
+ *    matters operationally" claim; cited via the
+ *    `ICAO4444_7_11_6_REDUCED_RUNWAY_TAILWIND` `RegulationDatabase`
+ *    entry (fn-15.1).
+ *  - **Cessna 172R/172S NAV III POH §2 (Limitations)**: explicit
+ *    **absence** of a published tailwind limitation. The KDoc of
+ *    [AircraftType.C172] records this absence — load-bearing for the
+ *    AFH-advisory framing and for the codex round-1 closure on
+ *    `RegulationDatabase` scope (manufacturer values are not
+ *    regulations).
+ *  - **Boeing 737-800 FCOM Limitations §1**: 15 kt steady tailwind on
+ *    dry runway — hard operational limitation, distinct doctrinal
+ *    severity from the C172 leaf's AFH advisory. This test exercises
+ *    the C172 leaf only; the B738 leaf's hard-limit regime is covered
+ *    by pilot-side unit tests (fn-15.1) and remains available for
+ *    future jet-class sim coverage.
  *  - **ICAO Annex 6 Part II §2.4**: PIC final authority (GA without
- *    ATC permission per CAP 413 §4.66 (Ed 24 — formerly §4.67 in Ed 23,
- *    renumbered per fn-17.1) / ICAO Doc 4444 §12.3.4.18).
+ *    ATC permission per CAP 413 §4.66 (Ed 24 — formerly §4.67 in
+ *    Ed 23, renumbered per fn-17.1) / ICAO Doc 4444 §12.3.4.18).
  *  - **FAA AIM §7-1-12.d.3**: ATC-voice winds in Magnetic degrees;
  *    runway designators are Magnetic; same reference frame.
  *
+ * @see G3aPilotReactiveCrosswindTest the immediate sibling — same
+ *      fixture, same two-transition world-state authorship pattern,
+ *      same three-layer pin shape; distinguishing surface is the
+ *      recognition axis (crosswind component vs tailwind component)
+ *      and the doctrinal regime (POH-demonstrated crosswind for the
+ *      C172 vs AFH-advisory tailwind for the C172 — the per-type
+ *      doctrinal severity asymmetry only surfaces on the tailwind
+ *      axis).
  * @see G3aPilotTrainedGoAroundTest the pilot-trained GA sibling
  *      (mission-authored, not world-weather-driven).
  * @see G3aRunwayObstructionTest the ATC-instructed reactive-GA sibling
@@ -202,22 +277,11 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  * @see G3aRunwayObstructionContinueApproachTest the non-GA pre-clearance
  *      sibling (controller-side CONTINUE APPROACH on short-TTL
  *      obstruction).
- * @see G3aPilotReactiveTailwindTest the immediate sibling on the second
- *      pilot-reactive POH/AFH recognition axis (fn-15 — closes the
- *      second pilot-reactive recognition axis as the fifth reactive-GA
- *      path). Same fixture / same two-transition
- *      `state.weatherByAerodrome[LOWG]` pattern / same three-layer pin
- *      shape; distinguishing surface is the recognition axis (tailwind
- *      component vs crosswind component) and the doctrinal regime
- *      (C172 AFH-advisory 10 kt tailwind vs C172 POH-demonstrated 15 kt
- *      crosswind — the per-type doctrinal severity asymmetry, C172 AFH
- *      advisory vs B738 FCOM hard limit, surfaces only on the tailwind
- *      axis since crosswind has POH-demonstrated values on both leaves).
  */
-class G3aPilotReactiveCrosswindTest {
+class G3aPilotReactiveTailwindTest {
 
     @Test
-    fun `world-authored crosswind exceedance triggers pilot reactive GA and recovery landing at LOWG`() {
+    fun `world-authored tailwind exceedance triggers pilot reactive GA and recovery landing at LOWG`() {
         // ── World + controllers via the shared fixture ──────────────────────
         val fixture = Fixtures.LOWG
         val loaded = fixture.load().getOrElse {
@@ -233,24 +297,26 @@ class G3aPilotReactiveCrosswindTest {
         }
 
         // Resolve runway heading via the fail-closed typed helper (fn-14.1).
-        // 16C → 160°M. Pure-crosswind direction is therefore (160 + 90) %
-        // 360 = 250°M. `% 360` prevents overflow for runway headings ≥ 270°
-        // (e.g. a runway 35C at 350°M + 90 would wrap to 80°M without the
-        // mod). Map result `0` back to `360` per the Wind smart constructor's
-        // `0..360` domain (the constructor accepts both endpoints; we use
-        // 360 to preserve the aviation-display convention "360 = North").
+        // 16C → 160°M. Pure-tailwind direction is therefore (160 + 180) %
+        // 360 = 340°M. `% 360` prevents overflow for runway headings ≥
+        // 180° (e.g. a runway 35C at 350°M + 180 would wrap to 170°M
+        // without the mod). Map result `0` back to `360` per the Wind smart
+        // constructor's `0..360` domain (the constructor accepts both
+        // endpoints; we use 360 to preserve the aviation-display convention
+        // "360 = North"). For 16C the result is 340 — neither boundary —
+        // so the clamp is defensive.
         val runwayHeading = checkNotNull(rwy.headingDegreesMagnetic()) {
             "Runway $rwy did not parse to a magnetic heading — fixture/test mismatch"
         }
-        val pureCrosswindDirection: Int = (((runwayHeading + 90) % 360))
+        val pureTailwindDirection: Int = (((runwayHeading + 180) % 360))
             .let { if (it == 0) 360 else it }
 
         // ── One AI aircraft, mission = single full-stop circuit ─────────────
         // `CircuitTraining(outcomes = [FullStop])` — one planned circuit;
         // the recovery circuit (after the pilot-reactive GA) is provided
-        // automatically by `applyCrosswindGoAround`'s `replaceChild { it
-        // .isCircuitLike() }` rewrite, mirroring G3a-obstruction's shape
-        // for the `CircuitAfterGoAround` subtree. NO `CircuitOutcome
+        // automatically by `applyTailwindGoAround`'s `replaceChild { it
+        // .isCircuitLike() }` rewrite, mirroring G3a-react-crosswind's
+        // shape for the `CircuitAfterGoAround` subtree. NO `CircuitOutcome
         // .GoAround` in the list — this is pilot-reactive, not pilot-
         // trained.
         val aircraftId = AircraftId("OE-ABC")
@@ -276,12 +342,15 @@ class G3aPilotReactiveCrosswindTest {
         )
 
         // ── Initial weather = 10 kt headwind from runway heading ─────────────
-        // Zero crosswind component initially — the recognition predicate is
-        // satisfied only after the world hook authors the shift. We
-        // override the fixture's default 160°@8 to a precise 16C
-        // headwind (160°@10) so the initial crosswind component is
-        // exactly zero and the hook's transition is the sole driver of
-        // recognition.
+        // Zero tailwind component initially (pure headwind has zero tailwind
+        // and zero crosswind) — the recognition predicate is satisfied only
+        // after the world hook authors the shift. We override the fixture's
+        // default 160°@8 to a precise 16C headwind (160°@10) so the initial
+        // tailwind component is exactly zero and the hook's transition is
+        // the sole driver of recognition. 10 kt sits exactly AT C172's
+        // `maxTailwindKnots` advisory but the recognition predicate is
+        // strict-`>` so the boundary value is non-triggering (fn-15.1
+        // boundary semantics — `tailwindComponent > maxTailwindKnots`).
         val initialWeather = WeatherObservation(
             wind = WindReport.Available(
                 Wind.unsafe(directionDegrees = runwayHeading, speedKnots = 10),
@@ -324,33 +393,34 @@ class G3aPilotReactiveCrosswindTest {
 
         // ── Two-transition world-state authorship via `onAfterEvent` ─────────
         //
-        // Transition 1 — wind crosses past C172's 15 kt POH limit. Fires
-        // when the aircraft is on `phase = Final` AND the tower's
-        // commitment for the aircraft sits in a post-clearance stage
-        // (`LandingClearanceIssued` or `AwaitLandedObserved`). This window
-        // pins `T_obs > T_ClearedToLand` (the hook's "post-clearance"
-        // constraint) and exercises the `GA-POST-CLEAR` interrupt path
-        // (matching G3a-trained / G3a-obstruction shape — same
-        // commitment-lifecycle interrupt fires off the pilot-emitted
-        // `Report(GoingAround)`, NOT `Immediate` advancement which is the
-        // G3a-obstruction controller-side reactive path).
+        // Transition 1 — wind crosses past C172's 10 kt AFH-advisory
+        // tailwind value. Fires when the aircraft is on `phase = Final` AND
+        // the tower's commitment for the aircraft sits in a post-clearance
+        // stage (`LandingClearanceIssued` or `AwaitLandedObserved`). This
+        // window pins `T_obs > T_ClearedToLand` (the hook's "post-
+        // clearance" constraint) and exercises the `GA-POST-CLEAR`
+        // interrupt path (same lifecycle interrupt the crosswind sibling
+        // uses — the controller-side machinery is trigger-agnostic and
+        // fires off any pilot-emitted `Report(GoingAround)`, NOT off
+        // `Immediate` advancement which is the G3a-obstruction
+        // controller-side reactive path).
         //
-        // Transition 2 — wind returns within limits. Fires when
+        // Transition 2 — wind returns within the advisory. Fires when
         // `Report(GoingAround)` has been observed in the transmission
         // record (the pilot has emitted the GA; the recovery circuit is
         // re-entering downwind) AND the aircraft is no longer on
         // `phase = Final` (i.e. has climbed out and is on a non-final
         // leg). Resetting BEFORE the recovery circuit reaches final
-        // ensures the recovery final's crosswind is within the limit;
+        // ensures the recovery final's tailwind is within the advisory;
         // the recognition stays silent on circuit 2 → aircraft lands.
         //
         // Each transition is one-shot guarded; defense-in-depth against
         // multi-fire which would either retrigger recognition (transition
         // 1) or thrash the wind (transition 2).
-        var crosswindAuthored = false
-        var crosswindClearedToLimit = false
-        val crosswindAuthoredAt = arrayOf<SimTime?>(null)
-        val crosswindClearedAt = arrayOf<SimTime?>(null)
+        var tailwindAuthored = false
+        var tailwindClearedToLimit = false
+        val tailwindAuthoredAt = arrayOf<SimTime?>(null)
+        val tailwindClearedAt = arrayOf<SimTime?>(null)
         val goingAroundTransmittedFlag = arrayOf(false)
         val onAfterEvent: (SimEvent, SimState) -> SimState = { ev, st ->
             // Track `Report(GoingAround)` emission via the event stream so
@@ -384,30 +454,30 @@ class G3aPilotReactiveCrosswindTest {
                 // immediately at the GA transmission instant, before the
                 // aircraft has actually climbed and re-entered downwind;
                 // the off-final gate gives the GA path room to execute.
-                !crosswindClearedToLimit &&
+                !tailwindClearedToLimit &&
                     goingAroundTransmittedFlag[0] &&
                     aircraftIsOffFinal(st, aircraftId) -> {
-                    crosswindClearedToLimit = true
-                    crosswindClearedAt[0] = st.now
+                    tailwindClearedToLimit = true
+                    tailwindClearedAt[0] = st.now
                     authorWeather(st, lowg, initialWeather)
                 }
                 // Transition 1 — wind crosses past limit (one-shot).
                 // Gated on post-clearance window per the spec.
-                !crosswindAuthored &&
+                !tailwindAuthored &&
                     aircraftIsOnFinalWithLandingClearance(st, aircraftId, tower.id) -> {
-                    crosswindAuthored = true
-                    crosswindAuthoredAt[0] = st.now
-                    val crosswindWeather = WeatherObservation(
+                    tailwindAuthored = true
+                    tailwindAuthoredAt[0] = st.now
+                    val tailwindWeather = WeatherObservation(
                         wind = WindReport.Available(
                             Wind.unsafe(
-                                directionDegrees = pureCrosswindDirection,
-                                speedKnots = 20,
+                                directionDegrees = pureTailwindDirection,
+                                speedKnots = 15,
                             ),
                         ),
                         qnh = null,
                         visibility = null,
                     )
-                    authorWeather(st, lowg, crosswindWeather)
+                    authorWeather(st, lowg, tailwindWeather)
                 }
                 else -> st
             }
@@ -425,11 +495,11 @@ class G3aPilotReactiveCrosswindTest {
         println(journey)
 
         println()
-        println("─── G3a-react per-aircraft trace summary ───")
+        println("─── G3a-react-tailwind per-aircraft trace summary ───")
         println("Runway heading (16C):       ${runwayHeading}°M")
-        println("Pure-crosswind direction:   ${pureCrosswindDirection}°M @ 20 kt")
-        println("Crosswind authored at:      ${crosswindAuthoredAt[0]?.millis ?: "<NEVER>"}ms")
-        println("Crosswind cleared at:       ${crosswindClearedAt[0]?.millis ?: "<NEVER>"}ms")
+        println("Pure-tailwind direction:    ${pureTailwindDirection}°M @ 15 kt")
+        println("Tailwind authored at:       ${tailwindAuthoredAt[0]?.millis ?: "<NEVER>"}ms")
+        println("Tailwind cleared at:        ${tailwindClearedAt[0]?.millis ?: "<NEVER>"}ms")
         println("Responsibility transitions:")
         for (t in trace.responsibilityTransitions(aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it::class.simpleName ?: "?" })
@@ -471,23 +541,23 @@ class G3aPilotReactiveCrosswindTest {
         for (t in trace.transitionsOf { st -> st.aircraft[aircraftId]?.phase }) {
             println("  [${t.after.time.millis}ms] ${t.from} → ${t.to}")
         }
-        println("─── end G3a-react per-aircraft trace summary ───")
+        println("─── end G3a-react-tailwind per-aircraft trace summary ───")
         println()
 
         // ── One-shot authorship pins (defensive) ────────────────────────────
-        check(crosswindAuthored) {
+        check(tailwindAuthored) {
             "World-authorship hook never fired transition 1 — " +
                 "`aircraftIsOnFinalWithLandingClearance` never returned true. Either the " +
                 "aircraft never reached phase=Final, or ClearedToLand was never issued for " +
                 "circuit 1. This is a pre-condition regression — the rest of the test's pins " +
-                "assume the crosswind was authored.\n$journey"
+                "assume the tailwind was authored.\n$journey"
         }
-        check(crosswindClearedToLimit) {
+        check(tailwindClearedToLimit) {
             "World-authorship hook never fired transition 2 — " +
                 "`Report(GoingAround)` was never transmitted OR aircraft never left final after " +
                 "the GA. Either the recognition didn't fire, the applier didn't transmit, or " +
                 "the GA path didn't climb out. Without transition 2, the recovery circuit's " +
-                "final would still face the crosswind and the recognition would re-fire — " +
+                "final would still face the tailwind and the recognition would re-fire — " +
                 "the test would never complete.\n$journey"
         }
 
@@ -516,14 +586,14 @@ class G3aPilotReactiveCrosswindTest {
         // ── World-weather transition pin (exactly two transitions) ──────────
         //
         // The aerodrome-keyed `weatherByAerodrome[LOWG]` slice transitions
-        // exactly twice during the run: (1) initial 160°@10 → 250°@20
-        // (crosswind authored), (2) 250°@20 → 160°@10 (cleared). No
+        // exactly twice during the run: (1) initial 160°@10 → 340°@15
+        // (tailwind authored), (2) 340°@15 → 160°@10 (cleared). No
         // controller-belief slice expansion — weather is world-state per
         // [weatherTransitions]'s KDoc.
         val weatherTrans = trace.weatherTransitions(lowg)
         check(weatherTrans.size == 2) {
             "Expected exactly two transitions in SimState.weatherByAerodrome[$lowg] " +
-                "(crosswind authored + cleared), observed ${weatherTrans.size}. " +
+                "(tailwind authored + cleared), observed ${weatherTrans.size}. " +
                 "More than two would indicate the one-shot guards regressed; fewer than two " +
                 "indicates either the authorship hook didn't fire (covered by the defensive " +
                 "pins above) or the trace doesn't see the world-state mutation (sim-engine " +
@@ -536,17 +606,17 @@ class G3aPilotReactiveCrosswindTest {
                 "($weatherClearMs ms). Equal/reversed indicates the one-shot guards fired in " +
                 "the wrong order.\n$journey"
         }
-        // Defense-in-depth: confirm the shift is the high-crosswind state
+        // Defense-in-depth: confirm the shift is the high-tailwind state
         // and the clear is the headwind state — pins the wind values
         // against the authorship parameters above.
         val shiftedWind = (weatherTrans[0].to.getOrElse {
             fail("Weather-shift transition has absent `to` — invariant violation.\n$journey")
         }.wind as? WindReport.Available)?.wind
             ?: fail("Weather-shift transition `to.wind` is not WindReport.Available.\n$journey")
-        check(shiftedWind.directionDegrees == pureCrosswindDirection &&
-            shiftedWind.speedKnots == 20) {
+        check(shiftedWind.directionDegrees == pureTailwindDirection &&
+            shiftedWind.speedKnots == 15) {
             "Weather-shift wind mismatch: got ${shiftedWind.directionDegrees}°@${shiftedWind.speedKnots} " +
-                "expected ${pureCrosswindDirection}°@20.\n$journey"
+                "expected ${pureTailwindDirection}°@15.\n$journey"
         }
         val clearedWind = (weatherTrans[1].to.getOrElse {
             fail("Weather-clear transition has absent `to` — invariant violation.\n$journey")
@@ -590,14 +660,15 @@ class G3aPilotReactiveCrosswindTest {
 
         // ── Layer 2 — Sticky-witness regression pin (post-clearance → GA) ──
         //
-        // Same shape as G3a-trained's regression pin: the pilot transmits
-        // `Report(GoingAround)`, the tower receives it via `GoAroundEvent`,
-        // and the `GA-POST-CLEAR` interrupt regresses the commitment from
-        // `{LandingClearanceIssued, AwaitLandedObserved}` to
-        // `AwaitDownwind`. UNLIKE G3a-obstruction (which uses `Immediate`
-        // advancement and equality with the GoAround decision cycle), this
-        // path goes through the radio-delivery → interrupt machinery, so
-        // the regression strictly POSTDATES the GoingAround transmission.
+        // Same shape as G3a-react-crosswind's regression pin: the pilot
+        // transmits `Report(GoingAround)`, the tower receives it via
+        // `GoAroundEvent`, and the `GA-POST-CLEAR` interrupt regresses
+        // the commitment from `{LandingClearanceIssued,
+        // AwaitLandedObserved}` to `AwaitDownwind`. UNLIKE G3a-obstruction
+        // (which uses `Immediate` advancement and equality with the
+        // GoAround decision cycle), this path goes through the radio-
+        // delivery → interrupt machinery, so the regression strictly
+        // POSTDATES the GoingAround transmission.
         val stageTransitions = trace.commitmentStageTransitions(aircraftId, tower.id)
         val postClearStages = setOf<TowerArrivalStage>(
             TowerArrivalStage.LandingClearanceIssued,
@@ -657,7 +728,7 @@ class G3aPilotReactiveCrosswindTest {
         // would indicate either (i) the recognition fired too late, (ii)
         // the applier's Tick A intent didn't propagate, or (iii) the
         // controller's interrupt didn't fire and the aircraft landed on
-        // the obstructed-by-crosswind runway.
+        // the tailwind-exceeding runway.
         val phaseTransitions = trace.transitionsOf { st ->
             st.aircraft[aircraftId]?.phase
         }
@@ -679,10 +750,10 @@ class G3aPilotReactiveCrosswindTest {
         //
         // The recovery clearance fires AFTER the wind has returned within
         // limits, the aircraft lands on the recovery circuit, vacates.
-        // We pin the recovery `ClearedToLand` strictly after the wind-
-        // recovery cycle (the controller's existing `ARR-LAND` re-clears
-        // on the recovery circuit's downwind/base call; the wind is now
-        // safe).
+        // We pin the recovery `ClearedToLand` strictly after the
+        // wind-recovery cycle (the controller's existing `ARR-LAND`
+        // re-clears on the recovery circuit's downwind/base call; the
+        // wind is now safe).
         val landRecords = records.filter { rec ->
             val out = (rec.utterance as? Utterance.FromController)?.output
                 as? ControllerOutput.Instruct ?: return@filter false
@@ -736,14 +807,19 @@ class G3aPilotReactiveCrosswindTest {
 
         // ── Time band (R12 — ±15% around observed wall) ──────────────────────
         //
-        // First-green observed wall (fn-14.2): 1_333_000 ms (~22.2 min) on
-        // the LOWG single-aircraft single-planned-circuit + pilot-reactive
-        // GA + recovery circuit scenario. ±15% band catches doctrine
-        // regressions while absorbing run-to-run jitter (mirrors
-        // G3a-trained's 1393 s and G3a-obstruction's 1399 s pins —
-        // same structural shape). Captured in fn-14.2 evidence;
-        // rebaseline if doctrine shifts (per fn-8.3 decision #11
-        // inheritance).
+        // Same structural shape as G3a-react-crosswind (one planned
+        // circuit, one pilot-reactive GA detour, one recovery circuit).
+        // Crosswind sibling's first-GREEN observed wall was 1_333_000 ms
+        // (~22.2 sim minutes); the tailwind sibling's first-GREEN observed
+        // wall is 1_397_000 ms (~23.3 sim minutes — comparable, the small
+        // uptick is the recovery-circuit re-entry geometry settling for
+        // the tailwind authorship cycle). We pin the band around the
+        // crosswind sibling's anchor (1_333_000 ms) — same shape, same
+        // band, exactly comparable across the G3a-react axis pair. The
+        // ±15% band catches doctrine timing regressions while absorbing
+        // run-to-run jitter (mirrors G3a-react-crosswind's pin shape).
+        // Captured in fn-15.2 evidence; rebaseline if doctrine shifts
+        // (per fn-8.3 decision #11 inheritance).
         val completionCursor = trace.firstWhere { st ->
             st.aircraft[aircraftId]?.pilotMission?.isComplete == true
         }.getOrElse {
@@ -769,7 +845,7 @@ class G3aPilotReactiveCrosswindTest {
      * Predicate for transition-1 authorship: the aircraft is on
      * `phase=Final` AND the tower's commitment for the aircraft sits in
      * a **post-clearance** stage (`LandingClearanceIssued` or
-     * `AwaitLandedObserved`). Same shape as G3a-obstruction's hook
+     * `AwaitLandedObserved`). Same shape as G3a-react-crosswind's hook
      * predicate (post-clearance window per the task spec's
      * `T_obs > T_ClearedToLand` rule).
      */

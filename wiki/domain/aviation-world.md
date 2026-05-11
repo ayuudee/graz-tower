@@ -98,9 +98,48 @@ Doctrine-anchored fields (per-leaf KDoc cites the source):
     is 15 knots (not a limitation)").
   - **B738** = 33 kt (FCOM Limitations §1: 33 kt steady crosswind on
     dry/grooved runway).
+- **`maxTailwindKnots: Knots`** (fn-15) — typed maximum tailwind
+  component the type's operating handbook (POH / FCOM) or industry
+  guidance recognises as the operational maximum. Consumed by the
+  pilot's reactive-GA recognition `derivePilotEvent`'s tailwind branch
+  — when the tailwind component computed from the world's wind report
+  against the active runway exceeds this value while the aircraft is
+  on final, the pilot self-initiates a go-around. Cross-reference
+  `maxCrosswindKnots` for the sibling pattern (lateral control
+  authority); tailwind is the **complementary axis** (touchdown energy
+  / runway remaining / go-around margin) and the physically stronger
+  constraint when both apply, hence `derivePilotEvent`'s branch order
+  DA → tailwind → crosswind.
+
+  **Per-type doctrinal severity asymmetry** (load-bearing — codex
+  round-1 closure from fn-15.1; surfaced in
+  `wiki/design-decisions/2026-04-22-root-cause-go-around-and-totality.md`
+  as a deliberate modelling choice):
+  - **C172** = 10 kt — **advisory, not a hard limitation**. The
+    Cessna 172R / 172S NAV III POH §2 (Operating Limitations) does
+    **NOT** publish a tailwind component limitation. The 10 kt value
+    is the **FAA AFH Ch 9 (FAA-H-8083-3C) industry-standard advisory**
+    for light singles — performance information / advisory framing,
+    not a certification limitation. (Same modelling rationale as the
+    crosswind axis: the sim models a competent VFR pilot as going
+    around when the advisory is exceeded.)
+  - **B738** = 15 kt — **hard operational limitation**. The Boeing
+    737-800 FCOM Limitations §1 publishes 15 kt steady tailwind on dry
+    runway as a hard operational limitation (Limitations section, no
+    exception). Same doctrinal severity as the FCOM crosswind clause.
+
+  The asymmetry only surfaces on the tailwind axis (crosswind has POH-
+  demonstrated values on both leaves). **Manufacturer values are not
+  regulations** — the typed datum lives on `AircraftType`, NOT in
+  `RegulationDatabase`. `RegulationDatabase` carries the public
+  regulatory citations (FAA AFH Ch 9 — tailwind risk anchor;
+  ICAO Doc 4444 §7.11.6 — 5 kt reduced-runway peer anchor) that
+  motivate the recognition behaviour, NOT the POH/FCOM values
+  themselves.
 
 Reuses the positive-only `Knots` smart type (`protocol/.../Instruction
-.kt:80`); every POH crosswind value is ≥ 1 kt by construction.
+.kt:80`); every POH / FCOM / AFH-advisory crosswind / tailwind value
+is ≥ 1 kt by construction.
 
 The POH "maximum demonstrated crosswind" is **performance information,
 NOT a limitation** in the certification sense. The sim models a
@@ -108,4 +147,5 @@ competent VFR pilot as going around when the demonstrated value is
 exceeded; this is the correct modelling choice even though it
 overstates real-world strictness (real PICs sometimes attempt and
 succeed beyond). The personal-minimums judgement layer is filed as a
-deferment (`D-PASS-g3a-react-personal-minimums`) per the fn-14 epic.
+deferment (`D-PASS-g3a-react-personal-minimums` per fn-14 +
+`D-PASS-g3a-react-tailwind-personal-minimums` per fn-15).
