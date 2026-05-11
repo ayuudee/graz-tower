@@ -914,7 +914,8 @@ private fun deriveCompanionOutputs(
         // block above. Emitted alongside the dispatched `GoAround` or
         // `ContinueApproach` instruction when the rule populated
         // `obstructionInfo` (per ICAO §7.4.1.4.1(c) + §8.9.6.1.8 — reason
-        // on radio is MUST for GA; CAP 413 §4.55-4.56 + ICAO 4444
+        // on radio is MUST for GA; CAP 413 §4.54-4.55 (Ed 24 — formerly
+        // §4.55-4.56 in Ed 23, renumbered per fn-17.1) + ICAO 4444
         // §12.3.4.16(d) for CONTINUE APPROACH).
         //
         // fn-13.1 (R3 — companion trace regs split): when the action

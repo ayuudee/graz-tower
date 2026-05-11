@@ -1297,10 +1297,11 @@ missing-XML output; record loudly.
 
 ## Evidence
 
-- Commits:
-  - Primary implementation: `68dc375a02b3b2fde95d44bd74238377e648cfbb` — "fn-17.1: CAP 413 Edition 24 numbering reconciliation (Branch A)"
-  - R11-verify-evidence follow-up: `3bfe9ce…` — "fn-17.1: R11 verify completed — eight goldens GREEN, close R11-verify-sandbox-block deferment"
-  - (Final `flowctl done` metadata commit — to be created at Phase 5.)
+- Commits (chronological, all on `main`):
+  - Primary implementation: `68dc375a02b3b2fde95d44bd74238377e648cfbb` — "fn-17.1: CAP 413 Edition 24 numbering reconciliation (Branch A)" — the load-bearing rename + KDoc/prose sweep + edition-string correction + verification artifact + closed-spec errata footers.
+  - R11-verify-evidence follow-up: `3bfe9ce` — "fn-17.1: R11 verify completed — eight goldens GREEN, close R11-verify-sandbox-block deferment".
+  - Task-evidence population: HEAD-1 (this file) — "fn-17.1: populate Done summary + Evidence sections (R10b)".
+  - Final `flowctl done` state-transition commit follows immediately after the last review SHIP per fn-17.1 Step 9.2 ("Follow-up metadata via `flowctl done`"). The `flowctl done` invocation patches the task spec's status field and produces the small follow-up commit recording the primary SHA; the chicken-and-egg recurrence ends there per the spec's explicit "the task IS done at this point" note.
 - Tests run: `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt --offline --no-daemon` exited **0** (BUILD SUCCESSFUL in 40s, 25 actionable tasks executed). Eight-golden evidence per the robust per-class XML check in Step 10:
   - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.LowgGoldenTest.xml` — failures=0 errors=0 skipped=0 tests>0
   - `sim/build/test-results/jvmTest/TEST-xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest.xml` — failures=0 errors=0 skipped=0 tests>0

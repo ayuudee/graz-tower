@@ -278,7 +278,8 @@ are what the run produced.
   `G3aRunwayObstructionContinueApproachTest` (`sim/jvmTest`)**: single-
   aerodrome, single-aircraft VFR **CONTINUE APPROACH** triggered by a
   short-TTL (5 s) world-authored runway obstruction at the
-  pre-clearance ladder middle state per CAP 413 §4.55-4.56 + ICAO Doc
+  pre-clearance ladder middle state per CAP 413 §4.54-4.55 (Ed 24 —
+  formerly §4.55-4.56 in Ed 23, renumbered per fn-17.1) + ICAO Doc
   4444 §12.3.4.16(d). C172 OE-ABC at LOWG flies a single planned
   circuit (`HighLevelGoal.CircuitTraining(outcomes = listOf(FullStop))`).
   The test's per-step world hook authors `runway.obstruction =
