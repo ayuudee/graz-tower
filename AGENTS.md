@@ -74,6 +74,7 @@ Before launching review agents (via the review orchestrator or directly), the pr
 5. **New-field audit**: Every field added to a state class has been checked against every mutation site.
 6. **Operational correctness**: Routes, transmissions, and clearances match real-world ATC procedures.
 7. **Error handling honesty**: `error()` only for provably impossible states. `Either`/`Option` for everything else.
+8. **Deferment honesty**: Any work surfaced during this pass that won't ship in this pass is filed in `docs/deferments.md` (one of the four buckets — test contract, API gap, multi-task epic, or narrative) before commit. See `docs/deferments-CONVENTION.md` for the decision tree.
 
 The bar: subsequent review should not turn up anything that a staff engineer of reasonable diligence could have been expected to catch. Domain-specific subtleties (ATC operational details, regulatory edge cases) are acceptable review findings. Architectural bugs, missing tests, and totality violations are NOT.
 
@@ -488,7 +489,9 @@ wiki/       Shared knowledge base — domain knowledge, data sources, design dec
 
 # Project Plan
 
-`.plan` in the repo root is the canonical backlog of known issues and deferred work.
+`docs/deferments.md` is the project-wide deferments register — the canonical discovery point for named `D-*` deferments (`D-PF.*`, `D-AUDIT.*`, `D-PASS-*`, `D-WORLD.*`) organised by the four-bucket model (test contract / API gap / multi-task epic / narrative). See `docs/deferments-CONVENTION.md` for the decision tree.
+
+`.plan` remains the canonical backlog for ordinary known issues with `Impact: H/M/L` ratings (short-ID format: `B3`, `IFR-1`, `RR-*`, `M*`). Boundary: if the item has a named `D-*` prefix with a real-fix contract (eventual API shape, blocked-on prerequisite, named closure trigger), it lives in `docs/deferments.md`. Otherwise it lives in `.plan`.
 
 **On every commit:**
 - Scan `.plan` for items resolved by the commit and mark them `DONE`.
