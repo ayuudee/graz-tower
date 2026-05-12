@@ -17,37 +17,100 @@ Today the pilot-firewall.md deferment register is repo-external and CI-invisible
 ## Files (read or modify)
 
 - **READ**
-  - `/home/andrew/dev/projects/twr2/docs/deferments.md` (created by fn-18.1) — schema + section structure to populate.
-  - `/home/andrew/dev/projects/twr2/docs/deferments-CONVENTION.md` (created by fn-18.1) — the decision tree this task applies.
+  - `./docs/deferments.md` (created by fn-18.1) — schema + section structure to populate.
+  - `./docs/deferments-CONVENTION.md` (created by fn-18.1) — the decision tree this task applies.
   - `~/.claude/plans/pilot-firewall.md` § Deferments register (lines ~552-907) — full inventory; lock IDs at task start via `grep -nE '^\*\*D-' ~/.claude/plans/pilot-firewall.md`.
-  - `/home/andrew/dev/projects/twr2/pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt` — existing tests; D-PF.1 / D-PF.3 stay, D-PF.2 / D-AUDIT.5 / .6 / .10 are orphans.
+  - `./pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt` — existing tests; D-PF.1 / D-PF.3 stay, D-PF.2 / D-AUDIT.5 / .6 / .10 are orphans.
   - All `.kt` files in `pilot/` `controller/` `protocol/` `sim/` `core/` `migration/` — grep for any inline `// D-PASS-*` / `// D-AUDIT-*` / `// D-PF.*` comment referencing IDs from this task's scope. Cross-reference confirmation per R10.
   - Per-pass plan files in `~/.claude/plans/pass-*.md` — read closure summaries for D-PF.2 / D-AUDIT.5 / .6 / .10 to inform orphan-test delete-vs-convert decision.
 
 - **CREATE (where applicable per per-bucket triage)**
-  - `/home/andrew/dev/projects/twr2/controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt` — if any pilot-firewall.md item maps to `:controller` bucket 1/2 (likely candidates: items related to `BeliefState` slices, `ControllerView` projections, runway-related guards).
-  - `/home/andrew/dev/projects/twr2/protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt` — if any item maps to protocol-level data-shape contracts.
-  - `/home/andrew/dev/projects/twr2/sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/DeferredContractsSpec.kt` — if any sim-side bucket 1/2 lands.
-  - `/home/andrew/dev/projects/twr2/core/src/commonTest/kotlin/xyz/easiersaid/twr/core/DeferredContractsSpec.kt` — if any core-side bucket 1/2 lands.
+  - `./controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt` — if any pilot-firewall.md item maps to `:controller` bucket 1/2 (likely candidates: items related to `BeliefState` slices, `ControllerView` projections, runway-related guards).
+  - `./protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt` — if any item maps to protocol-level data-shape contracts.
+  - `./sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/DeferredContractsSpec.kt` — if any sim-side bucket 1/2 lands.
+  - `./core/src/commonTest/kotlin/xyz/easiersaid/twr/core/DeferredContractsSpec.kt` — if any core-side bucket 1/2 lands.
   - **Only create per-module files if a bucket 1/2 deferment lands in that module.** Empty `DeferredContractsSpec.kt` files are NOT created (per epic R5 — only modules with actual contract-shape deferments get the file).
 
 - **MODIFY**
-  - `/home/andrew/dev/projects/twr2/docs/deferments.md` — populate every section per the inventory. ~32 new entries.
-  - `/home/andrew/dev/projects/twr2/pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt` — delete or convert four orphan tests (D-PF.2, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10) per Decision #13. **Delete** the existing D-PF.5 / D-PF.6 / D-AUDIT.3 closed-deferment block comments (those are orphan rot per Decision #13 — their content lives authoritatively in `docs/deferments.md § Archive`). Keep D-PF.1 and D-PF.3 active `@Ignore`d tests if they're being kept as bucket-1/2 entries (verify at task time — most likely D-PF.1 stays as bucket-2, D-PF.3 stays as bucket-1 or bucket-2 depending on FiledPlan API existence).
+  - `./docs/deferments.md` — populate every section per the inventory. ~32 new entries.
+  - `./pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt` — delete or convert four orphan tests (D-PF.2, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10) per Decision #13. **Delete** the existing D-PF.5 / D-PF.6 / D-AUDIT.3 closed-deferment block comments (those are orphan rot per Decision #13 — their content lives authoritatively in `docs/deferments.md § Archive`). Keep D-PF.1 and D-PF.3 active `@Ignore`d tests if they're being kept as bucket-1/2 entries (verify at task time — most likely D-PF.1 stays as bucket-2, D-PF.3 stays as bucket-1 or bucket-2 depending on FiledPlan API existence).
+- **EXTERNAL FOLLOW-UP ONLY (NOT MODIFIED)** (moved out of MODIFY per plan-review round 18 — codex finding "Files MODIFY listing contradicts the rule that fn-18.2 does not edit pilot-firewall.md")
   - `~/.claude/plans/pilot-firewall.md` — fn-18.2 PROVIDES the exact MIGRATED header text and records it in the evidence block as a post-task follow-up for the user (per Decision #12). fn-18.2 does NOT edit this file directly and does NOT block on whether the user has applied the edit by task-close. fn-18.2 NEVER declares migration confirmed; evidence-block status is `pending` by default, `confirmed-by-user` only if the user independently reports they have applied the edit. Both states satisfy R11 acceptance (per plan-review round 7 normalization).
 
 ## Approach (numbered Steps)
 
-### Step 1 — Lock the inventory (acceptance artifact)
+### Step 0 — Baseline capture (BEFORE any edits)
 
-Run the inventory grep:
+Per plan-review round 18 — codex finding "baseline capture is inside the verify step, AFTER edits, so R14-NoNewRegression can't actually prove pre-existing failures": capture the base SHA and pre-task verify output BEFORE doing any inventory mutation, file edit, or test write. The "pre-task baseline" must be pre-EVERYTHING, not pre-verify.
+
 ```bash
-grep -nE '^\*\*D-(PASS|AUDIT|PF|WORLD)' ~/.claude/plans/pilot-firewall.md
+git rev-parse HEAD > $TMPDIR/fn-18-2-base-sha.txt
+# Capture base verify state. If any failures pre-exist, R14-NoNewRegression mode is in effect
+# and the post-task verify must not introduce NEW failures beyond what this baseline records.
+./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt \
+  2>&1 | tee $TMPDIR/fn-18-2-base-test.log
+# Module preflight (fail-loud if any required Gradle task is missing — same rule across all fn-18 tasks):
+./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt \
+  --dry-run --offline --no-daemon 2>&1 | tee $TMPDIR/fn-18-2-preflight.log
 ```
 
-For each entry, classify by its status line in pilot-firewall.md:
-- **OPEN list**: every entry whose status is NOT `CLOSED`/`CLOSED-PARTIAL`. These get **active** `docs/deferments.md` entries.
-- **CLOSED-from-pilot-firewall list**: every entry whose status IS `CLOSED`/`CLOSED-PARTIAL` AND that appears in the `DeferredContractsSpec.kt` orphan set (D-PF.2, D-PF.5, D-PF.6, D-AUDIT.3, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10) OR otherwise needs an archive entry (per Decision #3 + Decision #13). These get **archive** entries.
+The Verify step (later) re-runs the same command and diffs against this baseline.
+
+### Step 1 — Lock the inventory (acceptance artifact)
+
+Run the inventory greps. **Two-pass discipline (hardened per plan-review rounds 16 + 17 — codex finding "anchored grep silently omits non-`**D-` references; awk section extractor is brittle on heading-depth and self-terminating-on-same-line")**: the first grep is a headings/anchored sanity check; the second grep is the authoritative concrete-ID extraction over the whole Deferments register section using a depth-agnostic section extractor that explicitly distinguishes the section heading from its first match.
+
+```bash
+# Pass 1 — anchored heading sanity check (catches the bolded **D-...** entries that pilot-firewall.md uses as headings)
+grep -nE '^\*\*D-(PASS|AUDIT|PF|WORLD)' ~/.claude/plans/pilot-firewall.md > $TMPDIR/fn-18-2-pilot-firewall-anchored-ids.txt
+
+# Pass 2 — robust section extractor (handles ANY heading depth via `^#+ ` regex; uses
+# a "start-after-heading" flag instead of awk's range pattern which can self-terminate
+# when the start and stop patterns match the same line OR when the depth changes
+# unexpectedly):
+awk '
+  function depth(line,    d) { d = 0; while (substr(line, d+1, 1) == "#") d++; return d }
+  /^#+ Deferments register/ { in_section=1; section_depth=depth($0); next }
+  in_section && /^#+ / {
+    # Stop only on a heading at the SAME or HIGHER level than the section opener.
+    # Lower-level (nested) headings stay inside the section. Per plan-review round 18 —
+    # codex finding "awk extractor stops on any heading, silently truncating on nested headings".
+    if (depth($0) <= section_depth) { in_section=0; next }
+  }
+  in_section { print }
+' ~/.claude/plans/pilot-firewall.md \
+  | grep -oE "D-(PASS|WORLD)-[A-Za-z0-9_.-]*[A-Za-z0-9_]|D-(AUDIT|PF)\.[A-Za-z0-9_.-]*[A-Za-z0-9_]|D-(AUDIT|WORLD)-[A-Za-z0-9_.-]*[A-Za-z0-9_]" \
+  | sort -u > $TMPDIR/fn-18-2-pilot-firewall-broad-ids.txt
+
+# Reconcile — IDs in broad but not in anchored are either (a) real entries the anchored
+# grep missed (different heading shape, indented entry, etc.) or (b) cross-reference /
+# parenthetical mentions. The implementer classifies each at task time:
+comm -23 $TMPDIR/fn-18-2-pilot-firewall-broad-ids.txt \
+  <(grep -oE 'D-[A-Za-z0-9_.-]+' $TMPDIR/fn-18-2-pilot-firewall-anchored-ids.txt | sort -u) \
+  > $TMPDIR/fn-18-2-pilot-firewall-anchor-gap.txt
+
+# Authoritative set_A_pilot_firewall is the RECONCILED set (per plan-review round 17 —
+# codex finding "set_A still uses anchored grep instead of reconciled broad inventory"):
+# anchored IDs UNION (anchor-gap IDs classified as real entries). Cross-reference-only
+# mentions go to a separate `cross_ref_only_in_pilot_firewall` field in evidence — they
+# are NOT real entries and don't get docs/deferments.md entries.
+#
+# Implementer step: open $TMPDIR/fn-18-2-pilot-firewall-anchor-gap.txt, classify each
+# line as real-entry OR cross-ref, write classified IDs to:
+#   $TMPDIR/fn-18-2-pilot-firewall-anchor-gap-real-entries.txt
+#   $TMPDIR/fn-18-2-pilot-firewall-anchor-gap-cross-refs.txt
+# Then assemble the reconciled set:
+cat $TMPDIR/fn-18-2-pilot-firewall-anchored-ids.txt \
+    $TMPDIR/fn-18-2-pilot-firewall-anchor-gap-real-entries.txt 2>/dev/null \
+  | grep -oE 'D-[A-Za-z0-9_.-]+' | sort -u > $TMPDIR/fn-18-2-set-A-pilot-firewall.txt
+# The contents of fn-18-2-set-A-pilot-firewall.txt become the `set_A_pilot_firewall`
+# evidence-JSON field. Cross-ref-only IDs go to `cross_ref_only_in_pilot_firewall`.
+```
+
+For each entry, classify by its status line in pilot-firewall.md. **Status taxonomy (hardened per plan-review round 14 — codex finding "status classifier misses DONE")**: closed statuses are `DONE` | `CLOSED` | `CLOSED-PARTIAL`. Open statuses are anything else NOT in that set (typically blank, `OPEN`, `PENDING`, `BLOCKED`). **Fail-loud rule**: any status string not in {`DONE`, `CLOSED`, `CLOSED-PARTIAL`, `OPEN`, `PENDING`, `BLOCKED`, blank} fails the task with `unknown_status_strings_in_pilot_firewall: [<list>]` recorded in evidence — fn-18.2 does NOT default an unknown status to open or closed. Expanding the taxonomy is a deliberate decision worth surfacing, not a silent assumption.
+
+- **OPEN list**: every entry whose status is NOT in the closed set above. These get **active** `docs/deferments.md` entries.
+- **CLOSED-from-pilot-firewall list**: every entry whose status IS in the closed set above AND that appears in the `DeferredContractsSpec.kt` orphan set (D-PF.2, D-PF.5, D-PF.6, D-AUDIT.3, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10) OR otherwise needs an archive entry (per Decision #3 + Decision #13). These get **archive** entries.
 
 **Both lists are locked inventory artifacts for this task** (per plan-review round 6). At task close, write them into the flowctl evidence JSON for fn-18.2 in a stable, recoverable format that fn-18.3 can consume:
 
@@ -71,20 +134,25 @@ This makes the count concrete and reviewable. Verify approximate OPEN count matc
 **Explicit three-set scope boundary** (per plan-review round 9 — the fn-18.2 / fn-18.3 boundary must be set-theoretically precise to avoid double-migration or gaps; hardened per plan-review round 10 — `/tmp` is NOT durable cross-task state, so the authoritative handoff goes through flowctl evidence JSON, not file paths):
 
 ```bash
-# Set A: pilot-firewall.md IDs (fn-18.2's authoritative source)
-grep -nE '^\*\*D-(PASS|AUDIT|PF|WORLD)' ~/.claude/plans/pilot-firewall.md \
-  | grep -Eo "D-(PASS|WORLD)-[A-Za-z0-9_.-]*[A-Za-z0-9_]|D-(AUDIT|PF)\.[A-Za-z0-9_.-]*[A-Za-z0-9_]|D-(AUDIT|WORLD)-[A-Za-z0-9_.-]*[A-Za-z0-9_]" \
-  | sort -u
+# Set A: pilot-firewall.md IDs — the AUTHORITATIVE reconciled set from the inventory
+# step above (anchored grep UNION anchor-gap real entries; per plan-review round 17 +
+# 18 — codex finding "Set A still uses anchored grep instead of reconciled artifact").
+# DO NOT re-grep the anchored form here; that contradicts the reconciled inventory.
+cat $TMPDIR/fn-18-2-set-A-pilot-firewall.txt
 
 # Set B: inline code-comment IDs (any module)
 grep -rhEo "D-(PASS|WORLD)-[A-Za-z0-9_.-]*[A-Za-z0-9_]|D-(AUDIT|PF)\.[A-Za-z0-9_.-]*[A-Za-z0-9_]|D-(AUDIT|WORLD)-[A-Za-z0-9_.-]*[A-Za-z0-9_]" \
   --include="*.kt" pilot/ controller/ protocol/ sim/ core/ migration/ \
-  | sort -u
+  | sort -u > $TMPDIR/fn-18-2-set-B-inline.txt
 
-# Compute the three derived sets via shell pipelines or by hand from A and B.
+# Compute the three derived sets from $TMPDIR/fn-18-2-set-A-pilot-firewall.txt and $TMPDIR/fn-18-2-set-B-inline.txt
 # Set intersection (A ∩ B): inline comments referring to pilot-firewall.md-source IDs. fn-18.2 R10 scope.
-# Set B \ A: inline-only IDs (not in pilot-firewall.md). fn-18.3 scope; handed off.
+comm -12 $TMPDIR/fn-18-2-set-A-pilot-firewall.txt $TMPDIR/fn-18-2-set-B-inline.txt > $TMPDIR/fn-18-2-set-intersection-A-and-B.txt
+# Set B \ A: inline-only IDs (not in pilot-firewall.md). fn-18.3 scope; handed off via evidence JSON.
+comm -23 $TMPDIR/fn-18-2-set-B-inline.txt $TMPDIR/fn-18-2-set-A-pilot-firewall.txt > $TMPDIR/fn-18-2-set-inline-only-for-fn-18-3.txt
 ```
+
+**Authoritative source for the evidence-JSON `set_A_pilot_firewall` field**: `$TMPDIR/fn-18-2-set-A-pilot-firewall.txt` (the reconciled artifact from the inventory step), NOT the anchored sanity grep. The cross-ref-only IDs (anchor-gap entries classified as cross-references during the inventory step) live separately under the `cross_ref_only_in_pilot_firewall` field — they are NOT in Set A.
 
 fn-18.2's scope: every ID in **Set A** plus every ID in **Set intersection** (inline comments referencing pilot-firewall.md-source IDs need a docs entry as part of R10). fn-18.3's scope is **Set B \ A** (inline-only) plus the epic-spec siblings plus `.plan` (per plan-review round 10).
 
@@ -126,7 +194,7 @@ For each OPEN ID, walk the bucket-decision tree from `docs/deferments-CONVENTION
 
 3. For bucket 1/2: identify the target module (`:pilot`/`:controller`/`:protocol`/`:sim`/`:core`). Identify the eventual API shape and the test name.
 
-4. For bucket 3: check if a flow-next epic stub already exists (e.g. fn-15 / fn-16 / fn-17 for fn-14-source items — but those are NOT pilot-firewall.md-source items, so likely no new epics in .2). Create stub via `flowctl epic create` + `set-plan` (minimal spec) + leave at `todo` status only if multi-task scope is genuinely clear.
+4. For bucket 3: check if a flow-next epic stub already exists (e.g. fn-16 for fn-14-source items — but those are NOT pilot-firewall.md-source items, so likely no new epics in .2). If a new stub is genuinely needed, create via `.flow/bin/flowctl epic create` + `epic set-plan` and leave at `todo` status only if multi-task scope is clear. **New-stub minimum spec template** (per plan-review round 14 — codex finding "bucket-3 stubs need Review considerations to satisfy project commandments"): the minimal spec MUST contain `## Overview` (1 paragraph), `## Boundaries / non-goals`, `## Acceptance` (at least one R-ID using the `- **Rn:** ...` form), `## Early proof point`, `## Requirement coverage` (table), AND `## Review considerations` (free-text section noting any cross-cutting concerns, risk areas, or known unknowns that subsequent `/flow-next:plan-review` should focus on). Without `## Review considerations` the stub fails plan-review at the next pass — better to land it complete the first time. fn-18.2 references the bucket-3 stub in `docs/deferments.md` only after the stub is created AND `flowctl validate --epic <new-id>` passes.
 
 5. For bucket 4: write the `docs/deferments.md` entry directly.
 
@@ -184,6 +252,7 @@ For each:
 - `**Pinned at:**` — for bucket 1/2 items: full file::test path. For bucket 4 items: `narrative only`.
 - `**Blocked on:**` — present only when Status=blocked. Pull from pilot-firewall.md's "Trigger" field, condense.
 - `**Why:**` — 1-3 sentences. Distill from pilot-firewall.md's "What today" + "Why wrong" without softening.
+- `**Contract:**` (conditional — present when the pilot-firewall.md entry's "Real-fix contract" field carries detail richer than 3 sentences of `Why:` can hold; added per epic Decision #7 hardened per plan-review round 14 — codex finding "fn-18.2 Step 5 doesn't apply the Contract: schema where it matters most"). Pull the "Real-fix contract" field verbatim from pilot-firewall.md. **Audit rule for fn-18.2**: for every OPEN ID whose source entry has a "Real-fix contract" field >3 sentences (typically `D-PF.*` and `D-PASS-*` items pinning future API shapes), the `Contract:` field MUST be present and MUST preserve the contract text. fn-18.2's done summary records the count of entries that include `Contract:` and the count without — non-`Contract:` entries are auditable for "did we drop detail?" by re-reading the pilot-firewall.md source.
 - `**Closes by:**` — pull from pilot-firewall.md's "Trigger" if it names a closing scenario.
 
 ### Step 6 — Populate `docs/deferments.md § Archive` for closed/deleted items
@@ -195,6 +264,8 @@ Each of D-PF.2 / D-AUDIT.5 / D-AUDIT.6 / D-AUDIT.10 (orphan tests) AND D-PF.5 / 
 2. `grep -rn` the cited type names + test class names to confirm they exist with that exact name.
 3. If a cited name has changed (rename via subsequent passes), use the current name. Stale archive history is itself rot.
 4. Record the verification step in the done summary as a per-entry pass/fail roll-up.
+
+⚠ **SYNTHETIC EXAMPLE SHAPES — DO NOT COPY VERBATIM** (hardened per plan-review round 11 — codex finding "archive examples easy to cargo-cult"). The seven blocks below illustrate the schema; **every field of every real archive entry MUST be reconstructed from primary sources** (the in-file closed-deferment block comment + a fresh grep against current type/test names + the pass-N plan referenced as `Closed by:`). Forbidden: pasting any line below directly into `docs/deferments.md` without first running the verify-before-write rule against the current codebase. The names below were correct at planning time on a different branch and may be stale now.
 
 Shape example (NON-AUTHORITATIVE — names below must be verified per the verify-before-write rule):
 
@@ -258,11 +329,12 @@ For every match referencing a pilot-firewall.md-source ID, verify there's a corr
 
 Per epic Decision #12 (clarified per plan-review round 2 + normalized per plan-review round 7): fn-18.2 provides the exact header text and records the external-follow-up status in the evidence block. fn-18.2 does NOT block on the user's edit AND does NOT declare "migration confirmed" at task close — declaring migration complete is the user's call once they apply the external edit.
 
-Header template:
+Header template (revised per plan-review round 11 — codex finding "MIGRATED header `<pending>` SHA": the previous template included a `<pending>` commit SHA the agent cannot update post-commit; the user would either have to fill it themselves or leave a stale placeholder forever; switch to a `git log` pointer so the link to commit history is durable without requiring any value to be filled in):
 ```
-**MIGRATED to docs/deferments.md per fn-18 on 2026-MM-DD (commit <pending>).**
+**MIGRATED to docs/deferments.md per fn-18 on 2026-MM-DD.**
 The entries below are preserved for historical context (pass-by-pass narrative).
 For the active deferment register, see `docs/deferments.md` in the repo.
+Commit history: `git log --grep "fn-18-deferment-register-reorganization-four" --oneline` in the repo.
 ```
 
 Evidence-block text format — the only thing fn-18.2 records is `pending` vs `confirmed-by-user`. fn-18.2 itself never writes "migration confirmed":
@@ -273,16 +345,70 @@ Both states satisfy R11 acceptance because R11 gates on "text provided + status 
 
 ### Step 9 — Verify
 
-**Pre-task baseline capture** (per plan-review round 2): at task start, run the verification command and capture base SHA + any pre-existing failures in a working note. This makes the R14 pre-existing-failure honesty clause executable.
+**Pre-task module preflight** (per plan-review round 11 — codex finding ":sim module preflight missing"): confirm referenced Gradle tasks exist before running verify.
 
 ```bash
-git rev-parse HEAD > /tmp/fn-18-2-base-sha.txt
-./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt 2>&1 | tee /tmp/fn-18-2-base-test.log
+./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt \
+  --dry-run --offline --no-daemon 2>&1 | tee $TMPDIR/fn-18-preflight.log
+# --dry-run prints the task graph that WOULD execute without actually running tests.
+# Gradle exits non-zero if any task is unknown (e.g. ':sim:jvmTest' if :sim module is absent).
+# This is the load-bearing preflight check (per plan-review round 13 — codex finding
+# './gradlew tasks without --all does NOT list :sim:jvmTest, so the prior preflight would
+# false-positive on a valid repo'). --dry-run is the canonical Gradle preflight idiom.
+# **Fail loud (per plan-review round 12 — codex finding 'silent under-verification path'): if ANY required Gradle task is missing, halt the task with an explicit `gradle_module_preflight_failure: <missing tasks>` line in evidence and refuse to substitute a trimmed verify command. This is a repository/module mismatch worth surfacing — silently trimming would let fn-18 ship without exercising the goldens that R14 gates on. The only acceptable diversion is the R14-NoNewRegression branch (baseline already red), and that branch must run the SAME task set as the baseline did — not a trimmed set.
 ```
+
+Baseline already captured in Step 0 (`$TMPDIR/fn-18-2-base-sha.txt` + `$TMPDIR/fn-18-2-base-test.log`). No need to re-run pre-task capture here — that's a defense against round-2's split-baseline anti-pattern (round 18 — codex finding 'baseline must precede edits').
 
 **Post-task verification**: re-run the same command. R14 acceptance is "no failures present in post-task log that were not present in base log." If base log was already red, the diff (not the absolute pass/fail) is what matters.
 
-Eight goldens GREEN at post-task. Detekt baseline unchanged. Any newly-created `@Ignore`d test compiles (proving its API references exist today) OR is bucket 2 with commented-out future-API references (compilable shell only). No `@Ignore` test goes from pass to fail.
+Nine goldens GREEN at post-task (per fn-15 closure: the ninth golden `G3aPilotReactiveTailwindTest` is now a permanent fixture). Detekt baseline unchanged. Any newly-created `@Ignore`d test compiles (proving its API references exist today) OR is bucket 2 with commented-out future-API references (compilable shell only). No `@Ignore` test goes from pass to fail.
+
+**`flowctl done` invocation** (per plan-review round 11 — codex finding "no concrete done-time step"): write the done summary and evidence JSON to dedicated files, then invoke `flowctl done` with both flags. The evidence JSON is the structured handoff for fn-18.3 — it MUST contain the `locked_inventory` block with `open_ids`, `closed_from_pilot_firewall_ids`, `inline_ids_observed_deferred_to_fn_18_3`, `bucket_distribution`, and `external_followup_status` keys (per Step 1 + Step 8).
+
+```bash
+# Write done summary
+cat > $TMPDIR/fn-18-2-summary.md <<'EOF'
+fn-18.2 shipped: migrated <N> pilot-firewall.md OPEN deferments into docs/deferments.md per the four-bucket model. Bucket distribution: <fill>. Orphan tests resolved: <list>. MIGRATED header provided as post-task follow-up; external-follow-up status: <pending|confirmed-by-user>. Implementation commit: see evidence-JSON `implementation_sha` field. Nine goldens GREEN.
+EOF
+# Write evidence JSON — populated from Step 1 locked-inventory + Step 8 MIGRATED-header status
+cat > $TMPDIR/fn-18-2-evidence.json <<'EOF'
+{
+  "task": "fn-18-deferment-register-reorganization-four.2",
+  "base_sha": "<from Step 0 base-sha.txt>",
+  "implementation_sha": "<SHA of the implementation commit BEFORE flowctl done",
+  "gradle_module_preflight": ["<list from preflight output>"],
+  "locked_inventory": {
+    "open_ids": ["..."],
+    "closed_from_pilot_firewall_ids": ["..."],
+    "set_A_pilot_firewall": ["..."],
+    "set_B_inline": ["..."],
+    "set_intersection_A_and_B": ["..."],
+    "set_inline_only_for_fn_18_3": ["..."],
+    "inline_ids_observed_deferred_to_fn_18_3": ["..."],
+    "bucket_distribution": {"bucket_1": 0, "bucket_2": 0, "bucket_3": 0, "bucket_4": 0}
+  },
+  "_schema_note": "locked_inventory keys MUST match Step 1's specification (set_A/set_B/set_intersection/set_inline_only_for_fn_18_3). fn-18.3 Step 6 reads these keys verbatim. Added per plan-review round 13 — codex finding 'evidence JSON schema inconsistency'.",
+  "orphan_tests_resolved": {
+    "deleted": ["..."],
+    "converted": ["..."]
+  },
+  "external_followup_status": "pending",
+  "migrated_header_text_lines": [
+    "**MIGRATED to docs/deferments.md per fn-18 on YYYY-MM-DD.**",
+    "The entries below are preserved for historical context (pass-by-pass narrative).",
+    "For the active deferment register, see `docs/deferments.md` in the repo.",
+    "Commit history: `git log --grep \"fn-18-deferment-register-reorganization-four\" --oneline` in the repo."
+  ],
+  "_migrated_header_text_note": "Lines as written into the array MUST match Step 8's template character-for-character; only YYYY-MM-DD is filled. R11's 'exact text provided' criterion gates on this array equalling Step 8 verbatim. Per plan-review round 15 — codex finding 'migrated_header_text was paraphrased; collapsing to a single string drifted from canonical'.",
+  "verify_command": "./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt",
+  "verify_outcome": "BUILD SUCCESSFUL"
+}
+EOF
+.flow/bin/flowctl done fn-18-deferment-register-reorganization-four.2 \
+  --summary-file $TMPDIR/fn-18-2-summary.md \
+  --evidence-json $TMPDIR/fn-18-2-evidence.json --json
+```
 
 ## Investigation targets
 
@@ -311,8 +437,8 @@ Eight goldens GREEN at post-task. Detekt baseline unchanged. Any newly-created `
 - [ ] **R9** — Bucket 3 epic stubs created (if any) before docs entries written. Existing fn-15/16/17 not in scope (fn-18.3 owns those).
 - [ ] **R10** (partial — pilot-firewall.md-source IDs) — every inline `// D-PASS-*` / `// D-AUDIT-*` / `// D-PF.*` code comment referring to a pilot-firewall.md-source ID has a corresponding `docs/deferments.md` entry. Verified via grep, listed in done summary.
 - [ ] **R11** — Exact MIGRATED header text provided AND external-follow-up status logged in evidence block (one of: `pending` / `confirmed-by-user`). Acceptance gates on "text provided + status logged"; fn-18.2 never declares migration complete and never writes `confirmed` unless the user has reported their edit. The actual user-edit to pilot-firewall.md is a separately-tracked external action (not flowctl-acceptance-bound). The legacy register is NOT declared migrated until the user applies the edit.
-- [ ] **R16** — Every NEW bucket-1 `@Ignore`d test written in this task (across `:pilot`/`:controller`/`:protocol`/`:sim`/`:core` modules) contains at least one **non-import** real-current-API value-flow reference inside its test body — an assertion using a real type, OR a type construction of a real domain class, OR a function call returning a real value. Import-only references fail R16 (per epic Decision #1 hardened per plan-review round 6). Bucket-2 tests are exempt. Verified by reading each new test body at task close; result recorded in done summary as a per-test pass/fail roll-up.
-- [ ] **R14** — Recorded as one of two outcomes per epic Decision #R14: **R14-Passed** (gradle exits 0; eight goldens GREEN; detekt unchanged; new `@Ignore`d tests compile) OR **R14-NoNewRegression** (baseline was already red; task evidence records base SHA + exact failing tests at start and proves no new failures introduced by fn-18.2's changes).
+- [ ] **R16** — Every bucket-1 `@Ignore`d test referenced by `docs/deferments.md`, **whether NEW or RETAINED** (per plan-review round 16 scope-widening), contains at least one **non-import** real-current-API value-flow reference inside its test body — an assertion using a real type, OR a type construction of a real domain class, OR a function call returning a real value. Import-only references fail R16 (per epic Decision #1 hardened per plan-review round 6). For retained placeholders (D-PF.1, D-PF.3, any other pre-fn-18 carry-over): if import-only, fn-18.2 either upgrades the test body with a value-flow reference OR re-classifies the deferment to bucket 2 in `docs/deferments.md`. Silent retention of an import-only "bucket 1" entry is forbidden. Bucket-2 tests are exempt. Verified by reading each bucket-1 test body referenced by `docs/deferments.md` at task close; result recorded in done summary as a per-test pass/fail roll-up.
+- [ ] **R14** — Recorded as one of two outcomes per epic Decision #R14: **R14-Passed** (gradle exits 0; nine goldens GREEN; detekt unchanged; new `@Ignore`d tests compile) OR **R14-NoNewRegression** (baseline was already red; task evidence records base SHA + exact failing tests at start and proves no new failures introduced by fn-18.2's changes).
 
 ## Notes for fn-18.3
 

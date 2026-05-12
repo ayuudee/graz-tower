@@ -1,13 +1,18 @@
 {
   "branch_name": "master",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
   "created_at": "2026-05-11T08:27:54.998086Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [],
   "id": "fn-18-deferment-register-reorganization-four",
   "next_task": 1,
-  "plan_review_status": "unknown",
-  "plan_reviewed_at": null,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-12T15:00:45.901135Z",
   "spec_path": ".flow/specs/fn-18-deferment-register-reorganization-four.md",
   "status": "open",
   "title": "Deferment register reorganization \u2014 four-bucket hybrid with code-as-record",
-  "updated_at": "2026-05-11T10:02:24.674681Z"
+  "updated_at": "2026-05-12T15:00:45.901255Z"
 }
