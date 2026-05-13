@@ -224,6 +224,12 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Why:** Pass 13 closed D-AUDIT.4.D by giving each AircraftType a circuit-pattern shape; the followup is deriving circuit-altitude (and turn-radius) from per-type cruise/maneuvering speeds rather than the current shared constant in PilotConstants. PilotRoutePlanner.kt computes per-step radius today but the altitude knob is global.
 **Closes by:** future per-type performance-derivation pass; co-files with D-AUDIT.4.A-FOLLOWUP V-speed wiring
 
+### D-AUDIT.M2 — IFR missed-approach hold-loop compiler hardcoded to LOWG_GBG_MISSED_HOLD
+**Status:** narrative
+**Pinned at:** narrative only — fn-11 spec § Out-of-scope; pilot's IFR missed-approach machinery (not engaged by `ifrGoAroundTask()` from VFR pilots in fn-11/14/15 scope)
+**Why:** Pilot's IFR missed-approach hold-loop compiler currently hardcodes `LOWG_GBG_MISSED_HOLD` instead of deriving the hold-loop pattern from the active IFR procedure. Out-of-scope anchor for VFR-only G3a-react work (fn-11/14/15); surfaces when a real IFR scenario lands and exercises the missed-approach path.
+**Closes by:** future IFR-missed-approach pass when a real IFR scenario engages `ifrGoAroundTask()` and exercises the hold-loop compiler.
+
 ## D-PASS
 
 ### D-PASS-deferments-map-tooling-automation — Tooling automation over deferments map
@@ -785,7 +791,3 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Closed by:** fn-8.3 (CLOSED-PARTIAL — harness sufficient for the entire fn-8.3 dive cycle Phase 1 → Phase 3 round 2)
 **Enforcement:** `sim/.../SimTraceQueries.kt` harness (`commitmentStageTransitions`, `missionStepTransitions`, `positionPointTransitions`, `transitionsOf`, `formatJourney`) plus direct `BeliefState` reads; `sim/jvmTest/.../G1ClosureDiveTest` as the per-round dive driver. No typed events on `:common` were needed; the broader follow-up is tracked as `D-PASS-g1-diagnostics-typed-events` (active) and `D-PASS-g1-diagnostics-broader` (active).
 
-### D-AUDIT.M2 — IFR missed-approach hold-loop compiler hardcoded to LOWG_GBG_MISSED_HOLD
-**Status:** narrative
-**Closed by:** narrative deferment — IFR-specific surface not in fn-11/14/15 (VFR) scope
-**Enforcement:** Tracked in `.flow/specs/fn-11-g3a-single-aircraft-pilot-trained-vfr.md` as an "out of scope" anchor for VFR-only G3a-react work. The hardcode lives in pilot's IFR missed-approach machinery and is not engaged by `ifrGoAroundTask()` from VFR pilots. Future IFR scenarios will surface the deferment as a typed contract.
