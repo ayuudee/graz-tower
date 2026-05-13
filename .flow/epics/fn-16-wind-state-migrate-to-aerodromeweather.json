@@ -1,6 +1,11 @@
 {
   "branch_name": "master",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-13T13:07:40.444540Z",
   "created_at": "2026-05-11T08:16:04.176481Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [
     "fn-12-g3a-obstruction-single-aircraft-atc",
     "fn-14-g3a-react-pilot-reactive-go-around-on"
@@ -12,5 +17,5 @@
   "spec_path": ".flow/specs/fn-16-wind-state-migrate-to-aerodromeweather.md",
   "status": "open",
   "title": "Wind-state migrate to Aerodrome.weather entity",
-  "updated_at": "2026-05-13T09:58:22.134298Z"
+  "updated_at": "2026-05-13T13:07:40.444657Z"
 }
