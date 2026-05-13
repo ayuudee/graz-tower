@@ -503,7 +503,7 @@ fn-18.3 shipped: closes the deferment-register reorganization epic (fn-18). Fina
 
 **R10 inline grep audit:** PASS — every `// D-PASS-*` / `// D-AUDIT-*` / `// D-PF.*` code-comment ID across `*.kt` in `pilot/` `controller/` `protocol/` `sim/` `core/` `migration/` references an ID that exists in `docs/deferments.md`. Verified via two-step grep + comm against `### D-` headings.
 
-**R16 value-flow roll-up:** No new bucket-1 `@Ignore`d tests added by fn-18.3 (60 of 71 fn-18.3 IDs are bucket-4 narrative; 10 archive; 1 bucket-3). The 4 retained bucket-1 entries from fn-18.2 (D-AUDIT.7.III-FOLLOWUP, D-AUDIT.8.IV-FOLLOWUP, D-PASS-13.3-II-FOLLOWUP, D-PF.3) remain GREEN per fn-18.2 evidence `r16_value_flow_rollup`.
+**R16 value-flow roll-up:** No new bucket-1 `@Ignore`d tests added by fn-18.3 (the 74 fn-18.3 additions are 61 bucket-4 narrative + 12 archive + 1 bucket-3 — i.e. zero bucket-1 / zero bucket-2). The 4 retained bucket-1 entries from fn-18.2 (D-AUDIT.7.III-FOLLOWUP, D-AUDIT.8.IV-FOLLOWUP, D-PASS-13.3-II-FOLLOWUP, D-PF.3) remain GREEN per fn-18.2 evidence `r16_value_flow_rollup`; in fn-18.3 round-4/5 their Pinned-at test-method anchor names were renamed to drop the leading `D-` prefix (`AUDIT7-III`, `AUDIT8-IV`, `PASS-13_3-II`, `PF3`) per CONVENTION §10, but the canonical docs headings (with `D-` prefix) are unchanged.
 
 **Epic-spec redirects** (via `flowctl epic set-plan` per plan-review round 3):
 - fn-14: MIGRATED redirect prepended; `flowctl validate` warns about pre-existing tasks-todo / epic-done mismatch — not introduced by fn-18.3
