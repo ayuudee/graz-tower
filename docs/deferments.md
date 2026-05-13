@@ -20,7 +20,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-PF.1 — Aerodrome-conditional startup clearance is removed, not modelled
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-PF1 aerodrome requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::PF1 aerodrome requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL
 **Blocked on:** LOWS / LOWW / LJLJ-class aerodrome in the fixture, plus the `CLEARANCE_DELIVERY` controller role.
 **Why:** After Phase D, `groundDepartureTask` has no `REQUEST_STARTUP` / `AWAIT_STARTUP_APPROVAL` steps — every pilot at every airport skips startup. At aerodromes that require startup clearance (LOWS, LOWW, LJLJ, much of central Europe), a pilot calling for taxi without first obtaining startup is a procedural violation; we deleted the steps because we never built the controller-side `CLEARANCE_DELIVERY` procedure.
 **Contract:** An `AirportProcedure.requiresStartupClearance: Boolean` field on the airport manifest, populated from real-world data. `groundDepartureTask(airport)` returns a tree containing `REQUEST_STARTUP` and `AWAIT_STARTUP_APPROVAL` iff the airport requires it. A new `CLEARANCE_DELIVERY` controller role, with a `ClearanceDeliveryStage` and `clearanceDeliveryProcedure()` analogous to `groundTaxiProcedure()`, issues `StartupApproved` in response to `Request(RequestStartup)`. The mission tree branch is determined by airport, never by cockpit type.
@@ -28,7 +28,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-PF.3 — Airborne spawn has a runway-assignment path via FiledPlan
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-PF3 airborne-spawned aircraft with FiledPlan has activeRunway from filed plan
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::PF3 airborne-spawned aircraft with FiledPlan has activeRunway from filed plan
 **Blocked on:** G2 (LOWG → LJMB transit) cross-aerodrome end-to-end test scenario.
 **Why:** An aircraft spawned mid-flight has no path to populate `mission.activeRunway` before its first radio instruction; G0 spawns at stand and is unaffected. A real airborne aircraft entering controlled airspace already knows its destination runway from ATIS, the filed flight plan, or the previous controller. Today our model has no filed-plan channel telling the pilot "you're going to runway 14L" — the pilot is deaf until the controller speaks.
 **Contract:** `FlightStrip.filed: FiledPlan?` carries `destinationRunway: RunwayId?` derived from the filed approach / ATIS. The pilot reads `mission.filedPlan?.destinationRunway` (set at sim init from the filing event) as the initial `activeRunway`; subsequent radio updates override per D-PF.2's precedence.
@@ -52,28 +52,28 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-AUDIT.2.C-FOLLOWUP — Sim-level integration test for full lost-comms tail
 **Status:** blocked
-**Pinned at:** sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/DeferredContractsSpec.kt::D-AUDIT2-C full comms tail integration test (query, reissue, blind)
+**Pinned at:** sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/DeferredContractsSpec.kt::AUDIT2-C full comms tail integration test (query, reissue, blind)
 **Blocked on:** Per-message cognitive-delay knob on `PilotInput`.
 **Why:** Pass 9 landed the lost-comms state machine and Pass 12 closed three of four follow-ups; the sim-level end-to-end (query at 10 s → reissue 1/2/3 → `LostCommsDeclared` at 5 min → `TransmittingBlind` emission) is the remaining integration assertion. Today a deterministic test can't stage the readback miss without injecting sim-internal time skew.
 **Closes by:** archived when per-message cognitive-delay knob lands.
 
 ### D-AUDIT.2.F-FOLLOWUP — G0 negative-escalation assertion (instruction-vs-completion)
 **Status:** blocked
-**Pinned at:** sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/DeferredContractsSpec.kt::D-AUDIT2-F G0 no LostCommsDeclared on un-complied-with instructions
+**Pinned at:** sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/DeferredContractsSpec.kt::AUDIT2-F G0 no LostCommsDeclared on un-complied-with instructions
 **Blocked on:** "Instruction physically complied with" accessor on `Commitment` or `BeliefState` (distinguishes "readback received but stage not reached" from "no readback").
 **Why:** Pass 12 dropped the Pass-9-fold-in "no LostCommsDeclared at end of G0" assertion: it was passing due to the destroyed-on-readback bug (D-AUDIT.2.E follow-on), not because of correctness. The right shape — "no LostCommsDeclared on instructions the aircraft has not physically complied with" — lands when scenario-level coverage of instruction-vs-completion semantics is in place.
 **Closes by:** archived when scenario-level coverage of instruction-vs-completion lands.
 
 ### D-AUDIT.3.II-FOLLOWUP — Per-step TIMED durations beyond RUN_UP_CHECKS
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT3-II MissionStep runUpDurationMs lookup is step-discriminated
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT3-II MissionStep runUpDurationMs lookup is step-discriminated
 **Blocked on:** Second `MissionStep` adopting `CompletionMode.TIMED`.
 **Why:** Pass 13 closed D-AUDIT.3 with `AircraftType.runUpDurationMs` for `RUN_UP_CHECKS`. Today only that single step uses TIMED; if other steps adopt TIMED, a flat scalar collapses the per-step semantic into one value. The right surface is a step-discriminated lookup (`MissionStep.runUpDurationMs(type)` or a step-keyed map on `AircraftType`).
 **Closes by:** archived when a second step adopts TIMED completion.
 
 ### D-AUDIT.4.A.II-FOLLOWUP — Runway-condition gating (wet, contaminated, displaced threshold)
 **Status:** blocked
-**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::D-AUDIT4-A-II runway-condition gating affects runway-length classification
+**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::AUDIT4-A-II runway-condition gating affects runway-length classification
 **Blocked on:** `RunwayCondition` sealed type (Dry / Wet / Contaminated) and displaced-threshold field on `RunwayDeclaredDistances`.
 **Why:** Pass 13's `RunwayLengthSufficient(operation)` uses dry/MTOW. Real runway-length sufficiency is sensitive to surface condition (wet ~15% longer LDA for jets; contaminated more) and displaced thresholds (LDA shorter than physical runway).
 **Closes by:** archived when `RunwayCondition` modelling lands.
@@ -86,7 +86,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-AUDIT.4.D.II-FOLLOWUP — Per-phase waypoint radius scaling
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT4-D-II Kinematics carries per-phase waypoint radii
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT4-D-II Kinematics carries per-phase waypoint radii
 **Blocked on:** Per-phase fields on `Kinematics` (taxi / climb / final).
 **Why:** Pass 13 added a single `Kinematics.waypointRadiusM` per type (C172 = 80 m, B738 = 250 m). The simple value bites at low speeds — taxi at 10 m/s wants ~5–10 m, not 80 m. G0 is dominated by high-speed segments so the per-type scalar is right today, but the gap is real.
 **Closes by:** archived when a low-speed scenario surfaces the gap.
@@ -100,63 +100,63 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-AUDIT.7.II-FOLLOWUP — Mixed-mode parallel-runway operations
 **Status:** blocked
-**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::D-AUDIT7-II mixed-mode parallel runway configuration is selectable
+**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::AUDIT7-II mixed-mode parallel runway configuration is selectable
 **Blocked on:** Simultaneous-parallel-approach scenario in the fixture.
 **Why:** `RunwayConfiguration` accepts independent arrivals/departures sets today but no consumer reads them as distinct; today the selection assumes `arrivals == departures`. Mixed-mode parallel operations (e.g. 16L arrivals + 16R departures concurrently) require the consumer wiring to read distinct sets.
 **Closes by:** archived when a parallel-runway scenario surfaces.
 
 ### D-AUDIT.7.III-FOLLOWUP — Derive `BeliefState.activeRunway` on read (delete stored slice)
 **Status:** blocked
-**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::D-AUDIT7-III BeliefState still carries stored activeRunway slice (will be deleted)
+**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::AUDIT7-III BeliefState still carries stored activeRunway slice (will be deleted)
 **Blocked on:** Read-site cascade migrating all consumers to a `deriveActiveRunway` accessor.
 **Why:** Pass 15 left `BeliefState.activeRunway: RunwayId?` as a stored slice — `expectedAtisLetter` + wind already drive its value. The stored slice is redundant; the right surface is on-read derivation, eliminating the two-truths failure mode.
 **Closes by:** archived when the read-site cascade lands.
 
 ### D-AUDIT.8.II-FOLLOWUP — Separate ATIS frequency
 **Status:** blocked
-**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::D-AUDIT8-II ATIS broadcast lives on its own frequency
+**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::AUDIT8-II ATIS broadcast lives on its own frequency
 **Blocked on:** Multi-frequency comms model.
 **Why:** Today ATIS is implicit on the role's primary frequency (TOWER / GROUND). Real ATIS broadcasts on a dedicated frequency and the pilot tunes to it before tuning to the operator role.
 **Closes by:** archived when multi-frequency comms model lands.
 
 ### D-AUDIT.8.III-FOLLOWUP — Voice-style ATIS rendering (`Atis.toMessage()`)
 **Status:** blocked
-**Pinned at:** protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt::D-AUDIT8-III Atis carries a toMessage rendering for voice broadcast
+**Pinned at:** protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt::AUDIT8-III Atis carries a toMessage rendering for voice broadcast
 **Blocked on:** `Atis.toMessage()` (or `AtisMessage` value class) on the protocol surface.
 **Why:** The structured `Atis` record is consumed directly by the rule layer today (`Controller.atisLetterMismatchAdvisories`, etc.) — there's no voice-shaped render. A voice render lets the broadcast path carry the same content over the transmission stream.
 **Closes by:** archived when `Atis.toMessage()` lands.
 
 ### D-AUDIT.8.IV-FOLLOWUP — Multi-aerodrome ATIS-letter resolution
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT8-IV ATIS letter resolution dispatches by aerodrome for size greater than one
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT8-IV ATIS letter resolution dispatches by aerodrome for size greater than one
 **Blocked on:** G2 cross-aerodrome scenario (or any scenario where `PilotInput.atisByAerodrome.size > 1`).
 **Why:** `atisLetterForCallInbound` at `PilotCognitive.kt:480` dispatches on `mission.goal` — `Transit`/`Departure` carry the destination, `Arrival`/`CircuitTraining` do not. For the latter goals, multi-entry maps `error()` loudly (Pass 15 G2 tightening). The right shape threads the target aerodrome through `PilotInput` or widens `HighLevelGoal` to carry the call-target aerodrome.
 **Closes by:** archived when G2 lands.
 
 ### D-AUDIT.9.II-FOLLOWUP — VFR see-and-avoid recognises nearby traffic
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT9-II VFR see-and-avoid recognises nearby traffic and yields right of way
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT9-II VFR see-and-avoid recognises nearby traffic and yields right of way
 **Blocked on:** `PilotInput.nearbyTraffic: List<NearbyAircraft>` field.
 **Why:** Pass 16 closed D-AUDIT.9 partially (self-initiated go-around). VFR see-and-avoid is the next leaf — pilots yield to nearby traffic per CAP 393 Rule 9. Today the pilot sees the world only via the controller's frequency.
 **Closes by:** archived when `PilotInput.nearbyTraffic` lands.
 
 ### D-AUDIT.9.III-FOLLOWUP — Abort takeoff on engine failure
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT9-III aborted takeoff on engine failure during takeoff roll
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT9-III aborted takeoff on engine failure during takeoff roll
 **Blocked on:** `AircraftState.engineState: EngineState` sealed type (Normal / LowPower / Failed).
 **Why:** Pass 16 closed D-AUDIT.9 partially. V1/Vr decisions gate on engine state in real aviation; today the model has no engine-state slot.
 **Closes by:** archived when `AircraftState.engineState` lands.
 
 ### D-AUDIT.9.IV-FOLLOWUP — Fuel exhaustion / divert
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT9-IV fuel exhaustion triggers divert to alternate
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT9-IV fuel exhaustion triggers divert to alternate
 **Blocked on:** `AircraftState.fuelKg: Double` + per-type fuel-burn rate + alternate-aerodrome diversion logic.
 **Why:** Pass 16 closed D-AUDIT.9 partially. Real flights track fuel; reserve-threshold breach triggers a divert. Today the model has no fuel slot.
 **Closes by:** archived when `AircraftState.fuelKg` + alternate-diversion logic land.
 
 ### D-AUDIT.9.V-FOLLOWUP — Icing / weather deviation
 **Status:** blocked
-**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-AUDIT9-V icing or weather deviation replans around hazardous volume
+**Pinned at:** pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::AUDIT9-V icing or weather deviation replans around hazardous volume
 **Blocked on:** `AviationWorld.weatherVolumes: List<WeatherVolume>` field.
 **Why:** Pass 16 closed D-AUDIT.9 partially. Real pilots replan around hazardous weather; today there is no typed weather volume in the world.
 **Closes by:** archived when `AviationWorld.weatherVolumes` lands.
@@ -634,7 +634,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-WORLD.1 — `Aerodrome.runwayConfiguration` field in world-candidate JSON
 **Status:** blocked
-**Pinned at:** protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt::D-WORLD1 Aerodrome carries a published runwayConfiguration field
+**Pinned at:** protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt::WORLD1 Aerodrome carries a published runwayConfiguration field
 **Blocked on:** CAD-authoring pass — schema field on `CandidateAerodrome` + loader population.
 **Why:** Pass 15 introduced `RunwayConfiguration` as a controller-side selection output; the published value (per aerodrome AIP) is not yet authored in the world-candidate JSON. Today `selectRunwayConfiguration` derives from wind alone.
 **Closes by:** archived when world-candidate JSON gains the `runwayConfiguration` field + loader populates `Aerodrome.runwayConfiguration`.

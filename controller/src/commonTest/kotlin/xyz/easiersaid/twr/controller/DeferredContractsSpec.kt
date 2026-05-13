@@ -45,7 +45,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT7-III BeliefState still carries stored activeRunway slice (will be deleted)`() {
+    fun `AUDIT7-III BeliefState still carries stored activeRunway slice (will be deleted)`() {
         // Bucket 1: API exists today; this references the stored slice to
         // anchor the eventual deletion.
         val state: BeliefState = BeliefState()
@@ -109,7 +109,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT4-A-II runway-condition gating affects runway-length classification`() {
+    fun `AUDIT4-A-II runway-condition gating affects runway-length classification`() {
         // Bucket 2: no condition modelling on `RunwayDeclaredDistances` today.
         // TODO when D-AUDIT.4.A.II-FOLLOWUP lands — requires
         //   `RunwayCondition` sealed type (Dry | Wet | Contaminated(depth, kind)).
@@ -134,7 +134,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT7-II mixed-mode parallel runway configuration is selectable`() {
+    fun `AUDIT7-II mixed-mode parallel runway configuration is selectable`() {
         // Bucket 2: today `arrivals == departures` is the only validated case.
         // TODO when D-AUDIT.7.II-FOLLOWUP lands — needs a simultaneous-parallel-
         // approach scenario and the consumer wiring to read distinct sets.
@@ -160,7 +160,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT8-II ATIS broadcast lives on its own frequency`() {
+    fun `AUDIT8-II ATIS broadcast lives on its own frequency`() {
         // Bucket 2: no `atisFrequency` field today; pilot/controller share
         // one frequency per role.
         // TODO when D-AUDIT.8.II-FOLLOWUP lands — requires multi-frequency

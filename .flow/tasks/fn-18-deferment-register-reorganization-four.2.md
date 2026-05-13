@@ -207,7 +207,7 @@ For every bucket 1 ID: write the `@Test @Ignore` placeholder in the appropriate 
 ```kotlin
 @Ignore
 @Test
-fun `D-AUDIT7-III BeliefState no longer stores activeRunway slice`() {
+fun `AUDIT7-III BeliefState no longer stores activeRunway slice`() {
     // Bucket-1: API exists today; this body uses real types so a rename breaks compile.
     val state: BeliefState = BeliefState.empty()
     assertEquals(null, state.observations.activeRunway)  // value-flow reference (R16 ok)
@@ -221,7 +221,7 @@ For every bucket 2 ID: same structure, but inside the test body include a **comm
 ```kotlin
 @Ignore
 @Test
-fun `D-AUDIT9-II VFR see-and-avoid recognises nearby traffic and yields right of way`() {
+fun `AUDIT9-II VFR see-and-avoid recognises nearby traffic and yields right of way`() {
     // TODO when D-AUDIT.9.II-FOLLOWUP lands; needs PilotInput.nearbyTraffic.
     //   val event = derivePilotEvent(aircraft, mission, input.nearbyTraffic)
     //   assertIs<PilotEvent.NearbyTrafficConflict>(event)
@@ -561,9 +561,9 @@ All four bucket-1 tests carry non-import current-API value-flow references:
 
 | Bucket-1 test | Value-flow reference | R16 |
 |---|---|---|
-| `pilot/.../DeferredContractsSpec.kt::D-PF3 airborne-spawned ...` | `FiledPlan.Vfr(...)` construct + `assertEquals(RunwayId("16C"), filed.destinationRunway)` + `assertNotNull(filed.destinationAerodrome)` | PASS |
-| `controller/.../DeferredContractsSpec.kt::D-AUDIT7-III BeliefState ...` | `val state: BeliefState = BeliefState(); assertNull(state.activeRunway); val seeded = state.copy(activeRunway = RunwayId("16C")); assertEquals(...)` | PASS |
-| `pilot/.../DeferredContractsSpec.kt::D-AUDIT8-IV ATIS letter resolution ...` | `Map<AerodromeId, Atis>` construction with `assertEquals(2, map.size)` + `assertEquals('A', map.getValue(lowgAtis.aerodrome).letter)` | PASS |
+| `pilot/.../DeferredContractsSpec.kt::PF3 airborne-spawned ...` | `FiledPlan.Vfr(...)` construct + `assertEquals(RunwayId("16C"), filed.destinationRunway)` + `assertNotNull(filed.destinationAerodrome)` | PASS |
+| `controller/.../DeferredContractsSpec.kt::AUDIT7-III BeliefState ...` | `val state: BeliefState = BeliefState(); assertNull(state.activeRunway); val seeded = state.copy(activeRunway = RunwayId("16C")); assertEquals(...)` | PASS |
+| `pilot/.../DeferredContractsSpec.kt::AUDIT8-IV ATIS letter resolution ...` | `Map<AerodromeId, Atis>` construction with `assertEquals(2, map.size)` + `assertEquals('A', map.getValue(lowgAtis.aerodrome).letter)` | PASS |
 | `controller/.../DeferredContractsSpec.kt::PASS-13_3-II RunwayLengthFailure ...` (test-method anchor renamed in fn-18.3 round-4 to drop `D-` prefix per CONVENTION §10; canonical entry remains `D-PASS-13.3-II-FOLLOWUP`) | `RunwayLengthFailure.RunwayTooShort(...)` construction + `assertTrue(failure is ...)` + `assertEquals(RunwayLengthOperation.LANDING, failure.operation)` | PASS |
 
 ### Orphan-test cleanup (R6)

@@ -85,7 +85,7 @@ NO `Why:` / `Blocked on:` / `Pinned at:` fields on archived entries. The active 
 **Decided.** Format: `path/to/File.kt::test_name_or_section` for tests; `fn-N-epic-id` for epics; `narrative only` for bucket 4. Plain text. Markdown links break when files move; plain text survives `grep -rn` and IDE jump-to-line.
 
 **Examples**:
-- `pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-PF1 airport requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL`
+- `pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::PF1 airport requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL`
 - `fn-15-g3a-react-tailwind-pilot-reactive-go`
 - `narrative only`
 

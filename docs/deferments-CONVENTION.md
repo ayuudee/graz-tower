@@ -116,7 +116,7 @@ survives `grep -rn` and IDE jump-to-line).
 ### Format
 
 - **For tests** (buckets 1 + 2): `path/to/File.kt::test_name_or_section`
-  - Example: `pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::D-PF1 airport requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL`
+  - Example: `pilot/src/commonTest/kotlin/xyz/easiersaid/twr/pilot/DeferredContractsSpec.kt::PF1 airport requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL`
 
 - **For epics** (bucket 3): `fn-N-<epic-id>`
   - Example: `fn-16-wind-state-migrate-to-aerodromeweather`

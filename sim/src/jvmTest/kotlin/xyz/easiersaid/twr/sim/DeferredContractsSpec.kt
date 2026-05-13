@@ -36,7 +36,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT2-C full comms tail integration test (query, reissue, blind)`() {
+    fun `AUDIT2-C full comms tail integration test (query, reissue, blind)`() {
         // Bucket 2: needs `PilotInput.perMessageCognitiveDelay` (or similar
         // knob) on the pilot input surface before the scenario is testable
         // deterministically.
@@ -72,7 +72,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT2-F G0 no LostCommsDeclared on un-complied-with instructions`() {
+    fun `AUDIT2-F G0 no LostCommsDeclared on un-complied-with instructions`() {
         // Bucket 2: requires an "instruction physically complied with"
         // accessor on `Commitment` or `BeliefState` that distinguishes
         // "readback received but stage not reached" from "no readback".

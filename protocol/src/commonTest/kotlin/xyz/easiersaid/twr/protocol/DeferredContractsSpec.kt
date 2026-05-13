@@ -31,7 +31,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT8-III Atis carries a toMessage rendering for voice broadcast`() {
+    fun `AUDIT8-III Atis carries a toMessage rendering for voice broadcast`() {
         // Bucket 2: no `toMessage()` on `Atis` today.
         // TODO when D-AUDIT.8.III-FOLLOWUP lands — requires `Atis.toMessage()`
         // (or `AtisMessage` value class) on the protocol surface.
@@ -68,7 +68,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-WORLD1 Aerodrome carries a published runwayConfiguration field`() {
+    fun `WORLD1 Aerodrome carries a published runwayConfiguration field`() {
         // Bucket 2: no `Aerodrome.runwayConfiguration` field today.
         // TODO when D-WORLD.1 lands — requires schema field on
         // `CandidateAerodrome` + loader population to `Aerodrome.runwayConfiguration`.

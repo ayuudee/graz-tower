@@ -44,7 +44,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-PF1 aerodrome requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL`() {
+    fun `PF1 aerodrome requiring startup clearance has REQUEST_STARTUP and AWAIT_STARTUP_APPROVAL`() {
         // Bucket 2: requires a new `Aerodrome.requiresStartupClearance: Boolean`
         // field + `groundDepartureTask(aerodrome)` overload + the
         // `CLEARANCE_DELIVERY` controller role.
@@ -72,7 +72,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-PF3 airborne-spawned aircraft with FiledPlan has activeRunway from filed plan`() {
+    fun `PF3 airborne-spawned aircraft with FiledPlan has activeRunway from filed plan`() {
         // Bucket 1: API exists today; this references `FiledPlan.Vfr` +
         // `destinationRunway` so a rename / signature shift breaks compile.
         val filed: FiledPlan = FiledPlan.Vfr(
@@ -113,7 +113,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT3-II MissionStep runUpDurationMs lookup is step-discriminated`() {
+    fun `AUDIT3-II MissionStep runUpDurationMs lookup is step-discriminated`() {
         // Bucket 2: no `MissionStep.runUpDurationMs(type)` lookup today.
         // TODO when D-AUDIT.3.II-FOLLOWUP lands:
         //   val runUp = MissionStep.RUN_UP_CHECKS.runUpDurationMs(c172Type)
@@ -137,7 +137,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT4-D-II Kinematics carries per-phase waypoint radii`() {
+    fun `AUDIT4-D-II Kinematics carries per-phase waypoint radii`() {
         // Bucket 2: today `Kinematics.waypointRadiusM` is one scalar.
         // TODO when D-AUDIT.4.D.II-FOLLOWUP lands:
         //   val kin = c172Type.kinematics
@@ -161,7 +161,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT8-IV ATIS letter resolution dispatches by aerodrome for size greater than one`() {
+    fun `AUDIT8-IV ATIS letter resolution dispatches by aerodrome for size greater than one`() {
         // Bucket 1: `PilotInput.atisByAerodrome` is a real public field today;
         // this references its type so a shape change breaks compile.
         val lowgAtis = stubAtis(letter = 'A', aerodrome = xyz.easiersaid.twr.protocol.AerodromeId("LOWG"))
@@ -201,7 +201,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT9-II VFR see-and-avoid recognises nearby traffic and yields right of way`() {
+    fun `AUDIT9-II VFR see-and-avoid recognises nearby traffic and yields right of way`() {
         // Bucket 2: requires `PilotInput.nearbyTraffic` field on the cockpit
         // input surface.
         // TODO when D-AUDIT.9.II-FOLLOWUP lands:
@@ -223,7 +223,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT9-III aborted takeoff on engine failure during takeoff roll`() {
+    fun `AUDIT9-III aborted takeoff on engine failure during takeoff roll`() {
         // Bucket 2: needs `AircraftState.engineState` (sealed type).
         // TODO when D-AUDIT.9.III-FOLLOWUP lands:
         //   val state = aircraftState.copy(engineState = EngineState.Failed(at = SimTime.zero))
@@ -245,7 +245,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT9-IV fuel exhaustion triggers divert to alternate`() {
+    fun `AUDIT9-IV fuel exhaustion triggers divert to alternate`() {
         // Bucket 2: needs `AircraftState.fuelKg` + alternate-aerodrome diversion logic.
         // TODO when D-AUDIT.9.IV-FOLLOWUP lands:
         //   val state = aircraftState.copy(fuelKg = 5.0)  // below reserve
@@ -267,7 +267,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-AUDIT9-V icing or weather deviation replans around hazardous volume`() {
+    fun `AUDIT9-V icing or weather deviation replans around hazardous volume`() {
         // Bucket 2: needs `AviationWorld.weatherVolumes`.
         // TODO when D-AUDIT.9.V-FOLLOWUP lands:
         //   val world = aviationWorld.copy(weatherVolumes = listOf(icingVolume))
