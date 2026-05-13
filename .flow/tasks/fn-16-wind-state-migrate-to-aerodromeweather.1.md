@@ -353,9 +353,8 @@ If any test fails: real regression. Diagnose at root cause. **Do not skip-list, 
 - [ ] No backwards-compat shim. The `SimState.weatherByAerodrome` field is fully gone.
 
 ## Done summary
-
-_(filled at completion)_
-
+Hoisted weather onto the `Aerodrome.weather` entity field (mirroring fn-12's `Runway.obstruction` precedent) via an atomic hard cutover: relocated `WeatherObservation` from `:controller` to `:core/world`, added `AviationWorld.updateAerodrome` lens, taught `SimState.initial` to fold weather into the world with a new `WeatherForUnknownAerodrome` pre-fold invariant, deleted `SimState.weatherByAerodrome`, migrated all three production readers + the two test mutators, and shipped focused specs for the lens, the dual invariants, and the pinned `mapNotNull` projection. Codex impl-review converged in 3 rounds (NEEDS_WORK on stale KDoc refs → NEEDS_WORK on pilot-firewall reachability KDoc → SHIP).
 ## Evidence
-
-_(filled at completion)_
+- Commits: 51ccebf, 3ced6e0, 55f5223, dbf4c8d
+- Tests: ./gradlew --offline --no-daemon :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests detekt
+- PRs:

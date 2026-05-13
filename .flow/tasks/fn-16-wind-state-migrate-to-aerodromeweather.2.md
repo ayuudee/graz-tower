@@ -4,29 +4,44 @@ satisfies: [R9, R10, R11, R12, R13]
 
 ## Description
 
-Sweep + paper-trail pass for fn-16. After fn-16.1 lands the atomic field migration, this task:
-1. Re-runs the audit script to confirm no orphan `SimState.weatherByAerodrome` references remain across the entire codebase (including test fixtures, KDoc, comments).
-2. Lands the KDoc updates listed in the epic spec § R10 — eight sites, mostly cross-references that previously cited `D-PASS-wind-state-migrate-to-aerodrome` as a deferment (now closed).
-3. Updates the existing `project_rich_world_domain.md` memory entry **in place** to confirm both `Runway.obstruction` (fn-12) and `Aerodrome.weather` (fn-16) live on entities, so future world-state slices follow the same shape automatically. **No new memory file is created.**
-4. Optionally renames the `SimState.initial(weatherByAerodrome = ...)` parameter — default decision = **keep the name** since it's a parameter, not a field; renaming adds churn without architectural value. Pin the decision in this task's evidence note.
+<!-- Updated by plan-sync: fn-16.1 absorbed most of the planned R10 KDoc edits inline; fn-18.3 moved the deferment register from `.plan` + `~/.claude/plans/pilot-firewall.md` to in-repo `docs/deferments.md`. fn-16.2 is now verification-dominant with a narrowed live-edit set. -->
 
-This task is **L → S** in scope vs fn-16.1. **Documentation and external-memory/register only; no behavioral code changes** (refined per codex round 7 — production source files DO get KDoc/comment-touch edits, and external files like `~/.claude/plans/pilot-firewall.md` and `~/.claude/projects/.../memory/project_rich_world_domain.md` get content updates too, but no code paths change in the repo). The build green-bar is a sanity check that the documentation edits didn't accidentally touch a code path.
+Sweep + paper-trail pass for fn-16. After fn-16.1 lands the atomic field migration (and absorbs most of the planned KDoc cross-references inline), this task:
+1. Re-runs the audit script to confirm no orphan `SimState.weatherByAerodrome` references remain across the entire codebase (including test fixtures, KDoc, comments).
+2. **Verifies** (not re-edits) that the KDoc updates listed in the epic spec § R10 already landed in fn-16.1. Most of the eight enumerated sites were absorbed during the atomic migration because the migration mechanically required touching them — see "Phase-1 absorption ledger" in the Files section below. Any residual hit is a sign the migration left a stale reference; clean it.
+3. Updates the existing `project_rich_world_domain.md` memory entry **in place** (path A/B per R11) to confirm both `Runway.obstruction` (fn-12) and `Aerodrome.weather` (fn-16) live on entities, so future world-state slices follow the same shape automatically. **No new memory file is created.**
+4. Optionally renames the `SimState.initial(weatherByAerodrome = ...)` parameter — default decision = **keep the name** since it's a parameter, not a field; renaming adds churn without architectural value. Pin the decision in this task's evidence note.
+5. **Deferment-register reconciliation (R13 — revised per plan-sync 2026-05-13)**: register location changed during fn-18.3 — `.plan` + `~/.claude/plans/pilot-firewall.md` are no longer the canonical register; the in-repo `docs/deferments.md` is. The 7 NEW deferments from this epic were filed in `docs/deferments.md` as fn-18.3 migrated entries; the `D-PASS-wind-state-migrate-to-aerodrome` entry itself remains in `docs/deferments.md` with `Status: planned` and must be flipped to `closed` + moved to `## Archive` by this task. fn-16.1 also filed a NEW deferment `D-PASS-pilot-world-strip-dynamic-state` (planned) — already in-repo, no action.
+
+This task is **L → S → XS** in scope vs fn-16.1 (further narrowed by plan-sync: most R10 KDoc edits already landed in fn-16.1; register location moved in fn-18.3). **Documentation + register updates only; no behavioral code changes**. The build green-bar is a sanity check that the documentation edits didn't accidentally touch a code path.
 
 **Files:**
-- `core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt` — verify `Aerodrome.weather` KDoc landed cleanly in fn-16.1 (no additional edit needed beyond fn-16.1's R2 work; cross-reference verification only).
-- `core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldLenses.kt` — verify KDoc landed (fn-16.1 R3).
-- `core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WeatherObservation.kt` — verify KDoc landed (fn-16.1 R1).
-- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/SimState.kt` — sweep the class-level KDoc block (lines 19-36) for any remaining `weatherByAerodrome` field references; remove. Update the `SimState.initial` KDoc to add a one-line note about the fold (if not already done in fn-16.1).
-- `pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/PilotInput.kt:71-72` — the fn-14 KDoc note "The eventual `Aerodrome.weather` rich-domain migration is filed as `D-PASS-wind-state-migrate-to-aerodrome`" updates to "Migrated to `Aerodrome.weather` in fn-16 (deferment closed)."
-- `controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/ControllerTypes.kt` — verify the old `WeatherObservation` KDoc was relocated to `core/world/WeatherObservation.kt` (per fn-16.1 R1); no residual KDoc fragment remains in `ControllerTypes.kt`. If the fn-16.1 work left a stray KDoc orphan referring to a non-existent symbol, clean it. Otherwise no-op.
-- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/PilotWiring.kt:36-42` — KDoc update from fn-16.1's R7a may already have landed; verify the "fn-14.1: project just the WindReport slice" block now also notes fn-16's source change (or replace the fn-14.1 ref with fn-16 attribution since the new wiring is the fn-16 shape).
-- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/ControllerWiring.kt` — verify the `state.world.aerodromes[id]?.weather` call site has a comment noting the source (one-line cite to fn-16 if missing).
-- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/SimTraceQueries.kt:186-211` — KDoc update for `weatherTransitions` extractor: change the "transitions of [SimState.weatherByAerodrome]" preamble to "transitions of `world.aerodromes[id].weather`" + cite fn-16 alongside the existing fn-14.2 cite.
-- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveCrosswindTest.kt:789-802` — KDoc on `authorWeather` updated to cite `AviationWorld.updateAerodrome` lens (this may already have landed in fn-16.1; verify and add if missing).
-- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveCrosswindTest.kt:106-122` — file-level KDoc references "`state.weatherByAerodrome[LOWG]` mutation"; update to "`world.aerodromes[LOWG].weather` mutation via `updateAerodrome` lens".
-- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/Fixtures.kt:57` — provenance KDoc references "`state.weatherByAerodrome[LOWG]` mutation"; update to "`world.aerodromes[LOWG].weather` mutation".
-- Other tests' file-level docstrings that reference `state.weatherByAerodrome` — grep `state.weatherByAerodrome` and update each hit. Likely candidates: `LowgGoldenTest.kt:81`, `G2CrossAerodromeVfrTest.kt:80`, `G3aRunwayObstructionTest.kt:99`, `G3aRunwayObstructionContinueApproachTest.kt:119`, `G3aPilotTrainedGoAroundTest.kt:92`.
-- `~/.claude/projects/-home-andrew-dev-projects-twr2/memory/project_rich_world_domain.md` — **EXISTING** memory file updated **in place** (per codex round 2 closure: NO new memory entry file is created; the principle and its precedent list live in one entry).
+
+<!-- Updated by plan-sync 2026-05-13: classified each enumerated R10 site by whether fn-16.1 already absorbed the KDoc edit during the atomic migration. "ABSORBED" rows are verify-only; "RESIDUAL" rows are the live-edit set. -->
+
+**Phase-1 absorption ledger (fn-16.1 already landed these; verify-only in fn-16.2):**
+- `core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldModel.kt` — ABSORBED (`Aerodrome.weather` KDoc landed cleanly in fn-16.1 R2).
+- `core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WorldLenses.kt` — ABSORBED (KDoc with validation-boundary caveat landed in fn-16.1 R3, verified at WorldLenses.kt:5-23).
+- `core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/WeatherObservation.kt` — ABSORBED (relocation KDoc landed in fn-16.1 R1, verified at WeatherObservation.kt:6-24).
+- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/SimState.kt` — ABSORBED (`SimState.initial` KDoc fully updated in fn-16.1 with order-of-operations notes at SimState.kt:231-258; `InitError` variants' KDocs both updated at SimState.kt:152-183; the class-level KDoc at lines 19-36 has no `weatherByAerodrome` reference to remove — the original field had no class-level mention).
+- `pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/PilotInput.kt` — ABSORBED (the fn-14 deferment cite was rewritten in fn-16.1 to read "fn-16 closed `D-PASS-wind-state-migrate-to-aerodrome` by hoisting weather onto `Aerodrome.weather`; the pilot firewall surface ... is unchanged — only the source migrates", verified at PilotInput.kt:70-74).
+- `controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/ControllerTypes.kt` — ABSORBED (the `WeatherObservation` data class and its KDoc were cleanly removed by fn-16.1 R1; no residual orphan; verified at ControllerTypes.kt:260-272 — the `Controller output` section header sits directly after `ReceivedMessage`).
+- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/PilotWiring.kt:36-55` — ABSORBED (the comment block now layers fn-14.1's projection rationale ON TOP of an explicit fn-16 R7a source cite + pinned-form rationale, verified at PilotWiring.kt:42-52).
+- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/ControllerWiring.kt:150-154` — ABSORBED (one-line cite landed: `// fn-16 (R7b): source migrated from the deleted state.weatherByAerodrome to aerodrome.weather...`, verified at ControllerWiring.kt:150-153).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/SimTraceQueries.kt:186-213` — ABSORBED (extractor KDoc rewritten to cite "world.aerodromes[id].weather" + carries an explicit fn-16 R7c paragraph alongside the prior fn-14.2 anchor, verified at SimTraceQueries.kt:204-207).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveCrosswindTest.kt:789-820` — ABSORBED (`authorWeather` KDoc updated to cite the `updateAerodrome` lens per fn-16 R8, verified at the method header).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveCrosswindTest.kt:106-122` — ABSORBED (file-level KDoc rewritten to "`state.world.aerodromes[LOWG].weather` directly through ... `updateAerodrome` lens — fn-16", verified at lines 107-112).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/Fixtures.kt:57` — ABSORBED (provenance KDoc reads "`world.aerodromes[LOWG].weather` mutation" — verified).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/LowgGoldenTest.kt:81,89` — ABSORBED (file-level cross-references use `world.aerodromes[LOWG].weather` shape — verified).
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G2CrossAerodromeVfrTest.kt:80` — ABSORBED.
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionTest.kt:99` — ABSORBED.
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt:119` — ABSORBED.
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotTrainedGoAroundTest.kt:92` — ABSORBED.
+
+**Residual live-edit set (fn-16.2 must actually edit these):**
+- `~/.claude/projects/-home-andrew-dev-projects-twr2/memory/project_rich_world_domain.md` — **EXISTING** memory file updated **in place** (path A) OR missing-file recorded in evidence (path B); see Step 4. NO new memory entry file is created; the principle and its precedent list live in one entry.
+- `docs/deferments.md` (in-repo, repo-root) — **register location changed via fn-18.3** (per the `.flow/specs/fn-16-...md:439` migration note: "MIGRATED to `docs/deferments.md` per fn-18.3 on 2026-05-13"). Flip `D-PASS-wind-state-migrate-to-aerodrome` from `Status: planned` to `Status: closed` and **move the entry from the active `## D-PASS` section to `## Archive`** with a `Closed by:` line. Verify all 7 NEW deferments from this epic are already present in `docs/deferments.md` (they were filed during fn-18.3's migration sweep): `D-PASS-weather-model-expansion` (line 608), `D-PASS-per-runway-weather` (line 572), `D-PASS-weather-history-replay` (line 602), `D-PASS-metar-taf-ingestion` (line 566), `D-PASS-weather-validity-window` (line 620), `D-PASS-weather-shift-event-leaf` (line 614), `D-PASS-direct-simstate-constructor-canonicalization` (line 344). Each is in active section already — no action beyond audit.
+- **Sister registers** (`.plan` + `~/.claude/plans/pilot-firewall.md`) — REMOVED FROM SCOPE per fn-18.3 migration; `docs/deferments.md` is the canonical register. If those external files still carry stale `D-PASS-wind-state-migrate-to-aerodrome` entries pointing into the now-migrated set, record in evidence (do not edit).
 
 ## Approach
 
@@ -35,20 +50,22 @@ Re-run the audit greps from the epic's "Quick commands" section:
 ```bash
 grep -rn "\.weatherByAerodrome\b" --include="*.kt" .   # Any direct field access (should be zero non-param hits)
 grep -rn "weatherByAerodrome" --include="*.kt" .        # All remaining (param names + PilotInput field + SimTraceQueries name)
-grep -rn "D-PASS-wind-state-migrate-to-aerodrome" --include="*.kt" --include="*.md" .  # Deferment refs to close
+grep -rn "D-PASS-wind-state-migrate-to-aerodrome" --include="*.kt" --include="*.md" .  # Deferment refs to close (now expected to surface docs/deferments.md only; source-tree refs were retired in fn-16.1's PilotInput.kt edit)
 ```
 
 Categorise every remaining hit into the allowed list from the epic R9. Any uncategorised hit is a regression — root-cause and fix in fn-16.1 (this task is paper-trail only; don't add new code in fn-16.2 that should have been in fn-16.1).
 
-### Step 2: KDoc updates (R10)
+### Step 2: KDoc verification (R10) — verify-only after plan-sync
 
-Edit each site enumerated above. Pattern:
-- Replace any `D-PASS-wind-state-migrate-to-aerodrome` reference with "Closed in fn-16."
-- Replace `state.weatherByAerodrome[X]` text in KDoc / inline comments with `world.aerodromes[X].weather`.
-- Replace `SimState.weatherByAerodrome` text in KDoc with either the lens (for writers) or the new walk (for readers).
-- Cross-reference fn-16 (this epic) at the relocation sites (`WeatherObservation` move, `Aerodrome.weather` add, lens add).
+<!-- Updated by plan-sync 2026-05-13: fn-16.1 absorbed the KDoc cross-cutting edits inline; this step is now verification-dominant. -->
 
-Tight scope — KDoc-only edits. No code lines change in this task.
+For each entry in the **Phase-1 absorption ledger** above, open the cited file:line and verify the KDoc cite/replacement landed cleanly in fn-16.1. Pattern to look for:
+- `D-PASS-wind-state-migrate-to-aerodrome` references that survived fn-16.1 (should be zero; deferment closure cite is the right shape).
+- `state.weatherByAerodrome[X]` text in prose (should already read `world.aerodromes[X].weather`).
+- `SimState.weatherByAerodrome` text in KDoc (should be replaced by lens-for-writers or walk-for-readers).
+- Cross-reference fn-16 (this epic) at relocation sites (`WeatherObservation` move, `Aerodrome.weather` add, lens add).
+
+If a verification turns up a stale reference, clean it inline (tight scope — KDoc-only). Record each verified hit (ABSORBED with file:line citation) OR each cleaned residual (RESIDUAL → fixed inline) in the evidence note. **The plan-sync ledger expects every R10 site to verify ABSORBED**; any RESIDUAL surfaces is a fn-16.1 paper-trail gap to flag in evidence.
 
 ### Step 3: parameter-rename decision (R10 optional)
 
@@ -91,37 +108,41 @@ Run `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :p
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/testing/SimTraceQueries.kt:186-211` — extractor KDoc
 - Every file with `state.weatherByAerodrome` in a KDoc/comment block — grep enumerable
 
-**Required (deferment registers — TWO sister registers per `.plan:484`'s standing convention; both files carry the same entries):**
+**Required (deferment register — single canonical in-repo file post fn-18.3):**
 
-1. **`.plan` (repo-root, IN-REPO, canonical project-local backlog)** — per `.plan`'s own header rules ("On every commit, check whether any item here was resolved and mark it DONE. When work is deferred mid-session, add it here before closing.") AND per `.plan:484`'s explicit register-split note: `~/.claude/plans/pilot-firewall.md` is the architectural design home (D-PF/D-AUDIT/D-PASS items), `.plan` is the project-local backlog, both carry identical entries so on-repo readers / CI / fresh-clone reviewers can resolve every deferment from `.plan` alone.
-   - **Scan `.plan` for `D-PASS-wind-state-migrate-to-aerodrome`**: if present, mark `DONE (2026-05-11, fn-16)` per `.plan`'s DONE format. If absent, record in evidence (the deferment may not have been mirrored into `.plan` yet).
-   - **Append the 7 NEW deferments** (per epic § Deferments register: `D-PASS-weather-model-expansion`, `D-PASS-per-runway-weather`, `D-PASS-weather-history-replay`, `D-PASS-metar-taf-ingestion`, `D-PASS-weather-validity-window`, `D-PASS-weather-shift-event-leaf`, `D-PASS-direct-simstate-constructor-canonicalization`) to the appropriate active-items section of `.plan` with full four-field contracts (what-today / why-wrong / real-fix-contract / trigger) per the pattern at `.plan:482-516` ("fn-8.3 G1 closure deferments"). Same Impact × Effort grading.
-   - `.plan` is in-repo and **always present** — no missing-file path.
+<!-- Updated by plan-sync 2026-05-13: fn-18.3 migrated the register out of `.plan` + `~/.claude/plans/pilot-firewall.md` into in-repo `docs/deferments.md`. Single source of truth now lives in-repo. -->
 
-2. **`~/.claude/plans/pilot-firewall.md`** — sister register (lives outside repo; the architectural design home for D-PF/D-AUDIT/D-PASS items, pre-dates `.plan`). Same closure + same 7 NEW entries. **Fail-loud-else-record-in-evidence**: if file absent (CI / fresh-clone), record missing-file state in evidence and capture intended text for later user update.
+**`docs/deferments.md` (repo-root, IN-REPO, canonical)** — per the `## D-PASS` and `## Archive` headings, the four-bucket model from `docs/deferments-CONVENTION.md`, and the migration note at `.flow/specs/fn-16-wind-state-migrate-to-aerodromeweather.md:439` ("MIGRATED to `docs/deferments.md` per fn-18.3 on 2026-05-13"). All entries on the register live in one file.
 
-Both registers must end up consistent. Per `.plan:484`'s convention: on-repo readers resolve from `.plan` alone; the external register is the architectural design home but is not load-bearing for on-repo discoverability.
+- **Scan `docs/deferments.md` for `D-PASS-wind-state-migrate-to-aerodrome`**: present at line ~626 with `Status: planned`. Edit to flip `Status: closed`, add a `**Closed by:** fn-16 (atomic field migration in fn-16.1 + paper-trail sweep in fn-16.2)` line, add a `**Enforcement:** ` line citing the key landed shapes (`Aerodrome.weather` on `core.world.WorldModel`, `AviationWorld.updateAerodrome` lens, `SimState.initial`'s fold + `WeatherForUnknownAerodrome` invariant, three production readers migrated, `G3aPilotReactiveCrosswindTest.authorWeather` mutator via lens), and **move the entry from `## D-PASS` to `## Archive`** preserving the four-field contract.
+- **Verify the 7 NEW deferments are already filed** in `docs/deferments.md` (they were captured by fn-18.3's migration sweep when it consolidated entries from `.plan` + `~/.claude/plans/pilot-firewall.md`): `D-PASS-weather-model-expansion` (line ~608), `D-PASS-per-runway-weather` (line ~572), `D-PASS-weather-history-replay` (line ~602), `D-PASS-metar-taf-ingestion` (line ~566), `D-PASS-weather-validity-window` (line ~620), `D-PASS-weather-shift-event-leaf` (line ~614), `D-PASS-direct-simstate-constructor-canonicalization` (line ~344). No action beyond audit; if any are missing, file them per the schema in `docs/deferments-CONVENTION.md`.
+- **`docs/deferments.md` is in-repo and always present — no missing-file branch.**
+
+**Sister registers (removed from scope per fn-18.3):** `.plan` and `~/.claude/plans/pilot-firewall.md` are no longer the canonical deferment register. If they still carry the `D-PASS-wind-state-migrate-to-aerodrome` entry (possibly orphaned from before fn-18.3's migration), record in evidence — do not edit. The user owns post-migration cleanup of those legacy registers.
 
 ## Key context
 
-- **Documentation + external-register task.** **No behavioral code changes; production-source KDoc/comment edits AND external-memory/register file updates only** (per codex round 7 wording clarification — the external user-memory and deferment-register files at `~/.claude/...` are within scope, but they live outside the repo). If a KDoc edit feels like it requires a code line change, that's a sign the change belongs in fn-16.1 (paper-trail task here, no scope creep).
+<!-- Updated by plan-sync 2026-05-13: scope narrowed — fn-16.1 absorbed the KDoc work; fn-18.3 moved the deferment register in-repo. -->
+
+- **Documentation + in-repo-register task.** **No behavioral code changes; verification-dominant KDoc work (fn-16.1 absorbed most of it inline) + in-repo `docs/deferments.md` edit + user-memory file update.** If a KDoc edit feels like it requires a code line change, that's a sign the change belongs in fn-16.1 (paper-trail task here, no scope creep).
 - **Memory entry: update `project_rich_world_domain.md` in place**, don't create a new file. The principle is the same; the precedent list grows.
 - **Parameter rename: default-no.** Keep the `weatherByAerodrome: Map<...>` parameter name on `SimState.initial`. Rename costs (25+ call sites) outweigh the architectural value (zero — it's a parameter).
 - **Sweep audit grep is the bar.** Zero remaining `SimState.weatherByAerodrome` field references (compiler-enforced post fn-16.1). All other remaining `weatherByAerodrome` references categorised per the epic R9 allowed list.
+- **Deferment register: in-repo only.** Post fn-18.3 the canonical register is `docs/deferments.md` in the repo root. `.plan` and `~/.claude/plans/pilot-firewall.md` are NOT in scope for fn-16.2; if they retain stale entries, surface in evidence only.
 
 ## Acceptance
 
 - [ ] R9 closure: post fn-16.1, the audit greps return zero unauthorized hits. Every remaining `weatherByAerodrome` reference categorised into the allowed list (parameter name, `PilotInput` field name, `MultiAerodromeFixture` struct field, `SimTraceQueries.weatherTransitions` name, `PilotWiring.buildPilotInput` named-arg call site).
-- [ ] R10: KDoc updates landed at the eight sites enumerated in the Files section above. Every `D-PASS-wind-state-migrate-to-aerodrome` reference replaced with a fn-16 closure note. Every `state.weatherByAerodrome[X]` reference in KDoc/inline comments replaced with `world.aerodromes[X].weather` (reader form) or `world.updateAerodrome(X) { ... }` (writer form).
+- [ ] R10: KDoc updates landed at the enumerated sites — **verified ABSORBED per the Phase-1 absorption ledger in Files (above) for all sixteen sites** (plan-sync 2026-05-13 confirmed fn-16.1 absorbed every KDoc cross-reference inline during the atomic migration). Any RESIDUAL site cleaned inline and recorded in evidence as a fn-16.1 paper-trail gap. Every `D-PASS-wind-state-migrate-to-aerodrome` reference in source-tree code replaced with a fn-16 closure note. Every `state.weatherByAerodrome[X]` reference in KDoc/inline comments replaced with `world.aerodromes[X].weather` (reader form) or `world.updateAerodrome(X) { ... }` (writer form).
 - [ ] R11: memory file `~/.claude/projects/-home-andrew-dev-projects-twr2/memory/project_rich_world_domain.md` handling — **Path A** (file present): updated in place with the two-precedents block (fn-12, fn-16) and the next-slice default-shape note; NO new memory file created. **Path B** (file absent — CI/fresh-clone): missing-file state recorded in this task's evidence note plus the exact intended-append text captured for later user update. Either path satisfies acceptance. Refined per codex round 4 to handle the user-memory-outside-repo case.
 - [ ] R10 (optional rename decision): the `SimState.initial(weatherByAerodrome = ...)` parameter name decision pinned in this task's evidence. Default = KEEP. If renamed, all 25+ test fixture sites updated; if not, no code touched.
 - [ ] R12: `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests :migration:allTests detekt` exits 0. All eight goldens green. detekt baseline unchanged.
 - [ ] Sweep audit script output committed to the task evidence note (so future readers can replay the verification).
-- [ ] **R13: `.plan` (in-repo, repo-root, canonical project-local backlog) reconciled (NEW per codex round 8):**
-  - `D-PASS-wind-state-migrate-to-aerodrome` entry scanned; if present marked `DONE (2026-05-11, fn-16)`; if absent recorded in evidence.
-  - All 7 NEW deferments appended with the full four-field contract format from `.plan:482-516` ("fn-8.3 G1 closure deferments" pattern): what-today / why-wrong / real-fix-contract / trigger; Impact × Effort grading.
-  - `.plan` is in-repo and always present (no missing-file branch).
-- [ ] `D-PASS-wind-state-migrate-to-aerodrome` entry in `~/.claude/plans/pilot-firewall.md` § Deferments register marked closed (the external sister register; the architectural design home for D-PF/D-AUDIT/D-PASS items per `.plan:484`'s register-split convention). If the file is absent (CI / fresh-clone — same case as R11's user-memory file), record the missing-file state in evidence and capture the intended closure text for later user update. **NEW deferments from this epic** (per the epic's "Deferments register" section — the same 7 entries appended to `.plan` per R13 above) — appended to this register's open-items list too, matching `.plan` content. Same fail-loud-if-missing-else-record-in-evidence semantics.
+- [ ] **R13: `docs/deferments.md` (in-repo, repo-root, canonical) reconciled (revised per plan-sync 2026-05-13 — register migrated from `.plan` + `~/.claude/plans/pilot-firewall.md` to in-repo `docs/deferments.md` via fn-18.3):**
+  - `D-PASS-wind-state-migrate-to-aerodrome` entry at `docs/deferments.md:~626` flipped from `Status: planned` to `Status: closed`; `**Closed by:**` line added citing fn-16.1 + fn-16.2; `**Enforcement:**` line added citing the key landed shapes; entry moved from `## D-PASS` to `## Archive`.
+  - All 7 NEW deferments from this epic verified present in `docs/deferments.md` (filed during fn-18.3's migration sweep): `D-PASS-weather-model-expansion`, `D-PASS-per-runway-weather`, `D-PASS-weather-history-replay`, `D-PASS-metar-taf-ingestion`, `D-PASS-weather-validity-window`, `D-PASS-weather-shift-event-leaf`, `D-PASS-direct-simstate-constructor-canonicalization`. Any missing entry filed per the schema in `docs/deferments-CONVENTION.md`.
+  - `docs/deferments.md` is in-repo and always present (no missing-file branch).
+  - **Sister registers `.plan` + `~/.claude/plans/pilot-firewall.md` removed from scope** — fn-18.3's migration made `docs/deferments.md` canonical; legacy register entries in those files (if any) are out of fn-16.2 scope. Record state in evidence if observed.
 
 ## Done summary
 

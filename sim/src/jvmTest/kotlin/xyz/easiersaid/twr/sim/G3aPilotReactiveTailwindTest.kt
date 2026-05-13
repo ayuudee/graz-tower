@@ -84,9 +84,11 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *
  * Initial wind = 10 kt headwind from runway heading (zero tailwind,
  * zero crosswind). After the tower issues `ClearedToLand`, the test's
- * per-tick world hook authors `weatherByAerodrome[LOWG] =
+ * per-tick world hook authors `world.aerodromes[LOWG].weather =
  * WeatherObservation(wind = Available(Wind(directionDegrees =
- * (runwayHeading + 180) % 360 clamped 0→360, speedKnots = 15)))`
+ * (runwayHeading + 180) % 360 clamped 0→360, speedKnots = 15)))` via the
+ * `AviationWorld.updateAerodrome` lens (fn-16 R8 — predecessor was the
+ * deleted `state.weatherByAerodrome[LOWG]` flat-map slot)
  * one-shot — 15 kt pure tailwind on the runway in use. 15 kt > C172's
  * 10 kt AFH-advisory; the 5 kt margin guards against any per-edition
  * adjustment to the advisory itself. The pilot reads the new wind via
@@ -639,11 +641,12 @@ class G3aPilotReactiveTailwindTest {
 
         // ── World-weather transition pin (exactly two transitions) ──────────
         //
-        // The aerodrome-keyed `weatherByAerodrome[LOWG]` slice transitions
-        // exactly twice during the run: (1) initial 160°@10 → 340°@15
-        // (tailwind authored), (2) 340°@15 → 160°@10 (cleared). No
-        // controller-belief slice expansion — weather is world-state per
-        // [weatherTransitions]'s KDoc.
+        // The aerodrome-keyed `world.aerodromes[LOWG].weather` slice
+        // (fn-16; predecessor was the deleted `state.weatherByAerodrome[LOWG]`
+        // flat-map slot) transitions exactly twice during the run:
+        // (1) initial 160°@10 → 340°@15 (tailwind authored),
+        // (2) 340°@15 → 160°@10 (cleared). No controller-belief slice
+        // expansion — weather is world-state per [weatherTransitions]'s KDoc.
         val weatherTrans = trace.weatherTransitions(lowg)
         check(weatherTrans.size == 2) {
             "Expected exactly two transitions in world.aerodromes[$lowg].weather " +
