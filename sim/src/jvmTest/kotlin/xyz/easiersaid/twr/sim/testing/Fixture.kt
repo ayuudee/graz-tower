@@ -6,7 +6,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.core.world.buildWorldIndex

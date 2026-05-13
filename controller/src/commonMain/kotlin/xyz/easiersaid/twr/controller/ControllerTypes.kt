@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.controller
 import arrow.core.NonEmptyList
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.Position
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.certify.CertificationEvidence
@@ -30,7 +31,6 @@ import xyz.easiersaid.twr.protocol.NumberInSequence
 import xyz.easiersaid.twr.protocol.ObligationId
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.PointId
-import xyz.easiersaid.twr.protocol.PressureSetting
 import xyz.easiersaid.twr.protocol.RegulationRef
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -256,23 +256,6 @@ data class ClearanceSummary(
     val status: ClearanceStatus,
     val instruction: AtcInstruction,
     val issuedAt: SimTime,
-)
-
-/**
- * Observed weather at a single aerodrome. The [wind] field is a sealed
- * [xyz.easiersaid.twr.protocol.WindReport] (not nullable) so every consumer
- * must handle the "no report" case explicitly.
- *
- * fn-14.1 (G3a-react): the [WindReport] sealed type lifted to `:protocol`
- * so the pilot can consume the wind projection through the firewall
- * without depending on `:controller`. `WeatherObservation` (the full
- * `(WindReport, qnh, visibility)` triple) stays here — only the
- * `wind` projection crosses to `:pilot`.
- */
-data class WeatherObservation(
-    val wind: xyz.easiersaid.twr.protocol.WindReport,
-    val qnh: PressureSetting?,
-    val visibility: Int?,
 )
 
 /** Channel-resolved pilot message — what was actually heard. Wraps PilotTransmission. */

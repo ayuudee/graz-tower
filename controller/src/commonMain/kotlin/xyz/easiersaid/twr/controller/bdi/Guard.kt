@@ -3,7 +3,6 @@ package xyz.easiersaid.twr.controller.bdi
 import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.ControllerView
 import xyz.easiersaid.twr.controller.RunwayStatus
-import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.ControllerEvent
 import xyz.easiersaid.twr.controller.observe.isSeverityAtLeast
@@ -11,6 +10,7 @@ import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.EntityRef
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.Meters
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.AtcInstruction

@@ -67,7 +67,6 @@ class KnownStripsHandoffTransitionSpec {
         beliefs = emptyMap(),
         world = AviationWorld(),
         worldIndex = WorldIndex(),
-        weatherByAerodrome = emptyMap(),
     )
 
     private fun spec(

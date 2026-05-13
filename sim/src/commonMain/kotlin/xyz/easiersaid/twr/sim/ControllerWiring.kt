@@ -147,7 +147,11 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         runways = deriveRunwayObservations(state, spec.aerodromeId),
         activeClearances = emptyMap(),
         receivedMessages = state.controllerInbox[controllerId].orEmpty(),
-        weather = state.weatherByAerodrome[spec.aerodromeId],
+        // fn-16 (R7b): source migrated from the deleted
+        // `state.weatherByAerodrome` to `aerodrome.weather` on the
+        // post-fold world. `ControllerView.weather: WeatherObservation?`
+        // shape is unchanged.
+        weather = state.world.aerodromes[spec.aerodromeId]?.weather,
         worldIndex = state.worldIndex,
         flightStripIntents = flightStripIntents,
         flightStripDestinations = flightStripDestinations,

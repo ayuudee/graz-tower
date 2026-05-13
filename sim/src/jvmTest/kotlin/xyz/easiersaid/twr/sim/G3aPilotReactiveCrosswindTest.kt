@@ -4,7 +4,8 @@ import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.fail
 import xyz.easiersaid.twr.controller.ControllerOutput
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
+import xyz.easiersaid.twr.core.world.updateAerodrome
 import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.pilot.AircraftState
@@ -799,17 +800,23 @@ class G3aPilotReactiveCrosswindTest {
     }
 
     /**
-     * Pure world-state mutation: replace `state.weatherByAerodrome
-     * [aerodromeId]` with [weather]. Per fn-14.2 R12 the world-only
-     * test trigger discipline writes directly to the world-state map
-     * (NOT to controller beliefs and NOT to `PilotInput`); the sim's
-     * per-cycle `buildPilotInput` projection picks up the new wind on
-     * the next pilot decision tick.
+     * Pure world-state mutation: replace
+     * `state.world.aerodromes[aerodromeId].weather` with [weather]. Per
+     * fn-14.2 R12 the world-only test trigger discipline writes
+     * directly to the world-state entity (NOT to controller beliefs
+     * and NOT to `PilotInput`); the sim's per-cycle `buildPilotInput`
+     * projection picks up the new wind on the next pilot decision
+     * tick.
+     *
+     * fn-16 (R8): migrated from the deleted
+     * `state.weatherByAerodrome` flat map to
+     * [xyz.easiersaid.twr.core.world.Aerodrome.weather] via the new
+     * [xyz.easiersaid.twr.core.world.updateAerodrome] lens helper.
      */
     private fun authorWeather(
         st: SimState,
         aerodromeId: AerodromeId,
         weather: WeatherObservation,
     ): SimState =
-        st.copy(weatherByAerodrome = st.weatherByAerodrome + (aerodromeId to weather))
+        st.copy(world = st.world.updateAerodrome(aerodromeId) { it.copy(weather = weather) })
 }

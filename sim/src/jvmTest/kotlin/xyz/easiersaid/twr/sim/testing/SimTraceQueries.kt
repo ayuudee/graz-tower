@@ -11,7 +11,7 @@ import xyz.easiersaid.twr.protocol.HandoffTarget
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ResponsibilityState
 import xyz.easiersaid.twr.protocol.SimTime
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.controller.bdi.Stage
 import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.pilot.MissionStep
@@ -185,7 +185,8 @@ fun SimTrace.runwayObstructionTransitions(
 
 /**
  * fn-14.2 (G3a-react R12 — world-only test trigger discipline):
- * transitions of [SimState.weatherByAerodrome] for one [aerodrome]. The
+ * transitions of one [aerodrome]'s
+ * [xyz.easiersaid.twr.core.world.Aerodrome.weather] over time. The
  * slice's transitions are the **world-state** observability surface for
  * wind shifts authored via [runUntilWithStateTrace]'s `onAfterEvent`
  * hook.
@@ -195,10 +196,15 @@ fun SimTrace.runwayObstructionTransitions(
  * `BeliefState.runwayObstructions` because the controller's reactive
  * obstruction rule is belief-gated), weather lives at the world-state
  * surface directly. The crosswind reactive-GA recognition is
- * **pilot-side** (`PilotInput.weatherByAerodrome ← SimState
- * .weatherByAerodrome.mapValues { obs.wind }` via `PilotWiring`); the
- * controller's belief shape does not project weather as a separate
- * slice, so a controller-keyed extractor would have no consumer.
+ * **pilot-side** (`PilotInput.weatherByAerodrome ← world.aerodromes[id]
+ * .weather?.wind` via `PilotWiring`); the controller's belief shape
+ * does not project weather as a separate slice, so a controller-keyed
+ * extractor would have no consumer.
+ *
+ * fn-16 (R7c): source migrated from the deleted
+ * `SimState.weatherByAerodrome` to
+ * `world.aerodromes[id].weather` (rich-world-domain migration). Trace
+ * shape (`List<Transition<Option<WeatherObservation>>>`) unchanged.
  *
  * Each transition's `after.time` is the cursor time at which the
  * world-state weather changed (post-step state where the hook fired).
@@ -208,7 +214,7 @@ fun SimTrace.runwayObstructionTransitions(
 fun SimTrace.weatherTransitions(
     aerodrome: AerodromeId,
 ): List<Transition<Option<WeatherObservation>>> =
-    transitionsOf { st -> Option.fromNullable(st.weatherByAerodrome[aerodrome]) }
+    transitionsOf { st -> Option.fromNullable(st.world.aerodromes[aerodrome]?.weather) }
 
 // ── Doctrine predicates over ResponsibilityState transitions ─────────
 

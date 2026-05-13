@@ -65,7 +65,6 @@ class MissedHandoffProjectionSpec {
             beliefs = emptyMap(),
             world = AviationWorld(),
             worldIndex = WorldIndex(),
-            weatherByAerodrome = emptyMap(),
             handoffEscalations = handoffEscalations,
         )
     }

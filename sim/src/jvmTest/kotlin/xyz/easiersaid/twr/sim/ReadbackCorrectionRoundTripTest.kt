@@ -3,7 +3,7 @@ package xyz.easiersaid.twr.sim
 import arrow.core.NonEmptyList
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.controller.ControllerOutput
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AerodromeAip

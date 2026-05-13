@@ -385,6 +385,26 @@ data class Aerodrome(
      * with proxy-offset margin) is the doctrinally-correct shape.
      */
     val ctrApproximationRadius: Meters = Doctrine.IcaoAnnex11.CTR_FLOOR_5NM,
+    /**
+     * fn-16: typed weather-observation home on the aerodrome entity, per
+     * `project_rich_world_domain.md` (time-varying state lives on the
+     * entity). Default-null preserves existing constructor sites
+     * (production loader at `WorldCandidateLoader`, test fixtures).
+     * Written by [xyz.easiersaid.twr.sim.SimState.initial]'s fold of
+     * the `weatherByAerodrome` parameter and by mid-run mutations via
+     * `AviationWorld.updateAerodrome` (see [WorldLenses]). Read by the
+     * pilot wiring (projects `weather.wind` into
+     * `PilotInput.weatherByAerodrome`), the controller wiring
+     * (projects `weather` into `ControllerView.weather`), and the trace
+     * extractor `SimTraceQueries.weatherTransitions`.
+     *
+     * Predecessor: `SimState.weatherByAerodrome: Map<AerodromeId,
+     * WeatherObservation>` (DELETED in fn-16.1). Migration motivated by
+     * the second consumer of the rich-world-domain principle after
+     * fn-12's [Runway.obstruction]. The `D-PASS-wind-state-migrate-to-
+     * aerodrome` deferment closed with this field.
+     */
+    val weather: WeatherObservation? = null,
 )
 
 data class AviationWorld(

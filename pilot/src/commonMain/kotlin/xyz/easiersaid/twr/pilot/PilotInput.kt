@@ -57,19 +57,21 @@ data class PilotInput(
     /**
      * fn-14.1 (G3a-react R3): per-aerodrome wind state as observed by
      * the pilot — windsock crosscheck + ASI + instrument scan. The
-     * sim projects `SimState.weatherByAerodrome[aerodrome].wind` into
+     * sim projects `world.aerodromes[aerodrome].weather?.wind` into
      * this map (only the [xyz.easiersaid.twr.protocol.WindReport]
      * slice; the full
-     * [xyz.easiersaid.twr.controller.WeatherObservation] triple stays
-     * on the controller side — QNH/visibility are not pilot crosswind
-     * inputs in v1).
+     * [xyz.easiersaid.twr.core.world.WeatherObservation] triple stays
+     * on the entity — QNH/visibility are not pilot crosswind inputs
+     * in v1).
      *
      * Read by the pilot's reactive-GA recognition for POH crosswind-
      * limit exceedance (`derivePilotEvent`'s crosswind branch). v1
      * sources from real-time world weather; the ATIS-cadence sensing
-     * path is filed as `D-PASS-g3a-react-atis-cadence-sensing`. The
-     * eventual `Aerodrome.weather` rich-domain migration is filed as
-     * `D-PASS-wind-state-migrate-to-aerodrome`.
+     * path is filed as `D-PASS-g3a-react-atis-cadence-sensing`. fn-16
+     * closed `D-PASS-wind-state-migrate-to-aerodrome` by hoisting
+     * weather onto [xyz.easiersaid.twr.core.world.Aerodrome.weather];
+     * the pilot firewall surface (this field's `Map<AerodromeId,
+     * WindReport>` shape) is unchanged — only the source migrates.
      *
      * **Firewall**: a real-world cockpit input (visual / instrument
      * sensing). `FirewallPilotInputTest` enumerates the allowlist

@@ -35,9 +35,23 @@ internal fun buildPilotInput(state: SimState, aircraftId: AircraftId): PilotInpu
         atisByAerodrome = state.atisByAerodrome,
         // fn-14.1 (G3a-react R4): project just the WindReport slice from
         // each WeatherObservation. The full triple (wind, qnh, visibility)
-        // stays on the controller side — only the wind crosses the pilot
-        // firewall. Real pilots sense wind via windsock + ASI + instrument
-        // scan; the projection models that channel.
-        weatherByAerodrome = state.weatherByAerodrome.mapValues { (_, obs) -> obs.wind },
+        // stays on the entity — only the wind crosses the pilot firewall.
+        // Real pilots sense wind via windsock + ASI + instrument scan;
+        // the projection models that channel.
+        //
+        // fn-16 (R7a): source migrated from the deleted
+        // `state.weatherByAerodrome` to `state.world.aerodromes[*].weather`.
+        // **Pinned `mapNotNull` form** — preserves the pre-migration
+        // absent-key semantics exactly. An aerodrome with `weather ==
+        // null` produces NO entry (matching pre-migration behaviour
+        // where the key was simply absent). Critical for
+        // `windForMission`'s `map.size == 1` singleton-fallback path
+        // in multi-aerodrome scenarios. The `mapValues { weather?.wind
+        // ?: NotReported }` alternative was considered and rejected
+        // because it would synthesise spurious `NotReported` entries
+        // for unweathered aerodromes.
+        weatherByAerodrome = state.world.aerodromes
+            .mapNotNull { (id, a) -> a.weather?.wind?.let { id to it } }
+            .toMap(),
     )
 }

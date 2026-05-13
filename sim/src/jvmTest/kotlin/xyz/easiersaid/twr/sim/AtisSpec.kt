@@ -1,6 +1,6 @@
 package xyz.easiersaid.twr.sim
 
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
@@ -66,7 +66,6 @@ class AtisSpec {
             beliefs = emptyMap(),
             world = AviationWorld(),
             worldIndex = WorldIndex(),
-            weatherByAerodrome = emptyMap(),
         )
         val event = SimEvent.AtisIssued(time = now0, aerodrome = LOWG, atis = atis('A'))
         val (next, emitted) = step(state, event)

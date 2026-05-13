@@ -6,7 +6,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlinx.serialization.json.Json
 import xyz.easiersaid.twr.controller.ControllerView
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.controller.controllerDecide
 import xyz.easiersaid.twr.controller.observe.BeliefState

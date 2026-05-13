@@ -53,7 +53,6 @@ class FlightPlanFilingSpec {
         beliefs = emptyMap(),
         world = AviationWorld(),
         worldIndex = WorldIndex(),
-        weatherByAerodrome = emptyMap(),
     )
 
     private fun groundSpec(responsibilities: Map<AircraftId, ResponsibilityState> = emptyMap()): ControllerSpec =

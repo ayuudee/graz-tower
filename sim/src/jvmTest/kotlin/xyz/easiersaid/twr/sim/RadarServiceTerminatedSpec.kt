@@ -73,7 +73,6 @@ class RadarServiceTerminatedSpec {
         beliefs = emptyMap(),
         world = xyz.easiersaid.twr.core.world.AviationWorld(),
         worldIndex = xyz.easiersaid.twr.core.world.WorldIndex(),
-        weatherByAerodrome = emptyMap(),
     )
 
     @Test

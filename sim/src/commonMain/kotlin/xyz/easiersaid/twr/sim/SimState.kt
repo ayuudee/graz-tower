@@ -5,11 +5,12 @@ import arrow.core.left
 import arrow.core.right
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.controller.ReceivedMessage
-import xyz.easiersaid.twr.controller.WeatherObservation
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.RunwayObstruction
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.core.world.updateAerodrome
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ControllerId
@@ -65,7 +66,6 @@ data class SimState(
     val beliefs: Map<ControllerId, BeliefState>,
     val world: AviationWorld,
     val worldIndex: WorldIndex,
-    val weatherByAerodrome: Map<AerodromeId, WeatherObservation>,
     val inFlightTransmissions: Map<TransmissionId, InFlightTransmission> = emptyMap(),
     val nextTransmissionId: Long = 0L,
     val controllerInbox: Map<ControllerId, List<ReceivedMessage>> = emptyMap(),
@@ -150,12 +150,35 @@ data class SimState(
          */
         sealed interface InitError {
             /**
-             * The world has at least one [AerodromeId] with runways but no
-             * weather entry. Without weather the controller's runway-into-wind
-             * selection silently picks a default; smart-constructor refuses
-             * to create such a state.
+             * The world has at least one [AerodromeId] with runways whose
+             * `aerodrome.weather == null` (post-fold). Without weather the
+             * controller's runway-into-wind selection silently picks a
+             * default; smart-constructor refuses to create such a state.
+             *
+             * fn-16: predicate source migrated from the deleted
+             * `SimState.weatherByAerodrome` map to
+             * [xyz.easiersaid.twr.core.world.Aerodrome.weather] on the
+             * post-fold world.
              */
             data class MissingWeatherForRunwayAerodrome(
+                val aerodromeId: AerodromeId,
+            ) : InitError
+
+            /**
+             * fn-16: the caller passed a weather observation for an
+             * [AerodromeId] that is not present in `world.aerodromes`.
+             *
+             * Without this check,
+             * [xyz.easiersaid.twr.core.world.updateAerodrome]'s
+             * no-op-on-absent-id semantics (appropriate for a generic
+             * mid-run lens) would silently drop the observation, leaving
+             * the runway-bearing aerodrome with `weather == null` and
+             * triggering [MissingWeatherForRunwayAerodrome] obscurely
+             * (or — worse — vacuously passing it for non-runway-bearing
+             * aerodromes). Surface the typo directly at the construction
+             * boundary.
+             */
+            data class WeatherForUnknownAerodrome(
                 val aerodromeId: AerodromeId,
             ) : InitError
 
@@ -207,12 +230,27 @@ data class SimState(
 
         /**
          * Validating constructor. Each [InitError] variant in turn:
-         *  - every runway-bearing aerodrome has a [WeatherObservation],
+         *  - every weather key is a known aerodrome (R5b — fn-16
+         *    fail-fast on fixture-authoring typo, pre-fold),
+         *  - every runway-bearing aerodrome has a [WeatherObservation]
+         *    folded onto its [xyz.easiersaid.twr.core.world.Aerodrome.weather]
+         *    (R5a — post-fold check),
          *  - every [AircraftId] in [aircraft] is unique,
          *  - every aircraft's `positionPoint` is in `worldIndex.positions`,
          *  - every [ControllerId] in [controllers] is unique,
          *  - every controller's aerodrome exists in [world],
          *  - every aircraft a controller claims responsibility for exists in [aircraft].
+         *
+         * fn-16: the `weatherByAerodrome` parameter is folded into
+         * `world.aerodromes[id].weather` at construction time; no flat
+         * `SimState.weatherByAerodrome` field survives. Order of operations:
+         *   1. Validate every weather key is in `world.aerodromes` —
+         *      surfaces typo'd ids loudly (else
+         *      [xyz.easiersaid.twr.core.world.updateAerodrome] would
+         *      silently drop the observation).
+         *   2. Fold each `(id, obs)` into the world via the lens.
+         *   3. Validate every runway-bearing aerodrome has weather on
+         *      the post-fold world.
          *
          * Tests that genuinely don't simulate weather pass an explicit
          * `WeatherObservation(wind = WindReport.NotReported, qnh = null, visibility = null)`
@@ -226,8 +264,30 @@ data class SimState(
             controllers: List<ControllerSpec> = emptyList(),
             weatherByAerodrome: Map<AerodromeId, WeatherObservation>,
         ): Either<InitError, SimState> {
-            for ((aerodromeId, aerodrome) in world.aerodromes) {
-                if (aerodrome.runways.isNotEmpty() && aerodromeId !in weatherByAerodrome) {
+            // fn-16 (R5b): pre-fold validation — every weather key must
+            // be a known aerodrome. Without this check,
+            // `updateAerodrome`'s no-op-on-absent-id semantics would
+            // silently drop a typo'd weather entry, masking a fixture
+            // bug (and, for runway-bearing victims, surfacing it
+            // obscurely via the post-fold R5a check).
+            for ((aerodromeId, _) in weatherByAerodrome) {
+                if (aerodromeId !in world.aerodromes) {
+                    return InitError.WeatherForUnknownAerodrome(aerodromeId).left()
+                }
+            }
+            // fn-16 (R4): fold weather entries into the world.
+            // `updateAerodrome`'s no-op-on-absent-id is safe here
+            // because the loop above already confirmed every id is
+            // present.
+            val foldedWorld = weatherByAerodrome.entries.fold(world) { acc, (id, obs) ->
+                acc.updateAerodrome(id) { it.copy(weather = obs) }
+            }
+            // fn-16 (R5a): existing invariant — every runway-bearing
+            // aerodrome has weather. Predicate source migrates from the
+            // deleted flat map to `aerodrome.weather` on the post-fold
+            // world.
+            for ((aerodromeId, aerodrome) in foldedWorld.aerodromes) {
+                if (aerodrome.runways.isNotEmpty() && aerodrome.weather == null) {
                     return InitError.MissingWeatherForRunwayAerodrome(aerodromeId).left()
                 }
             }
@@ -240,7 +300,7 @@ data class SimState(
                     return InitError.AircraftPositionPointNotInIndex(ac.id, ac.positionPoint).left()
                 }
             }
-            validateControllers(controllers, world, aircraftIds)?.let { return it.left() }
+            validateControllers(controllers, foldedWorld, aircraftIds)?.let { return it.left() }
             // fn-8.1: seed per-aircraft RNG state. Sort by AircraftId.value
             // ascending so the seeding pass is deterministic regardless of
             // the caller's input list order. Each child stream is split from
@@ -260,9 +320,8 @@ data class SimState(
                 },
                 controllers = controllers.associateBy { it.id },
                 beliefs = emptyMap(),
-                world = world,
+                world = foldedWorld,
                 worldIndex = worldIndex,
-                weatherByAerodrome = weatherByAerodrome,
                 inFlightTransmissions = emptyMap(),
                 nextTransmissionId = 0L,
                 controllerInbox = emptyMap(),

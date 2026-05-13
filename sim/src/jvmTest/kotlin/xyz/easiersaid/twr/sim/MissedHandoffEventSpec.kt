@@ -55,7 +55,6 @@ class MissedHandoffEventSpec {
         beliefs = emptyMap(),
         world = AviationWorld(),
         worldIndex = WorldIndex(),
-        weatherByAerodrome = emptyMap(),
         handoffEscalations = handoffEscalations,
     )
 

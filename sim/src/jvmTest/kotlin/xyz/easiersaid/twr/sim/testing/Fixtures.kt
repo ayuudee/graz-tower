@@ -4,7 +4,7 @@ import arrow.core.nonEmptyListOf
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import xyz.easiersaid.twr.controller.WeatherObservation
+import xyz.easiersaid.twr.core.world.WeatherObservation
 import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId

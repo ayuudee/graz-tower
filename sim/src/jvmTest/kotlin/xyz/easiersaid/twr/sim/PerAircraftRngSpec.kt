@@ -61,14 +61,14 @@ class PerAircraftRngSpec {
             seed = 42L,
             worldIndex = worldIndex,
             aircraft = listOf(aircraft(acA, pointA), aircraft(acB, pointB)),
-            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.controller.WeatherObservation>(),
+            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.core.world.WeatherObservation>(),
         ).getOrElse { error("init AB failed: $it") }
 
         val ba = SimState.initial(
             seed = 42L,
             worldIndex = worldIndex,
             aircraft = listOf(aircraft(acB, pointB), aircraft(acA, pointA)),
-            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.controller.WeatherObservation>(),
+            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.core.world.WeatherObservation>(),
         ).getOrElse { error("init BA failed: $it") }
 
         // Same id → same RNG state regardless of input list order.
@@ -84,7 +84,7 @@ class PerAircraftRngSpec {
             seed = 42L,
             worldIndex = worldIndex,
             aircraft = listOf(aircraft(acA, pointA), aircraft(acB, pointB)),
-            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.controller.WeatherObservation>(),
+            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.core.world.WeatherObservation>(),
         ).getOrElse { error("init failed: $it") }
 
         // Draw on A first, then B.
@@ -178,7 +178,7 @@ class PerAircraftRngSpec {
             seed = 42L,
             worldIndex = worldIndex,
             aircraft = listOf(aircraft(acA, pointA), aircraft(acB, pointB)),
-            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.controller.WeatherObservation>(),
+            weatherByAerodrome = emptyMap<AerodromeId, xyz.easiersaid.twr.core.world.WeatherObservation>(),
         ).getOrElse { error("init failed: $it") }
 
         val originalA = state.aircraftRng(acA)

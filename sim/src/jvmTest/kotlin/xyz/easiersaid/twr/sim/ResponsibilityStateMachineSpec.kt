@@ -73,7 +73,6 @@ class ResponsibilityStateMachineSpec {
         beliefs = emptyMap(),
         world = AviationWorld(),
         worldIndex = WorldIndex(),
-        weatherByAerodrome = emptyMap(),
     )
 
     private fun towerSpec(responsibilities: Map<AircraftId, ResponsibilityState> = emptyMap()): ControllerSpec =

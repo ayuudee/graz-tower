@@ -82,6 +82,7 @@ import xyz.easiersaid.twr.controller.procedure.reconcileGroundDepartureStage
 import xyz.easiersaid.twr.controller.procedure.towerArrivalProcedure
 import xyz.easiersaid.twr.controller.procedure.towerDepartureProcedure
 import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.WeatherObservation
 
 private val PROCEDURES: Map<CommitmentKind, ProcedureSpec> by lazy {
     listOf(
