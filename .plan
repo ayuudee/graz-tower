@@ -479,9 +479,9 @@ Full exploratory adversary surface (vectors, holding, sequencing stress) not yet
 
 ---
 
-### fn-8.3 G1 closure deferments (filed 2026-05-09)
+### fn-8.3 G1 closure deferments (filed 2026-05-09; migrated to `docs/deferments.md` per fn-18.3 on 2026-05-13)
 
-These items were surfaced during fn-8.3's G1 multi-session closure pass (Phase 1 → Phase 3 round 2). Each entry below carries the full four-field contract (what-today / why-wrong / real-fix-contract / trigger) so the next implementer can build directly from `.plan`. The sister register `~/.claude/plans/pilot-firewall.md § fn-8 deferments` carries an identical copy per the user's standing register-split convention (off-repo `~/.claude/plans/` is the long-running pilot-firewall design doc that pre-dates `.plan` and continues as the architectural design home for D-PF / D-AUDIT / D-PASS items; `.plan` is the project-local backlog). On-repo readers, CI, reviewers, and clones can resolve every deferment from `.plan` alone.
+These items were surfaced during fn-8.3's G1 multi-session closure pass (Phase 1 → Phase 3 round 2). **The full four-field contracts (what-today / why-wrong / real-fix-contract / trigger) were migrated to `docs/deferments.md` per fn-18.3**; `.plan` keeps one-line pointer stubs below for discovery only. The canonical surface for every deferment ID is now `docs/deferments.md` in the repo. The sister register `~/.claude/plans/pilot-firewall.md § fn-8 deferments` is now historical / read-only for items migrated by fn-18.
 
 **D-PASS-g1-diagnostics** — see `docs/deferments.md`
 
