@@ -67,7 +67,7 @@ This is the load-bearing artifact. The convention drives every subsequent migrat
 
 ### Step 2 — Write `docs/deferments.md` (empty body except meta-deferments)
 
-**Heading discipline** (per epic Decision #7): ONLY level-3 markdown headings with the deferment-ID prefix denote a deferment entry. Prefix-organising section headings use `##` depth; non-entry placeholder text uses prose. The meta-deferment entries themselves use level-3 headings with the canonical D-PASS-deferments prefix followed by a discriminating suffix (entries, by definition). This makes the file mechanically scannable: counting level-3 headings starting with the D-prefix counts entries.
+**Heading discipline** (per epic Decision #7): ONLY level-3 markdown headings with the deferment-ID prefix denote a deferment entry. Prefix-organising section headings use `##` depth; non-entry placeholder text uses prose. The three meta-deferment entries themselves use level-3 headings with concrete discriminating IDs (see commit history for the final names). This makes the file mechanically scannable: counting level-3 headings starting with the deferment-ID prefix counts entries.
 
 **Structure** locked per epic Decision #7a — prefix subsections at h2 depth directly, no parent wrapper:
 
@@ -253,6 +253,46 @@ EOF
 ## Done summary
 fn-18.1 shipped: docs/deferments.md scaffold + docs/deferments-CONVENTION.md + AGENTS.md pointer + reference_audit_registers.md rewrite + MEMORY.md index + 3 meta-deferments filed under § D-PASS. Implementation commit 270397e; no production code touched; nine sim goldens GREEN (R14-Passed at HEAD). R4b status: confirmed (memory directory was reachable + writable; reference_audit_registers.md + MEMORY.md written). Review verdict: SHIP via flowctl trivial-diff triage (mode `triage_skip`, deterministic, reason "docs-only (3 files)") — no codex backend call needed; receipt at $TMPDIR/impl-review-receipt.json.
 ## Evidence
-- Commits:
-- Tests:
-- PRs:
+- **Commits**: `270397e` (full SHA `270397e15…` — implementation commit: docs/deferments.md scaffold + docs/deferments-CONVENTION.md + AGENTS.md pointer + memory entry rewrite + MEMORY.md refresh + 3 meta-deferments filed). flowctl-done commit followed.
+- **Tests**: `./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt --offline --no-daemon` — BUILD SUCCESSFUL pre-task at HEAD `34c9a3e`; BUILD SUCCESSFUL post-task at HEAD `270397e`. 25 actionable tasks, all UP-TO-DATE post-task (docs-only diff). Nine sim goldens GREEN. Detekt baseline unchanged.
+- **R14 outcome**: R14-Passed (gradle exits 0; nine goldens GREEN; detekt unchanged; no `@Ignore` status changes).
+- **R4a — exact replacement text for `reference_audit_registers.md`** (acceptance-bound, in-evidence per epic R4 split — populated per plan-review round 15 + codex completion-review round 1 finding "R4a evidence missing"):
+
+```markdown
+# Audit / deferments registers location
+
+The project's deferred-work register is **`docs/deferments.md`** at the repo
+root. This is the **primary** discovery surface for named `D-*` deferments
+(`D-PF.*`, `D-AUDIT.*`, `D-PASS-*`, `D-WORLD.*`) — in-repo, CI-visible,
+greppable. See `docs/deferments-CONVENTION.md` (also at repo root) for the
+decision tree, schema, status taxonomy, and lifecycle.
+
+The four buckets:
+
+- **Bucket 1 — test contract, API exists today.** `@Ignore`d test in the
+  module's `commonTest/.../DeferredContractsSpec.kt` with a real-API
+  value-flow reference. The test breaks compile loudly when the API
+  changes.
+- **Bucket 2 — API gap, API missing today.** Same file as bucket 1, but
+  test body is commented-out pseudo-code. Becomes compile-checked once
+  the API lands.
+- **Bucket 3 — multi-task scope, needs an epic.** A flow-next epic in
+  `todo` status; the docs entry's `Pinned at:` field points at the epic ID.
+- **Bucket 4 — narrative / doctrinal / cross-cutting.** `docs/deferments.md`
+  entry only, `Pinned at: narrative only`.
+
+`~/.claude/plans/pilot-firewall.md § Deferments register` is kept as the
+**historical secondary** reference for pre-Pass-17 pass-by-pass narrative —
+the user's pass notes there are richer than the `## Archive` lines in
+`docs/deferments.md` will be. Future deferments DO NOT go into
+pilot-firewall.md; they are filed in `docs/deferments.md` per the
+four-bucket model.
+
+Quick recovery: `grep -c '^### D-' docs/deferments.md` counts active +
+archived entries; `grep -nE '^### D-(PF|AUDIT|PASS|WORLD)' docs/deferments.md`
+lists every named deferment with its line number.
+```
+
+- **R4b status**: confirmed. `/Users/andrew/.claude/projects/-Users-andrew-dev-projects-graz-tower/memory/reference_audit_registers.md` written with the exact text above; `/Users/andrew/.claude/projects/-Users-andrew-dev-projects-graz-tower/memory/MEMORY.md` index refreshed to include the new pointer line. Both writes verified by reading the files back at task close.
+- **Meta-deferments filed** (R13): three entries in `docs/deferments.md § D-PASS` at task close — the canonical IDs as they exist in docs today are `map-tooling-automation`, `renumbering-discipline`, and `defer-flow-from-impl-review` (each carrying the standard `D-PASS-` prefix). Original fn-18.1 planning used longer names with a `deferments-` infix; fn-18.3 round-12 renamed in-place via `flowctl epic set-plan` + docs edits to dodge an R15 grep edge case where the shared infix produced regex prefix-fragment matches. The migration was in-place, not a re-file. Authoritative names: see commit history + the current `^### D-PASS-` headings in `docs/deferments.md`.
+- **PRs**: (none — landed directly on `main`; the 23+ commits ahead of `origin/main` will ship together when the user pushes.)

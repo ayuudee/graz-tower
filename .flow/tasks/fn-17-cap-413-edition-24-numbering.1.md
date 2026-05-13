@@ -1249,7 +1249,7 @@ missing-XML output; record loudly.
   without re-running. **Failure handling**: any failure recorded in
   `## Evidence` with full failing test name + stderr. No
   "pre-existing flakiness" waiver without master-merge-base bisect
-  evidence AND a deferment filing (`D-PASS-flaky-test-<name>`). No
+  evidence AND a deferment filing (a flaky-test deferment (`PASS-flaky-test-<name>`)). No
   silent skip / retry / exclusion.
 
 ## Done summary

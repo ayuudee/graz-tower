@@ -872,7 +872,7 @@ sections rather than expanding .1. Hard scope-creep gate.
   reproduces on master at the merge-base SHA without this epic's
   changes (record the bisect evidence in `## Evidence`), AND (b) the
   pre-existing flakiness is filed as a new deferment (e.g.
-  `D-PASS-flaky-test-<name>`). No silent skip / silent retry / silent
+  a flaky-test deferment (`PASS-flaky-test-<name>`)). No silent skip / silent retry / silent
   test exclusion — per `feedback_no_corners.md`.
 
 ## Strategy drift flagged for review
