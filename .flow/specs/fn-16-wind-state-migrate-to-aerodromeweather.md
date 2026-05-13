@@ -470,7 +470,7 @@ Deferments filed by this epic in `~/.claude/plans/pilot-firewall.md` § Defermen
 | R10 | KDoc updates landed (8 sites) | fn-16.2 |
 | R11 | Memory entry added | fn-16.2 |
 | R12 | Full build green (8 goldens, detekt baseline unchanged) | fn-16.1, fn-16.2 |
-| R13 | `.plan` (in-repo sister register) reconciled — D-PASS-wind-state closure + 7 NEW deferments appended with four-field contracts | fn-16.2 |
+| R13 | `.plan` (in-repo sister register) reconciled — D-PASS-wind-state-migrate-to-aerodrome closure + 7 NEW deferments appended with four-field contracts | fn-16.2 |
 
 ## Done summary
 

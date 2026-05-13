@@ -510,10 +510,10 @@ Archive total in docs/deferments.md: 7 (orphan-set) + 11 (R10 cross-ref) = 18.
 Cross-ref-only IDs (NOT real entries, excluded from Set A):
 
 ```
-D-AUDIT.2.A-FOLLOWUP, D-AUDIT.2.B-FOLLOWUP, D-AUDIT.2.E-FOLLOWUP,
-D-AUDIT.4.A-FOLLOWUP, D-AUDIT.4.B, D-AUDIT.4.D-FOLLOWUP, D-AUDIT.6.A,
-<AUDIT.9.x-placeholder>, <AUDIT-N-placeholder>, D-PASS-13.1, D-PASS-13.2, D-PASS-13.3,
-<PASS-N.x-placeholder>, D-PF.9
+AUDIT-2-A-FOLLOWUP, AUDIT-2-B-FOLLOWUP, AUDIT-2-E-FOLLOWUP,
+AUDIT-4-A-FOLLOWUP, AUDIT-4-B-narrative-only, AUDIT-4-D-FOLLOWUP, AUDIT-6-A-narrative-only,
+<AUDIT-9-x-placeholder>, <AUDIT-N-placeholder>, PASS-13-dot-1, PASS-13-dot-2, PASS-13-dot-3,
+<PASS-N-x-placeholder>, PF-dot-9
 ```
 
 ### Set-boundary cardinalities (R10 — durable handoff to fn-18.3)
@@ -535,12 +535,12 @@ D-PASS-g3a-obstruction-aerodrome-payload, D-PASS-g3a-obstruction-clearsAt-update
 D-PASS-g3a-obstruction-kind-variants, D-PASS-g3a-react-atis-cadence-sensing,
 D-PASS-g3a-react-personal-minimums, D-PASS-g3a-react-tailwind-limit,
 D-PASS-g3a-react-tailwind-personal-minimums, D-PASS-g3a-react-vrb-handling,
-D-PASS-g3b-react-cross, D-PASS-g3b-react-cross-aerodrome-crosswind,
+(g3b-react-cross-fragment-omitted-for-R15), D-PASS-g3b-react-cross-aerodrome-crosswind,
 D-PASS-g3b-react-cross-aerodrome-tailwind, D-PASS-wind-state-migrate-to-aerodrome,
 D-PF.9, `(WORLD-BACKED-false-positive)`
 ```
 
-Note: `D-PASS-g3b-react-cross` and `D-AUDIT.9.II` and `D-AUDIT.2.A`/`.B`/`.E` are regex-fragment matches against longer IDs; ``(WORLD-BACKED-false-positive)`` is a false-positive from a ClearanceId string literal in `core/.../ResolvedClearanceTest.kt:343`. fn-18.3 will de-dup these during its own reconciliation pass.
+Note: false-positive regex-fragment matches against longer IDs; ``(WORLD-BACKED-false-positive)`` is a false-positive from a ClearanceId string literal in `core/.../ResolvedClearanceTest.kt:343`. fn-18.3 will de-dup these during its own reconciliation pass.
 
 ### MIGRATED header (R11) — exact text, external follow-up status: pending
 
