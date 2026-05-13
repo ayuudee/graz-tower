@@ -403,6 +403,24 @@ data class Aerodrome(
      * the second consumer of the rich-world-domain principle after
      * fn-12's [Runway.obstruction]. The `D-PASS-wind-state-migrate-to-
      * aerodrome` deferment closed with this field.
+     *
+     * **Pilot-side firewall discipline.** [AviationWorld] is part of the
+     * pilot's chart surface ([xyz.easiersaid.twr.pilot.PilotInput.world]).
+     * Pilot rules MUST consume the typed wind projection through
+     * [xyz.easiersaid.twr.pilot.PilotInput.weatherByAerodrome]
+     * (`Map<AerodromeId, WindReport>`) — the pilot's real-world sensing
+     * channel is windsock + ASI + instrument scan, which gives wind only,
+     * not the full `(WindReport, qnh, visibility)` triple. Reading
+     * `world.aerodromes[id].weather` directly from pilot code bypasses
+     * the firewall projection and would smuggle QNH / visibility that
+     * the pilot has not been told via radio (ATIS) or visual cue. Same
+     * discipline as [Runway.obstruction] (fn-12) — physically reachable
+     * through `world`, but the controller event channel (not chart
+     * read) is the doctrinally-correct path. Convention enforced by
+     * code review + per-field KDoc; structural enforcement (a typed
+     * `:pilot/PilotAviationWorld` projection that strips entity-level
+     * dynamic state) is filed as
+     * `D-PASS-pilot-world-strip-dynamic-state`.
      */
     val weather: WeatherObservation? = null,
 )
