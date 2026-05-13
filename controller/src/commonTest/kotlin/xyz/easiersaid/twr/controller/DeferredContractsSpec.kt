@@ -73,7 +73,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-PASS-13_3-II RunwayLengthFailure typed surface is plumbed into DecisionTrace`() {
+    fun `PASS-13_3-II RunwayLengthFailure typed surface is plumbed into DecisionTrace`() {
         // Bucket 1: the typed-failure surface exists today; the integration
         // into `DecisionTrace.skippedActions` is the deferred wiring.
         val failure: RunwayLengthFailure = RunwayLengthFailure.RunwayTooShort(
@@ -187,7 +187,7 @@ class DeferredContractsSpec {
      */
     @Ignore
     @Test
-    fun `D-PASS-17_2 IFR procedure helpers are aerodrome-scoped (no firstNotNullOfOrNull walks)`() {
+    fun `PASS-17_2 IFR procedure helpers are aerodrome-scoped (no firstNotNullOfOrNull walks)`() {
         // Bucket 2: today the walks succeed because procedure IDs are unique
         // across the in-fixture aerodrome set; collision exposure needs a
         // multi-aerodrome procedure-ID-collision test scenario.

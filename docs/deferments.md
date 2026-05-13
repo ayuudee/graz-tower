@@ -252,7 +252,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-PASS-13.3-II-FOLLOWUP — Wire `RunwayLengthFailure` into `DecisionTrace.skippedActions`
 **Status:** blocked
-**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::D-PASS-13_3-II RunwayLengthFailure typed surface is plumbed into DecisionTrace
+**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::PASS-13_3-II RunwayLengthFailure typed surface is plumbed into DecisionTrace
 **Blocked on:** Wire of `RunwayLengthSufficient.classify(...)`'s typed result through to `SkippedAction.failure` (or sealed wrapper).
 **Why:** Pass 17 closed D-PASS-13.3 partially with the `RunwayLengthFailure` sealed surface. The trace-render integration is the narrowed remaining work — today `DecisionTrace.skippedActions` carries a static `reason: String`; the typed payload (operation, designator, runway, required vs available) is dropped.
 **Closes by:** archived when rule-trace render needs typed failure for training-feedback context.
@@ -265,7 +265,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ### D-PASS-17.2 — Sweep `firstNotNullOfOrNull` walks in IFR procedure helpers
 **Status:** blocked
-**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::D-PASS-17_2 IFR procedure helpers are aerodrome-scoped (no firstNotNullOfOrNull walks)
+**Pinned at:** controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/DeferredContractsSpec.kt::PASS-17_2 IFR procedure helpers are aerodrome-scoped (no firstNotNullOfOrNull walks)
 **Blocked on:** Multi-aerodrome scenario where IFR procedure IDs collide.
 **Why:** Pass 17 closed D-PASS-13.1 by scoping the `RunwayLengthSufficient` lookup to `ctx.world.aerodromes[ctx.view.aerodromeId]?.runways[runwayId]`. The remaining `firstNotNullOfOrNull` walks in `buildSidDepartureRoute` / `buildStarApproachRoute` / `buildArrivalJoinRoute` / `buildMissedApproachRoute` still walk the entire world — fine today because procedure IDs don't collide across LOWG / LJMB, breaks when a third aerodrome lands with a colliding ID.
 **Closes by:** archived when a multi-aerodrome procedure-ID-collision scenario lands.

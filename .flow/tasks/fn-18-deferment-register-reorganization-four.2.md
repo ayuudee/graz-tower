@@ -564,7 +564,7 @@ All four bucket-1 tests carry non-import current-API value-flow references:
 | `pilot/.../DeferredContractsSpec.kt::D-PF3 airborne-spawned ...` | `FiledPlan.Vfr(...)` construct + `assertEquals(RunwayId("16C"), filed.destinationRunway)` + `assertNotNull(filed.destinationAerodrome)` | PASS |
 | `controller/.../DeferredContractsSpec.kt::D-AUDIT7-III BeliefState ...` | `val state: BeliefState = BeliefState(); assertNull(state.activeRunway); val seeded = state.copy(activeRunway = RunwayId("16C")); assertEquals(...)` | PASS |
 | `pilot/.../DeferredContractsSpec.kt::D-AUDIT8-IV ATIS letter resolution ...` | `Map<AerodromeId, Atis>` construction with `assertEquals(2, map.size)` + `assertEquals('A', map.getValue(lowgAtis.aerodrome).letter)` | PASS |
-| `controller/.../DeferredContractsSpec.kt::D-PASS-13_3-II RunwayLengthFailure ...` | `RunwayLengthFailure.RunwayTooShort(...)` construction + `assertTrue(failure is ...)` + `assertEquals(RunwayLengthOperation.LANDING, failure.operation)` | PASS |
+| `controller/.../DeferredContractsSpec.kt::PASS-13_3-II RunwayLengthFailure ...` (test-method anchor renamed in fn-18.3 round-4 to drop `D-` prefix per CONVENTION §10; canonical entry remains `D-PASS-13.3-II-FOLLOWUP`) | `RunwayLengthFailure.RunwayTooShort(...)` construction + `assertTrue(failure is ...)` + `assertEquals(RunwayLengthOperation.LANDING, failure.operation)` | PASS |
 
 ### Orphan-test cleanup (R6)
 

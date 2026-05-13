@@ -494,9 +494,9 @@ fn-18.3 shipped: closes the deferment-register reorganization epic (fn-18). Fina
 **R15 whole-repo exhaustiveness gate:** PASS
 - `docs_duplicate_check`: PASS (no duplicate `### D-` headings in `docs/deferments.md`)
 - `docs_missing_ids_check`: PASS (every concrete repo-wide ID has a matching `### D-...` heading in docs)
-- 28 unfiled IDs are all documented exclusions:
+- 26 unfiled IDs are all documented exclusions (round-4 narrowed from 28 to 26 by renaming the two test-method aliases to drop the `D-` prefix):
   - 18 regex fragments (substrings of longer real IDs): `D-AUDIT.2.A/B/E`, `D-AUDIT.4.A/B/D`, `D-AUDIT.6.A`, `D-AUDIT.9.II`, `D-PASS-cap413`, `D-PASS-cap413-edition-23/-comparison`, `D-PASS-cap413-edition-24-rename`, `D-PASS-cap413-edition-24-retired-atc/-ga`, `D-PASS-deferments`, `D-PASS-fixture-per-plan-filing`, `D-PASS-g3a-obstruction`, `D-PASS-g3a-react`, `D-PASS-g3b-react-cross`, `D-PASS-wind-state`
-  - 2 test-method aliases **formally registered in `docs/deferments-CONVENTION.md` §10 (added round-2)**: `D-PASS-13_3-II` ↔ canonical `D-PASS-13.3-II-FOLLOWUP` (in docs L210); `D-PASS-17_2` ↔ canonical `D-PASS-17.2` (in docs L223). Aliases substitute `_` for `.` because Kotlin backtick-quoted test-method names cannot include `.`; the canonical docs heading covers the alias under the alias-handling rule (CONVENTION §10).
+  - 0 test-method aliases (round 4: renamed the two Kotlin test-method anchors to drop the `D-` prefix so they no longer match the regex; canonical entries `D-PASS-13.3-II-FOLLOWUP` and `D-PASS-17.2` remain in docs; `CONVENTION` §10 documents the no-leading-D test-method-anchor rule).
   - 5 placeholder examples: `D-AUDIT.9.x`, `D-AUDIT.N`, `D-PASS-N.x`, `D-PASS-my-feature-shape`, `D-AUDIT-g3a-react-pilot-reactive-go-around`
   - 1 false-positive: `D-WORLD-BACKED` (ClearanceId string literal in `core/.../ResolvedClearanceTest.kt` per fn-18.2 evidence)
   - 2 placeholder-fragment-filter drops: `D-PASS-cap413-edition-24-*` placeholder prefixes (auto-filtered by tail-char regex)

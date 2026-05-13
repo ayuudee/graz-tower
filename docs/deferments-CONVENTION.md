@@ -369,40 +369,42 @@ Single canonical location, no duplicates.
 
 ---
 
-## 10. Test-method-name aliases — canonical ID with `_` substituted for `.`
+## 10. Test-method-name anchors must NOT match the `D-*` regex
 
-Kotlin test-method names (backtick-quoted strings) accept most characters but
-the leading identifier of a function body cannot start with `.` and embedded
-`.` in a backticked name is awkward for tooling. For bucket-1 / bucket-2
-entries whose canonical ID contains a `.` (e.g. `D-PASS-13.3-II-FOLLOWUP`,
-`D-PASS-17.2`), the corresponding test-method name substitutes `_` for `.`,
-producing **alias forms** like `D-PASS-13_3-II` and `D-PASS-17_2`.
+When a bucket-1 / bucket-2 entry's `Pinned at:` field points at a Kotlin
+test-method name (the test-body anchor), the test-method name MUST use a
+non-matching form that DOES NOT begin with `D-PASS-` / `D-AUDIT.` / `D-PF.`
+/ `D-WORLD-` / `D-WORLD.`. The canonical ID with `D-` stays in the
+`### D-...` heading and the `Pinned at:` `<file>::<anchor>` cite uses a
+matching but `D-`-stripped anchor.
 
-**These alias forms are NOT separate deferments**: they appear in the test
-file's `fun ...()` declaration and in the entry's `Pinned at:` value (which
-quotes the test-method name verbatim for greppability), but the canonical
-ID — and the `### D-...` heading in `docs/deferments.md` — uses the dotted
-form.
+**Rationale.** R15's whole-repo grep matches every `D-*` string in `*.kt`,
+`*.md`, `.plan`. If a Kotlin test-method name contains a `D-PASS-...` or
+`D-AUDIT....` substring, that substring appears as a concrete ID in the
+repo-wide ID set and must have a `### D-...` heading in `docs/deferments.md`.
+Allowing "alias forms" would weaken R15's acceptance: the gate would pass
+while concrete `D-*` strings still lack matching docs headings.
 
-**R15 acceptance — alias handling**:
+**Convention for test-method anchors:**
 
-The R15 whole-repo exhaustiveness gate's "every concrete `D-*` ID has a
-matching `### D-...` heading" requirement is satisfied for these aliases by
-the docs entry of the **canonical (dotted) form**. The alias surfaces in the
-test file as a regex match for `D-PASS-..._...` but is **NOT** drift — it is
-the deliberately-mangled test-method spelling of the canonical ID, and the
-canonical entry covers it.
+- Drop the leading `D-` prefix on the test-method name.
+- Substitute `_` for `.` in numeric-suffixed IDs because Kotlin's backtick
+  identifier handling is fragile around `.`.
+- The `Pinned at:` field uses the form `<file>::<anchor> <short test
+  description>` where `<anchor>` is the `D-`-stripped form; the `<file>::`
+  prefix makes the anchor unambiguous.
 
-**Recognised aliases** (as of fn-18.3 closure):
+**Examples in the repo:**
 
-| Alias (test-method spelling) | Canonical (docs heading) | Reason |
-|---|---|---|
-| `D-PASS-13_3-II` | `D-PASS-13.3-II-FOLLOWUP` | Kotlin backtick-name avoids `.` |
-| `D-PASS-17_2` | `D-PASS-17.2` | Kotlin backtick-name avoids `.` |
+| Canonical (docs heading) | Test-method anchor (no `D-` prefix) |
+|---|---|
+| canonical 13.3-II-FOLLOWUP form | `PASS-13_3-II RunwayLengthFailure ...` (in `controller/.../DeferredContractsSpec.kt`) |
+| canonical 17.2 form | `PASS-17_2 IFR procedure helpers ...` (in `controller/.../DeferredContractsSpec.kt`) |
 
-New aliases land here when a new bucket-1 / bucket-2 ID containing `.` files
-its `DeferredContractsSpec.kt` test. Adding to this table is part of the
-filing pass; R15 reads this table when classifying repo-wide candidates.
+When filing a new bucket-1 / bucket-2 entry whose canonical ID contains `.`,
+follow this convention: keep the canonical `D-...` form in the `###`
+heading, strip the `D-` prefix and substitute `_` for `.` in the
+test-method name.
 
 ---
 
