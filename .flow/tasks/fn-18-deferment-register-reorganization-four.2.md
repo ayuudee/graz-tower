@@ -450,6 +450,122 @@ fn-18.2 shipped: migrated 32 OPEN pilot-firewall.md deferments into docs/deferme
 A prior worker recorded a BLOCKED: EXTERNAL_BLOCKED finding because `~/.claude/plans/pilot-firewall.md` was not present on this host. The user subsequently staged the file (122 KB, 1055 lines, 33 anchored D-* entries) at the canonical path and the task was re-claimed. The fresh worker proceeded from Step 0 and the migration shipped — see Done summary above.
 
 ## Evidence
-- Commits:
-- Tests:
-- PRs:
+
+**Commits** (fn-18.2 implementation chain):
+- `e32a275` — `docs(deferments): migrate pilot-firewall.md OPEN items + orphan-test cleanup` (migration body: docs/deferments.md populated, per-module DeferredContractsSpec.kt created for controller/protocol/sim, pilot updated, archive entries seeded).
+- `0b1d21d` — `fn-18.2 round-1 codex: clear stale BLOCKED narrative from task md` (round-1 codex fix).
+- `55bcfed` — `fn-18.2 round-2 codex: fill done summary + evidence in task spec md` (round-2 codex fix; richer summary was overwritten by `flowctl done` on the canonical summary-file content — full content remains in `flowctl show fn-18.2 --json | jq .done.summary` and the evidence JSON cited below).
+- `dd97a56` — `fn-18.2 round-3 codex: flip task .json status to done; flowctl done md state` (round-3 codex fix).
+
+**Tests** — `./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt --offline --no-daemon` → `BUILD SUCCESSFUL`. Outcome: **R14-Passed**. Nine sim goldens GREEN; detekt baseline unchanged; new `@Ignore`d tests compile (bucket 1 with real value-flow references; bucket 2 with commented-out pseudo-code only). Full log archived at `/tmp/claude-501/fn-18-2-final-verify.log` (session-local).
+
+**PRs** — none yet; fn-18 epic will surface a PR at epic close.
+
+### Locked inventory (R7) — Set A, pilot-firewall.md reconciled
+
+OPEN IDs (32) — every entry has an active `### D-...` block in `docs/deferments.md`:
+
+```
+D-AUDIT-airac-cycle-tracking, D-AUDIT-arp-proxy-runtime, D-AUDIT-ljmb-polygon,
+D-AUDIT-polygon-ctr, D-AUDIT.11, D-AUDIT.2.C-FOLLOWUP, D-AUDIT.2.F-FOLLOWUP,
+D-AUDIT.3.II-FOLLOWUP, D-AUDIT.4.A.II-FOLLOWUP, D-AUDIT.4.B-FOLLOWUP,
+D-AUDIT.4.D.II-FOLLOWUP, D-AUDIT.6.C-FOLLOWUP, D-AUDIT.7.II-FOLLOWUP,
+D-AUDIT.7.III-FOLLOWUP, D-AUDIT.8.II-FOLLOWUP, D-AUDIT.8.III-FOLLOWUP,
+D-AUDIT.8.IV-FOLLOWUP, D-AUDIT.9.II-FOLLOWUP, D-AUDIT.9.III-FOLLOWUP,
+D-AUDIT.9.IV-FOLLOWUP, D-AUDIT.9.V-FOLLOWUP, D-PASS-13.3-II-FOLLOWUP,
+D-PASS-17.1, D-PASS-17.2, D-PASS-17.3-FOLLOWUP, D-PASS-cross-aircraft-step-on,
+D-PASS-g1-diagnostics-typed-events, D-PASS-pilot-mid-tng-fullstop-recovery,
+D-PF.1, D-PF.3, D-PF.8, D-WORLD.1
+```
+
+CLOSED-from-pilot-firewall IDs (18) — every entry has a `### D-...` block under `## Archive`:
+
+```
+Orphan-test set (7, per Decision #3 + #13):
+  D-PF.2, D-PF.5, D-PF.6, D-AUDIT.3, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10
+
+R10-cross-referenced closed entries (11, surfaced by inline-grep verification):
+  D-PF.4, D-PF.7, D-AUDIT.1, D-AUDIT.2, D-AUDIT.4, D-AUDIT.6.A-FOLLOWUP,
+  D-AUDIT.7, D-AUDIT.8, D-AUDIT.9, D-AUDIT.12, D-AUDIT.14
+```
+
+Cross-ref-only IDs (NOT real entries, excluded from Set A):
+
+```
+D-AUDIT.2.A-FOLLOWUP, D-AUDIT.2.B-FOLLOWUP, D-AUDIT.2.E-FOLLOWUP,
+D-AUDIT.4.A-FOLLOWUP, D-AUDIT.4.B, D-AUDIT.4.D-FOLLOWUP, D-AUDIT.6.A,
+D-AUDIT.9.x, D-AUDIT.N, D-PASS-13.1, D-PASS-13.2, D-PASS-13.3,
+D-PASS-N.x, D-PF.9
+```
+
+### Set-boundary cardinalities (R10 — durable handoff to fn-18.3)
+
+- `|set_A_pilot_firewall|` = 53 (reconciled anchored ∪ anchor-gap-real).
+- `|set_B_inline|` = 65 (grep of `D-*` IDs across `*.kt` in `pilot/ controller/ protocol/ sim/ core/ migration/`).
+- `|set_intersection_A_and_B|` = 36 (pilot-firewall-source IDs with inline anchors — fn-18.2's R10 scope; every ID has a `docs/deferments.md` entry).
+- `|set_inline_only_for_fn_18_3|` = 29 (inline-only IDs not in Set A; fn-18.3 picks these up).
+
+`set_inline_only_for_fn_18_3` content (handoff for fn-18.3):
+
+```
+D-AUDIT.2.A, D-AUDIT.2.A-FOLLOWUP, D-AUDIT.2.B, D-AUDIT.2.E,
+D-AUDIT.4.A-FOLLOWUP, D-AUDIT.4.D-FOLLOWUP, D-AUDIT.9.II, D-PASS-13.1,
+D-PASS-13.2, D-PASS-13.3, D-PASS-cap413-2_7-principle-cite-audit,
+D-PASS-cap413-4_46-principle-cite-audit, D-PASS-continue-approach-pilot-readback,
+D-PASS-fixture-per-plan-filing-time, D-PASS-fn6-snap-derived,
+D-PASS-g3a-obstruction-aerodrome-payload, D-PASS-g3a-obstruction-clearsAt-update,
+D-PASS-g3a-obstruction-kind-variants, D-PASS-g3a-react-atis-cadence-sensing,
+D-PASS-g3a-react-personal-minimums, D-PASS-g3a-react-tailwind-limit,
+D-PASS-g3a-react-tailwind-personal-minimums, D-PASS-g3a-react-vrb-handling,
+D-PASS-g3b-react-cross, D-PASS-g3b-react-cross-aerodrome-crosswind,
+D-PASS-g3b-react-cross-aerodrome-tailwind, D-PASS-wind-state-migrate-to-aerodrome,
+D-PF.9, D-WORLD-BACKED
+```
+
+Note: `D-PASS-g3b-react-cross` and `D-AUDIT.9.II` and `D-AUDIT.2.A`/`.B`/`.E` are regex-fragment matches against longer IDs; `D-WORLD-BACKED` is a false-positive from a ClearanceId string literal in `core/.../ResolvedClearanceTest.kt:343`. fn-18.3 will de-dup these during its own reconciliation pass.
+
+### MIGRATED header (R11) — exact text, external follow-up status: pending
+
+The user-edit to `~/.claude/plans/pilot-firewall.md § Deferments register` is queued as non-blocking post-task follow-up. fn-18.2 does NOT edit the file directly and does NOT auto-flip the status to `confirmed-by-user` — that flip requires the user to independently report they have applied the edit.
+
+Exact 4-line header text (verbatim per Step 8 / Decision #12 canonical template; only `YYYY-MM-DD` is filled to today's date):
+
+```
+**MIGRATED to docs/deferments.md per fn-18 on 2026-05-13.**
+The entries below are preserved for historical context (pass-by-pass narrative).
+For the active deferment register, see `docs/deferments.md` in the repo.
+Commit history: `git log --grep "fn-18-deferment-register-reorganization-four" --oneline` in the repo.
+```
+
+### R16 per-test value-flow roll-up (R16)
+
+All four bucket-1 tests carry non-import current-API value-flow references:
+
+| Bucket-1 test | Value-flow reference | R16 |
+|---|---|---|
+| `pilot/.../DeferredContractsSpec.kt::D-PF3 airborne-spawned ...` | `FiledPlan.Vfr(...)` construct + `assertEquals(RunwayId("16C"), filed.destinationRunway)` + `assertNotNull(filed.destinationAerodrome)` | PASS |
+| `controller/.../DeferredContractsSpec.kt::D-AUDIT7-III BeliefState ...` | `val state: BeliefState = BeliefState(); assertNull(state.activeRunway); val seeded = state.copy(activeRunway = RunwayId("16C")); assertEquals(...)` | PASS |
+| `pilot/.../DeferredContractsSpec.kt::D-AUDIT8-IV ATIS letter resolution ...` | `Map<AerodromeId, Atis>` construction with `assertEquals(2, map.size)` + `assertEquals('A', map.getValue(lowgAtis.aerodrome).letter)` | PASS |
+| `controller/.../DeferredContractsSpec.kt::D-PASS-13_3-II RunwayLengthFailure ...` | `RunwayLengthFailure.RunwayTooShort(...)` construction + `assertTrue(failure is ...)` + `assertEquals(RunwayLengthOperation.LANDING, failure.operation)` | PASS |
+
+### Orphan-test cleanup (R6)
+
+All four orphan tests deleted (closures had landed full structural enforcement; no shape left unverified that would warrant conversion):
+
+- `D-PF.2` — deleted (Pass 5 closure: `RunwayAssignmentSource` sealed type + `applyPrecedence` 6×6 invariant tests in `ProcessInstructionRunwayDerivationSpec`).
+- `D-AUDIT.5` — deleted (Pass 7 closure: `ResponsibilityState` sealed type + `ResponsibilityInvariantSpec` + `ResponsibilityStateMachineSpec`).
+- `D-AUDIT.6` — deleted (Pass 11 closure: `FiledPlan` sealed + `SimEvent.FlightPlanFiled` + `FixtureLoadSpec` + `FlightPlanFilingSpec`).
+- `D-AUDIT.10` — deleted (Pass 11 closure alongside D-AUDIT.6: `FirewallFixtureNoDirectResponsibilitiesTest` E20 architectural firewall).
+
+Closed-deferment block comments deleted from `pilot/.../DeferredContractsSpec.kt` (Decision #13):
+
+- `D-PF.5` (filed-plan-only intent), `D-PF.6` (TaxiTo split), `D-AUDIT.3` (per-type runUpDurationMs).
+
+### Bucket distribution (R8) for the 32 OPEN
+
+- **Bucket 1 (4)** — test contract, current-API value-flow reference: `D-AUDIT.7.III-FOLLOWUP`, `D-AUDIT.8.IV-FOLLOWUP`, `D-PASS-13.3-II-FOLLOWUP`, `D-PF.3`.
+- **Bucket 2 (16)** — API gap, commented-out future API: `D-AUDIT.2.C-FOLLOWUP`, `D-AUDIT.2.F-FOLLOWUP`, `D-AUDIT.3.II-FOLLOWUP`, `D-AUDIT.4.A.II-FOLLOWUP`, `D-AUDIT.4.D.II-FOLLOWUP`, `D-AUDIT.6.C-FOLLOWUP`, `D-AUDIT.7.II-FOLLOWUP`, `D-AUDIT.8.II-FOLLOWUP`, `D-AUDIT.8.III-FOLLOWUP`, `D-AUDIT.9.II-FOLLOWUP`, `D-AUDIT.9.III-FOLLOWUP`, `D-AUDIT.9.IV-FOLLOWUP`, `D-AUDIT.9.V-FOLLOWUP`, `D-PASS-17.2`, `D-PF.1`, `D-WORLD.1`.
+- **Bucket 3 (0)** — multi-task epic stub: none of the pilot-firewall items required a new epic.
+- **Bucket 4 (12)** — narrative / cross-cutting: `D-AUDIT-airac-cycle-tracking`, `D-AUDIT-arp-proxy-runtime`, `D-AUDIT-ljmb-polygon`, `D-AUDIT-polygon-ctr`, `D-AUDIT.11`, `D-AUDIT.4.B-FOLLOWUP`, `D-PASS-17.1`, `D-PASS-17.3-FOLLOWUP`, `D-PASS-cross-aircraft-step-on`, `D-PASS-g1-diagnostics-typed-events`, `D-PASS-pilot-mid-tng-fullstop-recovery`, `D-PF.8`.
+
+Total 4 + 16 + 0 + 12 = 32. ✓
