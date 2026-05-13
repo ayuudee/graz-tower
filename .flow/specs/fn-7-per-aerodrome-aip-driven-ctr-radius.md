@@ -688,7 +688,7 @@ different scopes — fn-7 updates exactly one of them:
    the user's audit register, per persistent memory
    `reference_audit_registers.md`: *"D-AUDIT/D-PF/D-PASS items live
    in `~/.claude/plans/pilot-firewall.md` § Deferments register, not
-   in the project repo"*. Uses `D-AUDIT.N` numbered + `D-AUDIT-<kebab>`
+   in the project repo"*. Uses `<AUDIT-N-placeholder>` numbered + `<AUDIT-kebab-placeholder>`
    styles (mixed). **fn-7 appends one-line cross-reference pointers
    here** for each new deferment (`D-AUDIT-arp-proxy-runtime`,
    `D-AUDIT-polygon-ctr`, `D-AUDIT-airac-cycle-tracking`,

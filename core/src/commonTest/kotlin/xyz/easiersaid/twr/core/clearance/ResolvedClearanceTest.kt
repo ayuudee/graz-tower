@@ -306,7 +306,7 @@ class ResolvedClearanceTest {
         val resolved = world.resolveClearance(
             context = ClearanceResolutionContext(FixtureIds.aerodrome),
             clearance = StructuredClearance(
-                id = ClearanceId("CLR-ROUTE-WORLD-BACKED"),
+                id = ClearanceId("CLR-ROUTE-WORLDBACKED"),
                 aircraft = AircraftId("TEST123"),
                 content = ClearanceContent.Single(
                     ClearedTo(
@@ -340,7 +340,7 @@ class ResolvedClearanceTest {
         val resolved = world.resolveClearance(
             context = ClearanceResolutionContext(FixtureIds.aerodrome),
             clearance = StructuredClearance(
-                id = ClearanceId("CLR-HOLD-WORLD-BACKED"),
+                id = ClearanceId("CLR-HOLD-WORLDBACKED"),
                 aircraft = AircraftId("TEST123"),
                 content = ClearanceContent.Single(
                     HoldAt(
@@ -374,7 +374,7 @@ class ResolvedClearanceTest {
         val resolved = world.resolveClearance(
             context = ClearanceResolutionContext(FixtureIds.aerodrome),
             clearance = StructuredClearance(
-                id = ClearanceId("CLR-APPROACH-WORLD-BACKED"),
+                id = ClearanceId("CLR-APPROACH-WORLDBACKED"),
                 aircraft = AircraftId("TEST123"),
                 content = ClearanceContent.Single(
                     ClearedApproach(
@@ -417,7 +417,7 @@ class ResolvedClearanceTest {
         val resolved = world.resolveClearance(
             context = ClearanceResolutionContext(FixtureIds.aerodrome),
             clearance = StructuredClearance(
-                id = ClearanceId("CLR-JOIN-CIRCUIT-WORLD-BACKED"),
+                id = ClearanceId("CLR-JOIN-CIRCUIT-WORLDBACKED"),
                 aircraft = AircraftId("TEST123"),
                 content = ClearanceContent.Single(
                     JoinCircuit(

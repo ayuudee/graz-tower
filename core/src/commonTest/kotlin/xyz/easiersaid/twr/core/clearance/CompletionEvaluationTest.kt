@@ -164,7 +164,7 @@ class CompletionEvaluationTest {
         val resolved = world.resolveClearance(
             context = ClearanceResolutionContext(FixtureIds.aerodrome),
             clearance = structuredClearance(
-                id = "CLR-ROUTE-WORLD-BACKED",
+                id = "CLR-ROUTE-WORLDBACKED",
                 domain = ClearanceDomain.ROUTE,
                 content = ClearanceContent.Single(
                     ClearedTo(
@@ -206,7 +206,7 @@ class CompletionEvaluationTest {
         val resolved = world.resolveClearance(
             context = ClearanceResolutionContext(FixtureIds.aerodrome),
             clearance = structuredClearance(
-                id = "CLR-APPROACH-WORLD-BACKED",
+                id = "CLR-APPROACH-WORLDBACKED",
                 domain = ClearanceDomain.ROUTE,
                 content = ClearanceContent.Single(
                     ClearedApproach(

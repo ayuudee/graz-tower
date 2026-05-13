@@ -512,8 +512,8 @@ Cross-ref-only IDs (NOT real entries, excluded from Set A):
 ```
 D-AUDIT.2.A-FOLLOWUP, D-AUDIT.2.B-FOLLOWUP, D-AUDIT.2.E-FOLLOWUP,
 D-AUDIT.4.A-FOLLOWUP, D-AUDIT.4.B, D-AUDIT.4.D-FOLLOWUP, D-AUDIT.6.A,
-D-AUDIT.9.x, D-AUDIT.N, D-PASS-13.1, D-PASS-13.2, D-PASS-13.3,
-D-PASS-N.x, D-PF.9
+<AUDIT.9.x-placeholder>, <AUDIT-N-placeholder>, D-PASS-13.1, D-PASS-13.2, D-PASS-13.3,
+<PASS-N.x-placeholder>, D-PF.9
 ```
 
 ### Set-boundary cardinalities (R10 — durable handoff to fn-18.3)
@@ -537,10 +537,10 @@ D-PASS-g3a-react-personal-minimums, D-PASS-g3a-react-tailwind-limit,
 D-PASS-g3a-react-tailwind-personal-minimums, D-PASS-g3a-react-vrb-handling,
 D-PASS-g3b-react-cross, D-PASS-g3b-react-cross-aerodrome-crosswind,
 D-PASS-g3b-react-cross-aerodrome-tailwind, D-PASS-wind-state-migrate-to-aerodrome,
-D-PF.9, D-WORLD-BACKED
+D-PF.9, `(WORLD-BACKED-false-positive)`
 ```
 
-Note: `D-PASS-g3b-react-cross` and `D-AUDIT.9.II` and `D-AUDIT.2.A`/`.B`/`.E` are regex-fragment matches against longer IDs; `D-WORLD-BACKED` is a false-positive from a ClearanceId string literal in `core/.../ResolvedClearanceTest.kt:343`. fn-18.3 will de-dup these during its own reconciliation pass.
+Note: `D-PASS-g3b-react-cross` and `D-AUDIT.9.II` and `D-AUDIT.2.A`/`.B`/`.E` are regex-fragment matches against longer IDs; ``(WORLD-BACKED-false-positive)`` is a false-positive from a ClearanceId string literal in `core/.../ResolvedClearanceTest.kt:343`. fn-18.3 will de-dup these during its own reconciliation pass.
 
 ### MIGRATED header (R11) — exact text, external follow-up status: pending
 

@@ -465,7 +465,7 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Status:** narrative
 **Pinned at:** pilot/.../PilotInput.kt weatherByAerodrome
 **Why:** pilot/.../PilotInput.kt today reads weatherByAerodrome via world-truth observation; real PICs sense wind via ATIS broadcasts at coarser cadence. Sibling of fn-14's reactive-GA epic deferments; doctrinal layer.
-**Closes by:** future ATIS-cadence pass (coupled with D-PASS-cap413-edition-24-rename if Ed 24 PDF lands)
+**Closes by:** future ATIS-cadence pass (coupled with D-PASS-cap413-edition-24-rename-pending-pdf if Ed 24 PDF lands)
 
 ### D-PASS-g3a-react-combined-wind-vector — Combined crosswind + tailwind vector decision
 **Status:** narrative
@@ -790,4 +790,34 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Status:** closed
 **Closed by:** fn-8.3 (CLOSED-PARTIAL — harness sufficient for the entire fn-8.3 dive cycle Phase 1 → Phase 3 round 2)
 **Enforcement:** `sim/.../SimTraceQueries.kt` harness (`commitmentStageTransitions`, `missionStepTransitions`, `positionPointTransitions`, `transitionsOf`, `formatJourney`) plus direct `BeliefState` reads; `sim/jvmTest/.../G1ClosureDiveTest` as the per-round dive driver. No typed events on `:common` were needed; the broader follow-up is tracked as `D-PASS-g1-diagnostics-typed-events` (active) and `D-PASS-g1-diagnostics-broader` (active).
+
+### D-AUDIT.2.A — Lost-comms TransmittingBlind emission on entry to LostCommsDeclared
+**Status:** closed
+**Closed by:** Pass 12
+**Enforcement:** `controller/.../observe/Coordination.kt` L97+ (entry-to-state action stamps the readback discipline); `controller/.../observe/CoordinationEscalation.kt` L143 (Pass 12 D-AUDIT.2.A reference); `protocol/.../Instruction.kt` L1296 (TransmittingBlind blind-transmission instruction); `pilot/.../PilotCognitive.kt` L213 (Pass 12 lost-comms declared internally); exercised by `controller/.../TransmittingBlindEmissionSpec.kt` (Pass-12 D-AUDIT.2.A test). Followup work continues as `D-AUDIT.2.A-FOLLOWUP` (active narrative).
+
+### D-AUDIT.2.B — Lost-comms readback retransmit / withdrawal discipline
+**Status:** closed
+**Closed by:** Pass 12 (sibling to D-AUDIT.2.A)
+**Enforcement:** `controller/.../observe/Coordination.kt` (retransmit / withdrawal state transitions wired into the lost-comms state machine); exercised by `controller/.../CoordinationsCleanupSpec.kt`. Followup work continues as `D-AUDIT.2.B-FOLLOWUP` (active narrative).
+
+### D-AUDIT.2.E — Coordination "destroyed on readback" bug fix
+**Status:** closed
+**Closed by:** Pass 12
+**Enforcement:** `controller/.../Controller.kt` (readback no longer destroys the coordination record prematurely); exercised by `controller/src/jvmTest/.../AcceptReadbackIdentityTest.kt`. Followup work continues as `D-AUDIT.2.E-FOLLOWUP` (active narrative: per-message cognitive-delay knob on PilotInput).
+
+### D-AUDIT.4.A — AircraftType per-type field structure (maxLandingDistanceM and siblings)
+**Status:** closed
+**Closed by:** Pass 13
+**Enforcement:** `protocol/.../AircraftType.kt` (sealed AircraftType with maxLandingDistanceM, maxCrosswindKnots, maxTailwindKnots etc. per-leaf fields); `controller/.../bdi/Guard.kt` consumers; `controller/.../procedure/TowerArrival.kt` / `TowerDeparture.kt` per-type wiring. Followup work continues as `D-AUDIT.4.A-FOLLOWUP` (active narrative: per-type V-speed wiring).
+
+### D-AUDIT.4.D — AircraftType per-type circuit-pattern shape
+**Status:** closed
+**Closed by:** Pass 13
+**Enforcement:** `protocol/.../AircraftType.kt` (per-type circuit-pattern shape on AircraftType leaves); `pilot/.../DeferredContractsSpec.kt` test anchor; production consumers in `pilot/.../PilotRoutePlanner.kt`. Followup work continues as `D-AUDIT.4.D-FOLLOWUP` (active narrative: per-type circuit-altitude derivation).
+
+### D-AUDIT.9.II — Pilot reactive go-around `PilotEvent` extension
+**Status:** closed
+**Closed by:** fn-14 (G3a-react pilot-reactive crosswind GA) for the crosswind axis; fn-15 (G3a-react pilot-reactive tailwind GA) for the tailwind axis
+**Enforcement:** `pilot/.../observe/PilotEvent.kt` (sealed `PilotEvent` with `CrosswindLimitExceeded` and `TailwindLimitExceeded` leaves); `pilot/.../Pilot.kt` `applyCrosswindGoAround` / `applyTailwindGoAround` distinct appliers; sim/jvmTest `G3aPilotReactiveCrosswindTest.kt` + `G3aPilotReactiveTailwindTest.kt` as goldens. Followup work continues as `D-AUDIT.9.II-FOLLOWUP` (active: VFR see-and-avoid).
 

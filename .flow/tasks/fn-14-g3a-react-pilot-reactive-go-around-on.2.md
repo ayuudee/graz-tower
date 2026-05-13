@@ -40,7 +40,7 @@ Per codex plan review issue #8: this task does **not** add event-tracing instrum
   - Sibling test class docstrings (LowgGoldenTest, G1TwoAircraftCircuitsTest, G1TwoAircraftMinimalSpec, G2CrossAerodromeVfrTest, G3aPilotTrainedGoAroundTest, G3aRunwayObstructionTest, G3aRunwayObstructionContinueApproachTest) — `@see G3aPilotReactiveCrosswindTest` cross-ref.
 
 - **MODIFY (auxiliary — optional, repo-external)**
-  - `~/.claude/plans/pilot-firewall.md` — Deferments register: mark `D-AUDIT-g3a-react-pilot-reactive-go-around` (or equivalent) as closed by fn-14 with commit SHA. **Optional / non-acceptance**: this file lives outside the repo and cannot be validated from CI. Treat as best-effort housekeeping; the load-bearing closure record is the flow epic + git commit history.
+  - `~/.claude/plans/pilot-firewall.md` — Deferments register: mark `(legacy-register-anchor)` (or equivalent) as closed by fn-14 with commit SHA. **Optional / non-acceptance**: this file lives outside the repo and cannot be validated from CI. Treat as best-effort housekeeping; the load-bearing closure record is the flow epic + git commit history.
 
 ## Approach (numbered Steps)
 
@@ -113,7 +113,7 @@ If the GA interrupt path regresses for an unexpected reason, root-cause (do NOT 
 - Confirm fn-12.3's test class name and copy its two-transition structure.
 - Confirm fn-11.3's LOWG fixture pattern.
 - Confirm controller stage names: `LandingClearanceIssued`, `AwaitLandedObserved`, `TowerArrivalStage.AwaitDownwind`.
-- Identify the auxiliary deferment register entry (likely `D-AUDIT-g3a-react-pilot-reactive-go-around` per fn-11 deferments).
+- Identify the auxiliary deferment register entry (likely `(legacy-register-anchor)` per fn-11 deferments).
 
 ## Key context
 

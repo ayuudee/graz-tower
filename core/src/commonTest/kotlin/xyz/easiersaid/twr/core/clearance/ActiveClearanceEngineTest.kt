@@ -521,7 +521,7 @@ class ActiveClearanceEngineTest {
             world.resolveClearance(
                 context = ClearanceResolutionContext(FixtureIds.aerodrome),
                 clearance = structuredClearance(
-                    id = "APPROACH-WORLD-BACKED",
+                    id = "APPROACH-WORLDBACKED",
                     domain = ClearanceDomain.ROUTE,
                     content = ClearanceContent.Single(
                         ClearedApproach(
@@ -547,7 +547,7 @@ class ActiveClearanceEngineTest {
 
         assertTrue(
             reconciled.terminalClearances.any { managed ->
-                managed.source.id.value == "APPROACH-WORLD-BACKED" &&
+                managed.source.id.value == "APPROACH-WORLDBACKED" &&
                     managed.status == ClearanceStatus.COMPLETED
             }
         )
