@@ -445,9 +445,46 @@ EOF
 fn-18.3 picks up the remaining migration sources (fn-14/15/17 epic-spec siblings + inline-only IDs that aren't pilot-firewall.md-sourced). The schema, conventions, and per-module DeferredContractsSpec.kt locations established by fn-18.1/.2 apply unchanged. fn-18.3 also updates fn-14/15/17 epic specs to redirect their `## Deferments register` sections at `docs/deferments.md` (R12).
 
 ## Done summary
-
 _(filled at done-time, including: total IDs migrated, per-bucket counts, orphan-test resolutions, MIGRATED header status — confirmed or pending follow-up)_
 
+Blocked:
+## BLOCKED: EXTERNAL_BLOCKED
+
+**Task:** fn-18-deferment-register-reorganization-four.2
+
+**Summary:** Canonical source `~/.claude/plans/pilot-firewall.md` is not accessible from this machine. The entire `~/.claude/plans/` directory does not exist on this host (verified via `find /Users/andrew/.claude -maxdepth 3 -type d` and `find / -maxdepth 5 -name "pilot-firewall.md"` — no matches anywhere on the filesystem).
+
+**Why this blocks the task:** fn-18.2 Step 1 (locked inventory) hard-requires the file as the AUTHORITATIVE reconciled set (`set_A_pilot_firewall`). Per the task spec:
+
+> Set A: pilot-firewall.md IDs — the AUTHORITATIVE reconciled set from the inventory step above (anchored grep UNION anchor-gap real entries; per plan-review round 17 + 18 — codex finding "Set A still uses anchored grep instead of reconciled artifact"). DO NOT re-grep the anchored form here; that contradicts the reconciled inventory.
+
+The grep against pilot-firewall.md is also the only source for the per-ID Status (OPEN / DONE / CLOSED-PARTIAL / PENDING / BLOCKED) and for the schema-fill fields the migration needs (`Why today / Why wrong` → `Why:`; `Real-fix contract` → `Contract:`; `Trigger` → `Blocked on:` / `Closes by:`). The fail-loud rule in Step 1 explicitly forbids substituting unknown statuses.
+
+**What I confirmed I can see (the inline-side):**
+- `docs/deferments.md` scaffold and `docs/deferments-CONVENTION.md` exist per fn-18.1
+- Inline `D-*` grep across `pilot/ controller/ protocol/ sim/ core/ migration/` yields 60 unique IDs (recorded for future reference but cannot stand in for the authoritative source)
+- `.plan` carries 8 D-PASS entries (not the ~22-32 from pilot-firewall.md)
+- No `reference_audit_registers.md` in `.flow/memory/` either (the auto-memory entry mentioned in the parent's context is not present locally)
+
+**What's needed to unblock:**
+The user makes `~/.claude/plans/pilot-firewall.md` readable from this session. Options:
+1. Sync the file from the machine where it lives.
+2. Stage at a repo-internal scratch path (e.g. `$TMPDIR/pilot-firewall.md`) for the duration of fn-18.2's execution and update the task spec's Files-READ pointer.
+3. Paste the relevant `§ Deferments register` section into a transient file the agent can read.
+
+Once accessible, the task picks up from Step 0 (baseline capture) → Step 1 (two-pass inventory) → through to Step 9.
+
+**Impact:**
+- fn-18.2 cannot ship.
+- fn-18.3 depends on fn-18.2's evidence-JSON `set_inline_only_for_fn_18_3` to scope its inline-only migration — also blocked.
+- fn-18 epic cannot close.
+- `.flow/HANDOFF.md` already notes fn-18 is the meta-epic for next-session execution.
+
+**No code touched.** Git working tree contains only the pre-existing dirty state called out in the parent context (`research/tools/requirements-spike/*` modifications + untracked source_processing_queue subdir) plus the in-progress `fn-18-deferment-register-reorganization-four.1.md` done-summary backfill that the parent had already staged. No fn-18.2 work was started — the block was triggered at the re-anchor / pre-implementation investigation phase before any edits.
+
+**Suggested next action for the parent:** Surface this block to the user, get the file accessible, then re-claim fn-18.2 in a fresh worker call.
 ## Evidence
 
-_(filled at done-time; include MIGRATED header status — user confirmation OR pending-follow-up note)_
+- Commits:
+- Tests:
+- PRs:

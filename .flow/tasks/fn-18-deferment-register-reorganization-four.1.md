@@ -251,9 +251,8 @@ EOF
 - [ ] **R14** — Recorded as one of two outcomes per epic Decision #R14: **R14-Passed** (gradle exits 0; nine goldens GREEN; detekt unchanged; no `@Ignore` status changes) OR **R14-NoNewRegression** (baseline was already red; task evidence records base SHA + exact failing tests at start and proves no new failures).
 
 ## Done summary
-
-_(filled at done-time)_
-
+fn-18.1 shipped: docs/deferments.md scaffold + docs/deferments-CONVENTION.md + AGENTS.md pointer + reference_audit_registers.md rewrite + MEMORY.md index + 3 meta-deferments filed under § D-PASS. Implementation commit 270397e; no production code touched; nine sim goldens GREEN (R14-Passed at HEAD). R4b status: confirmed (memory directory was reachable + writable; reference_audit_registers.md + MEMORY.md written). Review verdict: SHIP via flowctl trivial-diff triage (mode `triage_skip`, deterministic, reason "docs-only (3 files)") — no codex backend call needed; receipt at $TMPDIR/impl-review-receipt.json.
 ## Evidence
-
-_(filled at done-time)_
+- Commits:
+- Tests:
+- PRs:
