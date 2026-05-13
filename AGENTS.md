@@ -489,7 +489,7 @@ wiki/       Shared knowledge base — domain knowledge, data sources, design dec
 
 # Project Plan
 
-`docs/deferments.md` is the project-wide deferments register — the canonical discovery point for named `D-*` deferments (`D-PF.*`, `D-AUDIT.*`, `D-PASS-*`, `D-WORLD.*`) organised by the four-bucket model (test contract / API gap / multi-task epic / narrative). See `docs/deferments-CONVENTION.md` for the decision tree.
+`docs/deferments.md` is the project-wide deferments register — the canonical discovery point for named D-prefixed deferments (D-PF, D-AUDIT, D-PASS, D-WORLD prefix families) organised by the four-bucket model (test contract / API gap / multi-task epic / narrative). See `docs/deferments-CONVENTION.md` for the decision tree.
 
 `.plan` remains the canonical backlog for ordinary known issues with `Impact: H/M/L` ratings (short-ID format: `B3`, `IFR-1`, `RR-*`, `M*`). Boundary: if the item has a named `D-*` prefix with a real-fix contract (eventual API shape, blocked-on prerequisite, named closure trigger), it lives in `docs/deferments.md`. Otherwise it lives in `.plan`.
 
