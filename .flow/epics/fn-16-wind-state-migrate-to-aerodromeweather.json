@@ -15,7 +15,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-16-wind-state-migrate-to-aerodromeweather.md",
-  "status": "open",
+  "status": "done",
   "title": "Wind-state migrate to Aerodrome.weather entity",
-  "updated_at": "2026-05-13T13:07:40.444657Z"
+  "updated_at": "2026-05-13T14:04:06.988943Z"
 }
