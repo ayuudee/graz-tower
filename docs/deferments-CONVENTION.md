@@ -369,6 +369,43 @@ Single canonical location, no duplicates.
 
 ---
 
+## 10. Test-method-name aliases — canonical ID with `_` substituted for `.`
+
+Kotlin test-method names (backtick-quoted strings) accept most characters but
+the leading identifier of a function body cannot start with `.` and embedded
+`.` in a backticked name is awkward for tooling. For bucket-1 / bucket-2
+entries whose canonical ID contains a `.` (e.g. `D-PASS-13.3-II-FOLLOWUP`,
+`D-PASS-17.2`), the corresponding test-method name substitutes `_` for `.`,
+producing **alias forms** like `D-PASS-13_3-II` and `D-PASS-17_2`.
+
+**These alias forms are NOT separate deferments**: they appear in the test
+file's `fun ...()` declaration and in the entry's `Pinned at:` value (which
+quotes the test-method name verbatim for greppability), but the canonical
+ID — and the `### D-...` heading in `docs/deferments.md` — uses the dotted
+form.
+
+**R15 acceptance — alias handling**:
+
+The R15 whole-repo exhaustiveness gate's "every concrete `D-*` ID has a
+matching `### D-...` heading" requirement is satisfied for these aliases by
+the docs entry of the **canonical (dotted) form**. The alias surfaces in the
+test file as a regex match for `D-PASS-..._...` but is **NOT** drift — it is
+the deliberately-mangled test-method spelling of the canonical ID, and the
+canonical entry covers it.
+
+**Recognised aliases** (as of fn-18.3 closure):
+
+| Alias (test-method spelling) | Canonical (docs heading) | Reason |
+|---|---|---|
+| `D-PASS-13_3-II` | `D-PASS-13.3-II-FOLLOWUP` | Kotlin backtick-name avoids `.` |
+| `D-PASS-17_2` | `D-PASS-17.2` | Kotlin backtick-name avoids `.` |
+
+New aliases land here when a new bucket-1 / bucket-2 ID containing `.` files
+its `DeferredContractsSpec.kt` test. Adding to this table is part of the
+filing pass; R15 reads this table when classifying repo-wide candidates.
+
+---
+
 ## Cross-references
 
 - `docs/deferments.md` — the live index.
