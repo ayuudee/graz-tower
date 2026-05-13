@@ -104,11 +104,12 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *
  * **What G3a-react distinctively pins:**
  *  - **World-only test trigger via wind:** the test authors
- *    `state.weatherByAerodrome[LOWG]` directly through
- *    `runUntilWithStateTrace`'s `onAfterEvent` hook. The pilot reads
- *    the new wind on the next `PilotDecisionTick` via `buildPilotInput`'s
- *    `weatherByAerodrome = state.weatherByAerodrome.mapValues { obs.wind }`
- *    projection (fn-14.1's `PilotWiring` wiring). No
+ *    `state.world.aerodromes[LOWG].weather` directly through
+ *    `runUntilWithStateTrace`'s `onAfterEvent` hook (via
+ *    `updateAerodrome` lens — fn-16). The pilot reads the new wind on
+ *    the next `PilotDecisionTick` via `buildPilotInput`'s
+ *    `mapNotNull { (id, a) -> a.weather?.wind?.let { id to it } }`
+ *    projection (fn-14.1's `PilotWiring` wiring, fn-16 R7a source). No
  *    `PilotEvent.CrosswindLimitExceeded` injection, no direct
  *    `PilotInput.weatherByAerodrome` mutation outside the sim wiring,
  *    no `mission` mutation bypassing the recognition→apply pipeline.
@@ -119,7 +120,7 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *    = false` and `var crosswindClearedToLimit = false` ensure each
  *    transition fires exactly once.
  *  - **End-to-end pilot-side reactive stack:** world weather author →
- *    `state.weatherByAerodrome` mutation → `PilotWiring.buildPilotInput`
+ *    `world.aerodromes[id].weather` mutation → `PilotWiring.buildPilotInput`
  *    projects to `WindReport` → `pilotDecide`'s `windForMission`
  *    resolves aerodrome key → `derivePilotEvent`'s crosswind branch
  *    fires `CrosswindLimitExceeded` → `applyCrosswindGoAround` Tick A
@@ -154,7 +155,7 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *      phase between the wind-shift cycle and the wind-recovery cycle;
  *      the aircraft does NOT touch down on the GA'd approach.
  *  - **World-weather transition pin:** exactly two transitions in the
- *    aerodrome-keyed `SimState.weatherByAerodrome[LOWG]` slice — wind
+ *    aerodrome-keyed `world.aerodromes[LOWG].weather` slice — wind
  *    crosses past limit (triggers GA), wind returns within limits
  *    (enables recovery). Via [weatherTransitions]; **aerodrome-keyed
  *    only — NO controller belief slice** (weather is world-state, not
@@ -207,7 +208,7 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *      pilot-reactive POH/AFH recognition axis (fn-15 — closes the
  *      second pilot-reactive recognition axis as the fifth reactive-GA
  *      path). Same fixture / same two-transition
- *      `state.weatherByAerodrome[LOWG]` pattern / same three-layer pin
+ *      `world.aerodromes[LOWG].weather` pattern / same three-layer pin
  *      shape; distinguishing surface is the recognition axis (tailwind
  *      component vs crosswind component) and the doctrinal regime
  *      (C172 AFH-advisory 10 kt tailwind vs C172 POH-demonstrated 15 kt
@@ -523,7 +524,7 @@ class G3aPilotReactiveCrosswindTest {
         // [weatherTransitions]'s KDoc.
         val weatherTrans = trace.weatherTransitions(lowg)
         check(weatherTrans.size == 2) {
-            "Expected exactly two transitions in SimState.weatherByAerodrome[$lowg] " +
+            "Expected exactly two transitions in world.aerodromes[$lowg].weather " +
                 "(crosswind authored + cleared), observed ${weatherTrans.size}. " +
                 "More than two would indicate the one-shot guards regressed; fewer than two " +
                 "indicates either the authorship hook didn't fire (covered by the defensive " +

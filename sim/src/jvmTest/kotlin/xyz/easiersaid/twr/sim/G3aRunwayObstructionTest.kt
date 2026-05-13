@@ -96,7 +96,7 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    reactive-GA path). Same fixture, same world-only-trigger
  *    discipline (one-shot `onAfterEvent` authorship). Distinguishing
  *    surface is the world-state slice mutated: G3a-react authors
- *    `state.weatherByAerodrome[LOWG]` (a two-transition pattern —
+ *    `world.aerodromes[LOWG].weather` (a two-transition pattern —
  *    20 kt crosswind, then back to headwind) while G3a-obstruction
  *    authors `runway.obstruction`. Distinguishing rule path: G3a-react
  *    is **pilot-side** (`derivePilotEvent`'s crosswind branch +
@@ -112,7 +112,7 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    **pilot-side reactive** axis (fn-15 — closes the second pilot-
  *    reactive POH/AFH recognition axis as the fifth reactive-GA path).
  *    Same fixture, same world-only-trigger discipline; same
- *    `state.weatherByAerodrome[LOWG]` two-transition pattern as
+ *    `world.aerodromes[LOWG].weather` two-transition pattern as
  *    G3a-react-crosswind. Distinguishing surface is the recognition
  *    axis (`derivePilotEvent`'s tailwind branch +
  *    `applyTailwindGoAround` vs the crosswind sibling's branch +

@@ -54,7 +54,7 @@ import xyz.easiersaid.twr.protocol.Wind
  *    wind shift whose crosswind component on the active runway exceeds
  *    the aircraft type's POH-derived `AircraftType.maxCrosswindKnots`
  *    (C172 = 15 kt); same fixture, distinguishing surface is the two-
- *    transition `state.weatherByAerodrome[LOWG]` mutation via
+ *    transition `world.aerodromes[LOWG].weather` mutation via
  *    `runUntilWithStateTrace`'s `onAfterEvent` hook per
  *    `feedback_world_only_test_triggers.md` — first one-shot authors
  *    20 kt direct crosswind to trigger the recognition, second one-shot
@@ -73,7 +73,7 @@ import xyz.easiersaid.twr.protocol.Wind
  *    FCOM Limitations §1 hard operational limitation — the per-type
  *    doctrinal severity asymmetry surfaces only on the tailwind axis,
  *    not on the crosswind axis); same fixture, same two-transition
- *    `state.weatherByAerodrome[LOWG]` discipline as G3a-react-crosswind
+ *    `world.aerodromes[LOWG].weather` discipline as G3a-react-crosswind
  *    via `onAfterEvent`; first one-shot authors 15 kt direct tailwind
  *    `((runwayHeading + 180) % 360 clamped 0→360)` to trigger
  *    recognition (5 kt margin above C172's 10 kt advisory), second

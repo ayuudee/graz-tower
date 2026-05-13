@@ -145,16 +145,17 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *
  * **What G3a-react-tailwind distinctively pins:**
  *  - **World-only test trigger via wind:** the test authors
- *    `state.weatherByAerodrome[LOWG]` directly through
- *    `runUntilWithStateTrace`'s `onAfterEvent` hook. The pilot reads
- *    the new wind on the next `PilotDecisionTick` via `buildPilotInput`'s
- *    `weatherByAerodrome = state.weatherByAerodrome.mapValues { obs.wind }`
- *    projection (fn-14.1's `PilotWiring` wiring, reused unchanged for
- *    the tailwind axis). No `PilotEvent.TailwindLimitExceeded`
- *    injection, no direct `PilotInput.weatherByAerodrome` mutation
- *    outside the sim wiring, no `mission` mutation bypassing the
- *    recognition→apply pipeline. Per
- *    `feedback_world_only_test_triggers.md`.
+ *    `state.world.aerodromes[LOWG].weather` directly through
+ *    `runUntilWithStateTrace`'s `onAfterEvent` hook (via
+ *    `updateAerodrome` lens — fn-16). The pilot reads the new wind on
+ *    the next `PilotDecisionTick` via `buildPilotInput`'s
+ *    `mapNotNull { (id, a) -> a.weather?.wind?.let { id to it } }`
+ *    projection (fn-14.1's `PilotWiring` wiring, fn-16 R7a source,
+ *    reused unchanged for the tailwind axis). No
+ *    `PilotEvent.TailwindLimitExceeded` injection, no direct
+ *    `PilotInput.weatherByAerodrome` mutation outside the sim wiring,
+ *    no `mission` mutation bypassing the recognition→apply pipeline.
+ *    Per `feedback_world_only_test_triggers.md`.
  *  - **Two-transition world-weather authorship pattern:** one-shot wind
  *    shift past limit (triggers GA), then one-shot wind return within
  *    limit (enables recovery landing). Guards `var tailwindAuthored
@@ -173,7 +174,7 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *    peek into pilot state or controller belief beyond what crosses
  *    the radio.
  *  - **End-to-end pilot-side reactive stack** (tailwind axis): world
- *    weather author → `state.weatherByAerodrome` mutation →
+ *    weather author → `world.aerodromes[id].weather` mutation →
  *    `PilotWiring.buildPilotInput` projects to `WindReport` →
  *    `pilotDecide`'s `windForMission` resolves aerodrome key →
  *    `derivePilotEvent`'s tailwind branch fires `TailwindLimitExceeded`
@@ -223,7 +224,7 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *      phase between the wind-shift cycle and the wind-recovery cycle;
  *      the aircraft does NOT touch down on the GA'd approach.
  *  - **World-weather transition pin:** exactly two transitions in the
- *    aerodrome-keyed `SimState.weatherByAerodrome[LOWG]` slice — wind
+ *    aerodrome-keyed `world.aerodromes[LOWG].weather` slice — wind
  *    crosses past limit (triggers GA), wind returns within limit
  *    (enables recovery). Via [weatherTransitions]; **aerodrome-keyed
  *    only — NO controller belief slice** (weather is world-state, not
@@ -645,7 +646,7 @@ class G3aPilotReactiveTailwindTest {
         // [weatherTransitions]'s KDoc.
         val weatherTrans = trace.weatherTransitions(lowg)
         check(weatherTrans.size == 2) {
-            "Expected exactly two transitions in SimState.weatherByAerodrome[$lowg] " +
+            "Expected exactly two transitions in world.aerodromes[$lowg].weather " +
                 "(tailwind authored + cleared), observed ${weatherTrans.size}. " +
                 "More than two would indicate the one-shot guards regressed; fewer than two " +
                 "indicates either the authorship hook didn't fire (covered by the defensive " +

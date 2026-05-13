@@ -89,7 +89,7 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    maximum demonstrated crosswind (fn-14). Closes the G3a trilogy
  *    as the fourth reactive-GA path. Same fixture, same world-only-
  *    trigger discipline; distinguishing surface is the
- *    `state.weatherByAerodrome[LOWG]` mutation (vs trained's mission
+ *    `world.aerodromes[LOWG].weather` mutation (vs trained's mission
  *    goal authorship; vs obstruction's `runway.obstruction` mutation).
  *    The first pilot-side reactive recognition driven by world
  *    weather, via `derivePilotEvent`'s crosswind branch +
@@ -99,7 +99,7 @@ import xyz.easiersaid.twr.sim.testing.transitionsOf
  *    by a world-authored wind shift past the C172's **AFH-advisory**
  *    10 kt tailwind value (fn-15). Closes the second pilot-reactive
  *    POH/AFH recognition axis as the fifth reactive-GA path. Same
- *    fixture / same two-transition `state.weatherByAerodrome[LOWG]`
+ *    fixture / same two-transition `world.aerodromes[LOWG].weather`
  *    discipline; distinguishing surface from G3a-react-crosswind is
  *    the recognition axis (tailwind vs crosswind component) and the
  *    doctrinal regime (AFH-advisory tailwind for the C172 vs POH-

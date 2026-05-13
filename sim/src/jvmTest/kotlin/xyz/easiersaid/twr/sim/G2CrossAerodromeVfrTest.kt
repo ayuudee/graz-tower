@@ -77,7 +77,7 @@ import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
  * §12.3.4.16(d)); G3a-react ([G3aPilotReactiveCrosswindTest]) is the
  * single-aerodrome **pilot-reactive crosswind** sibling (fn-14 — closes
  * the G3a trilogy as the fourth reactive-GA path; world hook authors a
- * two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
+ * two-transition wind shift on `world.aerodromes[LOWG].weather` past
  * C172's 15 kt POH `maxCrosswindKnots` and pilot autonomously GAs via
  * `derivePilotEvent`'s crosswind branch + `applyCrosswindGoAround`; the
  * first pilot-side reactive recognition driven by world weather);

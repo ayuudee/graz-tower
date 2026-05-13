@@ -78,7 +78,7 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      state per CAP 413 §4.55-4.56 / ICAO 4444 §12.3.4.16(d)).
  * @see G3aPilotReactiveCrosswindTest the single-aerodrome pilot-reactive
  *      crosswind GA sibling (fn-14 — same fixture; world hook authors a
- *      two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
+ *      two-transition wind shift on `world.aerodromes[LOWG].weather` past
  *      C172's 15 kt POH `maxCrosswindKnots`; pilot's `derivePilotEvent`
  *      crosswind branch fires `CrosswindLimitExceeded` and
  *      `applyCrosswindGoAround` produces the reactive GA. Closes the G3a
@@ -86,7 +86,7 @@ import xyz.easiersaid.twr.sim.testing.TransmissionRecord
  *      reactive recognition driven by world weather).
  * @see G3aPilotReactiveTailwindTest the single-aerodrome pilot-reactive
  *      tailwind GA sibling (fn-15 — same fixture; world hook authors a
- *      two-transition wind shift on `state.weatherByAerodrome[LOWG]` past
+ *      two-transition wind shift on `world.aerodromes[LOWG].weather` past
  *      C172's 10 kt **AFH-advisory** `maxTailwindKnots`; pilot's
  *      `derivePilotEvent` tailwind branch fires `TailwindLimitExceeded`
  *      and `applyTailwindGoAround` produces the reactive GA. Closes the
