@@ -205,3 +205,11 @@ EOF2
   - `M research/tools/requirements-spike/run_icao4444_ollama_first_prototype.py`
   - `M research/tools/requirements-spike/test_quality_gates.py`
   - `?? research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-11-fn10-windowed-v6/`
+
+## Done summary
+
+_(filled by `flowctl done` at task close — see Step 7)_
+
+## Evidence
+
+_(filled by `flowctl done` at task close — see Step 7)_
