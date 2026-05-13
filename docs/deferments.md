@@ -632,6 +632,13 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ## D-WORLD
 
+### D-WORLD.2 — `LjmbWorldCandidateValidationTest.writesLjmbCurrentCoreValidationReport` pre-existing failure
+**Status:** blocked
+**Pinned at:** migration/src/jvmTest/kotlin/xyz/easiersaid/twr/migration/world/LjmbWorldCandidateValidationTest.kt:264
+**Blocked on:** LJMB world-candidate JSON authoring — IFR SID inventory or related publication-field reconciliation against `LjmbWorldCandidateValidationTest`'s expectations.
+**Why:** `:migration:jvmTest`'s `LjmbWorldCandidateValidationTest.writesLjmbCurrentCoreValidationReport()` has been failing on `main` since at least commit `369ead7` (2026-04-30 — "Pilot/ATC firewall: passes 1-5"). Multiple subsequent epics observed and explicitly documented the failure as out-of-scope (fn-5, fn-6, fn-9, fn-11, fn-16). It breaks the `:migration:allTests` aggregate task, which prevents the full epic-spec R12 command (`./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests :migration:allTests detekt`) from exiting 0 in any epic that inherits the standing R12 shape, even when the epic's own surfaces are GREEN. Treated as "out-of-scope" in each downstream epic via explicit narrative carve-outs in evidence; this deferment promotes the standing narrative carve-out into a named register entry so future epics can cite a single `D-WORLD.2 (blocked)` instead of re-deriving the rationale.
+**Closes by:** archived when an LJMB-candidate-authoring pass reconciles the validation report (e.g., a CAD-authoring/IFR-SID-inventory epic that re-files the LJMB world-candidate JSON to match the validator's expectations).
+
 ### D-WORLD.1 — `Aerodrome.runwayConfiguration` field in world-candidate JSON
 **Status:** blocked
 **Pinned at:** protocol/src/commonTest/kotlin/xyz/easiersaid/twr/protocol/DeferredContractsSpec.kt::WORLD1 Aerodrome carries a published runwayConfiguration field

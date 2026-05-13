@@ -136,7 +136,7 @@ Run `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :p
 - [ ] R10: KDoc updates landed at the enumerated sites — **verified ABSORBED per the Phase-1 absorption ledger in Files (above) for all sixteen sites** (plan-sync 2026-05-13 confirmed fn-16.1 absorbed every KDoc cross-reference inline during the atomic migration). Any RESIDUAL site cleaned inline and recorded in evidence as a fn-16.1 paper-trail gap. Every `D-PASS-wind-state-migrate-to-aerodrome` reference in source-tree code replaced with a fn-16 closure note. Every `state.weatherByAerodrome[X]` reference in KDoc/inline comments replaced with `world.aerodromes[X].weather` (reader form) or `world.updateAerodrome(X) { ... }` (writer form).
 - [ ] R11: memory file `~/.claude/projects/-home-andrew-dev-projects-twr2/memory/project_rich_world_domain.md` handling — **Path A** (file present): updated in place with the two-precedents block (fn-12, fn-16) and the next-slice default-shape note; NO new memory file created. **Path B** (file absent — CI/fresh-clone): missing-file state recorded in this task's evidence note plus the exact intended-append text captured for later user update. Either path satisfies acceptance. Refined per codex round 4 to handle the user-memory-outside-repo case.
 - [ ] R10 (optional rename decision): the `SimState.initial(weatherByAerodrome = ...)` parameter name decision pinned in this task's evidence. Default = KEEP. If renamed, all 25+ test fixture sites updated; if not, no code touched.
-- [ ] R12: `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests :migration:allTests detekt` exits 0. All eight goldens green. detekt baseline unchanged.
+- [~] R12: `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests :migration:allTests detekt` exits 0. All eight goldens green. detekt baseline unchanged. **PARTIAL** per codex round 2 — fn-16-relevant test targets all GREEN, but `:migration:allTests` fails due to pre-existing `D-WORLD.2 (blocked)`: `LjmbWorldCandidateValidationTest.writesLjmbCurrentCoreValidationReport` has been failing on `main` since commit `369ead7` (2026-04-30); unrelated to weather state shape. Carve-out promoted from narrative-only (fn-5/6.2/9.2/11.2/16.1) to named register entry in `docs/deferments.md` by this task. Future epics inherit the partial-with-D-WORLD.2 framing until that deferment closes.
 - [ ] Sweep audit script output committed to the task evidence note (so future readers can replay the verification).
 - [ ] **R13: `docs/deferments.md` (in-repo, repo-root, canonical) reconciled (revised per plan-sync 2026-05-13 — register migrated from `.plan` + `~/.claude/plans/pilot-firewall.md` to in-repo `docs/deferments.md` via fn-18.3):**
   - `D-PASS-wind-state-migrate-to-aerodrome` entry at `docs/deferments.md:~626` flipped from `Status: planned` to `Status: closed`; `**Closed by:**` line added citing fn-16.1 + fn-16.2; `**Enforcement:**` line added citing the key landed shapes; entry moved from `## D-PASS` to `## Archive`.
@@ -146,7 +146,7 @@ Run `./gradlew :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :p
 
 ## Done summary
 
-Paper-trail sweep closing fn-16. R9 audit greps surfaced only categorizable hits (parameter-name / PilotInput-field / migration-narrative-cite); R10 absorption-ledger verified for the 16 enumerated sites with two RESIDUAL stale references in `G3aPilotReactiveTailwindTest.kt` (a fn-15 sibling not in the original ledger) cleaned inline; R11 Path B taken (memory file absent — recorded in evidence, intended-append text captured); R12 build verified green; R13 `docs/deferments.md` flipped `D-PASS-wind-state-migrate-to-aerodrome` from `planned` to `closed` and moved to `## Archive` with the three-field locked schema (Status + Closed by + Enforcement) per `docs/deferments-CONVENTION.md` § 5.2.2. Parameter-rename decision: KEEP — pinned in evidence below.
+Paper-trail sweep closing fn-16. R9 audit greps surfaced only categorizable hits (parameter-name / PilotInput-field / migration-narrative-cite); R10 absorption-ledger verified for the 16 enumerated sites with two RESIDUAL stale references in `G3aPilotReactiveTailwindTest.kt` (a fn-15 sibling not in the original ledger) cleaned inline; R11 Path B taken (memory file absent — recorded in evidence, intended-append text captured); R12 PARTIAL — fn-16-relevant test targets green, `:migration:allTests` blocked by `D-WORLD.2` (pre-existing `LjmbWorldCandidateValidationTest` failure, unrelated to fn-16, promoted from narrative carve-out to named register entry by this task); R13 `docs/deferments.md` flipped `D-PASS-wind-state-migrate-to-aerodrome` from `planned` to `closed` and moved to `## Archive` with the three-field locked schema (Status + Closed by + Enforcement) per `docs/deferments-CONVENTION.md` § 5.2.2, plus `D-WORLD.2` filed as `Status: blocked` for the cross-epic R12 inheritance. Parameter-rename decision: KEEP — pinned in evidence below.
 
 ## Evidence
 
@@ -219,7 +219,11 @@ Future world-state additions (surface contamination, lighting, NOTAM, taxiway-cl
 
 In-repo memory at `.flow/memory/bug/integration/rich-world-domain-entity-field-needs-2026-05-13.md` (captured by fn-16.1) already documents the pilot-firewall reachability lesson that complements this principle entry.
 
-### R12 — smoke verify
+### R12 — smoke verify (PARTIAL — `:migration:allTests` blocked by D-WORLD.2)
+
+**Status: PARTIAL.** The full epic-spec command does NOT exit 0 because of a pre-existing `:migration:jvmTest` failure independent of fn-16. The fn-16-relevant verification surfaces are all GREEN; the failure is filed as a named deferment (`D-WORLD.2 — LjmbWorldCandidateValidationTest pre-existing failure`, status `blocked`) so this carve-out has a register entry rather than only narrative evidence.
+
+**fn-16-relevant green bar** (subset of the spec command — fn-16-touched modules only):
 
 ```
 $ GRADLE_USER_HOME=$TMPDIR/gradle-user-home _JAVA_OPTIONS=-Djava.io.tmpdir=$TMPDIR \
@@ -233,13 +237,33 @@ BUILD SUCCESSFUL in 6s
 
 All eight goldens green via the cached `:sim:jvmTest` task. fn-16.2 documentation-only edits don't invalidate the test cache. detekt baseline unchanged.
 
-The full epic-spec command (including `:migration:allTests`) was attempted first and surfaced one failing test: `LjmbWorldCandidateValidationTest > writesLjmbCurrentCoreValidationReport()` at `LjmbWorldCandidateValidationTest.kt:264`. This failure is **PRE-EXISTING and UNRELATED to fn-16** — it concerns world-candidate JSON authoring/validation, not weather state shape. fn-16.1's verification surface (verified at commit dbf4c8d) reported the same failure and explicitly excluded `:migration:allTests` from the green-bar evidence; fn-16.2 follows the same exclusion. The pre-existing failure was observed on this machine at HEAD `dbf4c8d` before any fn-16.2 edit landed.
+**Full spec command output** (with `:migration:allTests`):
+
+```
+$ ./gradlew --offline --no-daemon \
+    :sim:jvmTest :pilot:jvmTest :controller:jvmTest :core:allTests :protocol:allTests :migration:allTests detekt
+...
+> Task :migration:jvmTest
+LjmbWorldCandidateValidationTest[jvm] > writesLjmbCurrentCoreValidationReport()[jvm] FAILED
+    org.opentest4j.AssertionFailedError at LjmbWorldCandidateValidationTest.kt:264
+80 tests completed, 1 failed
+BUILD FAILED in 11s
+```
+
+This failure is **PRE-EXISTING** and **UNRELATED** to fn-16:
+- Test file last touched in commit `369ead7` (2026-04-30, "Pilot/ATC firewall: passes 1-5"), predating fn-16 by ~11 days.
+- `git diff --stat 369ead7..HEAD -- migration/` shows fn-16's only touch to `migration/` is `migration/src/jvmTest/.../...` test fixtures that absorb fn-16's API changes (the failure is unrelated to those fixtures — it concerns LJMB world-candidate JSON authoring / IFR SID inventory validation).
+- fn-5, fn-6.2, fn-9.2, fn-11.2, fn-16.1 all observed the same failure and explicitly documented it as out-of-scope.
+- Promoted from narrative carve-out to named register entry by fn-16.2 — filed as `D-WORLD.2` in `docs/deferments.md` with `Status: blocked, Blocked on: LJMB world-candidate JSON authoring`.
+
+**R12 acceptance status:** PARTIAL — every fn-16-relevant test target is GREEN; the only failure is `D-WORLD.2 (blocked, pre-existing, unrelated)`. The standing R12 shape (which inherits `:migration:allTests` from a planning-time over-cast that didn't anticipate D-WORLD.2 surfacing) cannot exit 0 in any epic until D-WORLD.2 closes. Future epics may inherit the partial-with-D-WORLD.2 framing.
 
 ### R13 — `docs/deferments.md` reconciliation
 
 - `D-PASS-wind-state-migrate-to-aerodrome` entry at `docs/deferments.md` flipped from `Status: planned` to `Status: closed`. Entry moved from active `## D-PASS` section to `## Archive` (now at lines 824-827). New body conforms to the three-field locked schema per `docs/deferments-CONVENTION.md` § 5.2.2 (Status + Closed by + Enforcement). Enforcement field cites: `Aerodrome.weather` field; relocated `WeatherObservation`; `AviationWorld.updateAerodrome` lens + unit test; `SimState.initial` fold with `WeatherForUnknownAerodrome` + `MissingWeatherForRunwayAerodrome` invariants; deleted `SimState.weatherByAerodrome` field; three production readers (pinned `mapNotNull` form on `PilotWiring`); `authorWeather` lens migration on `G3aPilotReactiveCrosswindTest`; 8 direct-constructor `SimState` test sites cleaned; UNCHANGED firewall surfaces (`PilotInput.weatherByAerodrome`, `ControllerView.weather`); cross-reference to `D-PASS-pilot-world-strip-dynamic-state` follow-up filed during fn-16.1 codex round 2.
 - 7 NEW deferments from this epic verified present in `docs/deferments.md` (already filed during fn-18.3's migration sweep, no action needed): `D-PASS-weather-model-expansion` (line 608), `D-PASS-per-runway-weather` (line 572), `D-PASS-weather-history-replay` (line 602), `D-PASS-metar-taf-ingestion` (line 566), `D-PASS-weather-validity-window` (line 620), `D-PASS-weather-shift-event-leaf` (line 614), `D-PASS-direct-simstate-constructor-canonicalization` (line 344).
 - Plus `D-PASS-pilot-world-strip-dynamic-state` (line 633) filed during fn-16.1 codex round 2 — already in-repo, no action.
+- **NEW:** `D-WORLD.2 — LjmbWorldCandidateValidationTest pre-existing failure` filed as `Status: blocked` to capture the cross-epic R12-inheritance carve-out (see R12 evidence above). This promotes the standing narrative carve-out (observed in fn-5, fn-6.2, fn-9.2, fn-11.2, fn-16.1, fn-16.2) into a named register entry so future epics can cite the single deferment instead of re-deriving the out-of-scope argument.
 
 ### Sister registers (legacy, out of scope per fn-18.3)
 
