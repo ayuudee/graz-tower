@@ -6,7 +6,7 @@ satisfies: [R1, R5, R7, R8, R9, R10, R12, R14, R15, R16]
 
 ## Description
 
-Closes the migration. Two sources to triage and pin: (a) the in-repo epic-spec `## Deferments register` sections of fn-14 / fn-15 / fn-17 (planning-time estimate: 11 IDs from fn-14, 6 from fn-15, 2 concrete + 1 conditional-placeholder from fn-17 = ~19 IDs total; verify at task time via locked-inventory step); (b) the inline-only IDs that exist solely as code comments and were never filed in pilot-firewall.md (~6 IDs: `D-PASS-fn6-snap-derived`, `D-PASS-g3a-obstruction-aerodrome-payload`, `D-PASS-continue-approach-pilot-readback`, `D-PASS-g3a-obstruction-kind-variants`, `D-PASS-g3a-obstruction-clearsAt-update`, `D-PASS-fixture-per-plan-filing-time`). Per epic Decision #10: planning-time counts are non-authoritative; locked inventory artifact controls. After triage, every fn-14/15/17 epic-spec `## Deferments register` section gets a redirect line pointing at `docs/deferments.md` as the single source of truth (without deleting the existing block — preserving as historical artefact).
+Closes the migration. Two sources to triage and pin: (a) the in-repo epic-spec `## Deferments register` sections of fn-14 / fn-15 / fn-17 (planning-time estimate: 11 IDs from fn-14, 6 from fn-15, 2 concrete + 1 conditional-placeholder from fn-17 = ~19 IDs total; verify at task time via locked-inventory step); (b) the inline-only IDs that exist solely as code comments and were never filed in pilot-firewall.md. <!-- Updated by plan-sync: fn-18.2 handed off 29 inline-only IDs (|B\A|=29) in evidence JSON `set_inline_only_for_fn_18_3`, not the ~6 originally estimated. The 6 originally-named anchors (D-PASS-fn6-snap-derived, D-PASS-g3a-obstruction-aerodrome-payload, D-PASS-continue-approach-pilot-readback, D-PASS-g3a-obstruction-kind-variants, D-PASS-g3a-obstruction-clearsAt-update, D-PASS-fixture-per-plan-filing-time) are a subset; the authoritative list is fn-18.2's evidence. --> The actual handoff from fn-18.2 is 29 inline-only IDs in evidence JSON `set_inline_only_for_fn_18_3` (set-boundary cardinalities: |A|=53, |B|=65, |A∩B|=36, |B\A|=29). Treat the 6-ID anchor list above as illustrative; the locked inventory comes from `flowctl show fn-18-deferment-register-reorganization-four.2 --json | jq .evidence.locked_inventory.set_inline_only_for_fn_18_3`. Per epic Decision #10: planning-time counts are non-authoritative; locked inventory artifact controls. After triage, every fn-14/15/17 epic-spec `## Deferments register` section gets a redirect line pointing at `docs/deferments.md` as the single source of truth (without deleting the existing block — preserving as historical artefact).
 
 Records the final bucket distribution across all sources in the done summary.
 
@@ -106,13 +106,25 @@ Inventory expected:
 - D-PASS-cap413-edition-24-<section> — **conditional placeholder, NOT a stable ID** (per epic Decision #10 clarification). No `docs/deferments.md` entry filed unless a concrete ID lands. Done summary records the conditional language.
 - D-PASS-cap413-principle-text-deep-refresh
 
-**Inline-only IDs (from grep)**:
+**Inline-only IDs (from grep)** <!-- Updated by plan-sync: fn-18.2 used set_inline_only_for_fn_18_3 (29 IDs, |B\A|=29) not the ~6 originally estimated. The 6 anchors below are real-but-incomplete; the authoritative source is fn-18.2's evidence JSON. -->:
+
+The authoritative inline-only list is fn-18.2's evidence-JSON field `set_inline_only_for_fn_18_3` (29 IDs; |B\A|=29). Read it via:
+
+```bash
+.flow/bin/flowctl show fn-18-deferment-register-reorganization-four.2 --json \
+  | jq -r '.evidence.locked_inventory.set_inline_only_for_fn_18_3 // .evidence.locked_inventory.set_inline_only_for_fn_18_3[]?'
+```
+
+The 6 anchors below are the originally-named inline-only KDoc breadcrumbs (from planning-time grep); they are a subset of the 29 IDs fn-18.2 actually handed off. fn-18.3 re-runs its own grep at task time (Step 7 / Step 7b) and reconciles against the evidence JSON.
+
 - D-PASS-fn6-snap-derived (`controller/.../AircraftObservationTestFixtures.kt`, `controller/.../ControllerTypes.kt`)
 - D-PASS-g3a-obstruction-aerodrome-payload (`controller/.../ControllerTypes.kt`, `controller/.../Event.kt`, `sim/.../RunwayObstructionWiring.kt`)
 - D-PASS-continue-approach-pilot-readback (`protocol/.../Instruction.kt`, `sim/.../G3aRunwayObstructionContinueApproachTest.kt`)
 - D-PASS-g3a-obstruction-kind-variants (`core/.../RunwayObstruction.kt`)
 - D-PASS-g3a-obstruction-clearsAt-update (`core/.../RunwayObstruction.kt`)
 - D-PASS-fixture-per-plan-filing-time (`sim/.../G1TwoAircraftCircuitsTest.kt`)
+
+The remaining ~23 inline-only IDs (regex-fragment matches against longer IDs, plus closed/CLOSED-PARTIAL items surfaced by inline grep) are listed verbatim in fn-18.2's `set_inline_only_for_fn_18_3`. fn-18.2's evidence also flags `D-WORLD-BACKED` as a known false positive (ClearanceId string literal in `core/.../ResolvedClearanceTest.kt:343`) and notes `D-PASS-g3b-react-cross`, `D-AUDIT.9.II`, `D-AUDIT.2.A`/`.B`/`.E` as regex-fragment matches against longer IDs — fn-18.3 de-dups these during its own reconciliation pass.
 
 **From `.plan` (added per plan-review round 10 — explicit fn-18.3 migration source)**:
 
@@ -437,7 +449,7 @@ EOF
 
 - [ ] **R1** (final populated state) — `docs/deferments.md` contains every inventoried ID across all sources. Active body + Archive complete.
 - [ ] **R5** — Per-module `DeferredContractsSpec.kt` files exist for any new bucket 1/2 items landing here (rare — most fn-14/15/17 siblings are bucket 4).
-- [ ] **R7** (complete) — every inventoried ID across all sources (planning-time estimate ~61 total: ~32 pilot-firewall.md + ~19 epic-spec siblings + ~6 inline-only + 4 orphan archives — counts non-authoritative per epic Decision #10) is in `docs/deferments.md`. Exact count from fn-18.2 + fn-18.3 locked inventory artifacts verified in done summary. The 3 meta-deferments filed in fn-18.1 are NOT inventoried IDs for R7 — they are new entries this epic creates, not migrated.
+- [ ] **R7** (complete) — every inventoried ID across all sources is in `docs/deferments.md`. <!-- Updated by plan-sync: fn-18.2 actual handoff was 32 OPEN + 21 CLOSED (|A|=53), 18 archived; inline-only handoff is 29 (|B\A|=29), not the planning-time ~6. Total to-migrate is materially higher than the planning-time ~61 estimate; the locked inventory artifact (fn-18.2 evidence JSON + fn-18.3 grep) controls. --> Exact count from fn-18.2 + fn-18.3 locked inventory artifacts verified in done summary. fn-18.2's actual cardinalities (recorded in evidence JSON `locked_inventory`): |set_A_pilot_firewall| = 53 (32 OPEN + 21 CLOSED), |set_B_inline| = 65, |set_intersection_A_and_B| = 36, |set_inline_only_for_fn_18_3| = 29 — these supersede the planning-time estimate of ~61 total. The 3 meta-deferments filed in fn-18.1 are NOT inventoried IDs for R7 — they are new entries this epic creates, not migrated. Per epic Decision #10: planning-time counts are non-authoritative; locked inventory artifact controls.
 - [ ] **R8** — Final bucket distribution recorded: counts per bucket (1/2/3/4) and per-source (pilot-firewall.md / fn-14 / fn-15 / fn-17 / inline-only / meta-deferments).
 - [ ] **R9** — fn-16 (the genuinely-open epic stub) cross-referenced in `docs/deferments.md` as a bucket-3 `planned` entry. fn-15 and fn-17 (closed during this session) cross-referenced as `## Archive` entries with `Closed by:` + `Enforcement:` pointers, NOT as bucket-3 active entries. Verified at task time by `flowctl show <epic-id> --json | jq '.tasks | map(.status)'`. No new stubs needed beyond fn-16 (already in `todo`).
 - [ ] **R10** (complete) — every inline `// D-PASS-*` / `// D-AUDIT-*` / `// D-PF.*` code comment across the entire codebase references an ID that exists in `docs/deferments.md`. Final grep audit recorded in done summary.

@@ -42,6 +42,12 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Contract:** Extend `ControllerView` with a `watching: Map<AircraftId, ControllerId>` projection (or similar shape carrying `from` controller plus arrival ETA). New rule guards (`HasIncomingHandoff`, `WatchingAircraft`) read it. The architectural test suite picks up the new projection — ideally by extending `FirewallStaffingPanelTest`'s pattern to a `FirewallWatchingProjectionTest`. When that pass lands, fold or delete the current `FirewallNoWatchingReadInControllerTest` as part of the same plan revision.
 **Closes by:** new epic when multi-aircraft handoff scheduling becomes test-driven (G3 if not earlier).
 
+### D-PF.9 — Pass-NN missed-handoff reissue discipline (KDoc breadcrumb)
+**Status:** narrative
+**Pinned at:** controller/.../Controller.kt; controller/.../bdi/Supersession.kt; controller/src/commonTest/.../MissedHandoffReissueSpec.kt
+**Why:** controller/.../Controller.kt, ControllerTypes.kt, bdi/Supersession.kt, observe/BeliefState.kt, and MissedHandoffReissueSpec.kt carry D-PF.9 KDoc breadcrumbs from the missed-handoff-reissue pass. The breadcrumb persists as a narrative anchor pointing future readers at the supersession discipline; the work itself has shipped.
+**Closes by:** archive once the KDoc breadcrumbs are retired or formalised into a typed feature flag
+
 ## D-AUDIT
 
 ### D-AUDIT.2.C-FOLLOWUP — Sim-level integration test for full lost-comms tail
@@ -187,6 +193,37 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Contract:** Obtain the LJMB CTR polygon (manually from the published Jepp/AIP charts, or via a cooperating data partner) and author either a tight per-aerodrome radius or — once `D-AUDIT-polygon-ctr` lands — the polygon directly.
 **Closes by:** archived when docs-scout obtains LJMB CTR polygon data via a non-bot path, or `D-AUDIT-polygon-ctr` lands and forces every authored aerodrome to ship a polygon.
 
+### D-AUDIT.2.A-FOLLOWUP — Coordination escalation explicit ack/timeout discipline
+**Status:** narrative
+**Pinned at:** controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/observe/CoordinationEscalation.kt (KDoc reference at L39)
+**Why:** Pass 12 closed D-AUDIT.2.A by stamping the readback discipline; the followup is the explicit per-step ack/timeout machinery (TWR receives confirmation message from APP within deadline, escalates if absent). Today CoordinationEscalation.kt carries the KDoc breadcrumb but no test surface exists.
+**Closes by:** future coordination-escalation pass when ack/timeout state machine becomes test-driven
+
+### D-AUDIT.2.B-FOLLOWUP — Coordination retransmit/handoff-acknowledge sub-state
+**Status:** narrative
+**Pinned at:** (no current Kotlin anchor — surfaced via fn-18.2 inventory; sibling of D-AUDIT.2.A-FOLLOWUP)
+**Why:** Sibling of .2.A — once explicit ack/timeout is modeled, retransmit on missing ack becomes its own sub-state. Today's coordination machine collapses retransmit into the parent escalation timer.
+**Closes by:** folded into D-AUDIT.2.A-FOLLOWUP's coordination-escalation pass
+
+### D-AUDIT.2.E-FOLLOWUP — Per-message cognitive-delay knob on PilotInput
+**Status:** blocked
+**Pinned at:** (no Kotlin anchor — blocker on D-AUDIT.2.C-FOLLOWUP integration test, see docs/deferments.md#d-audit2-c-followup)
+**Blocked on:** per-message cognitive-delay knob on PilotInput
+**Why:** Pass 12 closed D-AUDIT.2.E (the destroyed-on-readback bug); the followup is a per-message cognitive-delay knob on PilotInput so deterministic tests can stage readback misses without injecting sim-internal time skew. Unlocks the D-AUDIT.2.C-FOLLOWUP integration test.
+**Closes by:** archived when per-message cognitive-delay knob lands
+
+### D-AUDIT.4.A-FOLLOWUP — Per-aircraft-type departure thrust/V-speed wiring
+**Status:** narrative
+**Pinned at:** protocol/.../AircraftType.kt L222 KDoc; controller/.../bdi/Guard.kt; TowerArrival.kt; TowerDeparture.kt
+**Why:** Pass 13 closed D-AUDIT.4.A by introducing AircraftType with maxLandingDistanceM and other per-type fields; the followup is wiring per-type V-speeds and departure thrust profiles into Guard.kt's gating and TowerArrival/Departure procedure dispatch. Today AircraftType.kt carries the KDoc breadcrumb but per-type V1/Vr/V2 aren't typed leaves yet.
+**Closes by:** future per-type V-speed typing pass (likely co-files with weight-temp performance corrections)
+
+### D-AUDIT.4.D-FOLLOWUP — Per-type circuit-altitude pattern derivation
+**Status:** narrative
+**Pinned at:** pilot/.../PilotConstants.kt L12; pilot/.../PilotRoutePlanner.kt; sim/.../Step.kt
+**Why:** Pass 13 closed D-AUDIT.4.D by giving each AircraftType a circuit-pattern shape; the followup is deriving circuit-altitude (and turn-radius) from per-type cruise/maneuvering speeds rather than the current shared constant in PilotConstants. PilotRoutePlanner.kt computes per-step radius today but the altitude knob is global.
+**Closes by:** future per-type performance-derivation pass; co-files with D-AUDIT.4.A-FOLLOWUP V-speed wiring
+
 ## D-PASS
 
 ### D-PASS-deferments-map-tooling-automation — Tooling automation over deferments map
@@ -253,6 +290,339 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Why:** When B's first-circuit Downwind(TOUCH_AND_GO) collides on-air with the controller's same-tick ARR-LAND (full-stop default per C4 + strip-based circuit recognition per C2/C3), the controller's clearance arrives without ever observing the pilot's intent. B's pilot reads back ClearedToLand and lands; mission step advances; the controller's BacktrackRunway is silently dropped because `processInstruction` requires `step == AWAIT_VACATE_INSTRUCTION` but the pilot's step is `LAND`. B physically lifts off again, flies an unauthorised second circuit, and wedges on the runway through wall-time. Real ATC is two-sided — (a) controllers issue landing clearance after the pilot's position call (CAP 413 §4.45-4.49), not on observation alone; (b) pilots comply with ATC clearances even when they conflict with the pilot's plan.
 **Contract:** α path (controller-side): tighten `ARR-LAND` / `ARR-LAND-TNG` gates to require an observed pilot circuit-position report via a `HasReportedCircuitPosition(legs: Set<LegName>?)` BDI guard sourced from a commitment-scoped witness `Commitment.observedReportsDuringCommitment: Set<ReportEvent>` (mirroring Phase 2's `touchedDownDuringCommitment` discipline — sticky witness, default empty on commitment formation, set in `reconcileObservedStages`, reset on commitment lifecycle transitions). NOT a flat `BeliefState.observedReports[aircraft]` — that would let A's first-circuit Downwind unlock A's second-circuit landing clearance, recreating the stale-belief class Phase 2 closed for `circuitIntent`. β path (pilot-side, two-stage timing): on receipt of a ClearedToLand whose intent contradicts the active circuit task's shape, Stage 1 on ClearedToLand receipt replans the mission tree only (collapse the active TouchAndGo to a fall-through `groundArrivalTask`; mark `hasClearance = true`); Stage 2 on BacktrackRunway / AfterLandingVacateVia receipt while on runway post-touchdown extends `processInstruction` so these instructions match at any step where the pilot is on the runway post-touchdown. Recommendation: α first (smaller blast radius, doctrinally cleanest, controller-only, includes commitment-scoped witness regression test); β follows in a later pass with proper plan-review if α leaves residual cases. CAP 413 §4.45-4.49 (downwind intent reporting) and ICAO Doc 4444 §7.10 (landing clearance procedure) cited in α's doctrinal anchor.
 **Closes by:** new epic when the next fn-8.3 closure session opens it.
+
+### D-PASS-arr-number-in-sequence — Approach sequencing: 'number N in sequence'
+**Status:** narrative
+**Pinned at:** fn-8 (g1-two-aircraft-vfr-circuits-at-lowg) epic spec siblings; CB-1 in .plan controller backlog
+**Why:** fn-8 spec siblings — CAP 413 / ICAO 4444 'number N' approach sequencing phraseology not modeled. Today the sim collapses arrival sequencing to FCFS without explicit sequence number on instruction.
+**Closes by:** future approach-sequencing pass (co-files with CB-1)
+
+### D-PASS-arr-orbit — Approach orbit / extending downwind
+**Status:** narrative
+**Pinned at:** fn-8 (g1-two-aircraft-vfr-circuits-at-lowg) epic spec siblings
+**Why:** fn-8 spec sibling — controller-issued orbit / extend-downwind sequencing instruction not modeled. Sibling of D-PASS-arr-number-in-sequence.
+**Closes by:** future approach-sequencing pass (co-files with D-PASS-arr-number-in-sequence)
+
+### D-PASS-cap413-2_7-principle-cite-audit — CAP 413 §2.7 principle-vs-cite drift audit
+**Status:** narrative
+**Pinned at:** protocol/.../RegulationDatabase.kt CAP413_2_7
+**Why:** protocol/.../RegulationDatabase.kt CAP413_2_7.principle reads "When instructed to change frequency the pilot shall establish two-way communication on the new frequency; an initial call identifies the aircraft to the receiving unit" but the actual content of CAP 413 §2.7 in **both** Ed 23 (effective 2021-01-21) and Ed 24 (effective 2026-07-01) is "SAFETYCOM transmissions shall be made only within a maximum range of 10 NM... below 2,000 ft above aerodrome elevation". The cite is internally incoherent. Discovered during fn-17.1 Table 2 audit.
+**Contract:** Comprehensive content-vs-cite audit of `CAP413_2_7`; either rewrite the principle to match Ed 24 §2.7 SAFETYCOM content (and check whether `CAP413_2_7` consumers still make sense — they may need a different ref entirely), or locate the actual Ed 24 §-number whose content matches the existing "two-way communication on new frequency" principle and update the section field (the fn-17.1 audit could not locate the matching §-number via grep — may live in a different chapter under "Subsequent Frequency Changes" but lacking a single load-bearing paragraph). In the interim (per fn-17.1) edition string is pinned to inline Ed 23 Corr literal so the citation triple doesn't claim Ed 24 metadata it can't substantiate.
+**Closes by:** future principle-audit pass; or a consumer call-site discovers `CAP413_2_7` returns the wrong principle in a DecisionTrace.
+
+### D-PASS-cap413-4_46-principle-cite-audit — CAP 413 §4.46 principle-vs-cite drift audit
+**Status:** narrative
+**Pinned at:** protocol/.../RegulationDatabase.kt CAP413_4_46
+**Why:** protocol/.../RegulationDatabase.kt CAP413_4_46.principle reads "Hold short / hold position instructions relating to runways must be read back in full including the runway designator or holding point; silent acknowledgement is not acceptable" but Ed 23 §4.46 content is "Pilots will receive traffic information prior to joining the traffic circuit" and Ed 24 §4.46 content is "The pilot having joined the traffic circuit makes routine reports as required by local procedures" (Ed 23 §4.47 content shifted to §4.46 in Ed 24's `-1` renumbering). Neither matches the codebase principle. Sibling shape to `D-PASS-cap413-2_7-principle-cite-audit`. Discovered during fn-17.1 Table 2 audit.
+**Contract:** Locate Ed 24's actual section number for the "hold-short readback" content the codebase principle describes (most likely under §4.30-§4.40 range — "Aerodrome Phraseology" / "Ground Movements" sections), update `CAP413_4_46.section` accordingly, and re-classify per the universal hard gate. In the interim (per fn-17.1) edition string is pinned to inline Ed 23 Corr literal.
+**Closes by:** future principle-audit pass; co-files with `D-PASS-cap413-2_7-principle-cite-audit`.
+
+### D-PASS-cap413-edition-24-retired-atc-ga-phraseology — Branch-A-retired: ATC-initiated GA phraseology audit
+**Status:** narrative
+**Pinned at:** fn-17 spec § Deferments register; protocol/.../RegulationDatabase.kt CAP413_4_64 (renamed from _4_65)
+**Why:** fn-17.1 Branch A took the rename path (§4.65 → §4.64); the retire path (Branch A-retire) was not fired but the documentation-audit deferment carries over: any prose grep for §4.65 / CAP413_4_65 that still references the retired identifier should be classified and updated per fn-17 R13 narrative.
+**Closes by:** any future audit pass that sweeps stale §4.65/CAP413_4_65 references
+
+### D-PASS-cap413-principle-text-deep-refresh — Deeper principle-string rewrites beyond one-line summary
+**Status:** narrative
+**Pinned at:** protocol/.../RegulationDatabase.kt (entries with mechanical Ed 24 updates from fn-17.1)
+**Why:** fn-17 Branch A landed mechanical one-line summary updates for affected RegulationDatabase entries; deeper semantic Ed 24 refinements (paragraph-level rewrites) are separated to their own pass with full review. Co-files with D-PASS-cap413-2_7-principle-cite-audit + D-PASS-cap413-4_46-principle-cite-audit.
+**Closes by:** future Ed 24 principle-text refresh pass; co-files with the two cite-audit deferments
+
+### D-PASS-continue-approach-pilot-readback — CONTINUE APPROACH pilot readback semantics
+**Status:** narrative
+**Pinned at:** protocol/.../Instruction.kt CA leaf; sim/.../G3aRunwayObstructionContinueApproachTest.kt
+**Why:** protocol/.../Instruction.kt has CA instruction surface but no pilot-side readback discipline; the controller emits CA, the pilot accepts as a non-clearance acknowledgement. Real ATC semantics (CAP 413 §4.55/Ed24 §4.54) require explicit pilot readback. Today's sim collapses to silent acceptance.
+**Closes by:** CA readback discipline pass; doctrinal (CAP 413 §4.54 Ed 24)
+
+### D-PASS-direct-simstate-constructor-canonicalization — SimState direct-constructor sites canonicalization
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec); sim/.../SimState
+**Why:** fn-16 migrates 8 direct-constructor sites for SimState.weatherByAerodrome; the broader canonicalization (any other direct-constructor pattern that bypasses canonical builders) is deferred. Cross-cutting test-fixture refactor.
+**Closes by:** future canonicalization pass
+
+### D-PASS-doctrinal-edition-reconciliation-non-cap413 — Edition reconciliation for non-CAP-413 sources (ICAO Doc 4444, Annex 11, SERA, 9432)
+**Status:** narrative
+**Pinned at:** protocol/.../RegulationDatabase.kt (non-CAP-413 entries)
+**Why:** fn-17 reconciled CAP 413 to Ed 24; ICAO Doc 4444, Annex 11, SERA, ICAO 9432 each have their own edition history that isn't reconciled. Each source needs its own primary-source verification pass mirroring fn-17.1's Branch-A pattern.
+**Closes by:** per-source edition-reconciliation passes (one per regulatory source)
+
+### D-PASS-fixture-per-plan-filing-time — Sim-fixture per-plan filing-time refactor
+**Status:** narrative
+**Pinned at:** sim/src/jvmTest/.../G1TwoAircraftCircuitsTest.kt
+**Why:** sim/.../G1TwoAircraftCircuitsTest.kt uses ad-hoc fixture wiring that bypasses the SimEvent.FlightPlanFiled event channel; cross-aerodrome filing tests (CrossAerodromeFilingSpec lineage) need a per-plan filing-time hook on the fixture builder. Cross-cutting refactor across sim/test fixtures.
+**Closes by:** future sim-fixture pass that introduces a per-plan filing-time fixture builder
+
+### D-PASS-fn6-snap-derived — AircraftObservation derived-vs-projection cleanup
+**Status:** narrative
+**Pinned at:** controller/.../ControllerTypes.kt; controller/src/commonTest/.../AircraftObservationTestFixtures.kt
+**Why:** controller/.../ControllerTypes.kt and AircraftObservationTestFixtures.kt carry KDoc D-PASS-fn6-snap-derived breadcrumbs noting that the AircraftObservation snapshot conflates kinematic projection with derived state. A future refactor separates the projection-derived fields from the snapshot-derived fields.
+**Closes by:** future fn-6-derived refactor pass
+
+### D-PASS-g1-diagnostics-broader — G1 diagnostics broader-than-trace queries
+**Status:** narrative
+**Pinned at:** fn-8.3 task md; sim/.../SimTraceQueries.kt
+**Why:** fn-8.3 closed D-PASS-g1-diagnostics partially via SimTraceQueries; the broader follow-up adds richer diagnostics (cross-aircraft synchrony, frequency-busy windows). Sibling of D-PASS-g1-diagnostics-typed-events (already in docs).
+**Closes by:** future G1-diagnostics broader pass (co-files with D-PASS-g1-diagnostics-typed-events)
+
+### D-PASS-g3a-continue-approach-cancel-clearance — Cancel-clearance during CONTINUE APPROACH
+**Status:** narrative
+**Pinned at:** fn-13-g3a-obstruction-continue-approach-three (epic spec)
+**Why:** fn-13 spec sibling — controller-issued cancel-clearance during an active CONTINUE-APPROACH instruction (e.g. obstruction worsens) is not modeled. Edge case of fn-13's CA discipline.
+**Closes by:** future CA cancel-clearance pass
+
+### D-PASS-g3a-continue-approach-in-circuit — CONTINUE APPROACH in-circuit traffic interaction
+**Status:** narrative
+**Pinned at:** fn-13-g3a-obstruction-continue-approach-three (epic spec)
+**Why:** fn-13 spec sibling — CA semantics interact with in-circuit traffic (the trailing aircraft's downwind decisions) not modeled in fn-13's single-aircraft scope.
+**Closes by:** future CA + multi-aircraft pass
+
+### D-PASS-g3a-continue-approach-possible-ga-variant — CONTINUE APPROACH 'possible go-around' variant
+**Status:** narrative
+**Pinned at:** fn-13-g3a-obstruction-continue-approach-three (epic spec)
+**Why:** fn-13 spec sibling — CA with 'expect possible go-around' caveat phraseology is a variant not modeled in v1 (which collapses to CA-only).
+**Closes by:** future CA-variant pass
+
+### D-PASS-g3a-continue-approach-sequencing — CONTINUE APPROACH sequencing across multiple aircraft
+**Status:** narrative
+**Pinned at:** fn-13-g3a-obstruction-continue-approach-three (epic spec)
+**Why:** fn-13 spec sibling — CA sequencing across multiple aircraft (the leading aircraft on CA, trailing aircraft's spacing reaction) not modeled. Co-files with D-PASS-three-or-more-aircraft.
+**Closes by:** future CA + multi-aircraft pass (co-files with D-PASS-three-or-more-aircraft)
+
+### D-PASS-g3a-continue-approach-subjective-judgment — CONTINUE APPROACH subjective-judgment input
+**Status:** narrative
+**Pinned at:** fn-13-g3a-obstruction-continue-approach-three (epic spec)
+**Why:** fn-13 spec sibling — CA judgment input on the pilot side (visual assessment of whether the obstruction is clearing fast enough) is reduced in v1 to a deterministic rule. Subjective-judgment modeling is its own pass.
+**Closes by:** future pilot-subjective-judgment pass
+
+### D-PASS-g3a-obstruction-aerodrome-payload — RunwayObstructionInformation aerodrome payload
+**Status:** narrative
+**Pinned at:** controller/.../ControllerTypes.kt; controller/.../observe/Event.kt
+**Why:** controller/.../ControllerTypes.kt and observe/Event.kt carry KDoc D-PASS-g3a-obstruction-aerodrome-payload noting that the obstruction-information event payload lacks the aerodrome ID; today the sim wiring threads it implicitly. A future shape adds AerodromeId to the obstruction-information event leaf.
+**Closes by:** future obstruction-information-event reshape pass
+
+### D-PASS-g3a-obstruction-belief-divergence — Obstruction belief divergence (controller vs world)
+**Status:** narrative
+**Pinned at:** fn-12-g3a-obstruction-single-aircraft-atc (epic spec); controller/.../BeliefState obstruction slice
+**Why:** fn-12 obstruction model treats world-truth as ground truth; cases where controller belief diverges from world (delayed observation, stale strip) need their own modeling pass.
+**Closes by:** future obstruction-belief pass
+
+### D-PASS-g3a-obstruction-clearsAt-update — Obstruction clearsAt-update relaxation rule
+**Status:** narrative
+**Pinned at:** core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/RunwayObstruction.kt
+**Why:** core/.../world/RunwayObstruction.kt has a KDoc D-PASS-g3a-obstruction-clearsAt-update noting that the clearsAt timestamp is immutable today; a future pass allows controllers to update clearsAt as new information arrives without recreating the obstruction.
+**Closes by:** future obstruction-lifecycle pass when clearsAt-update arrives
+
+### D-PASS-g3a-obstruction-continue-approach — Continue-approach on obstruction (fn-12/13 anchor)
+**Status:** narrative
+**Pinned at:** fn-12-g3a-obstruction-single-aircraft-atc; fn-13-g3a-obstruction-continue-approach-three
+**Why:** fn-12 sims an unconditional GA on obstruction; fn-13 lands CONTINUE-APPROACH discipline. This entry persists as the cross-spec anchor between fn-12 obstruction surfacing and fn-13 CA semantics — fn-13 is the closure path but this entry references both specs.
+**Closes by:** archived once fn-12/13 cross-reference is retired
+
+### D-PASS-g3a-obstruction-flicker-debounce — Obstruction flicker debounce
+**Status:** narrative
+**Pinned at:** fn-12-g3a-obstruction-single-aircraft-atc (epic spec); core/.../RunwayObstruction
+**Why:** fn-12 obstruction surfacing is event-driven; rapid clear-then-appear flicker (debris settling/resettling, wildlife) needs a debounce window to avoid pilot-side recognition oscillation.
+**Closes by:** future obstruction-debounce pass
+
+### D-PASS-g3a-obstruction-kind-variants — Richer RunwayObstruction taxonomy beyond v1 single kind
+**Status:** narrative
+**Pinned at:** core/src/commonMain/kotlin/xyz/easiersaid/twr/core/world/RunwayObstruction.kt
+**Why:** core/.../world/RunwayObstruction.kt KDoc notes v1 has a single obstruction kind; future variants (FOD, disabled-aircraft, vehicle-incursion, wildlife) each become their own sealed leaf with type-specific clearance semantics.
+**Closes by:** future obstruction-taxonomy expansion pass
+
+### D-PASS-g3a-obstruction-leader-not-vacated — Leader-not-vacated obstruction (preceding aircraft on runway)
+**Status:** narrative
+**Pinned at:** fn-12-g3a-obstruction-single-aircraft-atc (epic spec)
+**Why:** fn-12 obstruction model treats obstruction as world entity; a leader-not-vacated case (preceding aircraft still on runway) is its own runtime situation that may surface obstruction-like wedges in multi-aircraft scenarios.
+**Closes by:** future multi-aircraft obstruction pass (co-files with D-PASS-three-or-more-aircraft)
+
+### D-PASS-g3a-obstruction-orbit-hold — Orbit-hold instruction during obstruction
+**Status:** narrative
+**Pinned at:** fn-12/13 epic specs
+**Why:** fn-12/13 obstruction model emits GA or CONTINUE-APPROACH on obstruction; orbit-hold (extending the approach by orbiting until obstruction clears) is a real ATC instruction shape not modeled. Sibling of D-PASS-arr-orbit.
+**Closes by:** future orbit-hold pass (co-files with D-PASS-arr-orbit)
+
+### D-PASS-g3a-obstruction-pilot-report — Pilot-reported obstruction (vs world-truth-only)
+**Status:** narrative
+**Pinned at:** fn-12-g3a-obstruction-single-aircraft-atc (epic spec)
+**Why:** fn-12 surfaces obstruction via world-truth observation; pilot-reported obstructions (a landing aircraft reports debris on runway via radio) are their own input channel. Not modeled in fn-12 v1.
+**Closes by:** future pilot-reported-obstruction pass
+
+### D-PASS-g3a-obstruction-runway-state — Runway state model (obstructed / closed / displaced) — fn-11 anchor
+**Status:** narrative
+**Pinned at:** fn-11-g3a-single-aircraft-pilot-trained-vfr (epic spec); core/.../Runway
+**Why:** fn-11 spec references runway-state model (obstructed vs closed vs displaced threshold) deferred until fn-12 obstruction work. fn-12 landed obstruction but the broader runway-state model remains separate from per-obstruction modeling.
+**Closes by:** future runway-state-model pass
+
+### D-PASS-g3a-react-atis-cadence-sensing — Wind via ATIS broadcast (cadence-sensitive)
+**Status:** narrative
+**Pinned at:** pilot/.../PilotInput.kt weatherByAerodrome
+**Why:** pilot/.../PilotInput.kt today reads weatherByAerodrome via world-truth observation; real PICs sense wind via ATIS broadcasts at coarser cadence. Sibling of fn-14's reactive-GA epic deferments; doctrinal layer.
+**Closes by:** future ATIS-cadence pass (coupled with D-PASS-cap413-edition-24-rename if Ed 24 PDF lands)
+
+### D-PASS-g3a-react-combined-wind-vector — Combined crosswind + tailwind vector decision
+**Status:** narrative
+**Pinned at:** fn-15-g3a-react-tailwind-pilot-reactive-go (epic spec siblings); pilot/.../Pilot.kt derivePilotEvent
+**Why:** fn-14/15 evaluate each wind axis independently. Real PICs evaluate the resultant vector (weakest-link). Cross-cutting refactor on derivePilotEvent.
+**Closes by:** future combined-vector pass
+
+### D-PASS-g3a-react-crosswind-trigger — G3a-react crosswind trigger (fn-11 narrative anchor)
+**Status:** narrative
+**Pinned at:** fn-11-g3a-single-aircraft-pilot-trained-vfr (epic spec); pilot/.../Pilot.kt CrosswindLimitExceeded recognition
+**Why:** fn-11 spec narrative references the reactive-crosswind trigger that fn-14 ultimately delivered. The fn-11 anchor persists as a back-reference to fn-14's recognition path. Sibling of fn-14's epic-spec entries.
+**Closes by:** archived once fn-11 narrative anchor retires (or use as historical pointer)
+
+### D-PASS-g3a-react-gust-evaluation — Gust-peak evaluation against POH limit
+**Status:** narrative
+**Pinned at:** fn-14-g3a-react-pilot-reactive-go-around-on (epic spec siblings)
+**Why:** fn-14 v1 reads steady-state Wind.speedKnots only; gust-peak evaluation against POH crosswind/tailwind limits is a real-pilot consideration flagged by practice-scout but deferred. Sibling deferment carries over to fn-15's tailwind axis as D-PASS-g3a-react-tailwind-gust-evaluation.
+**Closes by:** future gust-evaluation pass; co-files with D-PASS-g3a-react-tailwind-gust-evaluation
+
+### D-PASS-g3a-react-multi-aircraft-crosswind — Multiple aircraft on same runway when wind shifts to crosswind
+**Status:** narrative
+**Pinned at:** fn-14-g3a-react-pilot-reactive-go-around-on (epic spec siblings)
+**Why:** fn-14 covers single-aircraft G3a; multi-aircraft scenario where wind shifts and sequencing of simultaneous GAs requires controller coordination logic is deferred. Sibling: D-PASS-g3a-react-multi-aircraft-tailwind.
+**Closes by:** future multi-aircraft scenario pass; co-files with D-PASS-g3a-react-multi-aircraft-tailwind
+
+### D-PASS-g3a-react-multi-aircraft-tailwind — Multiple aircraft on same runway when wind shifts to tailwind
+**Status:** narrative
+**Pinned at:** fn-15-g3a-react-tailwind-pilot-reactive-go (epic spec siblings)
+**Why:** Tailwind sibling of D-PASS-g3a-react-multi-aircraft-crosswind. Multi-aircraft scenario with simultaneous tailwind GAs requires controller coordination.
+**Closes by:** future multi-aircraft scenario pass (co-files with crosswind sibling)
+
+### D-PASS-g3a-react-other-poh-triggers — Density altitude / temperature / weight POH triggers
+**Status:** narrative
+**Pinned at:** fn-14/15 epic specs; protocol/.../AircraftType.kt POH-derived shape
+**Why:** fn-14/15 typed maxCrosswindKnots + maxTailwindKnots establish the per-leaf POH-data pattern; other POH triggers (density altitude, OAT, weight limits) each become their own typed field + recognition predicate. Sibling siblings of fn-14/15 epics.
+**Closes by:** future POH-derivation pass per trigger
+
+### D-PASS-g3a-react-personal-minimums — Pilot personal-minimums margin below POH demo value
+**Status:** narrative
+**Pinned at:** protocol/.../AircraftType.kt maxCrosswindKnots/maxTailwindKnots; pilot/.../observe/PilotEvent.kt CrosswindLimitExceeded/TailwindLimitExceeded
+**Why:** pilot/.../observe/PilotEvent.kt and protocol/.../AircraftType.kt carry KDoc anchors for D-PASS-g3a-react-personal-minimums; today recognition uses typed POH limits directly. A future layer adds a per-pilot personal-minimums margin below the typed value.
+**Closes by:** future per-pilot personal-minimums pass
+
+### D-PASS-g3a-react-tailwind-atis-cadence — Wind via ATIS broadcast (tailwind axis)
+**Status:** narrative
+**Pinned at:** fn-15-g3a-react-tailwind-pilot-reactive-go (epic spec siblings)
+**Why:** Tailwind sibling of D-PASS-g3a-react-atis-cadence-sensing. fn-15 v1 reuses fn-14's world-truth weather observation path.
+**Closes by:** future ATIS-cadence pass (co-files with D-PASS-g3a-react-atis-cadence-sensing)
+
+### D-PASS-g3a-react-tailwind-condition-corrections — Runway-condition / displaced-threshold corrections to POH max tailwind
+**Status:** narrative
+**Pinned at:** fn-15-g3a-react-tailwind-pilot-reactive-go (epic spec siblings); protocol/.../AircraftType.kt maxTailwindKnots
+**Why:** fn-15 uses POH/AFH constant maxTailwindKnots; runway-condition (wet, contaminated), displaced threshold, pressure altitude, and temperature corrections are layered effects not modeled in v1. Co-files with D-AUDIT.4.A.II-FOLLOWUP (runway-condition gating).
+**Closes by:** future runway-condition-corrections pass (co-files with D-AUDIT.4.A.II-FOLLOWUP)
+
+### D-PASS-g3a-react-tailwind-gust-evaluation — Gust-peak evaluation against POH tailwind limit
+**Status:** narrative
+**Pinned at:** fn-15-g3a-react-tailwind-pilot-reactive-go (epic spec siblings)
+**Why:** Tailwind sibling of D-PASS-g3a-react-gust-evaluation; fn-15 v1 reads steady-state Wind.speedKnots for tailwind too. Mirror of fn-14's crosswind gust deferment.
+**Closes by:** future gust-evaluation pass (co-files with crosswind sibling)
+
+### D-PASS-g3a-react-tailwind-personal-minimums — Personal-minimums layer over fn-15 tailwind limit
+**Status:** narrative
+**Pinned at:** protocol/.../AircraftType.kt maxTailwindKnots; pilot/.../observe/PilotEvent.kt TailwindLimitExceeded
+**Why:** Sibling of D-PASS-g3a-react-personal-minimums applied to the tailwind axis; pilot judgement margin below the typed maxTailwindKnots. Doctrinal layer over fn-15's typed POH value.
+**Closes by:** future personal-minimums pass (co-files with D-PASS-g3a-react-personal-minimums)
+
+### D-PASS-g3a-react-vrb-handling — Wind.variable VRB direction handling
+**Status:** narrative
+**Pinned at:** (planned) protocol/.../Wind.variable: Boolean field
+**Why:** protocol/.../Instruction.kt and the Wind type lack a VRB (variable direction) flag; v1 evaluates crosswind=0 when direction is undefined. Real metar reporting includes VRB at low wind speeds.
+**Closes by:** future Wind-model VRB pass (co-files with D-PASS-g3a-react-atis-cadence-sensing)
+
+### D-PASS-g3a-react-wind-variability-dynamics — Temporal averaging / trend reasoning across ticks
+**Status:** narrative
+**Pinned at:** fn-14-g3a-react-pilot-reactive-go-around-on (epic spec siblings)
+**Why:** fn-14 v1 evaluates wind per-tick; real ATC + pilots use sustained-wind reasoning across a temporal window. Sibling of D-PASS-g3a-react-gust-evaluation but oriented at trend rather than peak.
+**Closes by:** future sustained-wind-trend pass
+
+### D-PASS-g3b-react-cross-aerodrome-crosswind — Cross-aerodrome crosswind go-around at LJMB
+**Status:** narrative
+**Pinned at:** pilot/.../Pilot.kt; pilot/.../observe/PilotEvent.kt CrosswindLimitExceeded; pilot/src/commonTest/.../WindForMissionTest.kt
+**Why:** pilot/.../Pilot.kt and PilotEvent.kt carry KDoc breadcrumbs for D-PASS-g3b-react-cross-aerodrome-crosswind; today the reactive-crosswind GA is exercised at LOWG. Fixture variation at LJMB or other aerodrome reuses all machinery (test added when G3b cross-aerodrome scenario lands).
+**Closes by:** future G3b cross-aerodrome scenario pass; sibling of fn-14 D-PASS-g3a-react-multi-aircraft-crosswind
+
+### D-PASS-g3b-react-cross-aerodrome-tailwind — Cross-aerodrome tailwind go-around at LJMB
+**Status:** narrative
+**Pinned at:** pilot/.../observe/PilotEvent.kt TailwindLimitExceeded; pilot/src/commonTest/.../observe/PilotEventTailwindTest.kt
+**Why:** pilot/.../observe/PilotEvent.kt and PilotEventTailwindTest.kt carry KDoc breadcrumbs for D-PASS-g3b-react-cross-aerodrome-tailwind; sibling of -crosswind variant for the tailwind axis.
+**Closes by:** future G3b cross-aerodrome scenario pass; sibling of D-PASS-g3b-react-cross-aerodrome-crosswind
+
+### D-PASS-instructor-agent-surface — Instructor-agent surface (pilot-training scenarios)
+**Status:** narrative
+**Pinned at:** fn-11/12 epic specs
+**Why:** fn-11/12 specs reference an instructor-agent surface for pilot-training scenarios; today's pilot model has solo + ATC layers. Instructor as a third agent layer is its own pass.
+**Closes by:** future instructor-agent pass
+
+### D-PASS-metar-taf-ingestion — METAR/TAF ingestion pipeline
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec siblings)
+**Why:** Read METAR/TAF cycles and translate to WeatherObservation writes via a separate ingestion pipeline. Separate from sim-mutation path.
+**Closes by:** future METAR/TAF pipeline pass
+
+### D-PASS-per-runway-weather — Per-runway weather sensors
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec siblings); core/.../Runway
+**Why:** Large airports with per-runway wind sensors require Runway.weather instead of (or alongside) Aerodrome.weather; v1 (post-fn-16) keeps aerodrome-scope.
+**Closes by:** future per-runway-weather pass
+
+### D-PASS-recat-eu-wake — RECAT-EU wake-turbulence categorisation
+**Status:** narrative
+**Pinned at:** fn-8 (g1-two-aircraft-vfr-circuits-at-lowg) epic spec siblings; CB-2 in .plan controller backlog
+**Why:** fn-8 spec sibling — wake turbulence separation per RECAT-EU rather than ICAO Heavy/Medium/Light bands. CB-2 in .plan controller backlog. Separate from core fn-8.
+**Closes by:** future wake-turbulence pass
+
+### D-PASS-regdb-transcription-drift — RegulationDatabase transcription-drift audit
+**Status:** narrative
+**Pinned at:** fn-13-g3a-obstruction-continue-approach-three (epic spec); protocol/.../RegulationDatabase.kt
+**Why:** fn-13 spec sibling — broader transcription-drift audit across RegulationDatabase entries beyond the cap413 cite-audit deferments. Whole-database principle-vs-section drift sweep.
+**Closes by:** future regdb-transcription audit pass (co-files with D-PASS-cap413-2_7-principle-cite-audit + D-PASS-cap413-4_46-principle-cite-audit)
+
+### D-PASS-three-or-more-aircraft — Three-or-more aircraft scenarios (fn-8 scope is two)
+**Status:** narrative
+**Pinned at:** fn-8 (g1-two-aircraft-vfr-circuits-at-lowg) epic spec siblings
+**Why:** fn-8 scope is exactly two aircraft (LOWG circuit); three-or-more scenarios surface new wedges (slot reservation across 3+ aircraft, runway sharing). Sibling of D-PASS-cross-aircraft-step-on (already in docs) and D-PASS-arr-number-in-sequence.
+**Closes by:** future N-aircraft scenario pass
+
+### D-PASS-visual-separation-handover — Visual-separation handover (pilot-to-pilot)
+**Status:** narrative
+**Pinned at:** fn-8 (g1-two-aircraft-vfr-circuits-at-lowg) epic spec siblings
+**Why:** fn-8 spec sibling — visual-separation handover ('Cessna ahead, follow') where the trailing pilot accepts responsibility for separation visually. Not modeled in fn-8 v1.
+**Closes by:** future visual-separation pass
+
+### D-PASS-weather-history-replay — Weather history replay (rolling buffer + replay)
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec siblings); core/.../WeatherObservation
+**Why:** Today's WeatherObservation is point-in-time only; retained observation history (rolling buffer, replay) is deferred.
+**Closes by:** future weather-history pass
+
+### D-PASS-weather-model-expansion — Weather model expansion (visibility, precipitation, cloud layers, weather volumes)
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec siblings); core/.../WeatherObservation
+**Why:** fn-16 migrates Wind to Aerodrome.weather; gusts (already typed on Wind), visibility ceilings, precipitation, cloud layers, weather volumes are each their own field on WeatherObservation or sibling entity. Separate from the migration.
+**Closes by:** future weather-model expansion pass per field
+
+### D-PASS-weather-shift-event-leaf — SimEvent.WeatherChanged event leaf
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec siblings); sim/.../SimEvent
+**Why:** Today's shape is direct world mutation via the AviationWorld.updateAerodrome lens helper; an event leaf would be structurally cleaner for test mutators. Filed but not blocking.
+**Closes by:** future SimEvent.WeatherChanged pass (low priority)
+
+### D-PASS-weather-validity-window — Weather observation validity window (observedAt + staleness)
+**Status:** narrative
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather (epic spec siblings); core/.../WeatherObservation
+**Why:** observedAt: SimTime on WeatherObservation + staleness reasoning ('METAR is 90 minutes old; treat as WindReport.NotReported'). Out of fn-16 scope.
+**Closes by:** future weather-validity-window pass
+
+### D-PASS-wind-state-migrate-to-aerodrome — Wind lives on Aerodrome.weather
+**Status:** planned
+**Pinned at:** fn-16-wind-state-migrate-to-aerodromeweather
+**Why:** v1 of G3a-react put wind in PilotInput.weatherByAerodrome because Aerodrome.weather didn't exist as a typed slice. Migration is cross-cutting (controller belief slice + sim wiring + pilot reads + fixture wiring) and needs its own epic.
+**Contract:** weatherByAerodrome moves from PilotInput to Aerodrome.weather; controller belief slice extended with aerodromeWeather: Map<AerodromeId, Weather>; sim wiring authors via Aerodrome.weather setter; pilot reads via aerodrome lookup. Test that lands when closed: G3aPilotReactiveCrosswindTest reading wind via aerodrome.weather instead of PilotInput.weatherByAerodrome.
+**Closes by:** fn-16 (planned).
 
 ## D-WORLD
 
@@ -354,3 +724,68 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Status:** closed
 **Closed by:** ~/.claude/plans/pass-5-entities-and-aircraft-intent.md (Pass 5). Archived in fn-18.2.
 **Enforcement:** `BeliefState.aircraftIntent` deleted; new `BeliefState.recentRadio: Map<AircraftId, RecentRadio>` time-windowed buffer (5-minute window); `RecentRadio` is a value class with a private primary constructor whose only mutation is `append(event, now, window)` which prunes entries older than `now - window` (time-window invariant encoded in the type); new `withRecentRadio(events, now)` fold; on-demand `deriveCurrentIntent(strip, recentRadio): AircraftIntent` (most-recent intent-bearing radio event wins; else strip; else Transit); `intentFromRadio(event)` + `aircraftIdOf(event)` sealed-exhaustive over `ControllerEvent` (14 leaves); `OperatorContext.intentOf(aircraft)` composes view's strip + belief's recentRadio; `EventExhaustivenessTest` pins leaf coverage; retargeted `FirewallBeliefWriteTest`; G0's intent-flip assertion migrated to behavioural-consequence check on the transmission stream.
+
+### D-AUDIT.13 — Cross-aerodrome strip propagation
+**Status:** closed
+**Closed by:** Pass 14 (commit b8b099a)
+**Enforcement:** controller/.../AftnRouting.routeFiledPlan fans out to destination-side recipient; destination tower ControllerSpec.knownStrips carries filed plan; ControllerView.flightStripIntents surfaces Arriving intent at sim-init via SimEvent.FlightPlanFiled (no radio-observation reliance). Exercised by CrossAerodromeFilingSpec: LOWG→LJMB VFR plan results in LJMB_TOWER seeing flightStripIntents[ac] == Arriving at sim-init.
+
+### D-PASS-13.1 — Aerodrome-scoped runway lookup
+**Status:** closed
+**Closed by:** Pass 17 (commit ce18d47)
+**Enforcement:** controller/.../bdi/Guard.kt aerodrome-scoped runway lookup at L960+ (Pass-17 closure KDoc); pre-Pass-17 lookup walked all aerodromes
+
+### D-PASS-13.2 — IFR procedure helpers' wrong-units cruise-altitude fallback
+**Status:** closed
+**Closed by:** Pass 17 (commit ce18d47)
+**Enforcement:** protocol/.../AircraftType.kt L135+ cruise-altitude fallback; pilot/.../PilotRoutePlanner.kt L556+/L624+/L678+/L726+ IFR fallback uses cruise altitude
+
+### D-PASS-13.3 — Typed RunwayLengthFailure sealed surface (partial; trace-render in -II-FOLLOWUP)
+**Status:** closed
+**Closed by:** Pass 17 partial closure (commit ce18d47); trace-render narrowed to D-PASS-13.3-II-FOLLOWUP (active in docs)
+**Enforcement:** controller/.../bdi/Guard.kt L937+/L955+/L1031+ typed RunwayLengthFailure; RunwayLengthGatingSpec.kt L209+/L213+/L231+ typed-payload assertions; trace-render plumbing remains as D-PASS-13.3-II-FOLLOWUP
+
+### D-PASS-cap413-edition-23-comparison-unavailable — Branch B-unverified-comparison sub-branch (conditional)
+**Status:** closed
+**Closed by:** fn-17.1 Branch A took the verified path (Ed 24 PDF acquired with SHA-pinning AND Ed 23 comparison source matched)
+**Enforcement:** Branch B was not fired. See D-PASS-cap413-edition-24-reconciliation archive entry; Ed 23 comparison source SHA f3b4839e885cd554740f664a55d3732cd7284789e0b5f808970cfdbc21e746e7 (planning-time match) noted in .plan.
+
+### D-PASS-cap413-edition-23-pdf-unreachable-at-task-time — Conditional: Ed 23 PDF unreachable at task time
+**Status:** closed
+**Closed by:** fn-17.1 Branch A — both Ed 23 and Ed 24 PDFs were reachable, conditional deferment was not fired
+**Enforcement:** No artifact — conditional clause that did not activate. See D-PASS-cap413-edition-24-reconciliation.
+
+### D-PASS-cap413-edition-24-r11-verify-sandbox-block — R11 verify command sandbox block (closed at task time via workaround)
+**Status:** closed
+**Closed by:** fn-17.1 (workaround applied at task time)
+**Enforcement:** Original blocker: fn-17.1's R11 verify command could not run in the implementer's sandbox because Gradle wrapper writes to `/Users/andrew/.gradle/` are blocked by harness filesystem policy. Workaround: cloned the entire Gradle user-home (`/Users/andrew/.gradle/{caches,native,wrapper}`) to a sandbox-writable location (`$TMPDIR/gradle-user-home/`), removed lock files, set `GRADLE_USER_HOME=$TMPDIR/gradle-user-home` + `_JAVA_OPTIONS=-Djava.io.tmpdir=$TMPDIR` (redirect Kotlin compiler intermediate files away from system default `/var/folders/...` which is also sandbox-blocked) + ran `./gradlew --offline --no-daemon` against the cloned cache. JAVA_HOME pointed at a Nix-installed Zulu JDK 21 path (`/nix/store/fh73gfg7fp1mhyxw6cf8bkv14v2xbzbb-zulu-ca-jdk-21.0.8`). Outcome: BUILD SUCCESSFUL in 40s, 25 actionable tasks executed; eight-golden testsuites verified GREEN (LowgGoldenTest, G1TwoAircraftCircuitsTest, G1TwoAircraftMinimalSpec, G2CrossAerodromeVfrTest, G3aPilotTrainedGoAroundTest, G3aRunwayObstructionTest, G3aRunwayObstructionContinueApproachTest, G3aPilotReactiveCrosswindTest). Pattern reusable for future sandbox-restricted Gradle work; fn-18 series reuses the same workaround.
+
+### D-PASS-cap413-edition-24-reconciliation — CAP 413 Edition 24 numbering reconciliation
+**Status:** closed
+**Closed by:** fn-17.1 (2026-05-11)
+**Enforcement:** Branch A — Confirmed (with Edition #1 quirk). Ed 24 primary-source verified against CAA PDF (URL https://www.caa.co.uk/publication/download/18165, SHA-256 c620cda9b6bdbe8e9ed51b258e4df2f6e3edc839226e53ee2b591cb696a966ac, captured 2026-05-11). Ed 23 comparison source SHA-256 f3b4839e885cd554740f664a55d3732cd7284789e0b5f808970cfdbc21e746e7 (planning-time match). Actual mapping: uniform `-1` shift across §4.5x-§4.6x range — §4.65 (ATC-initiated GA) → §4.64; §4.66 (VFR-continue) → §4.65; §4.67 (pilot-initiated GA) → §4.66; §4.68 (military) → §4.67. Plus §4.49 → §4.48 (circuit sequencing), §4.53 → §4.52 (cancellation of landing clearance), §4.55 → §4.54 (continue approach), §4.56 → §4.55 (CA not landing clearance). The docs-scout hypothesis was partially correct on §4.66→§4.65 and §4.67→§4.66 but missed that §4.65 ATC-initiated GA also moves to §4.64. Codebase: protocol/.../RegulationDatabase.kt CAP_413_EDITION = "Edition 24 (effective 1 July 2026)" constant; CAP413_4_65 renamed to CAP413_4_64; CAP413_4_49/CAP413_4_53/CAP413_4_55/CAP413_4_56 section fields updated. See wiki/data-sources/cap413-edition-24-capture.md (verification artifact with Tables 1 + 2 + mapping table + local extraction procedure) and `.flow/tasks/fn-17-cap-413-edition-24-numbering.1.md ## Evidence` for primary-implementation-commit SHA + R11 verification status.
+
+### D-PASS-cap413-edition-24-rename-pending-pdf — Branch-C deferment: pending Ed 24 PDF availability
+**Status:** closed
+**Closed by:** fn-17.1 Branch A took the verified path (PDF acquired and SHA-pinned)
+**Enforcement:** Branch C was not fired; Branch A landed full Ed 24 numbering reconciliation. The conditional deferment is moot. See D-PASS-cap413-edition-24-reconciliation archive entry.
+
+### D-PASS-g3a-react-tailwind-limit — POH tailwind limit + recognition + applier
+**Status:** closed
+**Closed by:** fn-15 epic (fn-15.1 + fn-15.2 both done)
+**Enforcement:** protocol/.../AircraftType.kt maxTailwindKnots typed field; pilot/.../observe/PilotEvent.kt TailwindLimitExceeded leaf; pilot/.../Pilot.kt applyTailwindGoAround applier; sim/src/jvmTest/.../G3aPilotReactiveTailwindTest.kt as the ninth golden
+
+### D-AUDIT-lowg-ctr-radius — LOWG CTR radius retuning from 12 NM hardcode to per-aerodrome AIP-derived value
+**Status:** closed
+**Closed by:** fn-7 (per-aerodrome-aip-driven-ctr-radius)
+**Enforcement:** Replaced `OutsideAerodromeRadius(Meters.fromNauticalMiles(12))` hardcode with per-aerodrome `Aerodrome.ctrApproximationRadius` field. LOWG authors 18 NM (AIP AD 2.17 polygon max-edge 16.25 NM rounded UP + ~1 NM ARP-proxy-offset margin). See `cad/airports/rendered/lowg/world-candidate.json` and `wiki/data-sources/lowg.md` for the AIP citation.
+
+### D-PASS-g1-diagnostics — G1 diagnostics SimTraceQueries harness
+**Status:** closed
+**Closed by:** fn-8.3 (CLOSED-PARTIAL — harness sufficient for the entire fn-8.3 dive cycle Phase 1 → Phase 3 round 2)
+**Enforcement:** `sim/.../SimTraceQueries.kt` harness (`commitmentStageTransitions`, `missionStepTransitions`, `positionPointTransitions`, `transitionsOf`, `formatJourney`) plus direct `BeliefState` reads; `sim/jvmTest/.../G1ClosureDiveTest` as the per-round dive driver. No typed events on `:common` were needed; the broader follow-up is tracked as `D-PASS-g1-diagnostics-typed-events` (active) and `D-PASS-g1-diagnostics-broader` (active).
+
+### D-AUDIT.M2 — IFR missed-approach hold-loop compiler hardcoded to LOWG_GBG_MISSED_HOLD
+**Status:** narrative
+**Closed by:** narrative deferment — IFR-specific surface not in fn-11/14/15 (VFR) scope
+**Enforcement:** Tracked in `.flow/specs/fn-11-g3a-single-aircraft-pilot-trained-vfr.md` as an "out of scope" anchor for VFR-only G3a-react work. The hardcode lives in pilot's IFR missed-approach machinery and is not engaged by `ifrGoAroundTask()` from VFR pilots. Future IFR scenarios will surface the deferment as a typed contract.

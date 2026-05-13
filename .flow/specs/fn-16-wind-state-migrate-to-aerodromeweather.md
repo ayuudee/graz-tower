@@ -436,6 +436,8 @@ This epic is a refactor — no new behaviour, no new test goldens. The acceptanc
 
 ## Deferments register
 
+**MIGRATED to `docs/deferments.md` per fn-18.3 on 2026-05-13 (commit <pending>).** The entries below are preserved for historical context. For the active deferment register, see `docs/deferments.md` in the repo.
+
 Deferments filed by this epic in `~/.claude/plans/pilot-firewall.md` § Deferments register:
 
 - **`D-PASS-weather-model-expansion`** — gusts (already typed on `Wind`), visibility ceilings, precipitation, cloud layers, weather volumes. Each is its own field on `WeatherObservation` or a sibling entity. Separate from the migration.
@@ -477,3 +479,4 @@ _(filled per task during implementation)_
 ## Evidence
 
 _(filled per task during implementation)_
+

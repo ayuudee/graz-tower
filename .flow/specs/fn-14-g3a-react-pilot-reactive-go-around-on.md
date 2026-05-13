@@ -389,6 +389,8 @@ The sim test (Task .2) follows the **three-layer pin pattern** from fn-11.2 / fn
 
 ## Deferments register
 
+**MIGRATED to `docs/deferments.md` per fn-18.3 on 2026-05-13 (commit <pending>).** The entries below are preserved for historical context. For the active deferment register, see `docs/deferments.md` in the repo.
+
 Deferments from this epic file in `~/.claude/plans/pilot-firewall.md` § Deferments register:
 
 - **`D-PASS-g3a-react-tailwind-limit`** — POH tailwind limit (often 10 kt). `AircraftType.maxTailwindKnots` field. Pilot recognition. Separate from crosswind; doctrinally a hard limitation (not just demonstrated).
@@ -437,3 +439,4 @@ _(filled per task during implementation)_
 ## Evidence
 
 _(filled per task during implementation)_
+

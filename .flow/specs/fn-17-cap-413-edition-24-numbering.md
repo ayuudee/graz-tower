@@ -1109,6 +1109,8 @@ C's `CAP_413_EDITION` constant.
 
 ## Deferments register
 
+**MIGRATED to `docs/deferments.md` per fn-18.3 on 2026-05-13 (commit <pending>).** The entries below are preserved for historical context. For the active deferment register, see `docs/deferments.md` in the repo.
+
 Deferments from this epic file in `~/.claude/plans/pilot-firewall.md`
 § Deferments register:
 
@@ -1174,3 +1176,4 @@ _(filled per task during implementation)_
 ## Evidence
 
 _(filled per task during implementation)_
+

@@ -448,6 +448,8 @@ Follows the **three-layer pin pattern** (per fn-11.2 / fn-12.3 / fn-14.2):
 
 ## Deferments register
 
+**MIGRATED to `docs/deferments.md` per fn-18.3 on 2026-05-13 (commit <pending>).** The entries below are preserved for historical context. For the active deferment register, see `docs/deferments.md` in the repo.
+
 Deferments from this epic. The user maintains the register at `~/.claude/plans/pilot-firewall.md` § Deferments register; these are filed there:
 
 - **`D-PASS-g3a-react-tailwind-gust-evaluation`** — gust-peak evaluation against POH tailwind limit. Mirror of fn-14's `D-PASS-g3a-react-gust-evaluation`. v1 reads steady-state `Wind.speedKnots` only.
@@ -492,3 +494,4 @@ _(filled per task during implementation)_
 ## Evidence
 
 _(filled per task during implementation)_
+
