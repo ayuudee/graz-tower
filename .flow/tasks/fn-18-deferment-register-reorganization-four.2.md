@@ -478,15 +478,33 @@ D-PASS-g1-diagnostics-typed-events, D-PASS-pilot-mid-tng-fullstop-recovery,
 D-PF.1, D-PF.3, D-PF.8, D-WORLD.1
 ```
 
-CLOSED-from-pilot-firewall IDs (18) — every entry has a `### D-...` block under `## Archive`:
+CLOSED IDs in Set A (21 total) — broken into three classes:
 
 ```
-Orphan-test set (7, per Decision #3 + #13):
-  D-PF.2, D-PF.5, D-PF.6, D-AUDIT.3, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10
+(a) Orphan-test set (7, per Decision #3 + #13; archived in docs/deferments.md):
+    D-PF.2, D-PF.5, D-PF.6, D-AUDIT.3, D-AUDIT.5, D-AUDIT.6, D-AUDIT.10
 
-R10-cross-referenced closed entries (11, surfaced by inline-grep verification):
-  D-PF.4, D-PF.7, D-AUDIT.1, D-AUDIT.2, D-AUDIT.4, D-AUDIT.6.A-FOLLOWUP,
-  D-AUDIT.7, D-AUDIT.8, D-AUDIT.9, D-AUDIT.12, D-AUDIT.14
+(b) R10-cross-referenced closed entries (11, surfaced by inline-grep
+    verification; archived in docs/deferments.md):
+    D-PF.4, D-PF.7, D-AUDIT.1, D-AUDIT.2, D-AUDIT.4, D-AUDIT.6.A-FOLLOWUP,
+    D-AUDIT.7, D-AUDIT.8, D-AUDIT.9, D-AUDIT.12, D-AUDIT.14
+
+(c) Set-A-closed-but-unanchored (3, NOT archived per Decision #3 scope —
+    none are orphan-test sources AND none have inline anchors in Set B,
+    so neither archive criterion fires):
+    D-AUDIT-lowg-ctr-radius, D-AUDIT.13, D-PASS-g1-diagnostics
+
+  Verification: grep -rn '<id>' --include="*.kt" pilot/ controller/ protocol/
+  sim/ core/ migration/ yields zero hits for each of the three; none appear
+  in any DeferredContractsSpec.kt closed-comment block; pilot-firewall.md's
+  status field carries 'CLOSED by fn-7' / 'CLOSED (Pass 14)' /
+  'CLOSED-PARTIAL by fn-8.3' respectively.
+
+Reconciliation: |Set A| = 32 (OPEN) + 21 (CLOSED) = 53. Of the 21 CLOSED,
+18 are archived in docs/deferments.md (orphan-set 7 + R10 cross-ref 11),
+3 are intentionally not archived per Decision #3.
+
+Archive total in docs/deferments.md: 7 (orphan-set) + 11 (R10 cross-ref) = 18.
 ```
 
 Cross-ref-only IDs (NOT real entries, excluded from Set A):
