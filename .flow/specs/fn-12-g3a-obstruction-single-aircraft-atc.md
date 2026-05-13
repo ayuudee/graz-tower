@@ -15,7 +15,7 @@ Single AI aircraft at LOWG flies a circuit-training mission with `outcomes = lis
 - **Out: belief-vs-truth divergence.** v1: `clearsAt` is a single value the world holds; controller's belief equals world truth at all times (modulo one-tick event-fold latency, which is the canonical pure-fold pattern). Filed as `D-PASS-g3a-obstruction-belief-divergence`.
 - **Out: aircraft-in-circuit orbit/hold.** v1 reactive scope is on-final GA only. Orbit/hold primitive does not exist in VFR yet. Filed as `D-PASS-g3a-obstruction-orbit-hold`.
 - **Out: pilot-radio sensing modality.** Channel is deliberately modality-agnostic; sim is the bundled "tower senses" surface. Filed as `D-PASS-g3a-obstruction-pilot-report`.
-- **Out: typed obstruction kinds.** Each variant (Vehicle, Aircraft, Debris, Wildlife, SurfaceContamination) requires its own authoring shape. Filed as `D-PASS-g3a-obstruction-{vehicle,aircraft,debris,wildlife,contamination}-variant`.
+- **Out: typed obstruction kinds.** Each variant (Vehicle, Aircraft, Debris, Wildlife, SurfaceContamination) requires its own authoring shape. Filed as a per-variant suffix of the canonical D-PASS-g3a-obstruction-kind-variants ID.
 - **Out: leader-not-vacated as a typed obstruction.** Couples to multi-aircraft sequencing. Filed as `D-PASS-g3a-obstruction-leader-not-vacated`.
 - **Out: explicit instructor agent surface.** Filed in fn-11 as `D-PASS-instructor-agent-surface`.
 - (Pre-clearance on-final reactive case is now IN scope — see Decision #7. The `AwaitApproach` rule covers it.)

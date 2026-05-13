@@ -19,7 +19,7 @@ This epic establishes a **four-bucket hybrid** model. `docs/deferments.md` becom
 - **Out: adding new deferments.** Only triaging what exists today. (Exception: meta-deferments about the new system itself — e.g. tooling automation over `docs/deferments.md` — explicitly filed at task time.)
 - **Out: changing the `@Ignore` mechanism.** `kotlin.test.@Ignore` is the existing pattern; keep it.
 - **Out: redesigning the inline code-comment convention.** Keep `// PASS-prefix family / D-AUDIT-*` breadcrumbs as the third leg.
-- **Out: tooling automation.** A script that parses `docs/deferments.md` and asserts every `Pinned at:` exists, or a detekt rule that requires every inline deferment ID to appear in the map, is a follow-up sibling. v1 ships the human-readable map only. Filed as `D-PASS-deferments-map-tooling-automation`.
+- **Out: tooling automation.** A script that parses `docs/deferments.md` and asserts every `Pinned at:` exists, or a detekt rule that requires every inline deferment ID to appear in the map, is a follow-up sibling. v1 ships the human-readable map only. Filed as `D-PASS-map-tooling-automation`.
 - **Out: GitHub Issues integration.** Solo+AI workflow; flow-next is the project-management discipline.
 - **Out: editing `~/.claude/plans/pilot-firewall.md` directly as a CI-validated step.** The file is repo-external; the user owns it. fn-18.2's flowctl-acceptance criterion is that fn-18.2 **provides the exact MIGRATED header text and logs external-follow-up status** (`pending` / `confirmed-by-user`) in evidence. The actual user-edit to apply the header is outside flowctl acceptance; the legacy register is only declared migrated after the user performs and reports that edit. fn-18.2 never writes `confirmed` unless the user has independently reported the edit.
 
@@ -113,7 +113,7 @@ Field order is fixed. `Blocked on:` is omitted entirely (not blank, not "n/a") w
 
 Headers (`### <ID>`) use the existing dash-separated IDs from pilot-firewall.md (e.g. `D-PF.1`, `D-AUDIT.9.II-FOLLOWUP`, `D-PASS-g3a-react-tailwind-limit`). No renaming during migration.
 
-**Heading discipline** (locked per plan-review round 1): in `docs/deferments.md`, ONLY `### D-...` headings denote a deferment entry. Section-organising headings use other depths (`##`, `####`) or prose-only text. This makes the file mechanically scannable — a future tooling pass (`D-PASS-deferments-map-tooling-automation`) can count entries by grepping `^### D-`. Placeholder text in the empty body MUST NOT use `### D-...` for non-entry prose. The convention doc spells this out.
+**Heading discipline** (locked per plan-review round 1): in `docs/deferments.md`, ONLY `### D-...` headings denote a deferment entry. Section-organising headings use other depths (`##`, `####`) or prose-only text. This makes the file mechanically scannable — a future tooling pass (`D-PASS-map-tooling-automation`) can count entries by grepping `^### D-`. Placeholder text in the empty body MUST NOT use `### D-...` for non-entry prose. The convention doc spells this out.
 
 **Decision #7a — Locked structure for `docs/deferments.md`** (clarified per plan-review round 2):
 
@@ -129,7 +129,7 @@ Headers (`### <ID>`) use the existing dash-separated IDs from pilot-firewall.md 
 <entries: ### D-AUDIT.2.C-FOLLOWUP, ### D-AUDIT.3.II-FOLLOWUP, ...>
 
 ## D-PASS
-<entries: ### D-PASS-deferments-map-tooling-automation, ### D-PASS-g3a-react-tailwind-limit, ...>
+<entries: ### D-PASS-map-tooling-automation, ### D-PASS-g3a-react-tailwind-limit, ...>
 
 ## D-WORLD
 <entries: ### D-WORLD.1>
@@ -299,9 +299,9 @@ Commit history: `git log --grep "fn-18-deferment-register-reorganization-four" -
 
 **Decided.** fn-18 itself spawns the following meta-deferments:
 
-- **`D-PASS-deferments-map-tooling-automation`** — bucket 4 narrative. Future tooling: detekt rule or script that (a) parses `docs/deferments.md`, (b) verifies every `Pinned at: <test>` actually exists, (c) verifies every inline PASS-prefix-family / AUDIT-prefix-family / `PF prefix family` code comment appears as an ID in the map. Triggers automatic CI fail on drift. Filed in fn-18.1's `docs/deferments.md` initial scaffold.
-- **`D-PASS-deferments-renumbering-discipline`** — bucket 4 narrative. The current ID scheme is inherited from the pre-flow-next pass-N tracking (`EXAMPLE-AUDIT.N`, `EXAMPLE-PASS-N.x`) and fn-7+ epic-derived dash-suffixed names (`EXAMPLE-AUDIT-lowg-ctr-radius`). The mix produces inconsistent grep results. Future cleanup: a single convention (probably the dash-suffixed form, since it survives renumbering). v1 keeps existing IDs as-is to bound scope.
-- **`D-PASS-deferments-cross-ref-from-impl-review`** — bucket 4 narrative. When a code-review agent surfaces a finding that the principal agent defers, the convention for "this becomes a deferment" isn't yet automated. Today it's a manual "file it as a sibling deferment" step. Future tooling: a `/flow-next:defer` skill or similar that prompts for bucket assignment + writes the record.
+- **`D-PASS-map-tooling-automation`** — bucket 4 narrative. Future tooling: detekt rule or script that (a) parses `docs/deferments.md`, (b) verifies every `Pinned at: <test>` actually exists, (c) verifies every inline PASS-prefix-family / AUDIT-prefix-family / `PF prefix family` code comment appears as an ID in the map. Triggers automatic CI fail on drift. Filed in fn-18.1's `docs/deferments.md` initial scaffold.
+- **`D-PASS-renumbering-discipline`** — bucket 4 narrative. The current ID scheme is inherited from the pre-flow-next pass-N tracking (`EXAMPLE-AUDIT.N`, `EXAMPLE-PASS-N.x`) and fn-7+ epic-derived dash-suffixed names (`EXAMPLE-AUDIT-lowg-ctr-radius`). The mix produces inconsistent grep results. Future cleanup: a single convention (probably the dash-suffixed form, since it survives renumbering). v1 keeps existing IDs as-is to bound scope.
+- **`D-PASS-defer-flow-from-impl-review`** — bucket 4 narrative. When a code-review agent surfaces a finding that the principal agent defers, the convention for "this becomes a deferment" isn't yet automated. Today it's a manual "file it as a sibling deferment" step. Future tooling: a `/flow-next:defer` skill or similar that prompts for bucket assignment + writes the record.
 
 ### 15. Per-task scope split (locked baseline; plan-review may reshape)
 
@@ -329,7 +329,7 @@ Plan-review may propose 2 tasks or 4. The 3-task split is concrete and locked un
 - **R10** — Inline `// PASS-prefix family` / `// D-AUDIT-*` / `// PF prefix family` code comments cross-referenced: every ID appearing in any `.kt` source file under `pilot/` `controller/` `protocol/` `sim/` `core/` `migration/` appears as a `docs/deferments.md` entry (active or archive). Verified via grep at task time. No silent ID drift.
 - **R11** — fn-18.2 provides the exact MIGRATED header text per Decision #12 AND records it in the evidence block as an external follow-up. This is a "text provided + follow-up logged" criterion, NOT "header present in pilot-firewall.md." The user-edit to pilot-firewall.md is a separately-tracked external follow-up; the legacy register is not declared migrated until the user actually applies the edit. Acceptance for R11 is satisfied at task-close as long as the text is provided and the follow-up is logged.
 - **R12** — fn-14 / fn-15 / fn-17 epic specs' `## Deferments register` sections each carry a redirect line per Decision #12 with date + per-fn-18.3 attribution. fn-16 epic spec receives the same redirect IF its `## Deferments register` contains any entries that get migrated by this task (conditional — verify at task time). Commit SHA may be `<pending>`. Existing entries preserved as historical artefact (do NOT delete the entry blocks).
-- **R13** — Three meta-deferments (`D-PASS-deferments-map-tooling-automation`, `D-PASS-deferments-renumbering-discipline`, `D-PASS-deferments-cross-ref-from-impl-review`) filed in `docs/deferments.md` per Decision #14, all as bucket 4 (`narrative`).
+- **R13** — Three meta-deferments (`D-PASS-map-tooling-automation`, `D-PASS-renumbering-discipline`, `D-PASS-defer-flow-from-impl-review`) filed in `docs/deferments.md` per Decision #14, all as bucket 4 (`narrative`).
 - **R15 (final whole-repo exhaustiveness gate, added per plan-review round 7)** — at fn-18.3 close, run a **whole-repo grep** across `*.md` (specs, tasks, design docs, repo-root markdown), `*.kt` (all modules), and `.plan` for every `D-*` ID pattern (`D-PASS-`, `D-AUDIT.`, `D-AUDIT-`, `D-PF.`, `D-WORLD-`, `D-WORLD.`). Compare the de-duplicated ID set against `docs/deferments.md`'s set of `### D-...` headings. Every concrete ID found in the whole-repo grep MUST appear exactly once in `docs/deferments.md` (active body or `## Archive`). Documented placeholder IDs (e.g. `D-PASS-cap413-edition-24-<section>`) are excluded by virtue of being placeholders, not stable IDs. The de-dup-and-diff result is recorded in fn-18.3's done summary; any drift fails R15. This is the final exhaustiveness gate that catches any ID neither fn-18.2 nor fn-18.3's per-source inventory captured — meta-defence against inventory rot.
 
   **Quick command** (regex hardened per plan-review round 8 — tail-char restricted to `[A-Za-z0-9_]` so placeholder IDs like `D-PASS-cap413-edition-24-<section>` cannot match the prefix `D-PASS-cap413-edition-24-`; duplicate-detection split out separately because `sort -u` would hide duplicates; one-way containment instead of two-way diff per plan-review round 9 — docs-only IDs are LEGITIMATE because archive entries may not appear anywhere else after orphan-test deletion):
@@ -453,12 +453,12 @@ No new sim tests because there's no new sim behaviour. fn-18 produces docs + tes
 - No `else` clauses in the bucket-decision: the four buckets are exhaustive; the convention doc must spell out what happens if a deferment doesn't fit (answer: it does — bucket 4 is the catchall, and it's not silent).
 
 ### Impact axis
-- **Cross-references**: every inline code-comment `// PASS-prefix family` must have a corresponding `docs/deferments.md` entry. R10 makes this acceptance-level. If a future ID drift introduces a code comment without a docs entry, the planned tooling automation (`D-PASS-deferments-map-tooling-automation`) catches it — but that's v2. v1 relies on the migration's grep-completeness.
+- **Cross-references**: every inline code-comment `// PASS-prefix family` must have a corresponding `docs/deferments.md` entry. R10 makes this acceptance-level. If a future ID drift introduces a code comment without a docs entry, the planned tooling automation (`D-PASS-map-tooling-automation`) catches it — but that's v2. v1 relies on the migration's grep-completeness.
 - **`reference_audit_registers.md` rewrite**: every agent that reads this memory entry going forward gets the new pointer. Old contexts that already loaded the prior entry continue to work because pilot-firewall.md still exists as historical secondary.
 - **`AGENTS.md` discovery pointer**: minimal change to the existing structure — one bullet, one line. Replaces nothing; supplements.
 - **fn-14 / fn-15 / fn-17 spec updates** (R12): the `## Deferments register` sections in those specs are now redirect-only. Future epic specs adopt the convention that their `## Deferments register` is a working note that gets migrated into `docs/deferments.md` at done-time.
 - **`pilot-firewall.md` MIGRATED header**: user-performed, evidence-confirmed. Repo-external; can't be CI-gated. The honest path: capture confirmation in the task's evidence-block.
-- **Tooling automation deferred** (`D-PASS-deferments-map-tooling-automation`): v1 ships the map; v2 ships the lint. Until v2, drift detection is manual / grep-based. Acceptable risk given the rate of new deferments (~1 per pass).
+- **Tooling automation deferred** (`D-PASS-map-tooling-automation`): v1 ships the map; v2 ships the lint. Until v2, drift detection is manual / grep-based. Acceptable risk given the rate of new deferments (~1 per pass).
 
 ### Operational axis
 - **No runtime impact**: zero new code in production paths. Zero behaviour change. The nine golden tests stay GREEN by construction (no code paths touched).
@@ -502,9 +502,9 @@ No new sim tests because there's no new sim behaviour. fn-18 produces docs + tes
 
 Filed by this epic (all bucket-4 narrative, to be migrated into `docs/deferments.md § Active narrative bucket` during fn-18.1 per R13):
 
-- **`D-PASS-deferments-map-tooling-automation`** — detekt rule or script enforcing `docs/deferments.md` ↔ inline-code-comment ID consistency + verifying every `Pinned at:` test or epic exists. v1 ships human-readable map only; tooling lift to v2.
-- **`D-PASS-deferments-renumbering-discipline`** — current ID scheme mixes `EXAMPLE-AUDIT.N`, `EXAMPLE-PASS-N.x`, dash-suffixed (`EXAMPLE-AUDIT-lowg-ctr-radius`). v1 preserves all IDs as-is. Future cleanup: settle on dash-suffixed form (which survives renumbering); script-rewrite all references.
-- **`D-PASS-deferments-cross-ref-from-impl-review`** — when a review agent surfaces a finding the principal defers, the convention for "this becomes a deferment" isn't automated. Today: manual sibling-file step. Future: a `/flow-next:defer` skill that prompts for bucket assignment + writes the record.
+- **`D-PASS-map-tooling-automation`** — detekt rule or script enforcing `docs/deferments.md` ↔ inline-code-comment ID consistency + verifying every `Pinned at:` test or epic exists. v1 ships human-readable map only; tooling lift to v2.
+- **`D-PASS-renumbering-discipline`** — current ID scheme mixes `EXAMPLE-AUDIT.N`, `EXAMPLE-PASS-N.x`, dash-suffixed (`EXAMPLE-AUDIT-lowg-ctr-radius`). v1 preserves all IDs as-is. Future cleanup: settle on dash-suffixed form (which survives renumbering); script-rewrite all references.
+- **`D-PASS-defer-flow-from-impl-review`** — when a review agent surfaces a finding the principal defers, the convention for "this becomes a deferment" isn't automated. Today: manual sibling-file step. Future: a `/flow-next:defer` skill that prompts for bucket assignment + writes the record.
 
 ## Closures
 

@@ -232,19 +232,19 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ## D-PASS
 
-### D-PASS-deferments-map-tooling-automation — Tooling automation over deferments map
+### D-PASS-map-tooling-automation — Tooling automation over deferments map
 **Status:** narrative
 **Pinned at:** narrative only
 **Why:** v1 of the deferments register ships the human-readable map only; drift detection between `docs/deferments.md`, inline `// D-PASS-*` / `// D-AUDIT-*` / `// D-PF.*` code comments, and `Pinned at:` test paths is currently grep-and-eyeball. A detekt rule or repo-root script that parses `docs/deferments.md`, verifies every `Pinned at:` test or epic exists, and asserts every inline deferment-ID comment appears as an entry would turn that drift into a CI failure.
 **Closes by:** new epic when CI tooling lift becomes worthwhile.
 
-### D-PASS-deferments-renumbering-discipline — Mixed ID-scheme cleanup
+### D-PASS-renumbering-discipline — Mixed ID-scheme cleanup
 **Status:** narrative
 **Pinned at:** narrative only
 **Why:** The current deferment-ID scheme mixes legacy dotted forms (`D-AUDIT.7.II-FOLLOWUP`, `D-PASS-13.3-II-FOLLOWUP`) from the pre-flow-next pass-N tracking with fn-7+ dash-suffixed names (`D-PASS-g3a-react-tailwind-limit`, `D-AUDIT-polygon-ctr`). The mix produces inconsistent grep patterns and visual scan noise. v1 preserves all existing IDs as-is to bound migration scope; a future cleanup pass would settle on the dash-suffixed form (which survives renumbering) and script-rewrite all references.
 **Closes by:** new epic when settling on a single ID convention.
 
-### D-PASS-deferments-cross-ref-from-impl-review — Defer flow for review findings
+### D-PASS-defer-flow-from-impl-review — Defer flow for review findings
 **Status:** narrative
 **Pinned at:** narrative only
 **Why:** When a code-review agent (RepoPrompt / Codex) surfaces a finding that the principal agent defers, the convention for "this becomes a deferment" is currently a manual sibling-file step — the agent has to remember the four-bucket model, pick the right bucket, and write the entry by hand. A `/flow-next:defer` skill (or similar) that prompts for bucket assignment and writes the record would make the convention's discovery surface match the convention's discipline.

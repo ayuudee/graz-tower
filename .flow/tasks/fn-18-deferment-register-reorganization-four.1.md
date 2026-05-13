@@ -6,7 +6,7 @@ satisfies: [R1, R2, R3, R4a, R4b, R13, R14]
 
 ## Description
 
-Lays the foundation surface for the four-bucket deferment register reorganization. Writes the empty (header + schema + Archive stub) `docs/deferments.md` map, the full `docs/deferments-CONVENTION.md` decision-tree doc, updates `AGENTS.md` with a discovery pointer, rewrites the `reference_audit_registers.md` auto-memory entry, and files the three meta-deferments (`D-PASS-deferments-map-tooling-automation`, `D-PASS-deferments-renumbering-discipline`, `D-PASS-deferments-cross-ref-from-impl-review`). No migrations from existing sources yet — fn-18.2 / .3 handle those.
+Lays the foundation surface for the four-bucket deferment register reorganization. Writes the empty (header + schema + Archive stub) `docs/deferments.md` map, the full `docs/deferments-CONVENTION.md` decision-tree doc, updates `AGENTS.md` with a discovery pointer, rewrites the `reference_audit_registers.md` auto-memory entry, and files the three meta-deferments (`D-PASS-map-tooling-automation`, `D-PASS-renumbering-discipline`, `D-PASS-defer-flow-from-impl-review`). No migrations from existing sources yet — fn-18.2 / .3 handle those.
 
 The success criterion is: a reader who reads `docs/deferments-CONVENTION.md` and the empty-bodied `docs/deferments.md` can predict the **shape** of what fn-18.2 will produce when populating the map. If they can't, the convention is unclear and this task fails review.
 
@@ -67,7 +67,7 @@ This is the load-bearing artifact. The convention drives every subsequent migrat
 
 ### Step 2 — Write `docs/deferments.md` (empty body except meta-deferments)
 
-**Heading discipline** (per epic Decision #7): ONLY `### D-...` headings denote a deferment entry. Prefix-organising section headings use `##` depth; non-entry placeholder text uses prose. The meta-deferment entries themselves use `### D-PASS-deferments-...` headings (entries, by definition). This makes the file mechanically scannable: `grep -c '^### D-' docs/deferments.md` counts entries.
+**Heading discipline** (per epic Decision #7): ONLY level-3 markdown headings with the deferment-ID prefix denote a deferment entry. Prefix-organising section headings use `##` depth; non-entry placeholder text uses prose. The meta-deferment entries themselves use level-3 headings with the canonical D-PASS-deferments prefix followed by a discriminating suffix (entries, by definition). This makes the file mechanically scannable: counting level-3 headings starting with the D-prefix counts entries.
 
 **Structure** locked per epic Decision #7a — prefix subsections at h2 depth directly, no parent wrapper:
 
@@ -90,19 +90,19 @@ _(populated by fn-18.2 from `~/.claude/plans/pilot-firewall.md`)_
 
 ## D-PASS
 
-### D-PASS-deferments-map-tooling-automation — Tooling automation over deferments map
+### D-PASS-map-tooling-automation — Tooling automation over deferments map
 **Status:** narrative
 **Pinned at:** narrative only
 **Why:** <1-3 sentences per Decision #14>
 **Closes by:** new epic when CI tooling lift becomes worthwhile.
 
-### D-PASS-deferments-renumbering-discipline — Mixed ID-scheme cleanup
+### D-PASS-renumbering-discipline — Mixed ID-scheme cleanup
 **Status:** narrative
 **Pinned at:** narrative only
 **Why:** <1-3 sentences>
 **Closes by:** new epic when settling on a single ID convention.
 
-### D-PASS-deferments-cross-ref-from-impl-review — Defer flow for review findings
+### D-PASS-defer-flow-from-impl-review — Defer flow for review findings
 **Status:** narrative
 **Pinned at:** narrative only
 **Why:** <1-3 sentences>
@@ -214,7 +214,7 @@ cat > $TMPDIR/fn-18-1-evidence.json <<'EOF'
   "r4b_pending_external_followup": null,
   "_r4b_pending_external_followup_note": "When r4b_status == pending, set this to the exact R4a replacement text (the same text as r4a_replacement_text below) so the external follow-up has its source-of-truth handoff. When r4b_status == confirmed, leave as null.",
   "r4a_replacement_text": "<paste the exact rewritten memory entry verbatim here, as a single string with \\n for newlines>",
-  "meta_deferments_filed": ["D-PASS-deferments-map-tooling-automation", "D-PASS-deferments-renumbering-discipline", "D-PASS-deferments-cross-ref-from-impl-review"],
+  "meta_deferments_filed": ["D-PASS-map-tooling-automation", "D-PASS-renumbering-discipline", "D-PASS-defer-flow-from-impl-review"],
   "verify_command": "./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt",
   "verify_outcome": "BUILD SUCCESSFUL"
 }
@@ -247,7 +247,7 @@ EOF
 - [ ] **R3** — `AGENTS.md` updated: one new bullet under "Project Plan" pointing at `docs/deferments.md`; one new line under "Self-assessment before review" requiring deferred work to be filed before commit. Existing `.plan` references intact.
 - [ ] **R4a** — Exact replacement text for `reference_audit_registers.md` pasted into fn-18.1 evidence block. Acceptance-bound regardless of memory-directory reachability.
 - [ ] **R4b** — Recorded as one of two outcomes per epic R4 split: **R4b-confirmed** (memory directory reachable; `reference_audit_registers.md` rewritten in place + `MEMORY.md` index prose refreshed; date logged in evidence) OR **R4b-pending** (memory directory unreachable; pending external follow-up logged in evidence with the R4a text as the source-of-truth handoff).
-- [ ] **R13** — Three meta-deferments (`D-PASS-deferments-map-tooling-automation`, `D-PASS-deferments-renumbering-discipline`, `D-PASS-deferments-cross-ref-from-impl-review`) filed in `docs/deferments.md` per Decision #14 as bucket 4 (`narrative`).
+- [ ] **R13** — Three meta-deferments (`D-PASS-map-tooling-automation`, `D-PASS-renumbering-discipline`, `D-PASS-defer-flow-from-impl-review`) filed in `docs/deferments.md` per Decision #14 as bucket 4 (`narrative`).
 - [ ] **R14** — Recorded as one of two outcomes per epic Decision #R14: **R14-Passed** (gradle exits 0; nine goldens GREEN; detekt unchanged; no `@Ignore` status changes) OR **R14-NoNewRegression** (baseline was already red; task evidence records base SHA + exact failing tests at start and proves no new failures).
 
 ## Done summary
