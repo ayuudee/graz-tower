@@ -7,7 +7,7 @@
   "id": "fn-18-deferment-register-reorganization-four.2",
   "priority": null,
   "spec_path": ".flow/tasks/fn-18-deferment-register-reorganization-four.2.md",
-  "status": "todo",
+  "status": "done",
   "title": "Migrate pilot-firewall.md OPEN items + orphan-test cleanup + MIGRATED header",
-  "updated_at": "2026-05-13T07:50:15.548593Z"
+  "updated_at": "2026-05-13T08:16:03.171678Z"
 }
