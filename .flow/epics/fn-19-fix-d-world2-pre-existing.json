@@ -1,13 +1,18 @@
 {
   "branch_name": "fn-19-fix-d-world2-pre-existing",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
   "created_at": "2026-05-13T15:33:59.811941Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [],
   "id": "fn-19-fix-d-world2-pre-existing",
   "next_task": 1,
-  "plan_review_status": "unknown",
-  "plan_reviewed_at": null,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-14T08:04:52.819051Z",
   "spec_path": ".flow/specs/fn-19-fix-d-world2-pre-existing.md",
   "status": "open",
   "title": "Fix D-WORLD.2 pre-existing :migration:jvmTest failure (LjmbWorldCandidateValidationTest 9-vs-5 SIDs)",
-  "updated_at": "2026-05-13T16:05:15.576555Z"
+  "updated_at": "2026-05-14T08:04:52.819170Z"
 }
