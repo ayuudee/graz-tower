@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-15T16:35:46.845563Z",
+  "depends_on": [],
+  "epic": "fn-22-promote-6-session-memory-captures-into",
+  "id": "fn-22-promote-6-session-memory-captures-into.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-22-promote-6-session-memory-captures-into.1.md",
+  "status": "todo",
+  "title": "Write 6 knowledge entries + seed MEMORY.md index",
+  "updated_at": "2026-05-15T16:37:03.248407Z"
+}
