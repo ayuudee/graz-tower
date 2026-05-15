@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-21-refresh-strategymd-5-days-stale-4-epics",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-15T16:26:09.587772Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-21-refresh-strategymd-5-days-stale-4-epics",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-15T16:29:03.774997Z",
+  "spec_path": ".flow/specs/fn-21-refresh-strategymd-5-days-stale-4-epics.md",
+  "status": "open",
+  "title": "Refresh STRATEGY.md (5 days stale; 4 epics shipped since 2026-05-08)",
+  "updated_at": "2026-05-15T16:29:03.775106Z"
+}
