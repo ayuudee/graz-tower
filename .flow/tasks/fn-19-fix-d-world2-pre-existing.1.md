@@ -247,9 +247,8 @@ EOF2
   - `?? research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-11-fn10-windowed-v6/`
 
 ## Done summary
-
-_(filled by `flowctl done` at task close — see Step 7)_
-
+fn-19.1 shipped: LjmbWorldCandidateValidationTest helper body reshaped from 9-SID hard-coded set to structural-validity + missing-only-coverage decomposition against the current 5-SID CIFP cycle (`assertSidsAreStructurallyValid` + `assertSidsCoverPromisedSet`). D-WORLD.2 archived per CONVENTION §8 three-field locked schema. `.plan` M5 marked DONE (one-week traceability preserved). `cad/airports/ljmb-authoring.md` reconciled to 5 SIDs with `.plan` M1 cross-reference. `sim/.../Fixtures.kt` G2 Phase A LJMB IFR carve-out removed. `world-validation-report.json` auto-regenerated (issueCount=0, structuralIssueCount=0). R14-Passed: nine sim goldens GREEN, detekt baseline unchanged, `:migration:allTests` flipped red → green, `./gradlew build` green. Codex impl-review SHIP first-pass with no surviving introduced findings.
 ## Evidence
-
-_(filled by `flowctl done` at task close — see Step 7)_
+- Commits: 6c6a9010f91ade3ea350f737f05a579155ca696b
+- Tests:
+- PRs:
