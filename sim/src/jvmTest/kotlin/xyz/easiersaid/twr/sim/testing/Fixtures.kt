@@ -228,10 +228,6 @@ object Fixtures {
      * is the expected end point at LJMB. Both are taxiway-stand points per
      * the existing LOWG / LJMB authoring conventions.
      */
-    // G2 Phase A scope note: `LjmbWorldCandidateValidationTest` (LJMB IFR SID
-    // inventory mismatch — expects 9 SIDs, world-candidate publishes 5) is
-    // pre-existing on master and explicitly out of G2 scope (G2 is VFR transit;
-    // SIDs are IFR procedures). A future LJMB IFR pass closes that test.
     val LOWG_LJMB_VFR: MultiAerodromeFixture = MultiAerodromeFixture(
         staffing = nonEmptyListOf(
             AerodromeStaffing(

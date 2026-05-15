@@ -249,23 +249,83 @@ class LjmbWorldCandidateValidationTest {
         )
     }
 
+    /**
+     * Validates the LJMB runtime SID subset against the current CIFP source of truth.
+     *
+     * Decomposed into two semantically distinct checks (per dbt-style accepted-values + not-null
+     * split):
+     *  - [assertSidsAreStructurallyValid] — every actual SID validates structurally
+     *    (key matches `sid.id`; a `_PATH` entry exists in `document.world.geometry.paths`).
+     *    No hard-coded set. New SIDs appearing here are NOT a failure — they may come from
+     *    a CIFP cycle upgrade or `.plan` M1 unblocking fixless-leg SIDs.
+     *  - [assertSidsCoverPromisedSet] — asserts the subset of SIDs we promise to keep
+     *    supporting is present (`missing = expectedCovered - actual` is empty).
+     *    Does NOT assert `unexpected = actual - expectedCovered` is empty — coverage is a
+     *    subset relation, not an inventory snapshot.
+     *
+     * Cycle id source: `data/cifp/LJMB.dat` carries no AIRAC/CYCLE/HDR header marker, so the
+     * cycle id falls back to the file's git blob SHA. Failure messages hard-code the result so
+     * the next reconciler immediately knows what cycle the test was authored against.
+     */
     private fun assertExpectedLjmbIfrSids(document: WorldCandidateDocument) {
-        val expectedSidIds = setOf(
-            "LJMB_SID_DIML1S_14",
-            "LJMB_SID_GOLV1S_14",
+        assertSidsAreStructurallyValid(document)
+        assertSidsCoverPromisedSet(document)
+    }
+
+    private fun assertSidsAreStructurallyValid(document: WorldCandidateDocument) {
+        val sids = document.world.aerodrome.sids
+        val paths = document.world.geometry.paths
+        for ((key, sid) in sids) {
+            assertEquals(
+                key,
+                sid.id,
+                "LJMB SID structural validation: map key '$key' must equal the value's `sid.id` " +
+                    "field ('${sid.id}'). A mismatch indicates upstream serialization or " +
+                    "renaming drift in `bin/airport_world_candidate.py`.",
+            )
+            val expectedPathId = "${sid.id}_PATH"
+            assertTrue(
+                paths.containsKey(expectedPathId),
+                "LJMB SID structural validation: SID '${sid.id}' must have a matching " +
+                    "'$expectedPathId' entry in `document.world.geometry.paths`. " +
+                    "Missing path indicates the candidate generator's SID projection " +
+                    "(bin/airport_world_candidate.py:808-857) failed to emit a geometry " +
+                    "path for this SID.",
+            )
+        }
+    }
+
+    private fun assertSidsCoverPromisedSet(document: WorldCandidateDocument) {
+        val expectedCovered = setOf(
             "LJMB_SID_GOLV2G_14",
-            "LJMB_SID_MURE1S_14",
-            "LJMB_SID_PETO1S_14",
             "LJMB_SID_PETO2B_14",
             "LJMB_SID_PETO5D_32",
             "LJMB_SID_VALU1S_14",
             "LJMB_SID_VALU4L_32",
         )
-        assertEquals(
-            expectedSidIds,
-            document.world.aerodrome.sids.keys,
-            "LJMB runtime SID subset should project the 9 X-Plane CIFP SIDs whose leg models are waypoint-representable; " +
-                "the remaining -1J/-1N/-2G/-3H SIDs carry intermediate fixless VI legs and remain in the IFR inventory only.",
+        val actual = document.world.aerodrome.sids.keys
+        val missing = expectedCovered - actual
+        assertTrue(
+            missing.isEmpty(),
+            buildString {
+                appendLine(
+                    "LJMB SID coverage drift against CIFP cycle " +
+                        "'cycle unknown; source data/cifp/LJMB.dat at git-sha " +
+                        "a28fb1eed6a0ff80aedd0a3f3336a35f50d66a97':",
+                )
+                appendLine("  missing (expected but not present): $missing")
+                appendLine(
+                    "If non-empty, a SID we promised to support disappeared from the " +
+                        "candidate.",
+                )
+                appendLine(
+                    "Investigate the candidate generator " +
+                        "(bin/airport_world_candidate.py:811-812 filter) or whether the " +
+                        "CIFP cycle has shifted. Do NOT assert `actual - expectedCovered` " +
+                        "is empty — new SIDs are a structural-validation surface, not a " +
+                        "coverage regression.",
+                )
+            }.trim(),
         )
     }
 

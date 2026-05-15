@@ -80,7 +80,10 @@ factored sim responsibility scans/transmission-end handling into named helpers,
 and wrapped the pilot line-length offenders.
 Impact: M | Effort: M
 
-**M5 — LJMB runtime SID candidate/test mismatch keeps `./gradlew build` red**
+**M5 — LJMB runtime SID candidate/test mismatch keeps `./gradlew build` red** — DONE (2026-05-15)
+fn-19 reshaped `assertExpectedLjmbIfrSids` to a structural-validity + missing-only-coverage
+decomposition against the current 5-SID CIFP-projectable set; D-WORLD.2 archived;
+`./gradlew build` green.
 `cad/airports/rendered/ljmb/world-candidate.json` currently contains 5 runtime
 SIDs (`GOLV2G`, `PETO2B`, `PETO5D`, `VALU1S`, `VALU4L`), while
 `LjmbWorldCandidateValidationTest.assertExpectedLjmbIfrSids` and the stale

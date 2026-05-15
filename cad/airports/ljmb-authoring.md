@@ -153,7 +153,7 @@ The LJMB world candidate is now **integration-ready for multi-aerodrome runtime 
 - `39` taxiways
 - `7` stands
 - `3` aprons
-- `9` runtime-usable SIDs — X-Plane CIFP-ingested (`DIML1S`, `GOLV1S`, `GOLV2G`, `MURE1S`, `PETO1S`, `PETO2B`, `PETO5D`, `VALU1S`, `VALU4L`). Remaining `11` CIFP SIDs (-1J/-1N/-2G/-3H variants) carry fixless VI legs and stay in the IFR inventory only.
+- `5` runtime-usable SIDs — X-Plane CIFP-ingested (`GOLV2G`, `PETO2B`, `PETO5D`, `VALU1S`, `VALU4L`). The remaining `7` of the `12` CIFP SIDs in `data/cifp/LJMB.dat` (`DIML1J, DIML2G, DIML3H, GOLV3H, VALU1N, VALU3G, VALU3H`) are blocked by `fixless_leg_unrepresentable_in_waypoint_route_model` (`.plan` M1) — the runtime waypoint route model lacks `VI` (heading-to-altitude) leg support. SID inventory grows once M1 lands.
 - `0` runtime STARs, `0` runtime approaches, `0` runtime holding patterns — deferred pending missed-approach hold-loop compilation (LOWG handles this with a GBG-specific code path; an airport-agnostic compiler is a later phase). The full inventory (`9` STARs, `4` approaches including ILS 32 / LOC 32 / RNP LPV / RNP LNAV/VNAV, `2` holding-pattern candidates at `MR` and `ERROW`) is in the structured-airport-package candidate section with provenance.
 - `41` fixes — 22 local reporting points + 12 TMA entry points + 7 procedure-internal fixes. `PETOV` now resolves from the X-Plane earth_fix.dat cache.
 - `2` authored VFR routes — `ljmb_mn_corridor_inbound` (MN1-MN2) and `ljmb_mw_corridor_inbound` (MW1-LAPNA), both from Jepp 19-1.
