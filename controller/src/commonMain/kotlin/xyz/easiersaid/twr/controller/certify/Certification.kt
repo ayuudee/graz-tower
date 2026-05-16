@@ -236,6 +236,15 @@ object KotlinRuntimeKernelCertifiers : RuntimeKernelCertifiers {
         val aircraft = work.context.beliefs.trackedAircraft[work.action.aircraft]
             ?: return CertificationFailure.MissingAircraft(work.action.aircraft).left()
         val instruction = work.action.instruction
+        // fn-28.4 (R23) audit: the new `ARR-EXTEND-FOR-GA` rule emits
+        // `ExtendDownwind` to the trailing downwind aircraft (airborne
+        // by definition — the rule's `OnCircuitLeg(DOWNWIND)` guard
+        // requires the aircraft be in the airborne circuit pattern).
+        // The existing `is ExtendDownwind -> !aircraft.onGround` arm
+        // continues to cover the GA-driven extension correctly; no
+        // new clause required at this site or at the planning site
+        // (line ~559 below — same `ExtendDownwind` arm requires
+        // AirPath + Separation jointly).
         val coherent = when (instruction) {
             is ClearedForTakeoff -> aircraft.onGround
             is ClearedToLand,

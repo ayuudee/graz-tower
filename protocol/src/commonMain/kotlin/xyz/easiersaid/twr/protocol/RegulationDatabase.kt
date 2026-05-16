@@ -174,6 +174,32 @@ object RegulationDatabase {
     )
 
     /**
+     * fn-28.4 (R23): ICAO Doc 4444 17th ed. Ch 12 §12.3.4 —
+     * aerodrome-control phraseology covering circuit / sequencing
+     * instructions. Cited by `ARR-EXTEND-FOR-GA` (the controller-side
+     * multi-aircraft sequencing rule that extends trailing downwind
+     * traffic while a runway-scoped go-around is in progress). The
+     * §12.3.4.16 subsection captures the landing-clearance-delay
+     * phraseology including CONTINUE APPROACH; this top-level §12.3.4
+     * captures the broader sequencing phraseology umbrella (EXTEND
+     * DOWNWIND, TURN BASE, etc.).
+     *
+     * The edition string `ICAO_4444_EDITION` is the existing 17th-ed.
+     * (2024) constant defined in [RegulationRef.ICAO_4444_EDITION] —
+     * no new edition constant required; fn-28.4 acceptance "added if
+     * missing" was satisfied at fn-12-era when the same constant was
+     * introduced.
+     */
+    val ICAO4444_12_3_4 = RegulationRef(
+        document = "ICAO_4444", edition = RegulationRef.ICAO_4444_EDITION, section = "§12.3.4",
+        title = "Aerodrome-control sequencing phraseology",
+        principle = "Controller sequences circuit / arrival traffic via EXTEND DOWNWIND, TURN BASE, and " +
+            "related phraseology; the GA-in-progress case extends trailing downwind aircraft until " +
+            "the GA-aircraft has rejoined the pattern",
+        category = RegulationCategory.PHRASEOLOGY,
+    )
+
+    /**
      * ICAO Doc 4444 §7.10.2 — "Clearance to land". Source text:
      * "An aircraft may be cleared to land when there is reasonable assurance
      * that the separation in 7.10.1, or prescribed in accordance with 7.11,

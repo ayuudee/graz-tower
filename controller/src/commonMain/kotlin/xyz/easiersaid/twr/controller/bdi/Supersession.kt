@@ -55,7 +55,17 @@ enum class PendingReadbackPolicy {
  * Extend as new compounding sequencing instructions land in 5c.
  */
 val SUPERSESSION_RELATIONS: List<SupersessionRelation> = listOf(
-    // Circuit sequencing: later instructions supersede earlier delays
+    // Circuit sequencing: later instructions supersede earlier delays.
+    //
+    // fn-28.4 (R23) audit: this row is the cancel-output for the new
+    // `ARR-EXTEND-FOR-GA` rule's prior ExtendDownwind coordination.
+    // When the GA belief clears (Observe.withGoAroundInProgress fold —
+    // pattern-rejoin transmission `receivedAt > setAtTime`, OR 60s
+    // timeout), ARR-TURN-BASE's guard `Not(GoAroundInProgressOnRunway)`
+    // passes again and TURN BASE fires; this relation drops the
+    // pending ExtendDownwind on the same cycle. NO new supersession
+    // row needed for fn-28.4 — the existing row covers cancel-via-
+    // supersession per R23 round-10 Major 2.
     SupersessionRelation(TurnBase::class, ExtendDownwind::class, PendingReadbackPolicy.ABANDON),
     SupersessionRelation(Orbit::class, ExtendDownwind::class, PendingReadbackPolicy.ABANDON),
     SupersessionRelation(TurnBase::class, Orbit::class, PendingReadbackPolicy.ABANDON),

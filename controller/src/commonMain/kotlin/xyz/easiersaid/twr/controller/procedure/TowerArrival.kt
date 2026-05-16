@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.controller.bdi.ContinueApproachAction
 import xyz.easiersaid.twr.controller.bdi.ExtendDownwindAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
+import xyz.easiersaid.twr.controller.bdi.GoAroundInProgressOnRunway
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
 import xyz.easiersaid.twr.controller.bdi.HasReportedPositionCall
 import xyz.easiersaid.twr.controller.bdi.IsTransferTargetStaffed
@@ -89,6 +90,26 @@ import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.controller.observe.AdvancementPolicy
 
 /**
+ * fn-28.4 (R23) — multi-aircraft GA sequencing audit:
+ *  - **New rule**: `ARR-EXTEND-FOR-GA` at `AwaitApproach`, fires
+ *    `ExtendDownwind` to trailing downwind aircraft when
+ *    `BeliefState.goAroundInProgressByRunway` has an active entry for
+ *    the trailing aircraft's commitment runway. Drives off the
+ *    controller-observable `Report(GoingAround)` reception (NOT pilot-
+ *    internal `PilotPhase` state — firewall preserved).
+ *  - **Gating change**: `ARR-TURN-BASE` adds `Not(GoAroundInProgressOnRunway)`
+ *    to its guard so a downwind aircraft is not turned base into a GA-
+ *    active runway. When the GA belief clears (pattern-rejoin /
+ *    timeout), TURN BASE fires and the existing
+ *    `SupersessionRelation(TurnBase, ExtendDownwind, ABANDON)` row
+ *    drops B's prior ExtendDownwind coordination — concrete cancel
+ *    per R23 round-10 Major 2 (no new supersession row required).
+ *  - **Certification clauses** (`Certification.kt:246,559`): `ExtendDownwind`
+ *    already requires `KernelRequirement.AirPath` + `Separation` (jointly
+ *    certified). The `ARR-EXTEND-FOR-GA` rule's output goes through the
+ *    same certification path as `ARR-EXTEND` — no new clause needed;
+ *    audited at task-impl time.
+ *
  * Tower arrival procedure — the controller-side arrival flow's rule pipeline.
  *
  * **Three doctrinally distinct guard predicates at `AwaitApproach`** (fn-13
@@ -510,6 +531,58 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 urgency = Urgency.SAFETY,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
+            // fn-28.4 (R23): controller-side multi-aircraft sequencing for
+            // a runway-active go-around. Fires when:
+            //   (a) GoAroundInProgressOnRunway holds — the BeliefState.
+            //       goAroundInProgressByRunway slice has an active entry
+            //       for THIS commitment's runway (set by
+            //       Observe.withGoAroundInProgress when another aircraft's
+            //       Report(GoingAround) was received). The GA-going
+            //       aircraft has its own TOWER_ARRIVAL commitment that
+            //       was regressed by the GA-PRE-CLEAR / GA-POST-CLEAR
+            //       interrupts; this rule fires on the TRAILING aircraft
+            //       observed on downwind for the same runway.
+            //   (b) OnCircuitLeg(DOWNWIND) — controller-observable
+            //       predicate via worldIndex.circuitLegsByPoint[ac.position].
+            //       NO PilotPhase / aircraft.phase access (firewall: the
+            //       controller never reads pilot-internal mission state).
+            //
+            // Priority placement: BEFORE the existing ARR-EXTEND so the
+            // GA-driven extension takes precedence over the spacing-driven
+            // extension (and so the GA-driven extension fires even when
+            // separation-concern is below INTERVENTION — a downwind aircraft
+            // ~30s behind a GA-active runway might not register as a
+            // separation concern at all). Once the GA belief clears
+            // (pattern-rejoin report / 60s timeout / next cycle), this
+            // rule's guard returns false and the existing ARR-TURN-BASE
+            // rule's guard `Not(GoAroundInProgressOnRunway)` passes,
+            // emitting TurnBase to B in the SAME cycle. The existing
+            // SupersessionRelation(TurnBase, ExtendDownwind, ABANDON) row
+            // (Supersession.kt:59) then drops B's prior ExtendDownwind
+            // coordination — concrete cancel via supersession per
+            // R23 round-10 Major 2.
+            //
+            // Doctrine: ICAO Doc 4444 17th ed. Ch 12 §12.3.4 (aerodrome
+            // sequencing) + ICAO Doc 9432 Ch.4 (EXTEND DOWNWIND
+            // phraseology). The GA-driven extension is the doctrinal
+            // sequencing response when a same-runway GA is in progress.
+            //
+            // Retransmit cadence: same NoPendingReadback coordination
+            // lifecycle as the existing ARR-EXTEND — Issued → Querying →
+            // Reissued via the standard escalation flow.
+            AtcRule(
+                id = "ARR-EXTEND-FOR-GA",
+                description = "Extend downwind — go-around in progress on this runway",
+                regulations = listOf(ICAO4444_7_10, ICAO9432_EXTEND_DOWNWIND, ICAO4444_12_3_4),
+                guard = AllOf(listOf(
+                    OnCircuitLeg(LegName.DOWNWIND),
+                    GoAroundInProgressOnRunway,
+                    NoPendingReadback(instructionOfType<ExtendDownwind>()),
+                )),
+                action = ExtendDownwindAction,
+                urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
             // Extend downwind for spacing when no runway access yet
             AtcRule(
                 id = "ARR-EXTEND",
@@ -550,6 +623,22 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                     OnCircuitLeg(LegName.DOWNWIND),
                     Not(SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION)),
                     RunwayPhysicallyClear,
+                    // fn-28.4 (R23): don't turn a downwind aircraft into a
+                    // GA-active runway. While the runway-scoped GA belief
+                    // entry is live (set by Observe.withGoAroundInProgress
+                    // from Report(GoingAround), cleared on pattern-rejoin
+                    // or 60s timeout), trailing-aircraft sequencing is
+                    // handled by the ARR-EXTEND-FOR-GA rule above. The
+                    // moment the belief clears (next cycle after the
+                    // pattern-rejoin transmission, OR in the same cycle
+                    // the GA-aircraft transmits Downwind/Final/Base with
+                    // receivedAt > setAtTime), this guard returns true
+                    // again and TurnBase fires — superseding any extant
+                    // ExtendDownwind coordination via the existing
+                    // SupersessionRelation(TurnBase, ExtendDownwind,
+                    // ABANDON) row (concrete cancel-output contract
+                    // per R23 round-10 Major 2).
+                    Not(GoAroundInProgressOnRunway),
                     NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TurnBase>()),
                 )),
                 action = TurnBaseAction,

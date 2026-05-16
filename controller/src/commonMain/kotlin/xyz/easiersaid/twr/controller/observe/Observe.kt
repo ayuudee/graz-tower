@@ -1,10 +1,15 @@
 package xyz.easiersaid.twr.controller.observe
 
+import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.core.world.RunwayObstruction
 import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RequestApproach
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
@@ -284,6 +289,189 @@ internal fun intentFromRequestType(rt: RequestType): AircraftIntent? = when (rt)
     is RequestVisualApproach, is RequestShortApproach,
     is RequestRightBase, is RequestApproach -> AircraftIntent.Arriving
     else -> null
+}
+
+/**
+ * fn-28.4 (R23): runway-resolution failure for `Report(GoingAround)`.
+ *
+ * Either branch surfaces the diagnostic shape `resolveGoAroundRunway`
+ * returns when the reporting aircraft has no resolvable runway:
+ *  - no active TOWER_ARRIVAL commitment with a non-null `runway` field;
+ *  - no controller-side `activeRunway` belief either.
+ * Fail-closed: no arbitrary RunwayId silently written into the GA-belief.
+ */
+sealed interface GoAroundRunwayResolutionFailure {
+    /** Reporting aircraft has no arrival commitment in `BeliefState.commitments`. */
+    data class NoArrivalCommitment(val aircraft: AircraftId) : GoAroundRunwayResolutionFailure
+
+    /** Arrival commitment exists but its `runway` field is null. */
+    data class CommitmentRunwayNull(val aircraft: AircraftId) : GoAroundRunwayResolutionFailure
+
+    /** No commitment AND no `BeliefState.activeRunway` fallback. */
+    data class NoRunwayAnywhere(val aircraft: AircraftId) : GoAroundRunwayResolutionFailure
+}
+
+/**
+ * fn-28.4 (R23 + round-10 Major 3): resolve the runway for a
+ * `Report(GoingAround)` from [aircraft]. Primary source: the aircraft's
+ * active TOWER_ARRIVAL commitment in [beliefs] (the runway the controller
+ * committed the aircraft to landing on). Fallback: the controller's
+ * `BeliefState.activeRunway` for the aerodrome (round-10 Major 3 — used
+ * only when no commitment exists; the .5 scenario setup ensures
+ * ARR-LAND/-TNG commitments form before the wind shift so the primary
+ * path is the production path).
+ *
+ * Fail-closed: returns `Left(...)` when neither path yields a runway.
+ * The fold then drops the would-be belief write rather than silently
+ * writing an arbitrary key.
+ *
+ * **Plan-review reframing notes**: `Report(GoingAround)` carries no
+ * runway payload by design (`Report(listOf(ReportEvent.GoingAround))`).
+ * The controller's commitment ledger is the authoritative source — the
+ * controller already knows which runway the aircraft was approaching
+ * because it issued the landing clearance / arrival sequencing
+ * instructions. Using the commitment runway also keeps the belief
+ * stable across runway changes mid-cycle (the wind-shift case in .5's
+ * golden).
+ */
+fun resolveGoAroundRunway(
+    aircraft: AircraftId,
+    beliefs: BeliefState,
+): Either<GoAroundRunwayResolutionFailure, RunwayId> {
+    val commitment = beliefs.commitments[aircraft]
+    if (commitment != null && commitment.kind == CommitmentKind.TOWER_ARRIVAL) {
+        val runway = commitment.runway
+        if (runway != null) return runway.right()
+        // Commitment exists but runway field null — fall through to
+        // activeRunway fallback (round-10 Major 3).
+        val active = beliefs.activeRunway
+        return active?.right()
+            ?: GoAroundRunwayResolutionFailure.CommitmentRunwayNull(aircraft).left()
+    }
+    // No arrival commitment — try the global activeRunway fallback.
+    val active = beliefs.activeRunway
+    return active?.right()
+        ?: GoAroundRunwayResolutionFailure.NoArrivalCommitment(aircraft).left()
+}
+
+/**
+ * fn-28.4 (R23): fold [ControllerEvent.GoAroundDetected] and
+ * [ControllerEvent.PositionReported] events into
+ * [BeliefState.goAroundInProgressByRunway] under the R23 lifecycle:
+ *
+ *  - **SET** on `GoAroundDetected(aircraft)`: resolve runway via
+ *    [resolveGoAroundRunway]; on success AND the runway has no existing
+ *    entry (first-writer-wins per R23 round-7 Minor 1), write
+ *    `GoAroundInProgress(aircraft, setAtTime = now)`. Subsequent GA
+ *    reports for a runway with an active entry are IGNORED.
+ *  - **CLEAR (pattern-rejoin)**: a `PositionReported(aircraft, Downwind /
+ *    Final / Base)` event for the tracked aircraft, where `now >
+ *    entry.setAtTime`. The strict-inequality guard prevents a same-cycle
+ *    stale Final report (arriving alongside the GA report in the same
+ *    event batch) from immediately clearing what was just set —
+ *    round-13 Major 3.
+ *  - **CLEAR (timeout)**: any entry with
+ *    `now.millis - entry.setAtTime.millis >= GO_AROUND_TIMEOUT_MS` is
+ *    dropped. Applies regardless of `events` contents.
+ *
+ * Mirrors [withCircuitIntentEvents]'s shape: identity-equality
+ * short-circuit when no leaf changed the slice; explicit per-leaf arms
+ * over [ControllerEvent].
+ *
+ * **Firewall invariant**: sole write site for
+ * [BeliefState.goAroundInProgressByRunway]. `FirewallBeliefWriteTest`
+ * enforces this.
+ *
+ * **Doctrine**: ICAO Doc 4444 17th ed. Ch 12 §12.3.4 (aerodrome
+ * sequencing / circuit phraseology). The runway-active-GA belief is
+ * the controller-observable substrate driving downstream sequencing
+ * decisions (extend trailing downwind traffic; do not turn base into
+ * a GA-active runway).
+ */
+fun BeliefState.withGoAroundInProgress(
+    events: List<ControllerEvent>,
+    now: SimTime,
+): BeliefState {
+    // Phase 1: drop timed-out entries unconditionally (no events required).
+    val afterTimeout = goAroundInProgressByRunway.filterValues { entry ->
+        (now.millis - entry.setAtTime.millis) < BeliefState.GO_AROUND_TIMEOUT_MS
+    }
+    // Phase 2: pattern-rejoin clears — events from tracked aircraft whose
+    // current cycle time is strictly later than the entry's setAtTime.
+    val afterClears = events.fold(afterTimeout) { acc, ev ->
+        when (ev) {
+            is ControllerEvent.PositionReported -> {
+                if (!isPatternRejoin(ev.event)) acc
+                else acc.filterNot { (_, entry) ->
+                    entry.aircraftId == ev.aircraft && now.millis > entry.setAtTime.millis
+                }
+            }
+            // Non-position events do not clear.
+            is ControllerEvent.GoAroundDetected,
+            is ControllerEvent.ReadyForDepartureReceived,
+            is ControllerEvent.InitialContactReceived,
+            is ControllerEvent.ReadbackReceived,
+            is ControllerEvent.StartupRequested,
+            is ControllerEvent.TaxiRequested,
+            is ControllerEvent.ResponsibilityTaken,
+            is ControllerEvent.UnableReceived,
+            is ControllerEvent.TrafficInSightReceived,
+            is ControllerEvent.PilotRequestReceived,
+            is ControllerEvent.CircuitIntentReported,
+            is ControllerEvent.AircraftArrivalCommitted,
+            is ControllerEvent.RunwayObstructionDetected,
+            is ControllerEvent.RunwayObstructionCleared -> acc
+        }
+    }
+    // Phase 3: SETs from GoAroundDetected events (first-writer-wins).
+    val updated = events.fold(afterClears) { acc, ev ->
+        when (ev) {
+            is ControllerEvent.GoAroundDetected -> {
+                val runwayResolution = resolveGoAroundRunway(ev.aircraft, this)
+                val runway = runwayResolution.getOrNull() ?: return@fold acc
+                // First-writer-wins: if entry already exists for this
+                // runway, ignore the new report.
+                if (runway in acc) acc
+                else acc + (runway to GoAroundInProgress(ev.aircraft, now))
+            }
+            // Non-GA events do not set.
+            is ControllerEvent.PositionReported,
+            is ControllerEvent.ReadyForDepartureReceived,
+            is ControllerEvent.InitialContactReceived,
+            is ControllerEvent.ReadbackReceived,
+            is ControllerEvent.StartupRequested,
+            is ControllerEvent.TaxiRequested,
+            is ControllerEvent.ResponsibilityTaken,
+            is ControllerEvent.UnableReceived,
+            is ControllerEvent.TrafficInSightReceived,
+            is ControllerEvent.PilotRequestReceived,
+            is ControllerEvent.CircuitIntentReported,
+            is ControllerEvent.AircraftArrivalCommitted,
+            is ControllerEvent.RunwayObstructionDetected,
+            is ControllerEvent.RunwayObstructionCleared -> acc
+        }
+    }
+    return if (updated == goAroundInProgressByRunway) this
+    else copy(goAroundInProgressByRunway = updated)
+}
+
+/**
+ * Is this report event a pattern-rejoin transmission per the R23
+ * lifecycle? Downwind / Base / Final indicate the aircraft has rejoined
+ * the circuit pattern post-GA. Other report events (Ready, RunwayVacated,
+ * etc.) are not pattern-rejoin transmissions in the R23 sense.
+ */
+internal fun isPatternRejoin(event: ReportEvent): Boolean = when (event) {
+    is ReportEvent.Downwind, is ReportEvent.Base,
+    is ReportEvent.Final, is ReportEvent.LongFinal -> true
+    is ReportEvent.Ready, is ReportEvent.RunwayVacated,
+    is ReportEvent.Airborne, is ReportEvent.Established,
+    is ReportEvent.EstablishedLocaliser, is ReportEvent.EstablishedGlidepath,
+    is ReportEvent.GoingAround, is ReportEvent.VisualWithField,
+    is ReportEvent.EstablishedInHold, is ReportEvent.TcasRa,
+    is ReportEvent.MinimumFuel, is ReportEvent.PassingLevel,
+    is ReportEvent.LeavingLevel, is ReportEvent.DistanceDme,
+    is ReportEvent.OverFix -> false
 }
 
 private fun buildObservationHistory(

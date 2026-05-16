@@ -44,6 +44,7 @@ import xyz.easiersaid.twr.controller.observe.classifyReadback
 import xyz.easiersaid.twr.controller.observe.coordinationEscalationOutputs
 import xyz.easiersaid.twr.controller.observe.escalateOverdueCoordinations
 import xyz.easiersaid.twr.controller.observe.markCoordinationEscalationsEmitted
+import xyz.easiersaid.twr.controller.observe.withGoAroundInProgress
 import xyz.easiersaid.twr.controller.observe.withRecentRadio
 import xyz.easiersaid.twr.controller.observe.withCircuitIntentEvents
 import xyz.easiersaid.twr.controller.observe.withRunwayObstructionEvents
@@ -126,6 +127,15 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
             )
             b.copy(commitments = commitments)
         }
+        // fn-28.4 (R23): fold GoAroundDetected + pattern-rejoin reports
+        // into BeliefState.goAroundInProgressByRunway. Runs AFTER
+        // reconcileCommitments so the GA aircraft's TOWER_ARRIVAL
+        // commitment + runway are resolvable via the primary path
+        // (resolveGoAroundRunway reads beliefs.commitments[aircraft]).
+        // Runs BEFORE separationAssessment + arbitration so the
+        // downstream `GoAroundInProgressOnRunway` guard sees the
+        // updated slice within the SAME cycle.
+        .let { b -> b.withGoAroundInProgress(events, view.time) }
         .let { b ->
             // Observation-driven stage reconciliation: advance commitment stages
             // to match what the controller actually observes. Runs after

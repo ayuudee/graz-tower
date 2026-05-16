@@ -155,12 +155,63 @@ data class BeliefState(
      * on first contact).
      */
     val expectedAtisLetter: Map<xyz.easiersaid.twr.protocol.AerodromeId, Char> = emptyMap(),
+    /**
+     * fn-28.4 (R23): per-runway active go-around-in-progress belief.
+     *
+     * SET on `ControllerEvent.GoAroundDetected` reception, with the runway
+     * resolved from the reporting aircraft's active arrival commitment
+     * (TOWER_ARRIVAL `Commitment.runway`) via `resolveGoAroundRunway`. If
+     * no resolvable runway is found, the write is FAIL-CLOSED (no entry
+     * written; the fold logs nothing — diagnostic surfaces via the absence
+     * of an entry on the runway downstream rules would otherwise have
+     * gated against).
+     *
+     * CLEARED on:
+     *  - pattern-rejoin transmission from the tracked aircraft
+     *    (`Report(Downwind)` / `Report(Final)` / `Report(Base)`) with
+     *    `receivedAt > setAtTime`. The `receivedAt` source is the
+     *    controller's cycle wall clock (`ControllerView.time`); the
+     *    strict-inequality guard prevents a same-cycle stale Final report
+     *    (arriving alongside the GoAround in the same event batch) from
+     *    immediately clearing what was just set.
+     *  - 60s deterministic timeout from `setAtTime`. Bounded to recover
+     *    if no pattern-rejoin transmission is heard (radio failure,
+     *    aircraft diverted, etc.).
+     *  - concrete cancel-output emission (`TurnBase` to the trailing
+     *    aircraft): covered indirectly via the existing
+     *    `SupersessionRelation(TurnBase, ExtendDownwind, ABANDON)` row
+     *    that drops the ExtendDownwind coordination, plus the natural
+     *    ARR-TURN-BASE rule firing once the belief clears.
+     *
+     * **Tie-breaking** (R23 round-7 Minor 1): first-writer-wins until
+     * cleared. When a second `Report(GoingAround)` arrives for a runway
+     * with an active belief entry, the new report is IGNORED until the
+     * existing entry clears. Deterministic and simple — the multi-GA
+     * pile-up case is out of scope for v1.
+     *
+     * Read by [xyz.easiersaid.twr.controller.bdi.GoAroundInProgressOnRunway]
+     * to gate `ARR-EXTEND-FOR-GA` (emit `ExtendDownwind` to trailing
+     * downwind traffic while the runway is GA-active) and to negate
+     * `ARR-TURN-BASE` (don't turn a downwind aircraft into a GA-active
+     * runway).
+     *
+     * **Single-write site**: `Observe.withGoAroundInProgress`.
+     * `FirewallBeliefWriteTest` enforces.
+     */
+    val goAroundInProgressByRunway: Map<xyz.easiersaid.twr.protocol.RunwayId, GoAroundInProgress> = emptyMap(),
 ) {
     companion object {
         val EMPTY = BeliefState()
         const val MAX_OBSERVATION_HISTORY = 5
         /** Cooldown before concern severity can drop, in milliseconds. */
         const val CONCERN_COOLDOWN_MS = 15_000L
+        /**
+         * fn-28.4 (R23): GA-belief timeout. After 60s with no observable
+         * pattern-rejoin transmission, the belief clears deterministically.
+         * Bounded so a radio failure / diverted GA doesn't strand the
+         * trailing-aircraft sequencing.
+         */
+        const val GO_AROUND_TIMEOUT_MS = 60_000L
         /**
          * Time window for the [recentRadio] slice. 5 sim-minutes — bounded
          * by ATC's working-memory horizon. Real controllers remember recent
@@ -170,6 +221,23 @@ data class BeliefState(
             xyz.easiersaid.twr.protocol.SimDuration.ofMillis(5 * 60 * 1000L)
     }
 }
+
+/**
+ * fn-28.4 (R23): typed record for a runway-scoped go-around-in-progress
+ * belief entry. Lives on [BeliefState.goAroundInProgressByRunway].
+ *
+ * The belief is persistent across cycles (carried on `BeliefState`, not
+ * `ControllerView` which is rebuilt per cycle). `aircraftId` identifies
+ * the aircraft whose `Report(GoingAround)` set the entry; pattern-rejoin
+ * transmissions from this aircraft are the primary clear path.
+ * `setAtTime` is the cycle wall clock (`ControllerView.time`) at the
+ * moment the entry was written; the strict-inequality clear guard
+ * (`receivedAt > setAtTime`) reads against this field.
+ */
+data class GoAroundInProgress(
+    val aircraftId: xyz.easiersaid.twr.protocol.AircraftId,
+    val setAtTime: xyz.easiersaid.twr.protocol.SimTime,
+)
 
 /** Last committed concern level for a follower aircraft, with timestamp. */
 data class RecentConcern(

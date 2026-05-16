@@ -48,6 +48,9 @@ class FirewallBeliefWriteTest {
             // `circuitIntent`'s single-writer discipline).
             "Observe.kt" to setOf(
                 "recentRadio", "circuitIntent", "coordinations", "runwayObstructions",
+                // fn-28.4 (R23): per-runway go-around-in-progress belief.
+                // Single-write site: `Observe.withGoAroundInProgress`.
+                "goAroundInProgressByRunway",
             ),
             "Readback.kt" to setOf("coordinations"),
             "CoordinationEscalation.kt" to setOf("coordinations"),
@@ -66,6 +69,9 @@ class FirewallBeliefWriteTest {
             // fn-12 (R4): per-runway obstruction belief slice. Single-write
             // site `Observe.withRunwayObstructionEvents`.
             "runwayObstructions",
+            // fn-28.4 (R23): per-runway go-around-in-progress belief slice.
+            // Single-write site `Observe.withGoAroundInProgress`.
+            "goAroundInProgressByRunway",
         )
         val mutationPattern = Regex(
             """\.copy\s*\([^)]*\b(${sliceNames.joinToString("|")})\s*=""",

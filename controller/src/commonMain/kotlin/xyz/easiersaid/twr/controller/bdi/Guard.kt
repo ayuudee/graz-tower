@@ -599,6 +599,41 @@ data object ContinueApproachAlreadyIssuedThisAttempt : RuleGuard {
 }
 
 /**
+ * fn-28.4 (R23): the controller's runway-scoped go-around-in-progress
+ * belief (`BeliefState.goAroundInProgressByRunway`) has an active entry
+ * for THIS commitment's runway. The aircraft this guard evaluates is
+ * the *trailing* aircraft (the one we are deciding to extend or hold
+ * back from turning base) — NOT the GA-going aircraft. The GA-aircraft's
+ * runway is resolved at fold time via [resolveGoAroundRunway] and is
+ * what populates the belief slice.
+ *
+ * Resolves the runway from `commitment.runway ?: ctx.beliefs.activeRunway`
+ * (mirrors `WithinDistanceOfThreshold` shape). Fail-closed false when
+ * neither is resolvable.
+ *
+ * Used by `ARR-EXTEND-FOR-GA` (emit `ExtendDownwind` to trailing
+ * downwind traffic while a GA is in progress on the same runway) and
+ * as `Not(GoAroundInProgressOnRunway)` on `ARR-TURN-BASE` (do not turn
+ * a downwind aircraft into a GA-active runway).
+ *
+ * **Read-only**: this guard reads the belief slice but does NOT write
+ * it. The single write site is `Observe.withGoAroundInProgress`.
+ *
+ * **No PilotPhase access** (firewall): the trailing-aircraft observation
+ * is via the standard controller-observable predicates (`OnCircuitLeg`
+ * for downwind-leg membership via `worldIndex.circuitLegsByPoint`,
+ * `PositionReported` for radio position reports). This guard adds the
+ * runway-scoped GA-state read — purely a belief-state read.
+ */
+data object GoAroundInProgressOnRunway : RuleGuard {
+    override val failureMessage = "No go-around in progress on this commitment's runway"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean {
+        val runway = commitment.runway ?: ctx.beliefs.activeRunway ?: return false
+        return runway in ctx.beliefs.goAroundInProgressByRunway
+    }
+}
+
+/**
  * fn-13.1 (R1): safety margin added to obstruction-clears-in-time predicate
  * to absorb pilot-reaction-time variance + sensor-update-cycle latency.
  *
