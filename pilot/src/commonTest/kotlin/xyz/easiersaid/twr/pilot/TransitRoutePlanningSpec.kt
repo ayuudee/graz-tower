@@ -315,4 +315,128 @@ class TransitRoutePlanningSpec {
         assertEquals(tick1Route.waypoints, tick2Route.waypoints,
             "Tick 2 intent's route waypoints must equal tick 1's (intent stability)")
     }
+
+    @Test
+    fun `planRoute discriminator — Transit + FLY_DEPARTURE inside recovery Circuit does NOT plan cruise`() {
+        // fn-28.6 R14 round-14 Major 1: after a Transit-arrival reactive
+        // GA suffix replacement, the active leaf advances into the recovery
+        // `circuitTask()` subtree — FLY_DEPARTURE becomes active AGAIN as the
+        // first primitive of the recovery circuit, but the mission goal is
+        // still `HighLevelGoal.Transit`. The pre-fix code would route this
+        // FLY_DEPARTURE through `planTransitCruise` — WRONG. The discriminator
+        // gates: treat Transit+FLY_DEPARTURE as cruise ONLY when the active
+        // primitive is the original flat Transit departure primitive (no
+        // nested Circuit / CircuitAfterGoAround / GoAround wrapper).
+        //
+        // **Setup**: a Transit mission whose root contains GoAround (complete)
+        // + Circuit (active, FLY_DEPARTURE is its first primitive) + ... — the
+        // post-suffix-replace post-GOING_AROUND-complete state. `planRoute`
+        // must NOT call `planTransitCruise` here. Without a procedures-resolved
+        // world the cruise path would fail with `NoArrivalProcedure` →
+        // `PlanRouteOutcome.Failed`. With an empty/minimal world AND the
+        // discriminator firing correctly, the post-GA recovery path falls
+        // through to the regular logic (which requires an `activeRunway`;
+        // without one, it skips early). The behavioural pin: NOT a Failed/Plan
+        // outcome that came from the cruise arm.
+        val emptyWorld = AviationWorld(aerodromes = emptyMap()).toPilotView()
+        // GoAround compound (complete: GOING_AROUND is REPORTED — mark
+        // completed = true). Circuit compound (active: FLY_DEPARTURE is the
+        // first primitive of `circuitTask()`).
+        val postGoAroundMission = PilotMission(
+            goal = HighLevelGoal.Transit(destination = DESTINATION),
+            root = CompoundTask(
+                name = TaskName.Transit,
+                children = listOf(
+                    CompoundTask(
+                        name = TaskName.GoAround,
+                        children = listOf(
+                            PrimitiveTask(MissionStep.GOING_AROUND, CompletionMode.REPORTED, completed = true),
+                        ),
+                    ),
+                    circuitTask(),
+                    groundArrivalTask(),
+                ),
+            ),
+            stepEnteredAt = xyz.easiersaid.twr.protocol.SimTime.ofMillis(0),
+        )
+        // Sanity: active step is FLY_DEPARTURE (circuit's first primitive).
+        assertEquals(
+            MissionStep.FLY_DEPARTURE,
+            postGoAroundMission.currentTask?.step,
+            "test scaffold: post-GoAround active step is circuit's FLY_DEPARTURE",
+        )
+        // Sanity: activeCompound() returns the Circuit compound name.
+        assertEquals(
+            TaskName.Circuit,
+            postGoAroundMission.root.activeCompound()?.name,
+            "test scaffold: activeCompound() returns the Circuit compound (recovery shape)",
+        )
+
+        // Without the discriminator, `planRoute` would call `planTransitCruise`
+        // → fail to resolve LJMB's arrival procedure → `PlanRouteOutcome.Failed`.
+        // With the discriminator, planRoute falls through past the
+        // `step == FLY_DEPARTURE && goal is Transit` cruise check (because
+        // activeCompound is Circuit) and through to the activeRunway gate
+        // (which fails closed → Skip, since the test mission has no
+        // activeRunway). The behavioural pin: NOT a `Failed`.
+        val aircraft = AircraftState(
+            id = xyz.easiersaid.twr.protocol.AircraftId("OE-XYZ"),
+            callsign = xyz.easiersaid.twr.protocol.Callsign("OEXYZ"),
+            position = xyz.easiersaid.twr.core.world.Position(0.0, 0.0),
+            positionPoint = PointId("STAND"),
+            phase = PilotPhase.Final,
+        )
+        val outcome = planRoute(
+            mission = postGoAroundMission,
+            aircraft = aircraft,
+            kinematicRoute = PilotRoute.None,
+            world = emptyWorld,
+            worldIndex = xyz.easiersaid.twr.core.world.WorldIndex(),
+        )
+        assertTrue(
+            outcome is PlanRouteOutcome.Skip,
+            "post-GA recovery FLY_DEPARTURE skips cruise; without activeRunway falls through to Skip; got $outcome",
+        )
+    }
+
+    @Test
+    fun `planRoute discriminator — Transit + FLY_DEPARTURE direct child still plans cruise`() {
+        // Negative pin: the existing cruise contract must still hold for the
+        // pre-GA Transit mission shape (FLY_DEPARTURE as direct primitive
+        // child of Transit, no inner compound). A regression to "always skip
+        // cruise" would fail here.
+        val procedures = mapOf(
+            procedure("a_arr", PublishedVfrProcedureKind.ARRIVAL,
+                publishedSequence = listOf(fix("OSMOT", "LJMB_FIX_OSMOT"))),
+        )
+        val w = world(procedures)
+        val cruiseMission = PilotMission(
+            goal = HighLevelGoal.Transit(destination = DESTINATION),
+            root = CompoundTask(
+                name = TaskName.Transit,
+                children = listOf(
+                    PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
+                ),
+            ),
+            stepEnteredAt = xyz.easiersaid.twr.protocol.SimTime.ofMillis(0),
+        )
+        val aircraft = AircraftState(
+            id = xyz.easiersaid.twr.protocol.AircraftId("OE-XYZ"),
+            callsign = xyz.easiersaid.twr.protocol.Callsign("OEXYZ"),
+            position = xyz.easiersaid.twr.core.world.Position(0.0, 0.0),
+            positionPoint = PointId("STAND"),
+            phase = PilotPhase.AtStand,
+        )
+        val outcome = planRoute(
+            mission = cruiseMission,
+            aircraft = aircraft,
+            kinematicRoute = PilotRoute.None,
+            world = w,
+            worldIndex = xyz.easiersaid.twr.core.world.WorldIndex(),
+        )
+        assertTrue(
+            outcome is PlanRouteOutcome.Plan,
+            "pre-GA Transit cruise: discriminator does NOT skip cruise; got $outcome",
+        )
+    }
 }

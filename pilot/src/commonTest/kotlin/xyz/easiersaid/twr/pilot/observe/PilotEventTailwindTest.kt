@@ -283,16 +283,18 @@ class PilotEventTailwindTest {
     }
 
     @Test
-    fun `tailwind does NOT fire when active compound is NOT circuit-like — fail-closed mission-shape guard`() {
-        // fn-14.1 codex review fix, lifted to a shared helper in fn-15.1:
-        // a Transit-arrival mission carries FLY_FINAL directly under the
-        // Transit compound (no inner Circuit wrapper). `applyTailwindGoAround`'s
-        // subtree-rewrite predicate uses `isCircuitLike()` and would find
-        // no match — firing here would emit `Report(GoingAround)` without
-        // rewriting the tree, breaking hysteresis. Multi-aerodrome /
-        // Transit-arrival reactive tailwind is filed as
-        // `D-PASS-g3b-react-cross-aerodrome-tailwind`. Recognition fails
-        // closed at the derivation stage via `isReactiveGoAroundEligible`.
+    fun `tailwind FIRES on Transit-arrival shape — fn-28dot6 R18 disjunctive eligibility`() {
+        // fn-28.6 (round-12 Major 1 widening — closes the prior
+        // `D-PASS-g3b-react-cross-aerodrome-tailwind` deferment): a
+        // Transit-arrival mission carries FLY_FINAL directly under the
+        // Transit compound (no inner Circuit wrapper). Recognition now
+        // gates on a disjunctive eligibility:
+        //   isReactiveGoAroundEligible(mission)               // circuit-shape
+        //     || isTransitArrivalReactiveGoAroundEligible(    // Transit-arrival
+        //         aircraft, mission)
+        // The apply path's dispatch fork in `applyTailwindGoAround` uses
+        // `replaceFromActivePrimitive(listOf(goAroundTask(), circuitTask(),
+        // groundArrivalTask()))` (R22) for the Transit branch.
         val transitMission = PilotMission(
             goal = HighLevelGoal.Transit(destination = null),
             root = CompoundTask(
@@ -302,14 +304,39 @@ class PilotEventTailwindTest {
             stepEnteredAt = SimTime.ZERO,
             activeRunway = Some(RunwayAssignment(runway27, RunwayAssignmentSource.Filing)),
         )
+        val event = derivePilotEvent(
+            aircraftOnFinal(),
+            transitMission,
+            weather = availableWind(directionDegrees = 90, speedKnots = 15),
+        )
+        assertTrue(
+            event is PilotEvent.TailwindLimitExceeded,
+            "Transit-arrival reactive tailwind now fires post-fn-28.6 widening; got $event",
+        )
+    }
+
+    @Test
+    fun `tailwind does NOT fire on Transit cruise shape — FLY_DEPARTURE active`() {
+        // Sibling negative row: a Transit mission in cruise (FLY_DEPARTURE
+        // active as direct child of Transit) does NOT satisfy the
+        // disjunctive eligibility. The Transit-arrival guard's step-set
+        // gate filters out FLY_DEPARTURE — recognition fails closed.
+        val transitCruiseMission = PilotMission(
+            goal = HighLevelGoal.Transit(destination = null),
+            root = CompoundTask(
+                name = TaskName.Transit,
+                children = listOf(PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL)),
+            ),
+            stepEnteredAt = SimTime.ZERO,
+            activeRunway = Some(RunwayAssignment(runway27, RunwayAssignmentSource.Filing)),
+        )
         assertNull(
             derivePilotEvent(
                 aircraftOnFinal(),
-                transitMission,
+                transitCruiseMission,
                 weather = availableWind(directionDegrees = 90, speedKnots = 15),
             ),
-            "Transit mission with FLY_FINAL as direct primitive child of Transit (non-circuit-like " +
-                "active compound) → no event (G3b-react-tailwind deferred)",
+            "Transit cruise (FLY_DEPARTURE) is NOT in the Transit-arrival wind-reactive eligible set",
         )
     }
 

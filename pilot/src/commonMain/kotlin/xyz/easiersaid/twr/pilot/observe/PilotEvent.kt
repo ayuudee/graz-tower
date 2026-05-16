@@ -9,6 +9,7 @@ import xyz.easiersaid.twr.pilot.activeCompound
 import xyz.easiersaid.twr.pilot.computeDensityAltitudeFeet
 import xyz.easiersaid.twr.pilot.isCircuitLike
 import xyz.easiersaid.twr.pilot.isDensityAltitudeDeclineEligible
+import xyz.easiersaid.twr.pilot.isTransitArrivalReactiveGoAroundEligible
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.WindReport
@@ -422,8 +423,14 @@ private val WIND_REACTIVE_ELIGIBLE_STEPS: Set<MissionStep> = setOf(
  *  - `aircraft.phase is PilotPhase.Final`
  *  - mission's current step in [WIND_REACTIVE_ELIGIBLE_STEPS] —
  *    NOT clearance-gated (independent of `mission.hasClearance`)
- *  - mission-shape guard via [isReactiveGoAroundEligible] —
- *    `activeCompoundName.isCircuitLike()`
+ *  - mission-shape guard: disjunctive eligibility
+ *    `isReactiveGoAroundEligible(mission) ||
+ *     isTransitArrivalReactiveGoAroundEligible(aircraft, mission)`
+ *    (round-12 Major 1 / fn-28.6 widening). Circuit/T&G/CAG shapes fall
+ *    through the first disjunct; Transit-arrival pre-GA shapes fall
+ *    through the second. The apply path's dispatch fork in
+ *    `applyCrosswindGoAround` / `applyTailwindGoAround` decides which
+ *    rewrite mechanism to use.
  *  - `weather is WindReport.Available` — fail-closed on null /
  *    `NotReported`
  *  - `mission.activeRunway is Some`
@@ -434,8 +441,14 @@ private val WIND_REACTIVE_ELIGIBLE_STEPS: Set<MissionStep> = setOf(
  *  - `aircraft.phase is PilotPhase.Final`
  *  - mission's current step in [WIND_REACTIVE_ELIGIBLE_STEPS] —
  *    NOT clearance-gated (independent of `mission.hasClearance`)
- *  - mission-shape guard via [isReactiveGoAroundEligible] —
- *    `activeCompoundName.isCircuitLike()`
+ *  - mission-shape guard: disjunctive eligibility
+ *    `isReactiveGoAroundEligible(mission) ||
+ *     isTransitArrivalReactiveGoAroundEligible(aircraft, mission)`
+ *    (round-12 Major 1 / fn-28.6 widening). Circuit/T&G/CAG shapes fall
+ *    through the first disjunct; Transit-arrival pre-GA shapes fall
+ *    through the second. The apply path's dispatch fork in
+ *    `applyCrosswindGoAround` / `applyTailwindGoAround` decides which
+ *    rewrite mechanism to use.
  *  - `weather is WindReport.Available` — fail-closed on null /
  *    `NotReported`
  *  - `mission.activeRunway is Some` — a runway must be assigned for
@@ -684,14 +697,23 @@ private fun deriveCrosswindEvent(
     if (step !in WIND_REACTIVE_ELIGIBLE_STEPS) return null
 
     // Mission-shape guard (fn-14.1 codex review fix, lifted to a shared
-    // helper in fn-15.1): only fire when the pilot's active compound is
-    // circuit-like, i.e. a tree the response applier
-    // (`applyCrosswindGoAround` → `replaceChild { isCircuitLike }`) can
-    // rewrite. See [isReactiveGoAroundEligible] KDoc for the
-    // recognition+apply pipeline rationale (Transit-arrival mission
-    // shape fails closed; multi-aerodrome reactive recognition is filed
-    // as `D-PASS-g3b-react-cross-aerodrome-crosswind`).
-    if (!isReactiveGoAroundEligible(mission)) return null
+    // helper in fn-15.1; widened for Transit-arrival in fn-28.6 / round-12
+    // Major 1): only fire when the pilot's mission-shape is rewritable by
+    // the apply path. fn-28.6 introduces the Transit-arrival reactive-GA
+    // dispatch fork in `applyCrosswindGoAround` (R18) — Transit-arrival
+    // missions are rewritten via `replaceFromActivePrimitive(listOf(
+    // goAroundTask(), circuitTask(), groundArrivalTask()))` instead of the
+    // circuit-only `replaceChild { isCircuitLike }`. Recognition must agree
+    // with BOTH apply paths, hence the disjunctive eligibility:
+    //   isReactiveGoAroundEligible(mission)               // circuit/T&G/CAG
+    //     || isTransitArrivalReactiveGoAroundEligible(    // Transit-arrival
+    //         aircraft, mission)
+    //
+    // Pinned by `bug/build-errors/recognitionapply-pipelines-need-mission-2026-05-11`
+    // — recognition firing on shapes the apply silently no-ops is the canonical
+    // pipeline failure mode.
+    if (!isReactiveGoAroundEligible(mission) &&
+        !isTransitArrivalReactiveGoAroundEligible(aircraft, mission)) return null
 
     // Weather guard: fail-closed on null + NotReported.
     val report = weather as? WindReport.Available ?: return null
@@ -761,12 +783,13 @@ private fun deriveTailwindEvent(
     val step = mission.currentTask?.step ?: return null
     if (step !in WIND_REACTIVE_ELIGIBLE_STEPS) return null
 
-    // Mission-shape guard (shared with crosswind branch): only fire when
-    // the pilot's active compound is circuit-like, i.e. a tree the
-    // response applier (`applyTailwindGoAround` → `replaceChild
-    // { isCircuitLike }`) can rewrite. See [isReactiveGoAroundEligible]
+    // Mission-shape guard (shared with crosswind branch; widened for
+    // Transit-arrival in fn-28.6 / round-12 Major 1): mirrors the crosswind
+    // branch's disjunctive check. See [isReactiveGoAroundEligible] KDoc and
+    // [xyz.easiersaid.twr.pilot.isTransitArrivalReactiveGoAroundEligible]
     // KDoc for the recognition+apply pipeline rationale.
-    if (!isReactiveGoAroundEligible(mission)) return null
+    if (!isReactiveGoAroundEligible(mission) &&
+        !isTransitArrivalReactiveGoAroundEligible(aircraft, mission)) return null
 
     // Weather guard: fail-closed on null + NotReported.
     val report = weather as? WindReport.Available ?: return null

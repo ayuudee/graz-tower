@@ -69,6 +69,105 @@ Cross-aerodrome foundation: TWO problems.
 - [ ] NO new deferment filed
 - [ ] `./gradlew :pilot:jvmTest :sim:jvmTest detekt --offline --no-daemon` GREEN
 
+## Resolved during implementation
+
+**(a) Weather projection — AUDIT, no FIX needed (no new deferment)**
+
+The current projection in `sim/.../PilotWiring.kt::buildPilotInput` is correct
+as-is. Both `weatherByAerodrome` and `densityAltitudeInputsByAerodrome` are
+projected via `state.world.aerodromes.mapNotNull { (id, a) -> ... }` —
+publishing the wind / DA-input slice for EVERY aerodrome whose weather has
+the relevant required fields (oat + qnh + elevation for DA; wind for wind).
+Geographic gating (an "ARP-circular" gate around the aircraft) is **not
+needed** because the consumer helpers already fail closed on multi-aerodrome
+ambiguity:
+
+- `windForMission(mission, weatherByAerodrome)`: when the mission's goal
+  carries a `destination` (Transit / Departure), the helper keys the lookup
+  on the destination aerodrome. When the goal doesn't carry one (Arrival /
+  CircuitTraining), the helper uses a singleton fallback (only when the map
+  has exactly one entry; ≥2 entries → null). Multi-aerodrome scenarios with
+  ambiguous goal keys return null — recognition fails closed.
+- `densityAltitudeInputForMission(mission, densityAltitudeInputsByAerodrome)`:
+  the post-round-9 helper keys on `mission.filedPlan?.departureAerodrome`
+  first; falls back to singleton-only resolution. Multi-aerodrome scenarios
+  without a filed plan return null — recognition fails closed.
+
+The projection therefore carries every available aerodrome's data, and the
+goal-keyed / filed-plan-keyed lookup at the recognition site is the
+authoritative narrowing. A tighter ARP-circular projection gate would be
+defensible (real pilots only know about nearby aerodromes), but it's
+upstream-redundant with the existing mission-shape narrowing AND would risk
+masking foundation defects in multi-aerodrome scenarios (the recognition
+helpers' fail-closed paths would never exercise with the geographic gate
+intercepting first). **No projection change in fn-28.6; no new deferment
+filed.** The pilot firewall's `PilotInput.weatherByAerodrome` /
+`PilotInput.densityAltitudeInputsByAerodrome` KDoc continues to document the
+slice — no doc change required (the slice contract is unchanged).
+
+**(b) Transit GA continuation TaskNodes — `[goAroundTask(), circuitTask(),
+groundArrivalTask()]` per R22**
+
+Located in `pilot/.../PilotMission.kt`:
+- `goAroundTask()` — defined at line 793; produces `CompoundTask(GoAround,
+  [PrimitiveTask(GOING_AROUND, REPORTED)])`. VFR-only — the IFR sibling is
+  `ifrGoAroundTask()` at line 798.
+- `circuitTask()` — defined at line 746; produces `CompoundTask(Circuit,
+  [FLY_DEPARTURE → FLY_DOWNWIND → REPORT_DOWNWIND → AWAIT_SEQUENCING →
+  FLY_BASE → REPORT_BASE → FLY_FINAL → REPORT_FINAL →
+  AWAIT_LANDING_CLEARANCE → LAND])`.
+- `groundArrivalTask()` — defined at line 775; produces
+  `CompoundTask(GroundArrival, [REPORT_RUNWAY_VACATED →
+  AWAIT_VACATE_INSTRUCTION → TAXI_TO_STAND → SHUTDOWN])`.
+
+The suffix produces a full recovery-landing-and-taxi continuation: the
+aircraft goes around, re-enters a circuit, lands, and taxies to stand. No
+new MissionStep enum values introduced (no `GA_AT_DEST` — closed by epic
+R8 / round-4 Critical 2). All three helper names existed pre-fn-28 and
+match the R22 contract verbatim.
+
+**Transit GA Tick A intent** (R19 / round-4 Major 2):
+- `targetSpeedMps = aircraft.type.kinematics.climbSpeedMps` (NOT 0).
+- `phase = PilotPhase.Final` (retained — Tick B's planRoute special case
+  builds the GA climb route from "Final + no airborne route + FLY_DEPARTURE").
+- `route = PilotRoute.None` (invalidates kinematic route toward the no-longer-
+  landable runway).
+- `targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM` (pattern
+  altitude — mirrors all circuit-only reactive-GA Tick A intent shapes).
+
+**`resetForGoAround` placement** (round-16 Major 2): called BEFORE the suffix
+rewrite in `applyTransitArrivalReactiveGoAround`. Mirrors `handleGoAround`'s
+sequencing (`mission.resetForGoAround(now).copy(root = newRoot, ...)`).
+Every approach-side mutation is cleared: `hasClearance`, `activeConstraints`,
+`routeOverride`, `altitudeRestrictionM`, `joinLeg`, `lastReportedLeg`,
+`lastTransmittedStep`.
+
+**`planRoute` Transit-cruise discriminator** (R14 / round-14 Major 1):
+added at the top of `Pilot.kt::planRoute`. The pre-fix `if (step ==
+FLY_DEPARTURE && mission.goal is Transit) return planTransitCruise(...)`
+unconditionally dispatched to cruise for any Transit + FLY_DEPARTURE
+state. After the suffix replacement, the active leaf becomes
+`circuitTask()`'s first primitive (FLY_DEPARTURE), but inside a nested
+`Circuit` compound — the cruise dispatch would send the aircraft to the
+destination's published REP at cruise altitude (WRONG; the aircraft is
+on a circuit recovery). The fix gates on `mission.root.activeCompound()?.name`:
+cruise dispatches ONLY when the active inner compound is null (i.e. the
+FLY_DEPARTURE is a direct primitive child of the Transit compound — the
+original pre-GA cruise shape). Recovery FLY_DEPARTURE (active compound =
+`Circuit` / `CircuitAfterGoAround` / `GoAround`) falls through to the
+Visual-mode + Circuit-mode planner logic, which already handles the GA
+climb path.
+
+**Recognition+apply pipeline agreement** (round-12 Major 1):
+`deriveCrosswindEvent` + `deriveTailwindEvent` widened from
+`isReactiveGoAroundEligible(mission)` (circuit-only) to disjunctive
+`isReactiveGoAroundEligible(mission) ||
+isTransitArrivalReactiveGoAroundEligible(aircraft, mission)`. The apply
+appliers carry the matching dispatch fork. Per the pin
+`bug/build-errors/recognitionapply-pipelines-need-mission-2026-05-11`,
+both sides must agree to avoid the canonical recognition-fires-but-apply-
+silently-no-ops failure mode.
+
 ## Done summary
 
 _(filled by `flowctl done` at task close)_

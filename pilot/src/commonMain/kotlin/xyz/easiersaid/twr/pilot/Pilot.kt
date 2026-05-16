@@ -531,8 +531,37 @@ internal fun planRoute(
     // G2 Phase C: cross-aerodrome Transit cruise. Fires BEFORE the activeRunway
     // gate below — Transit cruise doesn't depend on a local runway assignment.
     // See [planTransitCruise] for the cache + resolve logic.
+    //
+    // fn-28.6 (R14 round-14 Major 1): Transit-cruise discriminator.
+    // After a Transit-arrival reactive GA suffix replacement (R22), the
+    // active leaf advances into the recovery `circuitTask()` subtree —
+    // FLY_DEPARTURE becomes active AGAIN as the first primitive of the
+    // recovery circuit, but the mission goal is still
+    // `HighLevelGoal.Transit`. The pre-discriminator code would route this
+    // FLY_DEPARTURE through `planTransitCruise` (sending the aircraft toward
+    // the destination's first published REP at cruise altitude) — WRONG
+    // for the post-GA recovery, which needs the Circuit-mode GA climb
+    // path.
+    //
+    // **Discriminator**: treat Transit+FLY_DEPARTURE as cruise ONLY when
+    // the active primitive is the ORIGINAL flat Transit departure primitive
+    // (i.e. a direct child of the Transit compound). When the active
+    // primitive lives inside a nested `Circuit` / `CircuitAfterGoAround`
+    // / `GoAround` compound (post-suffix-replacement recovery), fall
+    // through to the regular planRoute logic — Tick B's Circuit-mode
+    // GA-route special case (`planCircuitTrainedGoAround`) and Visual-mode
+    // GA-route special case (in `planVisualRoute`) handle the recovery
+    // climb.
     if (step == MissionStep.FLY_DEPARTURE && mission.goal is HighLevelGoal.Transit) {
-        return planTransitCruise(mission, mission.goal, aircraft, world)
+        val activeInner = mission.root.activeCompound()?.name
+        val isRecoveryShape = activeInner is TaskName.Circuit ||
+            activeInner is TaskName.CircuitAfterGoAround ||
+            activeInner is TaskName.GoAround
+        if (!isRecoveryShape) {
+            return planTransitCruise(mission, mission.goal, aircraft, world)
+        }
+        // else: fall through — Transit post-GA recovery FLY_DEPARTURE goes
+        // through the same path as a CircuitTraining FLY_DEPARTURE.
     }
 
     // The pilot's runway is on the mission, populated by `processInstruction`
@@ -950,6 +979,108 @@ internal data class GoAroundResult(
 )
 
 /**
+ * fn-28.6 (G3b cross-aerodrome reactive-GA R18 / R22 / round-4 Major 1 +
+ * round-11 Major 1): Transit-arrival reactive-GA eligibility guard.
+ *
+ * **What this gates**: a pilot-reactive wind-exceedance go-around during the
+ * arrival pattern of a `HighLevelGoal.Transit` mission, where the arrival
+ * primitives (FLY_FINAL / REPORT_FINAL / AWAIT_LANDING_CLEARANCE / LAND) are
+ * direct primitive children of the `Transit` compound — NOT wrapped in a
+ * `Circuit` / `CircuitAfterGoAround` / `TouchAndGo` subtree the way
+ * `CircuitTraining` or `Arrive` shapes are. The existing
+ * `isReactiveGoAroundEligible` guard (in `:pilot/observe/PilotEvent.kt`) is
+ * scoped to circuit-like compounds — it returns `false` for Transit-arrival
+ * because `mission.root.activeCompound()` is `null` (the active primitive is
+ * a direct child of `Transit`, not a nested `Circuit`).
+ *
+ * **R18 dispatch path** (round-4 Major 1): the existing
+ * [applyCrosswindGoAround] / [applyTailwindGoAround] appliers carry a Transit
+ * dispatch fork that consults this guard. When the guard holds, the apply
+ * dispatches to the `replaceFromActivePrimitive(listOf(goAroundTask(),
+ * circuitTask(), groundArrivalTask()))` (R22) path instead of the circuit-
+ * only `replaceChild { isCircuitLike }` rewrite. NO new event leaves; NO new
+ * pilotDecide branches; NO new applier function — single dispatch fork in
+ * the existing appliers.
+ *
+ * **Recognition+apply pipeline agreement** (round-12 Major 1): BOTH sides
+ * (`deriveCrosswindEvent` + `deriveTailwindEvent` in PilotEvent.kt AND the
+ * appliers here) consult the same disjunctive eligibility
+ * `isReactiveGoAroundEligible(mission) || isTransitArrivalReactiveGoAroundEligible(aircraft, mission)`.
+ * Recognition firing without apply matching (or vice versa) is the canonical
+ * failure mode — pinned by the memory entry
+ * `bug/build-errors/recognitionapply-pipelines-need-mission-2026-05-11`.
+ *
+ * **Predicate parts** (round-11 Major 1 — data-honest with available fields):
+ *  1. `mission.goal is HighLevelGoal.Transit` — mission-shape carries the
+ *     Transit-arrival arrival-pattern continuation. (`HighLevelGoal.Arrival`
+ *     missions also have arrival primitives, but they wrap them in a
+ *     `Circuit` subtree via `planMission` — the existing
+ *     `isReactiveGoAroundEligible` covers that path.)
+ *  2. **Active arrival primitive** in the wind-reactive eligible step set
+ *     (`FLY_FINAL` / `REPORT_FINAL` / `AWAIT_LANDING_CLEARANCE` / `LAND`)
+ *     AND that primitive is a direct child of the `Transit` compound (not
+ *     inside a nested `Circuit` subtree). The flat-shape check is
+ *     `mission.root.activeCompound() == null` — i.e. the active primitive
+ *     bubbles up to the root level rather than being inside a nested
+ *     compound. Pre-fn-28.6 Transit-arrival has no inner compounds for the
+ *     arrival primitives; post-fn-28.6 Transit-arrival GA, the suffix
+ *     replacement puts `GoAround` / `Circuit` compounds in, and
+ *     `activeCompound()` returns those — the guard no longer matches, so
+ *     recognition does NOT re-fire (no-refire invariant).
+ *  3. `mission.activeRunway` is set (the filed plan's `destinationRunway`
+ *     resolution per the Transit-arrival arrival-runway pairing).
+ *  4. `aircraft.phase == PilotPhase.Final` — the pilot is on the approach
+ *     descent. NO geometric "at destination aerodrome" check — Transit +
+ *     active-arrival-primitive + Final-phase is the v1 proxy. A future
+ *     ARP-circular gate would be a finer geographic check; v1 fails closed
+ *     to the mission-shape contract.
+ *
+ * **Home** (round-10 Minor 2): this file (`Pilot.kt`), not
+ * `:pilot/observe/PilotEvent.kt`. The guard is consumed by the apply path
+ * (`applyCrosswindGoAround` / `applyTailwindGoAround`), so its home is
+ * adjacent to the appliers. PilotEvent.kt imports it for the recognition-
+ * site disjunctive check.
+ *
+ * **Doctrine**: FAA AFH (FAA-H-8083-3C) Chapter 9 (crosswind/tailwind GAs);
+ * ICAO Annex 6 Part II §2.4 (PIC final authority); ICAO Doc 4444 §7.10.2
+ * (missed-approach handling); CAP 413 §4.66 (Ed 24 — pilot standalone
+ * phraseology).
+ */
+@Suppress("ReturnCount") // guard-clause early returns enumerate fail-closed modes
+internal fun isTransitArrivalReactiveGoAroundEligible(
+    aircraft: AircraftState,
+    mission: PilotMission,
+): Boolean {
+    // (1) Mission-shape: Transit goal.
+    if (mission.goal !is HighLevelGoal.Transit) return false
+    // (4) Aircraft on final approach.
+    if (aircraft.phase !is PilotPhase.Final) return false
+    // (3) Active-runway resolved.
+    if (mission.activeRunway.getOrNull() == null) return false
+    // (2a) Active primitive's step is in the wind-reactive eligible step set
+    // (the same final-side step set the recognition derives use). Note: this
+    // set is locally enumerated rather than imported from PilotEvent.kt to
+    // avoid a circular dependency — PilotEvent.kt imports this function.
+    val step = mission.currentTask?.step ?: return false
+    val transitArrivalWindReactiveSteps = setOf(
+        MissionStep.FLY_FINAL,
+        MissionStep.REPORT_FINAL,
+        MissionStep.AWAIT_LANDING_CLEARANCE,
+        MissionStep.LAND,
+    )
+    if (step !in transitArrivalWindReactiveSteps) return false
+    // (2b) Flat-shape check: the active primitive must be a direct child of
+    // the Transit compound (no nested Circuit / GoAround wrapper). After a
+    // Transit-arrival GA suffix replacement, the active primitive moves
+    // inside a nested compound (GoAround → Circuit → ...), so
+    // `activeCompound()` returns non-null and this guard returns false —
+    // the no-refire invariant (recognition does NOT fire on post-GA
+    // mission shapes).
+    if (mission.root.activeCompound() != null) return false
+    return true
+}
+
+/**
  * Pass 16 (D-AUDIT.9 partial closure) — response stage for the
  * pilot's self-initiated go-around. Consumes a typed
  * [xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance]
@@ -1062,13 +1193,35 @@ internal fun applySelfInitiatedGoAround(
  * errors); 14 CFR §23.233(a); ICAO Annex 6 Part II §2.4 (PIC final
  * authority); ICAO Doc 4444 §7.10.2 (missed-approach handling).
  */
-@Suppress("UnusedParameter") // event field names available to future leaves; keeps the typed shape explicit.
+// fn-28.6 (R18 dispatch fork): function now has an early-return for the
+// Transit-arrival dispatch path + the existing circuit-only return. Both are
+// guard-clause patterns; ReturnCount suppression mirrors `planRoute`'s
+// discipline at the top of this file.
+@Suppress("UnusedParameter", "ReturnCount") // event field names available to future leaves; keeps the typed shape explicit.
 internal fun applyCrosswindGoAround(
     event: xyz.easiersaid.twr.pilot.observe.PilotEvent.CrosswindLimitExceeded,
     mission: PilotMission,
     aircraft: AircraftState,
     now: SimTime,
 ): GoAroundResult {
+    // fn-28.6 (R18 round-4 Major 1): Transit-arrival dispatch fork. When the
+    // mission is a Transit-arrival reactive-GA shape (FLY_FINAL et al. as
+    // direct primitives of the Transit compound, Final-phase, active runway),
+    // dispatch to the suffix-replace path via
+    // `replaceFromActivePrimitive([goAroundTask(), circuitTask(),
+    // groundArrivalTask()])` (R22). Pre-rewrite `resetForGoAround(now)` is
+    // called BEFORE the rewrite (round-16 Major 2) to clear stale approach
+    // state — same discipline as the circuit-only branch below.
+    //
+    // The recognition site (`deriveCrosswindEvent` in PilotEvent.kt) is
+    // widened to a disjunctive eligibility check
+    // `isReactiveGoAroundEligible(mission) || isTransitArrivalReactiveGoAroundEligible(aircraft, mission)`
+    // so both Transit-arrival and circuit-shape missions can fire the
+    // recognition; the apply path's dispatch fork here decides which rewrite
+    // mechanism runs.
+    if (isTransitArrivalReactiveGoAroundEligible(aircraft, mission)) {
+        return applyTransitArrivalReactiveGoAround(mission, aircraft, now)
+    }
     val gaTask = if (mission.navigationMode.getOrNull() is NavigationMode.Instrument) ifrGoAroundTask()
         else goAroundTask()
     // Subtree predicate mirrors `handleGoAround` (PilotCognitive.kt:986)
@@ -1099,6 +1252,104 @@ internal fun applyCrosswindGoAround(
             // (planCircuitTrainedGoAround) builds the GA route on the
             // next tick — load-bearing reuse pinned by
             // PilotCrosswindTickATickBTest.
+            phase = PilotPhase.Final,
+            route = PilotRoute.None,
+            targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
+        ),
+        mission = updatedMission,
+        transmissions = listOf(Report(listOf(ReportEvent.GoingAround))),
+    )
+}
+
+/**
+ * fn-28.6 (R13 + R18 + R19 + R22 / round-4 Major 1, Major 2, Critical 2;
+ * round-16 Major 2): Transit-arrival reactive-GA apply.
+ *
+ * Shared by [applyCrosswindGoAround] and [applyTailwindGoAround] — both wind-
+ * axis appliers dispatch here when [isTransitArrivalReactiveGoAroundEligible]
+ * holds. Single dispatch fork; no new event leaves; no new applier per axis.
+ *
+ * **Mission delta** (R13 / R22):
+ *   `mission.resetForGoAround(now)`            // round-16 Major 2 — clear
+ *                                              // approach-side state BEFORE
+ *                                              // the rewrite
+ *     .copy(root = mission.root.replaceFromActivePrimitive(
+ *         listOf(goAroundTask(), circuitTask(), groundArrivalTask()),
+ *     ))
+ *
+ * The suffix-replace uses the R13 primitive [CompoundTask.replaceFromActivePrimitive]
+ * with the R22 contract: `[goAroundTask(), circuitTask(), groundArrivalTask()]`
+ * — the post-recovery `groundArrivalTask()` preserves the Transit mission's
+ * full recovery-landing-and-taxi continuation (the eventual landing after
+ * the circuit pattern completes). Pre-fn-28.6 Transit-arrival has its
+ * arrival primitives as direct children of the `Transit` compound; the
+ * suffix-replace drops the active-and-onward arrival primitives, replacing
+ * them with the GA + circuit + ground-arrival continuation.
+ *
+ * **resetForGoAround placement** (round-16 Major 2): called BEFORE the
+ * rewrite so the cleared mission state is the receiver of `.copy(root = ...)`.
+ * Mirrors `handleGoAround`'s sequencing (`mission.resetForGoAround(now).copy
+ * (root = newRoot, ...)`) — every approach-phase mutation (`hasClearance`,
+ * `activeConstraints`, `routeOverride`, `altitudeRestrictionM`, `joinLeg`,
+ * `lastReportedLeg`, `lastTransmittedStep`) is cleared. The circuit-only
+ * branches (`applyCrosswindGoAround` / `applyTailwindGoAround`'s
+ * post-fork body, `applySelfInitiatedGoAround`, `handleGoAround`) call
+ * `resetForGoAround(now).copy(root = newRoot)` in the same order — the
+ * Transit branch matches their discipline.
+ *
+ * **Tick A intent** (R19 / round-4 Major 2): aligns with the existing
+ * reactive-GA Tick A used by [applyCrosswindGoAround] / [applyTailwindGoAround]
+ * / [applyPlannedGoAround] / [applyAtcInitiatedGoAround]:
+ *  - `targetSpeedMps = aircraft.type.kinematics.climbSpeedMps` — NOT 0
+ *    (DA/abort regime, not Transit GA).
+ *  - `phase = PilotPhase.Final` retained — Tick B's planRoute special-cases
+ *    (Visual-mode + Circuit-mode) detect "Final + no airborne route +
+ *    FLY_DEPARTURE" and build the GA climb route.
+ *  - `route = PilotRoute.None` — invalidates the kinematic route toward the
+ *    threshold of the runway that is no longer landable.
+ *  - `targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM` — the
+ *    pattern altitude target for the climb-out leg.
+ *
+ * Transmits `Report(GoingAround)` — same as the circuit-only path. CAP 413
+ * §4.66 (Ed 24 — formerly §4.67 in Ed 23) / ICAO Doc 4444 §12.3.4.18: pilot
+ * has standalone phraseology authority.
+ *
+ * **No-refire invariant** (R18): after the suffix replacement, the active
+ * primitive moves inside the nested `GoAround` compound, so
+ * `mission.root.activeCompound()` returns non-null —
+ * [isTransitArrivalReactiveGoAroundEligible]'s flat-shape check fails and
+ * recognition does NOT re-fire on subsequent ticks.
+ */
+private fun applyTransitArrivalReactiveGoAround(
+    mission: PilotMission,
+    aircraft: AircraftState,
+    now: SimTime,
+): GoAroundResult {
+    // R13 / R22 suffix-replace: `[goAroundTask(), circuitTask(),
+    // groundArrivalTask()]`. The first compound's first primitive
+    // (GOING_AROUND, REPORTED) becomes the active leaf; cognitive layer
+    // emits the GA report. After GOING_AROUND completes, the active leaf
+    // advances into the `circuitTask()` subtree (FLY_DEPARTURE first),
+    // which the planRoute Transit-cruise discriminator (below) correctly
+    // routes via the circuit-shape recovery path.
+    val rewrittenRoot = mission.root.replaceFromActivePrimitive(
+        listOf(
+            goAroundTask(),
+            circuitTask(),
+            groundArrivalTask(),
+        ),
+    )
+    // round-16 Major 2: resetForGoAround BEFORE rewrite — clear stale approach
+    // state (hasClearance, constraints, route overrides, joinLeg,
+    // lastReportedLeg, lastTransmittedStep) so the post-GA circuit pattern
+    // starts fresh.
+    val updatedMission = mission.resetForGoAround(now).copy(root = rewrittenRoot)
+    return GoAroundResult(
+        intent = PilotIntent(
+            targetSpeedMps = aircraft.type.kinematics.climbSpeedMps,
+            // R19: Transit GA Tick A mirrors circuit-only Tick A —
+            // climbSpeedMps + Final + None + patternAltitude. NOT
+            // targetSpeedMps = 0 (DA/abort regime).
             phase = PilotPhase.Final,
             route = PilotRoute.None,
             targetAltitudeM = aircraft.type.circuitPattern.altitudeAglM,
@@ -1183,13 +1434,25 @@ internal fun applyCrosswindGoAround(
  * 4444 §7.11.6 (peer doctrinal anchor — 5 kt tailwind for reduced runway
  * separation minima, scope distinct from POH performance).
  */
-@Suppress("UnusedParameter") // event field names available to future leaves; keeps the typed shape explicit.
+// fn-28.6 (R18 dispatch fork): mirrors `applyCrosswindGoAround` — early-return
+// for Transit-arrival + existing circuit-only return; ReturnCount suppression
+// matches.
+@Suppress("UnusedParameter", "ReturnCount") // event field names available to future leaves; keeps the typed shape explicit.
 internal fun applyTailwindGoAround(
     event: xyz.easiersaid.twr.pilot.observe.PilotEvent.TailwindLimitExceeded,
     mission: PilotMission,
     aircraft: AircraftState,
     now: SimTime,
 ): GoAroundResult {
+    // fn-28.6 (R18 round-4 Major 1): Transit-arrival dispatch fork — mirrors
+    // [applyCrosswindGoAround]'s dispatch. Single-applier dispatch fork; no
+    // new event leaves; no new pilotDecide branches. See
+    // [applyTransitArrivalReactiveGoAround] KDoc for the suffix-replace
+    // contract (R13 + R22) + Tick A intent (R19) + reset placement (round-16
+    // Major 2) + no-refire invariant.
+    if (isTransitArrivalReactiveGoAroundEligible(aircraft, mission)) {
+        return applyTransitArrivalReactiveGoAround(mission, aircraft, now)
+    }
     val gaTask = if (mission.navigationMode.getOrNull() is NavigationMode.Instrument) ifrGoAroundTask()
         else goAroundTask()
     // Subtree predicate mirrors `applyCrosswindGoAround` /
