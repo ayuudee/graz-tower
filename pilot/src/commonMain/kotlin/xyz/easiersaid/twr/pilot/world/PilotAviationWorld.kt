@@ -71,17 +71,25 @@ import xyz.easiersaid.twr.protocol.VfrRouteId
  * **Construction discipline (R4).** [AviationWorld.toPilotView],
  * [Aerodrome.toPilotView], and [Runway.toPilotView] use exhaustive
  * **named-argument constructor wiring** (no `copy()`, no spread, no
- * reflection). When a future field is added to [Aerodrome] or [Runway]
- * in `:core`, every projection-constructor call site in this file
- * fails to compile until the implementer either (a) adds the field to
- * the projection (chart-equivalent / static reference data), or (b)
+ * reflection). Named-arg wiring is the **projection-construction-site
+ * gate**: if a new field is added to a projection type
+ * ([PilotAerodrome] / [PilotRunway] / [PilotAviationWorld]) and a
+ * `toPilotView` call site forgets to wire it, the projection-
+ * constructor call fails to compile. It does NOT, by itself, react to
+ * adding a field to the core entity in `:core` (the `PilotAerodrome(...)`
+ * call sites would still type-check). The complementary future-field
+ * gate is `FirewallPilotAviationWorldTest`'s reflection-driven
+ * property-set parity assertion (R8 #2/#3) — that test fails fast when
+ * `:core/Aerodrome` or `:core/Runway` gains a field not mirrored in the
+ * projection (or vice versa). Together: named-arg wiring stops sloppy
+ * projection construction; the parity tests catch bidirectional drift.
+ * When the parity test surfaces a missing field, the implementer either
+ * (a) adds the field to the projection (chart-equivalent / static
+ * reference data) AND extends the `toPilotView()` wiring, or (b)
  * justifies why the field belongs only on the core entity (dynamic
  * state — model it as a typed projection field on `PilotInput` instead,
  * the way [xyz.easiersaid.twr.pilot.PilotInput.weatherByAerodrome] does
- * for `Aerodrome.weather.wind`). Named-arg wiring is the construction-
- * site gate; the property-set parity assertion in
- * `FirewallPilotAviationWorldTest` is the complementary future-field
- * gate that catches the same drift from the other side.
+ * for `Aerodrome.weather.wind`).
  *
  * **Build-graph one-wayness.** The projection lives in `:pilot`, not in
  * `:core` as a `Pilot`-typed view. Pilot-firewall enforcement belongs
