@@ -49,7 +49,7 @@ G3b sim golden. C172 LOWG → LJMB; on arrival approach at LJMB, wind exceeds PO
 - [ ] FPL: `destinationAerodrome = LJMB`; no SID; KDoc explains
 - [ ] LJMB runway 14 or 32 geometry chosen
 - [ ] Pilot observes LJMB weather per .6 resolution
-- [ ] Recognition fires via .6's `isTransitArrivalReactiveGoAroundEligible(aircraft, mission)` (inside existing appliers' dispatch fork)
+- [ ] Recognition fires through .6's widened `deriveCrosswindEvent` / `deriveTailwindEvent` disjunctive eligibility (round-16 Major 1 — recognition is in `derive*Event`, NOT inside appliers); apply dispatches through `applyCrosswindGoAround` / `applyTailwindGoAround` Transit fork using the same `isTransitArrivalReactiveGoAroundEligible(aircraft, mission)` guard
 - [ ] Apply rewrites via `replaceFromActivePrimitive(existingGATaskNodes)` where `existingGATaskNodes` is the .6-resolved GA continuation (NOT `GA_AT_DEST`)
 - [ ] **Test/spec contains NO `GA_AT_DEST` enum value or placeholder string** (round-5 Critical 2)
 - [ ] Transit GA intent: `climbSpeedMps + Final + None + patternAltitude` (R19)
