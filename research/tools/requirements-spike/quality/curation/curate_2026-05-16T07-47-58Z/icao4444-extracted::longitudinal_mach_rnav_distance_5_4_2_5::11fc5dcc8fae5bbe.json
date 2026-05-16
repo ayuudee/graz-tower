@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::11fc5dcc8fae5bbe",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.48,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote is not verbatim in the source: the source continues with \u201c(see Figures 5-27A and 5-27B); and\u201d rather than ending after \u201caircraft;\u201d. Because quote and claim identity fields cannot be corrected in this pass, the real G1 miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::11fc5dcc8fae5bbe.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::11fc5dcc8fae5bbe.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:11:25Z"
+}

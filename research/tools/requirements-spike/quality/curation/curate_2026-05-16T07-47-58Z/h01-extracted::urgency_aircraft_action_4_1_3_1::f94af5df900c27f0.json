@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::urgency_aircraft_action_4_1_3_1::f94af5df900c27f0",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_aircraft_action_4_1_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 42.34,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the listed examples, and no accepted sibling already covers this Note 1 content. Because the source is explicitly a non-normative note using advisory wording, it should be retained as advisory material rather than as a best-practice requirement.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_aircraft_action_4_1_3_1/h01-extracted::urgency_aircraft_action_4_1_3_1::f94af5df900c27f0.json",
+    "toPath": "candidates/h01-extracted/urgency_aircraft_action_4_1_3_1/h01-extracted::urgency_aircraft_action_4_1_3_1::f94af5df900c27f0.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:03:54Z"
+}

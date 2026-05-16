@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::uncontrolled_aerodromes_5_4::fcd244d0914b03dd",
+  "documentId": "h01-extracted",
+  "sectionId": "uncontrolled_aerodromes_5_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.12,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The statement is verbatim-supported and explicitly framed as a Note, so it is suitable only as advisory/background material rather than a best-practice requirement. No identity fields need changing; only the classification should be corrected to reflect its non-normative status.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::fcd244d0914b03dd.json",
+    "toPath": "candidates/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::fcd244d0914b03dd.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:00:38Z"
+}

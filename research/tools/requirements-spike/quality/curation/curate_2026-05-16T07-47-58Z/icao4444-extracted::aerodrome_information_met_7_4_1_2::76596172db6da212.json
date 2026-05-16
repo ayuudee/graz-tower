@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_met_7_4_1_2::76596172db6da212",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_met_7_4_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.48,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but one of the candidate's exactSourceQuotes contains an ellipsis and does not appear verbatim in the source text. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::76596172db6da212.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::76596172db6da212.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:09:21Z"
+}

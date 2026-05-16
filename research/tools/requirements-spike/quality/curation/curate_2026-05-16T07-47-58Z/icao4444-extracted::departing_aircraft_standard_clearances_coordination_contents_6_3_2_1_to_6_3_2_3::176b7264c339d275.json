@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::176b7264c339d275",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.8,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is directly supported by the source, and the modality/authority pairing is correct: the source uses 'should' and the candidate classifies it as operational guidance. The accepted siblings cover specific mandatory contents/provisions, but they do not make this separate advisory recommendation redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::176b7264c339d275.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::176b7264c339d275.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:55:18Z"
+}

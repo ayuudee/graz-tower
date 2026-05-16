@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::3ab17a26603daefe",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_sid_clearances_6_3_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The requirement is substantively supported by the source, but the candidate\u2019s exactSourceQuotes field is not verbatim: it uses ellipses/condensation and does not match the source text. Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this record must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_sid_clearances_6_3_2_4/icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::3ab17a26603daefe.json",
+    "toPath": "rejected/icao4444-extracted/departing_aircraft_sid_clearances_6_3_2_4/icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::3ab17a26603daefe.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:54:16Z"
+}

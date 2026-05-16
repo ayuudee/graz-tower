@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_frequency_readback::d5216d66345651ad",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_frequency_readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.52,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the definition, and there is no redundancy issue. However, the source is a glossary/list entry with no modal or note marker, so the modality should be `none` rather than `note` while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::d5216d66345651ad.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::d5216d66345651ad.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:58:58Z"
+}

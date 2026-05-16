@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::d41df90d63bf83c7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.66,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim source says the flight \u201cshould be considered\u201d to be in a state of emergency, but the immutable claimText says it \u201cshall be considered,\u201d overstating the source. Because correcting this would require editing an identity field, it cannot be promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::d41df90d63bf83c7.json",
+    "toPath": "rejected/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::d41df90d63bf83c7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:45:45Z"
+}

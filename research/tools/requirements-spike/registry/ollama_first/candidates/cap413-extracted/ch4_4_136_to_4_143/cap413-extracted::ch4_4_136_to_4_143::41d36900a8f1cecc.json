@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::41d36900a8f1cecc",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "familyId": "cap413_ch4_4_136_to_4_143_family",
+  "claimText": "In the event of a radio failure, drivers should follow the procedures for their aerodrome and comply with any light signals by the controller/FISO.",
+  "rationale": "All attempts agree on the protocol for radio failure involving local procedures and light signals.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "In the event of a radio failure, drivers should follow the procedures for their aerodrome and comply with any light signals by the controller/ FISO."
+  ],
+  "sourceItemIds": [
+    "4.143"
+  ],
+  "claimSha256": "ba78ce653a4476ce64f5e434da0c87aca16b811a152f6b2a4079c1d1ac64e7f1",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 11026,
+    "endLine": 11143
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_136_to_4_143_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_4_143_radio_failure",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is supported verbatim by the source, and all gate audits pass. Its `should` modality and `operational_guidance` authority class correctly reflect CAP 413 advisory wording, and sibling accepted records treat comparable CAP 413 `should` clauses the same way.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T07:52:29Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_136_to_4_143/judged_candidates.json",
+    "curatedAt": "2026-05-16T07:52:29Z"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_conditions_information_7_5::25edf66730f7e7fa",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_conditions_information_7_5",
+  "familyId": "icao4444_aerodrome_tower_family",
+  "claimText": "Essential information on aerodrome conditions shall be given in sufficient time for the aircraft to make proper use of it, and the hazards shall be identified as distinctly as possible.",
+  "rationale": "Attempt 2 split this into timing and clarity; conservative choice keeps them together as they are tightly coupled in the source sentence.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The information shall be given in sufficient time for the aircraft to make proper use of it, and the hazards shall be identified as distinctly as possible."
+  ],
+  "sourceItemIds": [
+    "7.5.3"
+  ],
+  "claimSha256": "2410cefd84b2b2e8a1844f7950cddf805cd263c1c0f0c6aa846249f1bf567b02",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8666,
+    "endLine": 8715
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_tower_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "7.5.3_timing_clarity",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_conditions_information_7_5/judged_candidates.json"
+  }
+}

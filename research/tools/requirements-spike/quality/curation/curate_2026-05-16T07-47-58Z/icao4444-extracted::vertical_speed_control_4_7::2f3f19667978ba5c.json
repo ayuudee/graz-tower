@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_speed_control_4_7::2f3f19667978ba5c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_speed_control_4_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.96,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim accurately reflects the source Note, but a note/advisory statement cannot be classified as an authoritative_requirement. Lowering the authorityClass to operational_guidance resolves the G3 failure without changing identity fields.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::2f3f19667978ba5c.json",
+    "toPath": "candidates/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::2f3f19667978ba5c.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:01Z"
+}

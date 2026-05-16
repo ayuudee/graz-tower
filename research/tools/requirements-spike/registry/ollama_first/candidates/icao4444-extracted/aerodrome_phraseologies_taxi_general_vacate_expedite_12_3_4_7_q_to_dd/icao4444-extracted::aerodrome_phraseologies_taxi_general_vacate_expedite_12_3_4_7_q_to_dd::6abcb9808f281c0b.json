@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd::6abcb9808f281c0b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "The phraseology for instructing an aircraft to taxi into a holding bay is: TAXI INTO HOLDING BAY.",
+  "rationale": "All attempts agree on the phraseology for item w).",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "TAXI INTO HOLDING BAY;"
+  ],
+  "sourceItemIds": [
+    "item_w"
+  ],
+  "claimSha256": "b2e8aa53d41a60e7f7b47cad5050f5c5039a6a31698c801dc700c385adfeefd0",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 14866,
+    "endLine": 14903
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_taxi_holding_bay",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd/judged_candidates.json"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::6c3aca661ef8277e",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+  "familyId": "h01_phraseology_contingency_family",
+  "claimText": "When a reply is not received, the controller shall use the phraseology: REPLY NOT RECEIVED (instructions).",
+  "rationale": "All attempts agree on this mandatory phraseology for missing replies.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: REPLY NOT RECEIVED (instructions)"
+  ],
+  "sourceItemIds": [
+    "5.8.2.1_item_3"
+  ],
+  "claimSha256": "60d7c0654ebbd004a9716e4c787b083ef5b67f251c23609cc393d332974de77a",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 12001,
+    "endLine": 12086
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_phraseology_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_5821_reply_not_received",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/judged_candidates.json"
+  }
+}

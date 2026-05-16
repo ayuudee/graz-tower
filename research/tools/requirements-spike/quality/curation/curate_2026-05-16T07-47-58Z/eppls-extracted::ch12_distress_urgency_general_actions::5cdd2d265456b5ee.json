@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::5cdd2d265456b5ee",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 21.03,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is present in the source window modulo line wrapping, and the claim accurately reflects a discretionary list item that is not covered by accepted siblings. Because the wording is advisory/discretionary rather than a best-practice requirement, it should be framed as advisory-only background support rather than rejected.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::5cdd2d265456b5ee.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::5cdd2d265456b5ee.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:53:03Z"
+}

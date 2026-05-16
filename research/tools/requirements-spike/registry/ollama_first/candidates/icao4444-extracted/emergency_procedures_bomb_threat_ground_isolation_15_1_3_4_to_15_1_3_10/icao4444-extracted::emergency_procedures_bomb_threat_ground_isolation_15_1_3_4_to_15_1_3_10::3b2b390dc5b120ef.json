@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10::3b2b390dc5b120ef",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10",
+  "familyId": "icao4444_emergency_family",
+  "claimText": "See Annex 14, Volume I, Chapter 3 for isolated parking position details.",
+  "rationale": "Consistent across all attempts. Referential note pointing to external documentation.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "See Annex 14, Volume I, Chapter 3"
+  ],
+  "sourceItemIds": [
+    "note_15.1.3.10"
+  ],
+  "claimSha256": "35eb17c9e53d70fe987ce7bbf736538903816ce87f6f24a19449c8e626a0801e",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 17652,
+    "endLine": 17680
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_emergency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "note_annex14_ref",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted text exists verbatim and the claim accurately captures a standalone non-normative note referring readers to Annex 14, Volume I, Chapter 3. Its modality and authority class are already correctly set as note/background_support, and it is not redundant with the accepted atomic requirements.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:57:49Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:57:49Z"
+  }
+}

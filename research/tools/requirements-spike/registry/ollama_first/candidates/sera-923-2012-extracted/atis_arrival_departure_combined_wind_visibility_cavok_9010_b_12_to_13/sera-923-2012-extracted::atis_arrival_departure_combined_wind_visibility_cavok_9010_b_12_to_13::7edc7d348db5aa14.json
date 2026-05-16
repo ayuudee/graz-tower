@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13::7edc7d348db5aa14",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13",
+  "familyId": "sera_atis_family",
+  "claimText": "The term 'CAVOK' replaces visibility and RVR elements when visibility is 10 km or more, no cloud of operational significance exists, and no weather of significance to aviation exists simultaneously.",
+  "rationale": "All attempts agree on the definition of CAVOK conditions. Marked as support_only as it defines the substitution rule for item (13) rather than a standalone obligation.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "These elements are replaced by the term \u2018CAVOK\u2019 when the following conditions occur simultaneously at the time of observation: (a) visibility, 10 km or more, and the lowest visibility not reported; (b) no cloud of operational significance; and (c) no weather of significance to aviation."
+  ],
+  "sourceItemIds": [
+    "sera_923_footnote_1"
+  ],
+  "claimSha256": "ca09b50463e572f98330d0779d0fcdba7da3f17ff688f2d1a11806a70ecf78f4",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2231,
+    "endLine": 2237
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "sera_atis_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "sera_923_footnote_1_cavok_def",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and supports the definitional CAVOK substitution statement, and the content is not redundant with the accepted siblings. However, the cited footnote uses no shall/must wording and functions as a definition/supporting substitution note rather than a standalone authoritative requirement, so the modality and authority class should be lowered.",
+      "corrections": {
+        "modality": "none",
+        "authorityClass": "background_support"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T12:02:56Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/sera-923-2012-extracted/atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13/judged_candidates.json",
+    "curatedAt": "2026-05-16T12:02:56Z"
+  }
+}

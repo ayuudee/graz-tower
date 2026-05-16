@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::7807adffceffbb63",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.82,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology is present in the source window despite the audit miss caused by line wrapping. However, the cited source text does not contain shall-strength wording for this specific phraseology item, so the modality should be lowered while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::7807adffceffbb63.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::7807adffceffbb63.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:27:44Z"
+}

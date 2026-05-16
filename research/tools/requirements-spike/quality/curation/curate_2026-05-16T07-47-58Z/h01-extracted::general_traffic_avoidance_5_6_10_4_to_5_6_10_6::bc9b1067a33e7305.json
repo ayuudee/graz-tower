@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::bc9b1067a33e7305",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.31,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted template appears verbatim in the source and the claim is supported as operational phraseology guidance. The pending issue is only that this is a phraseology template/example rather than a note, so the modality should be corrected to match the source presentation.",
+    "corrections": {
+      "modality": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::bc9b1067a33e7305.json",
+    "toPath": "candidates/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::bc9b1067a33e7305.json",
+    "correctionsApplied": {
+      "modality": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:54:32Z"
+}

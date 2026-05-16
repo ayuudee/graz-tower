@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::2137bedd28cb8ecd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.66,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim, and the candidate is not redundant with accepted siblings. However, the source uses \u201cshould,\u201d so under the authority floor rules it cannot remain an authoritative_requirement and should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::2137bedd28cb8ecd.json",
+    "toPath": "candidates/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::2137bedd28cb8ecd.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:44:05Z"
+}

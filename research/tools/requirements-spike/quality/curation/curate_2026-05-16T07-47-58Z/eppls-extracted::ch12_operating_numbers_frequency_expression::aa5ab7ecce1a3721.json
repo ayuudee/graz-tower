@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::aa5ab7ecce1a3721",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.16,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited wording is descriptive/background and does not support the claimText\u2019s shall-strength obligation; fixing that would require changing the identity claimText, which is not allowed in this curation pass. It is also not appropriate to promote merely by metadata correction because the overstatement is embedded in the claim itself.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::aa5ab7ecce1a3721.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::aa5ab7ecce1a3721.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:03:20Z"
+}

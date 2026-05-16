@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::10838277a4b2c599",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.92,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source window is background/training material and does not support the claimText\u2019s binding \u201cshall\u201d framing; changing that would require editing an identity field, which is not allowed in this pass. The cited quote appears substantively present despite the audit miss, but the candidate as written overstates the authority/modality.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::10838277a4b2c599.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::10838277a4b2c599.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:59:36Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::6cf954782cb3c42d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_dme_gnss_5_4_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.2,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuotes entry is not a verbatim substring of the source because it uses an ellipsis, so G1 has a real identity-field failure that cannot be corrected in this pass. Additionally, the source text is a Note rather than a shall-strength requirement, but the quote defect alone requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::6cf954782cb3c42d.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::6cf954782cb3c42d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:10:48Z"
+}

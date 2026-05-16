@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::315d4169cc8e1b9c",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "ATC may issue specific approach instructions to helicopters, including straight-in/circling approach, turns, arrival routes, hold short instructions, and cautions for obstacles or wake turbulence.",
+  "rationale": "All attempts cover the complex helicopter approach phraseology.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: MAKE STRAIGHT-IN/CIRCLING APPROACH [LEFT/RIGHT TURN TO (location, runway, taxiway, final approach and take-off area)] [ARRIVAL/ARRIVAL ROUTE (number, name or code)] [HOLD SHORT OF (active runway, extended runway centre line, other)] [REMAIN (direction or distance) FROM (runway, runway centre line, other helicopter or aircraft)][CAUTION (power lines, unlighted obstructions, wake turbulence, etc.)]"
+  ],
+  "sourceItemIds": [
+    "phrase_5.3.2.10.2_approach"
+  ],
+  "claimSha256": "e3894b3481c74b12b3421737772019536dd0823da7415c421a392b85f2f786e6",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 8115,
+    "endLine": 8265
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_5.3.2.10.2_helicopter_approach_instructions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11/judged_candidates.json"
+  }
+}

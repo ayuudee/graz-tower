@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::bd274e8c8012c466",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "familyId": "cap413_emergency_phraseology_family",
+  "claimText": "Pilots who do not wish to carry out a practice emergency but only wish to confirm their position for training purposes may request a 'Training Fix' on 121.5 MHz.",
+  "rationale": "Attempts 2 and 3 agree on the permission for Training Fixes.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Pilots who do not wish to carry out a practice emergency but only wish to confirm their position for training purposes may request a 'Training Fix' on 121.5 MHz."
+  ],
+  "sourceItemIds": [
+    "sec_8.23"
+  ],
+  "claimSha256": "ab8cca0ed962f6c42b427e8bace9e50e7c7c29f6034e5c7862db8c586de115d9",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 16598,
+    "endLine": 16841
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "training_fix_permission",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Pilots who do not wish to carry out a practice emergency but only wish to confirm their position for training purposes may request a 'Training Fix' on 121.5 MHz.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by CAP 413 section 8.23, and its modality/authorityClass are appropriate. However, the exactSourceQuote does not exist verbatim in the source text because the source uses curly quotation marks around \u2018Training Fix\u2019 and line wrapping; identity fields cannot be corrected in this pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:28:37Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:28:37Z"
+  }
+}

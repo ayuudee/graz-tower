@@ -103,11 +103,74 @@
       "notes": "SERA.9005 Scope of flight information service."
     },
     {
-      "sectionId": "atis_9010",
+      "sectionId": "atis_request_reply_acknowledgement_9010_a",
       "familyId": "sera_atis_family",
       "startLine": 2201,
-      "endLine": 2330,
-      "notes": "SERA.9010 Automatic terminal information service: ATIS request/reply, acknowledgement, altimeter setting, current/updated ATIS, and ATIS message contents."
+      "endLine": 2216,
+      "notes": "SERA.9010(a): ATIS use in directed request/reply transmissions, aircraft acknowledgement, current altimeter setting, current-ATIS omission rule, and stale-ATIS update rule."
+    },
+    {
+      "sectionId": "atis_arrival_departure_combined_identity_ops_9010_b_1_to_11",
+      "familyId": "sera_atis_family",
+      "startLine": 2217,
+      "endLine": 2230,
+      "notes": "SERA.9010(b)(1)-(11): combined arrival/departure ATIS message elements for aerodrome name, arrival/departure indicator, D-ATIS contract type, designator, observation time, expected approach type, runways in use/arresting-system status, runway surface/braking action, holding delay, transition level, and other essential operational information. Split from the broad combined ATIS contents window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13",
+      "familyId": "sera_atis_family",
+      "startLine": 2231,
+      "endLine": 2237,
+      "notes": "SERA.9010(b)(12)-(13): combined arrival/departure ATIS message elements for surface wind, runway/section-specific wind indication, visibility/RVR, and CAVOK footnote context. Split from the broad combined ATIS contents window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21",
+      "familyId": "sera_atis_family",
+      "startLine": 2247,
+      "endLine": 2256,
+      "notes": "SERA.9010(b)(14)-(21): combined arrival/departure ATIS message elements for present weather, cloud/CB/vertical visibility, air temperature, dew point, altimeter settings, significant meteorological phenomena, trend forecast, and specific ATIS instructions. Split from the broad combined ATIS contents window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_arrival_identity_ops_9010_c_1_to_11",
+      "familyId": "sera_atis_family",
+      "startLine": 2257,
+      "endLine": 2270,
+      "notes": "SERA.9010(c)(1)-(11): arrival-only ATIS message elements for aerodrome name, arrival indicator, D-ATIS contract type, designator, observation time, expected approach type, runways/arresting-system status, runway surface/braking action, holding delay, transition level, and other essential operational information. Split from the broad arrival-only ATIS window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16",
+      "familyId": "sera_atis_family",
+      "startLine": 2271,
+      "endLine": 2281,
+      "notes": "SERA.9010(c)(12)-(16): arrival-only ATIS message elements for surface wind, visibility/RVR, present weather, cloud/CB/vertical visibility, air temperature, and CAVOK footnote context. Split from the broad arrival-only ATIS window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_arrival_forecast_instructions_9010_c_17_to_21",
+      "familyId": "sera_atis_family",
+      "startLine": 2291,
+      "endLine": 2296,
+      "notes": "SERA.9010(c)(17)-(21): arrival-only ATIS message elements for dew point, altimeter settings, significant meteorological phenomena, trend forecast, and specific ATIS instructions. Split from the broad arrival-only ATIS window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_departure_identity_ops_9010_d_1_to_10",
+      "familyId": "sera_atis_family",
+      "startLine": 2297,
+      "endLine": 2309,
+      "notes": "SERA.9010(d)(1)-(10): departure-only ATIS message elements for aerodrome name, departure indicator, D-ATIS contract type, designator, observation time, runways/arresting-system status, runway surface/braking action, departure delay, transition level, and other essential operational information. Split from the broad departure-only ATIS window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_departure_wind_visibility_weather_9010_d_11_to_17",
+      "familyId": "sera_atis_family",
+      "startLine": 2310,
+      "endLine": 2319,
+      "notes": "SERA.9010(d)(11)-(17): departure-only ATIS message elements for surface wind, visibility/RVR, present weather, cloud/CB/vertical visibility, air temperature, dew point, and altimeter settings. Split from the broad departure-only ATIS window after final v7 exposed defense-pass density."
+    },
+    {
+      "sectionId": "atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20",
+      "familyId": "sera_atis_family",
+      "startLine": 2320,
+      "endLine": 2325,
+      "notes": "SERA.9010(d)(18)-(20): departure-only ATIS message elements for significant climb-out meteorological phenomena, trend forecast, specific ATIS instructions, and CAVOK footnote context. Split from the broad departure-only ATIS window after final v7 exposed defense-pass density."
     },
     {
       "sectionId": "emergency_service_11005",

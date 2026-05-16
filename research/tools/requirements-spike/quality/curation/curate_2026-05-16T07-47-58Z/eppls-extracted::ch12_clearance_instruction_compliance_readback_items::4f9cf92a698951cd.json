@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::4f9cf92a698951cd",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 29.6,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item is present in the source window despite the audit miss, and the surrounding source text states that clearances must always be read back; this is an atomic readback item not already covered by the accepted siblings. The source uses \u201cmust\u201d wording, so the modality should be corrected from \u201cshall\u201d to \u201cmust\u201d while retaining the background_support authority class.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::4f9cf92a698951cd.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::4f9cf92a698951cd.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:38:58Z"
+}

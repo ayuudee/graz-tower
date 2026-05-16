@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::99be6effb599e406",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.65,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim from a standalone Note and the candidate is already framed as note/background_support, so there is no authority/modality defect or identity problem. It is not redundant with the accepted siblings, which do not capture this stabilized-approach background reference.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::99be6effb599e406.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::99be6effb599e406.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:36:15Z"
+}

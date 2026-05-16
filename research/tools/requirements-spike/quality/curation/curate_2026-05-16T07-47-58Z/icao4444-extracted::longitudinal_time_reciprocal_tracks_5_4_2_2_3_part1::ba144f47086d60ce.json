@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::ba144f47086d60ce",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.38,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The figure caption is source-grounded and not redundant with the accepted siblings, which include analogous figure-caption background items but not Figure 5-16A. However, the quoted caption has no explicit note or normative marker, so the modality should be lowered from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::ba144f47086d60ce.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::ba144f47086d60ce.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:19:07Z"
+}

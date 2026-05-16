@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::0550cf72d532891a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.91,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim accurately reflects the Note, and the modality/authorityClass correctly mark it as non-normative background support rather than an authoritative requirement. It is not redundant with the accepted sibling requirements because it is a distinct emergency-procedures cross-reference.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::0550cf72d532891a.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::0550cf72d532891a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:24:54Z"
+}

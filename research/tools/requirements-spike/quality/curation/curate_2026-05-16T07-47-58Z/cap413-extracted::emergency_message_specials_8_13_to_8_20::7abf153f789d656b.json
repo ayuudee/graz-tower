@@ -1,0 +1,28 @@
+{
+  "canonicalId": "cap413-extracted::emergency_message_specials_8_13_to_8_20::7abf153f789d656b",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_message_specials_8_13_to_8_20",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.47,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item is verbatim and is governed by the parent sentence in 8.14: \u201cThe message shall convey the following data,\u201d so item 6 has the same mandatory force as the already accepted sibling PAN PAN MEDICAL data items. The issue is metadata strength, not identity or redundancy.",
+    "corrections": {
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_message_specials_8_13_to_8_20/cap413-extracted::emergency_message_specials_8_13_to_8_20::7abf153f789d656b.json",
+    "toPath": "candidates/cap413-extracted/emergency_message_specials_8_13_to_8_20/cap413-extracted::emergency_message_specials_8_13_to_8_20::7abf153f789d656b.json",
+    "correctionsApplied": {
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:25:34Z"
+}

@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::runway_in_use_selection_7_2::c57ea1b28b87d8f9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "runway_in_use_selection_7_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.62,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted Note is verbatim in the source and the claim is directly supported, with no redundancy against accepted sibling atomic requirements. Because it is explicitly a non-normative Note, it should be framed as advisory/background rather than best-practice operational guidance.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/runway_in_use_selection_7_2/icao4444-extracted::runway_in_use_selection_7_2::c57ea1b28b87d8f9.json",
+    "toPath": "candidates/icao4444-extracted/runway_in_use_selection_7_2/icao4444-extracted::runway_in_use_selection_7_2::c57ea1b28b87d8f9.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:33:46Z"
+}

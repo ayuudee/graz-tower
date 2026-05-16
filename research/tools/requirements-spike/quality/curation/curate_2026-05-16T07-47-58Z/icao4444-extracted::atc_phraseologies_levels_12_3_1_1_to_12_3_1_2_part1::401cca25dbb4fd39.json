@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::401cca25dbb4fd39",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.57,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote does not exist verbatim in the source window: the source shows the phraseology as item a) with intervening line breaks and separate 'followed as necessary by' text, not the quoted single-line item b). Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the record must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::401cca25dbb4fd39.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::401cca25dbb4fd39.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:50:05Z"
+}

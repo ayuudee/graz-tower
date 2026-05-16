@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_174_to_4_183::b0e0d12ae16ccb94",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_174_to_4_183",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.34,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate's exactSourceQuotes text is not present verbatim in the provided source window: the source shows the corrupted note text as \u201c1 N on essential words...\u201d rather than \u201cNumerals on essential words...\u201d. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::b0e0d12ae16ccb94.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::b0e0d12ae16ccb94.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:59:44Z"
+}

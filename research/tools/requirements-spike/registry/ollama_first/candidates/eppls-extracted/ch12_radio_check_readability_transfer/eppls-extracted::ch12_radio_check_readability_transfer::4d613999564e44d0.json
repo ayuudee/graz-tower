@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_radio_check_readability_transfer::4d613999564e44d0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_check_readability_transfer",
+  "familyId": "eppls_ch12_readback_transfer_background_family",
+  "claimText": "An aeronautical station operator may reply with 'STATION CALLING (frequency or 8.33 channel) UNREADABLE' when the transmission is unreadable.",
+  "rationale": "Attempts 1 and 3 correctly identify 'may'/'may be necessary' as the modality. Attempt 2 uses 'shall' which is too strong for 'sometimes it may be necessary'. Conservative choice is 'may'.",
+  "modality": "may",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Sometimes it may be necessary for the operator of an aeronautical station to reply with STATION CALLING (frequency or 8.33 channel) UNREADABLE."
+  ],
+  "sourceItemIds": [
+    "unreadable_response"
+  ],
+  "claimSha256": "b7ab1270c7efbfd36a0b84dfd53164fa723843d432d4f9ef9397f2b3c2ccc535",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23149,
+    "endLine": 23179
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_readback_transfer_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "unreadable_station_reply",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim and directly supports the claim, and the candidate is already correctly framed as permissive/background_support rather than authoritative. It is not redundant with the accepted sibling, which covers only the readability grade of 4.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:04:32Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_radio_check_readability_transfer/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:04:32Z"
+  }
+}

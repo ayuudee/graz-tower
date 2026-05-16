@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_level_changes_5_6_13::13cefe32d9c72bbb",
+  "documentId": "h01-extracted",
+  "sectionId": "general_level_changes_5_6_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.69,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate's exactSourceQuote does not appear verbatim in the provided source window: the bullet is separated from the phrase by intervening formatting/text, so the identity quote cannot be corrected in this pass. Because quote identity fields must not be edited, this fails G1 and must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::13cefe32d9c72bbb.json",
+    "toPath": "rejected/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::13cefe32d9c72bbb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:50:19Z"
+}

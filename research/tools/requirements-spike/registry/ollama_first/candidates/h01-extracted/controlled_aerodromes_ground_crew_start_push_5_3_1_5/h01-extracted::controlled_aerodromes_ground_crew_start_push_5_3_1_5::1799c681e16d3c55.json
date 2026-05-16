@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::1799c681e16d3c55",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_crew_start_push_5_3_1_5",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "Ground crew should follow the start-up exchange with a reply on the intercom or a distinct visual signal to indicate all is clear and start-up may proceed.",
+  "rationale": "Attempts 1 and 3 explicitly extract this advisory note. Attempt 2 omits it, but it is structurally present and semantically consistent with the guidance class.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The ground crew should follow this exchange by either a reply on the intercom or a distinct visual signal to indicate that all is clear and that the start-up as indicated may proceed."
+  ],
+  "sourceItemIds": [
+    "note_1"
+  ],
+  "claimSha256": "378f2ecfb3b756a04eabd511ac65c455bb4df796e6e93aeecef01956ceb94084",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 7006,
+    "endLine": 7046
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_start_up_clearance_signal",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim and supports the claim, with advisory 'should' wording correctly classified as operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling, which covers pushback/powerback phraseology rather than the start-up all-clear signal.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:33:04Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:33:04Z"
+  }
+}

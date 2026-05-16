@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6::4e0c35fd8bbb8277",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.65,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology is verbatim-supported and the claim is not redundant with accepted siblings. However, this item is a phraseology line rather than a Note and contains no explicit shall/should/may wording, so the modality should be corrected from note to none while retaining operational_guidance.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6/icao4444-extracted::aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6::4e0c35fd8bbb8277.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6/icao4444-extracted::aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6::4e0c35fd8bbb8277.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:23:19Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_frequency_readback::e1aea842d5a3b1f6",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_frequency_readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.72,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted text is not found verbatim as a contiguous source quote in the provided source window/G1 audit, and identity fields cannot be corrected in this pass. The substantive point is also already covered by an accepted sibling candidate on using four figures when the last two figures are zero.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::e1aea842d5a3b1f6.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::e1aea842d5a3b1f6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:59:08Z"
+}

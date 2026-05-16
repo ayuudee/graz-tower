@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::7ae02b484880d3a7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "familyId": "icao4444_aerodrome_traffic_family",
+  "claimText": "Red flashes from the aerodrome control tower mean move off the landing area or taxiway and watch out for aircraft.",
+  "rationale": "Source 7.6.3.2.3.2 defines the meaning of red flashes in the visual signal system.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Red flashes Move off the landing area or taxiway and watch out for aircraft"
+  ],
+  "sourceItemIds": [
+    "7.6.3.2.3.2"
+  ],
+  "claimSha256": "c3bc8e84722fd421d6017986c95581414a504aeae5c16da58d1cdeccd18125a8",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8811,
+    "endLine": 8951
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_traffic_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "visual_signal_red_flashes",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Red flashes Move off the landing area or taxiway and watch out for aircraft",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the table, but the exactSourceQuote does not appear verbatim in the source window because the extracted table text separates signal names from meanings. Since claimText and exactSourceQuotes are identity fields and the quote has a real G1 verbatim miss, this record cannot be promoted in this curation pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:15:51Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:15:51Z"
+  }
+}

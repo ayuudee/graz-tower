@@ -1,0 +1,11 @@
+{
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6",
+  "familyId": "h01_phraseology_contingency_family",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+  "startLine": 12087,
+  "endLine": 12181,
+  "lastPromotedRunId": "promote_2026-05-16T06-47-39Z_b460",
+  "lastPromotedAt": "2026-05-16T06:47:39Z"
+}

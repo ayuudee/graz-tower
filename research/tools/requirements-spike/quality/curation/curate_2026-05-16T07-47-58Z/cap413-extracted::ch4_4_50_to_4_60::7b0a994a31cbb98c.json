@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::7b0a994a31cbb98c",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.65,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim accurately captures a self-contained CAP 413 phraseology example, and the candidate is already framed conservatively as an example with operational_guidance authority. It is not redundant with the accepted sibling for 'wheels appear up' because it covers a distinct listed reply.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::7b0a994a31cbb98c.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::7b0a994a31cbb98c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:13:55Z"
+}

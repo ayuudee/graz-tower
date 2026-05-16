@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::ebbf27bed9e8bcd9",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.13,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the source window, which contains the quoted wording across a line break/spacing artifact: \u201ceach digit shall be transmitted separately.\u201d The modality matches the source\u2019s \u201cshall,\u201d and the background_support authority class is acceptable for this conservative training/source context; the content is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::ebbf27bed9e8bcd9.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::ebbf27bed9e8bcd9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:01:44Z"
+}

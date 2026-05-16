@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_general_service_8_1_to_8_12::1b151265b3f4e18b",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_general_service_8_1_to_8_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by clause 8.11, but the candidate\u2019s exactSourceQuote does not appear verbatim in the provided source window because the phrase is interrupted by page/header text. Since identity fields cannot be edited in this pass and the verbatim quote audit failed, the record cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_general_service_8_1_to_8_12/cap413-extracted::emergency_general_service_8_1_to_8_12::1b151265b3f4e18b.json",
+    "toPath": "rejected/cap413-extracted/emergency_general_service_8_1_to_8_12/cap413-extracted::emergency_general_service_8_1_to_8_12::1b151265b3f4e18b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:24:29Z"
+}

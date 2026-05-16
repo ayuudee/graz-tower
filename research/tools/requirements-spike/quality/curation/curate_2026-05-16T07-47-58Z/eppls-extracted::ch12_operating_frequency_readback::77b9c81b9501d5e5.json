@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_frequency_readback::77b9c81b9501d5e5",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_frequency_readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.1,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and exact quote are verbatim supported by the source glossary entry, and there is no redundancy issue. However, the entry is a definition without a normative or explanatory marker, so the modality should be `none` rather than `note`, consistent with the accepted sibling glossary definitions.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::77b9c81b9501d5e5.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::77b9c81b9501d5e5.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:58:23Z"
+}

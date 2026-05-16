@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_34_to_4_39::6ca82fda92f9fcc5",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_34_to_4_39",
+  "familyId": "cap413_ch4_4_34_to_4_39_family",
+  "claimText": "For aircraft departing from the same runway holding position, when a conditional line-up clearance has been issued to a succeeding departing aircraft, the illuminated red stop-bar may remain deselected provided that it will be the next movement on that runway.",
+  "rationale": "Normative permission for stop-bar status for departing conditional clearances in 4.35.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "deterministic_test",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "For aircraft departing from the same runway holding position, when a conditional line-up clearance has been issued to a succeeding departing aircraft, the illuminated red stop-bar may remain deselected provided that it will be the next movement on that runway."
+  ],
+  "sourceItemIds": [
+    "4.35"
+  ],
+  "claimSha256": "aee154c9b38a28e542b1fdd6c5a2d3134298d3740ed7ea865f0bd61169ecdcf2",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 8689,
+    "endLine": 8864
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_34_to_4_39_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "stop_bar_departing_conditional",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote exists verbatim and supports the claim as a permission using \u201cmay.\u201d The only defect is the floor violation: a \u201cmay\u201d permission cannot be classified as an authoritative_requirement, so the authorityClass should be lowered to operational_guidance.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:10:22Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_34_to_4_39/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:10:22Z"
+  }
+}

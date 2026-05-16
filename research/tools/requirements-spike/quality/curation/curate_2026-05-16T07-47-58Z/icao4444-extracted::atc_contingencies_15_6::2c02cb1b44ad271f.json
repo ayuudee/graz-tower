@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::2c02cb1b44ad271f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.65,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by item 15.6.1.3(b), but one exactSourceQuotes entry is not verbatim: the source has the section number followed by the \u201cBLOCKED FREQUENCY\u201d heading before the introductory sentence, not the quoted continuous text. Because exactSourceQuotes are identity fields and a real G1 miss cannot be corrected in this pass, the candidate must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::2c02cb1b44ad271f.json",
+    "toPath": "rejected/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::2c02cb1b44ad271f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:46:38Z"
+}

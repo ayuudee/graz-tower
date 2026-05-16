@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::7b8839bc62afd230",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.12,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The verbatim quote supports a shall-not-transmit prohibition, but it is structurally dependent on the omitted subordinate exception list after \u201cunless:\u201d. Resolving this requires re-extraction or bundling with the exception bullets rather than a modality/authority correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::7b8839bc62afd230.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:42:30Z"
+}

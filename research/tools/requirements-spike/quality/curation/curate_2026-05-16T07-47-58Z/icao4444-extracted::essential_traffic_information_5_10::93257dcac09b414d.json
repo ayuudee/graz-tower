@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::essential_traffic_information_5_10::93257dcac09b414d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "essential_traffic_information_5_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.59,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim-supported and the candidate correctly treats the source wording as a Note. However, a Note cannot be classified as an authoritative requirement under the authority/modality floor, so the authority class should be lowered to operational guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/essential_traffic_information_5_10/icao4444-extracted::essential_traffic_information_5_10::93257dcac09b414d.json",
+    "toPath": "candidates/icao4444-extracted/essential_traffic_information_5_10/icao4444-extracted::essential_traffic_information_5_10::93257dcac09b414d.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:01:48Z"
+}

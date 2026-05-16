@@ -1,0 +1,28 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13::7edc7d348db5aa14",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.86,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the definitional CAVOK substitution statement, and the content is not redundant with the accepted siblings. However, the cited footnote uses no shall/must wording and functions as a definition/supporting substitution note rather than a standalone authoritative requirement, so the modality and authority class should be lowered.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13/sera-923-2012-extracted::atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13::7edc7d348db5aa14.json",
+    "toPath": "candidates/sera-923-2012-extracted/atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13/sera-923-2012-extracted::atis_arrival_departure_combined_wind_visibility_cavok_9010_b_12_to_13::7edc7d348db5aa14.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:02:56Z"
+}

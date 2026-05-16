@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_general_15_1_1::fe31ffe75127a778",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_general_15_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.87,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is present verbatim and the claim is directly supported, with no redundancy against accepted siblings. The source uses \u201cshould,\u201d so the modality is correct, but `authoritative_requirement` is inconsistent with a should-strength provision and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::fe31ffe75127a778.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::fe31ffe75127a778.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:59:54Z"
+}

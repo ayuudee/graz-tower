@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::96d03a6e719daeb4",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.67,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 failed for a real verbatim miss: the quoted text is not contiguous in the source, because \u201cPriority shall be given to:\u201d appears as the list chapeau and item d appears later after intervening list items. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted even though the concept is broadly supported by the list structure.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::96d03a6e719daeb4.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::96d03a6e719daeb4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:25:23Z"
+}

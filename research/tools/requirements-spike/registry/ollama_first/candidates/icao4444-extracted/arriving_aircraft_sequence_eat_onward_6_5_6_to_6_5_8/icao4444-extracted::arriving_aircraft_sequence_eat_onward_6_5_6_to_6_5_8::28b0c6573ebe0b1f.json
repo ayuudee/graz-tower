@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8::28b0c6573ebe0b1f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8",
+  "familyId": "icao4444_arrival_procedures_family",
+  "claimText": "Aircraft shall be given a time at which to pass the specified point inbound, which time shall be determined with the aim of achieving the desired interval between successive landings on the runway while respecting the applicable separation minima at all times.",
+  "rationale": "The parent clause 6.5.6.2.1.1 uses 'should', making the procedure guidance. The item specifies the aim of time determination.",
+  "modality": "mixed",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "exploratory_probe",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "aircraft shall be given a time at which to pass the specified point inbound, which time shall be determined with the aim of achieving the desired interval between successive landings on the runway while respecting the applicable separation minima at all times"
+  ],
+  "sourceItemIds": [
+    "6.5.6.2.1.1",
+    "6.5.6.2.1.1_b"
+  ],
+  "claimSha256": "4a3fe9be2a92f8019bc856575d7315adafb6fa809924fa3253ac7d366fd91433",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7261,
+    "endLine": 7379
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_arrival_procedures_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "timed_approach_time_determination",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "mixed",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted text is verbatim and supports the atomic claim, and it is not redundant with an accepted sibling. However, the operative sub-item uses \u201cshall\u201d while it sits under a parent procedure introduced with \u201cshould,\u201d so the metadata should reflect the mixed modal framing rather than pure \u201cshould.\u201d",
+      "corrections": {
+        "modality": "mixed"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:40:36Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:40:36Z"
+  }
+}

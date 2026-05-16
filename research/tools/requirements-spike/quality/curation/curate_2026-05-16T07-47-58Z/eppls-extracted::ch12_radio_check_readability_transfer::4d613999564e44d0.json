@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_check_readability_transfer::4d613999564e44d0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_check_readability_transfer",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.86,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and directly supports the claim, and the candidate is already correctly framed as permissive/background_support rather than authoritative. It is not redundant with the accepted sibling, which covers only the readability grade of 4.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::4d613999564e44d0.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::4d613999564e44d0.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:04:32Z"
+}

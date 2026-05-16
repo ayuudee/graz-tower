@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::8657d65bfe56e029",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.86,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited phraseology appears verbatim and the candidate is atomic rather than redundant, but the source line itself contains no explicit shall/must obligation. For this H01 operational-guidance phraseology item, the modality should be downgraded to match the source wording rather than treating it as a mandatory requirement.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::8657d65bfe56e029.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::8657d65bfe56e029.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:32:28Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_5::45467823159ae6f4",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.46,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited quote is verbatim and the surrounding NOTE supports the full claim, including the preference for an overhead join absent specific local procedures. Because this is advisory CAP 413 note text, the existing should/operational_guidance classification is appropriate, but the requirement kind should be framed as advisory rather than best practice.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_5/cap413-extracted::ch4_4_5::45467823159ae6f4.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_5/cap413-extracted::ch4_4_5::45467823159ae6f4.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:12:14Z"
+}

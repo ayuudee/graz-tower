@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_departing_6_7_1_to_6_7_2::f11461b53ca6cc58",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_departing_6_7_1_to_6_7_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.35,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact Note is verbatim in the source, the claim accurately preserves its non-operative reference to Doc 9643, and the modality/authority classification as note/background_support is consistent. It is not an umbrella duplicating the accepted operative runway-departure requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_departing_6_7_1_to_6_7_2/icao4444-extracted::parallel_runways_departing_6_7_1_to_6_7_2::f11461b53ca6cc58.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_departing_6_7_1_to_6_7_2/icao4444-extracted::parallel_runways_departing_6_7_1_to_6_7_2::f11461b53ca6cc58.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:22:47Z"
+}

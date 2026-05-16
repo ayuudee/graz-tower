@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::26d688c55fee313b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.57,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not a verbatim contiguous passage in the source because it skips over the intervening item 1) text between the parent clause and item 2). Since quote identity fields cannot be corrected in this pass, the real G1 failure requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::26d688c55fee313b.json",
+    "toPath": "rejected/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::26d688c55fee313b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:56:17Z"
+}

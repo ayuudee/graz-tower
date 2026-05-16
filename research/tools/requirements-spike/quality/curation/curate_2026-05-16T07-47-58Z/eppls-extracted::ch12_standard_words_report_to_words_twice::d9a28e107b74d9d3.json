@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::d9a28e107b74d9d3",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.82,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The definition is verbatim supported by the source table and is not redundant with the accepted siblings. However, the quoted source contains no explicit note-style marker or modal wording, so the modality should be corrected from \"note\" to \"none\" while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::d9a28e107b74d9d3.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::d9a28e107b74d9d3.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:20:11Z"
+}

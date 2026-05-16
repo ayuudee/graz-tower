@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::e75b2df88ffdbaec",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_takeoff_preparation_12_3_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.13,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology exists verbatim and the claim is an atomic item not already covered by accepted siblings. However, the source list contains no explicit note or modal verb for this item, so the candidate's modality should be corrected from note to none while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_takeoff_preparation_12_3_4_10/icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::e75b2df88ffdbaec.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_phraseologies_takeoff_preparation_12_3_4_10/icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::e75b2df88ffdbaec.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:22:14Z"
+}

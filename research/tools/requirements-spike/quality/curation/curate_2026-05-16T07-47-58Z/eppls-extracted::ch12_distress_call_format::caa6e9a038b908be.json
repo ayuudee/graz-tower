@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::caa6e9a038b908be",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.44,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source window after whitespace normalization, so the G1 miss appears to be a false negative. The claim is atomic, not redundant with accepted siblings, and its shall modality is supported by the source while the background_support authority class appropriately reflects the non-authoritative training-material context.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::caa6e9a038b908be.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::caa6e9a038b908be.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:49:39Z"
+}

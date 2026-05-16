@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::24551c43b8aa9739",
+  "documentId": "h01-extracted",
+  "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.37,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not present verbatim in the source window: the phrase appears under the aircraft/pilot label \u201cA:\u201d rather than as \u201cG: REQUEST QDM/QDR/QTE\u201d. Because quote text is an identity field and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::24551c43b8aa9739.json",
+    "toPath": "rejected/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::24551c43b8aa9739.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:58:17Z"
+}

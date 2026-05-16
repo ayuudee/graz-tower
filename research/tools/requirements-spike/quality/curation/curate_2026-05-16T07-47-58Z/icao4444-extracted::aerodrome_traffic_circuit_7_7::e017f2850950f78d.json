@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::e017f2850950f78d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.51,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present and directly supports the permissive claim, with modality `may` and `operational_guidance` authority correctly aligned. It is not redundant with the accepted sibling covering the preceding `should` sentence in 7.7.2.1.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::e017f2850950f78d.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::e017f2850950f78d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:26:15Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_1_to_4_4::5ad94d08a7343258",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_1_to_4_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.29,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted Position 5 text is present in the source and supports the claim as an operational CAP 413 reporting-point/phraseology item. However, the cited text is not introduced as a NOTE and contains no modal verb, so the modality should be corrected from note to none rather than rejected.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::5ad94d08a7343258.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::5ad94d08a7343258.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:05:33Z"
+}

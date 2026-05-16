@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part2::b4bf4dbbb9265844",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.74,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate fails G1 because the quoted request phrase is not verbatim in the source: the source says \"A: (position) REQUEST AIR-TAXIING\", not \"A: (position) REQUEST AIR-TAXING\". Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the record must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part2/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part2::b4bf4dbbb9265844.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part2/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part2::b4bf4dbbb9265844.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:39:12Z"
+}

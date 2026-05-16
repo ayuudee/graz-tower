@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::d6fdb68d7678bcbd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.22,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim, self-contained, and not redundant with accepted siblings. The source wording is a non-mandatory 'should' clause, so it should remain operational guidance but be classified as advisory rather than best-practice.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::d6fdb68d7678bcbd.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::d6fdb68d7678bcbd.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:13:14Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::4e8ab0c62aa52da7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.36,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The figure-caption quote is present in the source and supports the claim as background/support material, not as a normative note or requirement. The only needed correction is to align the modality with the non-normative caption wording, consistent with the accepted sibling figure-caption item.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::4e8ab0c62aa52da7.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::4e8ab0c62aa52da7.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:18:50Z"
+}

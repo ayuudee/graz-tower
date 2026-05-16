@@ -1,0 +1,11 @@
+{
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_startup_7_4_1_1",
+  "familyId": "icao4444_aerodrome_tower_family",
+  "sourcePath": "research/txt/icao4444-extracted.txt",
+  "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+  "startLine": 8462,
+  "endLine": 8491,
+  "lastPromotedRunId": "promote_2026-05-16T06-47-39Z_b460",
+  "lastPromotedAt": "2026-05-16T06:47:39Z"
+}

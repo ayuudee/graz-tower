@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::4c5537ed00468bb6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the claim accurately captures the standalone Note 2 background reference to Circular 324 and PANS-OPS. Its modality as `note` and authorityClass as `background_support` are appropriate, and it is not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::4c5537ed00468bb6.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::4c5537ed00468bb6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:08:05Z"
+}

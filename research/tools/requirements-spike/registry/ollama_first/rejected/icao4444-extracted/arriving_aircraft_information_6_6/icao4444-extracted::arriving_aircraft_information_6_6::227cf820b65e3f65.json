@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_information_6_6::227cf820b65e3f65",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_information_6_6",
+  "familyId": "icao4444_arriving_aircraft_family",
+  "claimText": "Changes in observed RVR value(s), in accordance with the reported scale in use, or changes in the visibility representative of the direction of approach and landing shall be transmitted without delay during final approach.",
+  "rationale": "Atomic requirement for RVR/visibility changes.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "e) changes in observed RVR value(s), in accordance with the reported scale in use, or changes in the visibility representative of the direction of approach and landing."
+  ],
+  "sourceItemIds": [
+    "6.6.5_e"
+  ],
+  "claimSha256": "1eafda9175f538e6e41f7240935501f3abdc84c2e2de976843684decda65f448",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7380,
+    "endLine": 7472
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_arriving_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "6.6.5_e_rvr_changes",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "e) changes in observed RVR value(s), in accordance with the reported scale in use, or changes in the visibility representative of the direction of approach and landing.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the parent clause and item 6.6.5(e), but the exactSourceQuote as provided is not present verbatim in the source window because the item label is separated from the text by intervening page/header material. Since identity fields cannot be corrected in this pass, the verbatim-quote failure requires rejection rather than promotion.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:38:41Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/arriving_aircraft_information_6_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:38:41Z"
+  }
+}

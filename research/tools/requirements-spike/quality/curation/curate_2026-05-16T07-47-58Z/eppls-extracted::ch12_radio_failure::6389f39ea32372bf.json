@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::6389f39ea32372bf",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.76,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is supported by the source window as a contiguous passage after line-break normalization, so the G1 miss appears to be an artefact rather than a real verbatim failure. However, the source says ATC \u201cwill send up\u201d a shepherd aircraft descriptively rather than using a permissive \u201cmay,\u201d so the candidate should remain background support but with modality lowered to none.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6389f39ea32372bf.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6389f39ea32372bf.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:11:12Z"
+}

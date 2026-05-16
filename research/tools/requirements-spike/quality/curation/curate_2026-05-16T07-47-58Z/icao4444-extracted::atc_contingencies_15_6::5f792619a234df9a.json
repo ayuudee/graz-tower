@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::5f792619a234df9a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The substantive claim is supported by item 15.6.1.3(c), but one exactSourceQuotes entry is not verbatim in the source window because the heading and line break structure intervenes between \u201c15.6.1.3\u201d and the quoted sentence. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::5f792619a234df9a.json",
+    "toPath": "rejected/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::5f792619a234df9a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:47:04Z"
+}

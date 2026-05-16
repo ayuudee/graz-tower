@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::ff0d0fa0aa5ba760",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.2,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text is verbatim and supports the candidate claim, but it uses \u201cshould,\u201d making the provision advisory rather than an authoritative requirement. The only defect is the authorityClass being too high; sibling accepted items show the same 7.13.5 structure treated as operational guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::ff0d0fa0aa5ba760.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::ff0d0fa0aa5ba760.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:21:48Z"
+}

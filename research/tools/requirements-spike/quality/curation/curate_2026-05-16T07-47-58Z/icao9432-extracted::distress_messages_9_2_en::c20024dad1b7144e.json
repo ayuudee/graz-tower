@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_messages_9_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.94,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported and the claim accurately captures the operative clause in 9.2.3.2. Although ICAO Doc 9432 is treated as operational guidance rather than an authoritative regulation, the candidate already uses authorityClass \"operational_guidance\" while preserving the source's \"shall\" modality, and it is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_messages_9_2_en/icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e.json",
+    "toPath": "candidates/icao9432-extracted/distress_messages_9_2_en/icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:49:24Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::2fdc5963148d75cc",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 29.22,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source window supports the atomic claim by listing \u201cAltimeter settings\u201d among items to be read back, and the existing background_support authority class appropriately avoids treating this as an authoritative regulation. The modality should match the source wording/context using \u201cmust\u201d rather than \u201cshall.\u201d",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::2fdc5963148d75cc.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::2fdc5963148d75cc.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:37:03Z"
+}

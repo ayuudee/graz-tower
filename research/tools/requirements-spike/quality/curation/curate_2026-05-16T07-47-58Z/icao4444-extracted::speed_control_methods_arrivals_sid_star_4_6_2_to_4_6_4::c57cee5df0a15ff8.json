@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::c57cee5df0a15ff8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.59,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote appears verbatim in the source and the candidate accurately captures a self-contained Note 2 as non-normative background support. It is not redundant with the accepted sibling items and requires no modality or authority correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::c57cee5df0a15ff8.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::c57cee5df0a15ff8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:37:03Z"
+}

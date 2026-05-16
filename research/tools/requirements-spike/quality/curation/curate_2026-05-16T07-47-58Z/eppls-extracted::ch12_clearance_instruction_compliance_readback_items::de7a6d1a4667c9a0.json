@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::de7a6d1a4667c9a0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.18,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source window supports this as one of the listed readback items under the readback requirement, and the quoted item appears in the source apart from line-wrapping/whitespace. The operative wording uses \u201cmust,\u201d so the modality should be aligned to the source wording while retaining the non-authoritative background-support classification.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::de7a6d1a4667c9a0.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::de7a6d1a4667c9a0.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:40:33Z"
+}

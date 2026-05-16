@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::58bb08280f8d71ae",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_climb_descent_same_track_5_4_2_2_2",
+  "familyId": "icao4444_longitudinal_separation_family",
+  "claimText": "A minimum longitudinal separation of 5 minutes may be provided while vertical separation does not exist, provided that the level change is commenced within 10 minutes of the time the second aircraft has reported over a common point derived from ground-based navigation aids or GNSS.",
+  "rationale": "Consistent authoritative requirement for 5-minute separation conditional on timing of level change.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "5 minutes while vertical separation does not exist, provided that:",
+    "the level change is commenced within 10 minutes of the time the second aircraft has reported over a common point which must be derived from ground-based navigation aids or by GNSS"
+  ],
+  "sourceItemIds": [
+    "item_5.4.2.2.2.1",
+    "item_5.4.2.2.2.1_c",
+    "item_5.4.2.2.2.1_c_1"
+  ],
+  "claimSha256": "405a8b828e6bdd7463f6eb36b11f86ef2520d56abb85da27ee27f02a6b85dade",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5141,
+    "endLine": 5189
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_longitudinal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_same_track_5min_condition_1",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted source makes the 5-minute minimum conditional on both sub-item 1 and sub-item 2, joined by \u201cand\u201d; the claim states only the first condition and therefore presents an incomplete/sufficient condition not supported by the source. Fixing this would require changing the claim text and adding the omitted operative condition, which is not permitted in this curation pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:17:34Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:17:34Z"
+  }
+}

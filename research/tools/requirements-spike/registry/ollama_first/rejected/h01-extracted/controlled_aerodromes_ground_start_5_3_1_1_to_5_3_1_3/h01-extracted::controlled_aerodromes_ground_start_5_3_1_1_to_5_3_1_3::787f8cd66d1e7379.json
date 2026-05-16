@@ -1,0 +1,143 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::787f8cd66d1e7379",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "The phraseology for responding to a start up request includes: 'ANLASSEN GENEHMIGT', 'STAND BY F\u00dcR ANLASSEN (Begr\u00fcndung)', 'ANLASSEN NEGATIV (Begr\u00fcndung)', '[ERWARTEN SIE] ANLASSEN UM (Zeit)', '[ERWARTEN SIE ABFLUG UM (Zeit)] ANLASSEN', 'NACH EIGENEM ERMESSEN', or 'MELDEN SIE ANLASSBEREIT'.",
+  "rationale": "The source lists the mandatory phraseology options for ATC responses to start up requests in section 5.3.1.3.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: ANLASSEN GENEHMIGT",
+    "G: STAND BY F\u00dcR ANLASSEN (Begr\u00fcndung)",
+    "G: ANLASSEN NEGATIV (Begr\u00fcndung)",
+    "G: [ERWARTEN SIE] ANLASSEN UM (Zeit)",
+    "G: [ERWARTEN SIE ABFLUG UM (Zeit)] ANLASSEN",
+    "G: NACH EIGENEM ERMESSEN",
+    "G: MELDEN SIE ANLASSBEREIT"
+  ],
+  "sourceItemIds": [
+    "item_5.3.1.3_responses"
+  ],
+  "claimSha256": "8c444ec209b278e725a40d4625e92396b371c3509f23182426f278a0a65b5304",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 6822,
+    "endLine": 6967
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_startup_response_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 7,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "G: ANLASSEN GENEHMIGT",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: STAND BY F\u00dcR ANLASSEN (Begr\u00fcndung)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: ANLASSEN NEGATIV (Begr\u00fcndung)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: [ERWARTEN SIE] ANLASSEN UM (Zeit)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: [ERWARTEN SIE ABFLUG UM (Zeit)] ANLASSEN",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: NACH EIGENEM ERMESSEN",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: MELDEN SIE ANLASSBEREIT",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted identity fields do not appear verbatim in the source window: the German response phrases are shown with German speaker labels such as \u201cB:\u201d or separated labels, not the submitted \u201cG:\u201d quotes. Because exactSourceQuotes cannot be edited in this pass, the G1 failure is a real identity defect requiring rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:33:43Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:33:43Z"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::807e1c8029eea264",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.51,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is supported and the modality/authority pairing is consistent, but both the source window and claim are visibly truncated at the end of the page. Promoting would freeze an incomplete identity field; a human should re-extract with the following page to capture the complete Code Pennant description.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::807e1c8029eea264.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:53:42Z"
+}

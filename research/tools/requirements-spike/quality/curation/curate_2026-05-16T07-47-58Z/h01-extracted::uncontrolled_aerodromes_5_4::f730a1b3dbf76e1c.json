@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::uncontrolled_aerodromes_5_4::f730a1b3dbf76e1c",
+  "documentId": "h01-extracted",
+  "sectionId": "uncontrolled_aerodromes_5_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.49,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phrase appears verbatim in the Departure phraseology table with the 'G:' speaker prefix, consistent with the accepted sibling treatment of adjacent 'G:' entries as Ground phraseology. It is an atomic phraseology item not covered by siblingAccepted, and the gate audits passed with operational_guidance rather than authoritative status.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::f730a1b3dbf76e1c.json",
+    "toPath": "candidates/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::f730a1b3dbf76e1c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:00:26Z"
+}

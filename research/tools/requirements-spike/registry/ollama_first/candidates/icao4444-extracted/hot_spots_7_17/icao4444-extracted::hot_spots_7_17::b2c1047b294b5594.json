@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::hot_spots_7_17::b2c1047b294b5594",
+  "documentId": "icao4444-extracted",
+  "sectionId": "hot_spots_7_17",
+  "familyId": "icao4444_hot_spot_family",
+  "claimText": "Guidance material related to hot spots is contained in the Manual on the Prevention of Runway Incursions (Doc 9870).",
+  "rationale": "All attempts correctly identify this as non-operative guidance material.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Note.\u2014 Guidance material related to hot spots is contained in the Manual on the Prevention of Runway Incursions (Doc 9870)."
+  ],
+  "sourceItemIds": [
+    "item_note_7_17"
+  ],
+  "claimSha256": "98f22a404e16e9fb43feb9199c9bdc31864a092316ae00fedd39389d96682053",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9555,
+    "endLine": 9561
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_hot_spot_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "hot_spot_guidance_ref",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim-supported and the note/background authority framing is consistent; the accepted sibling candidates already cover the operative parent clause, so this item is not an underspecified replacement for them. However, the item is a non-operative guidance reference rather than a definition.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T11:09:10Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/hot_spots_7_17/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:09:10Z"
+  }
+}

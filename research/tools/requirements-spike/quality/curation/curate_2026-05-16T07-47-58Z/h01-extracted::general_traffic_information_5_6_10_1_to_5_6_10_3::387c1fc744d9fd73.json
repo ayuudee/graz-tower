@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::387c1fc744d9fd73",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.25,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the parent clause, but the sole exactSourceQuote, \"5. Direction of movement\", does not appear verbatim in the source window because the extracted numbering and text are separated by intervening material. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::387c1fc744d9fd73.json",
+    "toPath": "rejected/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::387c1fc744d9fd73.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:56:24Z"
+}

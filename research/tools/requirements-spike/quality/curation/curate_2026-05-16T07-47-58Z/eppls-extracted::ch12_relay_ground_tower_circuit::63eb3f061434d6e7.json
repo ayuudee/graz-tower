@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::63eb3f061434d6e7",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted definition is present in the source window after normal whitespace normalization, so the G1 miss appears to be an artefact rather than a real identity failure. The statement is non-normative background/definition text with no explicit modal wording, so the modality should be lowered from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::63eb3f061434d6e7.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::63eb3f061434d6e7.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:14:25Z"
+}

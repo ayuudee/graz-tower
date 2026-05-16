@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_27_to_4_30::eb7e48cb79ec3196",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_27_to_4_30",
+  "familyId": "cap413_ch4_4_27_to_4_30_family",
+  "claimText": "The surface wind will be passed if there is a significant difference to that already passed.",
+  "rationale": "All attempts identify this as a NOTE. While some argue for promotion due to 'will be passed', the source explicitly labels it as a NOTE, warranting advisory_only status to preserve source fidelity.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "NOTE: The surface wind will be passed if there is a significant difference to that already passed."
+  ],
+  "sourceItemIds": [
+    "item_4_28_note"
+  ],
+  "claimSha256": "42ec7f151c062baea7eeefe810bdf998ba33f30ea2d7febb77633ee5e867706e",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 8573,
+    "endLine": 8618
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_27_to_4_30_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_4_28_wind_note",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim, the claim is directly supported, and the candidate correctly preserves the source\u2019s explicit NOTE status with modality `note` and operational-guidance authority. It is not redundant with the accepted sibling candidates, which cover different wind-reporting and take-off-clearance points.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:07:47Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_27_to_4_30/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:07:47Z"
+  }
+}

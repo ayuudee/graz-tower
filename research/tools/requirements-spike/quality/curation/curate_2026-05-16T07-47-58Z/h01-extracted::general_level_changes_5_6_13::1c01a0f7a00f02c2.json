@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::general_level_changes_5_6_13::1c01a0f7a00f02c2",
+  "documentId": "h01-extracted",
+  "sectionId": "general_level_changes_5_6_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.58,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology 'A: UNABLE' appears verbatim under the scenario where a pilot is unable to comply, and no sibling accepted item already covers this plain 'UNABLE' atomic phrase. However, the quote itself contains no shall/must wording, so for this H01 operational-guidance table the metadata modality should be lowered to match the source wording.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::1c01a0f7a00f02c2.json",
+    "toPath": "candidates/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::1c01a0f7a00f02c2.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:50:46Z"
+}

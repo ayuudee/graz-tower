@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_messages_9_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 26.51,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The verbatim quote supports the claim, and the sibling accepted item does not cover this separate clarification of which station is normally addressed. Because the source says \u201cwill normally,\u201d this should remain advisory/operational rather than being treated as a best-practice requirement.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_messages_9_2_en/icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a.json",
+    "toPath": "candidates/icao9432-extracted/distress_messages_9_2_en/icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:48:39Z"
+}

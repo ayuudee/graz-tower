@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::84a51cb4547a8501",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_english_completion_5_3_1_4",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "The phraseology 'A: PUSHBACK/POWERBACK COMPLETED' is used by the aircraft to confirm completion of pushback or powerback.",
+  "rationale": "All attempts agree on the phraseology including speaker prefix. Modality set to 'note' for consistency.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "A: PUSHBACK/POWERBACK COMPLETED"
+  ],
+  "sourceItemIds": [
+    "item_completed"
+  ],
+  "claimSha256": "4e2dbaa8e720bb1dd725aac8207e1629b822eb46c7eafd37fed046b6d8e34963",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 6999,
+    "endLine": 7005
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_completed",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted phraseology appears verbatim and the claim is supported by the source. However, the source line is a phraseology item rather than a note, and sibling accepted phraseology items in the same window use modality \"none\" with operational_guidance authority.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:36:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:36:12Z"
+  }
+}

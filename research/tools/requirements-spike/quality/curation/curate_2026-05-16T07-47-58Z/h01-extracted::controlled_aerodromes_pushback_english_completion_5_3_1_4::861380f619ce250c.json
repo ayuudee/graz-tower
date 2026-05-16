@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::861380f619ce250c",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_english_completion_5_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.27,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote appears verbatim and the claim is consistent with the phraseology list, and it is not redundant with the accepted sibling items. However, the source presents the phraseology without a note or normative verb, so the modality should match the sibling phraseology entries as 'none' while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::861380f619ce250c.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::861380f619ce250c.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:36:16Z"
+}

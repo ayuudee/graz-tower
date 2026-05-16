@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::183047902fc12769",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.81,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and the claim accurately reflects a source Note providing external guidance, not a normative requirement. The only defect is the G3 authority/modality mismatch: a note cannot carry authoritative_requirement authority, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::183047902fc12769.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::183047902fc12769.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:20:16Z"
+}

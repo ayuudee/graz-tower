@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::eacc0c99a9c69e45",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "Multiple RVR observations are always representative of the touchdown zone, midpoint zone and the roll-out/stop end zone, respectively.",
+  "rationale": "Source note attached to 12.3.1.8(f) provides operational guidance on the meaning of RVR observation zones.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Multiple RVR observations are always representative of the touchdown zone, midpoint zone and the roll-out/stop end zone, respectively."
+  ],
+  "sourceItemIds": [
+    "note_12_3_1_8_f_1"
+  ],
+  "claimSha256": "339593a26461f4339614b1d38fb3459ee782fbf728105242a2fb2cff0858e723",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 13834,
+    "endLine": 14017
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "note_rvr_zones",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact quote is verbatim in Note 1 to 12.3.1.8(f), and the candidate correctly frames it as a non-normative note with operational_guidance authority. It is not redundant with the accepted RVR phraseology item or the separate Note 2 item, because it states the meaning of the three RVR observation positions.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:49:26Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:49:26Z"
+  }
+}

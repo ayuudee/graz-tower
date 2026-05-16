@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::c05fe1084d3e4c35",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_same_level_5_4_2_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.96,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and correctly classified as a non-normative figure caption, but it is support-only background rather than an independent rule. Its substantive content is already covered by the accepted atomic candidate for the 3-minute same-track/same-level separation minimum, so retaining this caption would be redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::c05fe1084d3e4c35.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::c05fe1084d3e4c35.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:19:48Z"
+}

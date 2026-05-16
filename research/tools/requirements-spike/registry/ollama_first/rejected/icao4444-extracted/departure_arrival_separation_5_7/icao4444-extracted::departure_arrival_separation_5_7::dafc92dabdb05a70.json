@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::dafc92dabdb05a70",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "familyId": "icao4444_departure_arrival_separation_family",
+  "claimText": "If an arriving aircraft is following an RNAV or RNP instrument flight procedure, vertical separation shall be applied until the arriving aircraft has reported passing the compulsory reporting waypoint on the instrument flight procedure.",
+  "rationale": "Mandatory vertical separation requirement for RNAV/RNP departures until a specific waypoint.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "vertical separation is applied until the arriving aircraft has reported passing the compulsory reporting waypoint on the instrument flight procedure"
+  ],
+  "sourceItemIds": [
+    "5.7.1.3",
+    "5.7.1.3_a"
+  ],
+  "claimSha256": "f7b8a435812b4842e84cf6620afcbfe4445f30e9da0ffd9b75fbe4ad29f8cf7f",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6352,
+    "endLine": 6482
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departure_arrival_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "5.7.1.3_rnav_vertical_sep",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted text is verbatim, but the claim overstates and reframes subordinate condition 5.7.1.3(a) as a standalone shall requirement whenever an arrival follows an RNAV/RNP procedure. In the source it is only one conjunctive proviso for the permission for a departing aircraft to take off on a path clear of the arrival protection area, alongside conditions (b) and (c), so fixing this would require changing the claim text.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:57:36Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departure_arrival_separation_5_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:57:36Z"
+  }
+}

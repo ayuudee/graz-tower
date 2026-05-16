@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_departure_combined_identity_ops_9010_b_1_to_11::7309b000ed96bc66",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_departure_combined_identity_ops_9010_b_1_to_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.87,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The parent sentence states that ATIS messages containing both arrival and departure information shall contain the listed elements, and item (11) is one of those elements. The quote is verbatim, the inherited shall modality and authoritative_requirement class are appropriate, and this leaf item is not redundant with the accepted sibling items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_arrival_departure_combined_identity_ops_9010_b_1_to_11/sera-923-2012-extracted::atis_arrival_departure_combined_identity_ops_9010_b_1_to_11::7309b000ed96bc66.json",
+    "toPath": "candidates/sera-923-2012-extracted/atis_arrival_departure_combined_identity_ops_9010_b_1_to_11/sera-923-2012-extracted::atis_arrival_departure_combined_identity_ops_9010_b_1_to_11::7309b000ed96bc66.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:02:23Z"
+}

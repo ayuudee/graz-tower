@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::ca08b3a1eb501356",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.89,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the provided exactSourceQuote is not verbatim because it uses an ellipsis and combines separated text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim failure requires rejection; the authority class would also need lowering if re-extracted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::ca08b3a1eb501356.json",
+    "toPath": "rejected/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::ca08b3a1eb501356.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:45:33Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::e49fba0dc65034cf",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.13,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists and is an atomic readback item in the same mandatory-readback list already accepted for sibling items, so it is not a redundant umbrella. The source/background context supports a readback obligation, but the modality should align with the claim/source wording as \u201cmust\u201d rather than \u201cshall,\u201d while retaining background_support authority.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::e49fba0dc65034cf.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::e49fba0dc65034cf.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:41:00Z"
+}

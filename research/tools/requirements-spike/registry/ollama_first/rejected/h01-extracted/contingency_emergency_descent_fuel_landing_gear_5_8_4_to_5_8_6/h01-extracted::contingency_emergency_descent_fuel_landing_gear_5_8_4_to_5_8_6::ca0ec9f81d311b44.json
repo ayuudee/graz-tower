@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6::ca0ec9f81d311b44",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6",
+  "familyId": "h01_phraseology_contingency_family",
+  "claimText": "Phraseology for emergency descent broadcast to all stations shall be: [TO] ALL STATIONS, EMERGENCY DESCENT AT (significant point or location), ALL AIRCRAFT BELOW (level) WITHIN (distance) OF (significant point or navaid) LEAVE IMMEDIATELY (followed as necessary by specific instructions as to direction, heading or track, etc.)",
+  "rationale": "Attempts 1 and 3 split this block; Attempt 2 combined it with altitude suggestion. Splitting is preferred for distinct operational intents (broadcast vs suggestion).",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "[TO] ALL STATIONS, EMERGENCY DESCENT AT (significant point or location), ALL AIRCRAFT BELOW (level) WITHIN (distance) OF (significant point or navaid) LEAVE IMMEDIATELY"
+  ],
+  "sourceItemIds": [
+    "5.8.4_block_2"
+  ],
+  "claimSha256": "f68859229b34a0db285d91a2364dd56e990b93374c1d3960103ec25ef5cfc18b",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 12087,
+    "endLine": 12181
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_phraseology_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_emergency_descent_all_stations",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "[TO] ALL STATIONS, EMERGENCY DESCENT AT (significant point or location), ALL AIRCRAFT BELOW (level) WITHIN (distance) OF (significant point or navaid) LEAVE IMMEDIATELY",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate\u2019s exactSourceQuote does not exist verbatim as a contiguous quote in the provided source window; the English phrase is split/interleaved with German text and page/footer material. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this cannot be promoted despite the underlying phraseology being semantically supported.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:24:50Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:24:50Z"
+  }
+}

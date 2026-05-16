@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::performance_based_longitudinal_5_4_2_9::3c05099a381ff7bd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "performance_based_longitudinal_5_4_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.15,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quoted source are supported, and the source uses permissive \u201cmay\u201d for this applicability statement. The only defect is the G3 authority-floor mismatch: a may-modality candidate should not remain authoritative_requirement, so the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::3c05099a381ff7bd.json",
+    "toPath": "candidates/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::3c05099a381ff7bd.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:29:41Z"
+}

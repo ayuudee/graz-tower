@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_general_15_1_1::37dcc5bec0dad341",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_general_15_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is supported by the source and the candidate correctly captures item 15.1.1.2e with inherited 'should' modality. The only issue is the G3 mismatch: a 'should' provision cannot be classified as an authoritative_requirement under the authority floor table, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::37dcc5bec0dad341.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::37dcc5bec0dad341.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:58:53Z"
+}

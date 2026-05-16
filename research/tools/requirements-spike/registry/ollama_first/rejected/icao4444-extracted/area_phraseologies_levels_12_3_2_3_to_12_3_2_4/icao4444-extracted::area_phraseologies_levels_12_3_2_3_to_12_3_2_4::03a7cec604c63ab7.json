@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::area_phraseologies_levels_12_3_2_3_to_12_3_2_4::03a7cec604c63ab7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_levels_12_3_2_3_to_12_3_2_4",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "The term MAINTAIN shall not be used in lieu of DESCEND or CLIMB when instructing an aircraft to change level.",
+  "rationale": "All attempts identify this Note as advisory guidance prohibiting the use of MAINTAIN for climb/descent instructions.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The term \u201cMAINTAIN\u201d is not to be used in lieu of \u201cDESCEND\u201d or \u201cCLIMB\u201d when instructing an aircraft to change level."
+  ],
+  "sourceItemIds": [
+    "note_maintain"
+  ],
+  "claimSha256": "2fddabbc17793433bf3dd6ff65a4cf082e673cfcc3653e6c493353c8e407b88d",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 14319,
+    "endLine": 14359
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "maintain_not_for_climb_descend",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The verbatim quote exists and supports an advisory Note that MAINTAIN is not to be used for level-change instructions, but the claimText recasts it as a 'shall not' obligation. Because claimText is an identity field and cannot be corrected here, the over-normative wording requires rejection rather than promotion.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:34:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/area_phraseologies_levels_12_3_2_3_to_12_3_2_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:34:38Z"
+  }
+}

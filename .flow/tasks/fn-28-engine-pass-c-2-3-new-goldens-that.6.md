@@ -169,9 +169,8 @@ both sides must agree to avoid the canonical recognition-fires-but-apply-
 silently-no-ops failure mode.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+G3b cross-aerodrome foundation: (a) AUDITED weather projection — no FIX needed, no new deferment (consumer helpers `windForMission` / `densityAltitudeInputForMission` already fail-closed on multi-aerodrome ambiguity; no ARP-circular gate required). (b) Added `isTransitArrivalReactiveGoAroundEligible(aircraft, mission)` named guard in Pilot.kt (R18), widened `deriveCrosswindEvent` + `deriveTailwindEvent` to disjunctive eligibility (round-12 Major 1), extended `applyCrosswindGoAround` + `applyTailwindGoAround` with shared Transit dispatch fork (R13/R18/R22) via `replaceFromActivePrimitive([goAroundTask(), circuitTask(), groundArrivalTask()])` + R19 Tick A intent (climbSpeedMps + Final + None + patternAltitude) + reset-before-rewrite (round-16 Major 2). Added `planRoute` Transit-cruise discriminator (R14 round-14 Major 1) so post-GA recovery FLY_DEPARTURE doesn't route through `planTransitCruise`. Codex round-1 caught a Major root-name gate gap (`PilotMission(goal=Transit, root=Arrive)` malformed shape); fixed + regression test.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 92fdeb2, 16cf526
+- Tests: tests NOT run locally — no JDK in this worker env, same caveat as fn-28.1-.5; verified via codex static impl-review of scoped diff, new tests: IsTransitArrivalReactiveGoAroundEligibleSpec (guard matrix + root-name-gate row), PilotTransitArrivalReactiveGoAroundTest (dispatch fork + Tick A intent + suffix shape + reset + no-refire + Arrival circuit-only path unaffected), widened tests: PilotEventCrosswindTest + PilotEventTailwindTest (Transit-arrival shape now FIRES; Transit cruise still does not), extended tests: TransitRoutePlanningSpec (discriminator unit tests: post-GA recovery skips cruise; pre-GA cruise still plans), user runs `./gradlew :pilot:jvmTest :sim:jvmTest detekt --offline --no-daemon` locally for the gradle gate
+- PRs:

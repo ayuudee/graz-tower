@@ -62,9 +62,8 @@ G3b sim golden. C172 LOWG → LJMB; on arrival approach at LJMB, wind exceeds PO
 - [ ] Inherited-gate-semantics audit comments
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+G3b cross-aerodrome Transit-arrival reactive-GA sim golden landed — the seventh + eighth reactive-GA paths overall (first cross-aerodrome reactive-GA paths). `G3bCrossAerodromeReactiveTest` exercises C172 VFR LOWG → LJMB transit with crosswind (20 kt > C172's 15 kt POH) and tailwind (15 kt > C172's 10 kt AFH-advisory) exceedances at LJMB runway 14; recognition fires through fn-28.6's widened `derive*Event` disjunctive eligibility and dispatches through the shared `applyTransitArrivalReactiveGoAround` helper with `replaceFromActivePrimitive([goAroundTask(), circuitTask(), groundArrivalTask()])` (R13 + R22). Three-layer bounded-window pins + R22 suffix-shape pin (both `GOING_AROUND` and recovery `FLY_DEPARTURE` required) + 2 archive flips on `D-PASS-g3b-react-cross-aerodrome-{crosswind,tailwind}` + `.plan` revival note on the abandoned G1 cross-aerodrome surface.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 833383d99d880165fd8a744e5794e976b0b0a0fe, 923a2f44cb44a76d9af53389846f2d9f9b6cc19a, f8c0cddca7e5114deb95baaa5f8b9e0ee273b32d, e9f0f360a4e56b1e846c5dd5cef74edf02301125
+- Tests: Targeted: ./gradlew :sim:jvmTest --tests '*G3bCrossAerodromeReactiveTest*' --offline --no-daemon (NOT RUN LOCALLY — no JDK in worker env; run by user on their machine per task instructions; same pattern as fn-28.1 through .6), Full verify: ./gradlew build --offline --no-daemon (NOT RUN LOCALLY — same reason), Verified statically via codex impl-review (round 1 NEEDS_WORK -> round 2 NEEDS_WORK -> round 3 SHIP); review backend confirmed all R-IDs satisfied (R19 partial — Tick A intent unit-pinned at PilotTransitArrivalReactiveGoAroundTest per spec design), Local grep audits: no GA_AT_DEST literal token in task-diff files; no @Suppress annotation in scenario helpers; detekt LongMethod threshold (95) verified — longest helper setupScenarioContext = 76 lines, well below threshold
+- PRs:

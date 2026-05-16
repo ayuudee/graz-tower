@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::d21cd3622efc248d",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.61,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is semantically supported, but its exactSourceQuotes entry is not verbatim in the source because the source uses curly quotation marks around \u2018Training Fix\u2019 while the candidate quote uses straight apostrophes. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, a real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::d21cd3622efc248d.json",
+    "toPath": "rejected/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::d21cd3622efc248d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:29:05Z"
+}

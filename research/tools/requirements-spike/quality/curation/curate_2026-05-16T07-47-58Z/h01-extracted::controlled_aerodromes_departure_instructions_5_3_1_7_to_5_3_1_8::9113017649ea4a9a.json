@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::9113017649ea4a9a",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One of the candidate's exactSourceQuotes is not present verbatim in the provided source window because the English phrase is interrupted by intervening German text in the extracted layout. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted despite the underlying phraseology being supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::9113017649ea4a9a.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::9113017649ea4a9a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:32:45Z"
+}

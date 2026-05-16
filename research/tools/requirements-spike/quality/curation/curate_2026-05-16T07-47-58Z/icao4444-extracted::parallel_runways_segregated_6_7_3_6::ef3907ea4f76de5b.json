@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_segregated_6_7_3_6::ef3907ea4f76de5b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_segregated_6_7_3_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.16,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim-supported and the claim accurately captures a non-operative note pointing to external SOIR guidance; it is not redundant with the accepted operational items. The existing note modality and background_support authority are appropriate, but the item is a cross-reference rather than a definition.",
+    "corrections": {
+      "requirementKind": "cross_reference"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_segregated_6_7_3_6/icao4444-extracted::parallel_runways_segregated_6_7_3_6::ef3907ea4f76de5b.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_segregated_6_7_3_6/icao4444-extracted::parallel_runways_segregated_6_7_3_6::ef3907ea4f76de5b.json",
+    "correctionsApplied": {
+      "requirementKind": "cross_reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:29:10Z"
+}

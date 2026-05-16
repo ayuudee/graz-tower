@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_119_to_4_128::293d9276a1d473b3",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_119_to_4_128",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.58,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The source quote is verbatim and directly supports the permissive CAP 413 phraseology rule. The candidate already uses `may` with `operational_guidance`, which is appropriate for advisory CAP 413 guidance, and it is not redundant with the accepted sibling items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_119_to_4_128/cap413-extracted::ch4_4_119_to_4_128::293d9276a1d473b3.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_119_to_4_128/cap413-extracted::ch4_4_119_to_4_128::293d9276a1d473b3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:49:09Z"
+}

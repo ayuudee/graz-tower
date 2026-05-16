@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::49ed7b51ee4d4499",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.15,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuote, \"RNP 10\", is not present verbatim in the source table, which lists the header \"RNP type\" and the value \"10\" separately. Because identity fields cannot be edited in this pass, the verbatim-quote failure requires rejection; separately, the cited wording is permissive \"may\" and would not support authoritative_requirement as classified.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::49ed7b51ee4d4499.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::49ed7b51ee4d4499.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:16:35Z"
+}

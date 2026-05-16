@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::e77048844fdf163b",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "familyId": "h01_controlled_aerodrome_family",
+  "claimText": "Controllers may instruct pilots to take/turn/vacate the first/second/convenient left/right exit using 'TAKE/TURN/VACATE FIRST/SECOND/CONVENIENT LEFT/RIGHT' (English) or 'NEHMEN/DREHEN/VERLASSEN SIE ERSTE[N]/ZWEITE[N]/PASSENDE[N] NACH LINKS/RECHTS' (German).",
+  "rationale": "All attempts agree on the phraseology for directing specific exit turns in both languages.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "G: TAKE/TURN/VACATE FIRST/SECOND/CONVENIENT LEFT/RIGHT",
+    "NEHMEN/DREHEN/VERLASSEN SIE ERSTE[N]/ZWEITE[N]/PASSENDE[N] NACH LINKS/RECHTS"
+  ],
+  "sourceItemIds": [
+    "en_turn_vacate",
+    "de_turn_vacate"
+  ],
+  "claimSha256": "550357f8ced53d48d81e6b18e88f44b5ccddb200088fca9c9da9a5abb662b24c",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 8266,
+    "endLine": 8358
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "turn_vacate_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted phraseology appears verbatim in the source and is not redundant with accepted siblings. However, the source provides phraseology entries without note-style or normative language, so the candidate's modality should be lowered from `note` to `none` while retaining operational-guidance authority.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:27:10Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_after_landing_5_3_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:27:10Z"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::d17dc22ff42b2e28",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_key_readbacks_takeoff_cleared_word_limits",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.97,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is present when the left-column text is read continuously, and the accepted siblings do not already cover this conditional-clearance point. However, the source does not use 'should' for this statement; in this background-support context it is descriptive/advisory rather than a should-strength recommendation.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::d17dc22ff42b2e28.json",
+    "toPath": "candidates/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::d17dc22ff42b2e28.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:57:46Z"
+}

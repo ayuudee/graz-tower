@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::9e4b5bc5b1bf33f8",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.23,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phrase is present in the source window aside from line-break/whitespace artefacts, and the item is not redundant with accepted siblings. However, this background-training source and this specific quote do not use shall-strength wording for the phraseology item, so the metadata modality should be lowered rather than treating it as an authoritative requirement.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::9e4b5bc5b1bf33f8.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::9e4b5bc5b1bf33f8.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:07:01Z"
+}

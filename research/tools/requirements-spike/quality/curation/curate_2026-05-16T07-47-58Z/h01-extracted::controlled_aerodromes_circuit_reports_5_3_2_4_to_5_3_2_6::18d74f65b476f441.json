@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::18d74f65b476f441",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.25,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source window, but the exactSourceQuote includes the prefix 'G:' as a contiguous part of the English phrase and that quote does not appear verbatim in the source text. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::18d74f65b476f441.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::18d74f65b476f441.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:28:26Z"
+}

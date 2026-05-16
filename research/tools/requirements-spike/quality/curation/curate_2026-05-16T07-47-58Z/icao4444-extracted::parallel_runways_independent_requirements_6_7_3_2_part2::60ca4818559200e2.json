@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_requirements_6_7_3_2_part2::60ca4818559200e2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_requirements_6_7_3_2_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.01,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact source quote is present and supports the claim, with 'should' modality properly classified as operational guidance. The candidate is not redundant with the accepted sibling covering the separate requirement for safety assessment/approval, because this one captures the specific recommended factors to review.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_independent_requirements_6_7_3_2_part2/icao4444-extracted::parallel_runways_independent_requirements_6_7_3_2_part2::60ca4818559200e2.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_independent_requirements_6_7_3_2_part2/icao4444-extracted::parallel_runways_independent_requirements_6_7_3_2_part2::60ca4818559200e2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:25:15Z"
+}

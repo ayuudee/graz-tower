@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8",
+  "documentId": "icao9432-extracted",
+  "sectionId": "pushback_powerback_4_3_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.11,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim, source-grounded footnote definition and is correctly classified as non-normative background support with note modality. It is not redundant with the accepted sibling operational items, which cover push-back procedures rather than the definition of power-back.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/pushback_powerback_4_3_en/icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8.json",
+    "toPath": "candidates/icao9432-extracted/pushback_powerback_4_3_en/icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:56:32Z"
+}

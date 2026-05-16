@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::0803693d80d85604",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.93,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source window, and the quoted text appears verbatim after whitespace normalization despite the G1 audit miss. However, the source is background/definition text with no explicit note marker, so the modality should be classified as none rather than note.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::0803693d80d85604.json",
+    "toPath": "candidates/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::0803693d80d85604.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:43:13Z"
+}

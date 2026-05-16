@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::e5917e8ec185a0ef",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.09,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuotes field contains an ellipsis and does not appear verbatim in the source window, so G1 fails on an identity field that cannot be corrected in this pass. Although the underlying rule is broadly supported by the source, the non-verbatim quote requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::e5917e8ec185a0ef.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::e5917e8ec185a0ef.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:15:51Z"
+}

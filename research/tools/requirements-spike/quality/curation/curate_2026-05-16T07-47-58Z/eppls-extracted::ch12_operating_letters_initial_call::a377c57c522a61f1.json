@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::a377c57c522a61f1",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.04,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote is not present verbatim in the source window; it uses an ellipsis where the source contains intervening text. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::a377c57c522a61f1.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::a377c57c522a61f1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:00:15Z"
+}

@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::87b7e4d619a0c157",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "familyId": "icao4444_aerodrome_traffic_family",
+  "claimText": "In the case of emergency vehicles proceeding to the assistance of an aircraft in distress, all movement of surface traffic should, to the extent practicable, be halted until it is determined that the progress of the emergency vehicles will not be impeded.",
+  "rationale": "Source 7.6.3.2.2.1 uses 'should' to advise halting surface traffic to ensure emergency vehicle progress.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "all movement of surface traffic should, to the extent practicable, be halted"
+  ],
+  "sourceItemIds": [
+    "7.6.3.2.2.1"
+  ],
+  "claimSha256": "417cc1efa8d078148b17756299f8e94fe9de8f3838e9b0c23f0118cc2ba267cd",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8811,
+    "endLine": 8951
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_traffic_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "emergency_traffic_halt",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted text is present verbatim and supports the claim, with the source using 'should' for the halting of surface traffic. The candidate's modality and authorityClass are already consistent as operational guidance, and the related accepted sibling covers the separate 'shall be afforded priority' requirement rather than this advisory halting clause.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:16:02Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:16:02Z"
+  }
+}

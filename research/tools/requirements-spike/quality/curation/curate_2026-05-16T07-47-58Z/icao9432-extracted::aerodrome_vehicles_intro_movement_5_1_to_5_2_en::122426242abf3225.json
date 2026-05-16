@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::122426242abf3225",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_vehicles_intro_movement_5_1_to_5_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.05,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim and fully supports the claim, and the advisory wording is correctly represented as should with operational_guidance authority. It is not redundant with the accepted sibling candidates, which cover different vehicle-movement instructions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_vehicles_intro_movement_5_1_to_5_2_en/icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::122426242abf3225.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_vehicles_intro_movement_5_1_to_5_2_en/icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::122426242abf3225.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:46:16Z"
+}

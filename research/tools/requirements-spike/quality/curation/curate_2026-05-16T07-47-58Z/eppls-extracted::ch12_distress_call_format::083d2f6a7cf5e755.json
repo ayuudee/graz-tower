@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::083d2f6a7cf5e755",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.17,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the source, and the quoted wording is present in the source window when the line break is normalized. The candidate is not redundant with the accepted sibling, which covers optional additional details rather than the SOS/MAYDAY distress-call method, and its may/background_support classification is appropriately conservative.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::083d2f6a7cf5e755.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::083d2f6a7cf5e755.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:47:09Z"
+}

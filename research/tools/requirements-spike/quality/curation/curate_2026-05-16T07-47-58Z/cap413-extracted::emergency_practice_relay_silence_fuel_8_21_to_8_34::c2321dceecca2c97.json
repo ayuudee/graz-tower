@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::c2321dceecca2c97",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.02,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is supported by CAP 413 section 8.26, and the candidate already uses the correct advisory modality and operational-guidance authority class for the source wording. The accepted siblings cover the authority to impose silence, but not this distinct phraseology form, so it is not redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::c2321dceecca2c97.json",
+    "toPath": "candidates/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::c2321dceecca2c97.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:28:59Z"
+}

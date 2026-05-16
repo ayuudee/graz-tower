@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::13beddbc77ef0dbe",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.14,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by item 4.109, but the exactSourceQuotes field is not verbatim because it contains an ellipsis and does not match the source text. Identity fields cannot be corrected in this pass, so the G1 verbatim quote failure requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::13beddbc77ef0dbe.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::13beddbc77ef0dbe.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:47:20Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_separation_5_3::670605bd2e4cb35d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_separation_5_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.49,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim text is supported verbatim by clause 5.3.3.4 and is not redundant with accepted siblings. The only defect is the G3 floor violation: the source uses \u201cshould,\u201d so the authority class must be lowered rather than changing modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::670605bd2e4cb35d.json",
+    "toPath": "candidates/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::670605bd2e4cb35d.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:37:52Z"
+}

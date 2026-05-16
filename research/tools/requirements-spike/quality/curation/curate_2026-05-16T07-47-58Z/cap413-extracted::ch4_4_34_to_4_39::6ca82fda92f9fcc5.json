@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_34_to_4_39::6ca82fda92f9fcc5",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_34_to_4_39",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.57,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim as a permission using \u201cmay.\u201d The only defect is the floor violation: a \u201cmay\u201d permission cannot be classified as an authoritative_requirement, so the authorityClass should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::6ca82fda92f9fcc5.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::6ca82fda92f9fcc5.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:10:22Z"
+}

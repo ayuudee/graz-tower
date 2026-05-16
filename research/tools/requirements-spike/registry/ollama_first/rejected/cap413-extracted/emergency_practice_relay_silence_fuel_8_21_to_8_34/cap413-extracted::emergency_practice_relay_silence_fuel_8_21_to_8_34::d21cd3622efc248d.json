@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::d21cd3622efc248d",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "familyId": "cap413_emergency_phraseology_family",
+  "claimText": "A 'Training Fix' is secondary in importance to actual emergency calls but takes precedence over practice emergency calls in the event of simultaneous incidents.",
+  "rationale": "Attempts 2 and 3 agree on the priority hierarchy.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "This 'Training Fix' is secondary in importance to actual emergency calls but takes precedence over practice emergency calls in the event of simultaneous incidents."
+  ],
+  "sourceItemIds": [
+    "sec_8.23"
+  ],
+  "claimSha256": "63c647ce33b468fa4c30c4a2bdd9cb23858caf296dbc1e928cb616e77aadb632",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 16598,
+    "endLine": 16841
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "training_fix_priority",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "This 'Training Fix' is secondary in importance to actual emergency calls but takes precedence over practice emergency calls in the event of simultaneous incidents.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate is semantically supported, but its exactSourceQuotes entry is not verbatim in the source because the source uses curly quotation marks around \u2018Training Fix\u2019 while the candidate quote uses straight apostrophes. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, a real G1 verbatim miss requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:29:05Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:29:05Z"
+  }
+}

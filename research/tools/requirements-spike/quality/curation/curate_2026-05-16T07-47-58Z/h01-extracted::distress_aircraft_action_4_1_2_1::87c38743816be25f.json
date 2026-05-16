@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::87c38743816be25f",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 21.28,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and directly supports the advisory claim. The candidate is already correctly framed with may modality and operational_guidance authority, and it is not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::87c38743816be25f.json",
+    "toPath": "candidates/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::87c38743816be25f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:40:00Z"
+}

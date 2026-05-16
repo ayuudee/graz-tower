@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_1_to_4_4::f5ab145db94a43ac",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_1_to_4_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.5,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted Position 3 text is supported verbatim in substance and is an atomic item not covered by accepted siblings. However, the source is descriptive and contains no NOTE marker or normative verb for this item, so the modality should be `none` rather than `note`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::f5ab145db94a43ac.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::f5ab145db94a43ac.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:06:17Z"
+}

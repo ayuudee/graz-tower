@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::d7faef11b4fa6f05",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.68,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quotes are source-grounded, and the provision is an atomic 7.13.5(e) item not already covered by accepted siblings. Because the source uses \u201cshould,\u201d the authoritative_requirement class is too high and should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::d7faef11b4fa6f05.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::d7faef11b4fa6f05.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:21:28Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_track_offset_12_3_2_9::75c5cb93d72bef0b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_track_offset_12_3_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuote is not verbatim in the source: the source separates 'a)' from 'CONFIRM ZERO OFFSET;' with the condition header, so 'a) CONFIRM ZERO OFFSET;' is not an identity-preserving quote. Because identity fields cannot be edited in this pass, the candidate must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_track_offset_12_3_2_9/icao4444-extracted::area_phraseologies_track_offset_12_3_2_9::75c5cb93d72bef0b.json",
+    "toPath": "rejected/icao4444-extracted/area_phraseologies_track_offset_12_3_2_9/icao4444-extracted::area_phraseologies_track_offset_12_3_2_9::75c5cb93d72bef0b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:37:06Z"
+}

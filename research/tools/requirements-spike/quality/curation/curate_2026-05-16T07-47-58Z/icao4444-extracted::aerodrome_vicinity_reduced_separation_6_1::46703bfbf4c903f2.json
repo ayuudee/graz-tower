@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_vicinity_reduced_separation_6_1::46703bfbf4c903f2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_vicinity_reduced_separation_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.13,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quotes are verbatim-supported and accurately capture the permissive condition in 6.1(c). The only defect is the G3 floor violation: a 'may' permission cannot be classified as an authoritative_requirement under the provided authority floor table, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_vicinity_reduced_separation_6_1/icao4444-extracted::aerodrome_vicinity_reduced_separation_6_1::46703bfbf4c903f2.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_vicinity_reduced_separation_6_1/icao4444-extracted::aerodrome_vicinity_reduced_separation_6_1::46703bfbf4c903f2.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:26:20Z"
+}

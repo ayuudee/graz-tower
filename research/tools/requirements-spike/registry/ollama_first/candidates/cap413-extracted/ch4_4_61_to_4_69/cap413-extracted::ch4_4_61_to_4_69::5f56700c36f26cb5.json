@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::5f56700c36f26cb5",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_61_to_4_69",
+  "familyId": "cap413_ch4_4_61_to_4_69_family",
+  "claimText": "If the runway in use is occupied by aircraft or vehicles, an approaching aircraft may be cleared to carry out a low approach which includes a descent not below a specified height or altitude.",
+  "rationale": "Defines the condition under which a low approach clearance with altitude restriction is permissible.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "If the runway in use is occupied by aircraft or vehicles, an approaching aircraft may be cleared to carry out a low approach which includes a descent not below a specified height or altitude."
+  ],
+  "sourceItemIds": [
+    "4.62"
+  ],
+  "claimSha256": "9990fa30485efbb22689651bf7a68c41d95c8cc11b4db9fb8c1da8183f724774",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 9294,
+    "endLine": 9443
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_61_to_4_69_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_4_62_clearance_conditions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted sentence is present in the source, the claim is directly supported, and the candidate correctly uses may with operational_guidance for CAP 413 material. The advisory-only judge rationale reflects conservative classification rather than a defect in the candidate, and no sibling accepted item duplicates this low-approach clearance rule.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:15:02Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_61_to_4_69/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:15:02Z"
+  }
+}

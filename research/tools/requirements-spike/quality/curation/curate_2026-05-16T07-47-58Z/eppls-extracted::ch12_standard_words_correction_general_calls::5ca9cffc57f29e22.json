@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::5ca9cffc57f29e22",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.6,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted sentence is not present verbatim in the provided source window after normalization; the text is split/interleaved with table content, so the exactSourceQuotes identity field fails G1. Because identity fields cannot be corrected in this curation pass, the candidate cannot be promoted despite being substantively supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::5ca9cffc57f29e22.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::5ca9cffc57f29e22.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:17:05Z"
+}

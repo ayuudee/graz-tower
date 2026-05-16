@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::9c2383a92a85b8d6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_dependent_approaches_6_7_3_4",
+  "familyId": "icao4444_parallel_runway_family",
+  "claimText": "Dependent parallel approaches may be conducted only if the runway centre lines are spaced by 915 m (3 000 ft) or more.",
+  "rationale": "Clause 6.7.3.4.1(a) mandates minimum runway centerline spacing for dependent parallel approaches.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the runway centre lines are spaced by 915 m (3 000 ft) or more"
+  ],
+  "sourceItemIds": [
+    "6.7.3.4.1_a"
+  ],
+  "claimSha256": "fce997b1767fb04049f5051b1a8375012cad5844fd814e10898649bc35ca98e1",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7874,
+    "endLine": 8070
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_parallel_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_runway_spacing",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted condition is verbatim and supports the claim as an atomic necessary condition within the dependent-parallel-approach permission, so it should not be rejected merely for bundle incompleteness. However, the governing wording is \u201cmay be conducted ... provided,\u201d so the candidate\u2019s modality should be may, and under the authority floor the authorityClass must be lowered from authoritative_requirement to operational_guidance.",
+      "corrections": {
+        "modality": "may",
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:23:50Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/parallel_runways_dependent_approaches_6_7_3_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:23:50Z"
+  }
+}

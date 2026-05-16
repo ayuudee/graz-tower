@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_34_to_4_39::e63a5fa1d0568387",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_34_to_4_39",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.3,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim, self-contained definition from CAP 413 section 4.37, the quote audit and schema/authority audits all pass, and it is not redundant with the accepted sibling operational requirements. Its advisory/background framing as a note with background_support is appropriate for a definition rather than an operative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::e63a5fa1d0568387.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::e63a5fa1d0568387.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:10:33Z"
+}

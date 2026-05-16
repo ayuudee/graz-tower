@@ -1,0 +1,20 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_17_to_4_23::427826380f53f101",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_17_to_4_23",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.66,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and supports a controller QNH check, but the candidate\u2019s identity claim uses 'must' while the CAP413 source says 'will' and is operational guidance rather than an authoritative shall-strength requirement. Fixing this properly would require re-extracting or rewriting the claim text, which is not permitted in this curation pass.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::427826380f53f101.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:01:04Z"
+}

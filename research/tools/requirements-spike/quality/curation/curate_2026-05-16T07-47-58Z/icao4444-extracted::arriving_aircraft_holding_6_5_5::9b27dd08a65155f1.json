@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::9b27dd08a65155f1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.44,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim and the claim is an atomic, source-supported statement from 6.5.5.6. Its 'should' modality and operational_guidance authorityClass correctly reflect the advisory wording and are consistent with accepted sibling treatment of other 'should' provisions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::9b27dd08a65155f1.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::9b27dd08a65155f1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:37:41Z"
+}

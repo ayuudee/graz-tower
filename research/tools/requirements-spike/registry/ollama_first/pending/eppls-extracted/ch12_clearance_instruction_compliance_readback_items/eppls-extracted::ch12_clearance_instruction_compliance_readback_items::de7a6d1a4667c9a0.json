@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::de7a6d1a4667c9a0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "familyId": "eppls_ch12_readback_transfer_background_family",
+  "claimText": "Heading, speed and level instructions, including Transition Levels, must be read back.",
+  "rationale": "Source lists these instructions as mandatory readback items.",
+  "modality": "must",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Heading, speed and level instructions, including Transition Levels"
+  ],
+  "sourceItemIds": [
+    "list_heading_speed_level"
+  ],
+  "claimSha256": "b09c030389f0b785e7e8f20d16e0d70f5722a1c28b9f6beb98bedc3383779b51",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23061,
+    "endLine": 23082
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_readback_transfer_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_readback_heading_speed_level",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Heading, speed and level instructions, including Transition Levels",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "must",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The source window supports this as one of the listed readback items under the readback requirement, and the quoted item appears in the source apart from line-wrapping/whitespace. The operative wording uses “must,” so the modality should be aligned to the source wording while retaining the non-authoritative background-support classification.",
+      "corrections": {
+        "modality": "must"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T08:40:33Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::de7a6d1a4667c9a0.json",
+      "to": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::de7a6d1a4667c9a0.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:40:33Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

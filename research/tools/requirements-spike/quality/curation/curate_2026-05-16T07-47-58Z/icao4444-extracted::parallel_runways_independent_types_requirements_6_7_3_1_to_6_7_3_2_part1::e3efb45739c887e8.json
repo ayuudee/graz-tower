@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::e3efb45739c887e8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.73,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Two exactSourceQuotes do not exist verbatim in the source window: one uses an ellipsis in place of source text, and the spacing-row quote omits the intervening table marker/line break content. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted despite the underlying concept being supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1/icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::e3efb45739c887e8.json",
+    "toPath": "rejected/icao4444-extracted/parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1/icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::e3efb45739c887e8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:27:33Z"
+}

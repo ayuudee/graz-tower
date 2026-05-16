@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::9e6611809cf8ac0e",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.41,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the modality/authority pairing is consistent, but the parent clause is structurally incomplete without the listed form elements it introduces. A human curator should ensure the missing subordinate item for distance is extracted/accepted or otherwise bundle this parent with all four list items before promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::9e6611809cf8ac0e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:54:23Z"
+}

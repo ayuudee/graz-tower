@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::75f3cf25d826ed8b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.38,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is source-grounded and the candidate's modality correctly reflects the source wording as \"should.\" The only defect is the authority/modality mismatch: a \"should\" statement cannot remain an authoritative_requirement under the authority floor table, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::75f3cf25d826ed8b.json",
+    "toPath": "candidates/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::75f3cf25d826ed8b.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:44:52Z"
+}

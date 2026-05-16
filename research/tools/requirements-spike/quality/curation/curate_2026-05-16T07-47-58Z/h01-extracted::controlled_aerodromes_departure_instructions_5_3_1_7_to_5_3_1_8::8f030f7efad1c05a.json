@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::8f030f7efad1c05a",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.07,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology exists verbatim in the source and is an atomic additional-instructions phrase not already covered by the accepted siblings. However, the source line is presented as phraseology without express mandatory wording, so the metadata modality should be lowered from shall to none while keeping operational_guidance.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::8f030f7efad1c05a.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::8f030f7efad1c05a.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:32:36Z"
+}

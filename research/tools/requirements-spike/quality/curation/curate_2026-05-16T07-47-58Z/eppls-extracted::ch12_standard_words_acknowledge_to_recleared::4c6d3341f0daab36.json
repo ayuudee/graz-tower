@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_acknowledge_to_recleared::4c6d3341f0daab36",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_acknowledge_to_recleared",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.43,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the definition, with no identity-field problem. However, this table entry has no normative or note marker, and the accepted sibling from the same table uses modality `none`, so only the modality should be corrected.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_acknowledge_to_recleared/eppls-extracted::ch12_standard_words_acknowledge_to_recleared::4c6d3341f0daab36.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_acknowledge_to_recleared/eppls-extracted::ch12_standard_words_acknowledge_to_recleared::4c6d3341f0daab36.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:16:09Z"
+}

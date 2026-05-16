@@ -1,0 +1,116 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::test_procedures_2_8_4_en::ebfa539c29b138f5",
+  "documentId": "icao9432-extracted",
+  "sectionId": "test_procedures_2_8_4_en",
+  "familyId": "icao9432_communications_family",
+  "claimText": "Test transmissions should include the call sign of the called air traffic service, the aircraft call sign, the expression 'PR\u00d3BA RADIA', and the frequency in use.",
+  "rationale": "Source 2.8.4.1 (Polish) lists the required components for test transmissions. As this is a parallel language version of the English guidance, it is treated as operational guidance with lower promotion priority than the primary English text.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Transmisje sprawdzaj\u0105ce \u0142\u0105czno\u015b\u0107 powinny zawiera\u0107:",
+    "a) znak wywo\u0142awczy wzywanej s\u0142u\u017cby ruchu lotniczego;",
+    "b) znak wywo\u0142awczy statku powietrznego;",
+    "c) wyra\u017cenie \u201ePR\u00d3BA RADIA\u201d; i",
+    "d) cz\u0119stotliwo\u015b\u0107 w u\u017cyciu."
+  ],
+  "sourceItemIds": [
+    "pol_2.8.4.1_req",
+    "pol_2.8.4.1_a",
+    "pol_2.8.4.1_b",
+    "pol_2.8.4.1_c",
+    "pol_2.8.4.1_d"
+  ],
+  "claimSha256": "bea2987ebdbca82873d51893e608271da48cc85930c5b87c70a5b2f8cf432c9c",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4086,
+    "endLine": 4197
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pol_radio_check_composition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 5,
+      "hits": 5,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The Polish quote set is verbatim and correctly classified as operational guidance, but the same operative content is already covered by the accepted English sibling for 2.8.4.1. Because the primary English candidate already captures this test-transmission composition rule, this parallel-language duplicate should not be promoted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T12:00:56Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/test_procedures_2_8_4_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T12:00:56Z"
+  }
+}

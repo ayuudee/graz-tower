@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_urgency_intro_9_1_en",
+  "familyId": "icao9432_emergency_phraseology_family",
+  "claimText": "Urgency is defined as a condition concerning the safety of an aircraft or other vehicle, or of some person on board or within sight, but which does not require immediate assistance.",
+  "rationale": "Definition. Marked support_only.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Urgency: a condition concerning the safety of an aircraft or other vehicle, or of some person on board or within sight, but which does not require immediate assistance."
+  ],
+  "sourceItemIds": [
+    "9.1.2b"
+  ],
+  "claimSha256": "c39c49b485f1e3124457dafdac7f68e5d79a22412f23f3825ac05f6ea53a1236",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 8686,
+    "endLine": 8808
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "urgency_definition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote exists verbatim in the source and supports the claim as a definition of urgency. Because the source wording is definitional and contains no modal or note framing, it should be treated as non-modal background support rather than operational guidance.",
+      "corrections": {
+        "modality": "none",
+        "authorityClass": "background_support"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:52:27Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/distress_urgency_intro_9_1_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:52:27Z"
+  }
+}

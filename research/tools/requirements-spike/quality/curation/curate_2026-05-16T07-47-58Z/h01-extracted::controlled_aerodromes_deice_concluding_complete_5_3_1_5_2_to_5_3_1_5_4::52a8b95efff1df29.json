@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4::52a8b95efff1df29",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.08,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim accurately reflects a non-normative Note/example in the source. Its modality and authority class are appropriately advisory, but the requirementKind should not be treated as a definition because the source frames it as an example.",
+    "corrections": {
+      "requirementKind": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4/h01-extracted::controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4::52a8b95efff1df29.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4/h01-extracted::controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4::52a8b95efff1df29.json",
+    "correctionsApplied": {
+      "requirementKind": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:31:34Z"
+}

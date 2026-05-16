@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::9976eb48d08971e7",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.75,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote does not appear verbatim in the provided source window after normalization; the English sentence is interrupted by interleaved German column text. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this fails G1 as a real verbatim miss.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::9976eb48d08971e7.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::9976eb48d08971e7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:31:06Z"
+}

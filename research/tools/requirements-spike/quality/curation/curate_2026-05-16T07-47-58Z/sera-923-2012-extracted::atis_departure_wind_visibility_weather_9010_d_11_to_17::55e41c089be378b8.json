@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_departure_wind_visibility_weather_9010_d_11_to_17::55e41c089be378b8",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_departure_wind_visibility_weather_9010_d_11_to_17",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.28,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by item (14), but the exactSourceQuotes field does not exist verbatim in the provided source window due to the line-break/soft-hyphen rendering of \u201ccumulonimbus.\u201d Because exactSourceQuotes is an identity field and cannot be corrected in this pass, the G1 verbatim failure requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_departure_wind_visibility_weather_9010_d_11_to_17/sera-923-2012-extracted::atis_departure_wind_visibility_weather_9010_d_11_to_17::55e41c089be378b8.json",
+    "toPath": "rejected/sera-923-2012-extracted/atis_departure_wind_visibility_weather_9010_d_11_to_17/sera-923-2012-extracted::atis_departure_wind_visibility_weather_9010_d_11_to_17::55e41c089be378b8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:04:00Z"
+}

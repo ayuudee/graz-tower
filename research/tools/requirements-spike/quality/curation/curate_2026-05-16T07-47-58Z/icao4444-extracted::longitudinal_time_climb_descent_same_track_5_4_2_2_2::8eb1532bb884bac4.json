@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::8eb1532bb884bac4",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_climb_descent_same_track_5_4_2_2_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim/source-grounded, the schema and authority/modality pairing pass, and the note is not redundant with the accepted atomic separation-minima siblings. It is correctly framed as non-mandatory operational guidance with note modality rather than as an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::8eb1532bb884bac4.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::8eb1532bb884bac4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:17:45Z"
+}

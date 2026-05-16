@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::a28976f537ec29ab",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_61_to_4_69",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.21,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source and uses \u201cshall,\u201d while the candidate\u2019s operational_guidance authority class is appropriate for CAP 413 and passes the authority/modality floor. It is an atomic item not already covered by the accepted siblings, and no identity-field or permitted metadata correction is needed.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_61_to_4_69/cap413-extracted::ch4_4_61_to_4_69::a28976f537ec29ab.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_61_to_4_69/cap413-extracted::ch4_4_61_to_4_69::a28976f537ec29ab.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:15:36Z"
+}

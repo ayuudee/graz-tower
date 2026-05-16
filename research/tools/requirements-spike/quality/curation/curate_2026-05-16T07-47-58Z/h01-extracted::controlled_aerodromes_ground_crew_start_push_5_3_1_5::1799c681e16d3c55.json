@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::1799c681e16d3c55",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_crew_start_push_5_3_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.28,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim, with advisory 'should' wording correctly classified as operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling, which covers pushback/powerback phraseology rather than the start-up all-clear signal.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::1799c681e16d3c55.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::1799c681e16d3c55.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:33:04Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1::e9905276abb407fa",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.55,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the schema and authority/modality audits pass, and the item is a self-contained ICAO Note providing background support rather than an operative requirement. It is not redundant with the accepted sibling requirements or notes, and the existing note/background_support framing is appropriate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1/icao4444-extracted::emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1::e9905276abb407fa.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1/icao4444-extracted::emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1::e9905276abb407fa.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:01:04Z"
+}

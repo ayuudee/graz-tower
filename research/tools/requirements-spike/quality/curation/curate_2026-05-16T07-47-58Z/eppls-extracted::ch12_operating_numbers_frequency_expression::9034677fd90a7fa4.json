@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::9034677fd90a7fa4",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.45,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source text and is not redundant with accepted siblings; the G1 miss appears to be a line-wrap/whitespace artifact. However, the cited sentence has no explicit note marker or modal wording, so the modality should be lowered from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::9034677fd90a7fa4.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::9034677fd90a7fa4.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:02:37Z"
+}

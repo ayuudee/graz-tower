@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::d7aa22cd7462ca29",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.56,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exactSourceQuotes field is not a verbatim substring of the source because it uses ellipses and therefore fails G1 with a real quote miss. Although the underlying rule is supported by the source, fixing it would require changing an identity field, which is not allowed in this curation pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::d7aa22cd7462ca29.json",
+    "toPath": "rejected/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::d7aa22cd7462ca29.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:30:44Z"
+}

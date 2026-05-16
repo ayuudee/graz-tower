@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::9e70f70fa64eddeb",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part3c_runway_vacating_helicopter",
+  "familyId": "cap413_ch4_4_84_part3c_runway_vacating_helicopter_family",
+  "claimText": "The phrase 'HOVER' is used to instruct a helicopter to hold position whilst airborne in ground effect, waiting to proceed.",
+  "rationale": "All attempts agree this is a definition/note rather than a strict 'shall' rule for phraseology usage.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "HOVER",
+    "When necessary to instruct a helicopter to hold position whilst airborne in ground effect, waiting to proceed."
+  ],
+  "sourceItemIds": [
+    "item_hover"
+  ],
+  "claimSha256": "f5eedd47028ca449dcd96f86bec46a0b2bbb6106ec7a46aef4409ec3c2887e64",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 9955,
+    "endLine": 9992
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_84_part3c_runway_vacating_helicopter_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_helicopter_hover_def",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted text is present verbatim and supports the candidate as a self-contained CAP413 phraseology definition for 'HOVER'. The note modality and operational_guidance authority are appropriate for this advisory/definition entry, and the accepted siblings do not duplicate it.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:20:28Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_84_part3c_runway_vacating_helicopter/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:20:28Z"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::556e5c8a66045e83",
+  "documentId": "h01-extracted",
+  "sectionId": "unlawful_interference_direction_finding_4_2_to_4_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.86,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted list item is verbatim and the claim is substantively supported by the parent clause plus item 2, but the current exactSourceQuotes omit the parent 'shall advise ... in the following form' needed to make the obligation operative. Resolving this requires re-extraction or adding source quotes, which cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/unlawful_interference_direction_finding_4_2_to_4_3/h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::556e5c8a66045e83.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:01:10Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::2950f9ca6f81fbee",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.89,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The candidate is directly supported by the quoted 15.6.1.2.2 text, which uses 'should' for the ATS authority's contingency procedures and delegation provision. The modality and operational_guidance authority class are consistent, and the accepted siblings do not redundantly cover this ATS-authority planning provision.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::2950f9ca6f81fbee.json",
+    "toPath": "candidates/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::2950f9ca6f81fbee.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:46:33Z"
+}

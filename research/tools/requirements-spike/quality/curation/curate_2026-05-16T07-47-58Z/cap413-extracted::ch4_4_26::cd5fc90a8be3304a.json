@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_26::cd5fc90a8be3304a",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_26",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.1,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The source quote is verbatim and supports the candidate as a CAP413 phraseology example, with modality `example` and `operational_guidance` authority correctly reflecting advisory phraseology rather than an authoritative requirement. It is not redundant with the accepted sibling, which covers only the parent guidance about lining up before take-off conditions allow.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_26/cap413-extracted::ch4_4_26::cd5fc90a8be3304a.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_26/cap413-extracted::ch4_4_26::cd5fc90a8be3304a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:06:44Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::emergency_service_11005::740fd586df0be135",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "emergency_service_11005",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.69,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim, the claim is directly supported by SERA.11005(b), and the shall/authoritative_requirement classification is consistent. Although the judge objected to fragmentation of item (b), the missing prompt-attendance obligation is already present as an accepted sibling, so this candidate completes rather than redundantly umbrellas the accepted atomic coverage.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/emergency_service_11005/sera-923-2012-extracted::emergency_service_11005::740fd586df0be135.json",
+    "toPath": "candidates/sera-923-2012-extracted/emergency_service_11005/sera-923-2012-extracted::emergency_service_11005::740fd586df0be135.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:04:12Z"
+}

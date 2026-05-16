@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aeronautical_ground_lights_7_16::7ad19ff212307716",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aeronautical_ground_lights_7_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 28.25,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source quote is verbatim and fully supports the claim, and it is not redundant with the accepted sibling candidates. However, because the cited provision is explicitly framed as a Note, its modality should be captured as advisory note rather than a standalone deontic should; the existing operational_guidance authority class is appropriate.",
+    "corrections": {
+      "modality": "note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::7ad19ff212307716.json",
+    "toPath": "candidates/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::7ad19ff212307716.json",
+    "correctionsApplied": {
+      "modality": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:27:41Z"
+}

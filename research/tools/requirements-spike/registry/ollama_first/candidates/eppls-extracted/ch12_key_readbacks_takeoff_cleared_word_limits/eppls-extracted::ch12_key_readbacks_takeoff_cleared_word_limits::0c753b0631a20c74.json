@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::0c753b0631a20c74",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_key_readbacks_takeoff_cleared_word_limits",
+  "familyId": "eppls_ch12_readback_transfer_background_family",
+  "claimText": "Until cleared for takeoff or cancellation, the word 'Departure' is used.",
+  "rationale": "All attempts agree on the usage of 'Departure' prior to takeoff clearance.",
+  "modality": "shall",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "up until then, the word Departure is used."
+  ],
+  "sourceItemIds": [
+    "item_takeoff_word_usage"
+  ],
+  "claimSha256": "7a913fb960e2279f4a0ae6459d3e1031825fe1168bba0b6d48bf786caac1ade8",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23101,
+    "endLine": 23114
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_readback_transfer_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "departure_word_usage_pre_takeoff",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/judged_candidates.json"
+  }
+}

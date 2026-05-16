@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_separation_5_3::fe9342b1e1e240db",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_separation_5_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.17,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quote are verbatim supported by the source, and the modality 'may' correctly matches the quoted text. The only issue is the G3 floor violation: a 'may' permission cannot be classified as an authoritative_requirement, so the authorityClass should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::fe9342b1e1e240db.json",
+    "toPath": "candidates/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::fe9342b1e1e240db.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:38:49Z"
+}

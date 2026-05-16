@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::eb9fe2e7f0e086ea",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.28,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source text, which states that a blue and white chequered flag means \u201cMuch Regret, Unable (i.e. NO)\u201d; the G1 miss appears to be an artefact rather than a real identity problem. However, the wording is a plain definition with no explicit note marker, so the modality should be lowered from `note` to `none` while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::eb9fe2e7f0e086ea.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::eb9fe2e7f0e086ea.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:49:57Z"
+}

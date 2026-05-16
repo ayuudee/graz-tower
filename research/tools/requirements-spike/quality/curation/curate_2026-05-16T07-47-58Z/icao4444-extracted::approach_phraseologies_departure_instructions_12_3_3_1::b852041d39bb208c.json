@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::approach_phraseologies_departure_instructions_12_3_3_1::b852041d39bb208c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "approach_phraseologies_departure_instructions_12_3_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.84,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted fragment is a descriptive/context label for the direct-clearance SID-rejoin phraseologies rather than an independent operative requirement. Its substantive content is already covered by the accepted atomic candidate for items g/h, so this umbrella/context item should not be promoted separately.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/approach_phraseologies_departure_instructions_12_3_3_1/icao4444-extracted::approach_phraseologies_departure_instructions_12_3_3_1::b852041d39bb208c.json",
+    "toPath": "rejected/icao4444-extracted/approach_phraseologies_departure_instructions_12_3_3_1/icao4444-extracted::approach_phraseologies_departure_instructions_12_3_3_1::b852041d39bb208c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:33:32Z"
+}

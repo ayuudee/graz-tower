@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::64331fe63de6495d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "familyId": "icao4444_longitudinal_separation_family",
+  "claimText": "When the Mach number technique is applied and the preceding aircraft is maintaining a true Mach number greater than the following aircraft, minimum longitudinal separation is 9 minutes if the preceding aircraft is Mach 0.02 faster.",
+  "rationale": "Extracts the specific 9-minute minimum from clause 5.4.2.4.3 item 2 sub-item 9.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "9 minutes, if the preceding aircraft is Mach 0.02 faster than the following aircraft;"
+  ],
+  "sourceItemIds": [
+    "clause_5_4_2_4_3",
+    "clause_5_4_2_4_3_min_2",
+    "clause_5_4_2_4_3_min_2_cond_9"
+  ],
+  "claimSha256": "e58dde83a459af06660cc0c2a9ad60d0b388f5ecacfbd427c91d0cd72dc57303",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5541,
+    "endLine": 5685
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_longitudinal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "mach_separation_reduced_9min",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The quoted 9-minute item is verbatim and the shall/authoritative classification is appropriate, but the candidate is structurally underspecified because the operative parent conditions in 5.4.2.4.3 are not included in the claim. Resolving this would require re-extraction or rebundling with the parent conditions rather than a permitted modality/authority correction.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:14:25Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_mach_time_5_4_2_4/judged_candidates.json"
+  }
+}

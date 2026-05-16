@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_takeoff_clearance_12_3_4_11::b1c4deafb9229cf8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_takeoff_clearance_12_3_4_11",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "Pilot transmission 'HOLDING' is the procedural response to ATC instruction 'HOLD POSITION, CANCEL TAKE-OFF'.",
+  "rationale": "All attempts agree on the pilot response phraseology and its trigger condition.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "*f) HOLDING;",
+    "HOLDING and STOPPING are the procedural responses to e)"
+  ],
+  "sourceItemIds": [
+    "item_f",
+    "note_pilot_transmission"
+  ],
+  "claimSha256": "c5592633daf81aaae73ad2bbb4a4b5e153d4b6d5b297506dbb363217719e3c8e",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 15001,
+    "endLine": 15060
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pilot_holding_response",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The claim is substantively supported by the source window, but the candidate\u2019s exactSourceQuotes omit item e, which is needed to define the ATC instruction triggering the pilot response. Fixing this would require adding a source quote or re-extracting the unit, and identity fields cannot be changed in this pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:20:30Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_phraseologies_takeoff_clearance_12_3_4_11/judged_candidates.json"
+  }
+}

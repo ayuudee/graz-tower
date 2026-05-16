@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::aed09e9fcd264e61",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.27,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the surrounding source text identifies the listed items as items to be read back; this candidate is an atomic sibling consistent with the already accepted readback-item records. The non-normative nature of the source is already handled by authorityClass=background_support, and no identity or allowed correction field needs changing.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::aed09e9fcd264e61.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::aed09e9fcd264e61.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:39:19Z"
+}

@@ -1,0 +1,124 @@
+{
+  "schemaName": "nolan_background_inventory",
+  "formatVersion": "2026-05-15-v1",
+  "flowTask": "fn-20-fn10-source-unit-ingest-close-out-and.6",
+  "status": "inventory_ready_no_ingest_recommended",
+  "source": {
+    "pdfPath": "research/pdf/fundies.pdf",
+    "textPath": "research/txt/nolan-fundamentals-extracted.txt",
+    "sha256": "438d772a3f872f969efeb3a03149b027d7ffa089d4e11e73af991781c72c390c",
+    "pdfTitle": "Fundamentals of Air Traffic Control",
+    "author": "Michael S. Nolan",
+    "edition": "5th Edition",
+    "publisher": "Delmar, Cengage Learning",
+    "copyrightYear": 2011,
+    "isbn13": "978-1-4354-8272-2",
+    "pageCount": 674,
+    "encrypted": false,
+    "textLineCount": 42853
+  },
+  "defaultAuthorityCeiling": "background_support",
+  "recommendation": {
+    "ingestNow": false,
+    "reason": "Nolan is a U.S./FAA textbook with broad explanatory value, but it is not a primary or local authority source for the current FN10 close-out. The relevant material duplicates or is weaker than ICAO, SERA, CAP 413, H01, and the newly inventoried EPPLS Chapter 12 windows.",
+    "ifIngestedLater": "Use only narrow background_support windows and keep them in a dedicated source package."
+  },
+  "candidateWindows": [
+    {
+      "sectionId": "nolan_history_light_gun_signals",
+      "startLine": 987,
+      "endLine": 1050,
+      "disposition": "inventory_only",
+      "authorityCeiling": "background_support",
+      "notes": "Light-gun communication history and signal table. Useful background, but not preferable to primary light-signal sources."
+    },
+    {
+      "sectionId": "nolan_ch4_atc_communications_clearance_basics",
+      "startLine": 10681,
+      "endLine": 10904,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "ATC facility suffixes, route/radial pronunciation, communication procedures, and clearance examples. U.S.-specific and overlapping with primary phraseology sources."
+    },
+    {
+      "sectionId": "nolan_ch4_identification_departure_altitude_reports_holding",
+      "startLine": 10905,
+      "endLine": 11743,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "Aircraft identification, departure instructions, route and altitude assignments, required reports, and holding instructions. Too broad for immediate ingest; would require several narrow windows if used."
+    },
+    {
+      "sectionId": "nolan_ch4_additional_communications_phraseology",
+      "startLine": 11745,
+      "endLine": 11968,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "Acknowledge, affirmative/negative, say intentions, expect, and standard abbreviation background. Useful only as explanatory support."
+    },
+    {
+      "sectionId": "nolan_ch5_transfer_control_communication_handoff",
+      "startLine": 12441,
+      "endLine": 12490,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "Clear distinction between transfer of communication, transfer of control, and handoff. Useful conceptual background for handoff modeling, but U.S./FAA framing means it should not drive doctrine."
+    },
+    {
+      "sectionId": "nolan_ch6_tower_roles_atis_clearance_delivery",
+      "startLine": 13060,
+      "endLine": 13653,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "Tower roles, flight data, ATIS content, clearance delivery fields, and pilot report/weather dissemination. Broad U.S. tower-operations background."
+    },
+    {
+      "sectionId": "nolan_ch6_ground_taxi_hold_short_crossing",
+      "startLine": 13724,
+      "endLine": 13816,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "Ground-control taxi instructions, hold-short phraseology, runway crossing coordination, and taxi urgency wording. Relevant, but primary/local phraseology sources are stronger."
+    },
+    {
+      "sectionId": "nolan_ch6_local_control_takeoff_landing_option",
+      "startLine": 13870,
+      "endLine": 14510,
+      "disposition": "possible_later_background",
+      "authorityCeiling": "background_support",
+      "notes": "Local-control runway separation, takeoff and landing phraseology, anticipated separation, touch-and-go, stop-and-go, low approach, and option clearances. U.S.-specific and partially divergent from current European/ICAO frame."
+    },
+    {
+      "sectionId": "nolan_ch6_wake_turbulence",
+      "startLine": 14568,
+      "endLine": 14786,
+      "disposition": "inventory_only",
+      "authorityCeiling": "background_support",
+      "notes": "Wake-turbulence explanation and U.S. timing examples. Not a communications/source-unit priority for this close-out."
+    },
+    {
+      "sectionId": "nolan_ch7_visual_separation",
+      "startLine": 17386,
+      "endLine": 17493,
+      "disposition": "inventory_only",
+      "authorityCeiling": "background_support",
+      "notes": "Visual separation explanation and example dialogue. Operationally interesting, but not aligned with the immediate source-unit close-out scope."
+    }
+  ],
+  "searchedSignals": [
+    "ATC Communications Procedures",
+    "Clearance",
+    "Phraseology",
+    "Control Tower Procedures",
+    "Clearance Delivery Controller Duties",
+    "Transfer of Communication",
+    "handoff",
+    "ATIS",
+    "readback",
+    "taxi",
+    "hold short",
+    "takeoff",
+    "landing",
+    "visual separation"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_70_to_4_83::a91d536cf11a6045",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_70_to_4_83",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.39,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence exists verbatim in the source, is self-contained, and is not redundant with accepted siblings. Its 'should normally' wording is correctly represented as advisory operational guidance rather than an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_70_to_4_83/cap413-extracted::ch4_4_70_to_4_83::a91d536cf11a6045.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_70_to_4_83/cap413-extracted::ch4_4_70_to_4_83::a91d536cf11a6045.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:17:40Z"
+}

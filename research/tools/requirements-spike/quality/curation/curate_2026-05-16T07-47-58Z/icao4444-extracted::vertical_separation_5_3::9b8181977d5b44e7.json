@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_separation_5_3::9b8181977d5b44e7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_separation_5_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.26,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the modality/authority are consistent with the parent 'shall be' clause. Although the judge flagged the missing 5.3.2.b dependency, that complementary designated-airspace item is already present in siblingAccepted, so this candidate can stand as the atomic 5.3.2.a component rather than as an incomplete umbrella.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::9b8181977d5b44e7.json",
+    "toPath": "candidates/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::9b8181977d5b44e7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:38:15Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::e932f048eb97f8c7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.69,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote contains an ellipsis and is not found verbatim in the source window, causing a real G1 identity-field failure. Because exactSourceQuotes cannot be edited in this curation pass, this cannot be fixed by corrections; the authorityClass would also need lowering if re-extracted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::e932f048eb97f8c7.json",
+    "toPath": "rejected/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::e932f048eb97f8c7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:45:51Z"
+}

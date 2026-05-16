@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.38,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present in the supplied source window after normal whitespace normalization, and the claim is directly supported. The source uses \u201cmust comply,\u201d which supports shall-strength modality, while the background_support authority class is consistent with the non-regulatory source.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:12:48Z"
+}

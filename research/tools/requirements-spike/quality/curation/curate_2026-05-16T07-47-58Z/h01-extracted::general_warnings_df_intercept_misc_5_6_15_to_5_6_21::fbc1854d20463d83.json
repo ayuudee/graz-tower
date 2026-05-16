@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::fbc1854d20463d83",
+  "documentId": "h01-extracted",
+  "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.12,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuotes do not appear verbatim in the provided source window: the speaker labels are separated from the phraseology lines in the DF table. Because quote text is an identity field and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::fbc1854d20463d83.json",
+    "toPath": "rejected/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::fbc1854d20463d83.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:59:20Z"
+}

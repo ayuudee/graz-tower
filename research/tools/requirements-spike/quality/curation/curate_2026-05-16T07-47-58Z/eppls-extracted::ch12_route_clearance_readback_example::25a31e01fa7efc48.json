@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_route_clearance_readback_example::25a31e01fa7efc48",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_route_clearance_readback_example",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.54,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited quotes are supported in the source and the claim is not redundant with the accepted sibling. The candidate correctly frames the language as advisory/background support rather than as an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_route_clearance_readback_example/eppls-extracted::ch12_route_clearance_readback_example::25a31e01fa7efc48.json",
+    "toPath": "candidates/eppls-extracted/ch12_route_clearance_readback_example/eppls-extracted::ch12_route_clearance_readback_example::25a31e01fa7efc48.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:15:41Z"
+}

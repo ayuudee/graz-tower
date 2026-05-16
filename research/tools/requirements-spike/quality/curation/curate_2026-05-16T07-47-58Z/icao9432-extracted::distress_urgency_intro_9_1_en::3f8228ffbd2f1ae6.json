@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao9432-extracted::distress_urgency_intro_9_1_en::3f8228ffbd2f1ae6",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_urgency_intro_9_1_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.01,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the claim is supported, non-redundant background information, with modality and authorityClass already consistent as note/background_support. However, the judge explicitly returned advisory_only rather than accepted, and no permitted correction is needed; promoting would go beyond the stated promote criteria.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::3f8228ffbd2f1ae6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:51:06Z"
+}

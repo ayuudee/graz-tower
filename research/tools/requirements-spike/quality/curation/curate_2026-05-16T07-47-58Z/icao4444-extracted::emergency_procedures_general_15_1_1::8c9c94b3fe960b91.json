@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_general_15_1_1::8c9c94b3fe960b91",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_general_15_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.26,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the candidate claim, but the parent clause uses \u201cshould,\u201d so it is advisory/operational guidance rather than an authoritative requirement. The only needed correction is to lower the authorityClass to match the stated modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::8c9c94b3fe960b91.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::8c9c94b3fe960b91.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:59:32Z"
+}

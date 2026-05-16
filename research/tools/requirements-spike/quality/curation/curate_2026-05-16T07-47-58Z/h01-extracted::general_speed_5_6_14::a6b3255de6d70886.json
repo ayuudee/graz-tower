@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_speed_5_6_14::a6b3255de6d70886",
+  "documentId": "h01-extracted",
+  "sectionId": "general_speed_5_6_14",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.85,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 has a real verbatim miss: the German source line is split as \u201cMINDESTANFLUGGESCH WINDIGKEIT\u201d after whitespace normalization, so the candidate\u2019s exact German quote does not exist verbatim in the provided source window. Because exactSourceQuotes are identity fields and cannot be edited in this pass, the record must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_speed_5_6_14/h01-extracted::general_speed_5_6_14::a6b3255de6d70886.json",
+    "toPath": "rejected/h01-extracted/general_speed_5_6_14/h01-extracted::general_speed_5_6_14::a6b3255de6d70886.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:53:46Z"
+}

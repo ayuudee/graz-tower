@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::60129fb9371c4833",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.96,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source text is verbatim, the claim accurately captures item 15.6.1.4.1(e), and the candidate correctly uses should with operational_guidance. It is an atomic list item not already covered by accepted siblings; the pending status appears to result only from treating advisory wording as non-promotable despite a valid non-authoritative classification.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::60129fb9371c4833.json",
+    "toPath": "candidates/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::60129fb9371c4833.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:47:13Z"
+}

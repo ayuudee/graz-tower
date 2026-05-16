@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z::caaf5d501be16757",
+  "documentId": "icao4444-extracted",
+  "sectionId": "approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.08,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is present verbatim, the schema and authority/modality checks pass, and the claim is a standalone legend/definition needed to interpret the asterisked pilot-transmission phraseologies. It is non-normative, but the existing modality `note` and operational-guidance authority correctly capture that without requiring identity changes.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z/icao4444-extracted::approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z::caaf5d501be16757.json",
+    "toPath": "candidates/icao4444-extracted/approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z/icao4444-extracted::approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z::caaf5d501be16757.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:34:09Z"
+}

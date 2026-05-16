@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::04ed5c1480f958e0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.2,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim as background/advisory support, but the cited wording is an example list introduced by \u201ce.g.\u201d rather than a true \u201cmay\u201d permission. The authorityClass is already appropriately non-authoritative, so only the modality should be corrected.",
+    "corrections": {
+      "modality": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::04ed5c1480f958e0.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::04ed5c1480f958e0.json",
+    "correctionsApplied": {
+      "modality": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:46:58Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::8bad70acd00d472b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.15,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote does not exist verbatim in the source window because the source uses curly quotation marks around \u201con-track,\u201d so an identity field is wrong and cannot be corrected in this pass. The candidate is also structurally incomplete because it extracts only condition (a) from a parent 'may be used ... provided' clause that depends on conditions (b)\u2013(d).",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::8bad70acd00d472b.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::8bad70acd00d472b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:12:32Z"
+}

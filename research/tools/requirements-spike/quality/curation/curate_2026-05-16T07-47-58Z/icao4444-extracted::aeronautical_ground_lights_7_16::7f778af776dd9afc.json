@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aeronautical_ground_lights_7_16::7f778af776dd9afc",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aeronautical_ground_lights_7_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.11,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim and the claim accurately captures a self-contained ICAO note defining runway lighting components. Its modality and authorityClass are already correctly advisory/background, and it is not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::7f778af776dd9afc.json",
+    "toPath": "candidates/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::7f778af776dd9afc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:28:01Z"
+}

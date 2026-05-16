@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::7f0ebcc3811bb619",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.29,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the quoted phraseology appears verbatim, the claimText is not supported because it states that pilots shall use these phrases, while the source lists controller/ground-issued phraseology such as \u201cCONTACT GROUND (frequency)\u201d. This would require changing the identity claim text, which is not allowed in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::7f0ebcc3811bb619.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::7f0ebcc3811bb619.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:26:11Z"
+}

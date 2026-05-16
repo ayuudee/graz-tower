@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::0dd590e31d6bd41f",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.52,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not found verbatim in the source: the source phraseology begins with \u201cG: WIND (number) DEGREES (number) KNOTS\u201d before \u201cRUNWAY\u2026\u201d, so the cited quote incorrectly omits required leading text while retaining \u201cG:\u201d. Because claimText and quotes cannot be edited in this pass, this identity-field defect requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11/h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::0dd590e31d6bd41f.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11/h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::0dd590e31d6bd41f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:34:21Z"
+}

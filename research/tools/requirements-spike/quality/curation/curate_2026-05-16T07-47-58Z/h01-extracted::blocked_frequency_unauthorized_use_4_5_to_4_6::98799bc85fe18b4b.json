@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::98799bc85fe18b4b",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.5,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, uses the source\u2019s \u201cshould\u201d modality, and is correctly classified as operational guidance. It is an atomic step under 4.6 and is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::98799bc85fe18b4b.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::98799bc85fe18b4b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:22:33Z"
+}

@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8::3666146bc9cf555d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8",
+  "familyId": "icao4444_horizontal_separation_family",
+  "claimText": "The ITP distance between the ITP aircraft and the reference aircraft shall be not less than 28 km (15 NM) with a maximum closing ground speed of 37 km/h (20 kt), or not less than 37 km (20 NM) with a maximum closing ground speed of 56 km/h (30 kt).",
+  "rationale": "Defines specific distance and speed criteria required for ITP requests.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the ITP distance between the ITP aircraft and the reference aircraft shall be: 1) not less than 28 km (15 NM) with a maximum closing ground speed of 37 km/h (20 kt); or 2) not less than 37 km (20 NM) with a maximum closing ground speed of 56 km/h (30 kt);"
+  ],
+  "sourceItemIds": [
+    "5.4.2.7.3.1_a"
+  ],
+  "claimSha256": "def002b71a6e73ad09a548d69f80b31bb83f04bf2f597c34a51e6af896b52dc7",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5920,
+    "endLine": 6075
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_horizontal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "itp_distance_speed_criteria",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8/judged_candidates.json"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::761f540a45ecbc1d",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.68,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is supported by the glossary/table entry in the source window, and the cited quote appears verbatim. Its modality and authority class are consistent with the accepted sibling glossary definitions as background/supportive content, with no needed identity-field or metadata correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::761f540a45ecbc1d.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::761f540a45ecbc1d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:17:15Z"
+}

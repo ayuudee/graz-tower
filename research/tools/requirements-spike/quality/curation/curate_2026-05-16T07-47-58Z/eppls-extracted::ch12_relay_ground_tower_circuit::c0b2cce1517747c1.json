@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::c0b2cce1517747c1",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.83,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The verbatim quote supports the definition and the item is not redundant with accepted siblings. The source is background/non-normative and contains no explicit modal or note marker, so the authorityClass can remain background_support but the modality should be none rather than note.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::c0b2cce1517747c1.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::c0b2cce1517747c1.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:14:52Z"
+}

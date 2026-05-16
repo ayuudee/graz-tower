@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::514fe43f80c4e316",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.37,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim, self-contained Note from the source and is correctly framed as non-normative operational guidance with modality `note`. It is not redundant with the accepted sibling phraseology items, which do not cover this terminology definition.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::514fe43f80c4e316.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::514fe43f80c4e316.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:38:30Z"
+}

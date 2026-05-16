@@ -85,9 +85,34 @@ Pilot abort branch + sim golden + epic-close ritual. Round-5 refinements integra
 - [ ] `## Resolved during implementation`: brief time computation + VR threshold + open Qs
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Final fn-28 task — abort pilot branch + G0 sim golden + epic-close ritual.
+Landed `PilotEvent.AbortTakeoff` sealed leaf + `deriveAbortTakeoffEvent`
+4-check gate (engineRunning + pre-VR strict + TakeoffRoll phase +
+`isAbortTakeoffEligible` mission-shape) at the R21-locked branch position
+3 (between DA-decline and tailwind); `applyAbortTakeoff` rewrites via
+R13 `replaceFromActivePrimitive([PrimitiveTask(ABORTED, NON_COMPLETING)])`
++ R14 cognitive-suppression covering ALL pilotDecide return paths.
+`G0AbortTakeoffEngineFailureTest` is the **first emergency-event anchor**
+in the sim suite — uses a new `runUntilWithStateTraceAndInjection`
+driver variant to dynamically inject `SimEvent.EngineFailure` when the
+post-step SimState shows the abort gate's preconditions hold (positive)
+or when speedMps >= rotationSpeedMps (negative); positive scenario pins
+instant-stop via R12 clamp + mission-tree rewrite + never-airborne;
+negative ends after gate-assertion. Epic-close ritual lands archive flip
+for D-AUDIT.9.III-FOLLOWUP, STRATEGY.md goldens 9→13 + sextuple-reactive
++ last_updated bump, AGENTS.md "Nine→Thirteen" + KDoc descriptions for
+the 4 new anchors (DA, multi-aircraft, G3b, abort), and .plan fn-28
+closure stub. **Goldens count post fn-28: 9 → 13.** **Net deferments
+change: –6 (6 archive flips, 0 new).** Codex impl-review NEEDS_WORK →
+SHIP after 2 fix rounds: round-1 (Major — radio-observable injection
+gate replaced with post-step state gate; AircraftState firewall KDoc
+updated to document the single-reader-site exception); round-2 (Major —
+hand-maintained negative-case lists replaced with exhaustive
+MissionStep.entries enumeration in both IsAbortTakeoffEligibleSpec
+and PilotEventAbortTakeoffTest). Two memory entries captured: the
+post-step injection pattern and the exhaustive-enum-enumeration
+discipline.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: f0074d779c51e850537f264cbf5d621e225851be, 01c1ab4517ea1fda8c0a557d9975cd169ffc4be2, 8f87a77e1d795943bf4c2a54fa32b946194f9519, c3e6f6761f2777996f92233b527e1ebc7a162dd6
+- Tests: TESTS NOT RUN LOCALLY — no JDK in worker env per task brief; same caveat as fn-28.1–.8. Verification path: codex impl-review (static; verdict SHIP after round-2). User runs ./gradlew :pilot:allTests :sim:jvmTest detekt locally., Codex review verdict trail: NEEDS_WORK (round-1: post-step injection gate + AircraftState firewall KDoc) → NEEDS_WORK (round-2: exhaustive MissionStep enumeration) → SHIP (round-3, 0 findings).
+- PRs:

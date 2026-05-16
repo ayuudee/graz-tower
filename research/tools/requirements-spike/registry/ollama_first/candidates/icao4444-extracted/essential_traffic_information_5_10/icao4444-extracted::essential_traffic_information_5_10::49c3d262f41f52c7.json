@@ -1,0 +1,105 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::essential_traffic_information_5_10::49c3d262f41f52c7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "essential_traffic_information_5_10",
+  "familyId": "icao4444_traffic_information_family",
+  "claimText": "Essential traffic information shall include one of the following: estimated time over the reporting point nearest to where the level will be crossed; relative bearing of the aircraft concerned in terms of the 12-hour clock as well as distance from the conflicting traffic; or actual or estimated position of the aircraft concerned.",
+  "rationale": "Disjunctive requirement for positional/time data accompanying the cruising level. Bundled as alternatives for the same informational slot.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "1) estimated time over the reporting point nearest to where the level will be crossed; or",
+    "2) relative bearing of the aircraft concerned in terms of the 12-hour clock as well as distance from the conflicting traffic; or",
+    "3) actual or estimated position of the aircraft concerned."
+  ],
+  "sourceItemIds": [
+    "5.10.2_c_1",
+    "5.10.2_c_2",
+    "5.10.2_c_3"
+  ],
+  "claimSha256": "d185ffe9def25f0f16be0572de681f7caad3b007b07937ea605a998fd411ca6e",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6681,
+    "endLine": 6724
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_traffic_information_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_info_time_or_bearing_or_pos",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/essential_traffic_information_5_10/judged_candidates.json"
+  }
+}

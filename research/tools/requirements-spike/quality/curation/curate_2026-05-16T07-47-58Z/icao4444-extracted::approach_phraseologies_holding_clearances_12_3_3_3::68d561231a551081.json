@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::approach_phraseologies_holding_clearances_12_3_3_3::68d561231a551081",
+  "documentId": "icao4444-extracted",
+  "sectionId": "approach_phraseologies_holding_clearances_12_3_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source, the claim accurately captures the asterisk note, and the candidate is correctly classified as a non-operative note with background_support authority. It is not redundant with the accepted operational phraseology siblings because it defines the symbol marking pilot transmissions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/approach_phraseologies_holding_clearances_12_3_3_3/icao4444-extracted::approach_phraseologies_holding_clearances_12_3_3_3::68d561231a551081.json",
+    "toPath": "candidates/icao4444-extracted/approach_phraseologies_holding_clearances_12_3_3_3/icao4444-extracted::approach_phraseologies_holding_clearances_12_3_3_3::68d561231a551081.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:33:56Z"
+}

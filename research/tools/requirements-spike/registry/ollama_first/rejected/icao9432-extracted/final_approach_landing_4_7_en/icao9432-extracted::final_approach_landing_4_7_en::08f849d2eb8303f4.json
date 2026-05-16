@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::final_approach_landing_4_7_en::08f849d2eb8303f4",
+  "documentId": "icao9432-extracted",
+  "sectionId": "final_approach_landing_4_7_en",
+  "familyId": "icao9432_aerodrome_phraseology_family",
+  "claimText": "Example dialogue illustrates the exchange for a training low approach request.",
+  "rationale": "Attempts 2 and 3 correctly classify the example dialogue as support/advisory.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "FASTAIR 345 REQUEST LOW APPROACH RUNWAY 09 FOR TRAINING",
+    "FASTAIR 345 CLEARED LOW APPROACH RUNWAY 09"
+  ],
+  "sourceItemIds": [
+    "4.7.4_example"
+  ],
+  "claimSha256": "04fe1c53d2ddb1ba27275580654b1457ab2d4d607388ed17e27f58c8ef875a13",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 5675,
+    "endLine": 5795
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "sup_474_example",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted dialogue is source-grounded, but the candidate is only a support/example umbrella rather than an atomic phraseology rule. The substantive low-approach permission concept is already covered by an accepted sibling, so this illustrative exchange should not be promoted as a separate candidate.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:54:44Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/final_approach_landing_4_7_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:54:44Z"
+  }
+}

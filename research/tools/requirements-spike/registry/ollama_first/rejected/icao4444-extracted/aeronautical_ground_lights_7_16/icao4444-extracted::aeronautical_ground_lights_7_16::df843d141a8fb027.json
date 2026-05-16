@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aeronautical_ground_lights_7_16::df843d141a8fb027",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aeronautical_ground_lights_7_16",
+  "familyId": "icao4444_ground_lights_family",
+  "claimText": "At aerodromes without air traffic control service or without centrally controlled lights, the lights of one runway shall remain lighted until such time as would normally be required to reactivate the lights in the likelihood of the departing aircraft returning for an emergency landing, and in any case not less than fifteen minutes after take-off.",
+  "rationale": "Mandatory requirement for post-takeoff runway lighting retention at uncontrolled/non-centrally controlled aerodromes, with a specific 15-minute minimum duration.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "7.16.4.2 If runway lighting is not operated continuously, lighting following a take-off shall be provided as specified below: b) at aerodromes without air traffic control service or without centrally controlled lights, the lights of one runway shall remain lighted until such time as would normally be required to reactivate the lights in the likelihood of the departing aircraft returning for an emergency landing, and in any case not less than fifteen minutes after take-off."
+  ],
+  "sourceItemIds": [
+    "7.16.4.2",
+    "7.16.4.2b"
+  ],
+  "claimSha256": "b73208f904f055c02781731684972820265faa1e9791b2ad8ee35e61c1c8cc49",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9448,
+    "endLine": 9554
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_ground_lights_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_7.16.4.2b",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "7.16.4.2 If runway lighting is not operated continuously, lighting following a take-off shall be provided as specified below: b) at aerodromes without air traffic control service or without centrally controlled lights, the lights of one runway shall remain lighted until such time as would normally be required to reactivate the lights in the likelihood of the departing aircraft returning for an emergency landing, and in any case not less than fifteen minutes after take-off.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The substantive requirement is supported by 7.16.4.2(b), but the exactSourceQuotes field is not verbatim: it concatenates the parent clause directly with item b) while omitting the intervening item a). Because identity fields cannot be edited in this pass and the quote does not exist verbatim in the source, the record must be rejected rather than corrected.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:29:07Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aeronautical_ground_lights_7_16/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:29:07Z"
+  }
+}

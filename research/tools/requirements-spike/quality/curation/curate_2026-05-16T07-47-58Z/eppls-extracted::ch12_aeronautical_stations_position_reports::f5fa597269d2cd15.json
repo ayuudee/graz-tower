@@ -1,0 +1,20 @@
+{
+  "canonicalId": "eppls-extracted::ch12_aeronautical_stations_position_reports::f5fa597269d2cd15",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_aeronautical_stations_position_reports",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.6,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The claim is substantively supported as advisory background text and the modality/authorityClass are consistent. However, the exact quote does not verify as a contiguous verbatim substring in the provided source window, apparently due to column interleaving, and fixing that would require source normalization or quote re-extraction rather than a permitted correction here.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::f5fa597269d2cd15.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:30:21Z"
+}

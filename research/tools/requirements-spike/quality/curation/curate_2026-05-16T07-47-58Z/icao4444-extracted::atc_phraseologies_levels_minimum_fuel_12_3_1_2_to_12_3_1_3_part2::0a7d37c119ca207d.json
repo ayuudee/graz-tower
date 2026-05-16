@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::0a7d37c119ca207d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.22,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuotes entry is not found verbatim in the source window: the source says \u201cclearance to cancel specific speed restrictions of a SID during climb,\u201d not the quoted wording with \u201crestriction(s)\u201d and \u201cvertical profile.\u201d Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the record must be rejected despite the underlying phraseology being supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2/icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::0a7d37c119ca207d.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2/icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::0a7d37c119ca207d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:50:34Z"
+}

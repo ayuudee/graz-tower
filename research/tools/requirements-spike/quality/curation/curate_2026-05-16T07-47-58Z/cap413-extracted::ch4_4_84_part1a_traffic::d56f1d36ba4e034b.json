@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part1a_traffic::d56f1d36ba4e034b",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part1a_traffic",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.85,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is verbatim supported by the source, and the candidate correctly preserves the source's advisory 'should' modality as operational guidance. It is not redundant with the accepted sibling phraseology items, which cover specific traffic-information phrases rather than this general message-composition guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part1a_traffic/cap413-extracted::ch4_4_84_part1a_traffic::d56f1d36ba4e034b.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part1a_traffic/cap413-extracted::ch4_4_84_part1a_traffic::d56f1d36ba4e034b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:18:13Z"
+}

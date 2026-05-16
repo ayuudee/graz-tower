@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::4703a642194d4967",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 42.68,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source window, and the first quoted passage appears verbatim after normal whitespace normalization despite the G1 miss. However, the candidate relies on both a 'should' passage and a 'may' passage, so the metadata modality should be mixed rather than purely should.",
+    "corrections": {
+      "modality": "mixed"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::4703a642194d4967.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::4703a642194d4967.json",
+    "correctionsApplied": {
+      "modality": "mixed"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:38:28Z"
+}

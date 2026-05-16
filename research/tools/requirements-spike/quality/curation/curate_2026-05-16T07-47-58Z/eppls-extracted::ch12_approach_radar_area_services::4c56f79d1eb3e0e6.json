@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_approach_radar_area_services::4c56f79d1eb3e0e6",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_approach_radar_area_services",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.84,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited sentence is present in the source window when line-break whitespace is normalized, and it directly supports the claim about pilot responsibility under a Radar Information Service. The note/background_support classification is conservative and appropriate for this training/background source, and the content is not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::4c56f79d1eb3e0e6.json",
+    "toPath": "candidates/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::4c56f79d1eb3e0e6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:31:46Z"
+}

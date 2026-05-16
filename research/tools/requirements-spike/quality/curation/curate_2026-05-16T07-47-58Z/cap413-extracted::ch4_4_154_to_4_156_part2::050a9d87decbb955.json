@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_154_to_4_156_part2::050a9d87decbb955",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_154_to_4_156_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 36.59,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source note, and the note/op_guidance classification is consistent with CAP 413 advisory phraseology material. It is not a redundant umbrella because the accepted sibling response phrase does not separately capture the explicit optionality note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_154_to_4_156_part2/cap413-extracted::ch4_4_154_to_4_156_part2::050a9d87decbb955.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_154_to_4_156_part2/cap413-extracted::ch4_4_154_to_4_156_part2::050a9d87decbb955.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:56:06Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::6ae7eee6047f164b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.52,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim-supported and the candidate is correctly framed as a non-operative note/background reference rather than an authoritative requirement. The only evident metadata issue is that the requirement kind should not be treated as a definition; it is advisory/background material pointing to external guidance.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::6ae7eee6047f164b.json",
+    "toPath": "candidates/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::6ae7eee6047f164b.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:31:50Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::dc9b1c0068880a9c",
+  "documentId": "icao9432-extracted",
+  "sectionId": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.25,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is substantively supported, but its exactSourceQuote is not verbatim in the source because the source uses curly quotation marks around \u201cif unable\u201d while the candidate quote uses straight quotes. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/readback_continuation_2_8_3_7_to_2_8_3_10_en/icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::dc9b1c0068880a9c.json",
+    "toPath": "rejected/icao9432-extracted/readback_continuation_2_8_3_7_to_2_8_3_10_en/icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::dc9b1c0068880a9c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:57:13Z"
+}

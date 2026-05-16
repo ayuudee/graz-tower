@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::4408ad102934af5a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "familyId": "icao4444_atc_contingency_family",
+  "claimText": "In the event of false and deceptive transmissions, if practical, the ATC unit concerned should instruct aircraft to change to another frequency.",
+  "rationale": "All attempts agree on the conditional 'should' modality for frequency change.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "15.6.1.4.1 Instances of false and deceptive transmissions on ATC frequencies which may impair the safety of aircraft can occasionally occur. In the event of such occurrences, the ATC unit concerned should:",
+    "d) if practical, instruct aircraft to change to another frequency; and"
+  ],
+  "sourceItemIds": [
+    "sec_15_6_1_4_1_d"
+  ],
+  "claimSha256": "c3b3dee3d7f1625c8239f93272852972105fb8f72e03edf9b44528104a4c6f39",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 18383,
+    "endLine": 18481
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "false_transmission_frequency_change",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted source text is present verbatim and directly supports the claim with 'should' language, and the operational_guidance authority class is consistent with that modality. The candidate is an atomic list item distinct from the accepted sibling covering verification of clearances, so it is not a redundant umbrella.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:46:59Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_contingencies_15_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:46:59Z"
+  }
+}

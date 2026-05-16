@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::9a3843d6542a2a16",
+  "documentId": "h01-extracted",
+  "sectionId": "unlawful_interference_direction_finding_4_2_to_4_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.23,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The claim is supported by the source window, but the recorded quote contains only the subordinate list item and omits the governing parent clause that supplies the condition and 'shall advise' modality. Fixing this would require re-extraction or adding the parent quote, which cannot be done as a modality/authority correction in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/unlawful_interference_direction_finding_4_2_to_4_3/h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::9a3843d6542a2a16.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:02:18Z"
+}

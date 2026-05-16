@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_frequency_readback::a75b6f9f69014b94",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_frequency_readback",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.43,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source\u2019s logical left-column text; the G1 miss appears to be caused by two-column text interleaving rather than a true unsupported quote. However, the source says \u201cyou can use,\u201d so the candidate\u2019s modality should be advisory/permissive rather than shall-strength.",
+    "corrections": {
+      "modality": "may"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::a75b6f9f69014b94.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_frequency_readback/eppls-extracted::ch12_operating_frequency_readback::a75b6f9f69014b94.json",
+    "correctionsApplied": {
+      "modality": "may"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:58:52Z"
+}

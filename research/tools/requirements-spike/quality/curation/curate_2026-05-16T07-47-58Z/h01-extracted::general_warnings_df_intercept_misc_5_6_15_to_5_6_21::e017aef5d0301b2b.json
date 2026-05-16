@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::e017aef5d0301b2b",
+  "documentId": "h01-extracted",
+  "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.42,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote 'G: DF OUT OF SERVICE' does not appear verbatim in the source window; the source formatting separates the 'G:' label from the phraseology line. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, this requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::e017aef5d0301b2b.json",
+    "toPath": "rejected/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::e017aef5d0301b2b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:59:02Z"
+}

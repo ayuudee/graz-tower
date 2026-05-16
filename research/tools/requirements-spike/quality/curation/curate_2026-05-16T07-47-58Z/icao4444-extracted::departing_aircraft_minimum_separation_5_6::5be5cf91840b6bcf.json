@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_minimum_separation_5_6::5be5cf91840b6bcf",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_minimum_separation_5_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.09,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text exists verbatim in the source and is a self-contained Note under 5.6.2. It is correctly classified as non-normative operational guidance with modality `note`, and it is not redundant with the accepted atomic separation requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_minimum_separation_5_6/icao4444-extracted::departing_aircraft_minimum_separation_5_6::5be5cf91840b6bcf.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_minimum_separation_5_6/icao4444-extracted::departing_aircraft_minimum_separation_5_6::5be5cf91840b6bcf.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:53:44Z"
+}

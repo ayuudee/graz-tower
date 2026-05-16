@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::suspend_vfr_operations_7_14::6fbcd2e8f5e09700",
+  "documentId": "icao4444-extracted",
+  "sectionId": "suspend_vfr_operations_7_14",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.48,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source verbatim supports the claim and the bundled list of authorized entities is complete. However, the source uses \u201cmay,\u201d so under the authority floor rules this cannot remain classified as an authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/suspend_vfr_operations_7_14/icao4444-extracted::suspend_vfr_operations_7_14::6fbcd2e8f5e09700.json",
+    "toPath": "candidates/icao4444-extracted/suspend_vfr_operations_7_14/icao4444-extracted::suspend_vfr_operations_7_14::6fbcd2e8f5e09700.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:37:39Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::58bb08280f8d71ae",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_climb_descent_same_track_5_4_2_2_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.73,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted source makes the 5-minute minimum conditional on both sub-item 1 and sub-item 2, joined by \u201cand\u201d; the claim states only the first condition and therefore presents an incomplete/sufficient condition not supported by the source. Fixing this would require changing the claim text and adding the omitted operative condition, which is not permitted in this curation pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::58bb08280f8d71ae.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::58bb08280f8d71ae.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:17:34Z"
+}

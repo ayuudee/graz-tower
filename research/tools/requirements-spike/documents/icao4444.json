@@ -285,11 +285,36 @@
       "notes": "ICAO Doc 4444 \u00a76.2: essential local traffic information."
     },
     {
-      "sectionId": "departing_aircraft_procedures_6_3",
+      "sectionId": "departing_aircraft_general_6_3_1",
       "familyId": "icao4444_departing_aircraft_family",
       "startLine": 6797,
+      "endLine": 6819,
+      "notes": "ICAO Doc 4444 \u00a76.3.1: general departing-aircraft clearance content and SID use.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3",
+      "familyId": "icao4444_departing_aircraft_family",
+      "startLine": 6819,
+      "endLine": 6866,
+      "notes": "ICAO Doc 4444 \u00a7\u00a76.3.2.1-6.3.2.3: standard departure clearances, transfer-of-control coordination, departure sequence/runway display, and standard-clearance contents.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "departing_aircraft_sid_clearances_6_3_2_4",
+      "familyId": "icao4444_departing_aircraft_family",
+      "startLine": 6872,
+      "endLine": 6955,
+      "notes": "ICAO Doc 4444 \u00a76.3.2.4: clearances on SID, climb-via-SID meanings, restriction cancellation, direct-to-SID waypoint effects, vector/off-SID effects, and rejoin-SID instructions.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3",
+      "familyId": "icao4444_departing_aircraft_family",
+      "startLine": 6956,
       "endLine": 6987,
-      "notes": "ICAO Doc 4444 \u00a76.3: procedures for departing aircraft, including clearance content and SID-related provisions."
+      "notes": "ICAO Doc 4444 \u00a7\u00a76.3.2.5-6.3.3: departing-aircraft communication-failure limits, SID/AIP publication expectation, departure sequencing, and operator delay advice.",
+      "authorityCeiling": "operational_guidance"
     },
     {
       "sectionId": "departing_aircraft_information_6_4",
@@ -404,11 +429,44 @@
       "notes": "ICAO Doc 4444 \u00a77.3: initial call to aerodrome control tower."
     },
     {
-      "sectionId": "aerodrome_information_to_aircraft_7_4",
+      "sectionId": "aerodrome_information_startup_7_4_1_1",
       "familyId": "icao4444_aerodrome_tower_family",
       "startLine": 8462,
+      "endLine": 8491,
+      "notes": "ICAO Doc 4444 \u00a77.4.1.1: start-up time procedures and start-up clearance withholding/reason requirements.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_information_met_7_4_1_2",
+      "familyId": "icao4444_aerodrome_tower_family",
+      "startLine": 8492,
+      "endLine": 8553,
+      "notes": "ICAO Doc 4444 \u00a77.4.1.2: aerodrome and meteorological information before taxi/take-off and before entering circuit/approach.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4",
+      "familyId": "icao4444_aerodrome_tower_family",
+      "startLine": 8554,
+      "endLine": 8600,
+      "notes": "ICAO Doc 4444 \u00a7\u00a77.4.1.3-7.4.1.4: essential local traffic information and runway incursion/obstructed-runway action/reporting.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_information_position_uncertainty_7_4_1_5",
+      "familyId": "icao4444_aerodrome_tower_family",
+      "startLine": 8601,
+      "endLine": 8635,
+      "notes": "ICAO Doc 4444 \u00a77.4.1.5: pilot, vehicle-driver, and controller actions for position uncertainty on the manoeuvring area.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7",
+      "familyId": "icao4444_aerodrome_tower_family",
+      "startLine": 8636,
       "endLine": 8665,
-      "notes": "ICAO Doc 4444 \u00a77.4: information to aircraft by aerodrome control towers, including start-up, aerodrome/MET information, local traffic, incursions, uncertainty, wake/jet-blast hazards, and abnormal configuration."
+      "notes": "ICAO Doc 4444 \u00a7\u00a77.4.1.6-7.4.1.7: wake turbulence/jet blast hazards and abnormal aircraft configuration/condition advice.",
+      "authorityCeiling": "operational_guidance"
     },
     {
       "sectionId": "aerodrome_conditions_information_7_5",
@@ -588,43 +646,243 @@
       "notes": "ICAO Doc 4444 \u00a712.3.2.1: clearance issuance and reclearance phraseologies. Manifest authority ceiling is operational_guidance because this seam uses the window as phraseology support. Hardened in clearance_comms_2026-04-30."
     },
     {
-      "sectionId": "area_phraseologies_route_level_separation_12_3_2_2_to_12_3_2_9",
+      "sectionId": "area_phraseologies_route_clearance_limit_12_3_2_2",
       "familyId": "icao4444_atc_phraseology_family",
       "startLine": 14294,
-      "endLine": 14449,
-      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.2.2-12.3.2.9: area control phraseologies for route/clearance limit, specified levels, emergency descent, delayed clearance, deviation refusal, separation, and track offset.",
+      "endLine": 14318,
+      "notes": "ICAO Doc 4444 \u00a712.3.2.2: route and clearance-limit phraseologies.",
       "authorityCeiling": "operational_guidance"
     },
     {
-      "sectionId": "approach_phraseologies_12_3_3",
+      "sectionId": "area_phraseologies_levels_12_3_2_3_to_12_3_2_4",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14319,
+      "endLine": 14359,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.2.3-12.3.2.4: specified-level maintenance and cruising/crossing-level phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "area_phraseologies_emergency_clearance_refusal_12_3_2_5_to_12_3_2_7",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14366,
+      "endLine": 14390,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.2.5-12.3.2.7: emergency descent, expected clearance, and deviation-refusal phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "area_phraseologies_separation_12_3_2_8",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14391,
+      "endLine": 14420,
+      "notes": "ICAO Doc 4444 \u00a712.3.2.8: separation-instruction and track-establishment phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "area_phraseologies_track_offset_12_3_2_9",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14421,
+      "endLine": 14442,
+      "notes": "ICAO Doc 4444 \u00a712.3.2.9: track-offset phraseologies parallel to the cleared route.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "approach_phraseologies_departure_instructions_12_3_3_1",
       "familyId": "icao4444_atc_phraseology_family",
       "startLine": 14450,
-      "endLine": 14681,
-      "notes": "ICAO Doc 4444 \u00a712.3.3: approach control phraseologies for departure, approach, holding, and expected approach time.",
+      "endLine": 14494,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.1: approach-control departure-instruction phraseologies, including direct/rejoin SID examples.",
       "authorityCeiling": "operational_guidance"
     },
     {
-      "sectionId": "aerodrome_phraseologies_start_taxi_12_3_4_1_to_12_3_4_7",
+      "sectionId": "approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14495,
+      "endLine": 14527,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.2 a)-e): approach-instruction phraseologies for cleared arrival, clearance-limit routing, cleared/proceed route details, direct waypoint descent, expected STAR rejoin, and STAR rejoin instructions. Split from the broad approach-instructions window after final v7 exposed requirement-extraction density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "approach_phraseologies_approach_clearance_forms_12_3_3_2_f_to_m",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14528,
+      "endLine": 14548,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.2 f)-m): approach-clearance phraseologies for specified approach type/runway, circling, commence approach, straight-in approach requests/clearances, report visual, and report runway/lights in sight. Split from the broad approach-instructions window after final v7 exposed requirement-extraction density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "approach_phraseologies_visual_approach_12_3_3_2_n_to_p",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14549,
+      "endLine": 14563,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.2 n)-p): visual-approach request and clearance phraseologies, request to advise ability to accept visual approach, and the linked visual-approach procedure note. Split from the broad approach-instructions window after final v7 exposed requirement-extraction density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "approach_phraseologies_successive_visual_misc_12_3_3_2_q_to_z",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14567,
+      "endLine": 14604,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.2 q)-z): successive visual-approach own-separation phraseology, report significant point/procedure turn, VMC descent, maintain own separation/VMC, approach-procedure familiarity query, and approach/RNAV designator request/clearance forms. Split from the broad approach-instructions window after final v7 exposed requirement-extraction density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "approach_phraseologies_holding_clearances_12_3_3_3",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14605,
+      "endLine": 14662,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.3: holding-clearance phraseologies for visual, published, and detailed holding instructions.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "approach_phraseologies_expected_approach_time_12_3_3_4",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14663,
+      "endLine": 14681,
+      "notes": "ICAO Doc 4444 \u00a712.3.3.4: expected approach time and delay phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_ident_visual_ack_12_3_4_1_to_12_3_4_2",
       "familyId": "icao4444_atc_phraseology_family",
       "startLine": 14682,
-      "endLine": 14903,
-      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.1-12.3.4.7: aerodrome phraseologies for identification, visual acknowledgement, start-up, pushback, towing, time/aerodrome data, and taxi.",
+      "endLine": 14703,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.1-12.3.4.2: aerodrome phraseologies for aircraft identification and acknowledgement by visual means. Split from the broad identification/start/pushback window after final v7 exposed requirement-extraction density.",
       "authorityCeiling": "operational_guidance"
     },
     {
-      "sectionId": "aerodrome_phraseologies_holding_takeoff_12_3_4_8_to_12_3_4_12",
+      "sectionId": "aerodrome_phraseologies_starting_procedures_12_3_4_3",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14704,
+      "endLine": 14729,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.3: aerodrome starting-procedure phraseologies for request start-up, ATIS information, start-up approval/time/expectation, own discretion, and expected departure with start-up at own discretion. Split from the broad identification/start/pushback window after final v7 exposed requirement-extraction density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_pushback_procedures_12_3_4_4",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14730,
+      "endLine": 14748,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.4: aerodrome pushback phraseologies, local-procedure note, request pushback, approval, standby, own discretion, and expected delay due reason. Split from the broad identification/start/pushback window after final v7 exposed requirement-extraction density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_towing_time_departure_data_12_3_4_5_to_12_3_4_6",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14757,
+      "endLine": 14788,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.5-12.3.4.6: towing, time-check, and departure-information phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_taxi_departure_detailed_12_3_4_7_a_to_d",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14790,
+      "endLine": 14809,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.7 a)-d): taxi phraseologies for departure taxi requests, flight-rules/destination taxi request, taxi to holding point with runway/hold-short/cross/time options, and request detailed taxi instructions. Split from the broad taxi window after final v7 exposed structure density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_taxi_route_information_12_3_4_7_e_to_h",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14819,
+      "endLine": 14837,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.7 e)-h): taxi phraseologies when aerodrome information is not available from ATIS, route-specific taxi to holding point, aerodrome information as applicable, turn instruction, and taxiway routing. Split from the broad taxi window after final v7 exposed structure density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_taxi_helicopter_12_3_4_7_i_to_m",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14838,
+      "endLine": 14859,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.7 i)-m): helicopter taxi and air-taxi phraseologies, including taxi via runway, taxi to terminal/location/stand, request air-taxiing, air-taxi caution, and avoid traffic/personnel. Split from the broad taxi window after final v7 exposed structure density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_taxi_backtrack_12_3_4_7_n_to_p",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14860,
+      "endLine": 14865,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.7 n)-p): after-landing backtrack request, backtrack approved, and backtrack runway phraseologies. Split from the broad taxi window after final v7 exposed structure density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14866,
+      "endLine": 14903,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.7 q)-dd): general taxi phraseologies for taxi to destination, straight ahead, caution, give way, traffic in sight, holding bay, follow, vacate/runway vacated, expedite taxi/expediting, and taxi slower/slowing down. Split from the broad taxi window after final v7 exposed structure density.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_holding_crossing_12_3_4_8_to_12_3_4_9",
       "familyId": "icao4444_atc_phraseology_family",
       "startLine": 14904,
-      "endLine": 15101,
-      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.8-12.3.4.12: aerodrome phraseologies for holding, runway crossing, preparation for take-off, take-off clearance, and turn/climb after take-off.",
+      "endLine": 14952,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.8-12.3.4.9: holding and runway-crossing phraseologies, including required acknowledgement notes.",
       "authorityCeiling": "operational_guidance"
     },
     {
-      "sectionId": "aerodrome_phraseologies_circuit_landing_vacating_12_3_4_13_to_12_3_4_20",
+      "sectionId": "aerodrome_phraseologies_takeoff_preparation_12_3_4_10",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 14953,
+      "endLine": 14999,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.10: preparation-for-take-off, line-up, conditional-clearance, and readback confirmation phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_takeoff_clearance_12_3_4_11",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 15001,
+      "endLine": 15060,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.11: take-off clearance, immediate take-off, cancellation, stopping, and helicopter departure phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_after_takeoff_turn_climb_12_3_4_12",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 15061,
+      "endLine": 15101,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.12: turn, climb, airborne-time, runway-heading, track, and straight-ahead instructions after take-off.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15",
       "familyId": "icao4444_atc_phraseology_family",
       "startLine": 15102,
+      "endLine": 15148,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.13-12.3.4.15: entering aerodrome traffic circuit, circuit reporting, and approach-instruction context.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_landing_clearance_12_3_4_16",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 15149,
+      "endLine": 15224,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.16: landing, touch-and-go, full-stop, low approach/pass, and helicopter approach/landing phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_delay_missed_approach_12_3_4_17_to_12_3_4_18",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 15225,
+      "endLine": 15244,
+      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.17-12.3.4.18: delaying-aircraft and missed-approach/go-around phraseologies.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_aircraft_information_12_3_4_19",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 15245,
+      "endLine": 15289,
+      "notes": "ICAO Doc 4444 \u00a712.3.4.19: information-to-aircraft phraseologies for landing gear, wake turbulence, jet blast, and slipstream.",
+      "authorityCeiling": "operational_guidance"
+    },
+    {
+      "sectionId": "aerodrome_phraseologies_runway_vacating_after_landing_12_3_4_20",
+      "familyId": "icao4444_atc_phraseology_family",
+      "startLine": 15291,
       "endLine": 15322,
-      "notes": "ICAO Doc 4444 \u00a7\u00a712.3.4.13-12.3.4.20: aerodrome phraseologies for entering circuit, circuit reporting, approach, landing, delay, missed approach, inspection, and runway vacating.",
+      "notes": "ICAO Doc 4444 \u00a712.3.4.20: runway-vacating and communications-after-landing phraseologies, including helicopter air-taxi after landing.",
       "authorityCeiling": "operational_guidance"
     },
     {
@@ -636,11 +894,32 @@
       "authorityCeiling": "operational_guidance"
     },
     {
-      "sectionId": "emergency_procedures_15_1",
+      "sectionId": "emergency_procedures_general_15_1_1",
       "familyId": "icao4444_emergency_family",
       "startLine": 17529,
+      "endLine": 17589,
+      "notes": "ICAO Doc 4444 \u00a715.1.1: emergency-procedure general guidance, emergency transponder/ADS-B notes, ATS-unit actions, and frequency/SSR-code change limits."
+    },
+    {
+      "sectionId": "emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1",
+      "familyId": "icao4444_emergency_family",
+      "startLine": 17591,
+      "endLine": 17650,
+      "notes": "ICAO Doc 4444 \u00a7\u00a715.1.2-15.1.3.3.1: emergency priority, unlawful-interference recognition, SSR code verification, aircraft needs, flight monitoring, coordination, notification, and message relay."
+    },
+    {
+      "sectionId": "emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10",
+      "familyId": "icao4444_emergency_family",
+      "startLine": 17652,
+      "endLine": 17680,
+      "notes": "ICAO Doc 4444 \u00a7\u00a715.1.3.4-15.1.3.10: bomb-threat advice, intention reporting, expedited handling, re-clearance, ground isolation, and isolated parking/taxi route procedures."
+    },
+    {
+      "sectionId": "emergency_procedures_emergency_descent_15_1_4",
+      "familyId": "icao4444_emergency_family",
+      "startLine": 17686,
       "endLine": 17745,
-      "notes": "ICAO Doc 4444 \u00a715.1: emergency procedures, priority, assistance, descent, and emergency phase coordination."
+      "notes": "ICAO Doc 4444 \u00a715.1.4: ATS, descending-aircraft, and receiving-aircraft actions for emergency descent."
     },
     {
       "sectionId": "air_ground_communications_failure_15_3",

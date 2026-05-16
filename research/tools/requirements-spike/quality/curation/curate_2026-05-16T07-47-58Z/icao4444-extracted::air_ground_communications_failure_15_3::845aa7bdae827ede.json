@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::845aa7bdae827ede",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.21,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the candidate's exactSourceQuotes field is not a verbatim source quote because it uses an ellipsis and omits source wording. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::845aa7bdae827ede.json",
+    "toPath": "rejected/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::845aa7bdae827ede.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:30:09Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::0a18ddd369ea8260",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.67,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted content is supported by the source window despite the apparent whitespace/column-layout audit miss, and the claim does not need identity-field changes. However, the candidate's modality should not be `note` because the source quote includes a `must not` prohibition along with descriptive/normal-location language, so `mixed` better matches the cited wording while retaining background-support authority.",
+    "corrections": {
+      "modality": "mixed"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::0a18ddd369ea8260.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::0a18ddd369ea8260.json",
+    "correctionsApplied": {
+      "modality": "mixed"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:13:19Z"
+}

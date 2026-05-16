@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::119c3c9887c20c95",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.45,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The exact phraseology quotes are present verbatim and the candidate is not redundant with the accepted taxi-instruction sibling. However, the cited source lists phraseology without any modal or note framing, so the modality should be `none` rather than `note` while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::119c3c9887c20c95.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::119c3c9887c20c95.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:25:53Z"
+}

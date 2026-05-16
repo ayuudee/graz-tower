@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::b64030acf6ef4bbd",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_traffic_circuit_4_6_part2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.02,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, and the may/operational_guidance classification is consistent with the advisory ICAO 9432 material. It is not redundant with the accepted sibling candidates, which cover different clauses/items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_traffic_circuit_4_6_part2_en/icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::b64030acf6ef4bbd.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_traffic_circuit_4_6_part2_en/icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::b64030acf6ef4bbd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:45:09Z"
+}

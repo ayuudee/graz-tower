@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::7184f3f5a6bb8927",
+  "documentId": "h01-extracted",
+  "sectionId": "minimum_fuel_transponder_emergency_4_7_to_4_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.41,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is directly supported; it is not redundant with the accepted sibling fuel-emergency and transponder items. Because the source item is explicitly a Note and uses advisory 'should not' wording, it should remain operational guidance rather than an authoritative requirement, with requirement kind framed as advisory-only.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/minimum_fuel_transponder_emergency_4_7_to_4_8/h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::7184f3f5a6bb8927.json",
+    "toPath": "candidates/h01-extracted/minimum_fuel_transponder_emergency_4_7_to_4_8/h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::7184f3f5a6bb8927.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:59:30Z"
+}

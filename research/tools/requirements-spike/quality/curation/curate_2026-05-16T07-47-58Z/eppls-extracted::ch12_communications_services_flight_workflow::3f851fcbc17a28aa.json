@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::3f851fcbc17a28aa",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.1,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote does not appear verbatim in the provided source window after whitespace normalization, likely due to two-column text interleaving. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::3f851fcbc17a28aa.json",
+    "toPath": "rejected/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::3f851fcbc17a28aa.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:44:07Z"
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::f9edadd643cf65fb",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_position_uncertainty_7_4_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.58,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted notification text is verbatim and the shall/authoritative classification is consistent, but the parent clause 7.4.1.5.3 creates a sequential vehicle-driver obligation including notification, simultaneous vacating, and then stopping. Promoting this unchanged would leave the requirement operatively incomplete; resolving it would require re-extraction or bundling with items b and c, not just modality or authority corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_position_uncertainty_7_4_1_5/icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::f9edadd643cf65fb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:11:26Z"
+}

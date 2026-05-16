@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_separation_5_3::7b46fc6d9e1c21b9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_separation_5_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.72,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote does not exist verbatim in the source window; it concatenates list items and punctuation into a non-verbatim sentence. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying claim being substantively supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::7b46fc6d9e1c21b9.json",
+    "toPath": "rejected/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::7b46fc6d9e1c21b9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:37:58Z"
+}

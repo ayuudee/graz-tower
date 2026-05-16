@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::visual_surveillance_aerodrome_7_12::b9f05cfeb508a46d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "visual_surveillance_aerodrome_7_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.56,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim from the source Note, and the candidate correctly uses modality `note` with `background_support` authority. It is not redundant with the accepted sibling requirements, which cover separate normative provisions rather than this definitional context.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/visual_surveillance_aerodrome_7_12/icao4444-extracted::visual_surveillance_aerodrome_7_12::b9f05cfeb508a46d.json",
+    "toPath": "candidates/icao4444-extracted/visual_surveillance_aerodrome_7_12/icao4444-extracted::visual_surveillance_aerodrome_7_12::b9f05cfeb508a46d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:58Z"
+}

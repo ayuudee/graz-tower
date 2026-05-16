@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::6582cb9cf834d087",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "familyId": "icao4444_communication_failure_family",
+  "claimText": "If the aircraft fails to indicate that it is able to receive and acknowledge transmissions, separation shall be maintained based on the assumption that the aircraft will, in airspace where an ATS surveillance system is used, maintain the last assigned speed and level, or minimum flight altitude if higher, for a period of 7 minutes following the latest of: the time the last assigned level or minimum flight altitude is reached; the time the transponder is set to Code 7600 or the ADS-B transmitter is set to indicate the loss of air-ground communications; or the aircraft\u2019s failure to report its position over a compulsory reporting point, and thereafter adjust level and speed in accordance with the filed flight plan.",
+  "rationale": "Enumerated list item 'b)2' defines the specific assumption for separation maintenance in surveillance airspace.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "2) in airspace where an ATS surveillance system is used ... maintain the last assigned speed and level ... for a period of 7 minutes following ... whichever is later and thereafter adjust level and speed in accordance with the filed flight plan"
+  ],
+  "sourceItemIds": [
+    "15.3.3_b_2"
+  ],
+  "claimSha256": "940c9c12f00f0f4f4820bd25a3905a9244a6940fe2aa4cbf457a03a673015fd8",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 17950,
+    "endLine": 18093
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_communication_failure_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "15.3.3_sep_imc_surf",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "2) in airspace where an ATS surveillance system is used ... maintain the last assigned speed and level ... for a period of 7 minutes following ... whichever is later and thereafter adjust level and speed in accordance with the filed flight plan",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the source, but the listed exactSourceQuote is not verbatim because it uses ellipses and therefore fails the identity-field quote requirement. Since exactSourceQuotes cannot be edited in this curation pass, this record must be rejected rather than corrected.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:29:44Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/air_ground_communications_failure_15_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:29:44Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_deice_prior_start_5_3_1_5_1::ddf3bd2a953411fd",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_deice_prior_start_5_3_1_5_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.95,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a metadata/source-reference background note, and all quoted fragments appear verbatim in the source window. The bundle-gate concern is aimed at operative procedural content, which is already covered by accepted sibling candidates, and does not make this standalone background-support metadata record unsupported or redundant.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_deice_prior_start_5_3_1_5_1/h01-extracted::controlled_aerodromes_deice_prior_start_5_3_1_5_1::ddf3bd2a953411fd.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_deice_prior_start_5_3_1_5_1/h01-extracted::controlled_aerodromes_deice_prior_start_5_3_1_5_1::ddf3bd2a953411fd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:31:46Z"
+}

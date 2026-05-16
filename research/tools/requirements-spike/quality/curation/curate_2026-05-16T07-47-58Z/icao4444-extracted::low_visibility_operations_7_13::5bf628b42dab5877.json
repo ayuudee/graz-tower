@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::5bf628b42dab5877",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.84,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited quotes are verbatim and support the claim, and the sibling accepted items do not already cover the runway-holding-position item. The only defect is the authority/modality mismatch: the source uses 'should', so this is advisory operational guidance rather than an authoritative requirement.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::5bf628b42dab5877.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::5bf628b42dab5877.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:20:43Z"
+}

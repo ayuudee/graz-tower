@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6::ca0ec9f81d311b44",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.32,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exactSourceQuote does not exist verbatim as a contiguous quote in the provided source window; the English phrase is split/interleaved with German text and page/footer material. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this cannot be promoted despite the underlying phraseology being semantically supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6/h01-extracted::contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6::ca0ec9f81d311b44.json",
+    "toPath": "rejected/h01-extracted/contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6/h01-extracted::contingency_emergency_descent_fuel_landing_gear_5_8_4_to_5_8_6::ca0ec9f81d311b44.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:24:50Z"
+}

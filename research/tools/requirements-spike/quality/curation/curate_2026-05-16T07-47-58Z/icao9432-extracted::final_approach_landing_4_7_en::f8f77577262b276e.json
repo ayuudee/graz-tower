@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::final_approach_landing_4_7_en::f8f77577262b276e",
+  "documentId": "icao9432-extracted",
+  "sectionId": "final_approach_landing_4_7_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.15,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted dialogue is verbatim and correctly classified as an example, but the candidate is a redundant umbrella. Its atomic content is already covered by accepted sibling candidates for the touch-and-go request, clearance phrase, and alternative ATC responses, so the atomic items should be favored over this summary example record.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/final_approach_landing_4_7_en/icao9432-extracted::final_approach_landing_4_7_en::f8f77577262b276e.json",
+    "toPath": "rejected/icao9432-extracted/final_approach_landing_4_7_en/icao9432-extracted::final_approach_landing_4_7_en::f8f77577262b276e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:55:36Z"
+}

@@ -1,0 +1,107 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_departure_combined_identity_ops_9010_b_1_to_11::e6abf582bd8a7b38",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_departure_combined_identity_ops_9010_b_1_to_11",
+  "familyId": "sera_atis_family",
+  "claimText": "The elements of information in combined ATIS messages shall be presented in the order listed.",
+  "rationale": "Standalone clause imposing strict sequencing. Attempt 2 merged this with parent; Attempt 1/3 correctly isolate it as a distinct constraint.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "workflow_constraint",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "in the order listed:"
+  ],
+  "sourceItemIds": [
+    "sera_atis_family_b_intro"
+  ],
+  "claimSha256": "3ddc44a1e6d25b0188a21a1a7e5b535e671b5241617ac500f2dab69e7bc1e835",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2217,
+    "endLine": 2230
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "sera_atis_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "atis_combined_ordered_sequence",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The source supports an ordering requirement, but the candidate is structurally dependent on the eleven listed elements and its lone quote has no referents without them. This is not a modality or authorityClass problem, and rejecting would lose a distinct sequencing constraint not fully captured by the accepted sibling item-inclusion records.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T12:02:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/sera-923-2012-extracted/atis_arrival_departure_combined_identity_ops_9010_b_1_to_11/judged_candidates.json"
+  }
+}

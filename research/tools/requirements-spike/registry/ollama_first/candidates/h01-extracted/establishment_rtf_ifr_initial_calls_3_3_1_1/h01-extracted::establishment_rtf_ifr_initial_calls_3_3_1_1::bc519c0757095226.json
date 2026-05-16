@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::establishment_rtf_ifr_initial_calls_3_3_1_1::bc519c0757095226",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_ifr_initial_calls_3_3_1_1",
+  "familyId": "h01_rtf_communications_family",
+  "claimText": "Pilots shall provide level information at the nearest full 30 m or 100 ft as indicated on the pilot's altimeter.",
+  "rationale": "All attempts identify this note as advisory guidance on level reporting precision. Attempt 3 marked it 'promote' but others 'advisory_only'; conservative choice is advisory_only as it is a Note.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Pilots shall provide level information at the nearest full 30 m or 100 ft as indicated on the pilot's altimeter."
+  ],
+  "sourceItemIds": [
+    "note_level"
+  ],
+  "claimSha256": "cf07dfee7c8f41084e9016982d12c06769c083e873ca5e3bb4c0643f9e46ee3b",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 3689,
+    "endLine": 3779
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_rtf_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "level_reporting_precision",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted sentence is present verbatim and the candidate is a standalone note not covered by the accepted siblings. Because the source labels this content as a Note in an H01 operational-guidance context, it should be framed with note modality rather than as a standalone shall-strength requirement.",
+      "corrections": {
+        "modality": "note"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:44:21Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/establishment_rtf_ifr_initial_calls_3_3_1_1/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:44:21Z"
+  }
+}

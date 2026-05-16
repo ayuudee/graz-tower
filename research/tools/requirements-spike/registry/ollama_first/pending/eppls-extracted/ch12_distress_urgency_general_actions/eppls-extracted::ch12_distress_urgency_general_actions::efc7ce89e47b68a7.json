@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::efc7ce89e47b68a7",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "ELTs operate on 121.5 MHz and 406 MHz.",
+  "rationale": "Factual information about ELT frequencies; background support.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "ELTs operate on 121.5 MHz and 406 MHz."
+  ],
+  "sourceItemIds": [
+    "distress_frequency"
+  ],
+  "claimSha256": "e27e9401f72c49e825ada42730b03855db9bc60ec90b95e4ed892c6db989c6bb",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23227,
+    "endLine": 23266
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_distress_freq_elts",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "ELTs operate on 121.5 MHz and 406 MHz.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The factual claim is supported by the source window; the apparent G1 miss is a line-wrap/whitespace artefact rather than a substantive quote failure. However, the cited sentence is a plain factual statement with no note marker or normative language, so the modality should be `none` rather than `note`, while `background_support` remains appropriate.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:54:48Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::efc7ce89e47b68a7.json",
+      "to": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::efc7ce89e47b68a7.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_distress_urgency_general_actions/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:54:48Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

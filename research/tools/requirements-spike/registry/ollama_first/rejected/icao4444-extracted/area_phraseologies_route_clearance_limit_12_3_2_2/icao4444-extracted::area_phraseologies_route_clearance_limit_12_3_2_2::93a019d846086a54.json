@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::93a019d846086a54",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_route_clearance_limit_12_3_2_2",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "Phraseology for indicating route and clearance limit may use the format: TO (location), followed as necessary by VIA (distance) DME ARC (direction) OF (name of DME station).",
+  "rationale": "All attempts agree on this distinct phraseology rule.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "TO (location), followed as necessary by: 4) VIA (distance) DME ARC (direction) OF (name of DME station);"
+  ],
+  "sourceItemIds": [
+    "item_b",
+    "item_b_4"
+  ],
+  "claimSha256": "0ca14baffe7b6a6894904ab5569496cc790d6d27a50ef5ac44adde6f79234f46",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 14294,
+    "endLine": 14318
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_phraseology_to_dme_arc",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "TO (location), followed as necessary by: 4) VIA (distance) DME ARC (direction) OF (name of DME station);",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The exactSourceQuote is not present verbatim in the source window: the parent phrase and item 4 are separated by intervening list items, so the combined quote is an identity-field error. Under the curation rules, verbatim quote failures require rejection rather than correction.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:35:21Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/area_phraseologies_route_clearance_limit_12_3_2_2/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:35:21Z"
+  }
+}

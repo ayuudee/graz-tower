@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::84a51cb4547a8501",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_english_completion_5_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 3.68,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology appears verbatim and the claim is supported by the source. However, the source line is a phraseology item rather than a note, and sibling accepted phraseology items in the same window use modality \"none\" with operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::84a51cb4547a8501.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::84a51cb4547a8501.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:36:12Z"
+}

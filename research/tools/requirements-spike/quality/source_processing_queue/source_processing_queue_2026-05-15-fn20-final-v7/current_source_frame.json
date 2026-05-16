@@ -1,0 +1,213 @@
+{
+  "schemaName": "requirements_current_source_frame",
+  "formatVersion": "2026-05-09-v1",
+  "generatedAt": "2026-05-16T12:06:25Z",
+  "controlRule": "include all requirements-spike document manifests plus any live registry document not represented by those manifests; defer Nolan/EPPLS unless present in that control set",
+  "includedSources": [
+    {
+      "documentId": "cap413-extracted",
+      "classification": "included_manifest",
+      "documentStem": "cap413",
+      "documentTitle": "CAP 413 \u2014 UK Manual of Radiotelephony",
+      "manifestPath": "research/tools/requirements-spike/documents/cap413.json",
+      "sourcePath": "research/txt/cap413-extracted.txt",
+      "manifestSections": 58,
+      "registryRecords": {
+        "candidates": 547,
+        "pending": 13,
+        "rejected": 42
+      },
+      "manifestWindowState": {
+        "landed": 58,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "egast-vfr-extracted",
+      "classification": "included_manifest",
+      "documentStem": "egast",
+      "documentTitle": "EGAST GA9 \u2014 VFR Phraseology Pocket Guide",
+      "manifestPath": "research/tools/requirements-spike/documents/egast.json",
+      "sourcePath": "research/txt/egast-vfr-extracted.txt",
+      "manifestSections": 1,
+      "registryRecords": {
+        "candidates": 17,
+        "pending": 0,
+        "rejected": 0
+      },
+      "manifestWindowState": {
+        "landed": 1,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "eppls-extracted",
+      "classification": "included_manifest",
+      "documentStem": "eppls",
+      "documentTitle": "EASA Private Pilot Studies -- Chapter 12 Communications",
+      "manifestPath": "research/tools/requirements-spike/documents/eppls.json",
+      "sourcePath": "research/txt/eppls-extracted.txt",
+      "manifestSections": 24,
+      "registryRecords": {
+        "candidates": 81,
+        "pending": 113,
+        "rejected": 37
+      },
+      "manifestWindowState": {
+        "landed": 21,
+        "pendingOnly": 3,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "h01-extracted",
+      "classification": "included_manifest",
+      "documentStem": "h01",
+      "documentTitle": "AIC A 21/23 (Austria) Sprechfunkverfahren / Radio Communication Procedures",
+      "manifestPath": "research/tools/requirements-spike/documents/h01.json",
+      "sourcePath": "research/txt/h01-extracted.txt",
+      "manifestSections": 52,
+      "registryRecords": {
+        "candidates": 494,
+        "pending": 27,
+        "rejected": 115
+      },
+      "manifestWindowState": {
+        "landed": 52,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "icao4444-extracted",
+      "classification": "included_manifest",
+      "documentStem": "icao4444",
+      "documentTitle": "ICAO Doc 4444 PANS-ATM (Procedures for Air Navigation Services - Air Traffic Management)",
+      "manifestPath": "research/tools/requirements-spike/documents/icao4444.json",
+      "sourcePath": "research/txt/icao4444-extracted.txt",
+      "manifestSections": 127,
+      "registryRecords": {
+        "candidates": 1326,
+        "pending": 47,
+        "rejected": 166
+      },
+      "manifestWindowState": {
+        "landed": 127,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "icao9432-extracted",
+      "classification": "included_manifest",
+      "documentStem": "icao9432",
+      "documentTitle": "ICAO Doc 9432 \u2014 Manual of Radiotelephony",
+      "manifestPath": "research/tools/requirements-spike/documents/icao9432.json",
+      "sourcePath": "research/txt/icao9432-extracted.txt",
+      "manifestSections": 23,
+      "registryRecords": {
+        "candidates": 166,
+        "pending": 2,
+        "rejected": 21
+      },
+      "manifestWindowState": {
+        "landed": 23,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "safetysense22-extracted",
+      "classification": "included_manifest",
+      "documentStem": "safetysense22",
+      "documentTitle": "UK CAA SafetySense Leaflet 02 \u2014 Radiotelephony",
+      "manifestPath": "research/tools/requirements-spike/documents/safetysense22.json",
+      "sourcePath": "research/txt/safetysense22-extracted.txt",
+      "manifestSections": 1,
+      "registryRecords": {
+        "candidates": 15,
+        "pending": 0,
+        "rejected": 1
+      },
+      "manifestWindowState": {
+        "landed": 1,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "sera-923-2012-extracted",
+      "classification": "included_manifest",
+      "documentStem": "sera",
+      "documentTitle": "SERA \u2014 Standardised European Rules of the Air, Regulation (EU) 923/2012",
+      "manifestPath": "research/tools/requirements-spike/documents/sera.json",
+      "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+      "manifestSections": 26,
+      "registryRecords": {
+        "candidates": 163,
+        "pending": 1,
+        "rejected": 10
+      },
+      "manifestWindowState": {
+        "landed": 26,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    },
+    {
+      "documentId": "slovenia-vfr-extracted",
+      "classification": "included_manifest",
+      "documentStem": "slovenia-vfr",
+      "documentTitle": "Slovenia VFR Phraseology Guide",
+      "manifestPath": "research/tools/requirements-spike/documents/slovenia-vfr.json",
+      "sourcePath": "research/txt/slovenia-vfr-extracted.txt",
+      "manifestSections": 1,
+      "registryRecords": {
+        "candidates": 15,
+        "pending": 0,
+        "rejected": 0
+      },
+      "manifestWindowState": {
+        "landed": 1,
+        "pendingOnly": 0,
+        "readyToIngest": 0
+      },
+      "highPriorityRowsNeedingSourceWindowHardening": 0
+    }
+  ],
+  "excludedFutureSources": [
+    {
+      "sourceKey": "nolan",
+      "classification": "excluded_future",
+      "reason": "not in current document-manifest/registry control set",
+      "evidencePaths": [
+        "research/txt/nolan-fundamentals-extracted.txt"
+      ]
+    },
+    {
+      "sourceKey": "eppls",
+      "classification": "excluded_future",
+      "reason": "not in current document-manifest/registry control set",
+      "evidencePaths": [
+        "research/txt/eppls-extracted.txt",
+        "research/pdf/EPPLS.pdf"
+      ]
+    }
+  ],
+  "blockedAmbiguousSources": [],
+  "counts": {
+    "includedSources": 9,
+    "excludedFutureSources": 2,
+    "blockedAmbiguousSources": 0
+  }
+}

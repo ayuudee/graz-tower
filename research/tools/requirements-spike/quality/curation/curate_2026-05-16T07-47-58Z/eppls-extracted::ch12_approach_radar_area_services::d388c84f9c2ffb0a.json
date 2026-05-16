@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_approach_radar_area_services::d388c84f9c2ffb0a",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_approach_radar_area_services",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.91,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence appears verbatim and directly supports the claim, and it is not covered by the accepted sibling candidates. Because the source wording is a factual/definitional statement with no explicit note marker or normative modal, the modality should be lowered from `note` to `none` while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::d388c84f9c2ffb0a.json",
+    "toPath": "candidates/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::d388c84f9c2ffb0a.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:33:20Z"
+}

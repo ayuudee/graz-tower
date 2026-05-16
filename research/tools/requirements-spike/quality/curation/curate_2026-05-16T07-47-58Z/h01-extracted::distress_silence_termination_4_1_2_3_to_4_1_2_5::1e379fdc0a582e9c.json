@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::1e379fdc0a582e9c",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.23,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not present verbatim/contiguously in the source: the source has 'unless:' followed first by the cancellation/termination bullet before the 'all distress traffic...' bullet. Because the quote identity field is wrong and cannot be corrected in this pass, the candidate must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::1e379fdc0a582e9c.json",
+    "toPath": "rejected/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::1e379fdc0a582e9c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:42:10Z"
+}

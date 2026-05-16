@@ -1,0 +1,115 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::emergency_message_specials_8_13_to_8_20::29124ca5533b9dd6",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_message_specials_8_13_to_8_20",
+  "familyId": "cap413_emergency_phraseology_family",
+  "claimText": "Solo student pilots shall prefix the aircraft callsign with 'STUDENT' in emergency messages.",
+  "rationale": "All attempts agree on the mandatory 'STUDENT' prefix for solo students.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "a) Student pilots (see Notes 2 and 3);",
+    "Note 2: Solo student pilots shall prefix the aircraft callsign with \u2018STUDENT\u2019, e.g. \u2018MAYDAY, MAYDAY, MAYDAY STUDENT G-ABCD \u2026 \u2018 to indicate their lack of experience."
+  ],
+  "sourceItemIds": [
+    "8.13_item8a",
+    "note_2"
+  ],
+  "claimSha256": "f8f85d8332e7c40b52d30ca1df13ffa6ff094d34eed523aac61c0118117a9c4e",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 16430,
+    "endLine": 16597
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_8.13_student_prefix",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 1,
+      "misses": [
+        {
+          "quote": "Note 2: Solo student pilots shall prefix the aircraft callsign with \u2018STUDENT\u2019, e.g. \u2018MAYDAY, MAYDAY, MAYDAY STUDENT G-ABCD \u2026 \u2018 to indicate their lack of experience.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the source, but one exactSourceQuote is not verbatim: the source has the numbered note text rather than the quoted string beginning \u201cNote 2:\u201d. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the record must be rejected rather than promoted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:25:09Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/emergency_message_specials_8_13_to_8_20/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:25:09Z"
+  }
+}

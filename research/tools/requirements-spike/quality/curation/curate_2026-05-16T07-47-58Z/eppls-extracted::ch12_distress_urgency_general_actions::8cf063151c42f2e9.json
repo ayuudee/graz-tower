@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::8cf063151c42f2e9",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.53,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited sentence is present in the source window apart from whitespace/line-break formatting, and the claim is directly supported. Because the source wording uses \u201cmust\u201d rather than \u201cshall,\u201d the modality should be corrected while retaining background_support authority.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::8cf063151c42f2e9.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::8cf063151c42f2e9.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:54:03Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::5d25fc1efd870f88",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.19,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the parent 'shall' list, but the candidate's sole exactSourceQuote does not appear verbatim in the source window because the numbering and item text are separated by layout. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::5d25fc1efd870f88.json",
+    "toPath": "rejected/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::5d25fc1efd870f88.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:39:31Z"
+}

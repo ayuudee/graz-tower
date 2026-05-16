@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::a1a85aeb6ad1219f",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_english_completion_5_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.57,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology appears verbatim and is not redundant with accepted siblings. However, the source line contains no note marker or modal wording; consistent with the sibling phraseology entries, the correct modality is `none` while retaining operational_guidance.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::a1a85aeb6ad1219f.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::a1a85aeb6ad1219f.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:36:22Z"
+}

@@ -4,12 +4,12 @@ date: "2026-05-11"
 track: bug
 category: build-errors
 module: pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/observe/PilotEvent.kt
-tags: [fn-14, pilot, recognition-apply, fail-closed, mission-shape, go-around, fn-14.2, impl-review, scoped-diff, r13-doc-closure, multi-task-epic]
+tags: [fn-14, pilot, recognition-apply, fail-closed, mission-shape, go-around, fn-14.2, impl-review, scoped-diff, r13-doc-closure, multi-task-epic, fn-28, fn-28.2, phase-guard, cross-path-contract, focused-seam, codex-impl-review, sealed-when-exhaustiveness, density-altitude]
 problem_type: build-error
 symptoms: Recognition fires on mission shapes the apply silently no-ops; hysteresis breaks; transmission emitted without effect
 root_cause: Derivation site reused aerodrome-resolution helper that accepts more goal shapes than the apply's subtree-rewrite predicate supports
 resolution_type: fix
-last_updated: "2026-05-11"
+last_updated: "2026-05-16"
 related_to: [bug/build-errors/ga-path-precedence-reorder-when-adding-2026-05-10]
 ---
 
@@ -158,3 +158,116 @@ reference contract:
    reviews a diff; the diff is the artifact. "It's already there
    from fn-14.1" is correct but doesn't satisfy the review-scope
    requirement. Adjust the diff, not the review's framing.
+
+## Update 2026-05-16
+
+## Problem
+When extending a recognition→apply pipeline with a new pure-derivation
+event leaf (here: density-altitude decline as a pilot-side reactive
+recognition axis), two adjacent failure modes surfaced in successive
+codex impl-review rounds:
+
+1. **Recognition gates only on mission step, not on aircraft physical
+   phase.** A type-valid but desynced state — e.g. `mission.currentTask
+   = REQUEST_TAXI` paired with `aircraft.phase = Final` (a future
+   regression that wired the mission state independently of physical
+   phase) — would fire the recognition AND force a terminal mission-
+   tree rewrite on an aircraft physically in flight. The mission-shape
+   guard alone is not sufficient.
+
+2. **Code contracts that span multiple PilotOutput return paths cannot
+   be tested end-to-end if the natural firing conditions are mutually
+   exclusive across paths.** The round-13 contract for cognitive-
+   suppression required suppression to apply BEFORE every `PilotOutput`
+   construction site (`PlanRouteOutcome.Plan` AND `Skip`). But the
+   recognition's gates (pre-taxi mission shape + pre-taxi physical
+   phase) are structurally disjoint from `planRoute`'s `Plan` branch
+   gates (airborne steps + activeRunway / Transit-cruise context). A
+   "DA-decline fires AND Plan branch fires simultaneously" fixture is
+   impossible to construct.
+
+## What Didn't Work
+
+**Phase-guard miss**: initial implementation gated recognition on the
+mission step only (`isDensityAltitudeDeclineEligible` ← step in
+{REQUEST_TAXI, TAXI_TO_HOLDING}). Aircraft phase was inspected nowhere
+in the derivation site. Codex round-1 caught the desync hazard.
+
+**Plan-path test attempts**: first round-2 fix tried to exercise the
+Plan branch via an end-to-end pilotDecide test on a Transit-cruise
+fixture, with a `getOrElse { return@Test }` early-out. Two problems:
+(a) `return@Test` is not valid Kotlin — `@Test` is an annotation, not
+a lambda label — so the test failed to compile; (b) even when it
+"worked", the assertion `targetSpeedMps >= 0.0` did not distinguish
+Plan from Skip and could pass vacuously.
+
+## Solution
+
+**Phase-guard addition** at the derivation site:
+```kotlin
+val phaseOk = when (aircraft.phase) {
+    is PilotPhase.AtStand, is PilotPhase.Parked,
+    is PilotPhase.HoldingShort, is PilotPhase.Taxiing -> true
+    is PilotPhase.LinedUp, is PilotPhase.TakeoffRoll,
+    is PilotPhase.Climbing, is PilotPhase.Crosswind,
+    is PilotPhase.Downwind, is PilotPhase.Base, is PilotPhase.Final,
+    is PilotPhase.LandingRoll, is PilotPhase.Vacating,
+    is PilotPhase.ClearOfRunway -> false
+}
+if (\!phaseOk) return null
+```
+Exhaustive sealed-PilotPhase `when` (Kotlin's sealed-class
+exhaustiveness check catches any future phase addition at compile
+time). Recognition+apply agreement: both sites use the same physical-
+phase + mission-shape gate sets. Negative tests cover airborne phases
++ runway-active phases with eligible mission steps.
+
+**Focused-seam refactor for cross-path contracts**: extract the
+suppression logic to a named internal helper:
+```kotlin
+internal fun applyCognitiveSuppression(
+    transmissions: List<PilotTransmission>,
+    suppressSameTickCognitive: Boolean,
+): List<PilotTransmission> =
+    if (suppressSameTickCognitive) emptyList() else transmissions
+```
+Both `pilotDecide` return branches call this helper once (via
+`effectiveCognitiveTransmissions`). Unit tests on the helper directly
+cover the suppression logic; the structural code-share in
+`pilotDecide` guarantees Plan/Skip parity by construction. No need
+for an impossible "all paths fire simultaneously" fixture.
+
+`pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/observe/PilotEvent.kt`
+(phase guard); `pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/Pilot.kt:1394-1422`
+(focused-seam helper).
+
+## Prevention
+
+When extending a recognition→apply pipeline with a new pure-derivation
+event leaf:
+
+1. **List every state axis the apply mutates**, not just the mission
+   tree. If the apply rewrites the mission tree, but the apply's
+   effect (apron-terminal at-rest intent, climbing-out intent, etc.)
+   is only operationally coherent for specific physical phases, the
+   recognition site MUST gate on physical phase too. The mission tree
+   alone can desync with physical phase via a future regression.
+
+2. **Sealed-when on the typed phase enumeration** at the derivation
+   site — not an `if/else` chain. The exhaustiveness check forces
+   every PilotPhase to be classified explicitly; future phase
+   additions surface at compile time and require deliberate
+   review of the recognition gate.
+
+3. **When a code contract spans multiple return paths**, ask: "can
+   both paths' firing conditions be satisfied simultaneously?" If no,
+   end-to-end testing of the parity is impossible; refactor the
+   shared logic into a named internal helper and unit-test the
+   helper directly. The structural code-share in the call sites
+   guarantees the parity contract by construction.
+
+4. **Don't use `return@<annotation-name>`** — `@Test` and other
+   annotations are NOT lambda labels. To early-return from a test
+   function, use a guard clause or restructure the test. Kotlin's
+   `return` without a label returns from the nearest enclosing
+   function (the test method itself), not from a lambda.

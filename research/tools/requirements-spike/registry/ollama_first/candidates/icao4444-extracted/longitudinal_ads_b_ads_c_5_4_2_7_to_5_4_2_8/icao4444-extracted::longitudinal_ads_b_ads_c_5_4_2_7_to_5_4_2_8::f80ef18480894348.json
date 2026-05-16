@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8::f80ef18480894348",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8",
+  "familyId": "icao4444_horizontal_separation_family",
+  "claimText": "When an aircraft on the same track is cleared to climb or descend through the level of another aircraft, the clearance should be issued provided the following requirements are met: longitudinal distance determined by ground automation from near-simultaneous demand ADS-C reports with position accuracy of 0.25 NM or better; longitudinal distance not less than 27.8 km (15 NM) or 46.3 km (25 NM) depending on speed; altitude difference not greater than 600 m (2 000 ft); clearance issued with restriction ensuring vertical separation re-established within 15 minutes; and direct controller-pilot voice communications or CPDLC maintained.",
+  "rationale": "Guidance ('should') for CDP clearance issuance conditions.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "When an aircraft on the same track is cleared to climb or descend through the level of another aircraft, the clearance should be issued provided the following requirements are met:",
+    "the longitudinal distance between the aircraft is determined by the ground automation system from near-simultaneous demand ADS-C reports which contain position accuracy of 0.25 NM or better (Figure of Merit 6 or higher);",
+    "the longitudinal distance between the aircraft, as determined in a) above, is not less than: 1) 27.8 km (15 NM) when the preceding aircraft is at the same speed or faster than the following aircraft; or 2) 46.3 km (25 NM) when the following aircraft is not more than either 18.5 km/h (10 kt) or Mach 0.02 faster than the preceding aircraft;",
+    "the altitude difference between aircraft is not greater than 600 m (2 000 ft);",
+    "the clearance is issued with a restriction that ensures vertical separation is re-established within 15 minutes from the first demand report request;",
+    "direct controller-pilot voice communications or CPDLC is maintained."
+  ],
+  "sourceItemIds": [
+    "5.4.2.8.1"
+  ],
+  "claimSha256": "d2fe8914a08feaf1bcf5b0a0818814417d4c59366ed4eec1df2cf5183de234f8",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5920,
+    "endLine": 6075
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_horizontal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cdp_clearance_guidance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 6,
+      "hits": 6,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is directly supported by the verbatim source quotes, and the selected modality and authority class correctly reflect the source\u2019s \u201cshould be issued\u201d wording. The sibling accepted candidates do not already cover this ADS-C CDP clearance-conditions provision, so it is not a redundant umbrella over accepted atomic items.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:09:57Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:09:57Z"
+  }
+}

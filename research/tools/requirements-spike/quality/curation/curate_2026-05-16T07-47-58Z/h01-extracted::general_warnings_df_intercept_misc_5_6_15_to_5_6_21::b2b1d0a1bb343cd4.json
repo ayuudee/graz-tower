@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::b2b1d0a1bb343cd4",
+  "documentId": "h01-extracted",
+  "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.23,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote does not appear verbatim in the source window: the source shows 'G: YOU WILL BE INTERCEPTED (information)' followed by 'SEPARATION MINIMA WILL NOT BE APPLIED' on the next line, not 'G: SEPARATION MINIMA WILL NOT BE APPLIED'. The claim also adds a condition about standard separation not being guaranteed that is not stated in the quoted source text.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::b2b1d0a1bb343cd4.json",
+    "toPath": "rejected/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::b2b1d0a1bb343cd4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:58:21Z"
+}

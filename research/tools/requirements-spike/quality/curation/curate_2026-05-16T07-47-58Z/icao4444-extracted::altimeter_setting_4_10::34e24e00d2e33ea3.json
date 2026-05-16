@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::34e24e00d2e33ea3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.92,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exactSourceQuote is not found verbatim in the source because it inserts an ellipsis and omits source wording such as the parenthetical QNH definition and \u201cif required.\u201d Since quote text is an identity field and cannot be corrected in this pass, the record must be rejected despite the underlying clause being substantively mandatory.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::34e24e00d2e33ea3.json",
+    "toPath": "rejected/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::34e24e00d2e33ea3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:31:11Z"
+}

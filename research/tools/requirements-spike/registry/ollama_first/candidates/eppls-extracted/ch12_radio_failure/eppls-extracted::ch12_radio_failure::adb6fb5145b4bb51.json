@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_radio_failure::adb6fb5145b4bb51",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "If in a circuit and radio fails, repeatedly switch the landing lights on and off.",
+  "rationale": "Light signal procedure for circuit operations.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "If you are in a circuit, and your radio fails, repeatedly switch the landing lights on and off."
+  ],
+  "sourceItemIds": [
+    "item_controlled_airspace"
+  ],
+  "claimSha256": "289e7ba9ecf0a3b9fa73eef9cc0b49138e3928e75424e2c6bacc2b22cc2ee557",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23184,
+    "endLine": 23222
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "circuit_landing_lights",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote exists verbatim and supports the procedural content, but it does not use shall/must wording; it is advisory/background procedural text. Since identity fields are sound and only the modality is overstated, the candidate can be promoted with a modality correction.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:12:03Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_radio_failure/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:12:03Z"
+  }
+}

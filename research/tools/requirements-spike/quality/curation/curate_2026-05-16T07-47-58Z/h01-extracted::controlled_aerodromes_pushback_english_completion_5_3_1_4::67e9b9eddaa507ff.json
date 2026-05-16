@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::67e9b9eddaa507ff",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_english_completion_5_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phrase appears verbatim and the claim is supported by the pushback/powerback phraseology context. However, the source line has no deontic or note marker, so the modality should be `none` rather than `note`; operational_guidance remains appropriate.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::67e9b9eddaa507ff.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_pushback_english_completion_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_english_completion_5_3_1_4::67e9b9eddaa507ff.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:36:08Z"
+}

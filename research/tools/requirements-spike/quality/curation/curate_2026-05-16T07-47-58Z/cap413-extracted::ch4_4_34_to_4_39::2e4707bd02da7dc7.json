@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_34_to_4_39::2e4707bd02da7dc7",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_34_to_4_39",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.55,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is verbatim-supported by section 4.38, and the modality/authority pairing is appropriate for CAP 413 operational guidance: the source says local departure instructions \u201cmay\u201d be given and explains their normal separation purpose. It is not redundant with the accepted siblings, which cover different conditional-clearance and post-departure-instruction requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::2e4707bd02da7dc7.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::2e4707bd02da7dc7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:10:17Z"
+}

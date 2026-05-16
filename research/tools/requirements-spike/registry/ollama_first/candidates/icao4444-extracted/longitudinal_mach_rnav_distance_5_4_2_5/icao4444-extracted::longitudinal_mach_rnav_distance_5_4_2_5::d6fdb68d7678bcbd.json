@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::d6fdb68d7678bcbd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "familyId": "icao4444_longitudinal_separation_family",
+  "claimText": "To assist pilots to readily provide the required RNAV distance information, such position reports should, wherever possible, be referenced to a common waypoint ahead of both aircraft.",
+  "rationale": "Consistent guidance ('should') for referencing position reports.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_only",
+  "testability": "partially_executable",
+  "verificationMode": "exploratory_probe",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "To assist pilots to readily provide the required RNAV distance information, such position reports should, wherever possible, be referenced to a common waypoint ahead of both aircraft."
+  ],
+  "sourceItemIds": [
+    "5.4.2.5.3.1"
+  ],
+  "claimSha256": "70e56d9fa88021cd9fd283cd25cfb2b58df3b37481392c201c0e374aea76c7ce",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5686,
+    "endLine": 5816
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_longitudinal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "position_report_waypoint_guidance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim, self-contained, and not redundant with accepted siblings. The source wording is a non-mandatory 'should' clause, so it should remain operational guidance but be classified as advisory rather than best-practice.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:13:14Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:13:14Z"
+  }
+}

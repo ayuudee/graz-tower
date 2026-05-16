@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::127e7bd0e595f6c0",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.47,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited source provides phraseology entries for landing time but contains no shall-strength obligation requiring controllers to provide landing time. Because the claimText itself says \u201cControllers shall,\u201d correcting this would require editing an identity field, which is not permitted in this curation pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::127e7bd0e595f6c0.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::127e7bd0e595f6c0.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:26:04Z"
+}

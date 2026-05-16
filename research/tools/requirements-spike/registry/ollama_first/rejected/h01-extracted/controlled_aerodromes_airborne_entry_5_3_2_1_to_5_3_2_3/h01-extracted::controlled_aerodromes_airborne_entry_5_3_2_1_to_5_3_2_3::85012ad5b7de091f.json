@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::85012ad5b7de091f",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "The phraseology for flying a right traffic circuit is 'FLY [RIGHT [HAND]] [TRAFFIC] CIRCUIT[S] RUNWAY (number) [WIND (number) DEGREES (number) KNOTS] [TRAFFIC (details)]'.",
+  "rationale": "Source item 5.3.2.3_phr_3 provides the specific English phraseology for flying a traffic circuit.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "FLY [RIGHT [HAND]] [TRAFFIC] CIRCUIT[S] RUNWAY (number) [WIND (number) DEGREES (number) KNOTS] [TRAFFIC (details)]"
+  ],
+  "sourceItemIds": [
+    "5.3.2.3_phr_3"
+  ],
+  "claimSha256": "c6165307ce1b7c7d16ac99c6c67804e0313092e381f8d865f1cad17e77561c85",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 7858,
+    "endLine": 8001
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_5323_fly_circuit",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "FLY [RIGHT [HAND]] [TRAFFIC] CIRCUIT[S] RUNWAY (number) [WIND (number) DEGREES (number) KNOTS] [TRAFFIC (details)]",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The cited phraseology is substantively present in the source, but the candidate's exactSourceQuote is not found verbatim in the provided source text because the extracted window interleaves German and English column text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss cannot be cured by modality or authority corrections.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:28:08Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:28:08Z"
+  }
+}

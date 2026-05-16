@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::bdd860dadd8525e8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.49,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present in the source, and the candidate accurately captures the advisory CAP 413 wording with modality `should` and authorityClass `operational_guidance`. It is not redundant with the accepted siblings, which cover different paragraphs in the same source window.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::bdd860dadd8525e8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::bdd860dadd8525e8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:53:11Z"
+}

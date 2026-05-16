@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::4f2edeaa52576d7c",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "The term TAKE OFF shall only be used for transmission or cancellation of the take off clearance itself; in all other situations concerning the departure of an aircraft, the word DEPARTURE shall be used.",
+  "rationale": "All attempts agree on the restriction of 'TAKE OFF' vs 'DEPARTURE' usage. Classified as advisory due to source note status.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The term TAKE OFF shall only be used for transmission or cancellation of the take off clearance itself. In all other situations concerning the departure of an aircraft the word DEPARTURE shall be used."
+  ],
+  "sourceItemIds": [
+    "note_takeoff_term"
+  ],
+  "claimSha256": "40bfa042e4dd83afac6f2c277716f50130cd2cb108bb5a41e4cccbfe32acab06",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 7736,
+    "endLine": 7857
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_takeoff_term_usage",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "The term TAKE OFF shall only be used for transmission or cancellation of the take off clearance itself. In all other situations concerning the departure of an aircraft the word DEPARTURE shall be used.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The claim is substantively supported by the English Note and the modality/authority pairing is acceptable, but the exactSourceQuote does not appear as a contiguous verbatim substring in the provided source window because the bilingual columns are interleaved. A human curator should verify the underlying PDF/right-column text or re-extract the quote before promotion.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:37:44Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13/judged_candidates.json"
+  }
+}

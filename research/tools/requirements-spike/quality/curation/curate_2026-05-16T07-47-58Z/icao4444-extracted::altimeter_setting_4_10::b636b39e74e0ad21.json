@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::b636b39e74e0ad21",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.22,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted words exist, but the claim states the QFE-for-aerodrome-elevation rule unconditionally while the source clause immediately limits it with specified exceptions and a different requirement for those cases. Because fixing this would require changing the claim text and/or bundling the exception text, it cannot be promoted with only modality or authority corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::b636b39e74e0ad21.json",
+    "toPath": "rejected/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::b636b39e74e0ad21.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:32:22Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part1b_meteorological::6aae5cea91de0ba8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part1b_meteorological",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.61,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source and the claim accurately captures a standalone NOTE defining the convention for expressing wind. Its modality and authority class are already correctly framed as note/operational guidance, and it is not redundant with the accepted sibling phraseology items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part1b_meteorological/cap413-extracted::ch4_4_84_part1b_meteorological::6aae5cea91de0ba8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part1b_meteorological/cap413-extracted::ch4_4_84_part1b_meteorological::6aae5cea91de0ba8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:18:42Z"
+}

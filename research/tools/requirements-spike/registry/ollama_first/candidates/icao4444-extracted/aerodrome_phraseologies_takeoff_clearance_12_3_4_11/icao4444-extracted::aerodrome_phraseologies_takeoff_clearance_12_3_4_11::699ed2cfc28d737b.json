@@ -1,0 +1,105 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_takeoff_clearance_12_3_4_11::699ed2cfc28d737b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_takeoff_clearance_12_3_4_11",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "When reduced runway separation is used, ATC shall use phraseology 'RUNWAY (number) CLEARED FOR TAKE-OFF [REPORT AIRBORNE]' or '(traffic information) RUNWAY (number) CLEARED FOR TAKE-OFF'.",
+  "rationale": "All attempts agree on the condition and the two phraseology options for reduced runway separation.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "when reduced runway separation is used",
+    "RUNWAY (number) CLEARED FOR TAKE-OFF [REPORT AIRBORNE];",
+    "(traffic information) RUNWAY (number) CLEARED FOR TAKE-OFF;"
+  ],
+  "sourceItemIds": [
+    "ctx_reduced_runway",
+    "item_a",
+    "item_b"
+  ],
+  "claimSha256": "1a6d621ace4dc81099c8f78ec295e3d675ca3b587ba28967fe6e9c8f7d53f90a",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 15001,
+    "endLine": 15060
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "atc_takeoff_reduced_sep",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_phraseologies_takeoff_clearance_12_3_4_11/judged_candidates.json"
+  }
+}

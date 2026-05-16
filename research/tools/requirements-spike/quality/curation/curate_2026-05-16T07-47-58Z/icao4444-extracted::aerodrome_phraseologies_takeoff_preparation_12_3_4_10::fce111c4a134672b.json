@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::fce111c4a134672b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_takeoff_preparation_12_3_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.17,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology exists verbatim and represents the atomic pilot acknowledgement phraseology not already covered by the accepted siblings. However, the cited line itself has no note or modal wording, so the modality should align with the sibling phraseology entries as `none` while retaining operational-guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_takeoff_preparation_12_3_4_10/icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::fce111c4a134672b.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_phraseologies_takeoff_preparation_12_3_4_10/icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::fce111c4a134672b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:22:31Z"
+}

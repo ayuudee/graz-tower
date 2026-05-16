@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::aabaf59c265f7120",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_dme_gnss_5_4_2_3",
+  "familyId": "icao4444_horizontal_separation_family",
+  "claimText": "For aircraft on the same track while vertical separation does not exist, 19 km (10 NM) separation shall be maintained, provided each aircraft utilizes the specified DME/waypoint references, one aircraft maintains a level, and separation is established by obtaining simultaneous DME and/or GNSS readings.",
+  "rationale": "Separation minimum for climbing/descending aircraft on same track.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Aircraft on the same track: 19 km (10 NM) while vertical separation does not exist, provided: each aircraft utilizes... and b) one aircraft maintains a level... and c) separation is established by obtaining simultaneous DME and/or GNSS readings..."
+  ],
+  "sourceItemIds": [
+    "5.4.2.3.4.1_a"
+  ],
+  "claimSha256": "53d3f5c65f05c9959cb60947583d1c82bfc845f62f9eab6fa7be599c407c4831",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5417,
+    "endLine": 5540
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_horizontal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_climb_descend_19km",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Aircraft on the same track: 19 km (10 NM) while vertical separation does not exist, provided: each aircraft utilizes... and b) one aircraft maintains a level... and c) separation is established by obtaining simultaneous DME and/or GNSS readings...",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "Although the claim is substantively supported by the source text, the supplied exactSourceQuotes field is not verbatim because it uses ellipses and collapses intervening text. Identity fields cannot be corrected in this pass, and a real G1 verbatim-quote failure requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:11:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:11:00Z"
+  }
+}

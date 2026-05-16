@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::219711e6c3d088d5",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports this atomic permission for the 5.7.1.2(b)(1) straight-in approach case; the omitted 5.7.1.2(b)(2) is an alternative condition, not a reason to reject this atomic item. The only real defect is the may\u00d7authoritative_requirement mismatch, which should be fixed by lowering the authority class rather than changing the modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::219711e6c3d088d5.json",
+    "toPath": "candidates/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::219711e6c3d088d5.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:56:09Z"
+}

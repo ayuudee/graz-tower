@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_star_visual_instrument_6_5_2_4_to_6_5_4::c61dca670ab424ad",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_star_visual_instrument_6_5_2_4_to_6_5_4",
+  "familyId": "icao4444_arrival_procedures_family",
+  "claimText": "An IFR flight may be cleared to execute a visual approach provided the pilot can maintain visual reference to the terrain and either the reported ceiling is at or above the level of the beginning of the initial approach segment, or the pilot reports that meteorological conditions are such that with reasonable assurance a visual approach and landing can be completed.",
+  "rationale": "Consistent authoritative conditions for visual approach clearance.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "deterministic_test",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "An IFR flight may be cleared to execute a visual approach provided the pilot can maintain visual reference to the terrain and: a) the reported ceiling is at or above the level of the beginning of the initial approach segment for the aircraft so cleared; or b) the pilot reports... that the meteorological conditions are such that with reasonable assurance a visual approach and landing can be completed."
+  ],
+  "sourceItemIds": [
+    "6.5.3.3.a",
+    "6.5.3.3.b"
+  ],
+  "claimSha256": "249e0185d98fef7be2caee75f2389fd186f13d9dea699ed899ee828ea6a8d292",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7106,
+    "endLine": 7206
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_arrival_procedures_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "visual_approach_meteorological_conditions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "An IFR flight may be cleared to execute a visual approach provided the pilot can maintain visual reference to the terrain and: a) the reported ceiling is at or above the level of the beginning of the initial approach segment for the aircraft so cleared; or b) the pilot reports... that the meteorological conditions are such that with reasonable assurance a visual approach and landing can be completed.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by 6.5.3.3, but the exactSourceQuotes field is not verbatim because it inserts an ellipsis and omits source text from item b). Identity fields cannot be corrected in this pass, so the non-verbatim quote requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:43:15Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/arriving_aircraft_star_visual_instrument_6_5_2_4_to_6_5_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:43:15Z"
+  }
+}

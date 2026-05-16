@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_information_6_6::964d3f2ef78894ae",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_information_6_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the shall/authoritative classification is valid, but the claim is underspecified because \u201cspecified elements of information\u201d depends on the omitted sub-items a\u2013d. Although accepted siblings cover those atomic elements, rejecting would lose the parent clause\u2019s timing/exception language; a human curator should decide whether to bundle this parent with the accepted sub-items or re-extract a more self-contained timing requirement.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_information_6_6/icao4444-extracted::arriving_aircraft_information_6_6::964d3f2ef78894ae.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:39:21Z"
+}

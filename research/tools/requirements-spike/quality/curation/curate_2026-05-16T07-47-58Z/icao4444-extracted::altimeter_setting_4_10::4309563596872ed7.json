@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::4309563596872ed7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.1,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying requirement is supported by the source, but the candidate's exactSourceQuotes field is not a verbatim substring because it uses an ellipsis to bridge separate text. Since exactSourceQuotes is an identity field and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::4309563596872ed7.json",
+    "toPath": "rejected/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::4309563596872ed7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:31:28Z"
+}

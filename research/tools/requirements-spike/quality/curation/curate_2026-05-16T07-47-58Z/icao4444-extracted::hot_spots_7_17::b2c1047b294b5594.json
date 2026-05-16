@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::hot_spots_7_17::b2c1047b294b5594",
+  "documentId": "icao4444-extracted",
+  "sectionId": "hot_spots_7_17",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 28.64,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim-supported and the note/background authority framing is consistent; the accepted sibling candidates already cover the operative parent clause, so this item is not an underspecified replacement for them. However, the item is a non-operative guidance reference rather than a definition.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/hot_spots_7_17/icao4444-extracted::hot_spots_7_17::b2c1047b294b5594.json",
+    "toPath": "candidates/icao4444-extracted/hot_spots_7_17/icao4444-extracted::hot_spots_7_17::b2c1047b294b5594.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:09:10Z"
+}

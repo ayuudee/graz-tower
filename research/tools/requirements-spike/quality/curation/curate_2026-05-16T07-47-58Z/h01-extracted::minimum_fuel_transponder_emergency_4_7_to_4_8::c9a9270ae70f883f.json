@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::c9a9270ae70f883f",
+  "documentId": "h01-extracted",
+  "sectionId": "minimum_fuel_transponder_emergency_4_7_to_4_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.64,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is present in the source and the claim accurately captures a standalone definition note for MINIMUM FUEL. It is not redundant with the accepted atomic siblings, and its current note modality with operational_guidance authority is floor-consistent for non-operative explanatory material.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/minimum_fuel_transponder_emergency_4_7_to_4_8/h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::c9a9270ae70f883f.json",
+    "toPath": "candidates/h01-extracted/minimum_fuel_transponder_emergency_4_7_to_4_8/h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::c9a9270ae70f883f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:59:48Z"
+}

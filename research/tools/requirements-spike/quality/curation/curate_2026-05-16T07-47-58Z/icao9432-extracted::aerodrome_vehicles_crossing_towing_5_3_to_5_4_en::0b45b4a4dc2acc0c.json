@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::0b45b4a4dc2acc0c",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_vehicles_crossing_towing_5_3_to_5_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.21,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim text is verbatim supported by the source, and the assigned modality/authorityClass correctly reflect the advisory 'may be necessary' wording from ICAO 9432. It is not redundant with the accepted sibling requirements, which address separate runway-crossing and runway-vacating obligations.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_vehicles_crossing_towing_5_3_to_5_4_en/icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::0b45b4a4dc2acc0c.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_vehicles_crossing_towing_5_3_to_5_4_en/icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::0b45b4a4dc2acc0c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:45:21Z"
+}

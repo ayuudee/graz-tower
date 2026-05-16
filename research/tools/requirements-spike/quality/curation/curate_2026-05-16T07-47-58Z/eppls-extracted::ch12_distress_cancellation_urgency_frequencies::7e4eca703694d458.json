@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::7e4eca703694d458",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.43,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted definition is supported by the source window despite the automated G1 miss, and it is not redundant with accepted siblings. However, the source is descriptive training/background text with no explicit 'note' marker, so the modality should be lowered to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::7e4eca703694d458.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::7e4eca703694d458.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:50:48Z"
+}

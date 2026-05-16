@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::6896ef6133038a19",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.7,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and the claim accurately captures the permissive condition in 7.6.3.1.2.1. Because the operative wording is \u201cmay be permitted,\u201d the modality remains may, but the authorityClass should be lowered from authoritative_requirement to operational_guidance under the authority-floor rule.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::6896ef6133038a19.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::6896ef6133038a19.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:15:37Z"
+}

@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::2c4b84cc64abe8a3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "familyId": "icao4444_atc_contingency_family",
+  "claimText": "In the event of false and deceptive transmissions, the ATC unit concerned should instruct all aircraft on the affected frequency(ies) to verify instructions and clearances before taking action to comply.",
+  "rationale": "All attempts agree on the 'should' modality for instructing verification.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "15.6.1.4.1 Instances of false and deceptive transmissions on ATC frequencies which may impair the safety of aircraft can occasionally occur. In the event of such occurrences, the ATC unit concerned should:",
+    "c) instruct all aircraft on the affected frequency(ies) to verify instructions and clearances before taking action to comply;"
+  ],
+  "sourceItemIds": [
+    "sec_15_6_1_4_1_c"
+  ],
+  "claimSha256": "519928b10a23306736365019f9366bec4487c2bc175d56ce5825ac43bdfcbbf5",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 18383,
+    "endLine": 18481
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "false_transmission_verification",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is directly supported by the cited 15.6.1.4.1 parent clause and item c, and the source uses \u201cshould,\u201d matching the candidate\u2019s advisory modality and operational_guidance authority class. It is not redundant with the accepted sibling on flight crew verification, because this candidate addresses the ATC unit\u2019s instruction to all aircraft on affected frequencies.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:46:49Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_contingencies_15_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:46:49Z"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1e737c28551d4fe",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "To indicate 8.33 kHz exempted status, use the phrase: CONFIRM EIGHT POINT THREE THREE EXEMPTED;",
+  "rationale": "Source item 12.3.1.5(g) explicitly defines the phraseology for indicating 8.33 kHz exempted status.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "CONFIRM EIGHT POINT THREE THREE EXEMPTED;"
+  ],
+  "sourceItemIds": [
+    "item_12_3_1_5_g"
+  ],
+  "claimSha256": "e3bbf7d0227386d935ae489074a787bbe459dd2ca05f191adcd76f9f3deea971",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 13834,
+    "endLine": 14017
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_833_exempt_confirm",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted phrase exists verbatim, but it is paired in the source with the circumstance \u201cto request status in respect of 8.33 kHz exemption,\u201d not \u201cto indicate 8.33 kHz exempted status.\u201d The candidate\u2019s claim text is therefore unsupported and would require re-extraction rather than modality/authority correction.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:48:53Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_human_review",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:48:53Z"
+  }
+}

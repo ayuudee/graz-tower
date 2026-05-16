@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::cea74db62ddd2729",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.84,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is substantively supported by the source, but its exactSourceQuote is not found verbatim in the provided source window after whitespace normalization because the quoted sentence is interrupted by page/layout text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::cea74db62ddd2729.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::cea74db62ddd2729.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:01:14Z"
+}

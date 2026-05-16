@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::0e1ed9896f464733",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.89,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim text is verbatim supported by the source, and the candidate correctly uses `should` with `operational_guidance` for CAP 413 advisory material. There are no accepted siblings making it redundant, and no identity-field or audit issues require rejection or re-extraction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::0e1ed9896f464733.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::0e1ed9896f464733.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:52:07Z"
+}

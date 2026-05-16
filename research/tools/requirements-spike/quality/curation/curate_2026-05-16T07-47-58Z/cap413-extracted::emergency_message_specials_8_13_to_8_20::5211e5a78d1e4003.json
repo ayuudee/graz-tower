@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_message_specials_8_13_to_8_20::5211e5a78d1e4003",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_message_specials_8_13_to_8_20",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.6,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but one exactSourceQuote is not present verbatim in the source window: the source has note number formatting rather than the quoted 'Note 1:' text. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the failed verbatim quote audit requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_message_specials_8_13_to_8_20/cap413-extracted::emergency_message_specials_8_13_to_8_20::5211e5a78d1e4003.json",
+    "toPath": "rejected/cap413-extracted/emergency_message_specials_8_13_to_8_20/cap413-extracted::emergency_message_specials_8_13_to_8_20::5211e5a78d1e4003.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:25:13Z"
+}

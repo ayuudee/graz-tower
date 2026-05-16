@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_conditions_information_7_5::f37fa536a399aa05",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_conditions_information_7_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.11,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim, the schema and authority/modality pairing are valid, and the note is a self-contained clarification of the term \u201cother sources.\u201d It is not redundant with the accepted sibling that uses the term in the operative requirement, because this candidate preserves the source\u2019s explicit definition/examples.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_conditions_information_7_5/icao4444-extracted::aerodrome_conditions_information_7_5::f37fa536a399aa05.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_conditions_information_7_5/icao4444-extracted::aerodrome_conditions_information_7_5::f37fa536a399aa05.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:07:13Z"
+}

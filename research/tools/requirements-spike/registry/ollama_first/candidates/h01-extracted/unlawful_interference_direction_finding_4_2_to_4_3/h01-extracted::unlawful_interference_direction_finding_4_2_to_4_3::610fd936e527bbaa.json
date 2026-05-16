@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::610fd936e527bbaa",
+  "documentId": "h01-extracted",
+  "sectionId": "unlawful_interference_direction_finding_4_2_to_4_3",
+  "familyId": "h01_contingency_family",
+  "claimText": "Communication related to direction finding comprises messages for the transmission of direction finding values in case a pilot has lost his orientation or to render other navigational assistance.",
+  "rationale": "Descriptive definition of the scope of direction finding communications.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "Communication related to direction finding comprises messages for the transmission of direction finding values in case a pilot has lost his orientation or to render other navigational assistance."
+  ],
+  "sourceItemIds": [
+    "4.3_intro"
+  ],
+  "claimSha256": "e2b00a928a13a3625c8d3f31a894e516b931500e798b2c963f964063a6e0a7b0",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 5674,
+    "endLine": 5819
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "sup_43_intro_scope",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim is directly supported by a verbatim source quote and is not redundantly covered by the accepted sibling atomic items. However, the quoted sentence is a descriptive definition with no operative modal or explicit note marker, so it should be treated conservatively as non-modal background support rather than operational guidance.",
+      "corrections": {
+        "modality": "none",
+        "authorityClass": "background_support"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T10:01:47Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/unlawful_interference_direction_finding_4_2_to_4_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:01:47Z"
+  }
+}

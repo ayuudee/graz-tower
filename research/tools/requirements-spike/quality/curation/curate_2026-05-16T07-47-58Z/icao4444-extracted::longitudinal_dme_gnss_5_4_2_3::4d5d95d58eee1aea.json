@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::4d5d95d58eee1aea",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_dme_gnss_5_4_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.61,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s substantive claim is supported by the source, but its exactSourceQuotes entry is not verbatim because it uses ellipses and therefore fails the identity-field quote audit. Since identity fields cannot be corrected in this pass, it must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::4d5d95d58eee1aea.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::4d5d95d58eee1aea.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:10:43Z"
+}

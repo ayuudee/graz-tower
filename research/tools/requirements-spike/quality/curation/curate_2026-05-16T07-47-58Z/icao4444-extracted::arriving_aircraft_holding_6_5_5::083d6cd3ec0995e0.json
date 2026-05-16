@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::083d6cd3ec0995e0",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.94,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The exact source quote is present and supports the candidate\u2019s permissive claim. However, the source uses \u201cmay,\u201d so under the authority floor table the authorityClass cannot remain authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::083d6cd3ec0995e0.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::083d6cd3ec0995e0.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:37:13Z"
+}

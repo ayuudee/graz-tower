@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::392e44e573e9d706",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.02,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the claim is atomic and not redundant with accepted siblings, and the candidate is correctly framed as non-authoritative guidance using the source\u2019s 'should' language. The judge\u2019s advisory-only rationale confirms the advisory classification rather than identifying a defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::392e44e573e9d706.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::392e44e573e9d706.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:25:11Z"
+}

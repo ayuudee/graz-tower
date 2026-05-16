@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::4ee049952bdc7a89",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6",
+  "familyId": "icao4444_horizontal_separation_family",
+  "claimText": "Lateral separation between aircraft using different navigation aids, or when one aircraft is using RNAV equipment, shall be established by ensuring that the derived protected airspaces for the navigation aid(s) or RNP do not overlap.",
+  "rationale": "Direct authoritative requirement from clause 5.4.1.2.1.3 specifying the condition for lateral separation using different navigation aids or RNAV.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "deterministic_test",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Lateral separation between aircraft using different navigation aids, or when one aircraft is using RNAV equipment, shall be established by ensuring that the derived protected airspaces for the navigation aid(s) or RNP do not overlap."
+  ],
+  "sourceItemIds": [
+    "clause_5.4.1.2.1.3"
+  ],
+  "claimSha256": "dd35b8ceaf66b8e2c20572ce8996b90f1621d0de5de404d3f082276e58981b6d",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 4686,
+    "endLine": 4785
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_horizontal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_lat_sep_nav_aids_no_overlap",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/judged_candidates.json"
+  }
+}

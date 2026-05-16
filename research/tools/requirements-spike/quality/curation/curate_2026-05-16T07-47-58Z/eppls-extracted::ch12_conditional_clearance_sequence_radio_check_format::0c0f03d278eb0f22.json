@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::0c0f03d278eb0f22",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_conditional_clearance_sequence_radio_check_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.75,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text verbatim supports the conditional-clearance sequence and uses \u201cmust,\u201d while the candidate is already limited to background_support rather than authoritative_requirement. The only needed correction is to align the stored modality with the source wording.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_conditional_clearance_sequence_radio_check_format/eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::0c0f03d278eb0f22.json",
+    "toPath": "candidates/eppls-extracted/ch12_conditional_clearance_sequence_radio_check_format/eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::0c0f03d278eb0f22.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:46:16Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::transfer_vhf_communications_3_10::7d7ec9cc38b7e70a",
+  "documentId": "h01-extracted",
+  "sectionId": "transfer_vhf_communications_3_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.07,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exactSourceQuote does not exist verbatim in the source window: the source prints the phrase ending as \u201cCALL SIGN ONLY\u201c rather than \u201cCALL SIGN ONLY\u201d. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/transfer_vhf_communications_3_10/h01-extracted::transfer_vhf_communications_3_10::7d7ec9cc38b7e70a.json",
+    "toPath": "rejected/h01-extracted/transfer_vhf_communications_3_10/h01-extracted::transfer_vhf_communications_3_10::7d7ec9cc38b7e70a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:59:56Z"
+}

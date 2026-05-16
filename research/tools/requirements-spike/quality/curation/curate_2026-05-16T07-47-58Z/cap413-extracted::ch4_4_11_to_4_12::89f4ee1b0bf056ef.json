@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_11_to_4_12::89f4ee1b0bf056ef",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_11_to_4_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.79,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One of the candidate's identity quotes does not appear verbatim in the provided source window: the source text is corrupted/truncated as rendered and does not contain the quoted fixed-wing/helicopter sentence. Because exactSourceQuotes cannot be edited in this pass, the candidate cannot be promoted despite the advisory 'may' framing being otherwise consistent.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_11_to_4_12/cap413-extracted::ch4_4_11_to_4_12::89f4ee1b0bf056ef.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_11_to_4_12/cap413-extracted::ch4_4_11_to_4_12::89f4ee1b0bf056ef.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:50:13Z"
+}

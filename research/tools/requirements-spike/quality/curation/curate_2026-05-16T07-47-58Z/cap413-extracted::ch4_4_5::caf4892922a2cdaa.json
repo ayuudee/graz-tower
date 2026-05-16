@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_5::caf4892922a2cdaa",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.22,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source supports the substance, but the exactSourceQuote is not verbatim: the source window uses the ligature spelling \u201ctraf\ufb01c\u201d while the candidate quote uses \u201ctraffic.\u201d Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_5/cap413-extracted::ch4_4_5::caf4892922a2cdaa.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_5/cap413-extracted::ch4_4_5::caf4892922a2cdaa.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:12:22Z"
+}

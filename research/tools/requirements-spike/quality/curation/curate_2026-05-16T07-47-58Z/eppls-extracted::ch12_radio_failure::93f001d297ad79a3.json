@@ -1,0 +1,28 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::93f001d297ad79a3",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.65,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim, and it is not redundant with accepted siblings. However, the source is background-support material and the quoted wording is an imperative without an explicit shall/must modality, so it should not be curated as a normative rule.",
+    "corrections": {
+      "modality": "none",
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::93f001d297ad79a3.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::93f001d297ad79a3.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:11:55Z"
+}

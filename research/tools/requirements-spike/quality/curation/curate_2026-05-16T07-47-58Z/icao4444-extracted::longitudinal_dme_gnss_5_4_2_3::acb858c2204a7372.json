@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::acb858c2204a7372",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_dme_gnss_5_4_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.02,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The operative claim is supported by the source, but the provided exactSourceQuotes field is not verbatim because it contains an ellipsis where the source has full text. Since claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this real G1 verbatim miss requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::acb858c2204a7372.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_dme_gnss_5_4_2_3/icao4444-extracted::longitudinal_dme_gnss_5_4_2_3::acb858c2204a7372.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:11:05Z"
+}

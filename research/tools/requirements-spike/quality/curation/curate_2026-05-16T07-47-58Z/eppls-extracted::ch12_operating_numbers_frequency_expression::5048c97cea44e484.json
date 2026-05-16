@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::5048c97cea44e484",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.87,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The digit-to-speech mappings are quoted verbatim and supported by the source table, with no accepted sibling making this redundant. However, the cited table itself carries no explicit modal wording, so the candidate should not be tagged as a note; background_support remains appropriate.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::5048c97cea44e484.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::5048c97cea44e484.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:02:05Z"
+}

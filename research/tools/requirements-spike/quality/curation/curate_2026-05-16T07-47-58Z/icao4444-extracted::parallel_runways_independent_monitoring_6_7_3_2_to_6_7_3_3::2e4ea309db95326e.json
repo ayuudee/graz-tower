@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3::2e4ea309db95326e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the quoted text exists verbatim and includes the operative parent clause, the claimText changes the source logic by treating the listed conditions as a three-part conjunction. The source requires the separation until aircraft are established either inbound on the final approach course/track or on an RNP AR APCH approach, and within the NOZ; this identity-field error cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3/icao4444-extracted::parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3::2e4ea309db95326e.json",
+    "toPath": "rejected/icao4444-extracted/parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3/icao4444-extracted::parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3::2e4ea309db95326e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:24:23Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8",
+  "documentId": "icao9432-extracted",
+  "sectionId": "urgency_emergency_descent_9_3_to_9_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.83,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is an exact, source-supported statement from 9.3.1, and all gate audits pass. It is not redundant with the accepted sibling, and its advisory wording is already correctly captured as 'should' with operational_guidance authority rather than an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/urgency_emergency_descent_9_3_to_9_4_en/icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8.json",
+    "toPath": "candidates/icao9432-extracted/urgency_emergency_descent_9_3_to_9_4_en/icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:01:09Z"
+}

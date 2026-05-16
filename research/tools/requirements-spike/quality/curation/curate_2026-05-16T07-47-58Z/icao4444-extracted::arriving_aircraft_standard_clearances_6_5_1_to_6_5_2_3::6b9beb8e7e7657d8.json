@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::6b9beb8e7e7657d8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.73,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text is verbatim and supports the claim, but it uses 'should' rather than a shall-strength obligation. Under the authority floor rules, a 'should' candidate cannot remain an authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::6b9beb8e7e7657d8.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::6b9beb8e7e7657d8.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:41:52Z"
+}

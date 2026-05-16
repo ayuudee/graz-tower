@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_information_6_6::f569de34b61c63d8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_information_6_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.0,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the shall/authoritative classification is consistent, but the parent clause is operatively incomplete because \u201cthe following information\u201d depends on sub-items 6.6.5(a)\u2013(e). This cannot be fixed by modality or authority corrections; a human curator should bundle the subordinate list or ensure the missing atomic item for 6.6.5(e) is extracted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_information_6_6/icao4444-extracted::arriving_aircraft_information_6_6::f569de34b61c63d8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:39:47Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_callsign_abbreviation_invitation_to_proceed::c9f27b21c8ff3f76",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_callsign_abbreviation_invitation_to_proceed",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.9,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is exactly supported by the verbatim source quote, all gate audits passed, and the candidate is already framed as permissive/background support rather than authoritative. It is not redundant with the accepted sibling, which covers the separate 'shall be considered the invitation to proceed' clause.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_callsign_abbreviation_invitation_to_proceed/eppls-extracted::ch12_callsign_abbreviation_invitation_to_proceed::c9f27b21c8ff3f76.json",
+    "toPath": "candidates/eppls-extracted/ch12_callsign_abbreviation_invitation_to_proceed/eppls-extracted::ch12_callsign_abbreviation_invitation_to_proceed::c9f27b21c8ff3f76.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:34:06Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_check_readability_transfer::2062ffe65cce8aef",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_check_readability_transfer",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.94,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item exists verbatim and directly supports the definition that readability grade 4 means readable. However, the source wording has no modal or note marker, so the modality should be corrected from note to none while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::2062ffe65cce8aef.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::2062ffe65cce8aef.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:04:21Z"
+}

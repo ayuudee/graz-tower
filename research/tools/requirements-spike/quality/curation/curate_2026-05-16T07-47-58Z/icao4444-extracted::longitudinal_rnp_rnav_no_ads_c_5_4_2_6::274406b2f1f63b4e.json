@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::274406b2f1f63b4e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.46,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is verbatim supported by the source and is not redundant with accepted sibling candidates. Because the quoted wording itself says the aircraft \u201cmay be cleared,\u201d the modality should be permissive rather than classified solely as a note, while the operational_guidance authority class remains appropriate for material appearing in a Note.",
+    "corrections": {
+      "modality": "may"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::274406b2f1f63b4e.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::274406b2f1f63b4e.json",
+    "correctionsApplied": {
+      "modality": "may"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:16:27Z"
+}

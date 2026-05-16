@@ -1,0 +1,119 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::7969e3270e5ac4df",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "familyId": "h01_rtf_communications_family",
+  "claimText": "After the initial call on WIEN INFORMATION, the following details shall normally be transmitted as an extended position report: aircraft call sign and type, flight rules, departure and destination aerodrome (and route if applicable), position (with time overhead if not overhead), altitude or flight level, and SSR code (if other than 7000 or not Mode S equipped).",
+  "rationale": "Attempts 1 and 3 correctly identify 'shall normally' as 'should' in authority class. Attempt 2 decomposes this, but the consolidated view is preferred for recall/precision balance.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "following details shall normally be transmitted (=extended position report):",
+    "Aircraft call sign and aircraft type",
+    "Flight rules",
+    "Departure and destination aerodrome; route, if applicable",
+    "Position (and relevant time overhead if aircraft is not overhead reported position)",
+    "Altitude or flight level",
+    "SSR Code if other than 7000, or in case the aircraft is not Mode S equipped"
+  ],
+  "sourceItemIds": [
+    "3.3.1.2.2",
+    "3.3.1.2.2_list_1",
+    "3.3.1.2.2_list_2",
+    "3.3.1.2.2_list_3",
+    "3.3.1.2.2_list_4a",
+    "3.3.1.2.2_list_4b",
+    "3.3.1.2.2_list_4c"
+  ],
+  "claimSha256": "72f5b99f09e2f46e6bf3b1029b357bf4512f8d81416fd63317716f8b9a7a5c1f",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 3780,
+    "endLine": 3915
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_rtf_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "vfr_wien_info_extended_report",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 7,
+      "hits": 7,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The verbatim quotes, schema, and modality/authority pairing are sound, but the bundle gate identifies a missing structural parent item ('Position report:') needed to complete the hierarchy of the extended position report. Resolving this would require re-extraction or quote-bundle adjustment, which cannot be done by modality/authority corrections in this pass.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:46:43Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "unsupported_by_source",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/judged_candidates.json"
+  }
+}

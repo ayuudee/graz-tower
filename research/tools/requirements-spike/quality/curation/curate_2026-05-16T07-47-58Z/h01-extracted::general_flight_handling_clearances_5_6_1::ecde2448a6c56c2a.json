@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_flight_handling_clearances_5_6_1::ecde2448a6c56c2a",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_handling_clearances_5_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.33,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is substantively supported by the section, but its sole exactSourceQuote is not present verbatim in the provided source window because the English phraseology is broken/interleaved with German text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_flight_handling_clearances_5_6_1/h01-extracted::general_flight_handling_clearances_5_6_1::ecde2448a6c56c2a.json",
+    "toPath": "rejected/h01-extracted/general_flight_handling_clearances_5_6_1/h01-extracted::general_flight_handling_clearances_5_6_1::ecde2448a6c56c2a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:49:00Z"
+}

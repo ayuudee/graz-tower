@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::36b3abaf5f258faa",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.97,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is supported verbatim in the source, the modality 'should' matches the text, and operational_guidance is consistent with a non-mandatory PANS-ATM recommendation. It is not redundant with the accepted sibling candidates, which cover different clauses.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::36b3abaf5f258faa.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::36b3abaf5f258faa.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:34:44Z"
+}

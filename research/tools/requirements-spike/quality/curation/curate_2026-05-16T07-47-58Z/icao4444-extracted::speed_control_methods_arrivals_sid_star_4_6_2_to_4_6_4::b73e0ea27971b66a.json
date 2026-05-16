@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::b73e0ea27971b66a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 29.76,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source and is a standalone Note cross-reference, with modality `note` and authorityClass `background_support` correctly reflecting its non-normative status. It is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::b73e0ea27971b66a.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::b73e0ea27971b66a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:36:45Z"
+}

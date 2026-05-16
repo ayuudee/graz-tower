@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_separation_12_3_2_8::6ffa494ed30fdd09",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_separation_12_3_2_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.41,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology exists verbatim in the source and is an atomic list item distinct from the already accepted sibling for reporting establishment. The note provides contextual application information but does not make item e an umbrella or require bundling with item f for this candidate to be usable.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_separation_12_3_2_8/icao4444-extracted::area_phraseologies_separation_12_3_2_8::6ffa494ed30fdd09.json",
+    "toPath": "candidates/icao4444-extracted/area_phraseologies_separation_12_3_2_8/icao4444-extracted::area_phraseologies_separation_12_3_2_8::6ffa494ed30fdd09.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:36:04Z"
+}

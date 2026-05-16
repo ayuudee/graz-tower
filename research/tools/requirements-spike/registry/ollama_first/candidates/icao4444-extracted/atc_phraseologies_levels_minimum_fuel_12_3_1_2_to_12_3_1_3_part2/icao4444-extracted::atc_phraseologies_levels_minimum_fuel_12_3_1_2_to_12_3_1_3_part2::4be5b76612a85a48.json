@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::4be5b76612a85a48",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "When indicating minimum fuel, the pilot shall transmit 'MINIMUM FUEL;'.",
+  "rationale": "All attempts agree on the pilot phraseology for minimum fuel indication.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "indication of minimum fuel",
+    "MINIMUM FUEL;"
+  ],
+  "sourceItemIds": [
+    "min_fuel_context",
+    "min_fuel_phrase_a"
+  ],
+  "claimSha256": "9f6a8adeb7bc88c48f63147499a01a58cba5b290ada3eec195858c4b31eb41f5",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 13639,
+    "endLine": 13783
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "min_fuel_pilot",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted source verbatim supports an atomic pilot-transmission phraseology for the minimum fuel indication, with the asterisk note identifying it as pilot transmission. The omitted ATC response is a separate sibling phraseology item, not a reason to reject this supported atomic candidate.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:50:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:50:45Z"
+  }
+}

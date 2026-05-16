@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::e115c5284596e78c",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.92,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is supported verbatim by the cited CAP 413 text, and the modality/authority pairing is appropriate for advisory operational guidance. The accepted siblings do not already cover this specific 4.108 point, so it is not a redundant umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::e115c5284596e78c.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::e115c5284596e78c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:48:36Z"
+}

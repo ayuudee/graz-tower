@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::urgency_ats_action_4_1_3_2::0fb0f4ddd6e2538e",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_ats_action_4_1_3_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.17,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source supports the underlying c) obligation, but the candidate's only exactSourceQuote, \"c) if necessary, exercise control of communications.\", is not present verbatim in the source window because the item label and text are separated by formatting. Since exactSourceQuotes are identity fields and cannot be edited in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_ats_action_4_1_3_2/h01-extracted::urgency_ats_action_4_1_3_2::0fb0f4ddd6e2538e.json",
+    "toPath": "rejected/h01-extracted/urgency_ats_action_4_1_3_2/h01-extracted::urgency_ats_action_4_1_3_2::0fb0f4ddd6e2538e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:04:25Z"
+}

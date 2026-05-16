@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::e57647118ebe1606",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.89,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted source supports only a 'should, whenever practicable' guidance formulation, while the immutable claimText states 'shall include,' which overstates the source. Because correcting this would require changing the claimText identity field, it cannot be fixed via modality or authorityClass corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::e57647118ebe1606.json",
+    "toPath": "rejected/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::e57647118ebe1606.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:55:12Z"
+}

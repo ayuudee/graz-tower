@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_speed_control_4_7::f8b2d3ba94eebdf4",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_speed_control_4_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 3.97,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source verbatim supports the claim and uses permissive 'may' language. Under the authority floor rules, a 'may' provision cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered to operational_guidance while leaving the identity fields unchanged.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::f8b2d3ba94eebdf4.json",
+    "toPath": "candidates/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::f8b2d3ba94eebdf4.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:38Z"
+}

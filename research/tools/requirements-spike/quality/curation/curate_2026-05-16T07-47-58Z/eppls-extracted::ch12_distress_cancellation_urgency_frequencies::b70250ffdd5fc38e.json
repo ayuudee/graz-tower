@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::b70250ffdd5fc38e",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.5,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuote does not appear verbatim in the provided source window because the 121.5 MHz item is interrupted by two-column text before 'Frequency.' Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::b70250ffdd5fc38e.json",
+    "toPath": "rejected/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::b70250ffdd5fc38e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:51:27Z"
+}

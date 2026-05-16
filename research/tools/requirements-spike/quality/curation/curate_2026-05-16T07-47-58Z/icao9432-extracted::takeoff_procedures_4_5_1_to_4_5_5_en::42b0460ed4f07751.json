@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751",
+  "documentId": "icao9432-extracted",
+  "sectionId": "takeoff_procedures_4_5_1_to_4_5_5_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.9,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology is supported by the source window, the candidate is atomic and not covered by the accepted siblings, and G1\u2013G4 all pass. Its example modality and operational_guidance authority are appropriate for ICAO 9432 phraseology material.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/takeoff_procedures_4_5_1_to_4_5_5_en/icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751.json",
+    "toPath": "candidates/icao9432-extracted/takeoff_procedures_4_5_1_to_4_5_5_en/icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:58:17Z"
+}

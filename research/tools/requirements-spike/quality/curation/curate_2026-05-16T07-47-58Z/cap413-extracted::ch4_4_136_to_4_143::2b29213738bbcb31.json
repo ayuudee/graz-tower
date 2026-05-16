@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::2b29213738bbcb31",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.89,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source, and the claim accurately captures CAP 413 item 4.141. The modality and authority class are appropriate as advisory operational guidance, and the accepted sibling does not cover this driver-unsure-of-position content.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::2b29213738bbcb31.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::2b29213738bbcb31.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:52:18Z"
+}

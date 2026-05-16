@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::750bdebf8eecdd16",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.28,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is supported by Note 3, with no redundancy against accepted sibling candidates. Because the source material is explicitly a Note and provides scope/liability background rather than a best-practice requirement, only the requirement kind should be corrected.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::750bdebf8eecdd16.json",
+    "toPath": "candidates/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::750bdebf8eecdd16.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:31:55Z"
+}

@@ -1,0 +1,121 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f8851a1ba7b991a0",
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "ATC shall issue detailed holding instructions including clearance to a fix, level, holding direction/pattern, outbound time, and expected clearance time using the provided complex phraseology templates.",
+  "rationale": "Source section 5.6.4.3 provides detailed phraseology for holding procedures over facilities or fixes, including radial/DME references and pattern details.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "partially_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: CLEARED/PROCEED TO (significant point, name of facility or fix)), [MAINTAIN/CLIMB/DESCEND [TO] (level)], HOLD [(direction)] [(specified) RADIAL, COURSE, INBOUND TRACK (three digits) DEGREES] [RIGHT/LEFT HAND PATTERN], [OUTBOUND TIME (number) MINUTES] EXPECT APPROACH CLEARANCE/FURTHER CLEARANCE AT (time)",
+    "G: CLEARED TO THE (three digits) RADIAL OF THE (name) VOR AT (distance) DME FIX [MAINTAIN/CLIMB/DESCEND [TO] (level)] HOLD [(direction)] [RIGHT/LEFT HAND PATTERN], [OUTBOUND TIME (number) MINUTES]",
+    "G: HOLD [(direction)] AS PUBLISHED EXPECT APPROACH CLEARANCE/FURTHER CLEARANCE AT (time)",
+    "G: HOLD BETWEEN (distance) AND (distance) DME [RIGHT/LEFT HAND PATTERN], EXPECT APPROACH CLEARANCE/FURTHER CLEARANCE AT (time)",
+    "G: HOLD AT/OVER (name of facility or fix) AT (level), INBOUND TRACK (three digits) [DEGREES] RIGHT/LEFT [HAND] PATTERN, OUTBOUND TIME (number) MINUTE[S]"
+  ],
+  "sourceItemIds": [
+    "5.6.4.3_phrases"
+  ],
+  "claimSha256": "7f207e553df6eec8a1cee156fc31c8602a36cd765978fec582f0b5ce033ed2f6",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 9396,
+    "endLine": 9605
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "holding_detailed_instr",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 5,
+      "hits": 3,
+      "misses": [
+        {
+          "quote": "G: HOLD BETWEEN (distance) AND (distance) DME [RIGHT/LEFT HAND PATTERN], EXPECT APPROACH CLEARANCE/FURTHER CLEARANCE AT (time)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: HOLD AT/OVER (name of facility or fix) AT (level), INBOUND TRACK (three digits) [DEGREES] RIGHT/LEFT [HAND] PATTERN, OUTBOUND TIME (number) MINUTE[S]",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "Two of the five exactSourceQuotes do not exist verbatim in the source window with the claimed leading \u201cG:\u201d formatting, so the identity fields fail G1 and cannot be corrected in this pass. Although the substance is generally supported by the section, the quote mismatch requires rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:58:11Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:58:11Z"
+  }
+}

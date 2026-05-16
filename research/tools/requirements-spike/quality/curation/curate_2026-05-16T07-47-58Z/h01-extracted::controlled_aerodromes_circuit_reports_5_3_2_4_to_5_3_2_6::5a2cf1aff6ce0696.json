@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::5a2cf1aff6ce0696",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.49,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exact source quote \"G: REPORT \u2022 THREE MILES FINAL\" does not appear verbatim in the source window; the source has \"G: REPORT\" followed by separate bullet lines, including \"\u2022 THREE MILES FINAL\". Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::5a2cf1aff6ce0696.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::5a2cf1aff6ce0696.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:29:02Z"
+}

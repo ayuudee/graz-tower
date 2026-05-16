@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::73002906c5dcd8cd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.04,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One of the exactSourceQuotes is not present verbatim: the source separates \u201ca)\u201d from the condition with the intervening header \u201cAs determined by the appropriate ATS authority as appropriate:\u201d. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying concept being source-supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::73002906c5dcd8cd.json",
+    "toPath": "rejected/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::73002906c5dcd8cd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:31:56Z"
+}

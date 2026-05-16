@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::d4f5c73c7acd898b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.75,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and self-contained, and the candidate correctly preserves the source\u2019s 'should' modality as best-practice advisory material. It is not redundant with the accepted sibling candidates, which cover separate requirements and notes in the same section.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::d4f5c73c7acd898b.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::d4f5c73c7acd898b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:17:12Z"
+}

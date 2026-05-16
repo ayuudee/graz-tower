@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::6989581f09f726ac",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.19,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted instruction is present in the source window despite the audit miss, and the claim is source-grounded. However, the source uses imperative/advisory wording rather than a shall/must obligation, so the candidate\u2019s modality should be lowered while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6989581f09f726ac.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6989581f09f726ac.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:11:22Z"
+}

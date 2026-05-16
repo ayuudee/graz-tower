@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::b6a69b358e0a53f2",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+  "familyId": "icao9432_aerodrome_phraseology_family",
+  "claimText": "Phraseology for indicating expected departure time with start up at own discretion includes: '[Callsign] EXPECT DEPARTURE AT [Time] START UP AT OWN DISCRETION [QNH]'.",
+  "rationale": "Example phraseology from 4.2.2 options. Demoted to support_only.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "FASTAIR 345 EXPECT DEPARTURE AT 49 START UP AT OWN DISCRETION QNH 1009"
+  ],
+  "sourceItemIds": [
+    "ex_4.2.2_options_en"
+  ],
+  "claimSha256": "34b5ec0b772fcf5e4b58fc39c628d8fed542d86c6cb2c6d9bcc858d8d49ad25b",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4706,
+    "endLine": 4818
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_ex_422_expect_departure",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact phraseology example is supported by the source quote, the identity fields are valid, and modality/authorityClass are correctly framed as an example within operational guidance. It is an atomic phraseology item consistent with accepted sibling examples and is not redundant with them.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:43:15Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:43:15Z"
+  }
+}

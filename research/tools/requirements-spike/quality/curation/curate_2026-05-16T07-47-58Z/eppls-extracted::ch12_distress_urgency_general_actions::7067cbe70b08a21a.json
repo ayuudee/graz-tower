@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::7067cbe70b08a21a",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.76,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted bullet is verbatim and the claim is an atomic action not already covered by accepted siblings. However, the governing sentence for the bullet list says \u201cif you hear a distress transmission, you must,\u201d so the candidate\u2019s modality should be corrected from should to must while retaining background_support authority.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::7067cbe70b08a21a.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::7067cbe70b08a21a.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:53:32Z"
+}

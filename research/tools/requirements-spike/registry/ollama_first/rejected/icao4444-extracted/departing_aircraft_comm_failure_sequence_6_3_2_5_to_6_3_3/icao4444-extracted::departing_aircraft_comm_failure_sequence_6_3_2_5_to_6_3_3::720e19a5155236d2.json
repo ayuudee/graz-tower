@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3::720e19a5155236d2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3",
+  "familyId": "icao4444_departing_aircraft_family",
+  "claimText": "Deviation from the standard delayed departure order may be made to accommodate requests by an operator in respect of that operator\u2019s flights to the extent practicable.",
+  "rationale": "All attempts identify this as a distinct, permissible exception to the default order.",
+  "modality": "may",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "except that deviation from this order may be made to: b) accommodate requests by an operator in respect of that operator\u2019s flights to the extent practicable."
+  ],
+  "sourceItemIds": [
+    "6.3.3.2",
+    "6.3.3.2b"
+  ],
+  "claimSha256": "98c79533f159282dd38b7a49b60692589f566b7d859150554e68d86cbb3f1f4f",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6956,
+    "endLine": 6987
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departing_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "delayed_departure_exception_operator_requests",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "except that deviation from this order may be made to: b) accommodate requests by an operator in respect of that operator\u2019s flights to the extent practicable.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "fail",
+      "modality": "may",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": false,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": "(modality='may', authorityClass='authoritative_requirement') violates AUTHORITY_CLASS_BY_FLOOR"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The exactSourceQuote is not present verbatim in the source because it splices the chapeau directly to item b) while the source includes intervening item a). Although the underlying b) concept is supported, fixing this would require changing an identity field, which is not permitted in this pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:52:33Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:52:33Z"
+  }
+}

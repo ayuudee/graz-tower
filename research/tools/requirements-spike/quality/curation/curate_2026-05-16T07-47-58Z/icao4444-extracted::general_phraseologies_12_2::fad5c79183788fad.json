@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::fad5c79183788fad",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.93,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is supported as a standalone scope clarification, with no redundancy against accepted siblings. However, the source clause is not introduced as a Note and contains no operative modal, so the candidate\u2019s modality should be `none` rather than `note`; `background_support` remains appropriate.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::fad5c79183788fad.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::fad5c79183788fad.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:04:44Z"
+}

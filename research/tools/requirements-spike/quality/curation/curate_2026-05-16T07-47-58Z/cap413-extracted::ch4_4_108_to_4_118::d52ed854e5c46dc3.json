@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::d52ed854e5c46dc3",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.51,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present in 4.110 and supports the candidate\u2019s advisory 'should' wording for stating the designated landing/departure point/area. The operational_guidance authority class is appropriate for CAP 413 advisory material, and the claim is not redundant with the accepted sibling covering relevant traffic information.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::d52ed854e5c46dc3.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::d52ed854e5c46dc3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:48:25Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_segregated_6_7_3_6::41e0ee5c3a24ac56",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_segregated_6_7_3_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.22,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and the claim is supported by the parent clause governing item (a), including the operative 'may be utilized' and the stated conditions. The only defect is the may\u00d7authoritative_requirement mismatch, so the authority class should be lowered rather than changing the modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_segregated_6_7_3_6/icao4444-extracted::parallel_runways_segregated_6_7_3_6::41e0ee5c3a24ac56.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_segregated_6_7_3_6/icao4444-extracted::parallel_runways_segregated_6_7_3_6::41e0ee5c3a24ac56.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:28:36Z"
+}

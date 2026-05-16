@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::981b274e270ee7e0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.27,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One of the candidate\u2019s identity quotes does not appear verbatim in the provided source window after normalization, and identity fields cannot be corrected in this pass. Although the underlying claim is substantively supported by the surrounding text, the failed verbatim quote audit prevents promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::981b274e270ee7e0.json",
+    "toPath": "rejected/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::981b274e270ee7e0.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:39:08Z"
+}

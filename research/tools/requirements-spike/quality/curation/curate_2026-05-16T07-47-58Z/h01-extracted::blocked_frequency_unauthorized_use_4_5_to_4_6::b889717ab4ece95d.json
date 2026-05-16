@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::b889717ab4ece95d",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.2,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim and supports the candidate\u2019s atomic item 4 step, with the parent clause supplying the 'should' framing and the false/deceptive transmissions condition. The modality and authorityClass are already conservative for H01 operational guidance, and sibling accepted items do not cover this specific frequency-change step.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::b889717ab4ece95d.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::b889717ab4ece95d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:23:02Z"
+}

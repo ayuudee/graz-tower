@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::e612b386e0038ae2",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "familyId": "eppls_ch12_communications_background_family",
+  "claimText": "To indicate lack of 8.33 kHz capability, the phrase 'NEGATIVE EIGHT POINT THREE THREE' shall be used.",
+  "rationale": "All attempts identify this specific phraseology rule. Split from parent to allow distinct testing.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "To indicate lack of 8.33 kHz capability: NEGATIVE EIGHT POINT THREE THREE"
+  ],
+  "sourceItemIds": [
+    "item_833_negative"
+  ],
+  "claimSha256": "aef6916afbc9d10ebfb9d6acafc3ad1c56e0a9a5bab134438b14a1b28584402f",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 22390,
+    "endLine": 22530
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_communications_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_833_capability_negative",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "To indicate lack of 8.33 kHz capability: NEGATIVE EIGHT POINT THREE THREE",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The cited phraseology is supported by the source window, which states the lack-of-capability indication as “To indicate lack of 8.33 kHz capability: NEGATIVE EIGHT POINT THREE THREE” across a line break. However, the source does not use shall-strength wording for this item, so the metadata modality should match the phraseology/listing form rather than a normative obligation.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:08:11Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::e612b386e0038ae2.json",
+      "to": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::e612b386e0038ae2.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_radio_discipline_frequency_basics/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:08:11Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

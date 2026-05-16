@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::b6307b2dd444bf57",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "familyId": "cap413_ch4_4_50_to_4_60_family",
+  "claimText": "Where a controller cancels a landing clearance but intends to re-issue it in good time, he should, if time permits, give the reason for cancelling the landing clearance.",
+  "rationale": "Source 4.53 uses 'should' and 'if time permits', indicating a conditional operational guidance for controller actions.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Where a controller cancels a landing clearance but feels that a landing clearance will be re-issued in good time for the aircraft to make a safe landing, he should, if time permits, give the reason for cancelling the landing clearance."
+  ],
+  "sourceItemIds": [
+    "4.53"
+  ],
+  "claimSha256": "12e0f93eeffb94061ae11dcf38bdf7c3ebd0714871e15e3f9c4bf78ef0b0bba6",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 9112,
+    "endLine": 9293
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_50_to_4_60_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_453_cancel_reason",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact source quote is present verbatim, and the claim is supported by CAP 413 \u00a74.53. The source uses \u201cshould\u201d with \u201cif time permits,\u201d and the candidate correctly treats it as operational guidance rather than an authoritative requirement; it is not redundant with the accepted siblings.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:14:25Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_50_to_4_60/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:14:25Z"
+  }
+}

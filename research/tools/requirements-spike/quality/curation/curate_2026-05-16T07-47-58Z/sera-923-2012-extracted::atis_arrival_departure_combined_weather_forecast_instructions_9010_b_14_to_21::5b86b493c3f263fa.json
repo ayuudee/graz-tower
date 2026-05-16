@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21::5b86b493c3f263fa",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.61,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The requirement is substantively supported by source item (15), but the candidate's exactSourceQuotes field is not verbatim in the provided source window because the source has a line-broken/soft-hyphenated 'cumulo\u00ad\\nnimbus'. Identity fields cannot be corrected in this pass, so the failed verbatim quote audit requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21/sera-923-2012-extracted::atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21::5b86b493c3f263fa.json",
+    "toPath": "rejected/sera-923-2012-extracted/atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21/sera-923-2012-extracted::atis_arrival_departure_combined_weather_forecast_instructions_9010_b_14_to_21::5b86b493c3f263fa.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:02:44Z"
+}

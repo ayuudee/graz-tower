@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::a1dabca3896b874d",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.36,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, and the authority class is appropriately non-authoritative. However, the material appears in a source Note and was classified by the judge as advisory-only, so the modality should be framed as `note` rather than as a standalone `should` requirement.",
+    "corrections": {
+      "modality": "note"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::a1dabca3896b874d.json",
+    "toPath": "candidates/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::a1dabca3896b874d.json",
+    "correctionsApplied": {
+      "modality": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:47:16Z"
+}

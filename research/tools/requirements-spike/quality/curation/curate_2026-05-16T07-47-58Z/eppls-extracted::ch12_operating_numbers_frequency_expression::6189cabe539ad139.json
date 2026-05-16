@@ -1,0 +1,20 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::6189cabe539ad139",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.07,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted statement is verbatim and supports the ICAO expression, with modality and authorityClass already consistent. However, the source footnote states that the ICAO standard is not used in the UK, so resolving the scope issue requires bundling or separately extracting that subordinate qualification rather than changing modality or authorityClass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::6189cabe539ad139.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:02:13Z"
+}

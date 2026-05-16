@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::98493d524422abd3",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.07,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote does not appear verbatim in the provided source window after the bilingual column text is interleaved, and identity fields cannot be corrected in this pass. The candidate would require re-extraction with a quote that exists verbatim in the source text.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::98493d524422abd3.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::98493d524422abd3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:34:03Z"
+}

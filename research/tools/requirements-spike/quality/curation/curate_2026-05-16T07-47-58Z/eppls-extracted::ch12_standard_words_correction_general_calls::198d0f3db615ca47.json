@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::198d0f3db615ca47",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.75,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The glossary entry is verbatim supported by the source window and is correctly framed as background/supporting definition material rather than a normative requirement. There are no sibling atomic candidates making it redundant and no identity-field issue.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::198d0f3db615ca47.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::198d0f3db615ca47.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:16:34Z"
+}

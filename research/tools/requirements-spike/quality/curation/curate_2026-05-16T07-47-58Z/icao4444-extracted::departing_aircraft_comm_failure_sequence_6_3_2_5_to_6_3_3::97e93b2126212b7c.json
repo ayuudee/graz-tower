@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3::97e93b2126212b7c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.24,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted text is verbatim and the modality/authority pairing is valid, but the candidate omits the operative exceptions introduced by the same sentence. Resolving this requires re-extraction or additional scoped sibling coverage, not merely correcting modality, authorityClass, or requirementKind.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3/icao4444-extracted::departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3::97e93b2126212b7c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:52:41Z"
+}

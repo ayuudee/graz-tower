@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::1acd8fec198f3537",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.6,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted parent permission exists, and the may \u00d7 authoritative_requirement issue could be corrected by lowering authorityClass, but the operative rule is incomplete without the dependent conditions a\u2013d. Resolving this requires re-extraction or bundling with additional subordinate source items/quotes, which cannot be changed in this curation pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::1acd8fec198f3537.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:11:34Z"
+}

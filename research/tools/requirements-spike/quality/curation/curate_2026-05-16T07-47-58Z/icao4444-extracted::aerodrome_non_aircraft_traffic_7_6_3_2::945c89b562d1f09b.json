@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::945c89b562d1f09b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.27,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is present in the source and directly supports the claim with 'should' modality. The candidate\u2019s operational_guidance authority class is consistent with that modality, and the content is not redundant with the accepted sibling covering runway-use coordination approval.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::945c89b562d1f09b.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::945c89b562d1f09b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:16:10Z"
+}

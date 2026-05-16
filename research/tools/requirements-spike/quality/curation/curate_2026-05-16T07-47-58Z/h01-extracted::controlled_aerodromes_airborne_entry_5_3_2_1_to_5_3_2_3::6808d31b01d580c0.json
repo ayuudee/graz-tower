@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::6808d31b01d580c0",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.29,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted text is not found verbatim in the source, and the candidate appears to have mixed English phraseology with German-column text due to the two-column layout. Because the claimText and exactSourceQuotes are identity fields and would require re-extraction rather than a modality/authority correction, this cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::6808d31b01d580c0.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::6808d31b01d580c0.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:27:33Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::85012ad5b7de091f",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.14,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited phraseology is substantively present in the source, but the candidate's exactSourceQuote is not found verbatim in the provided source text because the extracted window interleaves German and English column text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss cannot be cured by modality or authority corrections.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::85012ad5b7de091f.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::85012ad5b7de091f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:28:08Z"
+}

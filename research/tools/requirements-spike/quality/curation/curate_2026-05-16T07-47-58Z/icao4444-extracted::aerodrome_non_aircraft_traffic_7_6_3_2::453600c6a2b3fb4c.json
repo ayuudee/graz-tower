@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::453600c6a2b3fb4c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.25,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by 7.6.3.2.3.3, but the provided exactSourceQuote is not present verbatim in the source because the table header/text intervenes between the light signal and its meaning. Since claimText and exactSourceQuotes cannot be edited in this pass, this must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::453600c6a2b3fb4c.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::453600c6a2b3fb4c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:15:17Z"
+}

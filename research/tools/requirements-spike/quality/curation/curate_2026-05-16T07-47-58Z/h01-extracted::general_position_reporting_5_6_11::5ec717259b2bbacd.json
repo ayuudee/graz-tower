@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_position_reporting_5_6_11::5ec717259b2bbacd",
+  "documentId": "h01-extracted",
+  "sectionId": "general_position_reporting_5_6_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.71,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying phraseology is present in the source window, but the candidate\u2019s exactSourceQuotes do not appear verbatim because the G:/A: labels are separated from the English phraseology in the source layout. Since quote identity fields cannot be corrected in this pass and G1 is a real verbatim miss, the record should be rejected for re-extraction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_position_reporting_5_6_11/h01-extracted::general_position_reporting_5_6_11::5ec717259b2bbacd.json",
+    "toPath": "rejected/h01-extracted/general_position_reporting_5_6_11/h01-extracted::general_position_reporting_5_6_11::5ec717259b2bbacd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:53:01Z"
+}

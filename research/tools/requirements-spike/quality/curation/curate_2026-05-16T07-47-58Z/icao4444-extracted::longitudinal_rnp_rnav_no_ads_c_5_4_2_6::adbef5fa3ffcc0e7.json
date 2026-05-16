@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::adbef5fa3ffcc0e7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.38,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quote are supported verbatim by 5.4.2.6.1, and the source uses permissive 'may' wording. The only issue is the G3 floor violation: a 'may' provision cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::adbef5fa3ffcc0e7.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::adbef5fa3ffcc0e7.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:16:45Z"
+}

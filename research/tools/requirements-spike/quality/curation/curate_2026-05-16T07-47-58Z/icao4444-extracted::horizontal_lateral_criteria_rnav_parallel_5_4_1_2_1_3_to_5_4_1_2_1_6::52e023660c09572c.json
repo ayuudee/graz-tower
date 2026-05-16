@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::52e023660c09572c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.32,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, and the candidate is not redundant with the accepted sibling items. The only issue is the G3 authority/modality mismatch: the source says \u201cmay be obtained,\u201d so the modality should remain \u201cmay\u201d and the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::52e023660c09572c.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::52e023660c09572c.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:08:12Z"
+}

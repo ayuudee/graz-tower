@@ -1,0 +1,119 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::3699fe1138a8dc5d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1",
+  "familyId": "icao4444_parallel_runway_family",
+  "claimText": "Independent parallel approaches may be conducted provided runway centre lines are spaced less than 1 525 m but not less than 1 310 m, and the ATS surveillance system has performance equal to or better than SSR azimuth accuracy of 0.3 degrees (or equivalent MLAT/ADS-B) and an update period of 5 seconds or less.",
+  "rationale": "Alternative surveillance criteria for medium spacing. Consistent between attempts 1 and 2.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "an ATS surveillance system with performance specifications other than those above, but equal to or better than:",
+    "for SSR, a minimum azimuth accuracy of 0.3 degrees (one sigma); or",
+    "for MLAT or ADS-B, a performance capability equivalent to or better than the SSR requirement can be demonstrated;",
+    "an update period of 5 seconds or less; and"
+  ],
+  "sourceItemIds": [
+    "6.7.3.2.1.a",
+    "table_6_1_row_2_spacing",
+    "table_6_1_row_2_criteria_alt_intro",
+    "table_6_1_row_2_criteria_alt_1",
+    "table_6_1_row_2_criteria_alt_2",
+    "table_6_1_row_2_criteria_alt_2b"
+  ],
+  "claimSha256": "ee96aeaac6264fc563bc1d722cdeff956388908b749d8aeb9e09c1cd9361393c",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7539,
+    "endLine": 7653
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_parallel_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_indep_parallel_spacing_1310_1525_alt_surveillance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 4,
+      "hits": 4,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted surveillance criteria are present verbatim and support the claim, and the accepted sibling does not already cover this more specific condition. However, the source frames the operation with \u201cmay be conducted provided that,\u201d so under the authority-floor rule the candidate\u2019s `may` modality cannot remain classified as `authoritative_requirement`; the authority class should be lowered one rung.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:26:24Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:26:24Z"
+  }
+}

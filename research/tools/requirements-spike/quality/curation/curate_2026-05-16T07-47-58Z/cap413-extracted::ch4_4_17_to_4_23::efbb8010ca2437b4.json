@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_17_to_4_23::efbb8010ca2437b4",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_17_to_4_23",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.88,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the modality 'may' and operational_guidance authority class match the CAP 413 wording, and all gate audits passed. This is not redundant with the accepted sibling about pilots requesting an intersection departure, because it covers the controller asking whether the pilot can accept one.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::efbb8010ca2437b4.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::efbb8010ca2437b4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:02:01Z"
+}

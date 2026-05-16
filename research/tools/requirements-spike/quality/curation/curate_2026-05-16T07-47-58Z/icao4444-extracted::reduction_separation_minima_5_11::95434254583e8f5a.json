@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::95434254583e8f5a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.22,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and the claim is supported, but the cited 5.11.1.2 text and subitems do not themselves contain an explicit modal verb. The authoritative_requirement class is also inconsistent with a non-mandatory/no-modal provision, so the record should be treated as operational guidance rather than an authoritative requirement.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::95434254583e8f5a.json",
+    "toPath": "candidates/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::95434254583e8f5a.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:32:07Z"
+}

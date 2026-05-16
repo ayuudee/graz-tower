@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::8ae2bd8d4d7b7b8e",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.01,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim and directly supports the claim that CANCEL DISTRESS could be used as an alternative cancellation phrase. The candidate is appropriately framed as background support with permissive/advisory modality and is not redundant with the accepted sibling covering the standard MAYDAY cancellation sequence.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::8ae2bd8d4d7b7b8e.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::8ae2bd8d4d7b7b8e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:50:58Z"
+}

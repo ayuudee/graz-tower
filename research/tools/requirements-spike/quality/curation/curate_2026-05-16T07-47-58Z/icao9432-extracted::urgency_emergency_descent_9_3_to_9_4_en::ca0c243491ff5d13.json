@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13",
+  "documentId": "icao9432-extracted",
+  "sectionId": "urgency_emergency_descent_9_3_to_9_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.15,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the verbatim source quote and is not redundant with accepted siblings. Because ICAO 9432 is operational guidance and the judge classified this as advisory-only, the record should be promoted only with the requirement kind lowered from best_practice to advisory_only.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/urgency_emergency_descent_9_3_to_9_4_en/icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13.json",
+    "toPath": "candidates/icao9432-extracted/urgency_emergency_descent_9_3_to_9_4_en/icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:02:06Z"
+}

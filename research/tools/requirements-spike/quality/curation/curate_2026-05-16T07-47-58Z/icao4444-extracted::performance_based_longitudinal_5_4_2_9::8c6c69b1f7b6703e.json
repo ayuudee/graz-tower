@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::performance_based_longitudinal_5_4_2_9::8c6c69b1f7b6703e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "performance_based_longitudinal_5_4_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.1,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is supported by \u00a75.4.2.9.3, but the source uses the permissive modal \u201cmay.\u201d Under the authority floor rule, a may-statement cannot remain classified as an authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::8c6c69b1f7b6703e.json",
+    "toPath": "candidates/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::8c6c69b1f7b6703e.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:30:06Z"
+}

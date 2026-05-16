@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::e7c8d162bec7d641",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.42,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and the note/background classification is internally consistent, but the candidate is only a cross-reference to Section 6.5.2. The substantive atomic requirements and guidance from Section 6.5.2 are already captured in siblingAccepted, so this referential umbrella should not be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::e7c8d162bec7d641.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::e7c8d162bec7d641.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:42:49Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::c4f12b14314dbbf7",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.55,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is source-grounded in substance, but its exactSourceQuotes do not appear verbatim in the provided source window due to intervening page/footer text, and identity fields cannot be corrected in this pass. The modality also appears overstated as 'shall' for a background-support advisory source, but the quote identity failure is dispositive.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::c4f12b14314dbbf7.json",
+    "toPath": "rejected/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::c4f12b14314dbbf7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:12:37Z"
+}

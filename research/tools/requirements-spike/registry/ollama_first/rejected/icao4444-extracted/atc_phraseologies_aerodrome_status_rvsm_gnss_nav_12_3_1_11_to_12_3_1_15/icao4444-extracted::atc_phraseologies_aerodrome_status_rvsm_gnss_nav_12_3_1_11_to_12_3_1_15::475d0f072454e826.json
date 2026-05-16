@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::475d0f072454e826",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "To report RVSM approved status, the phraseology shall be: CONFIRM RVSM APPROVED.",
+  "rationale": "Direct phraseology rule from enumerated list item 12.3.1.13 a) for reporting RVSM approved status.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "CONFIRM RVSM APPROVED;"
+  ],
+  "sourceItemIds": [
+    "12.3.1.13_a"
+  ],
+  "claimSha256": "f817af45854d27b112db7b7567e7621b931f31b68f93ea6f830f2dfd321d5bae",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 14126,
+    "endLine": 14256
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "12.3.1.13_a_confirm_rvsm_approved",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted phrase exists verbatim, but the candidate assigns it to the wrong circumstance: source item 12.3.1.13(a) uses \u201cCONFIRM RVSM APPROVED\u201d to ascertain RVSM approval status, while reporting RVSM approved status is \u201cAFFIRM RVSM\u201d and is already accepted as a sibling. Because correcting this would require changing the claimText identity field, it must be rejected.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:47:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "unsupported_by_source",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:47:38Z"
+  }
+}

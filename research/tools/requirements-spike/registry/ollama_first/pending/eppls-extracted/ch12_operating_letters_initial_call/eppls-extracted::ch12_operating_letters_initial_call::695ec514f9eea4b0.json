@@ -1,0 +1,125 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::695ec514f9eea4b0",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "familyId": "eppls_ch12_operating_procedures_background_family",
+  "claimText": "In the UK, the word 'To' is not used with flight levels (e.g., 'Climb Flight Level 100') to prevent confusion with the number two, whereas 'To' is used with climb and descent instructions relating to heights or altitudes.",
+  "rationale": "All attempts agree on the regional convention regarding 'To' usage.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "In UK, the word To is not used with flight levels",
+    "To is used with climb and descent instructions relating to heights or altitudes"
+  ],
+  "sourceItemIds": [
+    "item_uk_fl_convention"
+  ],
+  "claimSha256": "1005e579ee272ec49fbc4a3ced60fca1a843c22a4198dd8b3b3be978e320ec0d",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 22661,
+    "endLine": 22752
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_operating_procedures_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_uk_fl_convention",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 2,
+      "hits": 1,
+      "misses": [
+        {
+          "quote": "To is used with climb and descent instructions relating to heights or altitudes",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim is supported by the source, and the second quote does appear verbatim as a substring of the sentence beginning “However, To is used…”. However, the cited wording is descriptive and has no explicit note marker, so the modality should be lowered from `note` to `none` while retaining `background_support`.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:00:10Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::695ec514f9eea4b0.json",
+      "to": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::695ec514f9eea4b0.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_operating_letters_initial_call/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:00:10Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

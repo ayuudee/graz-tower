@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_track_offset_12_3_2_9::4624d2ec51a06a0d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_track_offset_12_3_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.11,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source and the claim accurately captures the non-normative symbol definition. It is not redundant with the accepted atomic phraseology items, and its existing note modality with operational_guidance authority is appropriate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_track_offset_12_3_2_9/icao4444-extracted::area_phraseologies_track_offset_12_3_2_9::4624d2ec51a06a0d.json",
+    "toPath": "candidates/icao4444-extracted/area_phraseologies_track_offset_12_3_2_9/icao4444-extracted::area_phraseologies_track_offset_12_3_2_9::4624d2ec51a06a0d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:36:58Z"
+}

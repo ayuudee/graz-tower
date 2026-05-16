@@ -1,0 +1,107 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::93c9684fe8f7a49f",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "familyId": "h01_rtf_communications_family",
+  "claimText": "The initial call on WIEN INFORMATION for a flight without a submitted flight plan shall use the phraseology: 'WIEN INFORMATION OEABC NEGATIVE FLIGHT PLAN'.",
+  "rationale": "Only Attempt 2 explicitly extracted the example as a distinct support item. It is structurally independent and source-grounded.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "A: WIEN INFORMATION OEABC NEGATIVE FLIGHT PLAN"
+  ],
+  "sourceItemIds": [
+    "3.3.1.2.1_example"
+  ],
+  "claimSha256": "ddbadf6c02eef6cd9963bb875237a091b02a436b95b7db82dcde63c2186e8eab",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 3780,
+    "endLine": 3915
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_rtf_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "vfr_init_wien_example",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The quoted line is a verbatim example and the modality/authorityClass are internally consistent, but the claimText frames the example as a standalone shall-strength phraseology rule while the operative \u201cshall be transmitted as follows\u201d support comes from the parent sentence, not the candidate\u2019s quoted source. Resolving this would require re-extraction or revising identity fields, which cannot be done in this pass.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:47:05Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/judged_candidates.json"
+  }
+}

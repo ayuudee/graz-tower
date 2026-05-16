@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::15dca9f30a2206d2",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.46,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote is not present verbatim in the provided source window after normalization because intervening bullet text breaks the sentence. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted even though the underlying idea appears supported.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::15dca9f30a2206d2.json",
+    "toPath": "rejected/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::15dca9f30a2206d2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:35:47Z"
+}

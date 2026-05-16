@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::d7aa22cd7462ca29",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "familyId": "icao4444_communication_failure_family",
+  "claimText": "If the aircraft fails to indicate that it is able to receive and acknowledge transmissions, separation shall be maintained based on the assumption that the aircraft will, in airspace where procedural separation is being applied, maintain the last assigned speed and level, or minimum flight altitude if higher, for a period of 20 minutes following the aircraft\u2019s failure to report its position over a compulsory reporting point and thereafter adjust level and speed in accordance with the filed flight plan.",
+  "rationale": "Enumerated list item 'b)1' defines the specific assumption for separation maintenance in procedural separation airspace.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "1) unless otherwise prescribed ... in airspace where procedural separation is being applied, maintain the last assigned speed and level ... for a period of 20 minutes"
+  ],
+  "sourceItemIds": [
+    "15.3.3_b_1"
+  ],
+  "claimSha256": "466ca63e6744abc4facf4014702ddd71bd63248cc5d4cb49d9c200608c2c343b",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 17950,
+    "endLine": 18093
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_communication_failure_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "15.3.3_sep_imc_proc",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "1) unless otherwise prescribed ... in airspace where procedural separation is being applied, maintain the last assigned speed and level ... for a period of 20 minutes",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate\u2019s exactSourceQuotes field is not a verbatim substring of the source because it uses ellipses and therefore fails G1 with a real quote miss. Although the underlying rule is supported by the source, fixing it would require changing an identity field, which is not allowed in this curation pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:30:44Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/air_ground_communications_failure_15_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:30:44Z"
+  }
+}

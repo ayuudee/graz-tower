@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::b17e8a99bb88f08f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.53,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, but the controlling parent clause uses \u201cshould,\u201d making this advisory rather than an authoritative requirement. Per the authority floor rule, the modality should remain \u201cshould\u201d and the authority class should be lowered one rung to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::b17e8a99bb88f08f.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::b17e8a99bb88f08f.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:21:02Z"
+}

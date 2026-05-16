@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::7a9e78263fbb1103",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.0,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted figure caption appears verbatim in the source and the claim accurately characterizes it as a non-operative figure-caption item. Its existing modality and authority class are appropriate for background support, and it is not redundant with the accepted siblings because the analogous accepted figure item covers Figure 5-24A, not Figure 5-25A.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::7a9e78263fbb1103.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::7a9e78263fbb1103.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:15:04Z"
+}

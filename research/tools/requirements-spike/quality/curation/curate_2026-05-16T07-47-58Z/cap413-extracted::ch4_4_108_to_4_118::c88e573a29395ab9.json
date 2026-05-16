@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::c88e573a29395ab9",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.19,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by CAP 413, but the exactSourceQuotes field is not verbatim because it uses an ellipsis in place of source text. Since identity fields cannot be edited in this pass and G1 is a real verbatim miss, the candidate must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::c88e573a29395ab9.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::c88e573a29395ab9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:48:15Z"
+}

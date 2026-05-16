@@ -1,0 +1,11 @@
+{
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_handling_clearances_5_6_1",
+  "familyId": "h01_general_flight_handling_family",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+  "startLine": 9212,
+  "endLine": 9395,
+  "lastPromotedRunId": "promote_2026-05-16T06-47-39Z_b460",
+  "lastPromotedAt": "2026-05-16T06:47:39Z"
+}

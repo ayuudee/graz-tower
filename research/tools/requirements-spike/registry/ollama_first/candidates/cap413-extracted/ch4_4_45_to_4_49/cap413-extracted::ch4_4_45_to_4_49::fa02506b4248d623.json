@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_45_to_4_49::fa02506b4248d623",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_45_to_4_49",
+  "familyId": "cap413_ch4_4_45_to_4_49_family",
+  "claimText": "It may be necessary in order to co-ordinate traffic in the circuit, to issue a pilot his number in the sequence along with the position of the preceding aircraft and delaying action if necessary.",
+  "rationale": "All attempts identify this as guidance on circuit coordination procedures, using 'may be necessary' to describe potential operational needs.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "It may be necessary in order to co-ordinate traffic in the circuit, to issue a pilot his number in the sequence along with the position of the preceding aircraft and delaying action if necessary."
+  ],
+  "sourceItemIds": [
+    "item_4_49_rule_2"
+  ],
+  "claimSha256": "0079f1ab34d6766339206af3bd77466697f98e378f1224cb4e799bf0977e8f8f",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 8980,
+    "endLine": 9111
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_45_to_4_49_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_4_49_sequence_coordination",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is a verbatim, source-grounded advisory statement using 'may be necessary', and the existing modality and authorityClass correctly frame it as operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling candidates, which do not cover sequencing, preceding-aircraft position, and delaying action in the circuit.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:11:22Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_45_to_4_49/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:11:22Z"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "eppls-extracted::ch12_conditional_clearance_identification::acd07a94e51a96ac",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_conditional_clearance_identification",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 22.02,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted obligation is supported by the source text despite the line break, but the bundle gate identifies a missing operative subordinate: the format introduced by \u201cTo achieve this, the following format is used:\u201d. Promoting this unit alone would leave the requirement incomplete; a human curator should re-extract or add the format-dependent subordinate item before promotion.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_conditional_clearance_identification/eppls-extracted::ch12_conditional_clearance_identification::acd07a94e51a96ac.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:45:56Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::voice_failure_air_ground_4_4_1::26a7f56f3afb3bcf",
+  "documentId": "h01-extracted",
+  "sectionId": "voice_failure_air_ground_4_4_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.05,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source, the candidate accurately represents a labeled Note, and its note/background_support classification is consistent with the non-operative SERA cross-reference. It is not redundant with the accepted sibling requirements, which cover aircraft acknowledgement actions rather than this external-reference note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/voice_failure_air_ground_4_4_1/h01-extracted::voice_failure_air_ground_4_4_1::26a7f56f3afb3bcf.json",
+    "toPath": "candidates/h01-extracted/voice_failure_air_ground_4_4_1/h01-extracted::voice_failure_air_ground_4_4_1::26a7f56f3afb3bcf.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:05:48Z"
+}

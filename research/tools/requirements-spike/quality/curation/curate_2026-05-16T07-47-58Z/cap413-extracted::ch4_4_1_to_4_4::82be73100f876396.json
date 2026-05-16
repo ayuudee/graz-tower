@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_1_to_4_4::82be73100f876396",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_1_to_4_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text appears verbatim and supports the claim, and the candidate is not redundant with accepted siblings. However, the source wording is descriptive and not a labeled NOTE, so the modality should be corrected from note to none while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::82be73100f876396.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::82be73100f876396.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:05:39Z"
+}

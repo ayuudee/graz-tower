@@ -1,0 +1,118 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::49ed7b51ee4d4499",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "familyId": "icao4444_horizontal_separation_family",
+  "claimText": "For aircraft cruising, climbing or descending on the same track, a separation minimum of 93 km (50 NM) may be used, requiring RNP type 10, direct controller-pilot communications, procedural position reports, and distance verification at least every 24 minutes.",
+  "rationale": "Consistent definition of minima and requirements for same-track operations.",
+  "modality": "may",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "For aircraft cruising, climbing or descending on the same track, the following separation minimum may be used:",
+    "93 km (50 NM)",
+    "RNP 10",
+    "Direct controller-pilot communications",
+    "Procedural position reports",
+    "At least every 24 minutes"
+  ],
+  "sourceItemIds": [
+    "5.4.2.6.3.1_table"
+  ],
+  "claimSha256": "35a48ec2351cfad1cea9e8c6a11d28eba7517e828b9bb077488c1dcbfa2eaa41",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5817,
+    "endLine": 5919
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_horizontal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "5.4.2.6.3.1_same_track_minima",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 6,
+      "hits": 5,
+      "misses": [
+        {
+          "quote": "RNP 10",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "fail",
+      "modality": "may",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": false,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": "(modality='may', authorityClass='authoritative_requirement') violates AUTHORITY_CLASS_BY_FLOOR"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "One exactSourceQuote, \"RNP 10\", is not present verbatim in the source table, which lists the header \"RNP type\" and the value \"10\" separately. Because identity fields cannot be edited in this pass, the verbatim-quote failure requires rejection; separately, the cited wording is permissive \"may\" and would not support authoritative_requirement as classified.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:16:35Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_human_review",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:16:35Z"
+  }
+}

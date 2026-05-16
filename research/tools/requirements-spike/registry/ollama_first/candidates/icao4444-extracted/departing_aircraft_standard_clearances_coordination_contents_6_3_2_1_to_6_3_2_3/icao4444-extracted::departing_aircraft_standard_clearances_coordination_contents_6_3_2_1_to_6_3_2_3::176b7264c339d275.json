@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::176b7264c339d275",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3",
+  "familyId": "icao4444_departing_aircraft_family",
+  "claimText": "The appropriate ATS authority should, wherever possible, establish standardized procedures for transfer of control between the ATC units concerned, and standard clearances for departing aircraft.",
+  "rationale": "All attempts agree this is a recommendation ('should') for establishing procedures, not a strict operational mandate for every instance.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The appropriate ATS authority should, wherever possible, establish standardized procedures for transfer of control between the ATC units concerned, and standard clearances for departing aircraft."
+  ],
+  "sourceItemIds": [
+    "6.3.2.1_text"
+  ],
+  "claimSha256": "08177a6c249a8f8f5a2f46916b0a3a4618c9f4ba5266eb1e039e14749b476e3e",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6819,
+    "endLine": 6866
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departing_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "6321_establish_std_clearances",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quote is verbatim, the claim is directly supported by the source, and the modality/authority pairing is correct: the source uses 'should' and the candidate classifies it as operational guidance. The accepted siblings cover specific mandatory contents/provisions, but they do not make this separate advisory recommendation redundant.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:55:18Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:55:18Z"
+  }
+}

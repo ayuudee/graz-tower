@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_27_to_4_30::eb7e48cb79ec3196",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_27_to_4_30",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.4,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is directly supported, and the candidate correctly preserves the source\u2019s explicit NOTE status with modality `note` and operational-guidance authority. It is not redundant with the accepted sibling candidates, which cover different wind-reporting and take-off-clearance points.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_27_to_4_30/cap413-extracted::ch4_4_27_to_4_30::eb7e48cb79ec3196.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_27_to_4_30/cap413-extracted::ch4_4_27_to_4_30::eb7e48cb79ec3196.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:07:47Z"
+}

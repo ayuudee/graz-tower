@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_aeronautical_stations_position_reports::a06355b0a266b566",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_aeronautical_stations_position_reports",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.47,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is present verbatim and directly supports the claim as background context about the limits of ATC control and continued pilot responsibility. The current modality and authorityClass are appropriately conservative for this support-only/advisory material, and it is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::a06355b0a266b566.json",
+    "toPath": "candidates/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::a06355b0a266b566.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:29:54Z"
+}

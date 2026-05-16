@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::671cc41dfa13b79d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_same_level_5_4_2_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.83,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and correctly framed as a non-normative figure caption, but it is only background visual support for the operative five-minute separation rule already captured by an accepted sibling. Because support-only figure material should not be promoted as a separate accepted source unit when the atomic operative requirement is already present, rejection is appropriate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::671cc41dfa13b79d.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::671cc41dfa13b79d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:19:25Z"
+}

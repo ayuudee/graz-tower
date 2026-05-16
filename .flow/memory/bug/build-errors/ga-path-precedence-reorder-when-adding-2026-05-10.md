@@ -4,7 +4,7 @@ date: "2026-05-10"
 track: bug
 category: build-errors
 module: pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/Pilot.kt
-tags: [fn-12.2, pilot, go-around, precedence, fork-point, fn-28, fn-28.1, density-altitude, helper-shape-mirror, codex-impl-review, sibling-helper, goal-resolution]
+tags: [fn-12.2, pilot, go-around, precedence, fork-point, fn-28, fn-28.1, density-altitude, helper-shape-mirror, codex-impl-review, sibling-helper, goal-resolution, fn-28.6, guard-discipline, goal-root-invariant, mission-shape, transit-arrival, independent-invariants]
 problem_type: build-error
 symptoms: ATC-reactive Tick A intent masked by self-initiated when both triggers active
 root_cause: derivePilotEvent ran before ATC recognition; intent precedence chain not reordered
@@ -83,3 +83,24 @@ When adding a new "X for mission" helper, ask explicitly: "is the decision-side 
 - Does each goal branch resolve to the aerodrome the decision actually concerns?
 - Is the singleton-fallback semantically correct, or just structurally convenient?
 - Does the test suite include a multi-aerodrome scenario that would catch a destination/departure mix-up?
+
+## Update 2026-05-16
+
+## Problem
+A named eligibility guard that gates a mission-tree rewrite must validate BOTH the goal type AND the root compound name, not just the goal. The two carry independent invariants — `HighLevelGoal` is the pilot's high-level mission shape; `mission.root.name` is the planner-produced tree-name. A well-typed `PilotMission(goal = Transit, root = CompoundTask(TaskName.Arrive, ...))` is malformed but type-system-permitted; a guard that gates only on `goal is Transit` would pass the malformed shape and run a Transit-specific rewrite on an Arrive-shape tree.
+
+This is a sibling failure mode to `recognitionapply-pipelines-need-mission-2026-05-11`: there, recognition fired on shapes the apply silently no-op'd. Here, a guard would have permitted dispatch into a rewrite that mismatches the tree's planner-produced structure.
+
+## What Didn't Work
+Predicate parts taken from the round-11 Major 1 / round-10 fixes enumerated the data-honest fields: (1) goal type; (2) active step in set; (2b) `activeCompound() == null` flat-shape check; (3) `activeRunway` set; (4) Final phase. The reviewer (codex round-1) noticed that `activeCompound() == null` doesn't constrain WHICH compound the active primitive is a direct child of — only that there's no nested compound. A `CompoundTask(TaskName.Arrive, [FLY_FINAL])` satisfies "FLY_FINAL is a direct child" without being a Transit tree.
+
+## Solution
+Add an explicit predicate part (1a): `mission.root.name is TaskName.Transit`. KDoc explains that this is NOT a structural redundancy with (1) — the goal type and the planner-produced tree-name are independent invariants, and refusing the malformed `goal/root` mismatch shape explicitly is a separate safety net.
+
+Test extension: a row that pins `goal=Transit + root={Arrive, Depart, Circuit, CircuitTraining, CircuitAfterGoAround, TouchAndGo}` ALL return false. A regression that drops the root-name check fails immediately.
+
+## Prevention
+When writing a mission-shape eligibility guard for a typed tree rewrite:
+- List EVERY data invariant the rewrite relies on. Each becomes a gate.
+- Specifically: if the rewrite hard-codes a target compound name (e.g., "replace the suffix of the Transit compound"), the guard MUST validate the root's compound name independently of the goal type. The type system permits malformed combinations; the guard's job is to refuse them.
+- Add a "wrong root name with correct goal" negative test row to every new guard's matrix. Pre-commit pattern: each goal-keyed predicate part gets a sibling root-name predicate part with its own test row.

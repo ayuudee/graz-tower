@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.19,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim 4.1.2 source text, all gate audits pass, and it is not redundant with the accepted sibling. Its advisory character is already correctly captured by modality \"should\" and authorityClass \"operational_guidance\" for ICAO 9432 material.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:42:02Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_85::888eaa23211285cc",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_85",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.52,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is source-grounded, the claim accurately describes the CAP 413 example phraseology, and modality/authority are consistent as an example under operational guidance. It is not redundant with the accepted siblings, which cover different exchanges in the same section.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::888eaa23211285cc.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::888eaa23211285cc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:21:52Z"
+}

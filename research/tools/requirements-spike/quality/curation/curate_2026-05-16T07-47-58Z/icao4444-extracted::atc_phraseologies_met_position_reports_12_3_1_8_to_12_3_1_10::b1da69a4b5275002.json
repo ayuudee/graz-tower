@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10::b1da69a4b5275002",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.45,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote does not appear verbatim in the source: the source ends the bracketed alternatives with \u201cRIDGES)];\u201d while the candidate/quote has \u201cRIDGES);\u201d. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10/icao4444-extracted::atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10::b1da69a4b5275002.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10/icao4444-extracted::atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10::b1da69a4b5275002.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:51:25Z"
+}

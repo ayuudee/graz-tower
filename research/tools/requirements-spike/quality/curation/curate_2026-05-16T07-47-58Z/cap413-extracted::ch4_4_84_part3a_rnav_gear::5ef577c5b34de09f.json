@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part3a_rnav_gear::5ef577c5b34de09f",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part3a_rnav_gear",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.98,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim phraseology supports expecting departure after an aircraft type or callsign, not providing an expected departure time. Fixing this would require changing the claimText, which is an identity field and cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part3a_rnav_gear/cap413-extracted::ch4_4_84_part3a_rnav_gear::5ef577c5b34de09f.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_84_part3a_rnav_gear/cap413-extracted::ch4_4_84_part3a_rnav_gear::5ef577c5b34de09f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:20:17Z"
+}

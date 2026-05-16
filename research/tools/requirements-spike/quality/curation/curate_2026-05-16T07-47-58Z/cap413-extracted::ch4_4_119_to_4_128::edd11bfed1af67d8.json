@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_119_to_4_128::edd11bfed1af67d8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_119_to_4_128",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.14,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source, the source uses 'must', and the candidate is already classified as operational_guidance rather than authoritative_requirement. It is not redundant with the accepted sibling candidates, which cover different items in the same section.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_119_to_4_128/cap413-extracted::ch4_4_119_to_4_128::edd11bfed1af67d8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_119_to_4_128/cap413-extracted::ch4_4_119_to_4_128::edd11bfed1af67d8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:49:52Z"
+}

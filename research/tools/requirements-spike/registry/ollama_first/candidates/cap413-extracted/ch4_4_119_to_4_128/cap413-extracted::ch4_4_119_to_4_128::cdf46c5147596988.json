@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_119_to_4_128::cdf46c5147596988",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_119_to_4_128",
+  "familyId": "cap413_ch4_4_119_to_4_128_family",
+  "claimText": "Air/Ground Communication Service operators are not to pass instructions and must use the phraseology they would use for the movement of aircraft on the aerodrome.",
+  "rationale": "All attempts agree on the restriction and phraseology requirement. 'Not to' and 'must' map to 'shall'.",
+  "modality": "must",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Air/Ground Communication Service operators are not to pass instructions",
+    "must use the phraseology they would use for the movement of aircraft on the aerodrome"
+  ],
+  "sourceItemIds": [
+    "4.124"
+  ],
+  "claimSha256": "994e852f555793ec816584e305fb11b9449faa95f8a82a7aa379045b1ff7fc22",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 10678,
+    "endLine": 10864
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_119_to_4_128_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "4.124_agcs_restriction",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "must",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The identity fields are supported verbatim by the source, and the claim is not redundant with the accepted sibling candidates. Because the operative source wording for this candidate uses \u201cmust\u201d rather than \u201cshall,\u201d the modality should be corrected to match the quote while retaining operational_guidance for CAP 413 material.",
+      "corrections": {
+        "modality": "must"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T07:49:42Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_119_to_4_128/judged_candidates.json",
+    "curatedAt": "2026-05-16T07:49:42Z"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::3063a19adb93f713",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.8,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and supports the claim as a normal coordination workflow, and it is not redundant with the accepted sibling items. However, the source says \u201cwill normally,\u201d not \u201cshall,\u201d so the candidate\u2019s modality should be lowered to a non-mandatory framing while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::3063a19adb93f713.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::3063a19adb93f713.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:55:24Z"
+}

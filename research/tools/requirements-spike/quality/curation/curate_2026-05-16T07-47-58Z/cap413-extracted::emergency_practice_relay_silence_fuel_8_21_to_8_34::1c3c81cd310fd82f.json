@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::1c3c81cd310fd82f",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.21,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate's exactSourceQuotes do not appear verbatim in the source: the source uses curly double quotation marks and continues with additional text, while the candidate quote uses single quotes and omits the continuation. Because claimText and exactSourceQuotes are identity fields that cannot be edited in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::1c3c81cd310fd82f.json",
+    "toPath": "rejected/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::1c3c81cd310fd82f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:27:04Z"
+}

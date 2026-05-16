@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::ebd141f8b1a0da9c",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 25.22,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The atomic item is supported by the source context: the list item 'Approach clearances' falls under the parent statement that clearances must always be read back, and sibling accepted records treat the same list structure similarly. Because the source wording uses 'must' rather than 'shall' and the authority remains background_support, only the modality should be corrected.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::ebd141f8b1a0da9c.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::ebd141f8b1a0da9c.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:41:26Z"
+}

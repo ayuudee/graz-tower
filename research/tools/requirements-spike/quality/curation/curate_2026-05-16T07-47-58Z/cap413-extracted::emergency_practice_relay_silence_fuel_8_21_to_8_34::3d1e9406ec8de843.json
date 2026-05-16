@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::3d1e9406ec8de843",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.61,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim/source-grounded, the claim accurately reflects the permissive wording in CAP 413, and the modality/authority pairing of may with operational_guidance is appropriate for advisory operational material. It is not redundant with the accepted sibling candidates, which cover different emergency-phraseology provisions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::3d1e9406ec8de843.json",
+    "toPath": "candidates/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::3d1e9406ec8de843.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:28:04Z"
+}

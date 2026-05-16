@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_153::44c14ff92a35c421",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_153",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.88,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted source is a CAP 413 phraseology template/example and does not support the claimText's normative wording that the response \u201cshall include\u201d the listed elements. Because correcting this would require changing the identity field claimText rather than only modality, authorityClass, or requirementKind, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_153/cap413-extracted::ch4_4_153::44c14ff92a35c421.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_153/cap413-extracted::ch4_4_153::44c14ff92a35c421.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:54:19Z"
+}

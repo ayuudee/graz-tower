@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::6dac3c28e5aaab2f",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_61_to_4_69",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.14,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and directly supports the claim, with the source using advisory \u201cshould\u201d language. The modality and operational_guidance authority class are consistent for CAP 413 advisory guidance, and the accepted siblings do not duplicate this runway-vacating frequency guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_61_to_4_69/cap413-extracted::ch4_4_61_to_4_69::6dac3c28e5aaab2f.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_61_to_4_69/cap413-extracted::ch4_4_61_to_4_69::6dac3c28e5aaab2f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:15:13Z"
+}

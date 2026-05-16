@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::b4f73228ca7efd0a",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.75,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is present in the source window after normalizing line breaks, and the claim is not redundant with the accepted siblings. However, the source uses imperative advisory wording rather than 'shall' or 'must', so the modality should be lowered while retaining the background-support authority class.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::b4f73228ca7efd0a.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::b4f73228ca7efd0a.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:12:25Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_speed_control_4_7::9afb5568e8696ec6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_speed_control_4_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.42,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the candidate's permissive 'may' modality. The only defect is the G3 floor violation: a 'may' provision should not be classified as an authoritative_requirement, so the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::9afb5568e8696ec6.json",
+    "toPath": "candidates/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::9afb5568e8696ec6.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:21Z"
+}

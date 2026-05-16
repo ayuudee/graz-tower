@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::fe1941abbded8714",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "Procedures relating to operations in RVSM airspace by aircraft with non-approved status are detailed in 12.2.4 and 12.2.5.",
+  "rationale": "Note referencing other sections for procedural details; not a standalone phraseology rule but provides operational guidance context.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "background_reference",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Note.\u2014 See 12.2.4 and 12.2.5 for procedures relating to operations in RVSM airspace by aircraft with non-approved status."
+  ],
+  "sourceItemIds": [
+    "12.3.1.13_note"
+  ],
+  "claimSha256": "687c7cb0ce325c65f12c6f3a975ec651c34dcf175bbc3da3927349883171ad01",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 14126,
+    "endLine": 14256
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "12.3.1.13_note_rvsm_procedures",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is source-grounded and the claim accurately reflects a non-normative Note, with no redundancy against the accepted phraseology siblings. Because this is only a cross-reference/background note rather than operational guidance or a best-practice item, it should be classified as background support while retaining note modality.",
+      "corrections": {
+        "authorityClass": "background_support",
+        "requirementKind": "background_reference"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:48:15Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:48:15Z"
+  }
+}

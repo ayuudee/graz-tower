@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_met_7_4_1_2::eb9deda74d1e3c7d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_met_7_4_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.9,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but one exactSourceQuote is not verbatim: the source has additional text after 'information' rather than the quoted ellipsis form. Because exactSourceQuotes are identity fields and cannot be edited in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::eb9deda74d1e3c7d.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::eb9deda74d1e3c7d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:09:57Z"
+}

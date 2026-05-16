@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::496e4f3e234a03d7",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.7,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, uses the source\u2019s \u201cshould\u201d modality, and is correctly classified as operational guidance for CAP 413. It is not redundant with the accepted siblings, which cover separate adjacent clauses.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::496e4f3e234a03d7.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::496e4f3e234a03d7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:52:50Z"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::emergency_message_specials_8_13_to_8_20::0adc6d1e107304b4",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_message_specials_8_13_to_8_20",
+  "familyId": "cap413_emergency_phraseology_family",
+  "claimText": "The term 'PAN PAN MEDICAL' indicates the message concerns a protected medical transport as defined in the 1949 Geneva Conventions.",
+  "rationale": "All attempts agree on the legal definition of the phraseology.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "The use of the term \u2018PAN PAN MEDICAL\u2019 indicates that the message which follows concerns a protected \u2018medical transport\u2019 as defined in the 1949 Geneva Conventions and Additional Protocols..."
+  ],
+  "sourceItemIds": [
+    "8.14_intro"
+  ],
+  "claimSha256": "4179b88c7f3caea3a69d2b42776e1fa1cf528f2b22a9e5e85a00738c178563bb",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 16430,
+    "endLine": 16597
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_8.14_pan_medical_definition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "The use of the term \u2018PAN PAN MEDICAL\u2019 indicates that the message which follows concerns a protected \u2018medical transport\u2019 as defined in the 1949 Geneva Conventions and Additional Protocols...",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The cited exactSourceQuote is not present verbatim in the source window because it uses an ellipsis and omits intervening source text/punctuation. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim failure requires rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:25:03Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/emergency_message_specials_8_13_to_8_20/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:25:03Z"
+  }
+}

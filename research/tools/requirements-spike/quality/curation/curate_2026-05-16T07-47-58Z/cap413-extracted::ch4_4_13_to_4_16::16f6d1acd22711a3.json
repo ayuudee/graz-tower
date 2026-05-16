@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_13_to_4_16::16f6d1acd22711a3",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_13_to_4_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.32,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is verbatim supported by the source, uses the correct may modality, and is appropriately classified as operational_guidance for CAP 413 advisory/operator-discretion text. It is not redundant with the accepted sibling items, which cover controller stop-bar crossing instructions and exceptional crossings rather than the aerodrome operator\u2019s withdrawal/alternative-route discretion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_13_to_4_16/cap413-extracted::ch4_4_13_to_4_16::16f6d1acd22711a3.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_13_to_4_16/cap413-extracted::ch4_4_13_to_4_16::16f6d1acd22711a3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:53:32Z"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::8afc7036be58492f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "familyId": "icao4444_communication_failure_family",
+  "claimText": "If circumstances indicate that a controlled flight experiencing a communication failure might proceed to (one of) the alternate aerodrome(s) specified in the filed flight plan, the air traffic control unit(s) serving the alternate aerodrome(s) and any other air traffic control units that might be affected by a possible diversion shall be informed of the circumstances of the failure and requested to attempt to establish communication with the aircraft at a time when the aircraft could possibly be within communication range.",
+  "rationale": "Authoritative requirement for alerting alternate aerodrome units when diversion is likely.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the air traffic control unit(s) serving the alternate aerodrome(s) ... shall be informed of the circumstances of the failure and requested to attempt to establish communication"
+  ],
+  "sourceItemIds": [
+    "15.3.8"
+  ],
+  "claimSha256": "483c97d4d0a45f34cfd363b713fa520f8331796d1a04a92c4cdfb74cec7ea079",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 17950,
+    "endLine": 18093
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_communication_failure_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "15.3.8_alternate_alert",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "the air traffic control unit(s) serving the alternate aerodrome(s) ... shall be informed of the circumstances of the failure and requested to attempt to establish communication",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by clause 15.3.8, but the sole exactSourceQuote contains an ellipsis and is not found verbatim in the source. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:30:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/air_ground_communications_failure_15_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:30:20Z"
+  }
+}

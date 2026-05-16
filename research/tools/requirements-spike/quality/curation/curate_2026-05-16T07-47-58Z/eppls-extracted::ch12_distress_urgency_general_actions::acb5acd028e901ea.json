@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::acb5acd028e901ea",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.65,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted bullet is verbatim and is not redundant with accepted siblings; it is one of the atomic actions in the source list. The list is introduced by \u201cif you hear a distress transmission, you must,\u201d so the correct modality for this item is must, while the background_support authority class can remain unchanged.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::acb5acd028e901ea.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::acb5acd028e901ea.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:54:25Z"
+}

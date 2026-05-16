@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_6_to_4_10::12eea39321e36b7b",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_6_to_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.06,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim, and the candidate is not redundant with the accepted atomic phraseology examples. However, the cited text is explicitly a background note/directive pointer rather than operational guidance, so its authority class should be lowered.",
+    "corrections": {
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_6_to_4_10/cap413-extracted::ch4_4_6_to_4_10::12eea39321e36b7b.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_6_to_4_10/cap413-extracted::ch4_4_6_to_4_10::12eea39321e36b7b.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:16:31Z"
+}

@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::3063a19adb93f713",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3",
+  "familyId": "icao4444_departing_aircraft_family",
+  "claimText": "Where standard clearances for departing aircraft have been agreed to between the units concerned, the aerodrome control tower will normally issue the appropriate standard clearance without prior coordination with or approval from the approach control unit or ACC.",
+  "rationale": "All attempts identify this as the standard workflow constraint. 'Will normally' defines the expected operational norm when standard clearances are in place.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Where standard clearances for departing aircraft have been agreed to between the units concerned, the aerodrome control tower will normally issue the appropriate standard clearance without prior coordination with or approval from the approach control unit or ACC."
+  ],
+  "sourceItemIds": [
+    "6.3.2.2.1"
+  ],
+  "claimSha256": "10914b5fa79f056b6f6839cdf83d393b0946f8e4ed28599394b0aa9de81819f1",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6819,
+    "endLine": 6866
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departing_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "63221_issue_std_clearance_no_prior_coord",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted text exists verbatim and supports the claim as a normal coordination workflow, and it is not redundant with the accepted sibling items. However, the source says \u201cwill normally,\u201d not \u201cshall,\u201d so the candidate\u2019s modality should be lowered to a non-mandatory framing while retaining operational_guidance authority.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:55:24Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "unsupported_by_source",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:55:24Z"
+  }
+}

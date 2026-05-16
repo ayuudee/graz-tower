@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::2c6c803be01bdcec",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.63,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited sentence appears verbatim in the source window aside from line wrapping/whitespace, and the claim accurately restates it. The note modality and background_support authority are appropriate for this advisory/background source, and the item is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::2c6c803be01bdcec.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::2c6c803be01bdcec.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:13:51Z"
+}

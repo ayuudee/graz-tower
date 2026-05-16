@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::d49728404d02715c",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.08,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote 'G: QDM (DF value)' does not appear verbatim in the source window; the speaker label and phrase are separated by intervening formatting. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 verbatim miss requiring rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::d49728404d02715c.json",
+    "toPath": "rejected/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::d49728404d02715c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:25:35Z"
+}

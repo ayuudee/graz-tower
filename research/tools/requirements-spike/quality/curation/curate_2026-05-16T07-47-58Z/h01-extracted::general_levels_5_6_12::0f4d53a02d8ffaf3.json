@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_levels_5_6_12::0f4d53a02d8ffaf3",
+  "documentId": "h01-extracted",
+  "sectionId": "general_levels_5_6_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.73,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim and the candidate is an atomic phraseology item matching the surrounding accepted sibling pattern for this H01 phraseology table. Its authorityClass is already limited to operational_guidance, so the phraseology-rule framing does not elevate it to an authoritative requirement.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_levels_5_6_12/h01-extracted::general_levels_5_6_12::0f4d53a02d8ffaf3.json",
+    "toPath": "candidates/h01-extracted/general_levels_5_6_12/h01-extracted::general_levels_5_6_12::0f4d53a02d8ffaf3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:51:51Z"
+}

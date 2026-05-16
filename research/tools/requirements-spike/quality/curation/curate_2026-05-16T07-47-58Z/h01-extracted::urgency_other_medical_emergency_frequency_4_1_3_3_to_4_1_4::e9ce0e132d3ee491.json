@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::e9ce0e132d3ee491",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.75,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote is not verbatim: it uses an ellipsis and different quotation marks/omits intervening source wording. Because claimText and exactSourceQuotes cannot be edited in this pass and G1 has a real verbatim miss, the candidate must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4/h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::e9ce0e132d3ee491.json",
+    "toPath": "rejected/h01-extracted/urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4/h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::e9ce0e132d3ee491.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:05:15Z"
+}

@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::c2c52b1d56444158",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "familyId": "h01_controlled_aerodrome_family",
+  "claimText": "Pilots shall report runway vacated using 'REPORT RUNWAY [(number)] VACATED' or 'RUNWAY [(number)] VACATED' (English), or 'MELDEN SIE PISTE [(Nummer)] VERLASSEN' / '[HABE] PISTE [(Nummer)] VERLASSEN' (German).",
+  "rationale": "All attempts agree on the standard vacated reporting phraseology in both languages.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "REPORT RUNWAY [(number)] VACATED",
+    "RUNWAY [(number)] VACATED",
+    "MELDEN SIE PISTE [(Nummer)] VERLASSEN",
+    "[HABE] PISTE [(Nummer)] VERLASSEN"
+  ],
+  "sourceItemIds": [
+    "en_report_vacated",
+    "en_report_vacated_alt",
+    "de_report_vacated",
+    "de_report_vacated_alt"
+  ],
+  "claimSha256": "bbdf6f64be7e384059dcafdf87d619fc4520e412a8da518ee1a98ee297b16bca",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 8266,
+    "endLine": 8358
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "report_vacated_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 4,
+      "hits": 4,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quoted phraseologies exist verbatim, but the claimText is not supported as written: 'REPORT RUNWAY [(number)] VACATED' / 'MELDEN SIE...' are controller instructions, not pilot reports, and the source does not establish a general 'pilots shall' obligation. Because fixing this would require changing the identity field claimText, it cannot be corrected in this pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:26:52Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_after_landing_5_3_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:26:52Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_153::b678505bb59fa97c",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_153",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.06,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim, the claim is supported by the NOTE, and the candidate is correctly framed as operational guidance with note modality for CAP 413 advisory material. It is not redundant with the accepted sibling, which covers a separate phraseology response item.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_153/cap413-extracted::ch4_4_153::b678505bb59fa97c.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_153/cap413-extracted::ch4_4_153::b678505bb59fa97c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:55:06Z"
+}

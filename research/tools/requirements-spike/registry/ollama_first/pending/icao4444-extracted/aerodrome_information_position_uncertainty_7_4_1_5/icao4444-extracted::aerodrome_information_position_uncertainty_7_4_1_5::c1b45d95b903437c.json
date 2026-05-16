@@ -1,0 +1,107 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::c1b45d95b903437c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_position_uncertainty_7_4_1_5",
+  "familyId": "icao4444_aerodrome_tower_family",
+  "claimText": "A pilot in doubt as to the position of the aircraft with respect to the manoeuvring area, but recognizes that the aircraft is on a runway, shall vacate the runway as expeditiously as possible if able to locate a nearby suitable taxiway, unless otherwise instructed by the ATS unit.",
+  "rationale": "All attempts agree on the vacate obligation conditional on locating a taxiway.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "if able to locate a nearby suitable taxiway, vacate the runway as expeditiously as possible, unless otherwise instructed by the ATS unit"
+  ],
+  "sourceItemIds": [
+    "7.4.1.5.2.b"
+  ],
+  "claimSha256": "a35e9b193db1b220dcd07ab163c0593a08aa9fcd88f0683dadb6419d49d301f5",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8601,
+    "endLine": 8635
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_tower_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pilot_runway_doubt_vacate",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The quoted subclause verbatim supports the atomic vacate-runway obligation with the stated shall-strength, and there is no modality or authority correction needed. However, the bundle audit identifies missing operative sibling obligations from the same parent clause\u2014notify ATS and then stop the aircraft\u2014so promotion would leave the required sequence incomplete; a human should extract/associate those companion obligations rather than alter this claim text.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T10:11:06Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_information_position_uncertainty_7_4_1_5/judged_candidates.json"
+  }
+}

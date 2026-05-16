@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_1_to_4_4::57c36782f2ea9ccd",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_1_to_4_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.71,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim, the claim accurately reflects NOTE 2, and the note/background classification is consistent with CAP 413\u2019s non-normative cross-reference. It is not redundant with the accepted sibling, which covers a separate operational guidance item.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::57c36782f2ea9ccd.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::57c36782f2ea9ccd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:05:24Z"
+}

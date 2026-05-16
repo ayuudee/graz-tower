@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::b27fe73805d16ef5",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "familyId": "icao4444_atc_contingency_family",
+  "claimText": "In the event of complete failure of the ground radio equipment used for ATC, the controller shall: attempt to establish radiocommunications on emergency frequency 121.5 MHz (if required); inform adjacent control positions/units of the failure; appraise them of the traffic situation; request assistance for separation/control if practicable; and instruct adjacent positions to hold or re-route controlled flights outside the failed unit's area.",
+  "rationale": "All attempts agree on the mandatory nature ('shall') and the specific sequence of actions for the controller during ground radio failure. The list items are distinct obligations.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "15.6.1.2.1 In the event of complete failure of the ground radio equipment used for ATC, the controller shall:",
+    "a) where aircraft are required to keep a listening watch on the emergency frequency 121.5 MHz, attempt to establish radiocommunications on that frequency;",
+    "b) without delay inform all adjacent control positions or ATC units, as applicable, of the failure;",
+    "c) appraise such positions or units of the current traffic situation;",
+    "d) if practicable, request their assistance, in respect of aircraft which may establish communications with those positions or units, in establishing separation between and maintaining control of such aircraft; and",
+    "e) instruct adjacent control positions or ATC units to hold or re-route all controlled flights outside the area of responsibility of the position or ATC unit that has experienced the failure until such time that the provision of normal services can be resumed."
+  ],
+  "sourceItemIds": [
+    "sec_15_6_1_2_1_a",
+    "sec_15_6_1_2_1_b",
+    "sec_15_6_1_2_1_c",
+    "sec_15_6_1_2_1_d",
+    "sec_15_6_1_2_1_e"
+  ],
+  "claimSha256": "3d0ffee4c1df19be9c43d490caa42e6c15b84d1c9b9a01f6480f0e71d9fa2b9c",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 18383,
+    "endLine": 18481
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "ground_radio_failure_controller_actions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 6,
+      "hits": 6,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_contingencies_15_6/judged_candidates.json"
+  }
+}

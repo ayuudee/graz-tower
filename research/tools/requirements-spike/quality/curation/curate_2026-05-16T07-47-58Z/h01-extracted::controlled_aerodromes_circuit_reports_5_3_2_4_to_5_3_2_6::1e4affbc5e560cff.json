@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::1e4affbc5e560cff",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.87,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exact source quote is not present verbatim, and the source window attributes 'REPORT FIELD/RUNWAY/APPROACH LIGHTS IN SIGHT' to G/ATC rather than A/pilots. Because the claim and quote are identity fields and would require re-extraction, this candidate cannot be corrected in place.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::1e4affbc5e560cff.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::1e4affbc5e560cff.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:28:45Z"
+}

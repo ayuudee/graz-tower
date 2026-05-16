@@ -1,0 +1,28 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::0f3c928c5be4b975",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.7,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology lines are verbatim and structurally complete, and they support inclusion as controller phraseology for taxiing to a stand and following a marshaller. However, the quoted text itself contains no shall/must operative wording and H01 should be treated conservatively as operational guidance rather than an authoritative requirement.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::0f3c928c5be4b975.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::0f3c928c5be4b975.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:38:04Z"
+}

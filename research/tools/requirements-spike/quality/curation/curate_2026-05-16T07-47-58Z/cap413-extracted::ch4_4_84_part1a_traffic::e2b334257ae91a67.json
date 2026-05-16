@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part1a_traffic::e2b334257ae91a67",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part1a_traffic",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.55,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim match to the source and is a self-contained explanatory definition of square-parentheses usage. Its current modality and authorityClass are appropriate for CAP 413 operational guidance, and it is not redundant with the accepted sibling covering ordinary parentheses.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part1a_traffic/cap413-extracted::ch4_4_84_part1a_traffic::e2b334257ae91a67.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part1a_traffic/cap413-extracted::ch4_4_84_part1a_traffic::e2b334257ae91a67.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:18:24Z"
+}

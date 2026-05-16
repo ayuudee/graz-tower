@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::930e87fbd63b85e3",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.3,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the parent 'shall include' clause, but the candidate's sole exactSourceQuote does not exist verbatim in the source window due to the extracted numbering/text layout. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::930e87fbd63b85e3.json",
+    "toPath": "rejected/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::930e87fbd63b85e3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:56:53Z"
+}

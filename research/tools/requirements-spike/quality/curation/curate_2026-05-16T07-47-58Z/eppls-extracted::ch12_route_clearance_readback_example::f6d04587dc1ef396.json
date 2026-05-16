@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_route_clearance_readback_example::f6d04587dc1ef396",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_route_clearance_readback_example",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.32,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s obligation is substantively supported, but its exactSourceQuote does not appear verbatim in the provided source text after whitespace normalization due to the interleaved column text. Because quote identity fields cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_route_clearance_readback_example/eppls-extracted::ch12_route_clearance_readback_example::f6d04587dc1ef396.json",
+    "toPath": "rejected/eppls-extracted/ch12_route_clearance_readback_example/eppls-extracted::ch12_route_clearance_readback_example::f6d04587dc1ef396.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:15:51Z"
+}

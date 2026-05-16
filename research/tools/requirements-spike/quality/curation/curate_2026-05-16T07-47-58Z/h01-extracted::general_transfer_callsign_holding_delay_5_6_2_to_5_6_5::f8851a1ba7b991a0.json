@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f8851a1ba7b991a0",
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.96,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Two of the five exactSourceQuotes do not exist verbatim in the source window with the claimed leading \u201cG:\u201d formatting, so the identity fields fail G1 and cannot be corrected in this pass. Although the substance is generally supported by the section, the quote mismatch requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f8851a1ba7b991a0.json",
+    "toPath": "rejected/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f8851a1ba7b991a0.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:58:11Z"
+}

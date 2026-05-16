@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_time_expression::43be3d936294fe6b",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_time_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 28.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted words are supported by the source text across a line break, so the G1 miss appears to be a matching artefact rather than a real verbatim failure. However, the source wording is \u201cyou can shorten,\u201d which is permissive rather than a non-modal note, while the existing background-support authority class can remain as-is.",
+    "corrections": {
+      "modality": "may"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::43be3d936294fe6b.json",
+    "toPath": "candidates/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::43be3d936294fe6b.json",
+    "correctionsApplied": {
+      "modality": "may"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:21:41Z"
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8::cece454674670990",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 25.88,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted condition is verbatim and not redundant, but it is a subordinate item under the missing parent clause \u201cA controller may clear ... provided the following conditions are satisfied,\u201d so its modality and scope cannot be curated correctly without re-extracting or bundling that governing text. Because fixing this would require changing identity fields or adding quotes, it should not be promoted with corrections in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8/icao4444-extracted::longitudinal_ads_b_ads_c_5_4_2_7_to_5_4_2_8::cece454674670990.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:09:46Z"
+}

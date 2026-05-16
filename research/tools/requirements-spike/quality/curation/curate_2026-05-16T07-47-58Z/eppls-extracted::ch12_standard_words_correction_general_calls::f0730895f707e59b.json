@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::f0730895f707e59b",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.42,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is supported by the source window despite the audit miss, and the claim does not duplicate an already accepted sibling. However, the source uses instructional prose rather than an explicit shall/must obligation, so the modality should be lowered while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::f0730895f707e59b.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::f0730895f707e59b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:18:51Z"
+}

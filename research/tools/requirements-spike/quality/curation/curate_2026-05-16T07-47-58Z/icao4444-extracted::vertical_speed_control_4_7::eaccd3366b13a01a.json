@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_speed_control_4_7::eaccd3366b13a01a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_speed_control_4_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.12,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is supported verbatim and the claim accurately reflects the source\u2019s 'should' wording. The only issue is that 'should' cannot support an authoritative_requirement classification, so the authority class should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::eaccd3366b13a01a.json",
+    "toPath": "candidates/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::eaccd3366b13a01a.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:34Z"
+}

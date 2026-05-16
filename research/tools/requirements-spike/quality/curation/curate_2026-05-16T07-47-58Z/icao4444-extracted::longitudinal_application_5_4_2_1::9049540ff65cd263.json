@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_application_5_4_2_1::9049540ff65cd263",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_application_5_4_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.28,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the candidate claim with a permissive \u201cmay\u201d modality. Under the authority floor table, a may-modality clause cannot be classified as authoritative_requirement, so the authorityClass should be lowered to operational_guidance without changing the identity fields.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_application_5_4_2_1/icao4444-extracted::longitudinal_application_5_4_2_1::9049540ff65cd263.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_application_5_4_2_1/icao4444-extracted::longitudinal_application_5_4_2_1::9049540ff65cd263.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:10:07Z"
+}

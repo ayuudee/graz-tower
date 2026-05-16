@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::b87e5205d840dd4a",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.94,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the source text, and the quoted sentence appears verbatim after normalizing the line breaks in the window. The candidate is already limited to background_support, while the source wording itself uses 'shall', so no modality or authority correction is needed.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::b87e5205d840dd4a.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::b87e5205d840dd4a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:48:59Z"
+}

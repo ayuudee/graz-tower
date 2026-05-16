@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::7e4eca703694d458",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "An Urgency call (PAN) indicates a very urgent message concerning safety where immediate assistance is not required, and has priority over all messages except Distress.",
+  "rationale": "All attempts agree on the definition of Urgency/PAN. It is a definitional note in training material.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "The Urgency call (or PAN) spoken three times, indicates a very urgent message concerning the safety of a ship, aircraft or other vehicle, or of some person on board or in sight, but immediate assistance is not required. It has priority over all other messages except Distress (above)."
+  ],
+  "sourceItemIds": [
+    "urgency_def"
+  ],
+  "claimSha256": "826e7b14ce532ba00be895f61b6276d14cb8db1b4bd0a4b9f6c286d291fa8d7c",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23317,
+    "endLine": 23354
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "urgency_definition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "The Urgency call (or PAN) spoken three times, indicates a very urgent message concerning the safety of a ship, aircraft or other vehicle, or of some person on board or in sight, but immediate assistance is not required. It has priority over all other messages except Distress (above).",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted definition is supported by the source window despite the automated G1 miss, and it is not redundant with accepted siblings. However, the source is descriptive training/background text with no explicit 'note' marker, so the modality should be lowered to none while retaining background_support.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T08:50:48Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::7e4eca703694d458.json",
+      "to": "pending/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::7e4eca703694d458.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:50:48Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

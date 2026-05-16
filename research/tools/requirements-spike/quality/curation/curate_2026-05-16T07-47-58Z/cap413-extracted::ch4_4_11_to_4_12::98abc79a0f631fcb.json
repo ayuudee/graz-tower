@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_11_to_4_12::98abc79a0f631fcb",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_11_to_4_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.73,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported and self-contained, and the claim accurately reflects the NOTE\u2019s optional wording. Its non-normative status is already handled by the `may` modality and `operational_guidance` authority class, with no redundancy against accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_11_to_4_12/cap413-extracted::ch4_4_11_to_4_12::98abc79a0f631fcb.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_11_to_4_12/cap413-extracted::ch4_4_11_to_4_12::98abc79a0f631fcb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:50:24Z"
+}

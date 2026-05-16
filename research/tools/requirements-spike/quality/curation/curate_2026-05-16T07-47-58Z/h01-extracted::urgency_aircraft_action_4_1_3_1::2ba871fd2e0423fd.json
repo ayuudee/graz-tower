@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::urgency_aircraft_action_4_1_3_1::2ba871fd2e0423fd",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_aircraft_action_4_1_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.26,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but six of the listed exactSourceQuotes do not appear verbatim because the source separates the numbering from the item text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 verbatim failure requiring rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_aircraft_action_4_1_3_1/h01-extracted::urgency_aircraft_action_4_1_3_1::2ba871fd2e0423fd.json",
+    "toPath": "rejected/h01-extracted/urgency_aircraft_action_4_1_3_1/h01-extracted::urgency_aircraft_action_4_1_3_1::2ba871fd2e0423fd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:02:44Z"
+}

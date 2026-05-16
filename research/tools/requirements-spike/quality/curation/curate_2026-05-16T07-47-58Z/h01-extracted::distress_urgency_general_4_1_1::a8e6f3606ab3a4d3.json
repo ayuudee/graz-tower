@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::distress_urgency_general_4_1_1::a8e6f3606ab3a4d3",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_urgency_general_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.59,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text is present verbatim and supports the claim, but it uses the operative word \u201cshall,\u201d not \u201cshould.\u201d Because H01 is treated conservatively as operational guidance, the authority class can remain operational_guidance while correcting only the modality.",
+    "corrections": {
+      "modality": "shall"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::a8e6f3606ab3a4d3.json",
+    "toPath": "candidates/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::a8e6f3606ab3a4d3.json",
+    "correctionsApplied": {
+      "modality": "shall"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:43:36Z"
+}

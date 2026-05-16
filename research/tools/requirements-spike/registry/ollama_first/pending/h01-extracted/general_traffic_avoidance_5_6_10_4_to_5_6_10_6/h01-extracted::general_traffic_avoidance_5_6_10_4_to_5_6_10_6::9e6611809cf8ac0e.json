@@ -1,0 +1,107 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::9e6611809cf8ac0e",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "Information regarding traffic on a conflicting path should be given, whenever practicable, in the following form.",
+  "rationale": "Establishes the conditional obligation for providing traffic information. Supported by attempts 1 and 3 as the primary rule.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Information regarding traffic on a conflicting path should be given, whenever practicable, in the following form:"
+  ],
+  "sourceItemIds": [
+    "h01_5.6.10.4"
+  ],
+  "claimSha256": "07deaa66ae996fa062fedb78c424e30d1e0f2d32ccb2b3fdc9f6e7a2b0c0a67a",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 10021,
+    "endLine": 10125
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_5.6.10.4_traffic_info_obligation",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The quote is verbatim and the modality/authority pairing is consistent, but the parent clause is structurally incomplete without the listed form elements it introduces. A human curator should ensure the missing subordinate item for distance is extracted/accepted or otherwise bundle this parent with all four list items before promotion.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:54:23Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/judged_candidates.json"
+  }
+}

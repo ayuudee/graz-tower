@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::16dc113d40a81bc4",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote is not a verbatim contiguous source quote: \u201cunless:\u201d is separated from the permission bullet by other intervening bullets. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::16dc113d40a81bc4.json",
+    "toPath": "rejected/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::16dc113d40a81bc4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:41:52Z"
+}

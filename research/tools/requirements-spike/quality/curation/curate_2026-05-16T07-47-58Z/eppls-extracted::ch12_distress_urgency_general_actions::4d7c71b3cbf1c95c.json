@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::4d7c71b3cbf1c95c",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.63,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phrase is present in the source window with only line-break/spacing differences, so the G1 miss appears to be a false negative rather than a real verbatim-support problem. The candidate is atomic, not covered by the accepted sibling, and its advisory/background classification is consistent with the source wording.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::4d7c71b3cbf1c95c.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::4d7c71b3cbf1c95c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:52:24Z"
+}

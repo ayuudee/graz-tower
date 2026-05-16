@@ -1,0 +1,11 @@
+{
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "familyId": "h01_general_flight_handling_family",
+  "sourcePath": "research/txt/h01-extracted.txt",
+  "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+  "startLine": 9396,
+  "endLine": 9605,
+  "lastPromotedRunId": "promote_2026-05-16T06-47-39Z_b460",
+  "lastPromotedAt": "2026-05-16T06:47:39Z"
+}

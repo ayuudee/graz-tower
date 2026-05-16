@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::f7050a186d769510",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.69,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is supported by the source window, appearing across a line break, and the claim matches it. The source uses the explicit modality word \u201cmust,\u201d so the modality should be corrected from \u201cshall\u201d to \u201cmust\u201d while retaining the background_support authority class.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::f7050a186d769510.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::f7050a186d769510.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:08:28Z"
+}

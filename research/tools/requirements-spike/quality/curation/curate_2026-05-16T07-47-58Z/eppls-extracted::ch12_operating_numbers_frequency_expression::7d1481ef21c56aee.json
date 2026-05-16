@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::7d1481ef21c56aee",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.17,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the source text, and the cited quote appears in the source window aside from line wrapping/normalization. However, the statement is descriptive background text with no explicit note marker or normative verb, so the safer modality is `none` rather than `note`; the background-support authority class is appropriate.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::7d1481ef21c56aee.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::7d1481ef21c56aee.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:02:25Z"
+}

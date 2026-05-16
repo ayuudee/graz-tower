@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::reduced_runway_minima_values_7_11_7::bdbc795333b66591",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduced_runway_minima_values_7_11_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 3.86,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quote are verbatim supported by the source and are not redundant with accepted siblings. The only issue is the G3 mismatch: the source uses 'may', so the authorityClass should be lowered rather than changing modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduced_runway_minima_values_7_11_7/icao4444-extracted::reduced_runway_minima_values_7_11_7::bdbc795333b66591.json",
+    "toPath": "candidates/icao4444-extracted/reduced_runway_minima_values_7_11_7/icao4444-extracted::reduced_runway_minima_values_7_11_7::bdbc795333b66591.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:31:15Z"
+}

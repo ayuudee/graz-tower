@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::eb7e8429d396ee8e",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.55,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote appears in the source window with only a line break/spacing difference before \u201cDeadside Descending,\u201d so the G1 miss appears to be a matching artefact rather than a real verbatim failure. The claim is supported, advisory in strength, and correctly classified as background_support with should modality.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::eb7e8429d396ee8e.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::eb7e8429d396ee8e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:15:15Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_check_readability_transfer::c06ad383c2d2f1c3",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_check_readability_transfer",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.8,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the verbatim source quote and is an atomic readability-scale definition not already covered by siblings. The source is descriptive and contains no note marker or normative language, so the modality should align with the accepted sibling readability-grade definitions as `none`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::c06ad383c2d2f1c3.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::c06ad383c2d2f1c3.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:05:03Z"
+}

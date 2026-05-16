@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::086b891e8467ccab",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.18,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source supports only advisory wording (\u201cYou should maintain\u2026\u201d), while the immutable claimText states a shall-level obligation. Because correcting this would require editing the claim text, it cannot be promoted with metadata corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::086b891e8467ccab.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::086b891e8467ccab.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:59:26Z"
+}

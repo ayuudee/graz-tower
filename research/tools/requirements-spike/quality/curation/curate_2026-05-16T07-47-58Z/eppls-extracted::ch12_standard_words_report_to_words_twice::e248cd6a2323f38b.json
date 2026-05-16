@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::e248cd6a2323f38b",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.2,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The definition is directly supported by the verbatim source quote and is not redundant with accepted siblings. However, the source is a glossary-style definition with no modal force, so the modality should be `none` rather than `note` while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::e248cd6a2323f38b.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::e248cd6a2323f38b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:20:26Z"
+}

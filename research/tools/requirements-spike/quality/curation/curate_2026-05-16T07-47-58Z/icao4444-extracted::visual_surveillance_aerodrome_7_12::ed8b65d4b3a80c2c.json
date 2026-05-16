@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::visual_surveillance_aerodrome_7_12::ed8b65d4b3a80c2c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "visual_surveillance_aerodrome_7_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.64,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, and the correct modality is permissive 'may'. Under the authority floor rule, a 'may' permission cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/visual_surveillance_aerodrome_7_12/icao4444-extracted::visual_surveillance_aerodrome_7_12::ed8b65d4b3a80c2c.json",
+    "toPath": "candidates/icao4444-extracted/visual_surveillance_aerodrome_7_12/icao4444-extracted::visual_surveillance_aerodrome_7_12::ed8b65d4b3a80c2c.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:40:02Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part2::fea86a17c428601a",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.66,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source, the claim accurately summarizes a non-normative NOTE, and the existing modality/authorityClass correctly frame it as advisory operational guidance. It is not redundant with the accepted phraseology item because it preserves the separate explanatory examples for the further-information placeholder.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part2/cap413-extracted::ch4_4_84_part2::fea86a17c428601a.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part2/cap413-extracted::ch4_4_84_part2::fea86a17c428601a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:20:04Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::general_position_reporting_5_6_11::fd4c35f5ab18989e",
+  "documentId": "h01-extracted",
+  "sectionId": "general_position_reporting_5_6_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the identity fields, but it appears under an explicit \u201cNote,\u201d so it should be curated as advisory operational guidance rather than a standalone shall-strength requirement. The accepted siblings do not already cover this specific level-reporting precision point.",
+    "corrections": {
+      "modality": "note"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_position_reporting_5_6_11/h01-extracted::general_position_reporting_5_6_11::fd4c35f5ab18989e.json",
+    "toPath": "candidates/h01-extracted/general_position_reporting_5_6_11/h01-extracted::general_position_reporting_5_6_11::fd4c35f5ab18989e.json",
+    "correctionsApplied": {
+      "modality": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:53:31Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::approach_phraseologies_departure_instructions_12_3_3_1::a0f4e26046688945",
+  "documentId": "icao4444-extracted",
+  "sectionId": "approach_phraseologies_departure_instructions_12_3_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.4,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology appears verbatim in the source and is an atomic list item not already covered by accepted siblings. However, the source quote contains no shall/must wording, so the candidate should not carry a shall modality; operational_guidance remains appropriate.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/approach_phraseologies_departure_instructions_12_3_3_1/icao4444-extracted::approach_phraseologies_departure_instructions_12_3_3_1::a0f4e26046688945.json",
+    "toPath": "candidates/icao4444-extracted/approach_phraseologies_departure_instructions_12_3_3_1/icao4444-extracted::approach_phraseologies_departure_instructions_12_3_3_1::a0f4e26046688945.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:33:25Z"
+}

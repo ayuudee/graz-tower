@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::1ba7702a0cd2d371",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.13,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and the note/background classification is internally consistent, but the unit is only a figure caption providing contextual support rather than a standalone regulatory requirement or guidance item. Since it is support-only and not an atomic operative source unit, it should not be promoted as an accepted candidate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::1ba7702a0cd2d371.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::1ba7702a0cd2d371.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:14:05Z"
+}

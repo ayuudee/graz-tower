@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::minimum_fuel_transponder_emergency_4_7_to_4_8::7184f3f5a6bb8927",
+  "documentId": "h01-extracted",
+  "sectionId": "minimum_fuel_transponder_emergency_4_7_to_4_8",
+  "familyId": "h01_contingency_communications_family",
+  "claimText": "The PAN PAN PAN call should not be used instead of the MINIMUM FUEL declaration.",
+  "rationale": "Universal agreement on the advisory nature of this note regarding PAN PAN PAN usage.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The PAN PAN PAN call should not be used instead of the MINIMUM FUEL declaration."
+  ],
+  "sourceItemIds": [
+    "4.7_note2"
+  ],
+  "claimSha256": "bd65e7261bcb12d3373871ef854eaabd2370b52145007d33f020b3e746cb65d0",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 6265,
+    "endLine": 6418
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_min_fuel_panic_prohibition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and the claim is directly supported; it is not redundant with the accepted sibling fuel-emergency and transponder items. Because the source item is explicitly a Note and uses advisory 'should not' wording, it should remain operational guidance rather than an authoritative requirement, with requirement kind framed as advisory-only.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:59:30Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/minimum_fuel_transponder_emergency_4_7_to_4_8/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:59:30Z"
+  }
+}

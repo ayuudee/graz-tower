@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::708e57e28d728edb",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_conditional_clearance_sequence_radio_check_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.54,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source states that the operator 'will assess' and 'will advise', not that the operator 'shall' do so, and this background-support material should not be elevated to a shall-strength requirement. Because the claimText itself contains the unsupported 'shall' formulation and identity fields cannot be edited in this pass, the record cannot be promoted with only metadata corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_conditional_clearance_sequence_radio_check_format/eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::708e57e28d728edb.json",
+    "toPath": "rejected/eppls-extracted/ch12_conditional_clearance_sequence_radio_check_format/eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::708e57e28d728edb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:46:47Z"
+}

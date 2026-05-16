@@ -1,0 +1,20 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::b4104b38de6a336d",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.33,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted list item is verbatim and the modality/authority are appropriate, but the candidate's operative condition and 'could be used' framing come from the parent 4.60 text that is not included in exactSourceQuotes. Resolving this would require re-extraction or adding the parent quote, which cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::b4104b38de6a336d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:14:03Z"
+}

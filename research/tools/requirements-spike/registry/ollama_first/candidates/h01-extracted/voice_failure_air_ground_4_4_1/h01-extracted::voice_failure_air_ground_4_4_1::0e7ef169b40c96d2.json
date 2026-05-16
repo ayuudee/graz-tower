@@ -1,0 +1,106 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::voice_failure_air_ground_4_4_1::0e7ef169b40c96d2",
+  "documentId": "h01-extracted",
+  "sectionId": "voice_failure_air_ground_4_4_1",
+  "familyId": "h01_communications_failure_family",
+  "claimText": "The aircraft shall: 1. transmit the intended message, following this by a complete repetition; 2. advise the time of its next intended transmission; 3. when provided with ATS, transmit information regarding the intention of the pilot-in-command with respect to the continuation of the flight.",
+  "rationale": "Enumerated list of mandatory actions for the aircraft in the event of receiver failure. Preserved as a single logical unit to maintain the conjunction of required actions.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "The aircraft shall:",
+    "1. transmit the intended message, following this by a complete repetition;",
+    "2. advise the time of its next intended transmission;",
+    "3. when provided with ATS, transmit information regarding the intention of the pilot-in-command with respect to the continuation of the flight."
+  ],
+  "sourceItemIds": [
+    "4.4.1.1_action_1",
+    "4.4.1.1_action_2",
+    "4.4.1.1_action_3"
+  ],
+  "claimSha256": "7b62caff39007445b3fa2af8d586e80c2a52b7c5f5ca1b6f5a6662af3ea7eddc",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 5820,
+    "endLine": 6022
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_communications_failure_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_receiver_failure_aircraft_actions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 4,
+      "hits": 4,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/voice_failure_air_ground_4_4_1/judged_candidates.json"
+  }
+}

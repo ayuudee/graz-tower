@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::fb2484ea697de6ff",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.19,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The note is directly supported by the source quote, all gate audits passed, and the modality/authority pairing is appropriate for a non-normative cross-reference note. It is not redundant with the accepted atomic phraseology items because it only points readers to Phraseologies 5.7.1.1 for more detail.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::fb2484ea697de6ff.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::fb2484ea697de6ff.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:32:56Z"
+}

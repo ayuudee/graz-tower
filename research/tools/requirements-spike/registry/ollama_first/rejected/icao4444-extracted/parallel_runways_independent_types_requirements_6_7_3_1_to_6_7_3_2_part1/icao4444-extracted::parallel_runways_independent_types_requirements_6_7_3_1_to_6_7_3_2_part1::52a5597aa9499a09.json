@@ -1,0 +1,116 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::52a5597aa9499a09",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1",
+  "familyId": "icao4444_parallel_runway_family",
+  "claimText": "Independent parallel approaches may be conducted provided runway centre lines are spaced less than 1 525 m but not less than 1 310 m, and a high resolution display providing position prediction and deviation alert is available.",
+  "rationale": "Specific display requirement for medium spacing. Consistent across attempts.",
+  "modality": "may",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Less than 1 525 m (5 000 ft) but not less than 1 310 m (4 300 ft)",
+    "a high resolution display providing position prediction and deviation alert is available."
+  ],
+  "sourceItemIds": [
+    "6.7.3.2.1.a",
+    "table_6_1_row_2_spacing",
+    "table_6_1_row_2_criteria"
+  ],
+  "claimSha256": "9b6a9aabbc014a471d4d5ce4058e53a45c3a6d329eac89ac12f1a855d4cc76f6",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7539,
+    "endLine": 7653
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_parallel_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_indep_parallel_spacing_1310_1525_display",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 1,
+      "misses": [
+        {
+          "quote": "Less than 1 525 m (5 000 ft) but not less than 1 310 m (4 300 ft)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "fail",
+      "modality": "may",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": false,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": "(modality='may', authorityClass='authoritative_requirement') violates AUTHORITY_CLASS_BY_FLOOR"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "One exactSourceQuote is not present verbatim in the source window because the table text includes an intervening \u201ca)\u201d between \u201cnot less than\u201d and \u201c1 310 m\u201d. Identity fields cannot be corrected in this pass; additionally, the record has a may\u00d7authoritative_requirement mismatch.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:26:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:26:45Z"
+  }
+}

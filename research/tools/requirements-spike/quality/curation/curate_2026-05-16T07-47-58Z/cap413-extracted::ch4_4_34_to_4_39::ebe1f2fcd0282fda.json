@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_34_to_4_39::ebe1f2fcd0282fda",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_34_to_4_39",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.59,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source window and supports the claim as advisory CAP 413 phraseology guidance using \u201cshould.\u201d The modality and authorityClass are already consistent, and the accepted siblings do not redundantly cover the runway-designator-first ordering guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::ebe1f2fcd0282fda.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_34_to_4_39/cap413-extracted::ch4_4_34_to_4_39::ebe1f2fcd0282fda.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:10:44Z"
+}

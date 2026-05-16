@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::dd269c0ba066ed5c",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_61_to_4_69",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.41,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim accurately captures a standalone referential statement in CAP 413. However, it is not operational guidance directed at pilot/controller conduct; it is background/supporting information about where the applicable minima are defined, so the authority class should be lowered.",
+    "corrections": {
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_61_to_4_69/cap413-extracted::ch4_4_61_to_4_69::dd269c0ba066ed5c.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_61_to_4_69/cap413-extracted::ch4_4_61_to_4_69::dd269c0ba066ed5c.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:15:49Z"
+}

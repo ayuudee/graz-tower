@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::controlled_traffic_separation_5_2::d0ddc753517b29de",
+  "documentId": "icao4444-extracted",
+  "sectionId": "controlled_traffic_separation_5_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.43,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the second sentence of 5.2.1.3, but the supplied exactSourceQuote is not verbatim: it incorrectly attaches the section number directly to that second sentence while omitting the preceding sentence. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/controlled_traffic_separation_5_2/icao4444-extracted::controlled_traffic_separation_5_2::d0ddc753517b29de.json",
+    "toPath": "rejected/icao4444-extracted/controlled_traffic_separation_5_2/icao4444-extracted::controlled_traffic_separation_5_2::d0ddc753517b29de.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:52:19Z"
+}

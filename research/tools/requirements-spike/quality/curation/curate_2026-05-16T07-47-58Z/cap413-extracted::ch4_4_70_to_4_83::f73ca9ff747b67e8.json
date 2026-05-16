@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_70_to_4_83::f73ca9ff747b67e8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_70_to_4_83",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.9,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence appears verbatim and supports the claim, and the accepted siblings do not already cover this timing guidance. However, the source uses descriptive passive wording with \u201cwhenever possible\u201d rather than an explicit \u201cshould,\u201d so the modality should be recorded as none while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_70_to_4_83/cap413-extracted::ch4_4_70_to_4_83::f73ca9ff747b67e8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_70_to_4_83/cap413-extracted::ch4_4_70_to_4_83::f73ca9ff747b67e8.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:17:50Z"
+}

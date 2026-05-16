@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::9cd4bfdc8c66f3dd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.91,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and the authority issue could otherwise be fixed by lowering authorityClass, but an accepted sibling already contains the identical claim with modality 'may' and authorityClass 'operational_guidance'. Keeping this candidate would create a redundant duplicate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::9cd4bfdc8c66f3dd.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::9cd4bfdc8c66f3dd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:50:22Z"
+}

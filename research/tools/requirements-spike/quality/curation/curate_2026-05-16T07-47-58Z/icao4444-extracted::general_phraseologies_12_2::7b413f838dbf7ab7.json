@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::7b413f838dbf7ab7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 54.77,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is supported verbatim in substance and the candidate is not redundant with accepted siblings, but it is a non-operative cross-reference to Doc 9432 rather than a definition or enforceable requirement. The word \u201cmay\u201d is non-deontic here, so the safer modality is none while retaining background_support authority.",
+    "corrections": {
+      "modality": "none",
+      "requirementKind": "reference"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::7b413f838dbf7ab7.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::7b413f838dbf7ab7.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "requirementKind": "reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:03:53Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::c5a97d6d7bf3ea77",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.17,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is supported verbatim by the source quote, and the candidate correctly frames it as a non-normative note with background-support authority. It is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::c5a97d6d7bf3ea77.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::c5a97d6d7bf3ea77.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:20:06Z"
+}

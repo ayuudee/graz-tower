@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::4c77f21490f22fc2",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.5,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exactSourceQuote is not found verbatim in the provided source window; the English phrase is split/interleaved with German text in the source, so the supplied quote is an identity-field mismatch. Because claimText and exactSourceQuotes cannot be edited in this pass, this cannot be promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::4c77f21490f22fc2.json",
+    "toPath": "rejected/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::4c77f21490f22fc2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:24:10Z"
+}

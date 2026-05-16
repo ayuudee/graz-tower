@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aeronautical_ground_lights_7_16::02582beebe3f5dee",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aeronautical_ground_lights_7_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.85,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present in the source, the claim accurately tracks the complete advisory clause in 7.16.2.3, and the modality/authority classification correctly treats the 'should' language as operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling requirements, which address different lighting-operation obligations.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::02582beebe3f5dee.json",
+    "toPath": "candidates/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::02582beebe3f5dee.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:26:43Z"
+}

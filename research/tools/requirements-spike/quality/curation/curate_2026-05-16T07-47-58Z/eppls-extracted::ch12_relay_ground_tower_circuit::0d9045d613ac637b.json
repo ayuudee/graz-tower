@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::0d9045d613ac637b",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.63,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is present in the source window across a line break, so the G1 miss appears to be a whitespace/windowing artefact rather than a real verbatim miss. The claim is directly supported, non-redundant with the accepted sibling, and its note/background-support framing is appropriate for this explanatory parenthetical.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::0d9045d613ac637b.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::0d9045d613ac637b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:13:30Z"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3::a873b6cc80f31f0f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3",
+  "familyId": "icao4444_parallel_runway_family",
+  "claimText": "When assigning the final heading to intercept the final approach course or track, the runway shall be confirmed, and the aircraft shall be advised of its position relative to a fix on the final approach course or track, the altitude to be maintained until established on the final approach course or track, to the glide path or vertical path intercept point, and if required, clearance for the appropriate approach.",
+  "rationale": "Attempts 1 and 2 bundle these as a single workflow constraint. Attempt 3 splits them. Preference is given to bundling because the advisory items are simultaneous requirements triggered by a single event (assigning final heading).",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "When assigning the final heading to intercept the final approach course or track, the runway shall be confirmed, and the aircraft shall be advised of:",
+    "its position relative to a fix on the final approach course or track;",
+    "the altitude to be maintained until established on the final approach course or track, to the glide path or vertical path intercept point; and",
+    "if required, clearance for the appropriate approach."
+  ],
+  "sourceItemIds": [
+    "6.7.3.2.7_a",
+    "6.7.3.2.7_b",
+    "6.7.3.2.7_c"
+  ],
+  "claimSha256": "c397d76968af6780d8e0bda83657a4c8f61f49bd25b4f8f5cf037d25722464db",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7796,
+    "endLine": 7873
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_parallel_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_advice_final_heading",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 4,
+      "hits": 4,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is directly supported by the verbatim source quotes, including the parent clause containing the operative condition and 'shall' obligation, and all G1-G4 audits pass. The bundle-gate concern appears to be an artefact because the first exactSourceQuote includes the parent text, and no accepted sibling redundantly covers this requirement.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:24:41Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/parallel_runways_independent_monitoring_6_7_3_2_to_6_7_3_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:24:41Z"
+  }
+}

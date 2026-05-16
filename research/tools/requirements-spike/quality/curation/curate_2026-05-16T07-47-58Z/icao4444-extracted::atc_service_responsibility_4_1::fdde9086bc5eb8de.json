@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::atc_service_responsibility_4_1::fdde9086bc5eb8de",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_service_responsibility_4_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 26.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and supports the claim as a non-normative ICAO Note using \u201cmay,\u201d and it is not redundant with the accepted atomic requirements. The modality and authority class are already appropriate, but the item is better classified as an advisory note rather than a best-practice requirement.",
+    "corrections": {
+      "requirementKind": "advisory_note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_service_responsibility_4_1/icao4444-extracted::atc_service_responsibility_4_1::fdde9086bc5eb8de.json",
+    "toPath": "candidates/icao4444-extracted/atc_service_responsibility_4_1/icao4444-extracted::atc_service_responsibility_4_1::fdde9086bc5eb8de.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:51:51Z"
+}

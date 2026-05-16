@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::c861aa71264ebb4b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.84,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying source supports requesting this navigation-equipment information, but the candidate\u2019s exactSourceQuotes field is not verbatim because it combines text with an ellipsis and the list item in a form not present as a contiguous source quote. Since exactSourceQuotes is an identity field and cannot be corrected in this pass, the record must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::c861aa71264ebb4b.json",
+    "toPath": "rejected/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::c861aa71264ebb4b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:45:28Z"
+}

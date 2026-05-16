@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::bd274e8c8012c466",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.88,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by CAP 413 section 8.23, and its modality/authorityClass are appropriate. However, the exactSourceQuote does not exist verbatim in the source text because the source uses curly quotation marks around \u2018Training Fix\u2019 and line wrapping; identity fields cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::bd274e8c8012c466.json",
+    "toPath": "rejected/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::bd274e8c8012c466.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:28:37Z"
+}

@@ -65,9 +65,8 @@ Sim golden test for the reframed multi-aircraft scenario. Two C172s at LOWG: air
 - [ ] Inherited-gate-semantics audit comments present (A's gates inherited; B's downwind gates new)
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Landed fn-28.5 (multi-aircraft G3a-react sim golden + 2 archive flips): `G3aPilotReactiveMultiAircraftTest.kt` with three `@Test` methods (crosswind GA on A → ExtendDownwind(B); tailwind GA on A → ExtendDownwind(B); GA-recovery via A's recovery `Report(Downwind)` clears belief → `TurnBase(B)` fires same-cycle per `CONTROLLER_CYCLE_INTERVAL` window per .4's concrete cancel-output contract). Three-layer pin per scenario (Layer 1 partial-order + Layer 2 commitment-stage regression on A + Layer 3 kinematic non-event on B via BeliefState-slice walk to find GA-active SET/CLEAR cursors — codex round-1 fix). Round-10 Major 3 precondition pin: A's TOWER_ARRIVAL commitment with runway=16C exists in BeliefState at the wind-shift cursor. Total-order determinism re-run pin (round-8 Minor 1 EVENT_ORDER proxy). No-runway-vacate pin (round-8 Major 3 — TurnBase(B) precedes A's first Report(RunwayVacated)). `Fixtures.kt` `LOWG_TWO_AIRCRAFT` KDoc extended with G3a-react-multi-aircraft provenance. Two archive flips in `docs/deferments.md`: `D-PASS-g3a-react-multi-aircraft-crosswind` + `-tailwind`, both citing reframed model per plan-review-round-1 (GA + ATC sequencing, NOT simultaneous pilot recognition). Codex impl-review: round-1 NEEDS_WORK (2 Majors — GA-active window upper bound too narrow + Scenario 3 same-cycle assertion too loose) → round-2 SHIP after BeliefState-slice walk replaced both gates.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: cbf399ea8ccca08ed22e8eb393385df7c65fce25, 127308c26beff160b4c79e65389ac0325709d8de
+- Tests: ./gradlew :sim:jvmTest --tests "*G3aPilotReactiveMultiAircraftTest*" --offline --no-daemon (NOT RUN LOCALLY: no JDK in worker environment per fn-28.1-.4 pattern; codex impl-review SHIP'd statically on round-2 — scoped diff c11298378ed92d26379cc90cf78a5aea0ba98f26..HEAD; round-1 NEEDS_WORK fixed by replacing the narrow GA-active window upper bound + the loose same-cycle assertion with a BeliefState-slice walk to find the actual SET/CLEAR cursors)
+- PRs:

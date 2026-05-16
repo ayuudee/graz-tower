@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::81a9f52298127502",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.7,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is directly supported by ICAO 4444 6.5.2.2.2. However, the source uses \u201cshould,\u201d so the candidate cannot remain classified as an authoritative requirement; its authorityClass should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::81a9f52298127502.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::81a9f52298127502.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:41:57Z"
+}

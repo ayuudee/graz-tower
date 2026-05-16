@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7::86d9fe94d4f6f4ad",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.59,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is present verbatim in the source, and the claim accurately captures the standalone 7.4.1.6.2 guidance. Its 'should' modality and operational_guidance authority class are consistent, and it is not redundant with the accepted sibling note about jet blast effects.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7/icao4444-extracted::aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7::86d9fe94d4f6f4ad.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7/icao4444-extracted::aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7::86d9fe94d4f6f4ad.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:13:45Z"
+}

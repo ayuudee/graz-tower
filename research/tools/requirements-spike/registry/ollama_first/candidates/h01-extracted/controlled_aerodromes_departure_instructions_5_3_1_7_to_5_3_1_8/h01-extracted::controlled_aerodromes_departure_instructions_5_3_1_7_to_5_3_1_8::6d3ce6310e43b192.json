@@ -1,0 +1,103 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::6d3ce6310e43b192",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "Post-departure turn or climb instructions phraseology shall use 'AFTER DEPARTURE (instructions)', 'AFTER DEPARTURE FLY HEADING (three digits)', 'AFTER DEPARTURE TURN RIGHT/LEFT HEADING (three digits) TO (level) [TO INTERCEPT (track, route, airway, etc.)]', 'LEFT/RIGHT TURN AFTER DEPARTURE', 'AFTER DEPARTURE CLIMB (instructions)', '[AFTER DEPARTURE] TURN RIGHT/LEFT HEADING (three digits)', '[AFTER DEPARTURE] CONTINUE RUNWAY HEADING/TRACK EXTENDED CENTRE LINE TO (level/significant point) [(other instructions as required)]', 'AFTER REACHING/PASSING (level or significant point) (instructions)', or 'TRACK (three digits) DEGREES [MAGNETIC/TRUE) TO/FROM (significant point) UNTIL (time)/REACHING (fix or significant point or level) [BEFORE PROCEEDING ON COURSE]'.",
+  "rationale": "Attempts 1 and 3 provide the full list; Attempt 2 splits them. Merging ensures completeness of the phraseology set.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: AFTER DEPARTURE (instructions)",
+    "G: AFTER DEPARTURE FLY HEADING (three digits)",
+    "G: TRACK (three digits) DEGREES [MAGNETIC/TRUE) TO/FROM (significant point) UNTIL (time)/REACHING (fix or significant point or level) [BEFORE PROCEEDING ON COURSE]"
+  ],
+  "sourceItemIds": [
+    "5.3.1.7.4_phrases"
+  ],
+  "claimSha256": "fc882c47db58e9934c12589ac60f81535ec2b75df81194e9689554eb73af49a8",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 7464,
+    "endLine": 7592
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "post_departure_turn_climb_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/judged_candidates.json"
+  }
+}

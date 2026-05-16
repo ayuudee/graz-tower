@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_86_to_4_93::ad589c3c2aa9aba8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_86_to_4_93",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.37,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim, standalone cross-reference note from paragraph 4.93, with G1\u2013G4 passing and no redundancy with accepted sibling items. Its existing modality and authorityClass correctly frame it as non-normative background support rather than an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_86_to_4_93/cap413-extracted::ch4_4_86_to_4_93::ad589c3c2aa9aba8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_86_to_4_93/cap413-extracted::ch4_4_86_to_4_93::ad589c3c2aa9aba8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:23:31Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::b14d95b71723a0c9",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.89,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists and supports the substantive Ident tip, and it is not redundant with accepted siblings. However, the source labels it as a \u201cTip\u201d and does not use should-strength wording, so the modality should be lowered to non-normative note while retaining background_support authority.",
+    "corrections": {
+      "modality": "note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::b14d95b71723a0c9.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::b14d95b71723a0c9.json",
+    "correctionsApplied": {
+      "modality": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:51:19Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1",
+  "documentId": "icao9432-extracted",
+  "sectionId": "after_landing_4_9_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.81,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology appears verbatim in the source, is an atomic example not covered by accepted siblings, and its existing modality/authorityClass of example/operational_guidance correctly reflects the illustrative ICAO 9432 material. No identity fields or schema corrections are needed.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/after_landing_4_9_en/icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1.json",
+    "toPath": "candidates/icao9432-extracted/after_landing_4_9_en/icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:47:44Z"
+}

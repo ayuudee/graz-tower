@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::18ac5eb3522f03dd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.07,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuotes field is not verbatim: the source labels this phraseology as item c), not item d), and the quoted single-line text does not appear verbatim in the source window. Because quote identity fields cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::18ac5eb3522f03dd.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::18ac5eb3522f03dd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:49:57Z"
+}

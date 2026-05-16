@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::56cc9210fb3004ec",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_crew_start_push_5_3_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.59,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source and the candidate is correctly framed as a non-normative note with operational-guidance authority. It is a distinct Note 2 principle not covered by the accepted sibling candidates, so it is not a redundant umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::56cc9210fb3004ec.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::56cc9210fb3004ec.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:33:13Z"
+}

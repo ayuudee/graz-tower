@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::54e1db41b4696aad",
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.59,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying phraseology is present in the source window, but the candidate's exactSourceQuotes include a leading 'G:' that does not appear verbatim adjacent to these phrases in the source. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::54e1db41b4696aad.json",
+    "toPath": "rejected/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::54e1db41b4696aad.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:57:38Z"
+}

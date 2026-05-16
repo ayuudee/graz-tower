@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_174_to_4_183::c1f306d7b97ad01e",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_174_to_4_183",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.96,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is verbatim supported by section 4.181, and the modality/authority pairing of may with operational_guidance is appropriate for CAP 413 advisory phraseology. It is not redundant with the accepted sibling candidates and needs no identity or metadata correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::c1f306d7b97ad01e.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::c1f306d7b97ad01e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:00:05Z"
+}

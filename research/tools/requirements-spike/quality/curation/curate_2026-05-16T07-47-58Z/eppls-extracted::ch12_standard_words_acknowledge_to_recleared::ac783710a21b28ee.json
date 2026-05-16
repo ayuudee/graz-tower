@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_acknowledge_to_recleared::ac783710a21b28ee",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_acknowledge_to_recleared",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.92,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The definition is verbatim-supported by the source table and is not redundant with the accepted sibling definitions. However, the cited table row has no note/advisory marker; consistent with the sibling entries, the correct modality is `none` rather than `note`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_acknowledge_to_recleared/eppls-extracted::ch12_standard_words_acknowledge_to_recleared::ac783710a21b28ee.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_acknowledge_to_recleared/eppls-extracted::ch12_standard_words_acknowledge_to_recleared::ac783710a21b28ee.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:16:23Z"
+}

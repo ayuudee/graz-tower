@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::4b0c402f1b7bb977",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.48,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source and is explicitly presented as a Note defining \u201cminimum clean speed.\u201d The candidate\u2019s note modality and background_support authorityClass are appropriate, and the definition is not redundantly covered by the accepted sibling items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::4b0c402f1b7bb977.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::4b0c402f1b7bb977.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:35:22Z"
+}

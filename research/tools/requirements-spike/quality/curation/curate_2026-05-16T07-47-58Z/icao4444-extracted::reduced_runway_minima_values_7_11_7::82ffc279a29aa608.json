@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::reduced_runway_minima_values_7_11_7::82ffc279a29aa608",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduced_runway_minima_values_7_11_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.97,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source and is a standalone advisory provision. Its existing modality and authorityClass correctly reflect the source wording: \u201cshould\u201d as operational guidance, not an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduced_runway_minima_values_7_11_7/icao4444-extracted::reduced_runway_minima_values_7_11_7::82ffc279a29aa608.json",
+    "toPath": "candidates/icao4444-extracted/reduced_runway_minima_values_7_11_7/icao4444-extracted::reduced_runway_minima_values_7_11_7::82ffc279a29aa608.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:31:06Z"
+}

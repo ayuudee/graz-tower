@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_approach_radar_area_services::874c6b46ff114a30",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_approach_radar_area_services",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.94,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is present in the source window modulo line wrapping, and the claim is directly supported without being redundant with accepted siblings. However, the source wording is a descriptive factual statement rather than an explicit note, so the modality should be corrected to `none` while retaining background support treatment.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::874c6b46ff114a30.json",
+    "toPath": "candidates/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::874c6b46ff114a30.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:32:26Z"
+}

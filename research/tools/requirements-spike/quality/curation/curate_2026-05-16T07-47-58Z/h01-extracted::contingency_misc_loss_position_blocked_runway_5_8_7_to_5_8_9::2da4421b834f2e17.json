@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::2da4421b834f2e17",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.71,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but one identity quote fails verbatim audit: \"G: TRANSMITTING FOR DF\" does not appear verbatim in the source window. Because exactSourceQuotes cannot be edited in this pass, this must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::2da4421b834f2e17.json",
+    "toPath": "rejected/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::2da4421b834f2e17.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:24:56Z"
+}

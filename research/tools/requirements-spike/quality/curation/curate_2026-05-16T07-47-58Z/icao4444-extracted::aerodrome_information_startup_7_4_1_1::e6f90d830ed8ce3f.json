@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_startup_7_4_1_1::e6f90d830ed8ce3f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_startup_7_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.65,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source, and the claim is a self-contained advisory 'should' provision correctly classified as operational guidance. It is not redundant with the accepted siblings, which cover other sentences or later paragraphs in the start-up time procedures section.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::e6f90d830ed8ce3f.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::e6f90d830ed8ce3f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:12:47Z"
+}

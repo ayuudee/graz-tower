@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::b6926fe88595e603",
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.85,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the quoted phraseology appears verbatim, the claim is not accurately supported: it characterizes a mixed set of ground and aircraft transmissions, requests, approvals, and acknowledgements as aircraft acknowledgements of frequency-change instructions. Correcting this would require changing the identity claim text, which is not permitted in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::b6926fe88595e603.json",
+    "toPath": "rejected/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::b6926fe88595e603.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:57:49Z"
+}

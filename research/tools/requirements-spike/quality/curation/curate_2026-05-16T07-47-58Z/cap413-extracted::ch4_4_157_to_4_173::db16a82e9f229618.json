@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_157_to_4_173::db16a82e9f229618",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_157_to_4_173",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.18,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quotes, and its should/operational_guidance classification is consistent with CAP 413 wording. The bundle concern about clause 4.159 is already addressed by an accepted sibling candidate, so this candidate can remain an atomic pitch/roll reporting-format item rather than being rejected or re-extracted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_157_to_4_173/cap413-extracted::ch4_4_157_to_4_173::db16a82e9f229618.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_157_to_4_173/cap413-extracted::ch4_4_157_to_4_173::db16a82e9f229618.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:58:43Z"
+}

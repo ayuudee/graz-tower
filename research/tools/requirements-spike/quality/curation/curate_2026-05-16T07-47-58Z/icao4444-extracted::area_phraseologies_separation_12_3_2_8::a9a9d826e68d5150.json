@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_separation_12_3_2_8::a9a9d826e68d5150",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_separation_12_3_2_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted Note is verbatim-supported and the claim accurately reflects its advisory/non-normative content. The modality and authority class are already appropriate, but the requirement kind should reflect advisory-only note material rather than best practice.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_separation_12_3_2_8/icao4444-extracted::area_phraseologies_separation_12_3_2_8::a9a9d826e68d5150.json",
+    "toPath": "candidates/icao4444-extracted/area_phraseologies_separation_12_3_2_8/icao4444-extracted::area_phraseologies_separation_12_3_2_8::a9a9d826e68d5150.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:36:31Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::246891ab2478f38d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_sid_clearances_6_3_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.75,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and the claim accurately represents a non-operative cross-reference note; it is not redundant with the accepted sibling note about 12.3.3.1. The modality and authorityClass are appropriate, but requirementKind should not be 'definition' for a cross-reference note.",
+    "corrections": {
+      "requirementKind": "cross_reference"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_sid_clearances_6_3_2_4/icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::246891ab2478f38d.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_sid_clearances_6_3_2_4/icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::246891ab2478f38d.json",
+    "correctionsApplied": {
+      "requirementKind": "cross_reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:54:10Z"
+}

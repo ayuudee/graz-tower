@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::13beddbc77ef0dbe",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "familyId": "cap413_ch4_4_108_to_4_118_family",
+  "claimText": "When helicopters land or take-off on the manoeuvring area within sight of the VCR, the terms 'CLEARED TO LAND' or 'CLEARED FOR TAKE-OFF' followed by the position shall be used.",
+  "rationale": "All attempts agree on the specific phraseology requirement for manoeuvring area operations.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the terms \u2018CLEARED TO LAND\u2019 and \u2018CLEARED FOR TAKE-OFF\u2019 followed by the position from where they are authorised to take off from ... shall be used"
+  ],
+  "sourceItemIds": [
+    "4.109"
+  ],
+  "claimSha256": "de58beb95558a3a9df38d04af394bbbc87157c59ba9bf23f6856f193e931a419",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 10495,
+    "endLine": 10677
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_108_to_4_118_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_4_109_maneuvering_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "the terms \u2018CLEARED TO LAND\u2019 and \u2018CLEARED FOR TAKE-OFF\u2019 followed by the position from where they are authorised to take off from ... shall be used",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by item 4.109, but the exactSourceQuotes field is not verbatim because it contains an ellipsis and does not match the source text. Identity fields cannot be corrected in this pass, so the G1 verbatim quote failure requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T07:47:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_108_to_4_118/judged_candidates.json",
+    "curatedAt": "2026-05-16T07:47:20Z"
+  }
+}

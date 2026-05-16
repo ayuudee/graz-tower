@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_17_to_4_23::29e6763ef46a48ea",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_17_to_4_23",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.78,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited sentence is a descriptive/background statement about care taken in CAP 413 phraseology design, not an operative obligation that users' phraseology \u201cmust not\u201d be interpretable as take-off clearance or runway-entry instruction. Because the normative wording is embedded in the claimText, fixing this would require re-extraction rather than only modality/authority corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::29e6763ef46a48ea.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::29e6763ef46a48ea.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:00:53Z"
+}

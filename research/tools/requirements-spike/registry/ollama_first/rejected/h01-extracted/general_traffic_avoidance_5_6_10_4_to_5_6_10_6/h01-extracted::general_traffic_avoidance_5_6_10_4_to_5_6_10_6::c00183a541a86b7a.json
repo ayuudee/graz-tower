@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::c00183a541a86b7a",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "Traffic information without radar follows the structure: TRAFFIC IS (classification) [UNMANNED FREE BALLOON[S]/(type of A/C)] [WAS/ESTIMATED] OVER (place) AT (time) [REPORTED (level(s))/LEVEL UNKNOWN] [MOVING (direction)] [other pertinent information].",
+  "rationale": "Template phraseology example for non-radar traffic info. Marked advisory_only.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "G: TRAFFIC IS (classification) UNMANNED FREE BALLOON[S]/(type of A/C) WAS [or ESTIMATED] OVER (place) AT (time) REPORTED (level(s)) [or LEVEL UNKNOWN] MOVING (direction) (other pertinent information, if any)"
+  ],
+  "sourceItemIds": [
+    "h01_5.6.10.5_template"
+  ],
+  "claimSha256": "e692c0e585ea4aa3cfeb15fe2e78d2d95a7c7cc3b708d753eb9e6cee057d6c1d",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 10021,
+    "endLine": 10125
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_5.6.10.5_template_structure",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "G: TRAFFIC IS (classification) UNMANNED FREE BALLOON[S]/(type of A/C) WAS [or ESTIMATED] OVER (place) AT (time) REPORTED (level(s)) [or LEVEL UNKNOWN] MOVING (direction) (other pertinent information, if any)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The cited exactSourceQuote does not exist verbatim in the source window after whitespace normalization because the English template is interleaved with German text in the source. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 failure requiring rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:55:03Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:55:03Z"
+  }
+}

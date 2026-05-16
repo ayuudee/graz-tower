@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::43ab3819137626ed",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "familyId": "icao4444_arrival_procedures_family",
+  "claimText": "An IFR flight shall not be cleared for an initial approach below the appropriate minimum altitude unless the pilot reports that the aerodrome is and can be maintained in sight.",
+  "rationale": "Consistent condition for descending below minimum altitude based on visual contact.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "An IFR flight shall not be cleared for an initial approach below the appropriate minimum altitude... unless: b) the pilot reports that the aerodrome is and can be maintained in sight;"
+  ],
+  "sourceItemIds": [
+    "6.5.1.3",
+    "6.5.1.3b"
+  ],
+  "claimSha256": "c3785e9fbe079c34409479a2fd1bce56ae00bb7e26245da215f68831b781dab5",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7013,
+    "endLine": 7105
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_arrival_procedures_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "6.5.1.3b_initial_approach_visual",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "An IFR flight shall not be cleared for an initial approach below the appropriate minimum altitude... unless: b) the pilot reports that the aerodrome is and can be maintained in sight;",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by clause 6.5.1.3(b), but the provided exactSourceQuotes entry is not verbatim because it splices text with an ellipsis. Since quote identity fields cannot be corrected in this pass and G1 has a real verbatim miss, the candidate must be rejected.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:41:28Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:41:28Z"
+  }
+}

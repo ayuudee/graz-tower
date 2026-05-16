@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::e55a99e3ca70548a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_opposite_direction_5_8_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 25.76,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The figure caption is quoted verbatim and supports the claim as non-normative background material. However, the cited quote is a figure caption with no note language or operative modal, so the modality should be lowered from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_opposite_direction_5_8_5/icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::e55a99e3ca70548a.json",
+    "toPath": "candidates/icao4444-extracted/wake_turbulence_opposite_direction_5_8_5/icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::e55a99e3ca70548a.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:41:33Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_conditional_clearance_identification::3fec962f4ff7d9fb",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_conditional_clearance_identification",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 21.12,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present verbatim, the claim is directly supported, and all gate audits passed. The source's wording supports a shall modality, while the background_support authority class appropriately prevents treating this as an authoritative regulatory requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_conditional_clearance_identification/eppls-extracted::ch12_conditional_clearance_identification::3fec962f4ff7d9fb.json",
+    "toPath": "candidates/eppls-extracted/ch12_conditional_clearance_identification/eppls-extracted::ch12_conditional_clearance_identification::3fec962f4ff7d9fb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:45:33Z"
+}

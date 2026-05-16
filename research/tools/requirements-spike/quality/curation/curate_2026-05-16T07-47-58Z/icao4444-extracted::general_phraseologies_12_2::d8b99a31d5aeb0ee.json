@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::d8b99a31d5aeb0ee",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.02,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source and is explicitly a non-operative Note pointing to the readback requirements in Chapter 4. Its modality as note and authorityClass as background_support are appropriate, and no accepted sibling already covers this referential note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::d8b99a31d5aeb0ee.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::d8b99a31d5aeb0ee.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:04:15Z"
+}

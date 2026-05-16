@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::f8384c1a0540e220",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.03,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the surrounding operative clause, but the candidate's exact source quote does not appear verbatim in the source window because the numbering and list text are separated. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::f8384c1a0540e220.json",
+    "toPath": "rejected/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::f8384c1a0540e220.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:41:07Z"
+}

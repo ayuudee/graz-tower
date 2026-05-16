@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::7fbc9661229d12b4",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "Acknowledgement of receipt of ATIS information must be made by including the ATIS identifying letter in the request for start up (IFR) or for taxi (VFR).",
+  "rationale": "The note prescribes the specific phraseology mechanism for acknowledging ATIS.",
+  "modality": "must",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Acknowledge receipt of the ATIS information must be made by including the ATIS identifying letter in the request for start up (IFR) or for taxi (VFR)."
+  ],
+  "sourceItemIds": [
+    "item_5.3.1.1.1_note"
+  ],
+  "claimSha256": "ce6c041f6452af614c3b50b1e23bf63c229a65681fa062c200026acce65c78c8",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 6822,
+    "endLine": 6967
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_atis_ack_start",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Acknowledge receipt of the ATIS information must be made by including the ATIS identifying letter in the request for start up (IFR) or for taxi (VFR).",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "must",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted sentence is present in the source window after line-break normalization and supports the claim. However, the source wording uses “must,” so the candidate’s modality should match that wording rather than “shall”; operational_guidance is appropriate for this H01 note-based material.",
+      "corrections": {
+        "modality": "must"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:33:53Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::7fbc9661229d12b4.json",
+      "to": "pending/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::7fbc9661229d12b4.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:33:53Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

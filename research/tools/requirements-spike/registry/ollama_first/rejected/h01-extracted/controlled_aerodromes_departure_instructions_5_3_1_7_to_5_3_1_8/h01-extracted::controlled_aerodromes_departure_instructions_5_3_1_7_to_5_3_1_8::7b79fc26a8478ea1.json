@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8::7b79fc26a8478ea1",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "VFR departure route clearance phraseology shall use 'LEAVE CONTROL ZONE [NIGHT VFR] VIA [VFR] [ROUTE/SECTOR] (route description) AT (level) [OR ABOVE/OR BELOW)] [SQAWK (code)] [RIGHT/LEFT TURN AFTER DEPARTURE]'.",
+  "rationale": "All attempts agree on the specific English phraseology structure for VFR departure clearances.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: LEAVE CONTROL ZONE [NIGHT VFR] VIA [VFR] [ROUTE/SECTOR] (route description) AT (level) [OR ABOVE/OR BELOW)] [SQAWK (code)] [RIGHT/LEFT TURN AFTER DEPARTURE]"
+  ],
+  "sourceItemIds": [
+    "5.3.1.7.1_phrases"
+  ],
+  "claimSha256": "4b0ce588c9c3f1c436e66f1848794aa6004fd9e43e38690ac785fb1b06112bf8",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 7464,
+    "endLine": 7592
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "vfr_departure_clearance_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "G: LEAVE CONTROL ZONE [NIGHT VFR] VIA [VFR] [ROUTE/SECTOR] (route description) AT (level) [OR ABOVE/OR BELOW)] [SQAWK (code)] [RIGHT/LEFT TURN AFTER DEPARTURE]",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate\u2019s exactSourceQuote is not present verbatim in the provided source window after whitespace normalization because the English phraseology is split/interleaved with German text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, this requires rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:32:17Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_human_review",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_departure_instructions_5_3_1_7_to_5_3_1_8/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:32:17Z"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_tower_functions_7_1::341319d479f9a08a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_tower_functions_7_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.68,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the candidate correctly treats the source as a non-normative Note/background cross-reference rather than an obligation. The only issue is that the requirementKind is misclassified as a definition; it is a cross-reference to Chapter 8, 8.10.",
+    "corrections": {
+      "requirementKind": "cross_reference"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_tower_functions_7_1/icao4444-extracted::aerodrome_tower_functions_7_1::341319d479f9a08a.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_tower_functions_7_1/icao4444-extracted::aerodrome_tower_functions_7_1::341319d479f9a08a.json",
+    "correctionsApplied": {
+      "requirementKind": "cross_reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:23:49Z"
+}

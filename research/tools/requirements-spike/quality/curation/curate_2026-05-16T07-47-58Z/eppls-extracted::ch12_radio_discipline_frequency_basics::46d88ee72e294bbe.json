@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::46d88ee72e294bbe",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.33,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present verbatim in the source window once line breaks are normalized, so the G1 miss appears to be an audit artifact rather than a real identity failure. The candidate is advisory/background material with matching 'should' modality and is not redundant with the accepted ATZ reporting sibling.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::46d88ee72e294bbe.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::46d88ee72e294bbe.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:05:49Z"
+}

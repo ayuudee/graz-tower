@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_met_7_4_1_2::d64fdc59bc887d21",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_met_7_4_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.47,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuote is not present verbatim in the source because it uses an ellipsis and omits intervening text. Although the substantive claim is supported by the source, quote fields are identity fields and cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::d64fdc59bc887d21.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::d64fdc59bc887d21.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:09:51Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2::14b9fa8014f3a0d2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.3,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source, the claim accurately restates the note, and the candidate is correctly framed as non-normative with modality \u201cnote\u201d and authorityClass \u201coperational_guidance.\u201d It is not redundant with the accepted sibling requirements, which cover separate operative GNSS/VOR separation conditions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2/icao4444-extracted::horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2::14b9fa8014f3a0d2.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2/icao4444-extracted::horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2::14b9fa8014f3a0d2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:06:44Z"
+}

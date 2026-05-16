@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::ca4eb8f5bab34a7c",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.54,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted note is verbatim-supported, schema-valid, and correctly classified as note-level operational guidance rather than an authoritative requirement. It is not redundant with the accepted atomic phraseology items because it defines the procedural response terms HOLDING and STOPPING for the referenced cancellation/stop scenarios.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13/h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::ca4eb8f5bab34a7c.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13/h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::ca4eb8f5bab34a7c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:37:54Z"
+}

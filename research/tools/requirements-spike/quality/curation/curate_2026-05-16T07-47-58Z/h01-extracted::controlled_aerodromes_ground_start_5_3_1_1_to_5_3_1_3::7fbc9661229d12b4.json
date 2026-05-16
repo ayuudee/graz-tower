@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::7fbc9661229d12b4",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.96,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is present in the source window after line-break normalization and supports the claim. However, the source wording uses \u201cmust,\u201d so the candidate\u2019s modality should match that wording rather than \u201cshall\u201d; operational_guidance is appropriate for this H01 note-based material.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::7fbc9661229d12b4.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::7fbc9661229d12b4.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:33:53Z"
+}

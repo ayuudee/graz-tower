@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::9e570fd5e06121be",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source verbatim supports this standalone permission/authority to impose silence, including the affected stations. The missing list items relate to the separate later obligation introduced by \u201cIn either case, it shall use:\u201d and do not make this candidate\u2019s atomic claim incomplete or redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::9e570fd5e06121be.json",
+    "toPath": "candidates/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::9e570fd5e06121be.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:42:54Z"
+}

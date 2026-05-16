@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::daca0ef0d698ccf3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.12,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is supported by the Note, with the source using permissive 'may' language. Because the material is explicitly in a Note, it should remain non-authoritative/advisory rather than being treated as a best-practice requirement.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::daca0ef0d698ccf3.json",
+    "toPath": "candidates/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::daca0ef0d698ccf3.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:32:32Z"
+}

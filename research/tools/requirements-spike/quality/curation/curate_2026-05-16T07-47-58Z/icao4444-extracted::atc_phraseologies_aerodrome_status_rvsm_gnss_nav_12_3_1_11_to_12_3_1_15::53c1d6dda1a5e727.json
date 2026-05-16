@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::53c1d6dda1a5e727",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.48,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted text is verbatim and the modality/authority fields are consistent, but the source structure makes item 12.3.1.14 a) dependent on subordinate location qualifiers 1) or 2). Resolving this would require re-extraction or a human decision on whether to combine the parent phrase with the accepted qualifier siblings, and claimText/exactSourceQuotes cannot be edited here.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::53c1d6dda1a5e727.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:47:57Z"
+}

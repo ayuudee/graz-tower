@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_met_7_4_1_2::817b2b11720e6929",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_met_7_4_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.35,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but one exactSourceQuote is not verbatim: the source separates \u201ca)\u201d from the listed text and does not contain \u201ca) any significant changes...\u201d as quoted. Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this real G1 miss requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::817b2b11720e6929.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::817b2b11720e6929.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:09:26Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::4d3e2d04f9813e59",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.64,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text verbatim supports the atomic claim that position is one listed component of the distress message format, and this content is not already covered by the accepted siblings. However, the cited list item has no explicit note or modal wording, so the modality should be corrected from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::4d3e2d04f9813e59.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::4d3e2d04f9813e59.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:48:11Z"
+}

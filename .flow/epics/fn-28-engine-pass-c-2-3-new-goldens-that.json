@@ -1,13 +1,18 @@
 {
   "branch_name": "fn-28-engine-pass-c-2-3-new-goldens-that",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-16T17:17:28.573475Z",
   "created_at": "2026-05-16T08:32:03.202318Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [],
   "id": "fn-28-engine-pass-c-2-3-new-goldens-that",
   "next_task": 1,
-  "plan_review_status": "unknown",
-  "plan_reviewed_at": null,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-16T12:16:44.547971Z",
   "spec_path": ".flow/specs/fn-28-engine-pass-c-2-3-new-goldens-that.md",
-  "status": "open",
+  "status": "done",
   "title": "Engine pass C \u2014 2-3 new goldens that close the most deferments",
-  "updated_at": "2026-05-16T11:38:45.748179Z"
+  "updated_at": "2026-05-16T17:17:28.775966Z"
 }

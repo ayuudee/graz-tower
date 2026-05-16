@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_94_to_4_107::031586f3c823f680",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_94_to_4_107",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.41,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, and all gate audits passed. The wording \u201cwill normally avoid\u201d is appropriately treated as advisory operational guidance rather than an authoritative requirement, and the candidate is not redundant with the accepted sibling covering the relay of instructions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_94_to_4_107/cap413-extracted::ch4_4_94_to_4_107::031586f3c823f680.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_94_to_4_107/cap413-extracted::ch4_4_94_to_4_107::031586f3c823f680.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:23:47Z"
+}

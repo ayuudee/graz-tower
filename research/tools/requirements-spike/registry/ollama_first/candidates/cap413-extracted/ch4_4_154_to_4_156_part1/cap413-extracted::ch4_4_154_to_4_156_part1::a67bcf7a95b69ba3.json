@@ -1,0 +1,102 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_154_to_4_156_part1::a67bcf7a95b69ba3",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_154_to_4_156_part1",
+  "familyId": "cap413_ch4_4_154_to_4_156_part1_family",
+  "claimText": "Offshore station shall transmit 'Report your weather'; helicopter shall respond with Surface Wind, Visibility, Weather, Cloud, Temperature, QNH/QFE, and Helideck status.",
+  "rationale": "Standard phraseology pair for weather report, including specific data fields.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "(Offshore station callsign) (Aircraft callsign) Report your weather.",
+    "(Aircraft callsign) (Offshore station callsign) Weather (State the following information as appropriate) Surface Wind (number) degrees (number) knots, Visibility (distance) kilometres/ metres, Weather (rain, snow, showers, etc.), Cloud few/scattered etc., (number) feet estimated, Ambient temperature (number), Helideck temperature (number), (Name of Area) QNH (pressure) (hectopascals), QFE (pressure) (hectopascals), Pitch (number) degrees: Roll (number) degrees: Heave (number) metres (as appropriate)."
+  ],
+  "sourceItemIds": [
+    "tbl4_weather"
+  ],
+  "claimSha256": "a19bda92602b36af74897b36e5e5e7257a6cc5b088e91ab1a566215aa2a76eb4",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 11473,
+    "endLine": 11571
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_154_to_4_156_part1_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_4156_weather_pair",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_154_to_4_156_part1/judged_candidates.json"
+  }
+}

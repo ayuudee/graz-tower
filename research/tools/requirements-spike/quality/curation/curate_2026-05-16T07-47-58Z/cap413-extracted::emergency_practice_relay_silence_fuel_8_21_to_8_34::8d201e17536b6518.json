@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::8d201e17536b6518",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.68,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The operative content is broadly supported by CAP 413 8.30, but the supplied exactSourceQuote is not verbatim: it changes punctuation/quotation marks and omits the source's 'or' between the two alternatives. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::8d201e17536b6518.json",
+    "toPath": "rejected/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::8d201e17536b6518.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:28:30Z"
+}

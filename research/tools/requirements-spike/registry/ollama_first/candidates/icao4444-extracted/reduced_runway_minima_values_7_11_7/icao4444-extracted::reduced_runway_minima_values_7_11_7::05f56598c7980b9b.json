@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::reduced_runway_minima_values_7_11_7::05f56598c7980b9b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduced_runway_minima_values_7_11_7",
+  "familyId": "icao4444_reduced_runway_family",
+  "claimText": "A succeeding landing Category 2 aircraft may cross the runway threshold when the preceding aircraft is a Category 1 or 2 aircraft which has landed and has passed a point at least 1 500 m from the threshold of the runway, is in motion and will vacate the runway without backtracking.",
+  "rationale": "Consistent across all attempts. Defines the landed condition for Cat 2 landing separation.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "a succeeding landing Category 2 aircraft may cross the runway threshold when the preceding aircraft is a Category 1 or 2 aircraft which either: i) has landed and has passed a point at least 1 500 m from the threshold of the runway, is in motion and will vacate the runway without backtracking;"
+  ],
+  "sourceItemIds": [
+    "7.11.7_a_2_i"
+  ],
+  "claimSha256": "d74143f5458980222255ee375d458062d0aa954e853c2d8c3444a1a434e14629",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 9246,
+    "endLine": 9289
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_reduced_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "landing_cat2_1500m_landed",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim and quote are supported by the source, and the operative parent wording is explicitly permissive: the succeeding aircraft \"may cross\" under the listed condition. Because a `may` modality cannot carry `authoritative_requirement` under the authority floor table, the authorityClass should be lowered rather than changing the modality.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:30:23Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/reduced_runway_minima_values_7_11_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:30:23Z"
+  }
+}

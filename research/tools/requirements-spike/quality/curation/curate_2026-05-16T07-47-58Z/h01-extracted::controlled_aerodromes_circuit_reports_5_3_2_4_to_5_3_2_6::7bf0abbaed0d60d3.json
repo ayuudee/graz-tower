@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7bf0abbaed0d60d3",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote does not appear verbatim in the source window; the source has \u201cG: REPORT\u201d followed by separate bullet items, including \u201c\u2022 SHORT/LONG FINAL,\u201d not the compressed quote provided. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate fails G1 and must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7bf0abbaed0d60d3.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7bf0abbaed0d60d3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:29:19Z"
+}

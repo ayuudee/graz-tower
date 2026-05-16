@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_approach_radar_area_services::6dc8b736cb8d52ca",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_approach_radar_area_services",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.92,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the source window; the quoted sentence appears there with only a line break between \u201cdelaying\u201d and \u201cpurposes,\u201d and it is not redundant with accepted siblings. The only needed correction is that the source wording uses \u201cmay,\u201d not \u201cnote.\u201d",
+    "corrections": {
+      "modality": "may"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::6dc8b736cb8d52ca.json",
+    "toPath": "candidates/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::6dc8b736cb8d52ca.json",
+    "correctionsApplied": {
+      "modality": "may"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:32:06Z"
+}

@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::4676b657f36e01f4",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+  "familyId": "h01_contingency_communications_family",
+  "claimText": "When imposing silence, the radiotelephony distress signal 'MAYDAY' shall be used.",
+  "rationale": "All attempts agree on the required distress signal.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "In either case, it shall use: b) the radiotelephony distress signal \u201cMAYDAY\u201d"
+  ],
+  "sourceItemIds": [
+    "4.1.2.3.1",
+    "4.1.2.3.1.b"
+  ],
+  "claimSha256": "0d1a1b27f416a7a3ad41e5a6a8f0310b1e34f8a6a3f62bbeeda994ebfac520f1",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 5161,
+    "endLine": 5307
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "silence_phraseology_mayday",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "In either case, it shall use: b) the radiotelephony distress signal \u201cMAYDAY\u201d",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is supported by the source, but the provided exactSourceQuote does not exist verbatim: the source separates \u201cIn either case, it shall use:\u201d from item b) and includes intervening item a). Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim failure requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:42:16Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:42:16Z"
+  }
+}

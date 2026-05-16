@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::e2589e7fdb88f907",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.63,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology appears verbatim in the source, the schema and authority/modality checks pass, and the candidate is not redundant with the accepted siblings, which cover position-of-traffic examples and notes rather than type-of-traffic phraseology. Its example modality and operational_guidance authority correctly reflect the illustrative phraseology nature of H01.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::e2589e7fdb88f907.json",
+    "toPath": "candidates/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::e2589e7fdb88f907.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:57:04Z"
+}

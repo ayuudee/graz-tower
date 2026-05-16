@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::980cc16623f27535",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.58,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quotes are verbatim and support the candidate claim, including the RNP AR APCH constraints. The source uses permissive 'may' framing, so the only defect is that authorityClass is too high for modality 'may'.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1/icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::980cc16623f27535.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1/icao4444-extracted::parallel_runways_independent_types_requirements_6_7_3_1_to_6_7_3_2_part1::980cc16623f27535.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:26:56Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_speed_control_4_7::590e5d515e84cc1e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_speed_control_4_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.96,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The exact source quote is present and supports the claim, but it uses 'should', which is advisory rather than mandatory. Per the authority floor rules, the modality should remain 'should' and the authorityClass should be lowered from authoritative_requirement to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::590e5d515e84cc1e.json",
+    "toPath": "candidates/icao4444-extracted/vertical_speed_control_4_7/icao4444-extracted::vertical_speed_control_4_7::590e5d515e84cc1e.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:15Z"
+}

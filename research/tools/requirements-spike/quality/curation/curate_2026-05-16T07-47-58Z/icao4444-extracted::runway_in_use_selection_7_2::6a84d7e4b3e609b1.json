@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::runway_in_use_selection_7_2::6a84d7e4b3e609b1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "runway_in_use_selection_7_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 36.04,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim supported, the permissive modality 'may' is correctly captured, and the non-authoritative best_practice classification is floor-consistent. The accepted siblings do not duplicate this standalone 7.2.3 noise-abatement permission/objective.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/runway_in_use_selection_7_2/icao4444-extracted::runway_in_use_selection_7_2::6a84d7e4b3e609b1.json",
+    "toPath": "candidates/icao4444-extracted/runway_in_use_selection_7_2/icao4444-extracted::runway_in_use_selection_7_2::6a84d7e4b3e609b1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:33:27Z"
+}

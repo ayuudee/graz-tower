@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_85::97baca274ce13df7",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_85",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.29,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phrase exists in the source and is presented under \u201cExamples of typical FISO/Pilot RTF exchanges,\u201d so the example modality and operational_guidance authority are appropriate. The only issue is that requirementKind should not frame this as a binding phraseology rule.",
+    "corrections": {
+      "requirementKind": "phraseology_example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::97baca274ce13df7.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::97baca274ce13df7.json",
+    "correctionsApplied": {
+      "requirementKind": "phraseology_example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:22:02Z"
+}

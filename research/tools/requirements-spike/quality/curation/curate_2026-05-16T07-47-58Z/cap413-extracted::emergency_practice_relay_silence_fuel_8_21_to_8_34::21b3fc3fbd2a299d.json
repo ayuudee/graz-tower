@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::21b3fc3fbd2a299d",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.38,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited quote does not exist verbatim in the source text because the source uses curly apostrophes/quotation marks and different punctuation, so the identity field cannot be preserved. Although the underlying definition is present and would likely be descriptive rather than shall-strength, this pass cannot edit the claimText or exactSourceQuotes.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::21b3fc3fbd2a299d.json",
+    "toPath": "rejected/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::21b3fc3fbd2a299d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:27:28Z"
+}

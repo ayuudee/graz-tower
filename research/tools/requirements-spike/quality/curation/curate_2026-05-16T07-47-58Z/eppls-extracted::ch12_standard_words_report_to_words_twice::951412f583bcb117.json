@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::951412f583bcb117",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.12,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The definition is visually supported by the table, but the candidate\u2019s exactSourceQuote does not appear verbatim in the provided source text after whitespace normalization because the extracted text separates \u201cStandby\u201d from its meaning. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::951412f583bcb117.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::951412f583bcb117.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:19:33Z"
+}

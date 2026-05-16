@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::64331fe63de6495d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.18,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted 9-minute item is verbatim and the shall/authoritative classification is appropriate, but the candidate is structurally underspecified because the operative parent conditions in 5.4.2.4.3 are not included in the claim. Resolving this would require re-extraction or rebundling with the parent conditions rather than a permitted modality/authority correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::64331fe63de6495d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:14:25Z"
+}

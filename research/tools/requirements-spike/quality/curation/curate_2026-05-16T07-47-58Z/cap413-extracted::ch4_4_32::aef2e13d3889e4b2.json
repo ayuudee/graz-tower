@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_32::aef2e13d3889e4b2",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_32",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.81,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the schema and authority/modality checks pass, and the candidate correctly frames the CAP 413 wording as permissive operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling phraseology examples, which do not cover this advisory line-up guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_32/cap413-extracted::ch4_4_32::aef2e13d3889e4b2.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_32/cap413-extracted::ch4_4_32::aef2e13d3889e4b2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:08:35Z"
+}

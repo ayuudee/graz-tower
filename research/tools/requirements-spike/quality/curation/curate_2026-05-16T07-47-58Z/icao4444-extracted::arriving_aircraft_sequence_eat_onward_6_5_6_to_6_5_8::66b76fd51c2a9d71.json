@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8::66b76fd51c2a9d71",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.22,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, and the source uses 'should', which matches the candidate's modality and operational_guidance authority class. It is a distinct atomic guidance item not already covered by the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8/icao4444-extracted::arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8::66b76fd51c2a9d71.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8/icao4444-extracted::arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8::66b76fd51c2a9d71.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:40:46Z"
+}

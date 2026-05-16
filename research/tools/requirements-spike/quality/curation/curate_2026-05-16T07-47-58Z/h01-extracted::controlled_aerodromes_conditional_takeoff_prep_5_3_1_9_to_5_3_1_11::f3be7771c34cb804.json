@@ -1,0 +1,28 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::f3be7771c34cb804",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.34,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phrase exists verbatim and is an atomic phraseology item, but the specific source line is presented as listed phraseology without an explicit 'shall' modal for this correction response. The identity quote is valid and no sibling accepted item redundantly covers this negative-correction phrase, so the issue can be resolved by downgrading the modality/authority rather than rejecting.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::f3be7771c34cb804.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::f3be7771c34cb804.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:31:24Z"
+}

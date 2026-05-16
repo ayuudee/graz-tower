@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::6303181c29f7d935",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.76,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted wording is present in the source window despite the automated G1 miss, and the claim is supported without being redundant with accepted siblings. However, the source uses an imperative advisory instruction rather than an explicit 'should', so the modality should be recorded as none while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6303181c29f7d935.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6303181c29f7d935.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:10:59Z"
+}

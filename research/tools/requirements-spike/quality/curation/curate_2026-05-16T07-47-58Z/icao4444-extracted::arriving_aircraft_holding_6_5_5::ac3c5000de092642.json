@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::ac3c5000de092642",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.42,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim in the source and supports the claim, with \u201cshould\u201d governing the instruction/option to reduce speed when practicable. The candidate already uses advisory modality and operational_guidance authority, and it is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::ac3c5000de092642.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::ac3c5000de092642.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:38:02Z"
+}

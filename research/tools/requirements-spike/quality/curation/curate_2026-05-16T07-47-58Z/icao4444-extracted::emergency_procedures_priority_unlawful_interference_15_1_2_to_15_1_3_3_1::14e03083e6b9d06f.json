@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1::14e03083e6b9d06f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.2,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted Note exists verbatim in the source, and the candidate correctly frames it as non-operative background support with modality `note`. It is not redundant with the accepted operative sibling requiring ATS units to relay messages, because it supplies the source\u2019s illustrative examples of what those messages include.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1/icao4444-extracted::emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1::14e03083e6b9d06f.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1/icao4444-extracted::emergency_procedures_priority_unlawful_interference_15_1_2_to_15_1_3_3_1::14e03083e6b9d06f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:00:06Z"
+}

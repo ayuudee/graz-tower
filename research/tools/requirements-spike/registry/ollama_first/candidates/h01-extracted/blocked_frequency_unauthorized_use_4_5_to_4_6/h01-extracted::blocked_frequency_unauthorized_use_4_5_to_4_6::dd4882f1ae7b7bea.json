@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::dd4882f1ae7b7bea",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "familyId": "h01_contingency_communications_family",
+  "claimText": "If communication is established with the aircraft concerned, the flight crew should be instructed to take immediate action to stop inadvertent transmissions on the affected control frequency.",
+  "rationale": "All attempts agree on this step under 4.5. Source uses 'should'.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "if communication is established with the aircraft concerned, the flight crew should be instructed to take immediate action to stop inadvertent transmissions on the affected control frequency."
+  ],
+  "sourceItemIds": [
+    "4.5_c"
+  ],
+  "claimSha256": "b40fd958a0952b8257c2ba2273ad62d68694f1d339e5de11de34d8d70c8da38e",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 6133,
+    "endLine": 6264
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "4.5_stop_transmissions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The candidate is directly supported by the quoted 4.5(c) text, the quote audit and schema/authority audits all pass, and the modality/authorityClass correctly reflect advisory 'should' language as operational guidance. It is not redundant with the accepted siblings because it captures the distinct blocked-frequency step of instructing the flight crew to stop the inadvertent transmission.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:23:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:23:12Z"
+  }
+}

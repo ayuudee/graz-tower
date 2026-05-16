@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::4f0ef1d286932f00",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 25.91,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the schema and authority/modality audits pass, and the candidate is correctly framed as a non-operative note with background-support authority. It is not redundant with the accepted sibling requirements because it points to external reporting forms and instructions rather than restating the reporting obligation itself.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::4f0ef1d286932f00.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::4f0ef1d286932f00.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:08:15Z"
+}

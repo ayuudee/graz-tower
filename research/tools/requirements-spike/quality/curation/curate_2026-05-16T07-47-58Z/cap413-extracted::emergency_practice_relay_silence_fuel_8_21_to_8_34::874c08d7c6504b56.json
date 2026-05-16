@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::874c08d7c6504b56",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.42,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present in the source and directly supports the permission stated in the claim. The candidate is already framed conservatively as CAP 413 operational guidance with a 'may' modality, and it is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::874c08d7c6504b56.json",
+    "toPath": "candidates/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::874c08d7c6504b56.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:28:23Z"
+}

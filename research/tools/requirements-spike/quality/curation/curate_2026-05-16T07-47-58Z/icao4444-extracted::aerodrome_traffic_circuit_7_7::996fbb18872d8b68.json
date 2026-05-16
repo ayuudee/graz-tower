@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::996fbb18872d8b68",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.33,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the shall/authoritative metadata are correct, but the parent clause is expressly qualified by the following 'except that' subclauses. The accepted siblings contain those exemptions, so this record likely needs bundle/linkage treatment rather than metadata correction or rejection as unsupported.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::996fbb18872d8b68.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:25:34Z"
+}

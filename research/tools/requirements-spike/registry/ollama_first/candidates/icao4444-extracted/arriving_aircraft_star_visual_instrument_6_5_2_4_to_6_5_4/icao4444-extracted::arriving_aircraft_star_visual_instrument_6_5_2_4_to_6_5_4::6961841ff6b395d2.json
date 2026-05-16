@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::arriving_aircraft_star_visual_instrument_6_5_2_4_to_6_5_4::6961841ff6b395d2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_star_visual_instrument_6_5_2_4_to_6_5_4",
+  "familyId": "icao4444_arrival_procedures_family",
+  "claimText": "The phraseology 'DESCEND VIA STAR TO (level), CANCEL LEVEL RESTRICTION(S) AT (point(s))' requires descending to the cleared level with published level restrictions cancelled at specified points, following the lateral profile, and complying with published speed restrictions or ATC-issued speed control instructions.",
+  "rationale": "Consistent definition of phraseology meaning across all attempts.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "deterministic_test",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "DESCEND VIA STAR TO (level), CANCEL LEVEL RESTRICTION(S) AT (point(s)): i) descend to the cleared level; published level restriction(s) at the specified point(s) are cancelled; ii) follow the lateral profile of the STAR; and iii) comply with published speed restrictions or ATC-issued speed control instructions as applicable."
+  ],
+  "sourceItemIds": [
+    "6.5.2.4.1.c"
+  ],
+  "claimSha256": "85d1124367e3f91b21f388f75a659ee20bbb5f9f214e19f5c32d291d517a070e",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7106,
+    "endLine": 7206
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_arrival_procedures_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "descend_via_star_cancel_level_at_point_meaning",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/arriving_aircraft_star_visual_instrument_6_5_2_4_to_6_5_4/judged_candidates.json"
+  }
+}

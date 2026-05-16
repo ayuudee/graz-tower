@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.0,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact source quote is present and supports the claimed example phraseology for start-up approval. The candidate is properly framed as example modality and operational_guidance, and it is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:42:47Z"
+}

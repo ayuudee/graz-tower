@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::3082a37048916ef6",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.27,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list is verbatim and supports the procedural sequence, but the source is pilot-training/background material and does not use or support a shall-strength obligation. The identity fields can remain as extracted, while the metadata modality should be lowered to reflect advisory/background use.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::3082a37048916ef6.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/eppls-extracted::ch12_distress_cancellation_urgency_frequencies::3082a37048916ef6.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:50:20Z"
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::36fe9fd718363848",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.68,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted text is verbatim and the modality/authority are appropriate, but the candidate depends on parent clause 15.3.3 and the 15.3.3(b) IMC condition to define the operative separation assumption. Fixing this would require re-extraction or bundling by adding the missing parent context/quotes, which cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::36fe9fd718363848.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:29:29Z"
+}

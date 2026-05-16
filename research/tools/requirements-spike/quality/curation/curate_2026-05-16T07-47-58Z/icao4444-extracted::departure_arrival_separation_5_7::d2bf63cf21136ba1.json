@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::d2bf63cf21136ba1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 3.98,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the verbatim source quote and accurately captures the permission in 5.7.1.2(a). However, the candidate's modality is \"may\", so under the authority floor rules it cannot remain classified as an authoritative requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::d2bf63cf21136ba1.json",
+    "toPath": "candidates/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::d2bf63cf21136ba1.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:57:25Z"
+}

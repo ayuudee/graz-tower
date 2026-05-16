@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::164d2a2503b291b3",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.5,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted taxi-instruction step is present in the source window as the same text apart from line wrapping, and it is an atomic item not covered by accepted siblings. However, the source is background/advisory material and the list item uses a bare imperative rather than an explicit \u201cshould,\u201d so the modality should be `none` while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::164d2a2503b291b3.json",
+    "toPath": "candidates/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::164d2a2503b291b3.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:43:25Z"
+}

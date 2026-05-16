@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2::c177c503c0119fe7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.03,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The requirement is substantively supported, but the exactSourceQuote is not present verbatim in the provided source window because intervening page/header text breaks the quoted sentence between items a) and b). Since quote fields cannot be edited in this pass and G1 is a real verbatim miss, the record cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2/icao4444-extracted::horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2::c177c503c0119fe7.json",
+    "toPath": "rejected/icao4444-extracted/horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2/icao4444-extracted::horizontal_lateral_criteria_nav_aids_5_4_1_2_1_to_5_4_1_2_1_2::c177c503c0119fe7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:07:33Z"
+}

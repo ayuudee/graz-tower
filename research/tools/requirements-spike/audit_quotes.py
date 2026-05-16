@@ -29,12 +29,18 @@ ROOT = Path(__file__).resolve().parents[3]
 
 def normalize(text: str) -> str:
     """Normalise text for verbatim-quote matching:
-      1. Collapse all whitespace runs to a single space.
-      2. Strip whitespace adjacent to / and -, since line wraps can split a
+      1. Remove non-whitespace layout controls left by PDF extraction.
+      2. Collapse all whitespace runs to a single space.
+      3. Strip whitespace adjacent to / and -, since line wraps can split a
          word across these punctuation boundaries (e.g. "pilot/\ndriver" →
          "pilot/driver" once the layout artifact is removed). The model is
          expected to reconstruct the unwrapped form.
     """
+    text = "".join(
+        ch
+        for ch in text
+        if ch >= " " or ch in "\t\n\r\f\v"
+    )
     s = re.sub(r"\s+", " ", text).strip()
     s = re.sub(r"\s*/\s*", "/", s)
     s = re.sub(r"-\s+", "-", s)

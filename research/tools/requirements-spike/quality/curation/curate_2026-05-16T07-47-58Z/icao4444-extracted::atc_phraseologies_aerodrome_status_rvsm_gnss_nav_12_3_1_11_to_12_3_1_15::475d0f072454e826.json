@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::475d0f072454e826",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.47,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted phrase exists verbatim, but the candidate assigns it to the wrong circumstance: source item 12.3.1.13(a) uses \u201cCONFIRM RVSM APPROVED\u201d to ascertain RVSM approval status, while reporting RVSM approved status is \u201cAFFIRM RVSM\u201d and is already accepted as a sibling. Because correcting this would require changing the claimText identity field, it must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::475d0f072454e826.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::475d0f072454e826.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:47:38Z"
+}

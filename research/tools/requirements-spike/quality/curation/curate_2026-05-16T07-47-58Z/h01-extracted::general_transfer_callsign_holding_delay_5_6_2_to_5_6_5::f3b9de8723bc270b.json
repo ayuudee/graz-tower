@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f3b9de8723bc270b",
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.75,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by section 5.6.3.2, but the provided exactSourceQuote does not appear verbatim in the source window because the English phrase is split/interleaved with German text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f3b9de8723bc270b.json",
+    "toPath": "rejected/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::f3b9de8723bc270b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:57:59Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::41d36900a8f1cecc",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.3,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is supported verbatim by the source, and all gate audits pass. Its `should` modality and `operational_guidance` authority class correctly reflect CAP 413 advisory wording, and sibling accepted records treat comparable CAP 413 `should` clauses the same way.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::41d36900a8f1cecc.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::41d36900a8f1cecc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:52:29Z"
+}

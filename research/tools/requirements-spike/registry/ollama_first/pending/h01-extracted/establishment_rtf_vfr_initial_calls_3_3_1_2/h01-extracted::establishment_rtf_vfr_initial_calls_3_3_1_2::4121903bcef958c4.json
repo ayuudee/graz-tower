@@ -1,0 +1,117 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::4121903bcef958c4",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "familyId": "h01_rtf_communications_family",
+  "claimText": "After the initial call on any other ATS frequency, the following details shall be transmitted: aircraft call sign, position report (position with time overhead if not overhead, altitude or flight level), ATIS INFORMATION designator (if available), and reason of call.",
+  "rationale": "Attempts 1 and 3 agree on the consolidated rule. Attempt 2 decomposes it, but the consolidated view is preferred for structural integrity.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "following details shall be transmitted:",
+    "Aircraft call sign",
+    "Position (and relevant time overhead if aircraft is not overhead reported position)",
+    "Altitude or flight level",
+    "ATIS INFORMATION designator (if available)",
+    "Reason of call (e.g. \u201cfor landing\u201d)"
+  ],
+  "sourceItemIds": [
+    "3.3.1.2.3",
+    "3.3.1.2.3_list_1",
+    "3.3.1.2.3_list_2a",
+    "3.3.1.2.3_list_2b",
+    "3.3.1.2.3_list_3",
+    "3.3.1.2.3_list_4"
+  ],
+  "claimSha256": "59432097cf4022eca7b3cd3c2734b02dd74e6238b65e6e7a96c23ad7da2cfd72",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 3780,
+    "endLine": 3915
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_rtf_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "vfr_other_ats_call_details",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 6,
+      "hits": 6,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The source supports the claim, but the bundle audit identifies a real structural-completeness issue: the exactSourceQuotes omit the parent list item \u201cPosition report\u201d while the claim relies on that parent to group the nested position and altitude items. Fixing this would require changing the quote set, which is an identity field and cannot be corrected in this pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:46:32Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/judged_candidates.json"
+  }
+}

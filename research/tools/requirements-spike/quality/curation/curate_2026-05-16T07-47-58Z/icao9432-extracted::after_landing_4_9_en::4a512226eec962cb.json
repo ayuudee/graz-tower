@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::after_landing_4_9_en::4a512226eec962cb",
+  "documentId": "icao9432-extracted",
+  "sectionId": "after_landing_4_9_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.46,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present verbatim, the claim is directly supported, and the modality/authority pairing correctly treats this ICAO 9432 material as operational guidance rather than an authoritative requirement. The accepted sibling is only a phraseology example and does not redundantly cover this pilot-frequency guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/after_landing_4_9_en/icao9432-extracted::after_landing_4_9_en::4a512226eec962cb.json",
+    "toPath": "candidates/icao9432-extracted/after_landing_4_9_en/icao9432-extracted::after_landing_4_9_en::4a512226eec962cb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:47:02Z"
+}

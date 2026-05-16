@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part1a_traffic::f96a0c33f6fd5287",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part1a_traffic",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.91,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim, and the accepted siblings do not already cover the distinct rule that all items in a selected phrase are included. However, the sentence contains both permissive wording ('may be used') and mandatory-style wording ('are to be included'), so the candidate's modality should be mixed rather than shall.",
+    "corrections": {
+      "modality": "mixed"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part1a_traffic/cap413-extracted::ch4_4_84_part1a_traffic::f96a0c33f6fd5287.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part1a_traffic/cap413-extracted::ch4_4_84_part1a_traffic::f96a0c33f6fd5287.json",
+    "correctionsApplied": {
+      "modality": "mixed"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:18:31Z"
+}

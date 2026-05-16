@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_time_expression::72e4aa546e84449c",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_time_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.94,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is supported by the source window despite the G1 audit miss, with only a line break/spacing between \u201cbased on\u201d and \u201cUTC.\u201d The claim is a non-normative definition/background statement and is not redundant with the accepted sibling, which concerns callsign abbreviation.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::72e4aa546e84449c.json",
+    "toPath": "candidates/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::72e4aa546e84449c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:21:52Z"
+}

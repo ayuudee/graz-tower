@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::c1b45d95b903437c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_position_uncertainty_7_4_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.7,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted subclause verbatim supports the atomic vacate-runway obligation with the stated shall-strength, and there is no modality or authority correction needed. However, the bundle audit identifies missing operative sibling obligations from the same parent clause\u2014notify ATS and then stop the aircraft\u2014so promotion would leave the required sequence incomplete; a human should extract/associate those companion obligations rather than alter this claim text.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_position_uncertainty_7_4_1_5/icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::c1b45d95b903437c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:11:06Z"
+}

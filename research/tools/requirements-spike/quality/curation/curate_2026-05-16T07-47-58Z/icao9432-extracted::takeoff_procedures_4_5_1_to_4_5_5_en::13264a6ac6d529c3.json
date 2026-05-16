@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3",
+  "documentId": "icao9432-extracted",
+  "sectionId": "takeoff_procedures_4_5_1_to_4_5_5_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.21,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology appears verbatim in the source window under 4.5.5 and supports the claim as an example of immediate-departure take-off clearance after line-up. The candidate is already framed conservatively as operational guidance with example modality, and there are no accepted sibling records making it redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/takeoff_procedures_4_5_1_to_4_5_5_en/icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3.json",
+    "toPath": "candidates/icao9432-extracted/takeoff_procedures_4_5_1_to_4_5_5_en/icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:57:28Z"
+}

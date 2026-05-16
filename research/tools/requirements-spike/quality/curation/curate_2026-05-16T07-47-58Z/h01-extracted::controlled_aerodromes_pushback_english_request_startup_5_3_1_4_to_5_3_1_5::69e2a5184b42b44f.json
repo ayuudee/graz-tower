@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5::69e2a5184b42b44f",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.07,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim source text is a non-normative language note meaning the phraseology is provided/intended only in English, not a shall-strength requirement that all start-up communications must be conducted in English. Because the claimText itself overstates the source and cannot be edited in this pass, the candidate should be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5/h01-extracted::controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5::69e2a5184b42b44f.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5/h01-extracted::controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5::69e2a5184b42b44f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:36:38Z"
+}

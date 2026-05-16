@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::eacc0c99a9c69e45",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.43,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is verbatim in Note 1 to 12.3.1.8(f), and the candidate correctly frames it as a non-normative note with operational_guidance authority. It is not redundant with the accepted RVR phraseology item or the separate Note 2 item, because it states the meaning of the three RVR observation positions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::eacc0c99a9c69e45.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::eacc0c99a9c69e45.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:49:26Z"
+}

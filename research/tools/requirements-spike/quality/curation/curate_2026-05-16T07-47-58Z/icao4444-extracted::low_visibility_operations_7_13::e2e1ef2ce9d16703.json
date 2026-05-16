@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::e2e1ef2ce9d16703",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.57,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and the claim is a standalone cross-reference note, not an operative requirement. The only defect is the authority class: a note cannot remain authoritative_requirement under the authority floor, so it should be lowered to operational_guidance while keeping modality as note.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::e2e1ef2ce9d16703.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::e2e1ef2ce9d16703.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:21:41Z"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_flight_handling_clearances_5_6_1::1adb2ee350df178e",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_handling_clearances_5_6_1",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "The phrase 'cleared via flight planned route' shall not be used when granting a re-clearance.",
+  "rationale": "Nested prohibition under item 3 regarding specific phraseology usage.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the phrase 'cleared via flight planned route' shall not be used when granting a re-clearance;"
+  ],
+  "sourceItemIds": [
+    "h01_5.6.1.1_item3_sub2"
+  ],
+  "claimSha256": "a8c595b5d6b0d7a2c3600ff476a81516471c17f6b7ce5b969ddd675f4704806d",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 9212,
+    "endLine": 9395
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_clearance_route_prohibition",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "the phrase 'cleared via flight planned route' shall not be used when granting a re-clearance;",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate is semantically supported, but its exactSourceQuote is not present verbatim in the source window after normalization: the source uses curly quotation marks and the wording is split by PDF extraction around \u201cre\u2026clearance\u201d rather than matching the supplied quote. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the verbatim quote miss requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:48:07Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_flight_handling_clearances_5_6_1/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:48:07Z"
+  }
+}

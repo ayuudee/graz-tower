@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d",
+  "documentId": "icao9432-extracted",
+  "sectionId": "urgency_emergency_descent_9_3_to_9_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.29,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim, source-supported advisory statement from 9.3.1, and all gate audits pass. Its 'should' modality and operational_guidance authority are appropriate for ICAO 9432 advisory material, and it is not redundant with the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/urgency_emergency_descent_9_3_to_9_4_en/icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d.json",
+    "toPath": "candidates/icao9432-extracted/urgency_emergency_descent_9_3_to_9_4_en/icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:01:20Z"
+}

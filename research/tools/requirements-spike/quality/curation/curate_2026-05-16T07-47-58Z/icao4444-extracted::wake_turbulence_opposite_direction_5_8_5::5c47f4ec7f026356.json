@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::5c47f4ec7f026356",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_opposite_direction_5_8_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by clause 5.8.5(b), but the exactSourceQuotes field is not a verbatim contiguous quote from the source window because it skips the intervening sub-item (a) text between the parent clause and item b). Since quote text is an identity field and cannot be corrected in this pass, the G1 miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_opposite_direction_5_8_5/icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::5c47f4ec7f026356.json",
+    "toPath": "rejected/icao4444-extracted/wake_turbulence_opposite_direction_5_8_5/icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::5c47f4ec7f026356.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:41:07Z"
+}

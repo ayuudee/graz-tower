@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_174_to_4_183::95977220e1ae3cec",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_174_to_4_183",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not present verbatim in the source because it uses an ellipsis to compress the listed items, causing a real G1 identity-field failure. Since quotes must not be edited in this pass, the candidate cannot be promoted or corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::95977220e1ae3cec.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::95977220e1ae3cec.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:59:27Z"
+}

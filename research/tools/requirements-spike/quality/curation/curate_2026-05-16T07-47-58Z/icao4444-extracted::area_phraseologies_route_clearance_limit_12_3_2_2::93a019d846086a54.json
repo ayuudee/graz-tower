@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::93a019d846086a54",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_route_clearance_limit_12_3_2_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.74,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not present verbatim in the source window: the parent phrase and item 4 are separated by intervening list items, so the combined quote is an identity-field error. Under the curation rules, verbatim quote failures require rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_route_clearance_limit_12_3_2_2/icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::93a019d846086a54.json",
+    "toPath": "rejected/icao4444-extracted/area_phraseologies_route_clearance_limit_12_3_2_2/icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::93a019d846086a54.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:35:21Z"
+}

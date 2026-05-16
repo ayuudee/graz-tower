@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::dfa168c9f5ddc3ee",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.94,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim, but the operative permission is expressly incomplete because it ends with \u201cin the following circumstances\u201d and depends on 5.11.1.1 and 5.11.1.2. This cannot be fixed by only changing modality or authorityClass; a human curator would need to re-bundle or re-extract the provision with its subordinate circumstances, and also lower the authority if retained with 'may'.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::dfa168c9f5ddc3ee.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:32:41Z"
+}

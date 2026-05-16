@@ -1,0 +1,20 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::c0f6d267cf3fd9dd",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.7,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted list item is verbatim, but it is subordinate and does not include the parent 4.60 context establishing the low-pass/undercarriage condition and that the reply \u201ccould be used.\u201d Fixing this would require re-extraction or adding source quotes, which cannot be done in this curation pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::c0f6d267cf3fd9dd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:14:44Z"
+}

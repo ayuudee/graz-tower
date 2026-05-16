@@ -1,0 +1,103 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::cd45bbbfb30767a0",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+  "familyId": "h01_phraseology_contingency_family",
+  "claimText": "Phraseology for miscellaneous contingencies includes: 'IT SEEMS YOU ARE LOSING FUEL/OIL', 'YOUR AIRCRAFT IS TRAILING SMOKE', and 'YOUR ROPE/BANNER DID NOT DETACH'.",
+  "rationale": "All attempts agree on these specific English phrases for miscellaneous contingencies in section 5.8.7.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: IT SEEMS YOU ARE LOSING FUEL/OIL",
+    "G: YOUR AIRCRAFT IS TRAILING SMOKE",
+    "G: YOUR ROPE/BANNER DID NOT DETACH"
+  ],
+  "sourceItemIds": [
+    "item_5_8_7_phraseology"
+  ],
+  "claimSha256": "16336206ce9fd05b8e0eb3f9c0e71b7414d2f8c9d94ade65d22508cb4e1a902f",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 12182,
+    "endLine": 12285
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_phraseology_contingency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_misc_fuel_smoke_ropes",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/judged_candidates.json"
+  }
+}

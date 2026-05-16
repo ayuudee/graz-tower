@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15::609381fb471b12f8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.46,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present and supports the claim, and the candidate is correctly framed as a non-normative note with operational_guidance authority rather than an authoritative requirement. It is not redundant with the accepted sibling phraseology items, which do not capture the 7 km FINAL reporting note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15/icao4444-extracted::aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15::609381fb471b12f8.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15/icao4444-extracted::aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15::609381fb471b12f8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:17:40Z"
+}

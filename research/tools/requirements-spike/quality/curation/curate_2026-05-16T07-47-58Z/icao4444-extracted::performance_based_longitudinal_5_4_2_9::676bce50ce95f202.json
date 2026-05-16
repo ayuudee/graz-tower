@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::performance_based_longitudinal_5_4_2_9::676bce50ce95f202",
+  "documentId": "icao4444-extracted",
+  "sectionId": "performance_based_longitudinal_5_4_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.58,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source and the claim accurately preserves the note\u2019s definitional/background character. Its modality and authorityClass are already correctly set to note and background_support, and it is not redundant with the accepted operational measurement rule for identical tracks.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::676bce50ce95f202.json",
+    "toPath": "candidates/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::676bce50ce95f202.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:30:01Z"
+}

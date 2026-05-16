@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::test_procedures_2_8_4_en::ebfa539c29b138f5",
+  "documentId": "icao9432-extracted",
+  "sectionId": "test_procedures_2_8_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.43,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The Polish quote set is verbatim and correctly classified as operational guidance, but the same operative content is already covered by the accepted English sibling for 2.8.4.1. Because the primary English candidate already captures this test-transmission composition rule, this parallel-language duplicate should not be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/test_procedures_2_8_4_en/icao9432-extracted::test_procedures_2_8_4_en::ebfa539c29b138f5.json",
+    "toPath": "rejected/icao9432-extracted/test_procedures_2_8_4_en/icao9432-extracted::test_procedures_2_8_4_en::ebfa539c29b138f5.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:00:56Z"
+}

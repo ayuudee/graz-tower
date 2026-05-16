@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::07912b59f2524b4f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.84,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited quote does not exist verbatim in the source: the source uses curly double quotation marks around \u201con-track\u201d and continues with \u201c(see Figure 5-28)\u201d rather than ending with a period after \u201capart.\u201d Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying provision being substantively present.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::07912b59f2524b4f.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::07912b59f2524b4f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:11:18Z"
+}

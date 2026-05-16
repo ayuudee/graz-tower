@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_level_changes_5_6_13::2e5633c3d3f5e0f9",
+  "documentId": "h01-extracted",
+  "sectionId": "general_level_changes_5_6_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.19,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is supported in substance, but the exactSourceQuote includes a leading bullet and single-line wording that does not exist verbatim in the source window. Because quote identity fields cannot be corrected in this pass, this is a real G1 verbatim miss requiring rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::2e5633c3d3f5e0f9.json",
+    "toPath": "rejected/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::2e5633c3d3f5e0f9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:51:02Z"
+}

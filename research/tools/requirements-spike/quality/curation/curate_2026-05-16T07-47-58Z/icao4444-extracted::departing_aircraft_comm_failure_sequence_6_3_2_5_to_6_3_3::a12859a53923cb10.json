@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3::a12859a53923cb10",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source qualifies the guidance with \u201cwhen practicable,\u201d but the claimText omits that material limitation and therefore overstates the obligation. Because claimText is an identity field and cannot be corrected in this pass, the candidate should be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3/icao4444-extracted::departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3::a12859a53923cb10.json",
+    "toPath": "rejected/icao4444-extracted/departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3/icao4444-extracted::departing_aircraft_comm_failure_sequence_6_3_2_5_to_6_3_3::a12859a53923cb10.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:53:03Z"
+}

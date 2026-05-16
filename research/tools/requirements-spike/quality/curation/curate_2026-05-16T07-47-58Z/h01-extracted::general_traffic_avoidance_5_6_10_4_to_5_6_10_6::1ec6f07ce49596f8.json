@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::1ec6f07ce49596f8",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.05,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited phraseology is supported by the source; the quote appears in the source window with only a line break between 'TURN' and '(numbers)'. No modality or authority correction is needed, and the item is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::1ec6f07ce49596f8.json",
+    "toPath": "candidates/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::1ec6f07ce49596f8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:54:02Z"
+}

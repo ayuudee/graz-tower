@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::7e785d9a92d1bbda",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.13,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The operative claim is supported by the section, but the candidate\u2019s exactSourceQuote does not appear verbatim in the provided source window due the interleaved bilingual text/line extraction. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::7e785d9a92d1bbda.json",
+    "toPath": "rejected/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::7e785d9a92d1bbda.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:56:44Z"
+}

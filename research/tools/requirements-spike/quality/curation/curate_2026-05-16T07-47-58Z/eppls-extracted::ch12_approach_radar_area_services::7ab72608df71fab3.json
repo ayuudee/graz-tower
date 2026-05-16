@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_approach_radar_area_services::7ab72608df71fab3",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_approach_radar_area_services",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.05,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is present in the source window across a line break/spacing gap, and the claim is directly supported. However, the source is background training text and the wording has no explicit note marker; consistent with sibling treatment, the modality should be `none` rather than `note`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::7ab72608df71fab3.json",
+    "toPath": "candidates/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::7ab72608df71fab3.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:32:14Z"
+}

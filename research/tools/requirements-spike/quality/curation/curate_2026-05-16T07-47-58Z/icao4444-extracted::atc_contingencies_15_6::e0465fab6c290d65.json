@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::e0465fab6c290d65",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.21,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The source quotes are verbatim and directly support the candidate\u2019s atomic list-item obligation under the parent 'should' clause. The modality and authority class are consistent as advisory operational guidance, and no accepted sibling duplicates this specific item.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::e0465fab6c290d65.json",
+    "toPath": "candidates/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::e0465fab6c290d65.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:47:23Z"
+}

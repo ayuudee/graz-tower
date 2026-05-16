@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::f120867d64e8b3a8",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.57,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 has real verbatim misses: the source window does not contain the quoted strings \u201cG: TAXI VIA (identification of taxiway)\u201d or \u201cG: TAXI VIA RUNWAY (number)\u201d as exact source quotes. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::f120867d64e8b3a8.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::f120867d64e8b3a8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:38:39Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_departing_6_7_1_to_6_7_2::591ced54f14d0730",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_departing_6_7_1_to_6_7_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source and the claim accurately captures a non-operative Note referring readers to Circular 350 for further guidance. Its modality and authorityClass are already correctly framed as note/background_support, and it is not redundant with the accepted operative sibling requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_departing_6_7_1_to_6_7_2/icao4444-extracted::parallel_runways_departing_6_7_1_to_6_7_2::591ced54f14d0730.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_departing_6_7_1_to_6_7_2/icao4444-extracted::parallel_runways_departing_6_7_1_to_6_7_2::591ced54f14d0730.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:22:19Z"
+}

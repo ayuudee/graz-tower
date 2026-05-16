@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::c079568a0ca4daf7",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "familyId": "cap413_emergency_phraseology_family",
+  "claimText": "Controllers shall respond to a pilot who has indicated that he is becoming short of fuel but has not declared 'MINIMUM FUEL', as above but shall then ask the pilot if he wishes to declare an emergency.",
+  "rationale": "All attempts agree on the response for 'short of fuel' without 'MINIMUM FUEL' declaration.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Controllers shall respond to a pilot who has indicated that he is becoming short of fuel but has not declared 'MINIMUM FUEL', as above but shall then ask the pilot if he wishes to declare an emergency."
+  ],
+  "sourceItemIds": [
+    "sec_8.31"
+  ],
+  "claimSha256": "549de16cbdd7a38e5a21f826ce19fa90522e5db6eec7c91869901f323d5994fd",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 16598,
+    "endLine": 16841
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "short_fuel_response",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Controllers shall respond to a pilot who has indicated that he is becoming short of fuel but has not declared 'MINIMUM FUEL', as above but shall then ask the pilot if he wishes to declare an emergency.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate is substantively supported, but its sole exactSourceQuote is not verbatim: the source uses curly double quotation marks around \u201cMINIMUM FUEL\u201d, while the candidate quote uses single quotation marks. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:28:41Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:28:41Z"
+  }
+}

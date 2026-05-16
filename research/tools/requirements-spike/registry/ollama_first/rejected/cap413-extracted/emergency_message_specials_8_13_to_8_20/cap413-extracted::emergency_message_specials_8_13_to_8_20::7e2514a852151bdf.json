@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::emergency_message_specials_8_13_to_8_20::7e2514a852151bdf",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_message_specials_8_13_to_8_20",
+  "familyId": "cap413_emergency_phraseology_family",
+  "claimText": "The 'STUDENT' prefix shall also be used by licensed pilots undergoing renewal training involving solo flight under supervision.",
+  "rationale": "All attempts agree on the extension of the 'STUDENT' prefix to renewal training contexts.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Note 3: Although intended primarily for use by ab initio students, the prefix shall also be used in other circumstances where, for example, the holder of a valid licence is returning to flying practice after a significant absence and is undergoing renewal training involving solo flight conducted as a student under the supervision of a flight instructor."
+  ],
+  "sourceItemIds": [
+    "8.13_item8a",
+    "note_3"
+  ],
+  "claimSha256": "b6a4b6ba558790cae9dda6cbbd0ea3bf3cddcab203d8e40c69d6d0bd8d5c680a",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 16430,
+    "endLine": 16597
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_emergency_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_8.13_student_prefix_renewal",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Note 3: Although intended primarily for use by ab initio students, the prefix shall also be used in other circumstances where, for example, the holder of a valid licence is returning to flying practice after a significant absence and is undergoing renewal training involving solo flight conducted as a student under the supervision of a flight instructor.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The source supports the substance of the claim, but the exactSourceQuote does not appear verbatim in the source window because it begins with \u201cNote 3:\u201d while the source uses numbered note text (\u201c3 Although\u2026\u201d). Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this must be rejected rather than promoted with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:25:40Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/emergency_message_specials_8_13_to_8_20/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:25:40Z"
+  }
+}

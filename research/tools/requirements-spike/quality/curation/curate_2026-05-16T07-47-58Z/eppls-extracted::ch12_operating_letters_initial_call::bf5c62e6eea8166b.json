@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::bf5c62e6eea8166b",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.54,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited quote appears verbatim in the source window across a line break, and the surrounding sentence supports the callsign-default point. However, the source wording is descriptive/background text with no explicit note marker, so the modality should be corrected from \"note\" to \"none\" while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::bf5c62e6eea8166b.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::bf5c62e6eea8166b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:01:04Z"
+}

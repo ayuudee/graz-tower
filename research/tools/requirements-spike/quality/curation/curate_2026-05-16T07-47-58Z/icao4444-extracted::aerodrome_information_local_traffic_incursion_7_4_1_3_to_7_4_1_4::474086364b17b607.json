@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::474086364b17b607",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.03,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and correctly framed as a non-normative note, but it is purely explanatory background about the objective of 7.4.1.4.2 rather than an operational rule or guidance item. The operative reporting requirement is already captured by an accepted sibling, so this support-only note should not be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::474086364b17b607.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::474086364b17b607.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:07:49Z"
+}

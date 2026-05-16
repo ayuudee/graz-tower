@@ -1,0 +1,115 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::26d688c55fee313b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "familyId": "icao4444_departure_arrival_separation_family",
+  "claimText": "If an arriving aircraft is making a straight-in approach, a departing aircraft may take off in a direction which is different by at least 45 degrees from the reciprocal of the direction of approach of the arriving aircraft before the arriving aircraft crosses a designated fix on the approach track.",
+  "rationale": "Permission for departure with 45-degree divergence for straight-in approach, using a designated fix as the temporal marker.",
+  "modality": "may",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "in a direction which is different by at least 45 degrees from the reciprocal of the direction of approach of the arriving aircraft: 2) before the arriving aircraft crosses a designated fix on the approach track"
+  ],
+  "sourceItemIds": [
+    "5.7.1.2",
+    "5.7.1.2_b",
+    "5.7.1.2_b_2"
+  ],
+  "claimSha256": "e5a8fcdd7a377ff45e9a0585353b1eb43b884b399cb03f9667511f5213735a48",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6352,
+    "endLine": 6482
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departure_arrival_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "5.7.1.2_straight_in_45deg_fix",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "in a direction which is different by at least 45 degrees from the reciprocal of the direction of approach of the arriving aircraft: 2) before the arriving aircraft crosses a designated fix on the approach track",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "fail",
+      "modality": "may",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": false,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": "(modality='may', authorityClass='authoritative_requirement') violates AUTHORITY_CLASS_BY_FLOOR"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The exactSourceQuote is not a verbatim contiguous passage in the source because it skips over the intervening item 1) text between the parent clause and item 2). Since quote identity fields cannot be corrected in this pass, the real G1 failure requires rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:56:17Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "overbroad",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departure_arrival_separation_5_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:56:17Z"
+  }
+}

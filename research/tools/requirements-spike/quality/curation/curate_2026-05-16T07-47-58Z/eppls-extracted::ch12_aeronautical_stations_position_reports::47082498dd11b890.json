@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_aeronautical_stations_position_reports::47082498dd11b890",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_aeronautical_stations_position_reports",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.54,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source text and the quoted wording appears in the provided window apart from line-break/layout artifacts. Because the source is explicitly background/advisory material, it should remain non-authoritative, but its requirement kind should be framed as advisory rather than best-practice.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::47082498dd11b890.json",
+    "toPath": "candidates/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::47082498dd11b890.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:29:32Z"
+}

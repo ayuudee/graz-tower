@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part1b_meteorological::f0a29546790a19b9",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part1b_meteorological",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.28,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The QNH phraseology quote exists verbatim and the candidate is an atomic phraseology item, not a redundant umbrella. The previously identified qualification about appending \u201chectopascal\u201d is already accepted as a separate sibling dependency, so this QNH base phraseology can stand alongside it.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part1b_meteorological/cap413-extracted::ch4_4_84_part1b_meteorological::f0a29546790a19b9.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part1b_meteorological/cap413-extracted::ch4_4_84_part1b_meteorological::f0a29546790a19b9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:19:01Z"
+}

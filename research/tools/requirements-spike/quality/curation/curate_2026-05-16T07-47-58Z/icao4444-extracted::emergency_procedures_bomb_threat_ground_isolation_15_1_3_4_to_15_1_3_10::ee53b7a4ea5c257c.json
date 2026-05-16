@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10::ee53b7a4ea5c257c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.07,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim-supported and the claim accurately reflects the source. However, the source uses \u201cshould,\u201d so the item is advisory/operational guidance rather than an authoritative requirement; lowering the authority class resolves the only gate failure.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10/icao4444-extracted::emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10::ee53b7a4ea5c257c.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10/icao4444-extracted::emergency_procedures_bomb_threat_ground_isolation_15_1_3_4_to_15_1_3_10::ee53b7a4ea5c257c.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:57:58Z"
+}

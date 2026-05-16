@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::0bcea8542a65ddff",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 24.53,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text exists verbatim and the full claim is directly supported by 7.6.3.1.4.3. The source uses 'should', and the candidate already classifies it appropriately as operational guidance rather than an authoritative requirement; no accepted sibling covers this helicopter-taxiing guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::0bcea8542a65ddff.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::0bcea8542a65ddff.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:14:39Z"
+}

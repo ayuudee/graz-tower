@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_check_readability_transfer::08cb718313469c90",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_check_readability_transfer",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.47,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the four quoted bullet items appear verbatim, the source window does not support the claim that they are elements of a readback for a transfer of communication; they appear separate from the 'Transfer Of Communication' examples. The claim also asserts a shall-strength requirement not shown in the cited quotes, so fixing this would require changing the identity claim text rather than only metadata.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::08cb718313469c90.json",
+    "toPath": "rejected/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::08cb718313469c90.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:04:13Z"
+}

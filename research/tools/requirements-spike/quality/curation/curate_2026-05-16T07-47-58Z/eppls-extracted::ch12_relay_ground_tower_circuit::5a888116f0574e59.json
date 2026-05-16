@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::5a888116f0574e59",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.81,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology example is present verbatim in the source window after whitespace normalization, so the G1 miss appears to be a false negative. The candidate accurately frames the source as a non-mandatory example with background_support authority, and it is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::5a888116f0574e59.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::5a888116f0574e59.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:14:14Z"
+}

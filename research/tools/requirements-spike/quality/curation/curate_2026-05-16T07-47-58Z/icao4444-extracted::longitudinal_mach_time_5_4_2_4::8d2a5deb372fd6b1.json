@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::8d2a5deb372fd6b1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.65,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim quote exists and the modality/authority pairing is consistent, but the claim is overbroad because it omits the governing 'provided that' applicability conditions for clause 5.4.2.4.3. Correcting this would require changing the identity claim text and likely adding parent-condition quotes, which is not permitted in this curation pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::8d2a5deb372fd6b1.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::8d2a5deb372fd6b1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:15:30Z"
+}

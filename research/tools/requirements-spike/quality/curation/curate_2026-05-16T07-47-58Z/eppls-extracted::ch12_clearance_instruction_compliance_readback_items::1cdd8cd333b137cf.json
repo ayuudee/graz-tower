@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::1cdd8cd333b137cf",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 45.83,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item is verbatim and, in context, is part of the read-back discussion, so the atomic claim is source-grounded and not redundant with the accepted sibling. Since the source wording uses \u201cmust\u201d rather than \u201cshall\u201d and the authority is only background support, keep the non-authoritative classification but align the modality wording to the source.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::1cdd8cd333b137cf.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::1cdd8cd333b137cf.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:36:33Z"
+}

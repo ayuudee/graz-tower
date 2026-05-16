@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7e68ce42937e7704",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "Pilots shall use the phraseology 'REPORT [RIGHT [HAND]] BASE/FINAL/LONG FINAL RUNWAY (number)' to report their position on the circuit.",
+  "rationale": "All attempts agree on this pilot phraseology for reporting base/final position.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "A: REPORT [RIGHT [HAND]] BASE/FINAL/LONG FINAL RUNWAY (number)"
+  ],
+  "sourceItemIds": [
+    "sec_5_3_2_4_phr_en_2"
+  ],
+  "claimSha256": "bbb6dcca1af0f530392dc954ee1812bb929b8ce10c3df8f1dfeaf4e0bc113216",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 8002,
+    "endLine": 8114
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_circuit_report_position",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "A: REPORT [RIGHT [HAND]] BASE/FINAL/LONG FINAL RUNWAY (number)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The exact source quote is not found verbatim: the source text contains \u201cREPORT [RIGHT [HAND]] BASE/FINAL/LONG FINAL RUNWAY (number)\u201d without the cited \u201cA:\u201d prefix. In addition, the phraseology appears to be an ATC instruction to report, not pilot phraseology for reporting position, so fixing it would require changing identity fields.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:29:29Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:29:29Z"
+  }
+}

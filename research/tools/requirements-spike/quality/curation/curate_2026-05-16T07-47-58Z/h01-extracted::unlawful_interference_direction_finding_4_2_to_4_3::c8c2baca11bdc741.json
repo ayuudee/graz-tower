@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::c8c2baca11bdc741",
+  "documentId": "h01-extracted",
+  "sectionId": "unlawful_interference_direction_finding_4_2_to_4_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.36,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the definition that Class A bearing accuracy is within plus or minus 2 degrees. However, the source text is a bare definitional list item with no note marker or operative modal, so the modality should be `none` rather than `note`; the operational_guidance authority class is acceptable for this H01 guidance material.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/unlawful_interference_direction_finding_4_2_to_4_3/h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::c8c2baca11bdc741.json",
+    "toPath": "candidates/h01-extracted/unlawful_interference_direction_finding_4_2_to_4_3/h01-extracted::unlawful_interference_direction_finding_4_2_to_4_3::c8c2baca11bdc741.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:02:24Z"
+}

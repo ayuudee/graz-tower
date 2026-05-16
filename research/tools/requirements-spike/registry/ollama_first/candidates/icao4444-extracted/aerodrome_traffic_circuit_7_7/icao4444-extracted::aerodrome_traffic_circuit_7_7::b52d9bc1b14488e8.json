@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::b52d9bc1b14488e8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "familyId": "icao4444_aerodrome_traffic_family",
+  "claimText": "If circumstances warrant, aircraft which are in contact with the controller may be instructed by the controller to give way so as to remove as soon as possible the hazard introduced by such unauthorized operation.",
+  "rationale": "Permissive guidance allowing controllers to instruct unauthorized aircraft to give way.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_only",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "If circumstances warrant, aircraft which are in contact with the controller may be instructed by the controller to give way so as to remove as soon as possible the hazard introduced by such unauthorized operation"
+  ],
+  "sourceItemIds": [
+    "7.7.3.1"
+  ],
+  "claimSha256": "99cc89baea857b6a1fb86a833d03d271835cd7d79d98cd578c1a756ee6d1f026",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8952,
+    "endLine": 9022
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_traffic_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "7.7.3.1_unauthorized_give_way",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and the claim is supported by the cited sentence, which uses permissive \u201cmay be instructed\u201d language and is not redundant with the accepted siblings. The only needed normalization is to classify the requirement kind as advisory/permission rather than a rule, while retaining the correct may modality and operational_guidance authority class.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T10:25:57Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_traffic_circuit_7_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:25:57Z"
+  }
+}

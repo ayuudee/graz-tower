@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::general_levels_5_6_12::881ef95af11dc633",
+  "documentId": "h01-extracted",
+  "sectionId": "general_levels_5_6_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 26.97,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is source-grounded, atomic, and not redundant with the accepted sibling phraseology items, and its current modality/authority framing is internally consistent. However, the judge explicitly classified it as advisory_only rather than accepted because it is a note, and no permissible correction is clearly needed; a human curator should decide whether note-only H01 guidance belongs in the promoted set.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_levels_5_6_12/h01-extracted::general_levels_5_6_12::881ef95af11dc633.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:52:43Z"
+}

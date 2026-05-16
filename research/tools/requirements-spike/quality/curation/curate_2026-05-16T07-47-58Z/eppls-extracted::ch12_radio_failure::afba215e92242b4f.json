@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::afba215e92242b4f",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.63,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited quote is present in the source window and supports the claim in context. However, the word \u201cmust\u201d is part of the condition for needing to enter controlled airspace, not a shall-strength obligation for the divert/telephone procedure, so the candidate should remain advisory/background support with a non-deontic modality.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::afba215e92242b4f.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::afba215e92242b4f.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:12:13Z"
+}

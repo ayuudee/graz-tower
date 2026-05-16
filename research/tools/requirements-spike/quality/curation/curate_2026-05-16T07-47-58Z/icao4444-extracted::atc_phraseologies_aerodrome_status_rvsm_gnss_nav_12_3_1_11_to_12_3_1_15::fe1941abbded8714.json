@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::fe1941abbded8714",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.63,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is source-grounded and the claim accurately reflects a non-normative Note, with no redundancy against the accepted phraseology siblings. Because this is only a cross-reference/background note rather than operational guidance or a best-practice item, it should be classified as background support while retaining note modality.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "background_reference"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::fe1941abbded8714.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15/icao4444-extracted::atc_phraseologies_aerodrome_status_rvsm_gnss_nav_12_3_1_11_to_12_3_1_15::fe1941abbded8714.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "background_reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:48:15Z"
+}

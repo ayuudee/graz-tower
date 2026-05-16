@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de",
+  "documentId": "icao9432-extracted",
+  "sectionId": "takeoff_procedures_4_5_6_to_4_5_7_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.61,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is verbatim and supports an advisory operational-guidance item: the source says it is important that the departing aircraft correctly identifies the arriving aircraft. The candidate\u2019s modality and authority class appropriately avoid treating this as a hard shall requirement, and the accepted siblings do not redundantly cover this specific identification guidance.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/takeoff_procedures_4_5_6_to_4_5_7_en/icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de.json",
+    "toPath": "candidates/icao9432-extracted/takeoff_procedures_4_5_6_to_4_5_7_en/icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:59:12Z"
+}

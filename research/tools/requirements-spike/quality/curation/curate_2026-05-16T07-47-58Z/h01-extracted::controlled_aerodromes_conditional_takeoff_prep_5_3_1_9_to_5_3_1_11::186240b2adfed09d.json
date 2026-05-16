@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::186240b2adfed09d",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.97,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the sole exactSourceQuote is not present verbatim in the provided source window because the English parent clause and list item are separated/interleaved with bilingual text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::186240b2adfed09d.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::186240b2adfed09d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:30:13Z"
+}

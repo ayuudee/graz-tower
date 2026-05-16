@@ -69,9 +69,8 @@ This task adds the controller-side observation + emission + cancel logic. NO `Co
 - [ ] `./gradlew :controller:jvmTest :sim:jvmTest detekt --offline --no-daemon` GREEN; nine existing sim goldens don't regress
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Landed fn-28.4 (multi-aircraft controller-side GA sequencing foundation, R23): `BeliefState.goAroundInProgressByRunway` persistent slice + `withGoAroundInProgress` fold (SET on Report(GoingAround) with runway resolved from active TOWER_ARRIVAL commitment + activeRunway fallback, CLEAR on pattern-rejoin Downwind/Base/Final with `receivedAt > setAtTime` OR 60s timeout, first-writer-wins tie-breaking, fail-closed runway resolution) + `GoAroundInProgressOnRunway` guard + new `ARR-EXTEND-FOR-GA` rule (emits ExtendDownwind to trailing downwind aircraft via controller-observable predicates only — no PilotPhase reads) + `ARR-TURN-BASE` adds `Not(GoAroundInProgressOnRunway)` so concrete cancel-output fires same-cycle when belief clears (superseding via existing TurnBase→ExtendDownwind row). FirewallBeliefWriteTest allowlist extended; ICAO4444_12_3_4 (17th ed.) added to RegulationDatabase; 13 unit tests in GoAroundSequencingSpec. Codex impl-review: round-1 NEEDS_WORK (missing import for ICAO4444_12_3_4 in TowerArrival.kt → compile blocker) → round-2 SHIP.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 69eeb2dba8b6c5cebcfb3a8e5be1ac5cfecdb437, c112983
+- Tests: ./gradlew :controller:jvmTest :sim:jvmTest detekt --offline --no-daemon (NOT RUN LOCALLY: no JDK in worker environment per fn-28.1-.3 pattern; codex impl-review SHIP'd statically on round-2 — scoped diff bbe7fdf..HEAD; round-1 NEEDS_WORK fixed by adding missing ICAO4444_12_3_4 import in TowerArrival.kt)
+- PRs:

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::dc9b1c0068880a9c",
+  "documentId": "icao9432-extracted",
+  "sectionId": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+  "familyId": "icao9432_readback_family",
+  "claimText": "If there is a doubt as to whether a pilot can comply with an ATC clearance or instruction, the controller may follow the clearance or instruction by the phrase \"if unable\", and subsequently offer an alternative.",
+  "rationale": "All attempts agree on the permissive 'may' modality for the controller, classifying it as operational guidance.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "If there is a doubt as to whether a pilot can comply with an ATC clearance or instruction, the controller may follow the clearance or instruction by the phrase \"if unable\", and subsequently offer an alternative."
+  ],
+  "sourceItemIds": [
+    "clause_2_8_3_10_en"
+  ],
+  "claimSha256": "3cca93a82ce58d75c614c06ee29abffc7ab2005ca47a8de8bad26d6cf6d02c6f",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4011,
+    "endLine": 4085
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_readback_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "controller_if_unable_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "If there is a doubt as to whether a pilot can comply with an ATC clearance or instruction, the controller may follow the clearance or instruction by the phrase \"if unable\", and subsequently offer an alternative.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate is substantively supported, but its exactSourceQuote is not verbatim in the source because the source uses curly quotation marks around \u201cif unable\u201d while the candidate quote uses straight quotes. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:57:13Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/readback_continuation_2_8_3_7_to_2_8_3_10_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:57:13Z"
+  }
+}

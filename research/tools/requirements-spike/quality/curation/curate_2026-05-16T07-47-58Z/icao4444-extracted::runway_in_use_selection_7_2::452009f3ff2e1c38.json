@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::runway_in_use_selection_7_2::452009f3ff2e1c38",
+  "documentId": "icao4444-extracted",
+  "sectionId": "runway_in_use_selection_7_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.55,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quote are verbatim and source-supported, but the cited text uses \u201ccan,\u201d not a shall/must obligation. The candidate should therefore be treated as non-mandatory operational guidance rather than an authoritative requirement.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/runway_in_use_selection_7_2/icao4444-extracted::runway_in_use_selection_7_2::452009f3ff2e1c38.json",
+    "toPath": "candidates/icao4444-extracted/runway_in_use_selection_7_2/icao4444-extracted::runway_in_use_selection_7_2::452009f3ff2e1c38.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:32:51Z"
+}

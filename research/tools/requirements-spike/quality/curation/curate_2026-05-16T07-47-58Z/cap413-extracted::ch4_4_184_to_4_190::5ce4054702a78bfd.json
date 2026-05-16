@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_184_to_4_190::5ce4054702a78bfd",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_184_to_4_190",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 22.01,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted NOTE text exists verbatim in substance and supports the quantitative WATER PATCHES and FLOODED reporting criteria; the candidate is not fully redundant with accepted siblings because the FLOODED >50% threshold is not otherwise covered. Because the source frames these as NOTE material in CAP 413, it should remain advisory rather than being treated as a best-practice requirement.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_184_to_4_190/cap413-extracted::ch4_4_184_to_4_190::5ce4054702a78bfd.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_184_to_4_190/cap413-extracted::ch4_4_184_to_4_190::5ce4054702a78bfd.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:03:25Z"
+}

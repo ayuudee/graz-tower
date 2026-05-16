@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::3ab17a26603daefe",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_sid_clearances_6_3_2_4",
+  "familyId": "icao4444_departing_aircraft_family",
+  "claimText": "ATC instructions to an aircraft to rejoin a SID shall include the designator of the SID to be rejoined (unless advance notification was provided), the cleared level, and the position at which it is expected to rejoin the SID.",
+  "rationale": "Source 6.3.2.4.6 mandates specific content for rejoin instructions.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "ATC instructions to an aircraft to rejoin a SID shall include: a) the designator of the SID to be rejoin... b) the cleared level... c) the position at which it is expected to rejoin the SID."
+  ],
+  "sourceItemIds": [
+    "6.3.2.4.6"
+  ],
+  "claimSha256": "2cfcaf6938a67122c419b2f9d066ab120e8a744d15df294a77d59ffb99fe66cb",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6872,
+    "endLine": 6955
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departing_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_63246_rejoin_instruction",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "ATC instructions to an aircraft to rejoin a SID shall include: a) the designator of the SID to be rejoin... b) the cleared level... c) the position at which it is expected to rejoin the SID.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The requirement is substantively supported by the source, but the candidate\u2019s exactSourceQuotes field is not verbatim: it uses ellipses/condensation and does not match the source text. Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this record must be rejected rather than corrected.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:54:16Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departing_aircraft_sid_clearances_6_3_2_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:54:16Z"
+  }
+}

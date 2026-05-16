@@ -1,0 +1,111 @@
+{
+  "schemaName": "eppls_chapter12_inventory",
+  "formatVersion": "2026-05-15-v1",
+  "flowTask": "fn-20-fn10-source-unit-ingest-close-out-and.5",
+  "documentId": "eppls-extracted",
+  "documentTitle": "EASA Private Pilot Studies -- Chapter 12 Communications",
+  "sourcePath": "research/txt/eppls-extracted.txt",
+  "defaultAuthorityCeiling": "background_support",
+  "chapterLineRange": {
+    "startLine": 22390,
+    "endLine": 23379
+  },
+  "sections": [
+    {
+      "sectionId": "ch12_radio_discipline_frequency_basics",
+      "title": "Communications introduction, radio discipline, frequency basics",
+      "startLine": 22390,
+      "endLine": 22530,
+      "contentTypes": ["pilot_procedure", "explanatory_text", "source_reference"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Useful as training/background context for standard phraseology, concise transmissions, listening watch, frequency expression, 8.33 kHz capability wording, and primary-reference pointers."
+    },
+    {
+      "sectionId": "ch12_q_codes_categories_messages",
+      "title": "Q codes and categories of message",
+      "startLine": 22535,
+      "endLine": 22608,
+      "contentTypes": ["explanatory_text", "message_priority"],
+      "disposition": "inventory_only",
+      "authorityCeiling": "background_support",
+      "notes": "Low priority for ingestion because primary regulatory and phraseology sources already cover urgency/distress and message priority more directly."
+    },
+    {
+      "sectionId": "ch12_operating_words_callsigns_time",
+      "title": "Operating procedures, standard words, callsigns, and time",
+      "startLine": 22609,
+      "endLine": 22852,
+      "contentTypes": ["phraseology", "pilot_procedure", "table", "explanatory_text"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Contains useful pilot-training coverage of transmission technique, initial calls, ATIS mention on first contact, standard words/phrases, time expression, and callsign abbreviation cautions."
+    },
+    {
+      "sectionId": "ch12_aeronautical_stations_position_reports",
+      "title": "Aeronautical stations, service suffixes, and position reports",
+      "startLine": 22858,
+      "endLine": 22940,
+      "contentTypes": ["pilot_procedure", "table", "explanatory_text"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Useful background for station/service suffixes, position-report item order, and pilot-side sequencing of ATIS, startup, taxi, joining, circuit reports, and go-around calls."
+    },
+    {
+      "sectionId": "ch12_ground_tower_circuit_approach",
+      "title": "Ground, tower, circuit, approach, and radar-service background",
+      "startLine": 22946,
+      "endLine": 23049,
+      "contentTypes": ["pilot_procedure", "aerodrome_operations", "explanatory_text"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Useful as background for ground/tower responsibilities, taxi clearance limits, circuit/final reporting, continue versus landing clearance, and approach/radar service context."
+    },
+    {
+      "sectionId": "ch12_clearances_readbacks_conditional_radio_checks_transfer",
+      "title": "Clearances, readbacks, conditional clearances, radio checks, and transfer",
+      "startLine": 23050,
+      "endLine": 23179,
+      "contentTypes": ["phraseology", "pilot_procedure", "readback", "radio_check"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Most relevant EPPLS window: pilot-side readback expectations, clearance/instruction distinction, conditional-clearance sequence, test-transmission format, readability scale, and transfer-of-communication examples."
+    },
+    {
+      "sectionId": "ch12_radio_failure",
+      "title": "Radio failure",
+      "startLine": 23184,
+      "endLine": 23222,
+      "contentTypes": ["contingency", "pilot_procedure", "explanatory_text"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Useful background for aircraft-side communications-failure checks, transmitting-blind technique, last-clearance compliance, circuit light signals, receiver-failure reports, and transponder code context."
+    },
+    {
+      "sectionId": "ch12_distress_urgency",
+      "title": "Distress and urgency",
+      "startLine": 23227,
+      "endLine": 23354,
+      "contentTypes": ["contingency", "phraseology", "pilot_procedure"],
+      "disposition": "manifested_background_support",
+      "authorityCeiling": "background_support",
+      "notes": "Useful background for distress/urgency message shape, radio silence, cancellation, emergency frequencies, fuel-emergency wording, and emergency transponder code context. Primary sources remain H01, ICAO, SERA, and CAP 413."
+    },
+    {
+      "sectionId": "ch12_propagation_frequencies_interception",
+      "title": "Propagation, frequencies, and interception",
+      "startLine": 23359,
+      "endLine": 23379,
+      "contentTypes": ["explanatory_text", "cross_reference"],
+      "disposition": "inventory_only",
+      "authorityCeiling": "background_support",
+      "notes": "Not worth ingesting in this close-out; it is a short cross-reference to other training material with little source-unit value for FN10."
+    }
+  ],
+  "summary": {
+    "manifestedCandidateWindows": 7,
+    "inventoryOnlyWindows": 2,
+    "blockedWindows": 0,
+    "overallDisposition": "Chapter 12 has ingest-worthy material, but only as background/training support."
+  }
+}

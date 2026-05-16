@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::aa5ab7ecce1a3721",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "familyId": "eppls_ch12_operating_procedures_background_family",
+  "claimText": "Numbers occurring as round figures (e.g., 65, 2000, 11000) shall be spoken using specific conventions: 65 is six-five, 2000 is two thousand, and 11000 is One One Thousand.",
+  "rationale": "Captures specific pronunciation rules for round figures; consistent across attempts.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "where they occur as round figures. 65 is therefore six-five, while 2000 is two thousand. Eleven thousand is One One Thousand."
+  ],
+  "sourceItemIds": [
+    "num_pronunciation_rule"
+  ],
+  "claimSha256": "d0705f06f5c1d5a9424491820219471ed43fe2e582d2b7d4597121ee15eedba0",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 22609,
+    "endLine": 22650
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_operating_procedures_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "num_round_figures_pronunciation",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "where they occur as round figures. 65 is therefore six-five, while 2000 is two thousand. Eleven thousand is One One Thousand.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The cited wording is descriptive/background and does not support the claimText\u2019s shall-strength obligation; fixing that would require changing the identity claimText, which is not allowed in this curation pass. It is also not appropriate to promote merely by metadata correction because the overstatement is embedded in the claim itself.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:03:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_operating_numbers_frequency_expression/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:03:20Z"
+  }
+}

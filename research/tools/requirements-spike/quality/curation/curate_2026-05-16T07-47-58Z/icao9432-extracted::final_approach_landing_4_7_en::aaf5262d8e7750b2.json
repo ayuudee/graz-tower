@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2",
+  "documentId": "icao9432-extracted",
+  "sectionId": "final_approach_landing_4_7_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 46.35,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted dialogue is source-grounded and accurately characterized as an illustrative example rather than a binding phraseology requirement. Because the claim is explicitly about an example dialogue, it should be classified as background support rather than operational guidance.",
+    "corrections": {
+      "authorityClass": "background_support"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/final_approach_landing_4_7_en/icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2.json",
+    "toPath": "candidates/icao9432-extracted/final_approach_landing_4_7_en/icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:55:30Z"
+}

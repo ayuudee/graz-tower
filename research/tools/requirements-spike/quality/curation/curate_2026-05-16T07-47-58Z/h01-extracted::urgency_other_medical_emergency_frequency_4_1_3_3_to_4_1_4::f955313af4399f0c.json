@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::f955313af4399f0c",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.34,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The candidate is an atomic list-item requirement supported by the parent sentence \u201cThe message shall convey the following data\u201d and the quoted list item, and its modality/authority are consistent with that operative parent clause. It is not a redundant umbrella; sibling accepted records cover other atomic list items, so this item should be accepted despite the bundle-gate rationale confusion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4/h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::f955313af4399f0c.json",
+    "toPath": "candidates/h01-extracted/urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4/h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::f955313af4399f0c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:05:26Z"
+}

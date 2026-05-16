@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::2927bd56af792152",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.48,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, and the candidate is not redundant with accepted siblings. However, the source wording for this specific clause contains both \u201cmust\u201d and \u201cmay,\u201d so the modality should be mixed rather than note while retaining operational_guidance for this definitional phraseology convention.",
+    "corrections": {
+      "modality": "mixed"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::2927bd56af792152.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::2927bd56af792152.json",
+    "correctionsApplied": {
+      "modality": "mixed"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:02:33Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::078640dcb747def5",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.46,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the displayed source text, with only a line break between \u201cATIS\u201d and \u201cversion,\u201d and there are no accepted siblings making it redundant. However, the cited wording contains no explicit \u201cshould\u201d modality and appears in background/advisory material, so the modality should be lowered rather than treated as a best-practice obligation.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::078640dcb747def5.json",
+    "toPath": "candidates/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::078640dcb747def5.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:43:02Z"
+}

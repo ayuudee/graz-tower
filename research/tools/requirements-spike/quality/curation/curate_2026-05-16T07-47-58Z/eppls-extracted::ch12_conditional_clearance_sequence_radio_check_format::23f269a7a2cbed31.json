@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::23f269a7a2cbed31",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_conditional_clearance_sequence_radio_check_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.85,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted example appears verbatim, the schema and modality/authority pairing are valid, and the candidate is appropriately framed as an example with background_support authority rather than a normative requirement. It is not redundant with the accepted sibling, which captures the general sequence rule rather than this illustrative readback example.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_conditional_clearance_sequence_radio_check_format/eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::23f269a7a2cbed31.json",
+    "toPath": "candidates/eppls-extracted/ch12_conditional_clearance_sequence_radio_check_format/eppls-extracted::ch12_conditional_clearance_sequence_radio_check_format::23f269a7a2cbed31.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:46:27Z"
+}

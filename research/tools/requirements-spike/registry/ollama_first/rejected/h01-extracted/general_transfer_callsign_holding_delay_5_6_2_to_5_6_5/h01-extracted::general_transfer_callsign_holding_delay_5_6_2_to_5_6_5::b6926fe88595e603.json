@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_transfer_callsign_holding_delay_5_6_2_to_5_6_5::b6926fe88595e603",
+  "documentId": "h01-extracted",
+  "sectionId": "general_transfer_callsign_holding_delay_5_6_2_to_5_6_5",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "The aircraft shall acknowledge frequency change instructions by contacting the new unit using the phrase 'CONTACT (unit call sign) (frequency)' or 'FREQUENCY CHANGE APPROVED' or 'REQUEST CHANGE TO (frequency)' or 'REQUEST TO LEAVE FREQUENCY [FOR (number) MINUTE[S]]'.",
+  "rationale": "Source section 5.6.2 lists the required phraseology for aircraft to request or acknowledge frequency changes and leave a frequency.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "A: CONTACT (unit call sign) (frequency)",
+    "A: REQUEST CHANGE TO (frequency)",
+    "G: FREQUENCY CHANGE APPROVED",
+    "A: FREQUENCY CHANGE APPROVED",
+    "A: REQUEST TO LEAVE FREQUENCY [FOR (number) MINUTE[S]]",
+    "G: [APPROVED TO] LEAVE FREQUENCY [FOR (number) MINUTE[S]]",
+    "A: [APPROVED TO] LEAVE FREQUENCY [FOR (number) MINUTE[S]]"
+  ],
+  "sourceItemIds": [
+    "5.6.2_phrases"
+  ],
+  "claimSha256": "34f3e4da2e8bdab315012b5716f24670407110f5d3a91cb617cd423f23230eb9",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 9396,
+    "endLine": 9605
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "freq_change_aircraft_ack",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 7,
+      "hits": 7,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "Although the quoted phraseology appears verbatim, the claim is not accurately supported: it characterizes a mixed set of ground and aircraft transmissions, requests, approvals, and acknowledgements as aircraft acknowledgements of frequency-change instructions. Correcting this would require changing the identity claim text, which is not permitted in this pass.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:57:49Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_transfer_callsign_holding_delay_5_6_2_to_5_6_5/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:57:49Z"
+  }
+}

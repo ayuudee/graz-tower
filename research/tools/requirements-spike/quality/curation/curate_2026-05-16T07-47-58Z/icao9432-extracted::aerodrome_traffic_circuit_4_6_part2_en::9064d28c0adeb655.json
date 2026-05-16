@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::9064d28c0adeb655",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_traffic_circuit_4_6_part2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.73,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exact English source quote is not found verbatim in the provided source window, failing the identity-field requirement. The same substantive guidance is already represented by an accepted Polish sibling candidate, so this record should not be promoted as-is.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_traffic_circuit_4_6_part2_en/icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::9064d28c0adeb655.json",
+    "toPath": "rejected/icao9432-extracted/aerodrome_traffic_circuit_4_6_part2_en/icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::9064d28c0adeb655.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:45:00Z"
+}

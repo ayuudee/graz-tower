@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::bcde89fa8fbf66d0",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.12,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quotes are verbatim and support the claim, but the controlling parent clause uses 'should specify', so it cannot remain an authoritative requirement. This matches the treatment of sibling 7.13.5 items with embedded 'shall' language as operational guidance rather than mandatory requirements.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::bcde89fa8fbf66d0.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::bcde89fa8fbf66d0.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:21:10Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::19e4edf3ff2a5aff",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 35.2,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited phraseology is supported by the source; the G1 misses appear to be line-wrap artefacts rather than real verbatim failures. Because the item is framed as illustrative phraseology under H01 operational guidance rather than a binding rule, the requirement kind should be softened.",
+    "corrections": {
+      "requirementKind": "phraseology_example"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::19e4edf3ff2a5aff.json",
+    "toPath": "candidates/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::19e4edf3ff2a5aff.json",
+    "correctionsApplied": {
+      "requirementKind": "phraseology_example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:55:53Z"
+}

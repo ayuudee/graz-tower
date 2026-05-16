@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_aeronautical_stations_position_reports::66b1c95f00abc364",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_aeronautical_stations_position_reports",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.77,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source window and is not redundant with the accepted sibling. However, the cited wording is descriptive/background text with no explicit note marker or normative modal, so the modality should be lowered from `note` to `none` while retaining `background_support`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::66b1c95f00abc364.json",
+    "toPath": "candidates/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::66b1c95f00abc364.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:29:42Z"
+}

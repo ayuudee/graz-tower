@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::6e573b8fadb505b4",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.36,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source supports the substance of the claim, but the exactSourceQuotes field is not verbatim: it omits the word \u201cmovements\u201d from \u201cshall not be used for movements affecting the active runway(s)\u201d. Because quote text is an identity field and cannot be corrected in this pass, the candidate must be rejected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::6e573b8fadb505b4.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::6e573b8fadb505b4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:30:41Z"
+}

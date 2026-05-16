@@ -1,0 +1,116 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::95434254583e8f5a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "familyId": "icao4444_separation_family",
+  "claimText": "In accordance with regional air navigation agreements when: a) special electronic, area navigation or other aids enable the aircraft to closely adhere to their current flight plans; and b) the air traffic situation is such that the conditions in 5.11.1.1 a) regarding communications between pilots and the appropriate ATC unit or units need not necessarily be met to the degree specified therein.",
+  "rationale": "Defines reduction under regional agreements, allowing relaxed communication conditions if flight plan adherence is aided.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "5.11.1.2 In accordance with regional air navigation agreements when:",
+    "a) special electronic, area navigation or other aids enable the aircraft to closely adhere to their current flight plans; and",
+    "b) the air traffic situation is such that the conditions in 5.11.1.1 a) regarding communications between pilots and the appropriate ATC unit or units need not necessarily be met to the degree specified therein."
+  ],
+  "sourceItemIds": [
+    "5.11.1.2",
+    "5.11.1.2_a",
+    "5.11.1.2_b"
+  ],
+  "claimSha256": "9c368c8ac081eaeea37fb33275bc9fc693c0068e5a2ea68f07c57382e730089f",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6725,
+    "endLine": 6766
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "separation_reduction_regional",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 3,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted text is verbatim and the claim is supported, but the cited 5.11.1.2 text and subitems do not themselves contain an explicit modal verb. The authoritative_requirement class is also inconsistent with a non-mandatory/no-modal provision, so the record should be treated as operational guidance rather than an authoritative requirement.",
+      "corrections": {
+        "modality": "none",
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T11:32:07Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_human_review",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/reduction_separation_minima_5_11/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:32:07Z"
+  }
+}

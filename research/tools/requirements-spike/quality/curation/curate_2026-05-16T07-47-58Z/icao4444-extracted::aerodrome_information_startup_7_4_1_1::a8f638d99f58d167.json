@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_startup_7_4_1_1::a8f638d99f58d167",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_startup_7_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.22,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim exactly, and the candidate\u2019s modality and authorityClass correctly reflect the source\u2019s \u201cshould\u201d language as operational guidance. The accepted siblings do not duplicate this 7.4.1.1.1 item, so it is not a redundant umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::a8f638d99f58d167.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::a8f638d99f58d167.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:11:57Z"
+}

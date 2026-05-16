@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::0effaa3e2e65c239",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.5,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the verbatim source quote and is not redundant with any accepted sibling. Because the quote uses \u201cmust,\u201d the modality should match that wording while retaining the background_support authority classification for this textbook source.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::0effaa3e2e65c239.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::0effaa3e2e65c239.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:05:38Z"
+}

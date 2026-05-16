@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::59de79560f9ebcbc",
+  "documentId": "icao4444-extracted",
+  "sectionId": "speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the schema and authority/modality pairing are valid, and the candidate is correctly framed as a non-normative note/background support rather than an operative requirement. It is not redundant with the accepted sibling requirement that flight crews comply with SID/STAR speed restrictions, because it provides a distinct explanatory reason for some such restrictions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::59de79560f9ebcbc.json",
+    "toPath": "candidates/icao4444-extracted/speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4/icao4444-extracted::speed_control_methods_arrivals_sid_star_4_6_2_to_4_6_4::59de79560f9ebcbc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:35:54Z"
+}

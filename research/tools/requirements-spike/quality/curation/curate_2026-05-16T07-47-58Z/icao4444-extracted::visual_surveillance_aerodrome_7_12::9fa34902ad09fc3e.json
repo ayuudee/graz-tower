@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::visual_surveillance_aerodrome_7_12::9fa34902ad09fc3e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "visual_surveillance_aerodrome_7_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.07,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is quoted verbatim from 7.12.1.2, and the candidate correctly preserves the source\u2019s advisory \u201cshould\u201d modality as best_practice. It is not redundant with the accepted sibling requirements, which cover separate shall-strength provisions in 7.12.1.1 and 7.12.2.2.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/visual_surveillance_aerodrome_7_12/icao4444-extracted::visual_surveillance_aerodrome_7_12::9fa34902ad09fc3e.json",
+    "toPath": "candidates/icao4444-extracted/visual_surveillance_aerodrome_7_12/icao4444-extracted::visual_surveillance_aerodrome_7_12::9fa34902ad09fc3e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:39:47Z"
+}

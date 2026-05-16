@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::9c2383a92a85b8d6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_dependent_approaches_6_7_3_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.77,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted condition is verbatim and supports the claim as an atomic necessary condition within the dependent-parallel-approach permission, so it should not be rejected merely for bundle incompleteness. However, the governing wording is \u201cmay be conducted ... provided,\u201d so the candidate\u2019s modality should be may, and under the authority floor the authorityClass must be lowered from authoritative_requirement to operational_guidance.",
+    "corrections": {
+      "modality": "may",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_dependent_approaches_6_7_3_4/icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::9c2383a92a85b8d6.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_dependent_approaches_6_7_3_4/icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::9c2383a92a85b8d6.json",
+    "correctionsApplied": {
+      "modality": "may",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:23:50Z"
+}

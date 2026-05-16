@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_184_to_4_190::5ce4054702a78bfd",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_184_to_4_190",
+  "familyId": "cap413_ch4_4_184_to_4_190_family",
+  "claimText": "Water patches will be reported when more than 25% of the assessed area is covered by water more than 3mm deep. Flooded will be reported when more than 50% of the assessed area is covered by water more than 3mm deep.",
+  "rationale": "Quantitative criteria for WATER PATCHES and FLOODED.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "NOTE: Water patches will be reported when more than 25% of the assessed area is covered by water more than 3mm deep.",
+    "NOTE: Flooded will be reported when more than 50% of the assessed area is covered by water more than 3mm deep."
+  ],
+  "sourceItemIds": [
+    "term_FLOODED_note_1",
+    "term_FLOODED_note_2"
+  ],
+  "claimSha256": "78d6f90e2d8c209fe502931618b8bc355f6e332bc8fad0bdccb39a91755588c5",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 12028,
+    "endLine": 12166
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_184_to_4_190_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "advice_FLOODED_criteria",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted NOTE text exists verbatim in substance and supports the quantitative WATER PATCHES and FLOODED reporting criteria; the candidate is not fully redundant with accepted siblings because the FLOODED >50% threshold is not otherwise covered. Because the source frames these as NOTE material in CAP 413, it should remain advisory rather than being treated as a best-practice requirement.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T08:03:25Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_184_to_4_190/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:03:25Z"
+  }
+}

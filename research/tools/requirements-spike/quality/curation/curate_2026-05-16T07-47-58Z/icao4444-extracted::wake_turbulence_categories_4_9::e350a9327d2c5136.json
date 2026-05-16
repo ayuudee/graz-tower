@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_categories_4_9::e350a9327d2c5136",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_categories_4_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.31,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the candidate accurately captures a standalone Note 2 as non-normative background support. Its modality and authorityClass are already appropriate, and it is not redundant with the accepted sibling atomic requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_categories_4_9/icao4444-extracted::wake_turbulence_categories_4_9::e350a9327d2c5136.json",
+    "toPath": "candidates/icao4444-extracted/wake_turbulence_categories_4_9/icao4444-extracted::wake_turbulence_categories_4_9::e350a9327d2c5136.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:40:41Z"
+}

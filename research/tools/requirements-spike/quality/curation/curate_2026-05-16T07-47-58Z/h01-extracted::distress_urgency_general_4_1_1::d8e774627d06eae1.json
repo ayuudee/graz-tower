@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::distress_urgency_general_4_1_1::d8e774627d06eae1",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_urgency_general_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.99,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The definition is directly supported by the verbatim source quote and is not redundant with the accepted distress-definition sibling. Because the quoted text is a non-operative definition with no modal wording and is not labeled as a note, the modality should be lowered from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::d8e774627d06eae1.json",
+    "toPath": "candidates/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::d8e774627d06eae1.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:43:45Z"
+}

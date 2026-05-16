@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::c512635281456893",
+  "documentId": "h01-extracted",
+  "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.48,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the phraseology list, but the exactSourceQuotes are not verbatim in the source window: the cited strings include 'G:' prefixes that do not appear contiguous with the banner-dropping English phrases. Because quote identity fields cannot be corrected in this pass, the candidate must be rejected rather than promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::c512635281456893.json",
+    "toPath": "rejected/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::c512635281456893.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:58:30Z"
+}

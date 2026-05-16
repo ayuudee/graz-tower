@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_startup_7_4_1_1::e04f81e6fe7536be",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_startup_7_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 29.32,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and the note/background classification is internally consistent, but the unit is only a cross-reference background note and the judge correctly classified it as advisory/support-only rather than an accepted operative requirement or guidance item. No modality or authority correction would make it promotable without changing its identity.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::e04f81e6fe7536be.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::e04f81e6fe7536be.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:12:37Z"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::613d9f0c3283e00a",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "ATC may use the phrase 'TURN LEFT/RIGHT [IMMEDIATELY] HEADING (three digits) TO AVOID [UNKNOWN/UNIDENTIFIED] TRAFFIC (bearing by clock-reference and distance)' to provide avoiding action.",
+  "rationale": "Standard ATC phraseology for heading-based avoidance. Consistent across attempts.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: TURN LEFT/RIGHT [IMMEDIATELY] HEADING (three digits) TO AVOID [UNKNOWN/UNIDENTIFIED] TRAFFIC (bearing by clock-reference and distance)"
+  ],
+  "sourceItemIds": [
+    "h01_5.6.10.6_turn_heading"
+  ],
+  "claimSha256": "fd8207d11a9ac7b9dbf800c4c641e02b357fb97f191ccdf1561484a1573d080b",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 10021,
+    "endLine": 10125
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_5.6.10.6_turn_heading",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "G: TURN LEFT/RIGHT [IMMEDIATELY] HEADING (three digits) TO AVOID [UNKNOWN/UNIDENTIFIED] TRAFFIC (bearing by clock-reference and distance)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the source, but the cited exactSourceQuote is not present verbatim in the provided source window after whitespace normalization due the interleaved bilingual/PDF text. Because exactSourceQuotes are identity fields and cannot be edited in this pass, this real G1 verbatim miss prevents promotion.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:54:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:54:12Z"
+  }
+}

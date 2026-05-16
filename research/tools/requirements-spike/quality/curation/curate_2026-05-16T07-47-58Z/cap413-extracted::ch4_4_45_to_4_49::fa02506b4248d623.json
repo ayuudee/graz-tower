@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_45_to_4_49::fa02506b4248d623",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_45_to_4_49",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.17,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim, source-grounded advisory statement using 'may be necessary', and the existing modality and authorityClass correctly frame it as operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling candidates, which do not cover sequencing, preceding-aircraft position, and delaying action in the circuit.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_45_to_4_49/cap413-extracted::ch4_4_45_to_4_49::fa02506b4248d623.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_45_to_4_49/cap413-extracted::ch4_4_45_to_4_49::fa02506b4248d623.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:11:22Z"
+}

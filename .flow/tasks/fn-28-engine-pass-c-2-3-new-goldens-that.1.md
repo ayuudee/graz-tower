@@ -64,9 +64,8 @@ Foundation A: WeatherObservation.oat + Temperature typed-units + `DensityAltitud
 - [ ] `./gradlew :core:allTests :pilot:jvmTest :protocol:allTests :sim:jvmTest detekt --offline --no-daemon` GREEN
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Landed fn-28.1 (DA foundation A): WeatherObservation.oat + Temperature typed-units + DensityAltitudeInput typed projection on PilotInput + fail-closed projection at PilotWiring + derivePilotEvent signature threading + ATIS OAT slot + Annex 11 §4.3.6 RegulationDatabase entry. Relocated Feet from :core/world to :protocol per R24 with typealias re-export. Populated LOWG fixture with concrete OAT + QNH. Tests: WeatherObservationSpec (3) + TemperatureSpec (11) + ProjectionDensityAltitudeInputSpec (5) + DensityAltitudeInputForMissionTest (7) + FirewallPilotInputTest extension. Codex impl-review: round 1 NEEDS_WORK (sibling-helper destination-vs-departure-aerodrome semantic) → round 2 SHIP after correcting densityAltitudeInputForMission to fail-closed for all goal branches + dedicated regression-pin test suite.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 4fe1f05a65ba6384ac9f692d57f7e59b065ad23b, e417c9884d6b6806750982716012b12791f432ab, afbfc15422ab5477e43e635bce14b99a6992673b
+- Tests: ./gradlew :core:allTests :pilot:jvmTest :protocol:allTests :sim:jvmTest detekt --offline --no-daemon (NOT RUN LOCALLY: no JDK installed in worker environment — /Library/Java/JavaVirtualMachines is empty + brew has no jdk cask; verification deferred to next CI/local pass; codex impl-review SHIP'd statically scoped to base 1260654)
+- PRs:

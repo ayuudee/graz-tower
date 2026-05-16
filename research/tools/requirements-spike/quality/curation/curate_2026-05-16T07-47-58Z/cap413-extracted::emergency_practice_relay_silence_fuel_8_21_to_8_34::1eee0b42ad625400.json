@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::1eee0b42ad625400",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.95,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is verbatim, the claim is fully supported by CAP 413 section 8.27, and the may-modality with operational_guidance authority is consistent for this advisory CAP 413 content. It is not redundant with the accepted siblings, which cover related but distinct emergency-communications provisions.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::1eee0b42ad625400.json",
+    "toPath": "candidates/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::1eee0b42ad625400.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:27:23Z"
+}

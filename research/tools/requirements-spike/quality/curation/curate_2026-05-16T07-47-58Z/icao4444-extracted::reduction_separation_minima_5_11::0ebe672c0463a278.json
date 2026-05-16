@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::0ebe672c0463a278",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item exists verbatim and is supported by the parent provision stating the minima may be reduced in these circumstances. Because the operative modality is permissive, the candidate cannot remain an authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::0ebe672c0463a278.json",
+    "toPath": "candidates/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::0ebe672c0463a278.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:31:40Z"
+}

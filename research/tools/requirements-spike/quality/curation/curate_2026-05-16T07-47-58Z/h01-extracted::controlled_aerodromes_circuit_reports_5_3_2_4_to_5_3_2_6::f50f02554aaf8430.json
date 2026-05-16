@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::f50f02554aaf8430",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.82,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited quote does not appear verbatim in the source window: 'G: REPORT' is a list header and '[RIGHT [HAND]] BASE' is a later bullet separated by intervening bullets. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::f50f02554aaf8430.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::f50f02554aaf8430.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:30:06Z"
+}

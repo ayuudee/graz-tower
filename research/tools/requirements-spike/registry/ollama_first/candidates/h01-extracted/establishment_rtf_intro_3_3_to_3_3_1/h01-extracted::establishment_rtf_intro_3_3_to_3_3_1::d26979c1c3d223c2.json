@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::d26979c1c3d223c2",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_intro_3_3_to_3_3_1",
+  "familyId": "h01_rtf_communications_family",
+  "claimText": "When a station is called but is uncertain of the identification of the calling station, it should reply by transmitting: STATION CALLING (station called) SAY AGAIN YOUR CALL SIGN.",
+  "rationale": "Direct 'should' guidance from section 3.3(e) specifying phraseology for uncertain identification.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "When a station is called but is uncertain of the identification of the calling station, it should reply by transmitting the following: G/A: STATION CALLING (station called) SAY AGAIN YOUR CALL SIGN"
+  ],
+  "sourceItemIds": [
+    "3.3_e"
+  ],
+  "claimSha256": "4ca10aef1369653bcde8888738d819619a37dbbe3e67f7f742d8618fb7dc3df8",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 3494,
+    "endLine": 3688
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_rtf_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "rtf_uncertain_identification_reply",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact source quote is present and directly supports the claim, including the 'should' modality and specified phraseology. The candidate is correctly framed as operational guidance rather than an authoritative requirement, and it is not redundant with the accepted sibling candidates.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:46:09Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/establishment_rtf_intro_3_3_to_3_3_1/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:46:09Z"
+  }
+}

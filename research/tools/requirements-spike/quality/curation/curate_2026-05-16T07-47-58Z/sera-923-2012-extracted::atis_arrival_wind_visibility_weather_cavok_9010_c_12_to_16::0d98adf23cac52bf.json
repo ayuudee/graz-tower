@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16::0d98adf23cac52bf",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.97,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying requirement is supported, but the exactSourceQuote is not verbatim in the source window: the source has \u201ccumulo\u00ad\nnimbus\u201d split with a soft hyphen/line break, while the candidate quote has \u201ccumulonimbus.\u201d Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16/sera-923-2012-extracted::atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16::0d98adf23cac52bf.json",
+    "toPath": "rejected/sera-923-2012-extracted/atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16/sera-923-2012-extracted::atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16::0d98adf23cac52bf.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:03:32Z"
+}

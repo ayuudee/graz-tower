@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::1285fd09c63d41ef",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.26,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuotes do not appear verbatim in the source window: the source layout separates the repeated \u201cG:\u201d labels from the phrase lines. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted despite the phraseology being substantively present.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::1285fd09c63d41ef.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::1285fd09c63d41ef.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:38:14Z"
+}

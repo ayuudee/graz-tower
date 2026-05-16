@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::special_vfr_authorization_7_15::eb25c5e71b26e1ba",
+  "documentId": "icao4444-extracted",
+  "sectionId": "special_vfr_authorization_7_15",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.8,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and the claim accurately reflects a non-operative Note cross-referencing Annex 2. The only defect is the authority/modality mismatch: a note cannot be classified as an authoritative requirement, so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/special_vfr_authorization_7_15/icao4444-extracted::special_vfr_authorization_7_15::eb25c5e71b26e1ba.json",
+    "toPath": "candidates/icao4444-extracted/special_vfr_authorization_7_15/icao4444-extracted::special_vfr_authorization_7_15::eb25c5e71b26e1ba.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:34:03Z"
+}

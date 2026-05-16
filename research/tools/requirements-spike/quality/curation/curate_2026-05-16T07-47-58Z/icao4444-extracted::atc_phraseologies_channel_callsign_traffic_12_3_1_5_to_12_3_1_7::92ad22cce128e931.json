@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::92ad22cce128e931",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.53,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the claim accurately reflects Note 2 under 12.3.1.8(f). It is correctly framed as non-normative operational guidance with modality `note`, and it is not redundant with the accepted RVR phraseology items because it adds the specific omission/order guidance for three-location reports.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::92ad22cce128e931.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::92ad22cce128e931.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:48:36Z"
+}

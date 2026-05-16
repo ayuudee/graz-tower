@@ -1,0 +1,129 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_aeronautical_stations_position_reports::47082498dd11b890",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_aeronautical_stations_position_reports",
+  "familyId": "eppls_ch12_operating_procedures_background_family",
+  "claimText": "Pilots should comply with ATC instructions as soon as they are issued, unless the instruction includes 'When Ready', in which case compliance is left to pilot discretion.",
+  "rationale": "Attempt 3 provides the most complete synthesis of the timing rule and the 'When Ready' exception, supported by the logic in attempts 1 and 2.",
+  "modality": "should",
+  "authorityClass": "background_support",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "You should comply with ATC instructions as soon as they are issued",
+    "sometimes a climb or descent is left to your discretion, in which case the words When Ready will be used."
+  ],
+  "sourceItemIds": [
+    "sec_atc_compliance"
+  ],
+  "claimSha256": "c8b0092bc57fa3289611215a4b161e8e2e87a84a6b9612ea4feea14eccf2e5b1",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 22868,
+    "endLine": 22899
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_operating_procedures_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_atc_compliance_timing",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 2,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "You should comply with ATC instructions as soon as they are issued",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "sometimes a climb or descent is left to your discretion, in which case the words When Ready will be used.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim is supported by the source text and the quoted wording appears in the provided window apart from line-break/layout artifacts. Because the source is explicitly background/advisory material, it should remain non-authoritative, but its requirement kind should be framed as advisory rather than best-practice.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T08:29:32Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::47082498dd11b890.json",
+      "to": "pending/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::47082498dd11b890.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_aeronautical_stations_position_reports/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:29:32Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

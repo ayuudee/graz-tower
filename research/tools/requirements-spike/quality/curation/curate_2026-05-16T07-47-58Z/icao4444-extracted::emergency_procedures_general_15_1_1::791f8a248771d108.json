@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_general_15_1_1::791f8a248771d108",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_general_15_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source quote is verbatim and supports the claim, with the operative parent clause using \"should.\" Under the authority floor table, a should-modality item cannot remain authoritative_requirement, and sibling items from the same list are classified as operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::791f8a248771d108.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_general_15_1_1/icao4444-extracted::emergency_procedures_general_15_1_1::791f8a248771d108.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:59:27Z"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::108e01f9bb72878f",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "familyId": "cap413_ch4_4_50_to_4_60_family",
+  "claimText": "A landing aircraft may be permitted to touch down before a preceding landing aircraft has vacated the runway provided: 1. the runway is long enough to allow safe separation and braking is not adversely affected; 2. it is during daylight hours; 3. the preceding aircraft is not required to backtrack; 4. the controller is satisfied the landing aircraft can see the preceding aircraft clearly and continuously until it vacates; and 5. the pilot of the following aircraft is warned and accepts responsibility for separation.",
+  "rationale": "Source 4.57 lists five mandatory conditions ('provided that') for permitting a landing before the preceding aircraft vacates. These are consolidated into a single rule candidate to preserve the logical conjunction of conditions.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "A landing aircraft may be permitted to touch down before a preceding landing aircraft has vacated the runway provided that: 1. the runway is long enough to allow safe separation between the two aircraft and there is no evidence to indicate that braking may be adversely affected; 2. it is during daylight hours; 3. the preceding landing aircraft is not required to backtrack in order to vacate the runway; 4. the controller is satisfied that the landing aircraft will be able to see the preceding aircraft which has landed, clearly and continuously, until it has vacated the runway; and 5. the pilot of the following aircraft is warned. (Responsibility for ensuring adequate separation rests with the pilot of the following aircraft."
+  ],
+  "sourceItemIds": [
+    "list_item_4.57_1",
+    "list_item_4.57_2",
+    "list_item_4.57_3",
+    "list_item_4.57_4",
+    "list_item_4.57_5"
+  ],
+  "claimSha256": "689ee2437d0784c2dab393dbd6d0506bd783c88bb1d6f56112e71ee797112a1c",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 9112,
+    "endLine": 9293
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_50_to_4_60_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cap413_457_land_after_conditions",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_50_to_4_60/judged_candidates.json"
+  }
+}

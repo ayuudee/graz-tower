@@ -248,9 +248,8 @@ implementation_sha="$(git rev-parse HEAD)"
 - **Pre-existing dirty state** (research/tools/requirements-spike/, fn-20+23 untracked, research/pdf+txt) MUST NOT be staged.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Added 4 Kotest property tests for the sim engine `step()` function (totality, monotonicity, determinism, conditional runway-kernel preservation) seeded from the LOWG fixture, activating kotest 5.9.1 in `:sim/jvmTest`. The R6 generator drives the sim to the pre-emission state for the first runway instruction so the property reaches the kernel-call branch every cycle; an explicit ≥5% non-vacuity gate hard-fails if the seed regresses.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 1260654d536a96c43c7322678f914cfce6490880
+- Tests: ./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests :migration:allTests detekt --offline --no-daemon
+- PRs:

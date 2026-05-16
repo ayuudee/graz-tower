@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_level_changes_5_6_13::f115baa8aef45252",
+  "documentId": "h01-extracted",
+  "sectionId": "general_level_changes_5_6_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.24,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source text, but the candidate\u2019s exactSourceQuote includes a leading bullet that does not appear verbatim before \u201cSTOP CLIMB/DESCENT AT (level)\u201d in the source window. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::f115baa8aef45252.json",
+    "toPath": "rejected/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::f115baa8aef45252.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:51:33Z"
+}

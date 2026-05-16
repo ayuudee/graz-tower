@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::843f97b59ddb53d2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.58,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology exists verbatim and the candidate is not a redundant umbrella over already accepted atomic items because it includes the alternative-instructions wording. The only gate failure is the invalid may \u00d7 authoritative_requirement pairing, so the authority class should be lowered rather than changing the source-supported permissive modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::843f97b59ddb53d2.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::843f97b59ddb53d2.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:50:16Z"
+}

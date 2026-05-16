@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7e68ce42937e7704",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.38,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exact source quote is not found verbatim: the source text contains \u201cREPORT [RIGHT [HAND]] BASE/FINAL/LONG FINAL RUNWAY (number)\u201d without the cited \u201cA:\u201d prefix. In addition, the phraseology appears to be an ATC instruction to report, not pilot phraseology for reporting position, so fixing it would require changing identity fields.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7e68ce42937e7704.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::7e68ce42937e7704.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:29:29Z"
+}

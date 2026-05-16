@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::42ed82027ce3eb19",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.08,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited words are supported by the source window as the outbound list item, despite a likely artefactual G1 miss from line wrapping/punctuation following the quoted fragment. The item has no explicit should/shall language and is background pilot-training material, so the modality should be lowered to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::42ed82027ce3eb19.json",
+    "toPath": "candidates/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::42ed82027ce3eb19.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:44:18Z"
+}

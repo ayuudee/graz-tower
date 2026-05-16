@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::25764887dee53713",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.56,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the claim is directly supported by CAP 413 section 8.22. The existing modality 'should' and authorityClass 'operational_guidance' correctly reflect the advisory CAP 413 wording, and the accepted siblings do not already cover this specific SSR Code 7700 restriction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::25764887dee53713.json",
+    "toPath": "candidates/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::25764887dee53713.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:27:39Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::test_procedures_2_8_4_en::48d26162f8fa9d03",
+  "documentId": "icao9432-extracted",
+  "sectionId": "test_procedures_2_8_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.51,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 has a real verbatim miss: the source reads \"3. Transmisja czytelna z trudno\u015bci\u0105.\" while the candidate quote and claim use \"z trudno\u015bciami.\" Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/test_procedures_2_8_4_en/icao9432-extracted::test_procedures_2_8_4_en::48d26162f8fa9d03.json",
+    "toPath": "rejected/icao9432-extracted/test_procedures_2_8_4_en/icao9432-extracted::test_procedures_2_8_4_en::48d26162f8fa9d03.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:00:21Z"
+}

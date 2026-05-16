@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::c519e4bd2b4288da",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_same_level_5_4_2_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.75,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is source-supported and correctly framed as a non-normative figure caption with note/background_support, but the judge did not accept it as a promoted regulatory candidate and no modality or authority correction is needed. A human curator should decide whether standalone figure captions are retained as background-support records or omitted when the operative separation requirement is already accepted in sibling candidates.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::c519e4bd2b4288da.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:20:00Z"
+}

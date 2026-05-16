@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::d6a4c51ac502fe40",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.62,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is present in the source and the claim accurately identifies it as an example transmission, with appropriate example modality and operational_guidance authority. It is not redundant with the accepted siblings, which cover separate normative/note content rather than this standalone phraseology example.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::d6a4c51ac502fe40.json",
+    "toPath": "candidates/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::d6a4c51ac502fe40.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:47:27Z"
+}

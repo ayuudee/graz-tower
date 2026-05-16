@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::distress_urgency_general_4_1_1::6067c14af66842b0",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_urgency_general_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 26.9,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is present and supports the claim as a standalone definition, and it is not redundant with the accepted operative siblings. However, the source quote contains no operative modal and is not presented as a source note, so the modality should be `none` rather than `note` while retaining background-support treatment.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::6067c14af66842b0.json",
+    "toPath": "candidates/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::6067c14af66842b0.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:43:26Z"
+}

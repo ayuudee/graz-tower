@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::e03ffc41e2cb1045",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part3c_runway_vacating_helicopter",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.34,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is present verbatim and supports the claim as a definition of the helicopter phrase 'HOLD POSITION'. The candidate is atomic, consistent with the accepted sibling 'HOVER' definition, and its note modality with operational_guidance authority is appropriate for CAP413 advisory phraseology material.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part3c_runway_vacating_helicopter/cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::e03ffc41e2cb1045.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part3c_runway_vacating_helicopter/cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::e03ffc41e2cb1045.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:20:39Z"
+}

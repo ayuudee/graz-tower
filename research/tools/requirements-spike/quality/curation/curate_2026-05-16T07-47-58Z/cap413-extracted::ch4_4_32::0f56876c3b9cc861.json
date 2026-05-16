@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_32::0f56876c3b9cc861",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_32",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.59,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phraseology examples are present in the source and support the candidate as an illustrative CAP 413 phraseology item. Its modality and authority class are already conservatively framed as example/operational_guidance, with no sibling redundancy or identity defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_32/cap413-extracted::ch4_4_32::0f56876c3b9cc861.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_32/cap413-extracted::ch4_4_32::0f56876c3b9cc861.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:08:06Z"
+}

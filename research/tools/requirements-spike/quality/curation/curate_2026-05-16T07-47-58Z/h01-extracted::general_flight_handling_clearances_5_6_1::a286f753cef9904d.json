@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_flight_handling_clearances_5_6_1::a286f753cef9904d",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_handling_clearances_5_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.41,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not verbatim in the source because the source uses curly quotation marks around \u2018UNABLE\u2019, while the candidate quote uses straight apostrophes. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 verbatim miss requiring rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_flight_handling_clearances_5_6_1/h01-extracted::general_flight_handling_clearances_5_6_1::a286f753cef9904d.json",
+    "toPath": "rejected/h01-extracted/general_flight_handling_clearances_5_6_1/h01-extracted::general_flight_handling_clearances_5_6_1::a286f753cef9904d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:48:38Z"
+}

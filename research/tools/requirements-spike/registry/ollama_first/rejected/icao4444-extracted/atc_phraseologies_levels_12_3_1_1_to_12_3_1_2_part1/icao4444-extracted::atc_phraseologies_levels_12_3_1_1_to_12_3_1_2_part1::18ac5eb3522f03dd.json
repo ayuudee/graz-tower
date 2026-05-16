@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1::18ac5eb3522f03dd",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "Requests for level changes shall use the phrase 'REQUEST LEVEL (or FLIGHT LEVEL or ALTITUDE) CHANGE FROM (name of unit) [AT (time or significant point)]'",
+  "rationale": "Section 12.3.1.2 item d) defines the specific phraseology for requesting a level change.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "d) REQUEST LEVEL (or FLIGHT LEVEL or ALTITUDE) CHANGE FROM (name of unit) [AT (time or significant point)];"
+  ],
+  "sourceItemIds": [
+    "item_12_3_1_2_d"
+  ],
+  "claimSha256": "213a0f30136e43bf083bfd496e9e51f4ff096a44736eb6b24a6952257f0db267",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 13470,
+    "endLine": 13638
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "request_level_change",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "d) REQUEST LEVEL (or FLIGHT LEVEL or ALTITUDE) CHANGE FROM (name of unit) [AT (time or significant point)];",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the source, but the exactSourceQuotes field is not verbatim: the source labels this phraseology as item c), not item d), and the quoted single-line text does not appear verbatim in the source window. Because quote identity fields cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:49:57Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/atc_phraseologies_levels_12_3_1_1_to_12_3_1_2_part1/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:49:57Z"
+  }
+}

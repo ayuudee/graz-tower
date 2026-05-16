@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_ats_action_4_1_2_2::df7cb25532d53709",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_ats_action_4_1_2_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.62,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The operative claim is broadly supported by the source, but the candidate\u2019s exactSourceQuote is not present verbatim in the source window after whitespace normalization. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_ats_action_4_1_2_2/h01-extracted::distress_ats_action_4_1_2_2::df7cb25532d53709.json",
+    "toPath": "rejected/h01-extracted/distress_ats_action_4_1_2_2/h01-extracted::distress_ats_action_4_1_2_2::df7cb25532d53709.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:41:27Z"
+}

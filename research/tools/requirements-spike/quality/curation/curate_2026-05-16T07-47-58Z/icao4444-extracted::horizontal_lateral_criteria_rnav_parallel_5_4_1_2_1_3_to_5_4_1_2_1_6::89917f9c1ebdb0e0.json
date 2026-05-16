@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::89917f9c1ebdb0e0",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim as a non-normative Note providing background on how the distance values were derived. The modality and authorityClass are already appropriate, but the content is not a definition, so the requirementKind should be corrected to a background/supporting-information type.",
+    "corrections": {
+      "requirementKind": "background_information"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::89917f9c1ebdb0e0.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::89917f9c1ebdb0e0.json",
+    "correctionsApplied": {
+      "requirementKind": "background_information"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:08:41Z"
+}

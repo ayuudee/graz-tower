@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::053e9ab866bbc448",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.71,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited English and German phraseology appears verbatim and supports the candidate\u2019s substance, with no sibling redundancy. However, the source quote is a bare phraseology entry without a note marker or normative/permissive modal, so the modality should be corrected from `note` to `none` while retaining operational-guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::053e9ab866bbc448.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::053e9ab866bbc448.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:25:46Z"
+}

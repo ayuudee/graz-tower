@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::c7bd6e1125bd94be",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.86,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the cited list item and footnote: pilot qualifications are listed, and the footnote states there is no ICAO requirement but that the information should be included whenever possible in UK emergency messages/contexts. G1\u2013G4 pass, the modality and background-support authority class are conservative and consistent, and the accepted siblings do not already cover this specific pilot-qualification point.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::c7bd6e1125bd94be.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::c7bd6e1125bd94be.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:49:10Z"
+}

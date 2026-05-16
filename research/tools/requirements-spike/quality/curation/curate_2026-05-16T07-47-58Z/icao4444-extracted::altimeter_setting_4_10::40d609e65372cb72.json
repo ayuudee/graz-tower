@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::40d609e65372cb72",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.91,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and the claim accurately reflects a standalone ICAO Note defining the lowest usable flight level. However, because the source is explicitly a Note, it should not be classified as an authoritative requirement; the authority class should be lowered while retaining the note modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::40d609e65372cb72.json",
+    "toPath": "candidates/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::40d609e65372cb72.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:31:22Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::0842fe5ef1e56270",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.76,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and, with the parent clause, supports the candidate\u2019s permission statement. However, the source uses \u201cmay,\u201d so under the authority floor rule the authorityClass cannot remain authoritative_requirement and should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::0842fe5ef1e56270.json",
+    "toPath": "candidates/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::0842fe5ef1e56270.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:55:50Z"
+}

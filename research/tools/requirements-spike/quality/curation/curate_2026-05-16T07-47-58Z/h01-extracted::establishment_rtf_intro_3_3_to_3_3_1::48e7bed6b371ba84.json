@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::48e7bed6b371ba84",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_intro_3_3_to_3_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.9,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted lines are verbatim and correctly identified as an example, but they are only an illustrative call format and not a standalone requirement. The underlying required initial-call procedure is already covered by accepted atomic sibling candidates, so this support-only example should not be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_intro_3_3_to_3_3_1/h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::48e7bed6b371ba84.json",
+    "toPath": "rejected/h01-extracted/establishment_rtf_intro_3_3_to_3_3_1/h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::48e7bed6b371ba84.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:44:47Z"
+}

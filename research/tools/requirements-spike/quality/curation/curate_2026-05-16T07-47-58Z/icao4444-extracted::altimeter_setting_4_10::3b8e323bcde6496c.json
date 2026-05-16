@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::3b8e323bcde6496c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.2,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the candidate as an authoritative prohibitive requirement. The only defect is that `shall_not` is not an allowed modality value; the source\u2019s \u201cshall not\u201d should be represented with modality `shall` rather than lowering authority.",
+    "corrections": {
+      "modality": "shall"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::3b8e323bcde6496c.json",
+    "toPath": "candidates/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::3b8e323bcde6496c.json",
+    "correctionsApplied": {
+      "modality": "shall"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:31:16Z"
+}

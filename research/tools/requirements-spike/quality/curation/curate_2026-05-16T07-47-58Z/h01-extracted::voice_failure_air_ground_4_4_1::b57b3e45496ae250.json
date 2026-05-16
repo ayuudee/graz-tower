@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::voice_failure_air_ground_4_4_1::b57b3e45496ae250",
+  "documentId": "h01-extracted",
+  "sectionId": "voice_failure_air_ground_4_4_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.06,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is present in the source and the claim accurately captures a standalone Note stating that the signal should not be expected on base and final. The candidate is correctly framed as non-authoritative operational guidance with note modality, and it is not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/voice_failure_air_ground_4_4_1/h01-extracted::voice_failure_air_ground_4_4_1::b57b3e45496ae250.json",
+    "toPath": "candidates/h01-extracted/voice_failure_air_ground_4_4_1/h01-extracted::voice_failure_air_ground_4_4_1::b57b3e45496ae250.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:06:13Z"
+}

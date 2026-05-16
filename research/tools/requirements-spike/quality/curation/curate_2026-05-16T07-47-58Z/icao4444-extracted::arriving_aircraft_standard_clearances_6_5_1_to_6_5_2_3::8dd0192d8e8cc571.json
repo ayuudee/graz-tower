@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::8dd0192d8e8cc571",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.92,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by ICAO 4444 6.5.2.3, but the sole exactSourceQuote is not present verbatim in the source because it skips intervening list item text between the parent clause and item b). Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::8dd0192d8e8cc571.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::8dd0192d8e8cc571.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:42:14Z"
+}

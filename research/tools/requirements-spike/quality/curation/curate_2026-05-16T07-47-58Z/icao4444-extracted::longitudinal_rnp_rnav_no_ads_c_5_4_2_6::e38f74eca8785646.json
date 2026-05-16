@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::e38f74eca8785646",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.03,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is substantively grounded in the notes, but its single exactSourceQuote is not a verbatim source span: it concatenates Note 2 and Note 3 while omitting the intervening Note 2 sentence. Because claimText and exactSourceQuotes are identity fields and the quote does not exist verbatim in the source, this cannot be promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::e38f74eca8785646.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::e38f74eca8785646.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:17:24Z"
+}

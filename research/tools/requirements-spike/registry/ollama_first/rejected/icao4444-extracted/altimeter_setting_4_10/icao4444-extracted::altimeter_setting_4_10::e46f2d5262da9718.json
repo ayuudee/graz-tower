@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::e46f2d5262da9718",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "familyId": "icao4444_altimeter_family",
+  "claimText": "For instrument runways where the threshold is 2 m (7 ft) or more below the aerodrome elevation, vertical position shall be expressed in terms of height above runway threshold elevation.",
+  "rationale": "Specific exception to the QFE aerodrome elevation rule for instrument runways with significant threshold depth.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "except that it shall be expressed in terms of height above runway threshold elevation: ... for instrument runways, if the threshold is 2 m (7 ft) or more below the aerodrome elevation;"
+  ],
+  "sourceItemIds": [
+    "4.10.1.2",
+    "4.10.1.2.a"
+  ],
+  "claimSha256": "1953eb891a16877cdbc8a10be6eafd7832a401d1337780f937af5203adfedab6",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 3628,
+    "endLine": 3722
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_altimeter_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "4.10.1.2_vpos_threshold_inst",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "except that it shall be expressed in terms of height above runway threshold elevation: ... for instrument runways, if the threshold is 2 m (7 ft) or more below the aerodrome elevation;",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The underlying rule is supported by the source, but the candidate's exactSourceQuotes field is not a verbatim source quote because it inserts an ellipsis across separated text. Since quote identity fields cannot be corrected in this pass, the G1 verbatim failure requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:32:37Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "unsupported_by_source",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/altimeter_setting_4_10/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:32:37Z"
+  }
+}

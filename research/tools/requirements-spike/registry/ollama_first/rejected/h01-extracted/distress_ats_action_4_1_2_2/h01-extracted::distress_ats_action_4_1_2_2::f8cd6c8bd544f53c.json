@@ -1,0 +1,116 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::distress_ats_action_4_1_2_2::f8cd6c8bd544f53c",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_ats_action_4_1_2_2",
+  "familyId": "h01_contingency_communications_family",
+  "claimText": "The ATS unit addressed by an aircraft in distress, or the first ATS unit acknowledging the distress message, shall take immediate action to ensure that all necessary information is made available, as soon as possible, to the ATS unit concerned.",
+  "rationale": "All attempts agree on this obligation to disseminate information to the relevant ATS unit. The parent 'shall' applies to the nested list item.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "c) take immediate action to ensure that all necessary information is made available, as soon as possible, to:",
+    "1. the ATS unit concerned;"
+  ],
+  "sourceItemIds": [
+    "h01_4.1.2.2_preamble",
+    "h01_4.1.2.2_c",
+    "h01_4.1.2.2_c_sub_1"
+  ],
+  "claimSha256": "8f1fb6cfeadc14704ccb363d4acf4f30adbcca7c83332907a928a2f99f5e7472",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 5056,
+    "endLine": 5160
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "h01_info_ats_unit",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 1,
+      "misses": [
+        {
+          "quote": "1. the ATS unit concerned;",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "One exactSourceQuote fails verbatim matching: the source window does not contain \"1. the ATS unit concerned;\" as a contiguous verbatim quote. Because identity fields cannot be corrected in this pass, the record cannot be promoted despite the underlying obligation being generally supported by the surrounding text.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:41:45Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "unsupported_by_source",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/distress_ats_action_4_1_2_2/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:41:45Z"
+  }
+}

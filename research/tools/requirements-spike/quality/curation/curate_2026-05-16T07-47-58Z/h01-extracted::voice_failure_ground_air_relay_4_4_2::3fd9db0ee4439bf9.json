@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::voice_failure_ground_air_relay_4_4_2::3fd9db0ee4439bf9",
+  "documentId": "h01-extracted",
+  "sectionId": "voice_failure_ground_air_relay_4_4_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.52,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The claim is supported by the source only when the parent clause \u201cThe provisions of a) shall also be applied:\u201d is bundled with the quoted subordinate condition. Because the current exactSourceQuotes omit that operative parent context and identity fields cannot be edited in this pass, this requires re-extraction or rebundling rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/voice_failure_ground_air_relay_4_4_2/h01-extracted::voice_failure_ground_air_relay_4_4_2::3fd9db0ee4439bf9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:06:25Z"
+}

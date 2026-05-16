@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.53,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The exact quote is present and the claim is directly supported, but the source is descriptive narrative and does not use shall/must-strength language. Because ICAO Doc 9432 is operational guidance here, the correct fix is to change the modality from shall to none while leaving the authority class unchanged.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:43:02Z"
+}

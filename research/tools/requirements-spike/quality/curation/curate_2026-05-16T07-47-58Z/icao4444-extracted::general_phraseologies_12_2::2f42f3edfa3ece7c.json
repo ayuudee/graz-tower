@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::2f42f3edfa3ece7c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.82,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote is not present verbatim in the source because it uses an ellipsis in place of intervening source text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying rule being supported by the source.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::2f42f3edfa3ece7c.json",
+    "toPath": "rejected/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::2f42f3edfa3ece7c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:02:38Z"
+}

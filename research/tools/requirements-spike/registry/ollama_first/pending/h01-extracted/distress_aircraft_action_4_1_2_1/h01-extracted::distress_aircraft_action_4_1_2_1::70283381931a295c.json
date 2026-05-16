@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::70283381931a295c",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "familyId": "h01_contingency_communications_family",
+  "claimText": "A distress message shall consist of as many as possible of the specified message elements, spoken distinctly and in the specified order if possible.",
+  "rationale": "All attempts agree on the structural requirement for message composition. Attempt 1 and 2 keep it as a parent rule; Attempt 3 splits it. We prefer the parent rule to avoid redundancy with the specific element candidates below.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the distress message to be sent by an aircraft in distress shall:",
+    "b) consist of as many as possible of the following elements spoken distinctly and, if possible, in the following order:"
+  ],
+  "sourceItemIds": [
+    "4.1.2.1_intro",
+    "4.1.2.1_b"
+  ],
+  "claimSha256": "3c1469d3c07af075adaa87d87a67270abe78a6a4fb136f60b1a952c30eba8d34",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 4932,
+    "endLine": 5055
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_distress_msg_elements",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "keep_pending",
+      "reasoning": "The quoted parent clause is verbatim and uses shall-strength language, but its operative content depends on the subordinate list of message elements that is not included in this candidate. This cannot be fixed by changing modality, authorityClass, or requirementKind; a human curator would need to bundle or re-extract the parent with the listed elements.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:39:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/distress_aircraft_action_4_1_2_1/judged_candidates.json"
+  }
+}

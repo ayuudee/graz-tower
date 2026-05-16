@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_levels_5_6_12::76185d916c747b53",
+  "documentId": "h01-extracted",
+  "sectionId": "general_levels_5_6_12",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "The word 'level' in parentheses indicates that specific level information (FLIGHT LEVEL (number) or (number) FEET) must be inserted to complete the phrase.",
+  "rationale": "Source lines 10332-10336 provide a note explaining the syntax for level instructions.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The word \u201clevel\u201d in parentheses (\u2026) indicates that specific level information (FLIGHT LEVEL (number) or (number) FEET) must be inserted to complete the phrase."
+  ],
+  "sourceItemIds": [
+    "5.6.12_note_1"
+  ],
+  "claimSha256": "f42a806c2ff281149c8eb4a03bbe93f804a1c2edfcb7e95fc2f60788b41d2ae3",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 10321,
+    "endLine": 10445
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_level_note_paren",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "The word \u201clevel\u201d in parentheses (\u2026) indicates that specific level information (FLIGHT LEVEL (number) or (number) FEET) must be inserted to complete the phrase.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The candidate\u2019s exactSourceQuote is not present verbatim in the provided source window because the English note is split/interleaved with German text, so G1 is a real verbatim-quote failure. Identity fields cannot be corrected in this curation pass, even though the underlying English meaning appears supported.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:52:16Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_levels_5_6_12/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:52:16Z"
+  }
+}

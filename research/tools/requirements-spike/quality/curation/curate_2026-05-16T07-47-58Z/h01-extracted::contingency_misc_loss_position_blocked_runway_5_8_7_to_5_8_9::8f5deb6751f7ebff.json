@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::8f5deb6751f7ebff",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.15,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is semantically supported by the source, but the cited exactSourceQuote 'G: MAINTAIN VMC' is not present verbatim in the provided source window because the label and phrase are separated by intervening extracted text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::8f5deb6751f7ebff.json",
+    "toPath": "rejected/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::8f5deb6751f7ebff.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:25:13Z"
+}

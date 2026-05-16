@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::d7627f4768feddcb",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.32,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The challenged quote is present in the source window with only line-break/whitespace differences, and the second quote is verbatim. The claim is supported as background-support advisory material with a 'should' modality, and it is not redundant with accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::d7627f4768feddcb.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::d7627f4768feddcb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:07:38Z"
+}

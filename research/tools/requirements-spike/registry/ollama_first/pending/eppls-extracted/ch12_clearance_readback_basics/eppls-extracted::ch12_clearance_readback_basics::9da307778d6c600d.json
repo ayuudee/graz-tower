@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_clearance_readback_basics::9da307778d6c600d",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_readback_basics",
+  "familyId": "eppls_ch12_readback_transfer_background_family",
+  "claimText": "Clearances should be read back in full, in the order given.",
+  "rationale": "All attempts agree on the scope and ordering obligation for readbacks. Although it introduces a list, the general instruction is present and distinct.",
+  "modality": "should",
+  "authorityClass": "background_support",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "These clearances should be read back in full, in the order given:"
+  ],
+  "sourceItemIds": [
+    "clause_readback_scope"
+  ],
+  "claimSha256": "f50da9199994f7e4cc23f18b578de6f38a46cdc85a0f0a4448feb79a2ce0ec1a",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23050,
+    "endLine": 23060
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_readback_transfer_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "eppls_readback_scope_full_order",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "These clearances should be read back in full, in the order given:",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim is directly supported by the quoted source wording, and the apparent G1 miss is not a real verbatim/support problem because the text appears in the source with only a line break. However, because this is background-support/advisory material using “should,” it should not be treated as a rule.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T08:42:35Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_clearance_readback_basics/eppls-extracted::ch12_clearance_readback_basics::9da307778d6c600d.json",
+      "to": "pending/eppls-extracted/ch12_clearance_readback_basics/eppls-extracted::ch12_clearance_readback_basics::9da307778d6c600d.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_clearance_readback_basics/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:42:35Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

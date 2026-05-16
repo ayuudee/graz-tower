@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::42233d58cd6911d9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_position_uncertainty_7_4_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.3,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote exists and the stop obligation is supported, but the extracted unit is operatively incomplete because clause 7.4.1.5.1 requires the pilot to both stop the aircraft and simultaneously notify the appropriate ATS unit. Fixing this would require re-extraction or bundling with item b, not merely changing modality, authorityClass, or requirementKind.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_position_uncertainty_7_4_1_5/icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::42233d58cd6911d9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:10:14Z"
+}

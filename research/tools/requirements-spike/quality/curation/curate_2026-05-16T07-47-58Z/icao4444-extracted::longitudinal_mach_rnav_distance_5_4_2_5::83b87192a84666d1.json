@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::83b87192a84666d1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.36,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted text is verbatim and the candidate is supported as a subordinate condition, but its operative meaning depends on the parent clause 5.4.2.5.5 and concurrent conditions a\u2013c. Fixing this would require re-extraction or bundling with the governing context, not merely changing modality, authorityClass, or requirementKind.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::83b87192a84666d1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:12:25Z"
+}

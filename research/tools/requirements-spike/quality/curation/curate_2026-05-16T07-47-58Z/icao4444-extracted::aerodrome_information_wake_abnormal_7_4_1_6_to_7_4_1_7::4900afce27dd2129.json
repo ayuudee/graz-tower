@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7::4900afce27dd2129",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.65,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is supported, but it is explicitly a Note providing explanatory limitations rather than operational guidance or a definition. It is not redundant with the accepted operative sibling requirements, so it can be promoted only with its authority lowered to background support.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "background_note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7/icao4444-extracted::aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7::4900afce27dd2129.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7/icao4444-extracted::aerodrome_information_wake_abnormal_7_4_1_6_to_7_4_1_7::4900afce27dd2129.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "background_note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:13:16Z"
+}

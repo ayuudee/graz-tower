@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::c8c1492fef1e4f3a",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.13,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source supports the claim and the quoted text appears in substance as a contiguous passage in the source window, so this is not a real identity-field problem. However, the cited sentence is descriptive and not a Note paragraph or explicit advisory/normative instruction, so the modality should be corrected from note to none.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::c8c1492fef1e4f3a.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::c8c1492fef1e4f3a.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:03:47Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::efc7ce89e47b68a7",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.73,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The factual claim is supported by the source window; the apparent G1 miss is a line-wrap/whitespace artefact rather than a substantive quote failure. However, the cited sentence is a plain factual statement with no note marker or normative language, so the modality should be `none` rather than `note`, while `background_support` remains appropriate.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::efc7ce89e47b68a7.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::efc7ce89e47b68a7.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:54:48Z"
+}

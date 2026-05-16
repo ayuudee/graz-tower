@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_met_7_4_1_2::c0baf8e21aca4d99",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_met_7_4_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.47,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the schema and authority/modality audits pass, and the candidate is correctly framed as a non-normative note/definition rather than an authoritative requirement. It is not redundant with the accepted operative requirement because it defines the scope of \u201csignificant meteorological conditions\u201d used by that requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::c0baf8e21aca4d99.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_met_7_4_1_2/icao4444-extracted::aerodrome_information_met_7_4_1_2::c0baf8e21aca4d99.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:09:47Z"
+}

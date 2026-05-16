@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_failure::f941adf46c3f10f7",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.38,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited troubleshooting steps are supported by the source, and the apparent G1 miss is not a real verbatim problem because the quote appears in the window after line-break/whitespace normalization. However, the source uses imperative advisory wording rather than an explicit 'should', so the modality should be lowered to none while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f941adf46c3f10f7.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f941adf46c3f10f7.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:12:58Z"
+}

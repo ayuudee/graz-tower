@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::219711e6c3d088d5",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "familyId": "icao4444_departure_arrival_separation_family",
+  "claimText": "If an arriving aircraft is making a straight-in approach, a departing aircraft may take off in a direction which is different by at least 45 degrees from the reciprocal of the direction of approach of the arriving aircraft until 3 minutes before the arriving aircraft is estimated to be over the beginning of the instrument runway.",
+  "rationale": "Permission for departure with 45-degree divergence for straight-in approach, with 3-minute time constraint.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "in a direction which is different by at least 45 degrees from the reciprocal of the direction of approach of the arriving aircraft: 1) until 3 minutes before the arriving aircraft is estimated to be over the beginning of the instrument runway"
+  ],
+  "sourceItemIds": [
+    "5.7.1.2",
+    "5.7.1.2_b",
+    "5.7.1.2_b_1"
+  ],
+  "claimSha256": "c560f9a039548bede14639c649d2f9d484469a4692a0e7ac88ffa5f17a121e84",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6352,
+    "endLine": 6482
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departure_arrival_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "5.7.1.2_straight_in_45deg_time",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted text is verbatim and supports this atomic permission for the 5.7.1.2(b)(1) straight-in approach case; the omitted 5.7.1.2(b)(2) is an alternative condition, not a reason to reject this atomic item. The only real defect is the may\u00d7authoritative_requirement mismatch, which should be fixed by lowering the authority class rather than changing the modality.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:56:09Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "overbroad",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": true
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departure_arrival_separation_5_7/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:56:09Z"
+  }
+}

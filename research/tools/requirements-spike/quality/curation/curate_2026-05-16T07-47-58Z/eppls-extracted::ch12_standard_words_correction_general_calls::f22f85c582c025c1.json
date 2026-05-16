@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::f22f85c582c025c1",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.62,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source quote and is an atomic definition not already covered by accepted siblings. However, the source wording contains no modal or explicit note marker, so the modality should be lowered from note to none while retaining background_support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::f22f85c582c025c1.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::f22f85c582c025c1.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:19:05Z"
+}

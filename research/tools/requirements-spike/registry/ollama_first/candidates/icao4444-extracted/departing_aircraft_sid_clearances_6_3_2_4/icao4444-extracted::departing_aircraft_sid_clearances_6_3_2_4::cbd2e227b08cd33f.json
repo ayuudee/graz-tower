@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::departing_aircraft_sid_clearances_6_3_2_4::cbd2e227b08cd33f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_sid_clearances_6_3_2_4",
+  "familyId": "icao4444_departing_aircraft_family",
+  "claimText": "When a departing aircraft is vectored or cleared to proceed to a point that is not on the SID, all published speed and level restrictions of the SID are cancelled.",
+  "rationale": "Source 6.3.2.4.5 mandates the cancellation of all SID restrictions when the aircraft is vectored or cleared off-SID.",
+  "modality": "none",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "When a departing aircraft is vectored or cleared to proceed to a point that is not on the SID, all the published speed and level restrictions of the SID are cancelled"
+  ],
+  "sourceItemIds": [
+    "6.3.2.4.5"
+  ],
+  "claimSha256": "8b3ee22c587b060a336f6b3e6e5a5fcdb6b371c18affe1afed89e08e8da7600c",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 6872,
+    "endLine": 6955
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_departing_aircraft_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_63245_off_sid_cancel",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim is directly supported by the verbatim source text and is not redundant with the accepted sibling items, which cover the controller actions in 6.3.2.4.5(a)\u2013(c) but not the cancellation effect itself. However, this candidate\u2019s quoted wording is declarative (\u201care cancelled\u201d) and does not itself use shall/must, so the modality and authority class should be lowered rather than treating it as a shall-strength obligation.",
+      "corrections": {
+        "modality": "none",
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:55:06Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/departing_aircraft_sid_clearances_6_3_2_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:55:06Z"
+  }
+}

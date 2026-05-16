@@ -1,0 +1,55 @@
+{
+  "schemaName": "eppls_intake_record",
+  "formatVersion": "2026-05-15-v1",
+  "flowTask": "fn-20-fn10-source-unit-ingest-close-out-and.5",
+  "status": "manifest_ready",
+  "source": {
+    "pdfPath": "research/pdf/EPPLS.pdf",
+    "textPath": "research/txt/eppls-extracted.txt",
+    "sha256": "dc50992422b288e8934799c31fe64c0ae2f17929c1c7c55b49078ddb0236af7b",
+    "sizeBytes": 73286341,
+    "pdfVersion": "1.6",
+    "pageCount": 782,
+    "encrypted": true,
+    "titleMetadata": "Front.fm",
+    "authorMetadata": "elect_000",
+    "creator": "FrameMaker 12.0.4",
+    "producer": "Acrobat Distiller 15.0 (Windows)",
+    "creationDate": "2014-10-25T06:42:14+02:00",
+    "modificationDate": "2021-11-12T18:51:17+01:00"
+  },
+  "identity": {
+    "resolved": true,
+    "documentTitle": "EASA Private Pilot Studies",
+    "author": "Phil Croucher",
+    "publisher": "Electrocution Technical Publishers",
+    "copyrightEvidence": "Text extract line 30 reports copyright 2020 and ISBN 978-1-9752253-1-9; running page footers report 2021.",
+    "isbn": "978-1-9752253-1-9",
+    "editionOrVersion": "not separately identified in the extracted text"
+  },
+  "extraction": {
+    "tool": "poppler-utils pdftotext",
+    "command": "nix-shell -p poppler-utils --run 'pdftotext -layout research/pdf/EPPLS.pdf research/txt/eppls-extracted.txt'",
+    "lineCount": 33387,
+    "stableLineNumbers": true,
+    "warnings": [
+      "pdfinfo reports the PDF as encrypted with copy/print restrictions, but pdftotext produced a line-stable text extract.",
+      "pdfinfo reported a bad annotation destination warning that does not affect the Chapter 12 text extraction."
+    ]
+  },
+  "chapter12": {
+    "found": true,
+    "title": "Communications",
+    "lineRange": {
+      "startLine": 22390,
+      "endLine": 23379
+    },
+    "nextChapterStartLine": 23383,
+    "authorityCeiling": "background_support",
+    "disposition": "candidate_windows_manifested"
+  },
+  "notes": [
+    "EPPLS is a pilot-training/background source for this close-out stream. It must not supersede ICAO, SERA, CAP 413, or H01.",
+    "The useful Chapter 12 content is narrow and source-local: operating procedures, readback training, radio checks, transfer of communication, radio failure, and distress/urgency."
+  ]
+}

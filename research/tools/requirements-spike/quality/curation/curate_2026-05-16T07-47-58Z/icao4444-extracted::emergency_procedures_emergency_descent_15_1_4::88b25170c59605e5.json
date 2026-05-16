@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::88b25170c59605e5",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_emergency_descent_15_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the candidate\u2019s permissive claim. The only defect is that modality 'may' is incompatible with 'authoritative_requirement', so the authority class should be lowered rather than changing the identity fields.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_emergency_descent_15_1_4/icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::88b25170c59605e5.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_emergency_descent_15_1_4/icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::88b25170c59605e5.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:58:27Z"
+}

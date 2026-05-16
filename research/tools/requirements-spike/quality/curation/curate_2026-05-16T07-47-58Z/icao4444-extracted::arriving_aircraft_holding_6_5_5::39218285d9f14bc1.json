@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::39218285d9f14bc1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.22,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, but the source uses the permissive modal 'may'. Under the authority floor rule, a 'may' statement cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::39218285d9f14bc1.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::39218285d9f14bc1.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:37:19Z"
+}

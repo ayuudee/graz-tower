@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_1_to_4_4::b1e8f70fceeca879",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_1_to_4_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.27,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the verbatim source quote and is not redundant with the accepted sibling items. However, the quoted text is descriptive CAP 413 phraseology text without a NOTE label or modal verb, so the modality should be `none` rather than `note`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::b1e8f70fceeca879.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_1_to_4_4/cap413-extracted::ch4_4_1_to_4_4::b1e8f70fceeca879.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:06:11Z"
+}

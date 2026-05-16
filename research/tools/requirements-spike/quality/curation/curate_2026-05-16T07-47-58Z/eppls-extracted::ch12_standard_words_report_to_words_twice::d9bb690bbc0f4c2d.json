@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::d9bb690bbc0f4c2d",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.71,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claimed definition is supported by the source window, with the quoted wording present across a line break. Because this is a plain definition rather than a note or operative statement, the modality should be corrected from 'note' to 'none'.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::d9bb690bbc0f4c2d.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::d9bb690bbc0f4c2d.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:20:21Z"
+}

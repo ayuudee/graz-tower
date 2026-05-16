@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::f1423798cdb885d6",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.28,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The substantive phraseology is present in the source window, but the candidate's exactSourceQuote includes the prefix \"G:\" and the quoted string \"G: TURN [RIGHT [HAND]] BASE/FINAL\" does not appear verbatim in the provided source text. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::f1423798cdb885d6.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6/h01-extracted::controlled_aerodromes_circuit_reports_5_3_2_4_to_5_3_2_6::f1423798cdb885d6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:29:57Z"
+}

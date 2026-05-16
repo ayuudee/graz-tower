@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::approach_phraseologies_visual_approach_12_3_3_2_n_to_p::951f0e070c60a9a3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "approach_phraseologies_visual_approach_12_3_3_2_n_to_p",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.12,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim and quote are verbatim-supported, and the note is not redundant with the accepted atomic phraseology items. However, it is a cross-reference/background note rather than operational guidance or a definition.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "cross_reference"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/approach_phraseologies_visual_approach_12_3_3_2_n_to_p/icao4444-extracted::approach_phraseologies_visual_approach_12_3_3_2_n_to_p::951f0e070c60a9a3.json",
+    "toPath": "candidates/icao4444-extracted/approach_phraseologies_visual_approach_12_3_3_2_n_to_p/icao4444-extracted::approach_phraseologies_visual_approach_12_3_3_2_n_to_p::951f0e070c60a9a3.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "cross_reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:34:19Z"
+}

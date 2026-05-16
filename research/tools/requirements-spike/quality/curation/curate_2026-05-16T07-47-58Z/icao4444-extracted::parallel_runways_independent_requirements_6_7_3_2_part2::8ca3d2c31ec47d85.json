@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_independent_requirements_6_7_3_2_part2::8ca3d2c31ec47d85",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_independent_requirements_6_7_3_2_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 28.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim and states an atomic condition in the enumerated requirements for independent parallel approaches. It is not redundant with the accepted siblings, and the bundle gate adequately resolves the judge's missing-parent concern for this standalone list item.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_independent_requirements_6_7_3_2_part2/icao4444-extracted::parallel_runways_independent_requirements_6_7_3_2_part2::8ca3d2c31ec47d85.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_independent_requirements_6_7_3_2_part2/icao4444-extracted::parallel_runways_independent_requirements_6_7_3_2_part2::8ca3d2c31ec47d85.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:25:44Z"
+}

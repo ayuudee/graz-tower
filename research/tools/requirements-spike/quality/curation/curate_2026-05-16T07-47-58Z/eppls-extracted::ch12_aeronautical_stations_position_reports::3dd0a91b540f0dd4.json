@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_aeronautical_stations_position_reports::3dd0a91b540f0dd4",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_aeronautical_stations_position_reports",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.15,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote is not present verbatim in the provided source window; the text is interrupted by adjacent-column content between \u201cthen\u201d and \u201cthe service available.\u201d Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::3dd0a91b540f0dd4.json",
+    "toPath": "rejected/eppls-extracted/ch12_aeronautical_stations_position_reports/eppls-extracted::ch12_aeronautical_stations_position_reports::3dd0a91b540f0dd4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:29:22Z"
+}

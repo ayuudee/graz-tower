@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::de256601bfb8db95",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.79,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote is not present verbatim in the source window due to the extracted list-number layout. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 failure requiring rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::de256601bfb8db95.json",
+    "toPath": "rejected/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::de256601bfb8db95.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:41:02Z"
+}

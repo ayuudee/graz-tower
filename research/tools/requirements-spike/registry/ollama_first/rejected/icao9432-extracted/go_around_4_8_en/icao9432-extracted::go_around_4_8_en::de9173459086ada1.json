@@ -1,0 +1,114 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::go_around_4_8_en::de9173459086ada1",
+  "documentId": "icao9432-extracted",
+  "sectionId": "go_around_4_8_en",
+  "familyId": "icao9432_aerodrome_phraseology_family",
+  "claimText": "In the event that the missed approach is initiated by the pilot, the phrase 'GOING AROUND' shall be used.",
+  "rationale": "All attempts agree on the mandatory phraseology for pilot-initiated go-arounds, despite fragmented source text.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "In the event that the missed approach is initiated by the pilot, the phrase\" GOING AROUND\" shall be used."
+  ],
+  "sourceItemIds": [
+    "item_4_8_3",
+    "item_4_8_3_phraseology"
+  ],
+  "claimSha256": "8378c69c82c5912ff829aeef39e2122012997bbb652d08e171e08254e4e6eb45",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 5796,
+    "endLine": 5867
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "c_483_phraseology_pilot_initiated",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "In the event that the missed approach is initiated by the pilot, the phrase\" GOING AROUND\" shall be used.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The operative claim is supported in substance, but the candidate\u2019s exactSourceQuote does not appear verbatim in the provided source window; the source text is fragmented/reordered around \u201cshall be used.\u201d Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:56:22Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/go_around_4_8_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:56:22Z"
+  }
+}

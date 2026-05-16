@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::e7f2c642ac889f18",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.99,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted text is verbatim and source-grounded, but an accepted sibling already contains the identical claim \u201cObtain the ATIS or current weather.\u201d The pending record is therefore redundant, and the source is background/descriptive rather than a separate should-strength item.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::e7f2c642ac889f18.json",
+    "toPath": "rejected/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::e7f2c642ac889f18.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:44:53Z"
+}

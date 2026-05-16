@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_information_6_6::da4fb63c01615f49",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_information_6_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.17,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the quoted parent clause is verbatim and has shall-strength authority, the candidate is an umbrella requirement that omits the operative subordinate items defining the information to be transmitted. Those atomic 6.6.4 items are already accepted as sibling candidates, so the umbrella should not be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_information_6_6/icao4444-extracted::arriving_aircraft_information_6_6::da4fb63c01615f49.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_information_6_6/icao4444-extracted::arriving_aircraft_information_6_6::da4fb63c01615f49.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:39:36Z"
+}

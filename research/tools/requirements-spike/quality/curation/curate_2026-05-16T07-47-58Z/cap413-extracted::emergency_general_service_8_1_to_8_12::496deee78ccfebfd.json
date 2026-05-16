@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_general_service_8_1_to_8_12::496deee78ccfebfd",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_general_service_8_1_to_8_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.19,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and directly supports the claim, and the candidate is properly framed as operational guidance with should-strength advisory modality based on \u201cPilots are urged.\u201d It is not redundant with the accepted siblings, which do not separately capture the early-request-assistance guidance in 8.8.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_general_service_8_1_to_8_12/cap413-extracted::emergency_general_service_8_1_to_8_12::496deee78ccfebfd.json",
+    "toPath": "candidates/cap413-extracted/emergency_general_service_8_1_to_8_12/cap413-extracted::emergency_general_service_8_1_to_8_12::496deee78ccfebfd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:24:39Z"
+}

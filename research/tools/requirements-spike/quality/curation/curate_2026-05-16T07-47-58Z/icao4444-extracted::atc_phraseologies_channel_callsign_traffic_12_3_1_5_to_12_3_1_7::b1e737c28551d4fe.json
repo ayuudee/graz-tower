@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1e737c28551d4fe",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.01,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted phrase exists verbatim, but it is paired in the source with the circumstance \u201cto request status in respect of 8.33 kHz exemption,\u201d not \u201cto indicate 8.33 kHz exempted status.\u201d The candidate\u2019s claim text is therefore unsupported and would require re-extraction rather than modality/authority correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1e737c28551d4fe.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1e737c28551d4fe.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:48:53Z"
+}

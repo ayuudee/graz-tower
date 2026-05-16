@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::34c8b499c559b3c2",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.28,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim supported, the claim matches the note\u2019s advisory content, and the modality/authorityClass pairing is floor-consistent because the source uses \u201cshould\u201d and the candidate is operational guidance rather than an authoritative requirement. It is not redundant with the accepted sibling, which covers only the initial-call requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::34c8b499c559b3c2.json",
+    "toPath": "candidates/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::34c8b499c559b3c2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:46:23Z"
+}

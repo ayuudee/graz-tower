@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_minimum_separation_5_6::bdf3af8eddcf153a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_minimum_separation_5_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the claim, but it uses the permissive modality \u201cmay.\u201d Under the authority floor rule, a may-provision cannot remain classified as an authoritative_requirement, so the authorityClass should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_minimum_separation_5_6/icao4444-extracted::departing_aircraft_minimum_separation_5_6::bdf3af8eddcf153a.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_minimum_separation_5_6/icao4444-extracted::departing_aircraft_minimum_separation_5_6::bdf3af8eddcf153a.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:53:48Z"
+}

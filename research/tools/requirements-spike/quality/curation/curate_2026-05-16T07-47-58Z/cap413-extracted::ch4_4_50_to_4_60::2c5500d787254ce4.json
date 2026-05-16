@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::2c5500d787254ce4",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 36.98,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present verbatim, the claim is directly supported, and the candidate is not redundant with the accepted siblings. Its 'may' modality and operational_guidance authorityClass appropriately preserve the advisory/non-authoritative nature of the CAP 413 note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::2c5500d787254ce4.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::2c5500d787254ce4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:13:09Z"
+}

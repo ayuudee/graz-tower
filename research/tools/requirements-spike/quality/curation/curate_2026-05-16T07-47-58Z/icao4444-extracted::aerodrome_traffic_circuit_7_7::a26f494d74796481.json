@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::a26f494d74796481",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.15,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by a verbatim source quote, the modality and authorityClass correctly reflect the source\u2019s \u201cshould\u201d wording as operational guidance, and all gate audits passed. It is not redundant with the accepted siblings, which do not cover this specific circuit-entry clearance guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::a26f494d74796481.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::a26f494d74796481.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:25:46Z"
+}

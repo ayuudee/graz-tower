@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::8267d28ddc07b20f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.95,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted Note 2 is present and directly supports the claim, so no identity field needs correction. However, a note cannot carry authoritative_requirement authority; under the authority floor rules it should be lowered to operational_guidance while retaining modality note.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::8267d28ddc07b20f.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::8267d28ddc07b20f.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:42:03Z"
+}

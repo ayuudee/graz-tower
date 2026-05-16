@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::performance_based_longitudinal_5_4_2_9::00d602d5d39a6371",
+  "documentId": "icao4444-extracted",
+  "sectionId": "performance_based_longitudinal_5_4_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.19,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim text and exact quote are supported verbatim by the source, but the operative wording for this candidate is explicitly permissive: \u201cmay be measured\u201d / \u201cmay be calculated.\u201d Because a `may` modality cannot remain `authoritative_requirement` under the authority floor rules, the authority class should be lowered rather than changing the source-backed modality.",
+    "corrections": {
+      "modality": "may",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::00d602d5d39a6371.json",
+    "toPath": "candidates/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::00d602d5d39a6371.json",
+    "correctionsApplied": {
+      "modality": "may",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:29:24Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::c9b6e3906d8c097c",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.94,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The glossary-style definition is supported by the source window and the quoted text appears verbatim. Its non-normative treatment as background_support with note modality is acceptable for a definition entry, and it is not redundant with the accepted sibling glossary items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::c9b6e3906d8c097c.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::c9b6e3906d8c097c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:18:19Z"
+}

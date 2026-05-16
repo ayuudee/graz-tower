@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8::24d456b3ec72929e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.8,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted text exists verbatim and supports the atomic item, and the modality/authority pairing is acceptable. However, the surrounding clause defines a two-part timed-approach procedure, and the pending rationale indicates a structural bundling issue with omitted item b that cannot be fixed by modality, authorityClass, or requirementKind corrections alone.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8/icao4444-extracted::arriving_aircraft_sequence_eat_onward_6_5_6_to_6_5_8::24d456b3ec72929e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:39:58Z"
+}

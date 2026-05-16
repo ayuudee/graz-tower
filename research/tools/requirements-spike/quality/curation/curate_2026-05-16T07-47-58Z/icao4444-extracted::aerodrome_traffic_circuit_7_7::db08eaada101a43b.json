@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_traffic_circuit_7_7::db08eaada101a43b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_traffic_circuit_7_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.97,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the parent clause and list item 7.7.3.3(c), but the provided exactSourceQuote does not appear verbatim in the source because the parent phrase and the SAR list item are separated by intervening list items and formatting. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::db08eaada101a43b.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_traffic_circuit_7_7/icao4444-extracted::aerodrome_traffic_circuit_7_7::db08eaada101a43b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:26:05Z"
+}

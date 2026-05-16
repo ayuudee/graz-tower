@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::51b34faa8e9bbaa7",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.59,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is supported verbatim and the candidate is an atomic Note 1 that is not redundant with the accepted siblings. Because the source frames this as a note rather than an operative obligation, it should remain operational guidance with note modality, but its requirement kind should be advisory-only rather than best-practice.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::51b34faa8e9bbaa7.json",
+    "toPath": "candidates/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::51b34faa8e9bbaa7.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:56:35Z"
+}

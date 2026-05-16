@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::81490161201eb712",
+  "documentId": "icao9432-extracted",
+  "sectionId": "takeoff_procedures_4_5_8_to_4_5_12_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.96,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by \u00a74.5.10 and the quoted substring appears verbatim, and it is not redundant with the accepted sibling covering cancellation of take-off clearance. However, the source is descriptive and contains no Note label or modal verb for this specific proposition, so the modality should be none; consistent with the accepted sibling, this is better classified as background support rather than operational guidance.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/takeoff_procedures_4_5_8_to_4_5_12_en/icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::81490161201eb712.json",
+    "toPath": "candidates/icao9432-extracted/takeoff_procedures_4_5_8_to_4_5_12_en/icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::81490161201eb712.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:00:05Z"
+}

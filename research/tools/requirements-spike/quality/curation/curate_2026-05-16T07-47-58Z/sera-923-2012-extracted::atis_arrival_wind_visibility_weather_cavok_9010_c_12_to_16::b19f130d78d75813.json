@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16::b19f130d78d75813",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.65,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and this item is a parallel atomic element in the same mandatory ATIS list as the already accepted sibling items. The bundle concern appears to be a symmetry/artifact issue rather than a defect in the candidate, and no modality or authority correction is needed.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16/sera-923-2012-extracted::atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16::b19f130d78d75813.json",
+    "toPath": "candidates/sera-923-2012-extracted/atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16/sera-923-2012-extracted::atis_arrival_wind_visibility_weather_cavok_9010_c_12_to_16::b19f130d78d75813.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:03:42Z"
+}

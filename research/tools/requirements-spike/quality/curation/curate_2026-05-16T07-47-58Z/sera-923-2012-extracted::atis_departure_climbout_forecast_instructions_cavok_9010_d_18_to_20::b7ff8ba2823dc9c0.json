@@ -1,0 +1,21 @@
+{
+  "canonicalId": "sera-923-2012-extracted::atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20::b7ff8ba2823dc9c0",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.58,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim quote exists and the modality/authority are consistent, but the claimText is materially incomplete: it omits the source condition that visibility is 10 km or more \"and the lowest visibility not reported.\" That omission makes the substitution rule overbroad, and identity fields cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/sera-923-2012-extracted/atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20/sera-923-2012-extracted::atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20::b7ff8ba2823dc9c0.json",
+    "toPath": "rejected/sera-923-2012-extracted/atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20/sera-923-2012-extracted::atis_departure_climbout_forecast_instructions_cavok_9010_d_18_to_20::b7ff8ba2823dc9c0.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:03:51Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::facd267594eeac84",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.8,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The candidate is an atomic list item directly supported by the parent requirement \u201cThe message shall convey the following data\u201d and the verbatim bullet quote. Sibling accepted candidates already use the same atomic-list treatment for the other data items, so this should be promoted for consistency rather than treated as an incomplete umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4/h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::facd267594eeac84.json",
+    "toPath": "candidates/h01-extracted/urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4/h01-extracted::urgency_other_medical_emergency_frequency_4_1_3_3_to_4_1_4::facd267594eeac84.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:05:36Z"
+}

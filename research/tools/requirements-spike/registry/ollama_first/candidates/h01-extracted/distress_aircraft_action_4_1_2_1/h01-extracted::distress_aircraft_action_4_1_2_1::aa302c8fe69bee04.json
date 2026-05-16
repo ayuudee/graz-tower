@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::aa302c8fe69bee04",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "familyId": "h01_contingency_communications_family",
+  "claimText": "The distress message may be made on the emergency frequency 121.500 MHz or another aeronautical mobile frequency if considered necessary or desirable.",
+  "rationale": "Note 1 item 1. All attempts agree on content and advisory nature.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Note 1: The provisions may be supplemented by the following measures:",
+    "1) the distress message of an aircraft in distress being made on the emergency frequency 121,500 MHz or another aeronautical mobile frequency, if considered necessary or desirable."
+  ],
+  "sourceItemIds": [
+    "note_1",
+    "note_1_1"
+  ],
+  "claimSha256": "cab4aa4ffa2e1b7b141726544519b5e48bfe17877110afd3176f78cee08cbe9f",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 4932,
+    "endLine": 5055
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_contingency_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "guid_distress_msg_supplement_1",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The claim is directly supported by the cited Note 1 text and is not redundant with the accepted siblings; it is an advisory supplementary measure rather than an authoritative requirement. The modality and authority class are already consistent, but the requirement kind should reflect the advisory-only nature of the note rather than best practice.",
+      "corrections": {
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:40:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/distress_aircraft_action_4_1_2_1/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:40:20Z"
+  }
+}

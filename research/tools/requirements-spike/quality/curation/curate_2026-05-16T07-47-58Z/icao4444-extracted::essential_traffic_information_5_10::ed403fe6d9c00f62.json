@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::essential_traffic_information_5_10::ed403fe6d9c00f62",
+  "documentId": "icao4444-extracted",
+  "sectionId": "essential_traffic_information_5_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is present in the source and is a Note, so the identity fields are sound. The only issue is the G3 authority/modality mismatch: a note cannot carry authoritative_requirement authority and should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/essential_traffic_information_5_10/icao4444-extracted::essential_traffic_information_5_10::ed403fe6d9c00f62.json",
+    "toPath": "candidates/icao4444-extracted/essential_traffic_information_5_10/icao4444-extracted::essential_traffic_information_5_10::ed403fe6d9c00f62.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:01:54Z"
+}

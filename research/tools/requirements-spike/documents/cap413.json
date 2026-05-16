@@ -215,11 +215,25 @@
       "notes": "CAP 413 Chapter 4 \u00a74.70-4.83: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
     },
     {
-      "sectionId": "ch4_4_84_part1",
-      "familyId": "cap413_ch4_4_84_part1_family",
+      "sectionId": "ch4_4_84_part1a_traffic",
+      "familyId": "cap413_ch4_4_84_part1a_traffic_family",
       "startLine": 9605,
+      "endLine": 9639,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 1a: split source window covering the \u00a74.84 introductory rule and Traffic information phraseology. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_84_part1b_meteorological",
+      "familyId": "cap413_ch4_4_84_part1b_meteorological_family",
+      "startLine": 9640,
+      "endLine": 9677,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 1b: split source window covering Meteorological conditions phraseology. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+    },
+    {
+      "sectionId": "ch4_4_84_part1c_reports_aerodrome",
+      "familyId": "cap413_ch4_4_84_part1c_reports_aerodrome_family",
+      "startLine": 9678,
       "endLine": 9733,
-      "notes": "CAP 413 Chapter 4 \u00a74.84 part 1: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 1c: split source window covering Additional reports, Aerodrome information, Operational status of aids, and Identification of aircraft phraseology. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
     },
     {
       "sectionId": "ch4_4_84_part2",
@@ -229,11 +243,46 @@
       "notes": "CAP 413 Chapter 4 \u00a74.84 part 2: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
     },
     {
-      "sectionId": "ch4_4_84_part3",
-      "familyId": "cap413_ch4_4_84_part3_family",
+      "sectionId": "ch4_4_84_part3a_rnav_gear",
+      "familyId": "cap413_ch4_4_84_part3a_rnav_gear_family",
       "startLine": 9896,
-      "endLine": 10089,
-      "notes": "CAP 413 Chapter 4 \u00a74.84 part 3: heading-aligned source window. Extract only source-supported rules, advisory guidance, and phraseology examples; do not infer topic labels from the manifest ID."
+      "endLine": 9930,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 3a: RNAV(GNSS) instrument approach and landing-gear visual-inspection phraseology. Split from part3 after retry failure reported mixed topics requiring a narrower source window."
+    },
+    {
+      "sectionId": "ch4_4_84_part3b_wake_jet_slipstream",
+      "familyId": "cap413_ch4_4_84_part3b_wake_jet_slipstream_family",
+      "startLine": 9934,
+      "endLine": 9947,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 3b: wake turbulence, jet blast, and slipstream caution phraseology. Split from part3 after retry failure reported mixed topics requiring a narrower source window."
+    },
+    {
+      "sectionId": "ch4_4_84_part3c_runway_vacating_helicopter",
+      "familyId": "cap413_ch4_4_84_part3c_runway_vacating_helicopter_family",
+      "startLine": 9955,
+      "endLine": 9992,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 part 3c: runway vacating/communications after landing and helicopter operations phraseology. Split from part3 after retry failure reported mixed topics requiring a narrower source window."
+    },
+    {
+      "sectionId": "ch4_4_84_vehicle_tug_route_approvals",
+      "familyId": "cap413_ch4_4_84_part3d_vehicle_tug_family",
+      "startLine": 10002,
+      "endLine": 10036,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 vehicle/tug route approvals: manoeuvring-area phraseology using PROCEED/TOW, route approvals, hold-short/cross-runway approval forms, taxiway/runway/location approvals, caution, give-way, follow, vacate, expedite, and proceed-slower forms. Split from part3d after final v7 exposed bundle-gate density."
+    },
+    {
+      "sectionId": "ch4_4_84_vehicle_tug_cross_hold_instructions",
+      "familyId": "cap413_ch4_4_84_part3d_vehicle_tug_family",
+      "startLine": 10045,
+      "endLine": 10064,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 vehicle/tug cross and hold instructions: repeated vehicle/tug movement context, HOLD POSITION, vehicle runway-crossing form, HOLD distance-from-position, and HOLD SHORT OF position phraseology. Split from part3d after final v7 exposed bundle-gate density."
+    },
+    {
+      "sectionId": "ch4_4_84_vehicle_tug_hold_acknowledgement_vacated_notes",
+      "familyId": "cap413_ch4_4_84_part3d_vehicle_tug_family",
+      "startLine": 10065,
+      "endLine": 10080,
+      "notes": "CAP 413 Chapter 4 \u00a74.84 vehicle/tug hold acknowledgement and vacated notes: ROGER/WILCO insufficient acknowledgement for HOLD/HOLD POSITION/HOLD SHORT instructions, required HOLDING/HOLDING SHORT acknowledgements, EXPEDITE CROSS RUNWAY traffic phraseology, and runway-vacated reporting notes. Split from part3d after final v7 exposed bundle-gate density."
     },
     {
       "sectionId": "ch4_4_85",

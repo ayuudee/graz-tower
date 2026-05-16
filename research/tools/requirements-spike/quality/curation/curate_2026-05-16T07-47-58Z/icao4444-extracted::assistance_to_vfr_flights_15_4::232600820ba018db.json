@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::232600820ba018db",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.97,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted definition exists verbatim in the source and the claim text is supported, but it is explicitly presented as a Note rather than an operative requirement. The modality can remain `note`; the authority class should be lowered from `authoritative_requirement` to `operational_guidance` to satisfy the authority floor.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::232600820ba018db.json",
+    "toPath": "candidates/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::232600820ba018db.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:44:12Z"
+}

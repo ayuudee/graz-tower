@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::bef7e9b0e7ae227c",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_avoidance_5_6_10_4_to_5_6_10_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 22.7,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying phraseology is supported by the section, but the exactSourceQuote is not present verbatim as a contiguous quote in the source window; the English phrase is interleaved with German column text, making the G1 miss real. Because quote identity fields cannot be corrected in this pass, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::bef7e9b0e7ae227c.json",
+    "toPath": "rejected/h01-extracted/general_traffic_avoidance_5_6_10_4_to_5_6_10_6/h01-extracted::general_traffic_avoidance_5_6_10_4_to_5_6_10_6::bef7e9b0e7ae227c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:54:54Z"
+}

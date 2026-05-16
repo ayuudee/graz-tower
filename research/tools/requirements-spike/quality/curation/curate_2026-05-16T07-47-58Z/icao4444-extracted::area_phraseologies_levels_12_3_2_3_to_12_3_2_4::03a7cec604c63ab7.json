@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_levels_12_3_2_3_to_12_3_2_4::03a7cec604c63ab7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_levels_12_3_2_3_to_12_3_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.72,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim quote exists and supports an advisory Note that MAINTAIN is not to be used for level-change instructions, but the claimText recasts it as a 'shall not' obligation. Because claimText is an identity field and cannot be corrected here, the over-normative wording requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_levels_12_3_2_3_to_12_3_2_4/icao4444-extracted::area_phraseologies_levels_12_3_2_3_to_12_3_2_4::03a7cec604c63ab7.json",
+    "toPath": "rejected/icao4444-extracted/area_phraseologies_levels_12_3_2_3_to_12_3_2_4/icao4444-extracted::area_phraseologies_levels_12_3_2_3_to_12_3_2_4::03a7cec604c63ab7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:34:38Z"
+}

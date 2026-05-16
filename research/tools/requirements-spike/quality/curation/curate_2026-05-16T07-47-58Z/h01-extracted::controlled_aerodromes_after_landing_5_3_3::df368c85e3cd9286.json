@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::df368c85e3cd9286",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.83,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted source lines are verbatim phraseology entries, but they do not support the claimText\u2019s shall-strength assertion that pilots are required to respond with those words. Because claimText is an identity field and would need rewording to remove the unsupported obligation, this cannot be fixed by modality/authority corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::df368c85e3cd9286.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::df368c85e3cd9286.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:27:01Z"
+}

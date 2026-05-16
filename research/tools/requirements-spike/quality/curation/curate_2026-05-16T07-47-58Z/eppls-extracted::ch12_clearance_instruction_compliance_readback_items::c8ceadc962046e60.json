@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::c8ceadc962046e60",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.99,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote does not appear verbatim in the provided source window after normalization, so the identity field cannot be validated. Because quote text cannot be edited in this curation pass, this cannot be promoted or corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::c8ceadc962046e60.json",
+    "toPath": "rejected/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::c8ceadc962046e60.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:40:13Z"
+}

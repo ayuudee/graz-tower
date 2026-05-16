@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::57714631f0c96515",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.14,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the schema and authority/modality audits pass, and the candidate is correctly framed as a non-normative note with operational_guidance authority. It is not redundant with the accepted sibling for the main RNAV/RNP separation provision because it adds the specific contextual point that spacing depends on the specified RNP type.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::57714631f0c96515.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6/icao4444-extracted::horizontal_lateral_criteria_rnav_parallel_5_4_1_2_1_3_to_5_4_1_2_1_6::57714631f0c96515.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:08:22Z"
+}

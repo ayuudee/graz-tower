@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_acknowledge_to_recleared::11245bb56f09878c",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_acknowledge_to_recleared",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The definition is verbatim supported by the source and is not redundant with any accepted sibling. However, the cited table entry contains no normative or note marker, so the modality should be treated as non-modal while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_acknowledge_to_recleared/eppls-extracted::ch12_standard_words_acknowledge_to_recleared::11245bb56f09878c.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_acknowledge_to_recleared/eppls-extracted::ch12_standard_words_acknowledge_to_recleared::11245bb56f09878c.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:16:03Z"
+}

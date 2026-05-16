@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::58342b6385ddcd0c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.39,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and the specific turn-clear-of-cloud guidance is not already covered by accepted siblings. However, it sits under 15.4.1.8's introductory wording that the listed items are guidelines that may be followed, so it should not be treated as an authoritative requirement.",
+    "corrections": {
+      "modality": "may",
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::58342b6385ddcd0c.json",
+    "toPath": "candidates/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::58342b6385ddcd0c.json",
+    "correctionsApplied": {
+      "modality": "may",
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:44:37Z"
+}

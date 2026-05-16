@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_levels_5_6_12::1dce22dd7976dc98",
+  "documentId": "h01-extracted",
+  "sectionId": "general_levels_5_6_12",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.77,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source quote is verbatim, but it only lists the phraseology as 'G: VERIFY FLIGHT LEVEL/ALTITUDE' and does not support the claimText's 'shall use' obligation. Because the unsupported modal wording is embedded in the immutable claimText, this would require re-extraction rather than a permissible metadata-only correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_levels_5_6_12/h01-extracted::general_levels_5_6_12::1dce22dd7976dc98.json",
+    "toPath": "rejected/h01-extracted/general_levels_5_6_12/h01-extracted::general_levels_5_6_12::1dce22dd7976dc98.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:52:06Z"
+}

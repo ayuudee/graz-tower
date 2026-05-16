@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::dd2cc0a087f14437",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.9,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the cited Note 2, the quote audit and schema/authority checks pass, and the candidate is correctly framed as a non-normative note with operational_guidance authority. It is not redundant with the accepted atomic sibling requirements because it captures a separate clarification about SID designators and vertical profiles.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::dd2cc0a087f14437.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3/icao4444-extracted::departing_aircraft_standard_clearances_coordination_contents_6_3_2_1_to_6_3_2_3::dd2cc0a087f14437.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:55:45Z"
+}

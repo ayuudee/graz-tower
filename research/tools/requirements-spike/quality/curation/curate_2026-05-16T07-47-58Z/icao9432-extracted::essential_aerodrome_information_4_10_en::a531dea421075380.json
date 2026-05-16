@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380",
+  "documentId": "icao9432-extracted",
+  "sectionId": "essential_aerodrome_information_4_10_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.51,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item is verbatim and supports the claim as an included category of essential aerodrome information. However, the item itself has no explicit 'should' wording; the accepted sibling list items use 'none' for the same definition-list structure, so only the modality needs correction.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/essential_aerodrome_information_4_10_en/icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380.json",
+    "toPath": "candidates/icao9432-extracted/essential_aerodrome_information_4_10_en/icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:54:01Z"
+}

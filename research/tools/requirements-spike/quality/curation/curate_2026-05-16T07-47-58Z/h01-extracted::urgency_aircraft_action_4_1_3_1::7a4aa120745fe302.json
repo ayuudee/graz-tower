@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::urgency_aircraft_action_4_1_3_1::7a4aa120745fe302",
+  "documentId": "h01-extracted",
+  "sectionId": "urgency_aircraft_action_4_1_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.57,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim supported, the claim accurately reflects Note 3, and the advisory classification with modality `note` and authorityClass `operational_guidance` matches the source wording. It is not redundant with the accepted sibling requirements, which address PAN PAN transmission and frequency rather than the normally addressed ATS unit.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/urgency_aircraft_action_4_1_3_1/h01-extracted::urgency_aircraft_action_4_1_3_1::7a4aa120745fe302.json",
+    "toPath": "candidates/h01-extracted/urgency_aircraft_action_4_1_3_1/h01-extracted::urgency_aircraft_action_4_1_3_1::7a4aa120745fe302.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:03:12Z"
+}

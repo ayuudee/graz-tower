@@ -48,9 +48,8 @@ DA sim golden. C172 at LOWG apron-stay. **Fixture sets concrete OAT and QNH nume
 - [ ] Full verify GREEN
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Landed fn-28.3 (G3a-react-density-altitude sim golden): new `G3aPilotReactiveDensityAltitudeTest` at `sim/src/jvmTest/.../G3aPilotReactiveDensityAltitudeTest.kt` pins the apron-stay DA-decline path via a three-layer pin — Layer 1 (R17) numerical DA via `computeDensityAltitudeFeet(DensityAltitudeInput(oat=50°C, qnh=1013, fieldElevation=1120ft)) = 5594 ft` asserted strictly > C172's 5000 ft `maxDensityAltitudeFt` advisory (FAA AC 61-107B §3-1), Layer 2 mission-tree shows `DECLINE_DEPARTURE` primitive with `NON_COMPLETING` completion mode + `currentTask` = DECLINE_DEPARTURE + `REQUEST_TAXI` absent (R13 suffix-replace), Layer 3 kinematic non-event (zero `positionPoint` transitions + altitudeM/targetSpeedMps == 0 + route is `PilotRoute.None`); R14 pin: ZERO `Request(RequestTaxi)` transmissions across the run. New `Fixtures.LOWG_HIGH_DA` variant (copy of LOWG with OAT = 50°C; full numeric provenance in KDoc). Archive flip for `D-PASS-g3a-react-other-poh-triggers` in `docs/deferments.md` cites bundled-coverage (fn-28.1 + fn-28.2 + fn-28.3) including DA-decline + apron-stay + cognitive-suppression + numerical DA assertion. Codex impl-review: round 1 SHIP first-pass, 0 introduced findings, all 12 R-IDs (R2-DA, R2a-e, R3, R4, R5, R7, R14, R17) marked met.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: bbe7fdf28df7502ef7a5f937da87c011cefb2aff
+- Tests: ./gradlew :sim:jvmTest --tests xyz.easiersaid.twr.sim.G3aPilotReactiveDensityAltitudeTest detekt --offline --no-daemon (NOT RUN LOCALLY: no JDK installed in worker environment — same caveat as fn-28.1 + fn-28.2; verification deferred to user/CI local pass; codex impl-review SHIP'd statically scoped to base aa623d238f7d80224b384b6fc8fc2b6181115be4 with 0 introduced findings + all R-IDs met)
+- PRs:

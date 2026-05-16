@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::9e70f70fa64eddeb",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part3c_runway_vacating_helicopter",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.75,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is present verbatim and supports the candidate as a self-contained CAP413 phraseology definition for 'HOVER'. The note modality and operational_guidance authority are appropriate for this advisory/definition entry, and the accepted siblings do not duplicate it.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part3c_runway_vacating_helicopter/cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::9e70f70fa64eddeb.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part3c_runway_vacating_helicopter/cap413-extracted::ch4_4_84_part3c_runway_vacating_helicopter::9e70f70fa64eddeb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:20:28Z"
+}

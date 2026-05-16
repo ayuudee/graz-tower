@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::e86599b3fe9bc5f6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.14,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is directly supported by 6.5.5.7, and the candidate correctly uses should/operational_guidance for the advisory wording. It is not redundant with the accepted sibling covering the broader shall-level level-assignment principle because this captures the separate normal ordering guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::e86599b3fe9bc5f6.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::e86599b3fe9bc5f6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:38:23Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::d5469502c4f967d2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.67,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted ATC response phraseology appears verbatim in the source and the modality/authority classification is consistent for ICAO PANS-ATM phraseology. The bundle concern is resolved by an accepted sibling covering the triggering pilot transmission ('MINIMUM FUEL'), while this candidate is the complementary atomic ATC response rather than a redundant umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2/icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::d5469502c4f967d2.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2/icao4444-extracted::atc_phraseologies_levels_minimum_fuel_12_3_1_2_to_12_3_1_3_part2::d5469502c4f967d2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:50:56Z"
+}

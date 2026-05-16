@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::208fab439220ece1",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 21.5,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the source text: 'You can use ... or the spoken words MAYDAY, repeated 3 times,' with the apparent G1 miss caused by line wrapping/whitespace rather than a real quote absence. The candidate is not redundant with the accepted SOS sibling and its may/background_support classification is appropriate for this support-only source.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::208fab439220ece1.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::208fab439220ece1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:47:31Z"
+}

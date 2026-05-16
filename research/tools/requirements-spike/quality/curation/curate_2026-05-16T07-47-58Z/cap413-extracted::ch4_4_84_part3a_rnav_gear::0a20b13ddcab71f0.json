@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part3a_rnav_gear::0a20b13ddcab71f0",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part3a_rnav_gear",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.53,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim-supported and the claim accurately reflects the phraseology item, with no redundancy against accepted siblings. However, this CAP413 phraseology line does not use a shall/must modal; it is operational guidance with no explicit modal wording, so the modality should be lowered to none rather than treated as a shall requirement.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part3a_rnav_gear/cap413-extracted::ch4_4_84_part3a_rnav_gear::0a20b13ddcab71f0.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_84_part3a_rnav_gear/cap413-extracted::ch4_4_84_part3a_rnav_gear::0a20b13ddcab71f0.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:20:12Z"
+}

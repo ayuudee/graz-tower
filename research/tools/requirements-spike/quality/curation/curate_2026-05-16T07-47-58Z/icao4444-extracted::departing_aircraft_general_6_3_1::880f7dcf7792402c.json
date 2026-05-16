@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::departing_aircraft_general_6_3_1::880f7dcf7792402c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departing_aircraft_general_6_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.4,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is fully supported by clause 6.3.1.2, and the candidate\u2019s should modality with operational_guidance authority is floor-consistent. It is not redundant with the accepted sibling, which covers a different shall requirement in 6.3.1.1.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departing_aircraft_general_6_3_1/icao4444-extracted::departing_aircraft_general_6_3_1::880f7dcf7792402c.json",
+    "toPath": "candidates/icao4444-extracted/departing_aircraft_general_6_3_1/icao4444-extracted::departing_aircraft_general_6_3_1::880f7dcf7792402c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:53:13Z"
+}

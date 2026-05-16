@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_german_5_3_1_4::3be9f1093a486419",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_german_5_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.5,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate fails the verbatim quote audit: the quoted identity field is not found verbatim in the source as supplied, and identity fields cannot be corrected in this pass. Additionally, the source line is a phraseology listing rather than an explicit shall-strength obligation, but the quote mismatch alone requires rejection under the curation rules.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_german_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_german_5_3_1_4::3be9f1093a486419.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_pushback_german_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_german_5_3_1_4::3be9f1093a486419.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:36:50Z"
+}

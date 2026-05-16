@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::1269c953675e479f",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.53,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the quoted source text, and the alleged G1 miss is not a real verbatim miss because the quote appears in the source window with only line-break/spacing differences. The modality and authorityClass are appropriately conservative as note/background_support, and the sibling accepted items do not cover this frequency-retention point.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::1269c953675e479f.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::1269c953675e479f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:13:40Z"
+}

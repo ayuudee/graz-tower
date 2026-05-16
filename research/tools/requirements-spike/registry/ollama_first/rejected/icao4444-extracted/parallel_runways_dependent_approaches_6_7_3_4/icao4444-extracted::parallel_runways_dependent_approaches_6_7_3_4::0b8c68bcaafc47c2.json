@@ -1,0 +1,117 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::0b8c68bcaafc47c2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_dependent_approaches_6_7_3_4",
+  "familyId": "icao4444_parallel_runway_family",
+  "claimText": "Instrument flight procedures aligning aircraft with the extended runway centre line for dependent parallel approaches must be a precision approach procedure, an APV procedure using RNP AR APCH (with specific RNP value constraints), or an APV/RNP APCH procedure with documented safety assessment and ATS authority approval.",
+  "rationale": "Clause 6.7.3.4.1(d) lists permissible instrument flight procedures and their associated constraints.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "the instrument flight procedures that align the aircraft with the extended runway centre line are any combination of the following: 1) a precision approach procedure; 2) an APV procedure designed using the RNP AR APCH navigation specification...; 3) an APV procedure designed using the RNP AR APCH navigation specification that does not meet the provisions in d) 2) or an RNP APCH, provided that: i) an appropriate, documented safety assessment has shown that an acceptable level of safety can be met; and ii) operations are approved by the appropriate ATS authority"
+  ],
+  "sourceItemIds": [
+    "6.7.3.4.1_d_1",
+    "6.7.3.4.1_d_2",
+    "6.7.3.4.1_d_3",
+    "6.7.3.4.1_d_3_i",
+    "6.7.3.4.1_d_3_ii"
+  ],
+  "claimSha256": "0161461064b1683974e70e60c7ff49c1eb1d779e7103b0806509459f0be60d49",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 7874,
+    "endLine": 8070
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_parallel_runway_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_approach_procedure_types",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "the instrument flight procedures that align the aircraft with the extended runway centre line are any combination of the following: 1) a precision approach procedure; 2) an APV procedure designed using the RNP AR APCH navigation specification...; 3) an APV procedure designed using the RNP AR APCH navigation specification that does not meet the provisions in d) 2) or an RNP APCH, provided that: i) an appropriate, documented safety assessment has shown that an acceptable level of safety can be met; and ii) operations are approved by the appropriate ATS authority",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by the source, but the single exactSourceQuote is not present verbatim: it concatenates separated text and uses an ellipsis. Because claimText and exactSourceQuotes are identity fields that cannot be corrected in this pass, the record must be rejected rather than promoted with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:23:11Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/parallel_runways_dependent_approaches_6_7_3_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:23:11Z"
+  }
+}

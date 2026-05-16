@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_84_part1b_meteorological::9eebb6310076f006",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_84_part1b_meteorological",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.14,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The verbatim quote supports only a NOTE that CAVOK is pronounced CAV-O-KAY, not a shall-strength requirement. Because the claimText itself states \u201cshall\u201d and identity fields cannot be edited in this curation pass, this would require re-extraction rather than a modality-only correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_84_part1b_meteorological/cap413-extracted::ch4_4_84_part1b_meteorological::9eebb6310076f006.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_84_part1b_meteorological/cap413-extracted::ch4_4_84_part1b_meteorological::9eebb6310076f006.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:18:50Z"
+}

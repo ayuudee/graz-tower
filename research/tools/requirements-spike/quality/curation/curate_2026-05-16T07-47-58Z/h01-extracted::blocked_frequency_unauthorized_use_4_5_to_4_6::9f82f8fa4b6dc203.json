@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::9f82f8fa4b6dc203",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.32,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim quoted list item in 4.6, and the source uses advisory 'should' language. The candidate is an atomic action not already covered by the accepted siblings, with modality and authorityClass already consistent as operational guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::9f82f8fa4b6dc203.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::9f82f8fa4b6dc203.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:22:43Z"
+}

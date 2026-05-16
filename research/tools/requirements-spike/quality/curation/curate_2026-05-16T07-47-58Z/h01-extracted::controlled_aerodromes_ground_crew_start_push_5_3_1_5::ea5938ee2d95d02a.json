@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::ea5938ee2d95d02a",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_crew_start_push_5_3_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.36,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source note, and G1\u2013G4 all pass with a valid note modality and operational_guidance authority class. It is not redundant with the accepted sibling phraseology because it captures the explanatory meaning of the subsequent visual signal after disconnect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::ea5938ee2d95d02a.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_ground_crew_start_push_5_3_1_5/h01-extracted::controlled_aerodromes_ground_crew_start_push_5_3_1_5::ea5938ee2d95d02a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:33:33Z"
+}

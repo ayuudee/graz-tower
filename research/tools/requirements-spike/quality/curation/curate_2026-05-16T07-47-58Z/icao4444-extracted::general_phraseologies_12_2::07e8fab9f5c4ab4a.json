@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::07e8fab9f5c4ab4a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by 12.2.4 and item c), but the supplied exactSourceQuote is not a verbatim substring of the source because it uses an ellipsis and omits intervening text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim failure requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::07e8fab9f5c4ab4a.json",
+    "toPath": "rejected/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::07e8fab9f5c4ab4a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:01:59Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::test_procedures_2_8_4_en::8af1023341088e17",
+  "documentId": "icao9432-extracted",
+  "sectionId": "test_procedures_2_8_4_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.48,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuote is not verbatim in the source: the source begins \u201cJe\u017celi kontroler...\u201d while the candidate quote begins \u201cJe\u015bli kontroler...\u201d. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite being substantively supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/test_procedures_2_8_4_en/icao9432-extracted::test_procedures_2_8_4_en::8af1023341088e17.json",
+    "toPath": "rejected/icao9432-extracted/test_procedures_2_8_4_en/icao9432-extracted::test_procedures_2_8_4_en::8af1023341088e17.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T12:00:48Z"
+}

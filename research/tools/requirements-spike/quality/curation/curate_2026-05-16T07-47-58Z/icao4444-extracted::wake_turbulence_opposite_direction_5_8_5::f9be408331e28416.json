@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::f9be408331e28416",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_opposite_direction_5_8_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.97,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The figure caption supports the claim and the quote is present, and this is non-normative background support rather than an operative requirement. However, the caption itself contains no note wording or modal verb, so the modality should be corrected from note to none, consistent with the accepted sibling Figure 5-45 item.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_opposite_direction_5_8_5/icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::f9be408331e28416.json",
+    "toPath": "candidates/icao4444-extracted/wake_turbulence_opposite_direction_5_8_5/icao4444-extracted::wake_turbulence_opposite_direction_5_8_5::f9be408331e28416.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:41:43Z"
+}

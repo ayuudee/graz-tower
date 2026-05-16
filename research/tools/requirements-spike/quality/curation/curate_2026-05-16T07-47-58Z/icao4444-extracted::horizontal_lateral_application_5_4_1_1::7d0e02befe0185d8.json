@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_application_5_4_1_1::7d0e02befe0185d8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_application_5_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.04,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim as a permissive Note, but the candidate's may modality cannot be classified as an authoritative_requirement under the authority floor. This should be retained only with lowered authority rather than rejected, since it is not redundant with the accepted atomic requirements.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_application_5_4_1_1/icao4444-extracted::horizontal_lateral_application_5_4_1_1::7d0e02befe0185d8.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_application_5_4_1_1/icao4444-extracted::horizontal_lateral_application_5_4_1_1::7d0e02befe0185d8.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:04:51Z"
+}

@@ -152,11 +152,53 @@
       "notes": "AIC A 21/23 \u00a7\u00a75.3.1.1-5.3.1.3 controlled-aerodrome ground time, towing, and start phraseology. Bilingual layout; extract English-side content only."
     },
     {
-      "sectionId": "controlled_aerodromes_pushback_deice_5_3_1_4_to_5_3_1_5",
+      "sectionId": "controlled_aerodromes_pushback_german_5_3_1_4",
       "familyId": "h01_controlled_aerodrome_phraseology_family",
       "startLine": 6968,
+      "endLine": 6978,
+      "notes": "AIC A 21/23 \u00a75.3.1.4 German-side pushback/powerback procedure phraseology. Bilingual layout; use only as cross-check context for the English-side operational phraseology."
+    },
+    {
+      "sectionId": "controlled_aerodromes_pushback_english_request_startup_5_3_1_4_to_5_3_1_5",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 6979,
+      "endLine": 6992,
+      "notes": "AIC A 21/23 \u00a75.3.1.4 to \u00a75.3.1.5 English-side pushback/powerback request and adjacent start-up phraseology exposed by the bilingual layout. Extract English-side operational phraseology only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_pushback_english_completion_5_3_1_4",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 6999,
+      "endLine": 7005,
+      "notes": "AIC A 21/23 \u00a75.3.1.4 English-side pushback/powerback approval, negative response, standby, expected delay, own-discretion pushback, and completion phraseology. Extract English-side operational phraseology only."
+    },
+    {
+      "sectionId": "controlled_aerodromes_ground_crew_start_push_5_3_1_5",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7006,
+      "endLine": 7046,
+      "notes": "AIC A 21/23 \u00a75.3.1.5 ground crew/flight crew start-up and pushback/powerback phraseologies. English-only subsection; include notes only when they support phraseology scope."
+    },
+    {
+      "sectionId": "controlled_aerodromes_deice_prior_start_5_3_1_5_1",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7052,
+      "endLine": 7068,
+      "notes": "AIC A 21/23 \u00a75.3.1.5.1 prior to de/anti-icing plus DE-ICING STARTS NOW phraseology. Split to keep the start-of-deicing scope complete after bundle-gate failure."
+    },
+    {
+      "sectionId": "controlled_aerodromes_deice_concluding_complete_5_3_1_5_2_to_5_3_1_5_4",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7072,
+      "endLine": 7094,
+      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.5.2-5.3.1.5.4 concluding de/anti-icing, anti-icing code, final step, post-deicing check, and personnel/equipment-clear phraseologies."
+    },
+    {
+      "sectionId": "controlled_aerodromes_deice_abnormal_5_3_1_5_5",
+      "familyId": "h01_controlled_aerodrome_phraseology_family",
+      "startLine": 7099,
       "endLine": 7107,
-      "notes": "AIC A 21/23 \u00a7\u00a75.3.1.4-5.3.1.5 pushback/powerback and de/anti-icing phraseology. Bilingual layout; extract English-side content only."
+      "notes": "AIC A 21/23 \u00a75.3.1.5.5 abnormal de/anti-icing operations phraseology. English-side content only."
     },
     {
       "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",

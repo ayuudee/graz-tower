@@ -73,9 +73,8 @@ Foundation B for DA — refined per rounds 1-5:
 - [ ] `./gradlew :pilot:jvmTest :protocol:allTests detekt --offline --no-daemon` GREEN
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Landed fn-28.2 (DA foundation B): AircraftType.maxDensityAltitudeFt (NULLABLE; C172=5000 ft per FAA AC 61-107B §3-1, B738=null applicability fallthrough) + RegulationDatabase.FAA_AC_61_107B_3_1 entry + CompletionMode.NON_COMPLETING (R20 audit) + MissionStep.DECLINE_DEPARTURE (R15 audit) + CompoundTask.replaceFromActivePrimitive (R13 sole rewrite primitive) + isDensityAltitudeDeclineEligible guard (R16 split) + computeDensityAltitudeFeet pure function in :pilot (R17) + PilotEvent.DensityAltitudeDecline leaf + deriveDensityAltitudeEvent branch with phase + step + threshold + input gates (R21 branch order: DA-without-clearance → DensityAltitudeDecline → tailwind → crosswind) + applyDensityAltitudeDecline with at-rest intent + suppressSameTickCognitive flag (R14) + applyCognitiveSuppression focused-seam helper + filed-plan departure-aerodrome lookup in densityAltitudeInputForMission (round-9 Major 2). Tests: AircraftTypeSpec extended (C172=5000, B738=null), IsDensityAltitudeDeclineEligibleSpec (6 rows), DensityAltitudeFormulaTest (7 boundary numerics + idempotence), ReplaceFromActivePrimitiveSpec (6 rows: flat + nested + multi-element suffix + terminal + outer-siblings-preserved), CompletionModeNonCompletingAuditSpec (3 rows), MissionStepDeclineDepartureAuditSpec (3 rows), PilotEventDensityAltitudeTest (10 rows incl. B738 fallthrough + airborne-phase rejection + runway-active-phase rejection + Taxiing+TAXI_TO_HOLDING positive), PilotDensityAltitudeDeclineTest (7 rows incl. NON_COMPLETING invariant + ineligible-mission defensive guard), PilotDensityAltitudeDeclineCognitiveSuppressionTest (6 rows incl. control + B738 fallthrough through pilotDecide + 3 focused-seam helper rows), DensityAltitudeInputForMissionTest extended (3 filed-plan rows). Codex impl-review: round 1 NEEDS_WORK (missing filed-plan lookup + missing phase guard + Plan-path test coverage) → round 2 NEEDS_WORK (return@Test compile error + Plan-path test didn't actually prove Plan-coverage) → round 3 SHIP after focused-seam refactor of applyCognitiveSuppression helper.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 20297bf, 5ec1ff4, aa623d2
+- Tests: ./gradlew :pilot:jvmTest :protocol:allTests detekt --offline --no-daemon (NOT RUN LOCALLY: no JDK installed in worker environment — /Library/Java/JavaVirtualMachines is empty + brew has no jdk cask; verification deferred to next CI/local pass; codex impl-review SHIP'd statically scoped to base afbfc15)
+- PRs:

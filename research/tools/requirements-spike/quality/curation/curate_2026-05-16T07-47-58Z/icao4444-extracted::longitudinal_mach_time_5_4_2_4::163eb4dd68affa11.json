@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::163eb4dd68affa11",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.98,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote exists verbatim and the note/background_support classification is internally consistent, but the judge explicitly demoted it as support-only rather than an accepted standalone requirement. No permitted correction to modality, authorityClass, or requirementKind would resolve that status without changing the identity fields or the acceptance policy for figure captions.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::163eb4dd68affa11.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:13:45Z"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::atis_departure_wind_visibility_weather_9010_d_11_to_17::55e41c089be378b8",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_departure_wind_visibility_weather_9010_d_11_to_17",
+  "familyId": "sera_atis_family",
+  "claimText": "Departure-only ATIS messages shall include cloud below 1 500 m (5 000 ft) or below the highest minimum sector altitude, whichever is greater; cumulonimbus; and if the sky is obscured, vertical visibility when available.",
+  "rationale": "All attempts agree on the specific cloud, CB, and vertical visibility requirements.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "cloud below 1 500 m (5 000 ft) or below the highest minimum sector altitude, whichever is greater; cumulonimbus; if the sky is obscured, vertical visibility when available (1);"
+  ],
+  "sourceItemIds": [
+    "sera_atis_14"
+  ],
+  "claimSha256": "e384dcfefee23c2025ca02784cb81ddeff265a7febf4c4bf4e8e39e32cf9c202",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2310,
+    "endLine": 2319
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "sera_atis_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "sera_atis_cloud",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "cloud below 1 500 m (5 000 ft) or below the highest minimum sector altitude, whichever is greater; cumulonimbus; if the sky is obscured, vertical visibility when available (1);",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The claim is substantively supported by item (14), but the exactSourceQuotes field does not exist verbatim in the provided source window due to the line-break/soft-hyphen rendering of \u201ccumulonimbus.\u201d Because exactSourceQuotes is an identity field and cannot be corrected in this pass, the G1 verbatim failure requires rejection rather than promotion with corrections.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T12:04:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/sera-923-2012-extracted/atis_departure_wind_visibility_weather_9010_d_11_to_17/judged_candidates.json",
+    "curatedAt": "2026-05-16T12:04:00Z"
+  }
+}

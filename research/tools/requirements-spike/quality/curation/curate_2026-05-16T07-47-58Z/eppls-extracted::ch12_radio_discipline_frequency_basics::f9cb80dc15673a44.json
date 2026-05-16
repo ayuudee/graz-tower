@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::f9cb80dc15673a44",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 29.16,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the source: it states that pilots are bound to preserve secrecy and may not disclose transmissions except to intended recipients or officials, with the listed distress, safety, and All Stations exceptions. The reported G1 miss appears to be an audit artefact, because the second quoted passage appears verbatim as a contiguous substring in the provided source window.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::f9cb80dc15673a44.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::f9cb80dc15673a44.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:08:58Z"
+}

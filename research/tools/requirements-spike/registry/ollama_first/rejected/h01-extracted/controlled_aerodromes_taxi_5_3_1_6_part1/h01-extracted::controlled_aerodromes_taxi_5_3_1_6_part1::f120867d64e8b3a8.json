@@ -1,0 +1,121 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::f120867d64e8b3a8",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+  "familyId": "h01_controlled_aerodrome_phraseology_family",
+  "claimText": "ATC shall issue taxi instructions via a specific route, taxiway, or runway using the phrase 'TAXI VIA [identifier]'.",
+  "rationale": "Source provides specific phraseology for taxiing via specific paths. These are standard phraseology requirements for controller actions.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "G: TAXI VIA (route)",
+    "G: TAXI VIA (identification of taxiway)",
+    "G: TAXI VIA RUNWAY (number)"
+  ],
+  "sourceItemIds": [
+    "list_taxi_via_route",
+    "list_taxi_via_taxiway",
+    "list_taxi_via_runway"
+  ],
+  "claimSha256": "d632492f0c8f9581056fa8626aecd7aee4b96daeabc53e5b9cbe457bc33573cf",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 7108,
+    "endLine": 7275
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_controlled_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "phrase_instr_taxi_via",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 3,
+      "hits": 1,
+      "misses": [
+        {
+          "quote": "G: TAXI VIA (identification of taxiway)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: TAXI VIA RUNWAY (number)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "G1 has real verbatim misses: the source window does not contain the quoted strings \u201cG: TAXI VIA (identification of taxiway)\u201d or \u201cG: TAXI VIA RUNWAY (number)\u201d as exact source quotes. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate cannot be promoted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:38:38Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:38:38Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::3bb541ec6fd40959",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is verbatim in the source and supports the claim, including the source wording \u201cshall be monitored.\u201d Because the passage is explicitly labelled as a Note, the candidate\u2019s lowered authorityClass of operational_guidance is appropriate, and the accepted siblings do not redundantly cover this ATIS-monitoring statement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::3bb541ec6fd40959.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3/h01-extracted::controlled_aerodromes_airborne_entry_5_3_2_1_to_5_3_2_3::3bb541ec6fd40959.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:27:21Z"
+}

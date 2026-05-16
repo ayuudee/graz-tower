@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_70_to_4_83::56b4efc96dc1729f",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_70_to_4_83",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.75,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote in 4.79, the quote audit and schema/authority checks all passed, and no accepted sibling covers this specific AFISO position-report request point. The modality and authority class are appropriately conservative for CAP 413: a permissive \u201cmay\u201d framed as operational guidance, not an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_70_to_4_83/cap413-extracted::ch4_4_70_to_4_83::56b4efc96dc1729f.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_70_to_4_83/cap413-extracted::ch4_4_70_to_4_83::56b4efc96dc1729f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:17:19Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_17_to_4_23::8e9d26a6a553c6b8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_17_to_4_23",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.26,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence appears verbatim in the source and is accurately framed as non-normative background/context with modality `note` and operational-guidance authority. It is not redundant with the accepted sibling candidates, which address separate operational or phraseology points.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::8e9d26a6a553c6b8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::8e9d26a6a553c6b8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:01:31Z"
+}

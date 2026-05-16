@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::efddb96d93ff56fd",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.12,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim Note 3 quote, all gate audits pass, and it is not redundant with the accepted sibling candidates. The existing modality and authorityClass correctly preserve the advisory note as operational guidance rather than an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::efddb96d93ff56fd.json",
+    "toPath": "candidates/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::efddb96d93ff56fd.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:57:14Z"
+}

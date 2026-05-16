@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::1c23a237721b7d7c",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.83,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim in the source, and the claim accurately captures item 4.5(b) using the source\u2019s advisory 'should' wording. The modality and authorityClass are already consistent for H01 operational guidance, and the accepted siblings do not duplicate this blocked-frequency communication step.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::1c23a237721b7d7c.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::1c23a237721b7d7c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:22:12Z"
+}

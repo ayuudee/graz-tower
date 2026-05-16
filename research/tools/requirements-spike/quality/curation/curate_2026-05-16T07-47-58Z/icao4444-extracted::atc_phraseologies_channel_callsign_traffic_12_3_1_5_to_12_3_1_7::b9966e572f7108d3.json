@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b9966e572f7108d3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.38,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The verbatim source note supports the claim exactly, and the candidate correctly treats it as non-normative note-level operational guidance rather than an authoritative requirement. It is not redundant with the accepted CAVOK phraseology item, which covers use of the phrase but not pronunciation.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b9966e572f7108d3.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b9966e572f7108d3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:49:03Z"
+}

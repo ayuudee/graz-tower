@@ -1,0 +1,28 @@
+{
+  "canonicalId": "h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::1eefcc1865f09656",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_rules_channel_5_6_8_to_5_6_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim, and the content is not redundant with the accepted phraseology sibling because it adds the flight-plan/arrival-message consequence. Because the source item is explicitly a Note, it should remain non-normative and be classified as background/advisory rather than a rule.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_flight_rules_channel_5_6_8_to_5_6_9/h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::1eefcc1865f09656.json",
+    "toPath": "candidates/h01-extracted/general_flight_rules_channel_5_6_8_to_5_6_9/h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::1eefcc1865f09656.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:50:02Z"
+}

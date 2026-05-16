@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::e9adbc8141577182",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.63,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited exactSourceQuotes string is not present verbatim in the source window after whitespace normalization because the source text is layout-interleaved. Since quote identity fields cannot be edited in this pass, this must be rejected rather than corrected, even though the underlying idea appears source-grounded.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::e9adbc8141577182.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::e9adbc8141577182.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:18:40Z"
+}

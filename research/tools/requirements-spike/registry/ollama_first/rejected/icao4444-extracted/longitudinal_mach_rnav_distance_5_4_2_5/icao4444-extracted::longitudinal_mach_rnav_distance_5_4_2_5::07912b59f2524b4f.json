@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::07912b59f2524b4f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "familyId": "icao4444_longitudinal_separation_family",
+  "claimText": "Aircraft utilizing RNAV may be cleared to climb or descend to or through the levels occupied by other aircraft utilizing RNAV provided it has been positively established by simultaneous RNAV distance readings to or from the same 'on-track' common point that the aircraft have passed each other and are at least 150 km (80 NM) apart.",
+  "rationale": "Consistent authoritative permission for reciprocal track clearance with RNAV.",
+  "modality": "may",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Aircraft utilizing RNAV may be cleared to climb or descend to or through the levels occupied by other aircraft utilizing RNAV provided it has been positively established by simultaneous RNAV distance readings to or from the same 'on-track' common point that the aircraft have passed each other and are at least 150 km (80 NM) apart."
+  ],
+  "sourceItemIds": [
+    "5.4.2.5.7"
+  ],
+  "claimSha256": "a4e2e2414a925a5639e74e242221e62320a1ee904adaafecdacc275653966043",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 5686,
+    "endLine": 5816
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_longitudinal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "reciprocal_tracks_rnav_clearance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Aircraft utilizing RNAV may be cleared to climb or descend to or through the levels occupied by other aircraft utilizing RNAV provided it has been positively established by simultaneous RNAV distance readings to or from the same 'on-track' common point that the aircraft have passed each other and are at least 150 km (80 NM) apart.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "fail",
+      "modality": "may",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": false,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": "(modality='may', authorityClass='authoritative_requirement') violates AUTHORITY_CLASS_BY_FLOOR"
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The cited quote does not exist verbatim in the source: the source uses curly double quotation marks around \u201con-track\u201d and continues with \u201c(see Figure 5-28)\u201d rather than ending with a period after \u201capart.\u201d Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying provision being substantively present.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:11:18Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:11:18Z"
+  }
+}

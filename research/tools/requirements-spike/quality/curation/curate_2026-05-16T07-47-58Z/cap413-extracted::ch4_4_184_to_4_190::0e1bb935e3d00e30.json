@@ -1,0 +1,20 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_184_to_4_190::0e1bb935e3d00e30",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_184_to_4_190",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.71,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote exists verbatim and the claim is supported as an introductory clause, but it is incomplete without the table entries that define the referenced 'following descriptions.' Resolving this requires bundling or re-extracting the subordinate reporting terms rather than changing modality or authorityClass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_184_to_4_190/cap413-extracted::ch4_4_184_to_4_190::0e1bb935e3d00e30.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:02:11Z"
+}

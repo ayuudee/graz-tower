@@ -1,0 +1,11 @@
+{
+  "documentId": "icao9432-extracted",
+  "sectionId": "final_approach_landing_4_7_en",
+  "familyId": "icao9432_aerodrome_phraseology_family",
+  "sourcePath": "research/txt/icao9432-extracted.txt",
+  "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+  "startLine": 5675,
+  "endLine": 5795,
+  "lastPromotedRunId": "promote_2026-05-16T06-47-39Z_b460",
+  "lastPromotedAt": "2026-05-16T06:47:40Z"
+}

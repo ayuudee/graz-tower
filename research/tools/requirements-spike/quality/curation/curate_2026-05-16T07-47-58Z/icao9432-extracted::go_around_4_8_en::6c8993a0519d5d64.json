@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::go_around_4_8_en::6c8993a0519d5d64",
+  "documentId": "icao9432-extracted",
+  "sectionId": "go_around_4_8_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.09,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is quoted verbatim in the source, and the candidate correctly preserves the source\u2019s advisory \u201cshould\u201d modality as operational guidance. It is not redundant with the accepted sibling requirements, which cover different go-around consequences in 4.8.2.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/go_around_4_8_en/icao9432-extracted::go_around_4_8_en::6c8993a0519d5d64.json",
+    "toPath": "candidates/icao9432-extracted/go_around_4_8_en/icao9432-extracted::go_around_4_8_en::6c8993a0519d5d64.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:56:12Z"
+}

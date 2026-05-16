@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e::cefabeec0b2c11c1",
+  "documentId": "icao4444-extracted",
+  "sectionId": "approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.73,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported and the candidate is correctly framed as a non-normative contextual note with operational_guidance authority, so there is no identity or authority/modality defect to correct. The accepted sibling phraseology items do not fully replace this circumstances/context statement about advance notice of a future STAR rejoin instruction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e/icao4444-extracted::approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e::cefabeec0b2c11c1.json",
+    "toPath": "candidates/icao4444-extracted/approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e/icao4444-extracted::approach_phraseologies_arrival_star_routing_12_3_3_2_a_to_e::cefabeec0b2c11c1.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:33:16Z"
+}

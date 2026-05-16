@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::474086364b17b607",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4",
+  "familyId": "icao4444_aerodrome_tower_family",
+  "claimText": "The provisions in 7.4.1.4.2 have the objective of supporting the State\u2019s safety programme and safety management system (SMS).",
+  "rationale": "Explanatory note describing the intent of the reporting requirement; not a standalone operational rule.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "The provisions in 7.4.1.4.2 have the objective of supporting the State\u2019s safety programme and safety management system (SMS)."
+  ],
+  "sourceItemIds": [
+    "note_2"
+  ],
+  "claimSha256": "a8c363576f9ca923121a40a6694c87694bd8767d60991d9bf5087f101624e61d",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8554,
+    "endLine": 8600
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_tower_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_note_2",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The quote is verbatim and correctly framed as a non-normative note, but it is purely explanatory background about the objective of 7.4.1.4.2 rather than an operational rule or guidance item. The operative reporting requirement is already captured by an accepted sibling, so this support-only note should not be promoted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T10:07:49Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/judged_candidates.json",
+    "curatedAt": "2026-05-16T10:07:49Z"
+  }
+}

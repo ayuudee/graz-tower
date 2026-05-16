@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::909e4ca34cdbb738",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.24,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote is not a verbatim contiguous quote from the source: it skips intervening list items 1\u20133 between the parent clause and item 4. Because claimText and exactSourceQuotes cannot be edited in this pass, this real G1 miss requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::909e4ca34cdbb738.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::909e4ca34cdbb738.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:30:55Z"
+}

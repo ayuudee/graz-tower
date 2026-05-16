@@ -1,0 +1,28 @@
+{
+  "canonicalId": "h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::2f967cb0f6dd511c",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 29.88,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the candidate\u2019s English-only/IFR-applicability note, and it is not redundant with the accepted atomic phraseology siblings. Because the source text is an informational note rather than operative guidance, it should be classified as background support while retaining note modality.",
+    "corrections": {
+      "authorityClass": "background_support",
+      "requirementKind": "applicability_note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::2f967cb0f6dd511c.json",
+    "toPath": "candidates/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::2f967cb0f6dd511c.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support",
+      "requirementKind": "applicability_note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:24:01Z"
+}

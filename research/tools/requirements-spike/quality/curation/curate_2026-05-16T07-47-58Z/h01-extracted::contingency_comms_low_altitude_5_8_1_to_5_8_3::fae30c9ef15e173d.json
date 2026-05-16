@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::fae30c9ef15e173d",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.89,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote does not appear verbatim in the provided source window because the English phrase is interrupted by interleaved German text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::fae30c9ef15e173d.json",
+    "toPath": "rejected/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::fae30c9ef15e173d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:24:29Z"
+}

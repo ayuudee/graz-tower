@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aeronautical_ground_lights_7_16::4aefd6dd4feb1d3f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aeronautical_ground_lights_7_16",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.91,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The note is quoted verbatim, schema-valid, and correctly classified as non-normative background support with modality `note`. It is not redundant with the accepted atomic operational requirements because it supplies applicability scope for Section 7.16 rather than restating those requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::4aefd6dd4feb1d3f.json",
+    "toPath": "candidates/icao4444-extracted/aeronautical_ground_lights_7_16/icao4444-extracted::aeronautical_ground_lights_7_16::4aefd6dd4feb1d3f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:27:00Z"
+}

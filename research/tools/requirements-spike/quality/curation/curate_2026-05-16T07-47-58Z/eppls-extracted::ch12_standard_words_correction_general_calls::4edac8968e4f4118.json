@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::4edac8968e4f4118",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.56,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The definition is directly supported by the verbatim source quote, all gate audits passed, and it is consistent with accepted sibling glossary entries. Its current note modality and background_support authority are appropriate for a non-normative definition.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::4edac8968e4f4118.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::4edac8968e4f4118.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:16:57Z"
+}

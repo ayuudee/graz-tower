@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::b167452f4e62742d",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.29,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, and the source uses 'should' for the ATC unit's listed actions. The modality and authorityClass are consistent for advisory operational guidance, and the accepted siblings do not already cover this distinct atomic item.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::b167452f4e62742d.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::b167452f4e62742d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:22:54Z"
+}

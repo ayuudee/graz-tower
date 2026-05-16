@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_categories_4_9::6b6958293164bc91",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_categories_4_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.63,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim, and the candidate is correctly framed as a non-normative note with background_support authority. It is not redundant with the accepted sibling requirements, which cover wake categories and heavy-call-sign usage rather than this terminology clarification.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_categories_4_9/icao4444-extracted::wake_turbulence_categories_4_9::6b6958293164bc91.json",
+    "toPath": "candidates/icao4444-extracted/wake_turbulence_categories_4_9/icao4444-extracted::wake_turbulence_categories_4_9::6b6958293164bc91.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:40:24Z"
+}

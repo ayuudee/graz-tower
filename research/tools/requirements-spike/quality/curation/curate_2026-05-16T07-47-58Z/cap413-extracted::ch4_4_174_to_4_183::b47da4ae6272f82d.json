@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_174_to_4_183::b47da4ae6272f82d",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_174_to_4_183",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.23,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited sentence appears verbatim in the source and supports the claim as advisory guidance using 'should'. The candidate's modality and operational_guidance authority class are consistent, and the content is not covered by accepted sibling atomic candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::b47da4ae6272f82d.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::b47da4ae6272f82d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:59:54Z"
+}

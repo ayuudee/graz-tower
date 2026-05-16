@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::273da32239aaf397",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.66,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim Note 2 quote, and all gate audits passed. Its note modality and background_support authority class correctly preserve the non-normative character, and it is not redundant with the accepted sibling requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::273da32239aaf397.json",
+    "toPath": "candidates/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::273da32239aaf397.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:39:22Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::59f3bd7b7af16324",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.47,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The cited quote is present in the source window across a line break, so the G1 miss appears to be a whitespace/windowing artefact rather than a real verbatim failure. The candidate is an atomic phraseology item not duplicated by the accepted TURN OBSERVED sibling, and its operational_guidance authority is appropriate for H01 phraseology.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::59f3bd7b7af16324.json",
+    "toPath": "candidates/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::59f3bd7b7af16324.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:24:21Z"
+}

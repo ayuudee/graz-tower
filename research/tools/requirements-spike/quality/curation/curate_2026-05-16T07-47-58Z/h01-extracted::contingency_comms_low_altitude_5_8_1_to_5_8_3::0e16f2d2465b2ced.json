@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::0e16f2d2465b2ced",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_comms_low_altitude_5_8_1_to_5_8_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.55,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source window, but the exactSourceQuote does not occur verbatim as a contiguous quote after whitespace normalization because the English phrase is interrupted by interleaved German text. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::0e16f2d2465b2ced.json",
+    "toPath": "rejected/h01-extracted/contingency_comms_low_altitude_5_8_1_to_5_8_3/h01-extracted::contingency_comms_low_altitude_5_8_1_to_5_8_3::0e16f2d2465b2ced.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:23:31Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::f089b47d46d9653d",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.36,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and the claim is supported, but the recorded modality \u201cwill\u201d is outside the allowed vocabulary. Because the source says \u201cwill normally indicate\u201d in ICAO Doc 9432 operational guidance, this should be curated as advisory/normal practice rather than a binding requirement.",
+    "corrections": {
+      "modality": "should"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::f089b47d46d9653d.json",
+    "toPath": "candidates/icao9432-extracted/aerodrome_ch4_intro_start_4_1_to_4_2_en/icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::f089b47d46d9653d.json",
+    "correctionsApplied": {
+      "modality": "should"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:43:49Z"
+}

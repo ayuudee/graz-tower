@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::f45e69f7102bcc7b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.81,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote from ICAO Doc 4444 \u00a76.5.5.1, and all gate audits passed. The `should` modality and `operational_guidance` authority class correctly reflect the source wording, and the candidate is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::f45e69f7102bcc7b.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::f45e69f7102bcc7b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:38:32Z"
+}

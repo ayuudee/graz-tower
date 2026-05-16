@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_time_expression::ac9552f81ba08f6f",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_time_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.05,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote does not appear verbatim because the source line-wraps the term as \u201c24-\u201d followed by \u201chour.\u201d Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::ac9552f81ba08f6f.json",
+    "toPath": "rejected/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::ac9552f81ba08f6f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:21:57Z"
+}

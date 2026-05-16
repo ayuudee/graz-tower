@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::ff5018172472effb",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted definition appears verbatim in the source and is not duplicated by accepted siblings. However, the table entry has no explicit note/advisory marker; consistent with sibling phrase definitions, its modality should be `none` while remaining `background_support`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::ff5018172472effb.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::ff5018172472effb.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:20:52Z"
+}

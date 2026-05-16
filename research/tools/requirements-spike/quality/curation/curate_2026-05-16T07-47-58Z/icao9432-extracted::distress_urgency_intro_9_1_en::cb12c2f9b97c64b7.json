@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_urgency_intro_9_1_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.99,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is verbatim supported by the source and is an atomic guidance item not already covered by accepted siblings. Its `should` modality and `operational_guidance` authorityClass correctly reflect the advisory wording in ICAO 9432.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7.json",
+    "toPath": "candidates/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:52:38Z"
+}

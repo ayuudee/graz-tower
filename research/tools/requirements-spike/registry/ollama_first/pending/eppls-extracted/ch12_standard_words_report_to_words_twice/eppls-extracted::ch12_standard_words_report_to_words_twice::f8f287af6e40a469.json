@@ -1,0 +1,126 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::f8f287af6e40a469",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "familyId": "eppls_ch12_operating_procedures_background_family",
+  "claimText": "A timegroup such as 220345Z means a quarter to four GMT on the 22nd of the month. Time is normally given to the nearest minute, except control towers may state time to the nearest half minute for taxi clearances.",
+  "rationale": "Attempts 2 and 3 provide comprehensive consolidation. Attempt 1 splits this; conservative approach merges into one definition/advisory item.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "If you see a timegroup: 220345Z It means a quarter to four GMT on the 22nd of the month.",
+    "Time is normally given to the nearest minute, except that control towers may state the time to the nearest half minute when issuing a taxi clearance to a departing aircraft."
+  ],
+  "sourceItemIds": [
+    "note_timegroup"
+  ],
+  "claimSha256": "449407b9c86fc58e141e6d6bf16dd6be4eb35f9233134aae3fa549255f3b8695",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 22808,
+    "endLine": 22842
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_operating_procedures_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cand_timegroup_interpretation",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 2,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "If you see a timegroup: 220345Z It means a quarter to four GMT on the 22nd of the month.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "Time is normally given to the nearest minute, except that control towers may state the time to the nearest half minute when issuing a taxi clearance to a departing aircraft.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The G1 failure appears to be a false negative caused by PDF layout/line breaks: both exactSourceQuotes are present verbatim in the provided source window after whitespace normalization. The item is a non-normative explanatory note with appropriate modality and authorityClass, and it is not redundant with the accepted sibling phrase-definition items.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:20:41Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::f8f287af6e40a469.json",
+      "to": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::f8f287af6e40a469.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_standard_words_report_to_words_twice/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:20:41Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

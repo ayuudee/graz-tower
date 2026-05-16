@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::8531ee8ef326cc11",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.99,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source text verbatim supports the claim that, at ATC aerodromes, all helicopter movements are subject to ATC unit permission. The candidate is correctly framed as operational guidance rather than an authoritative requirement, and the accepted sibling items do not redundantly cover this parent permission principle.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::8531ee8ef326cc11.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::8531ee8ef326cc11.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:48:10Z"
+}

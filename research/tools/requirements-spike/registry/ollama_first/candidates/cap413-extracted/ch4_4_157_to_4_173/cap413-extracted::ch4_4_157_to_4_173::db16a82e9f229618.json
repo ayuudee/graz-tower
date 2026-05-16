@@ -1,0 +1,110 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_157_to_4_173::db16a82e9f229618",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_157_to_4_173",
+  "familyId": "cap413_ch4_4_157_to_4_173_family",
+  "claimText": "Reports on pitch and roll should include values in degrees about both axes of the true vertical datum and be expressed in relation to the vessel\u2019s heading, with pitch expressed as 'up'/'down' and roll as 'left'/'right'.",
+  "rationale": "Clauses 4.157 and 4.158 define the specific format and reference frame for reporting pitch and roll.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Reports on pitch and roll should include values, in degrees, about both axes of the true vertical datum",
+    "Pitch should be expressed in terms of \u2018up\u2019 and \u2018down\u2019 and roll should be expressed in terms of \u2018left\u2019 and \u2018right\u2019."
+  ],
+  "sourceItemIds": [
+    "4.157",
+    "4.158"
+  ],
+  "claimSha256": "083c72a0f80b379ed7cda6176dbc5e73c2a273c307443065eab6b714054e4e50",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 11709,
+    "endLine": 11857
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_157_to_4_173_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pitch_roll_reporting_format",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is directly supported by the verbatim source quotes, and its should/operational_guidance classification is consistent with CAP 413 wording. The bundle concern about clause 4.159 is already addressed by an accepted sibling candidate, so this candidate can remain an atomic pitch/roll reporting-format item rather than being rejected or re-extracted.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T07:58:43Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_bundle",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "underspecified",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": false
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_157_to_4_173/judged_candidates.json",
+    "curatedAt": "2026-05-16T07:58:43Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::b7aaf3d4e80b7f9d",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.31,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate is source-grounded in meaning, but its exactSourceQuote does not exist verbatim in the provided source window after whitespace normalization due to intervening text in the extraction. Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, a real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::b7aaf3d4e80b7f9d.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::b7aaf3d4e80b7f9d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:19:42Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::b8e6b61cf8799892",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_intro_3_3_to_3_3_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 34.47,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted lines exist verbatim and support the claim as a non-normative example of the reply phraseology. The candidate\u2019s modality and authorityClass are already appropriate, but requirementKind should not be \u201cdefinition\u201d for a worked example.",
+    "corrections": {
+      "requirementKind": "example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_intro_3_3_to_3_3_1/h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::b8e6b61cf8799892.json",
+    "toPath": "candidates/h01-extracted/establishment_rtf_intro_3_3_to_3_3_1/h01-extracted::establishment_rtf_intro_3_3_to_3_3_1::b8e6b61cf8799892.json",
+    "correctionsApplied": {
+      "requirementKind": "example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:45:53Z"
+}

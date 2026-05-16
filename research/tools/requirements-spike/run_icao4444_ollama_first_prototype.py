@@ -157,6 +157,32 @@ class OllamaJsonError(RuntimeError):
         )
 
 
+class OllamaSchemaError(RuntimeError):
+    def __init__(
+        self,
+        *,
+        stage: str,
+        model: str,
+        reason: str,
+        content: str,
+        repair_attempts: list[dict[str, Any]],
+    ) -> None:
+        self.stage = stage
+        self.model = model
+        self.reason = reason
+        self.excerpt = json_excerpt(content)
+        self.repair_attempts = repair_attempts
+        repair_suffix = (
+            f"; schemaRepairAttempts={len(repair_attempts)}"
+            if repair_attempts
+            else ""
+        )
+        super().__init__(
+            f"{stage}: model {model} returned JSON with invalid schema "
+            f"({reason}){repair_suffix}: {self.excerpt}"
+        )
+
+
 def read_window(source: Path, *, start_line: int, end_line: int) -> str:
     lines = source.read_text(encoding="utf-8").split("\n")
     window_lines: list[str] = []
@@ -227,17 +253,19 @@ def repair_json_response(
     num_predict: int,
     num_ctx: int,
     timeout_seconds: int,
+    problem: str = "parsing failed",
+    expected_shape: str = "same intended schema and semantic content",
 ) -> dict[str, Any]:
     system_prompt = (
-        "You repair malformed JSON emitted by another model. "
+        "You repair JSON emitted by another model. "
         "Return strict JSON only. "
         "Preserve the intended keys and values. "
         "Do not add new facts, rationale, candidates, or commentary."
     )
     user_prompt = f"""
-The previous response for stage `{stage}` was supposed to be valid JSON, but parsing failed.
+The previous response for stage `{stage}` was supposed to be valid JSON, but {problem}.
 
-Repair it into valid JSON with the same intended schema and semantic content.
+Repair it into valid JSON with {expected_shape}.
 Return only the repaired JSON object or array.
 
 Malformed response:
@@ -259,6 +287,47 @@ Malformed response:
     return repair_result
 
 
+def _required_object_problem(payload: Any, fields: list[str]) -> str | None:
+    if not isinstance(payload, dict):
+        return f"top-level JSON value is {type(payload).__name__}, expected object"
+    missing = [field for field in fields if field not in payload]
+    if missing:
+        return f"missing required fields: {missing}"
+    return None
+
+
+def _normalize_required_object(
+    payload: Any,
+    fields: list[str],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    if isinstance(payload, dict):
+        if _required_object_problem(payload, fields) is None:
+            return payload, None
+        nested_matches = [
+            value
+            for value in payload.values()
+            if isinstance(value, dict) and _required_object_problem(value, fields) is None
+        ]
+        if len(nested_matches) == 1:
+            return nested_matches[0], {
+                "kind": "singleNestedObject",
+                "outerKeys": sorted(payload.keys()),
+            }
+        return None, None
+    if isinstance(payload, list):
+        object_matches = [
+            value
+            for value in payload
+            if isinstance(value, dict) and _required_object_problem(value, fields) is None
+        ]
+        if len(object_matches) == 1:
+            return object_matches[0], {
+                "kind": "singleObjectArray",
+                "arrayLength": len(payload),
+            }
+    return None, None
+
+
 def call_ollama_chat(
     *,
     base_url: str,
@@ -272,6 +341,7 @@ def call_ollama_chat(
     disable_thinking: bool = True,
     stage: str = "ollama",
     json_repair_attempts: int = 1,
+    required_fields: list[str] | None = None,
 ) -> dict[str, Any]:
     result = post_ollama_chat(
         base_url=base_url,
@@ -287,6 +357,63 @@ def call_ollama_chat(
     content = result.pop("content")
     parsed = parse_json_payload(content)
     if parsed is not None:
+        if required_fields is not None:
+            normalized, schema_normalization = _normalize_required_object(
+                parsed,
+                required_fields,
+            )
+            if normalized is not None:
+                result["parsed"] = normalized
+                result["jsonRepairApplied"] = False
+                result["jsonRepairAttempts"] = []
+                result["schemaRepairApplied"] = False
+                result["schemaRepairAttempts"] = []
+                if schema_normalization is not None:
+                    result["schemaNormalization"] = schema_normalization
+                    result["schemaInvalidParsedExcerpt"] = json_excerpt(json.dumps(parsed))
+                return result
+
+            schema_repair_attempts: list[dict[str, Any]] = []
+            problem = _required_object_problem(parsed, required_fields) or "unknown schema mismatch"
+            for repair_no in range(1, max(json_repair_attempts, 0) + 1):
+                repair_result = repair_json_response(
+                    base_url=base_url,
+                    model=model,
+                    stage=stage,
+                    malformed_content=content,
+                    num_predict=num_predict,
+                    num_ctx=num_ctx,
+                    timeout_seconds=timeout_seconds,
+                    problem=problem,
+                    expected_shape=(
+                        "one JSON object containing these required top-level fields: "
+                        + ", ".join(required_fields)
+                    ),
+                )
+                repair_result["attemptNo"] = repair_no
+                schema_repair_attempts.append(repair_result)
+                repaired, repair_normalization = _normalize_required_object(
+                    repair_result["parsed"],
+                    required_fields,
+                )
+                if repaired is not None:
+                    result["parsed"] = repaired
+                    result["jsonRepairApplied"] = False
+                    result["jsonRepairAttempts"] = []
+                    result["schemaRepairApplied"] = True
+                    result["schemaRepairAttempts"] = schema_repair_attempts
+                    result["schemaInvalidReason"] = problem
+                    result["schemaInvalidParsedExcerpt"] = json_excerpt(json.dumps(parsed))
+                    if repair_normalization is not None:
+                        result["schemaRepairNormalization"] = repair_normalization
+                    return result
+            raise OllamaSchemaError(
+                stage=stage,
+                model=model,
+                reason=problem,
+                content=content,
+                repair_attempts=schema_repair_attempts,
+            )
         result["parsed"] = parsed
         result["jsonRepairApplied"] = False
         result["jsonRepairAttempts"] = []
@@ -306,10 +433,23 @@ def call_ollama_chat(
         repair_result["attemptNo"] = repair_no
         repair_attempts.append(repair_result)
         if repair_result["parsed"] is not None:
-            result["parsed"] = repair_result["parsed"]
+            if required_fields is not None:
+                repaired, repair_normalization = _normalize_required_object(
+                    repair_result["parsed"],
+                    required_fields,
+                )
+                if repaired is None:
+                    continue
+                result["parsed"] = repaired
+                if repair_normalization is not None:
+                    result["schemaRepairNormalization"] = repair_normalization
+            else:
+                result["parsed"] = repair_result["parsed"]
             result["jsonRepairApplied"] = True
             result["invalidJsonExcerpt"] = json_excerpt(content)
             result["jsonRepairAttempts"] = repair_attempts
+            result["schemaRepairApplied"] = False
+            result["schemaRepairAttempts"] = []
             return result
 
     raise OllamaJsonError(
@@ -354,6 +494,10 @@ def parse_json_payload(text: str) -> Any | None:
 
 
 def require_fields(payload: dict[str, Any], fields: list[str], *, stage: str) -> None:
+    if not isinstance(payload, dict):
+        raise ValueError(
+            f"{stage} expected JSON object, got {type(payload).__name__}"
+        )
     missing = [field for field in fields if field not in payload]
     if missing:
         nested_matches = [
@@ -370,6 +514,10 @@ def require_fields(payload: dict[str, Any], fields: list[str], *, stage: str) ->
 
 
 def normalize_judge_payload(payload: dict[str, Any], *, window: dict[str, Any], candidate: dict[str, Any]) -> None:
+    if not isinstance(payload, dict):
+        raise ValueError(
+            f"judge:{candidate['candidateId']} expected JSON object, got {type(payload).__name__}"
+        )
     if "caseId" not in payload:
         payload["caseId"] = window["caseId"]
     if "candidateId" not in payload:
@@ -1243,6 +1391,7 @@ def run_pipeline(
             timeout_seconds=600,
             stage=f"structure:attempt_{attempt_no}",
             json_repair_attempts=json_repair_attempts,
+            required_fields=["caseId", "assessment", "structureItems", "relationships"],
         )
         attempt_result["attemptId"] = f"structure_attempt_{attempt_no}"
         structure_attempts.append(attempt_result)
@@ -1265,6 +1414,7 @@ def run_pipeline(
         timeout_seconds=600,
         stage="structure:reconcile",
         json_repair_attempts=json_repair_attempts,
+        required_fields=["caseId", "assessment", "structureItems", "relationships"],
     )
     write_json(output_dir / "structure_reconciliation_response.json", structure_result)
     write_json(output_dir / "structure_response.json", structure_result)
@@ -1284,6 +1434,7 @@ def run_pipeline(
             timeout_seconds=600,
             stage=f"requirements:attempt_{attempt_no}",
             json_repair_attempts=json_repair_attempts,
+            required_fields=["caseId", "candidates"],
         )
         attempt_result["attemptId"] = f"attempt_{attempt_no}"
         extraction_attempts.append(attempt_result)
@@ -1302,6 +1453,7 @@ def run_pipeline(
         timeout_seconds=600,
         stage="requirements:reconcile",
         json_repair_attempts=json_repair_attempts,
+        required_fields=["caseId", "candidates"],
     )
     write_json(output_dir / "reconciliation_response.json", requirement_result)
     write_json(output_dir / "requirement_response.json", requirement_result)
@@ -1382,6 +1534,7 @@ def run_pipeline(
             timeout_seconds=300,
             stage=f"bundle_gate:{candidate['candidateId']}",
             json_repair_attempts=json_repair_attempts,
+            required_fields=["caseId", "candidateId", "scopeComplete", "missingDependencies", "rationale"],
         )
         write_json(output_dir / "bundle_gate" / f"{candidate['candidateId']}.json", bundle_gate_result)
         require_fields(
@@ -1415,6 +1568,15 @@ def run_pipeline(
             timeout_seconds=300,
             stage=f"challenge:{candidate['candidateId']}",
             json_repair_attempts=json_repair_attempts,
+            required_fields=[
+                "caseId",
+                "candidateId",
+                "candidateSourceItemModalities",
+                "effectiveModality",
+                "verdict",
+                "concerns",
+                "sourceQuotes",
+            ],
         )
         write_json(output_dir / "challenge" / f"{candidate['candidateId']}.json", challenge_result)
         require_fields(
@@ -1454,6 +1616,7 @@ def run_pipeline(
             timeout_seconds=300,
             stage=f"defense:{candidate['candidateId']}",
             json_repair_attempts=json_repair_attempts,
+            required_fields=["caseId", "candidateId", "verdict", "supports", "sourceQuotes"],
         )
         write_json(output_dir / "defense" / f"{candidate['candidateId']}.json", defense_result)
         require_fields(defense_result["parsed"], ["caseId", "candidateId", "verdict", "supports", "sourceQuotes"], stage=f"defense:{candidate['candidateId']}")
@@ -1477,6 +1640,7 @@ def run_pipeline(
             timeout_seconds=600,
             stage=f"judge:{candidate['candidateId']}",
             json_repair_attempts=json_repair_attempts,
+            required_fields=["caseId", "candidateId", "decision", "confidence", "rationale", "notes"],
         )
         normalize_judge_payload(judge_result["parsed"], window=window, candidate=candidate)
         write_json(output_dir / "judge" / f"{candidate['candidateId']}.json", judge_result)

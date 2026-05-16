@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_191_to_4_199::3907daaa69790227",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_191_to_4_199",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.46,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exact quote is present, but the candidate claim changes the operative wording from \u201cwill be passed\u201d to \u201cmust be passed,\u201d elevating CAP 413 operational guidance beyond the source wording. Because claimText is an identity field and cannot be corrected in this pass, this requires rejection rather than metadata-only correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_191_to_4_199/cap413-extracted::ch4_4_191_to_4_199::3907daaa69790227.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_191_to_4_199/cap413-extracted::ch4_4_191_to_4_199::3907daaa69790227.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:04:46Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::10898d9cdc1fe594",
+  "documentId": "cap413-extracted",
+  "sectionId": "emergency_practice_relay_silence_fuel_8_21_to_8_34",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.32,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the cited CAP 413 text, the quote is present, and the candidate correctly uses advisory \u201cshould\u201d modality with operational_guidance authority. It is not redundant with the accepted siblings, which cover different emergency-communications topics.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::10898d9cdc1fe594.json",
+    "toPath": "candidates/cap413-extracted/emergency_practice_relay_silence_fuel_8_21_to_8_34/cap413-extracted::emergency_practice_relay_silence_fuel_8_21_to_8_34::10898d9cdc1fe594.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:26:58Z"
+}

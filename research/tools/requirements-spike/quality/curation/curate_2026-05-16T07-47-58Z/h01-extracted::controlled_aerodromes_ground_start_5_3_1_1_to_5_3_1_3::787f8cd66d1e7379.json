@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::787f8cd66d1e7379",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.84,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted identity fields do not appear verbatim in the source window: the German response phrases are shown with German speaker labels such as \u201cB:\u201d or separated labels, not the submitted \u201cG:\u201d quotes. Because exactSourceQuotes cannot be edited in this pass, the G1 failure is a real identity defect requiring rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::787f8cd66d1e7379.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3/h01-extracted::controlled_aerodromes_ground_start_5_3_1_1_to_5_3_1_3::787f8cd66d1e7379.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:33:43Z"
+}

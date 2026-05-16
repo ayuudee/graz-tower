@@ -57,6 +57,7 @@ from curate_pending_with_gpt import (  # noqa: E402
 )
 from check_ollama_first_regressions import detect_regressions  # noqa: E402
 from audit_registry_reproducibility import audit_dry_run  # noqa: E402
+from audit_quotes import normalize as normalize_for_quote_audit  # noqa: E402
 from audit_overrides_load_bearing import diff_eligibility  # noqa: E402
 from build_registry_adequacy_review import (  # noqa: E402
     _source_window,
@@ -1425,6 +1426,79 @@ def test_prompt_version_shas_per_stage_are_distinct() -> None:
     assert proto.PROMPT_VERSION_SHA not in shas.values()
 
 
+def test_llm_stage_schema_error_is_stage_specific() -> None:
+    """Valid JSON with the wrong top-level shape must fail as an LLM
+    schema problem, not as an unhelpful Python TypeError downstream."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import run_icao4444_ollama_first_prototype as proto  # noqa: PLC0415
+
+    original_post = proto.post_ollama_chat
+
+    def fake_post(**_: object) -> dict[str, object]:
+        return {"model": "fake", "content": '["not", "an", "object"]'}
+
+    proto.post_ollama_chat = fake_post  # type: ignore[assignment]
+    try:
+        try:
+            proto.call_ollama_chat(
+                base_url="http://example.invalid",
+                model="fake-model",
+                system_prompt="system",
+                user_prompt="user",
+                temperature=0.0,
+                num_predict=16,
+                num_ctx=128,
+                timeout_seconds=1,
+                stage="judge:cand_x",
+                json_repair_attempts=0,
+                required_fields=["caseId", "candidateId"],
+            )
+        except proto.OllamaSchemaError as exc:
+            assert "judge:cand_x" in str(exc)
+            assert "top-level JSON value is list" in str(exc)
+        else:
+            raise AssertionError("expected OllamaSchemaError")
+    finally:
+        proto.post_ollama_chat = original_post  # type: ignore[assignment]
+
+
+def test_llm_stage_schema_normalizes_single_object_array() -> None:
+    """A model sometimes wraps the requested object in a one-item array.
+    That normalization is deterministic and audited rather than silent."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import run_icao4444_ollama_first_prototype as proto  # noqa: PLC0415
+
+    original_post = proto.post_ollama_chat
+
+    def fake_post(**_: object) -> dict[str, object]:
+        return {
+            "model": "fake",
+            "content": json.dumps([{"caseId": "c", "candidateId": "x"}]),
+        }
+
+    proto.post_ollama_chat = fake_post  # type: ignore[assignment]
+    try:
+        result = proto.call_ollama_chat(
+            base_url="http://example.invalid",
+            model="fake-model",
+            system_prompt="system",
+            user_prompt="user",
+            temperature=0.0,
+            num_predict=16,
+            num_ctx=128,
+            timeout_seconds=1,
+            stage="judge:cand_x",
+            json_repair_attempts=0,
+            required_fields=["caseId", "candidateId"],
+        )
+    finally:
+        proto.post_ollama_chat = original_post  # type: ignore[assignment]
+
+    assert result["parsed"] == {"caseId": "c", "candidateId": "x"}
+    assert result["schemaNormalization"]["kind"] == "singleObjectArray"
+    assert result["schemaRepairApplied"] is False
+
+
 # ── reproducibility audit (dry-run) ───────────────────────────────────────
 
 
@@ -1582,6 +1656,15 @@ def test_audit_dry_run_flags_non_record_non_sidecar_as_unexpected() -> None:
         report = audit_dry_run(registry)
         kinds = {m["kind"] for m in report["mismatches"]}
         assert "unexpected_file" in kinds, report
+
+
+def test_quote_audit_normalize_removes_pdf_layout_controls() -> None:
+    """PDF extraction sometimes leaves non-whitespace C0 controls adjacent
+    to visible text. Quote matching should ignore that layout artifact while
+    preserving ordinary whitespace normalization."""
+    source = "\x07Stourton Ground,\nBIGJET 347"
+    quote = "Stourton Ground, BIGJET 347"
+    assert quote in normalize_for_quote_audit(source)
 
 
 def test_audit_dry_run_returns_empty_for_empty_registry() -> None:
@@ -1805,6 +1888,8 @@ TESTS = [
     test_adequacy_section_sample_covers_source_shape_risks,
     test_adequacy_source_window_uses_newline_line_numbers,
     test_prompt_version_shas_per_stage_are_distinct,
+    test_llm_stage_schema_error_is_stage_specific,
+    test_llm_stage_schema_normalizes_single_object_array,
     test_audit_dry_run_passes_on_clean_registry,
     test_audit_dry_run_catches_edited_claim_text,
     test_audit_dry_run_catches_renamed_file_as_unexpected,
@@ -1812,6 +1897,7 @@ TESTS = [
     test_audit_dry_run_catches_directory_drift,
     test_audit_dry_run_handles_unreadable_file,
     test_audit_dry_run_flags_non_record_non_sidecar_as_unexpected,
+    test_quote_audit_normalize_removes_pdf_layout_controls,
     test_audit_dry_run_returns_empty_for_empty_registry,
     test_audit_full_imports_resolve,
     test_audit_dry_run_ignores_foreign_sidecars,

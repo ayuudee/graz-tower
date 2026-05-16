@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::test_procedures_2_8_4_en::8af1023341088e17",
+  "documentId": "icao9432-extracted",
+  "sectionId": "test_procedures_2_8_4_en",
+  "familyId": "icao9432_communications_family",
+  "claimText": "If a controller has doubts about a pilot's ability to comply with an instruction or clearance, the controller may propose an alternative solution preceded by the words 'je\u015bli nie mo\u017cesz'.",
+  "rationale": "Source 2.8.3.10 (Polish section) provides specific phraseology for proposing alternatives. It is a distinct procedural rule in the Polish section.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "workflow_constraint",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Je\u015bli kontroler ma w\u0105tpliwo\u015bci, czy pilot jest w stanie zastosowa\u0107 si\u0119 do instrukcji lub zezwolenia, mo\u017ce zaproponowa\u0107 alternatywne rozwi\u0105zanie poprzedzone s\u0142owami: \u201eje\u015bli nie mo\u017cesz\u201d."
+  ],
+  "sourceItemIds": [
+    "pol_2.8.3.10"
+  ],
+  "claimSha256": "8a81315528f7ebde30fd33be50b3067d53373e39aedf1700d377643952550394",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 4086,
+    "endLine": 4197
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_communications_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "pol_controller_alternative_proposal",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Je\u015bli kontroler ma w\u0105tpliwo\u015bci, czy pilot jest w stanie zastosowa\u0107 si\u0119 do instrukcji lub zezwolenia, mo\u017ce zaproponowa\u0107 alternatywne rozwi\u0105zanie poprzedzone s\u0142owami: \u201eje\u015bli nie mo\u017cesz\u201d.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The cited exactSourceQuote is not verbatim in the source: the source begins \u201cJe\u017celi kontroler...\u201d while the candidate quote begins \u201cJe\u015bli kontroler...\u201d. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite being substantively supported.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T12:00:48Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/test_procedures_2_8_4_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T12:00:48Z"
+  }
+}

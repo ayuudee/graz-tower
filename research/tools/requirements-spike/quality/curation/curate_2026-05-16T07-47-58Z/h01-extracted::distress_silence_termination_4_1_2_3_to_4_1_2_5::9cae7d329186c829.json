@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::9cae7d329186c829",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_silence_termination_4_1_2_3_to_4_1_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.54,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote does not exist verbatim in the source window: the English list item is separated from the parent clause by intervening bilingual text/list formatting. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::9cae7d329186c829.json",
+    "toPath": "rejected/h01-extracted/distress_silence_termination_4_1_2_3_to_4_1_2_5/h01-extracted::distress_silence_termination_4_1_2_3_to_4_1_2_5::9cae7d329186c829.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:42:45Z"
+}

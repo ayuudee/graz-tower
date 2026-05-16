@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_startup_7_4_1_1::33d8f27db7962a3a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_startup_7_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the claim is directly supported by 7.4.1.1.2, and the candidate correctly treats the operative wording as 'should' with operational_guidance authority. It is not redundant with the accepted siblings, which cover separate start-up timing/withholding provisions rather than the local-instructions documentation provision.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::33d8f27db7962a3a.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_startup_7_4_1_1/icao4444-extracted::aerodrome_information_startup_7_4_1_1::33d8f27db7962a3a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:11:47Z"
+}

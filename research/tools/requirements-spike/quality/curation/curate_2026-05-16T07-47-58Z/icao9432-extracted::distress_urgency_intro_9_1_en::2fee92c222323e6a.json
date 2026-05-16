@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_urgency_intro_9_1_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.14,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present in the source and directly supports the claim as a permissive statement about using other frequencies when necessary or desirable. The candidate\u2019s may modality and operational_guidance authorityClass are appropriate for ICAO 9432 advisory material, and the accepted siblings do not already cover this specific alternative-frequency permission.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a.json",
+    "toPath": "candidates/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:50:56Z"
+}

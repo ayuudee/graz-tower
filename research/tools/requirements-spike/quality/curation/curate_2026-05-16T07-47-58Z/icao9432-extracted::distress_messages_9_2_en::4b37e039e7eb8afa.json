@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_messages_9_2_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.2,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported verbatim by the cited source and is not redundant with the accepted sibling candidates. However, the source is permissive/advisory guidance rather than a best-practice recommendation, so only the requirement kind should be corrected.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_messages_9_2_en/icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa.json",
+    "toPath": "candidates/icao9432-extracted/distress_messages_9_2_en/icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:48:49Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_callsign_abbreviation_invitation_to_proceed::e99c8adca7e2e688",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_callsign_abbreviation_invitation_to_proceed",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.53,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is supported by the source text, with the G1 miss appearing to result from two-column/layout interleaving rather than a substantive verbatim mismatch. The statement is factual background and contains no note label or normative modality marker, so its modality should be corrected from note to none while retaining background_support.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_callsign_abbreviation_invitation_to_proceed/eppls-extracted::ch12_callsign_abbreviation_invitation_to_proceed::e99c8adca7e2e688.json",
+    "toPath": "candidates/eppls-extracted/ch12_callsign_abbreviation_invitation_to_proceed/eppls-extracted::ch12_callsign_abbreviation_invitation_to_proceed::e99c8adca7e2e688.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:34:26Z"
+}

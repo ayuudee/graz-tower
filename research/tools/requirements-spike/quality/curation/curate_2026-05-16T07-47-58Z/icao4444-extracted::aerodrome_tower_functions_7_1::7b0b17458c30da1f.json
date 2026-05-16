@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_tower_functions_7_1::7b0b17458c30da1f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_tower_functions_7_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.4,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and fully supports the claim, with the correct 'should' modality and non-authoritative best_practice classification. It is a standalone clause and is not redundant with the accepted sibling candidates; the pending status appears to reflect an advisory-only handling artefact rather than a defect.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_tower_functions_7_1/icao4444-extracted::aerodrome_tower_functions_7_1::7b0b17458c30da1f.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_tower_functions_7_1/icao4444-extracted::aerodrome_tower_functions_7_1::7b0b17458c30da1f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:24:26Z"
+}

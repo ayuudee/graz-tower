@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_45_to_4_49::af546888b01fca37",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_45_to_4_49",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.97,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is supported verbatim, the schema and authority/modality audits all pass, and the candidate accurately captures a permissive CAP 413 operational-guidance statement. It is not redundant with the accepted sibling items, which cover traffic information, routine reports, report positions, and ATS considerations rather than straight-in approaches.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_45_to_4_49/cap413-extracted::ch4_4_45_to_4_49::af546888b01fca37.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_45_to_4_49/cap413-extracted::ch4_4_45_to_4_49::af546888b01fca37.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:11:04Z"
+}

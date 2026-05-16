@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_27_to_4_30::1e6c64ccc8fa4939",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_27_to_4_30",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.57,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the claim is directly supported as a standalone prohibition with an emergency exception. In this CAP 413 operational-guidance context, \u201cwill not be transmitted\u201d is appropriately captured as a shall-strength operational constraint without elevating it to authoritative_requirement, and it is not redundant with accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_27_to_4_30/cap413-extracted::ch4_4_27_to_4_30::1e6c64ccc8fa4939.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_27_to_4_30/cap413-extracted::ch4_4_27_to_4_30::1e6c64ccc8fa4939.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:07:17Z"
+}

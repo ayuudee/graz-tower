@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::wake_turbulence_categories_4_9::e70623a58f385ebf",
+  "documentId": "icao4444-extracted",
+  "sectionId": "wake_turbulence_categories_4_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.03,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The source only says there is some evidence that helicopter vortices are more intense per kilogram of gross mass, while the claim states that increased intensity as an unqualified fact. Because correcting that caveat would require changing the identity claimText, it cannot be promoted with corrections.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/wake_turbulence_categories_4_9/icao4444-extracted::wake_turbulence_categories_4_9::e70623a58f385ebf.json",
+    "toPath": "rejected/icao4444-extracted/wake_turbulence_categories_4_9/icao4444-extracted::wake_turbulence_categories_4_9::e70623a58f385ebf.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:41:00Z"
+}

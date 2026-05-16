@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_takeoff_clearance_12_3_4_11::b1c4deafb9229cf8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_takeoff_clearance_12_3_4_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.12,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The claim is substantively supported by the source window, but the candidate\u2019s exactSourceQuotes omit item e, which is needed to define the ATC instruction triggering the pilot response. Fixing this would require adding a source quote or re-extracting the unit, and identity fields cannot be changed in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_takeoff_clearance_12_3_4_11/icao4444-extracted::aerodrome_phraseologies_takeoff_clearance_12_3_4_11::b1c4deafb9229cf8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:20:30Z"
+}

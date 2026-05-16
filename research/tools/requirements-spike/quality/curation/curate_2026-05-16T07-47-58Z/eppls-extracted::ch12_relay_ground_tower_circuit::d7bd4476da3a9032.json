@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_relay_ground_tower_circuit::d7bd4476da3a9032",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_relay_ground_tower_circuit",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.24,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited statement is supported by the source window; the G1 miss appears to be an artefact of line wrapping/normalisation rather than a real verbatim absence. However, the wording is descriptive background text with no explicit note marker or operative modality, so the modality should be corrected from note to none.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::d7bd4476da3a9032.json",
+    "toPath": "candidates/eppls-extracted/ch12_relay_ground_tower_circuit/eppls-extracted::ch12_relay_ground_tower_circuit::d7bd4476da3a9032.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:15:04Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::departure_arrival_separation_5_7::4d8f6b04bc3fb19f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "departure_arrival_separation_5_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.66,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted definition is verbatim in the source and the claim text is supported, but it comes from a Note and therefore is non-normative. The only issue is the authority/modality mismatch: modality 'note' cannot be paired with 'authoritative_requirement', so the authorityClass should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::4d8f6b04bc3fb19f.json",
+    "toPath": "candidates/icao4444-extracted/departure_arrival_separation_5_7/icao4444-extracted::departure_arrival_separation_5_7::4d8f6b04bc3fb19f.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:56:43Z"
+}

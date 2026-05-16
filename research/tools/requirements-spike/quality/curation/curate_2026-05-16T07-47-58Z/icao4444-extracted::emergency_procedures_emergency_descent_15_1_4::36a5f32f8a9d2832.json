@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::36a5f32f8a9d2832",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_emergency_descent_15_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.27,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and the shall/authoritative classification is valid, but this is a parent umbrella requirement whose operative content is fully defined by subordinate items a\u2013f. Those atomic pilot actions are already present in siblingAccepted, so the umbrella should be rejected as redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_emergency_descent_15_1_4/icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::36a5f32f8a9d2832.json",
+    "toPath": "rejected/icao4444-extracted/emergency_procedures_emergency_descent_15_1_4/icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::36a5f32f8a9d2832.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:58:16Z"
+}

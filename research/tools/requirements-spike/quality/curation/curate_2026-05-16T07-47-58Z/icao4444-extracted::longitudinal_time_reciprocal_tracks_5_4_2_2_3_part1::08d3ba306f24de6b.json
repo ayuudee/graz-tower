@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::08d3ba306f24de6b",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 46.01,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The caption quote is source-grounded and the claim accurately describes the figure, but the source does not use note wording or contain any normative/advisory statement. The authority class as background support is appropriate, so only the modality should be corrected to none.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::08d3ba306f24de6b.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::08d3ba306f24de6b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:18:41Z"
+}

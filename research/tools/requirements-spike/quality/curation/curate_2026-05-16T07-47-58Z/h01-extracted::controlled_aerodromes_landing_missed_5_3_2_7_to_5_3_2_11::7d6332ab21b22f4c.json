@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::7d6332ab21b22f4c",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.53,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted landing-clearance phraseology appears verbatim and the schema, authority/modality, and override audits all pass. The only demotion reason was structural incompleteness for subordinate clauses, but those subordinate reduced-separation and helicopter landing-clearance items are already present as accepted siblings, so this base phraseology is not a redundant umbrella.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11/h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::7d6332ab21b22f4c.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11/h01-extracted::controlled_aerodromes_landing_missed_5_3_2_7_to_5_3_2_11::7d6332ab21b22f4c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:35:39Z"
+}

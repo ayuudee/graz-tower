@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::performance_based_longitudinal_5_4_2_9::36b82a4089f46d81",
+  "documentId": "icao4444-extracted",
+  "sectionId": "performance_based_longitudinal_5_4_2_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.93,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported by the source text, which uses permissive wording (\u201cmay be used\u201d) for the crossing-tracks condition, and the quoted text exists verbatim. The only issue is the G3 authority/modality mismatch: a `may` provision cannot remain `authoritative_requirement` under the authority floor table, so the authority class should be lowered.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::36b82a4089f46d81.json",
+    "toPath": "candidates/icao4444-extracted/performance_based_longitudinal_5_4_2_9/icao4444-extracted::performance_based_longitudinal_5_4_2_9::36b82a4089f46d81.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:29:36Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::4bc5e0c165cd5ad8",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 22.79,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported and the claim is limited to the note\u2019s implication rather than framed as an authoritative phraseology requirement. The existing modality and authorityClass correctly preserve the advisory/non-normative status, and the content is not redundant with the accepted sibling atomic phraseology items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::4bc5e0c165cd5ad8.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11/h01-extracted::controlled_aerodromes_conditional_takeoff_prep_5_3_1_9_to_5_3_1_11::4bc5e0c165cd5ad8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:30:36Z"
+}

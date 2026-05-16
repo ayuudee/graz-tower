@@ -1,0 +1,28 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_157_to_4_173::7c98b5370b4052ac",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_157_to_4_173",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.69,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is a verbatim, self-contained definitional statement from clause 4.170 and is not redundant with the accepted siblings. However, the quoted source is a plain declarative sentence with no explicit note marker or normative verb, so its modality should be `none` rather than `note`.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_157_to_4_173/cap413-extracted::ch4_4_157_to_4_173::7c98b5370b4052ac.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_157_to_4_173/cap413-extracted::ch4_4_157_to_4_173::7c98b5370b4052ac.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:58:22Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::076807572c8144c7",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.04,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate\u2019s exactSourceQuotes entry is not found verbatim in the source because it uses an ellipsis and combines list items rather than preserving the source text. Since quote text is an identity field and cannot be corrected in this pass, the G1 failure requires rejection despite the underlying requirement being present in the source.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::076807572c8144c7.json",
+    "toPath": "rejected/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::076807572c8144c7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:29:14Z"
+}

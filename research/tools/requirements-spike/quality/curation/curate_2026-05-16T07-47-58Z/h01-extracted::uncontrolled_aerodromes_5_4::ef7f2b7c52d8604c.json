@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::uncontrolled_aerodromes_5_4::ef7f2b7c52d8604c",
+  "documentId": "h01-extracted",
+  "sectionId": "uncontrolled_aerodromes_5_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the descriptive claim, but the source contains no 'should' or equivalent advisory modal for this statement. It should be retained as operational guidance with a non-modal/descriptive modality rather than rejected.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::ef7f2b7c52d8604c.json",
+    "toPath": "candidates/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::ef7f2b7c52d8604c.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:00:14Z"
+}

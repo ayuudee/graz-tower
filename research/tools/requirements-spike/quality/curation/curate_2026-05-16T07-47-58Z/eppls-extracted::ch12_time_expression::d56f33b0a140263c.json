@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_time_expression::d56f33b0a140263c",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_time_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.33,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the provided exactSourceQuotes entry uses an ellipsis and is not present verbatim in the source window. Because claimText and exactSourceQuotes are identity fields that cannot be corrected in this pass, this record must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::d56f33b0a140263c.json",
+    "toPath": "rejected/eppls-extracted/ch12_time_expression/eppls-extracted::ch12_time_expression::d56f33b0a140263c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:22:01Z"
+}

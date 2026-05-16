@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::c4c93d0ad512cddb",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 15.13,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and directly supports the claim as a standalone regional usage note. Its non-normative character is already correctly represented by modality `note` and authorityClass `background_support`, and it is not redundant with the accepted sibling.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::c4c93d0ad512cddb.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::c4c93d0ad512cddb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:19:57Z"
+}

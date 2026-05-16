@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::93c9684fe8f7a49f",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_vfr_initial_calls_3_3_1_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 22.1,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted line is a verbatim example and the modality/authorityClass are internally consistent, but the claimText frames the example as a standalone shall-strength phraseology rule while the operative \u201cshall be transmitted as follows\u201d support comes from the parent sentence, not the candidate\u2019s quoted source. Resolving this would require re-extraction or revising identity fields, which cannot be done in this pass.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_vfr_initial_calls_3_3_1_2/h01-extracted::establishment_rtf_vfr_initial_calls_3_3_1_2::93c9684fe8f7a49f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:47:05Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::a65d75698e798e5c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.36,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the candidate is structurally complete, and its non-normative character is already correctly captured with modality \"note\" and operational_guidance authority. It is not redundant with the accepted atomic requirement on the order of conditional clearances, because this note separately explains the identification implication for the receiving aircraft.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::a65d75698e798e5c.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::a65d75698e798e5c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:04:04Z"
+}

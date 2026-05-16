@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::f5dec90272f53fd9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.32,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact phrase appears verbatim in the source window under 12.3.1.5 as item j, and the surrounding circumstance supports the claim. The judge\u2019s concern is a structural/source-item indexing artifact rather than a substantive source-support problem, and no accepted sibling already covers this item.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::f5dec90272f53fd9.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::f5dec90272f53fd9.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:49:46Z"
+}

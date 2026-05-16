@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_discipline_frequency_basics::d78ff81d56224ed5",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_discipline_frequency_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.12,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The candidate is fully supported by verbatim source quotes, passes all gate audits, and is correctly framed as advisory/background material with should-level modality. It is not redundant with the accepted siblings, which do not already cover this complete nine-item radio-discipline checklist.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::d78ff81d56224ed5.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_discipline_frequency_basics/eppls-extracted::ch12_radio_discipline_frequency_basics::d78ff81d56224ed5.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:07:48Z"
+}

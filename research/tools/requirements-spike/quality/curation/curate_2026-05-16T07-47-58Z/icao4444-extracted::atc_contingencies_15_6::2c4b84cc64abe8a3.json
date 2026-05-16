@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_contingencies_15_6::2c4b84cc64abe8a3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_contingencies_15_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.11,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the cited 15.6.1.4.1 parent clause and item c, and the source uses \u201cshould,\u201d matching the candidate\u2019s advisory modality and operational_guidance authority class. It is not redundant with the accepted sibling on flight crew verification, because this candidate addresses the ATC unit\u2019s instruction to all aircraft on affected frequencies.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::2c4b84cc64abe8a3.json",
+    "toPath": "candidates/icao4444-extracted/atc_contingencies_15_6/icao4444-extracted::atc_contingencies_15_6::2c4b84cc64abe8a3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:46:49Z"
+}

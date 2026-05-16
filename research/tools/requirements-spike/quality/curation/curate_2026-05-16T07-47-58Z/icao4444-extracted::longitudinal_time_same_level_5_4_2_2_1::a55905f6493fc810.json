@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::a55905f6493fc810",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_same_level_5_4_2_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.0,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim-supported and correctly classified as non-normative background, but it is only a figure caption providing visual support for the already accepted atomic 10-minute same-track separation item. Since the operative content is already covered by a sibling accepted candidate, this support-only duplicate should not be promoted separately.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::a55905f6493fc810.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_time_same_level_5_4_2_2_1/icao4444-extracted::longitudinal_time_same_level_5_4_2_2_1::a55905f6493fc810.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:19:36Z"
+}

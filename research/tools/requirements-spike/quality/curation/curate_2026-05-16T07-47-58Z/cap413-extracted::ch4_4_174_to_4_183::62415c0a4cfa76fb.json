@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_174_to_4_183::62415c0a4cfa76fb",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_174_to_4_183",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.39,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the cited verbatim source text, and all gate audits pass. Its `may` modality and `operational_guidance` authority correctly reflect the optional/advisory CAP 413 wording, with no redundancy against accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::62415c0a4cfa76fb.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_174_to_4_183/cap413-extracted::ch4_4_174_to_4_183::62415c0a4cfa76fb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:59:12Z"
+}

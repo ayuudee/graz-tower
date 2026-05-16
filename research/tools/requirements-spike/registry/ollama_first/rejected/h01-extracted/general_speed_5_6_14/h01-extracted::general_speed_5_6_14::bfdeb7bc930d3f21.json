@@ -1,0 +1,113 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_speed_5_6_14::bfdeb7bc930d3f21",
+  "documentId": "h01-extracted",
+  "sectionId": "general_speed_5_6_14",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "'Minimum clean speed' signifies the minimum speed at which an aircraft can be flown in a clean configuration, i.e. without deployment of lift-augmentation devices, speed brakes or landing gear.",
+  "rationale": "All attempts agree on this definition. It is advisory/definitional rather than an operative instruction.",
+  "modality": "note",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "'Minimum clean speed' signifies the minimum speed at which an aircraft can be flown in a clean configuration, i.e. without deployment of lift-augmentation devices, speed brakes or landing gear."
+  ],
+  "sourceItemIds": [
+    "note_5_6_14"
+  ],
+  "claimSha256": "7b7cfb02b8b7ad5c864b5c63a28274fbfd6c916d41423e69b5fcbf5744e94aa9",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 10618,
+    "endLine": 10725
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "def_min_clean_speed",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "'Minimum clean speed' signifies the minimum speed at which an aircraft can be flown in a clean configuration, i.e. without deployment of lift-augmentation devices, speed brakes or landing gear.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "reject",
+      "reasoning": "The substantive definition is supported, but the exactSourceQuote is not verbatim in the source because the source uses curly quotation marks around \u2018Minimum clean speed\u2019 while the candidate quote uses straight apostrophes. Identity fields cannot be corrected in this pass, so the G1 verbatim failure requires rejection.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:53:52Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "rejected",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_speed_5_6_14/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:53:52Z"
+  }
+}

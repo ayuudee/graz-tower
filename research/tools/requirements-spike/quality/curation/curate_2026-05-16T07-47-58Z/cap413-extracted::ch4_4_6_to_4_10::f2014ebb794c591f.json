@@ -1,0 +1,28 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_6_to_4_10::f2014ebb794c591f",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_6_to_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.9,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim as background scope-setting text, and it is not redundant with the accepted sibling items. Because the source is declarative CAP 413 context with no normative marker, it should be treated as non-operative background rather than operational guidance.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_6_to_4_10/cap413-extracted::ch4_4_6_to_4_10::f2014ebb794c591f.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_6_to_4_10/cap413-extracted::ch4_4_6_to_4_10::f2014ebb794c591f.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:16:48Z"
+}

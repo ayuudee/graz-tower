@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::0be893ffab24178f",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.45,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim source quote, and all gate audits passed. Its advisory wording is already correctly represented as modality \"should\" with authorityClass \"operational_guidance\", and it is not redundant with the accepted sibling requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::0be893ffab24178f.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::0be893ffab24178f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:02:09Z"
+}

@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::1eefcc1865f09656",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_rules_channel_5_6_8_to_5_6_9",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "Cancelling an IFR flight cancels only the IFR portion; the flight plan remains active and an arrival message is required.",
+  "rationale": "All attempts agree this is an advisory note regarding flight plan status.",
+  "modality": "note",
+  "authorityClass": "background_support",
+  "requirementKind": "note",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "The portion of the IFR flight is cancelled only. Flight plan is still active, arrival message required."
+  ],
+  "sourceItemIds": [
+    "5.6.8.1_note1"
+  ],
+  "claimSha256": "32081169ef2ddae1c65be55389aa09fa3ed085e435a68c95a402b51cccb95b50",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 9716,
+    "endLine": 9857
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "ifr_cancel_flight_plan_status",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "note",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote exists verbatim and supports the claim, and the content is not redundant with the accepted phraseology sibling because it adds the flight-plan/arrival-message consequence. Because the source item is explicitly a Note, it should remain non-normative and be classified as background/advisory rather than a rule.",
+      "corrections": {
+        "authorityClass": "background_support",
+        "requirementKind": "note"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T09:50:02Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_flight_rules_channel_5_6_8_to_5_6_9/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:50:02Z"
+  }
+}

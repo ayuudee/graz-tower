@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_5::24eeccd450cf20ab",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.1,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source quote exists verbatim and supports an operational safety instruction, but the quoted text is an imperative with no explicit 'should' modal. Since only the metadata modality needs adjustment and the authority class is already conservatively operational_guidance, this can be promoted with correction.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_5/cap413-extracted::ch4_4_5::24eeccd450cf20ab.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_5/cap413-extracted::ch4_4_5::24eeccd450cf20ab.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:11:32Z"
+}

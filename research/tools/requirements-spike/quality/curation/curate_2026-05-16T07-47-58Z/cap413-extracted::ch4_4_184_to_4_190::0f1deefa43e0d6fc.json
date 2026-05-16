@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_184_to_4_190::0f1deefa43e0d6fc",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_184_to_4_190",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.19,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The definition is source-grounded and not redundant with the accepted sibling requirements, but the cited table entry is not marked as a NOTE and contains no modal wording. The appropriate correction is to keep it as CAP 413 operational guidance while changing the modality to none for a definition/table description.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_184_to_4_190/cap413-extracted::ch4_4_184_to_4_190::0f1deefa43e0d6fc.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_184_to_4_190/cap413-extracted::ch4_4_184_to_4_190::0f1deefa43e0d6fc.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:02:21Z"
+}

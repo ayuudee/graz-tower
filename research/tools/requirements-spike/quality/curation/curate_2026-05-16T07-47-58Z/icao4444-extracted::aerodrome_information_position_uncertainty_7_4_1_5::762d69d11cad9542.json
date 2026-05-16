@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::762d69d11cad9542",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_position_uncertainty_7_4_1_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 16.67,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted notification obligation is verbatim-supported and the shall/authoritative classification is consistent, but the candidate captures only item 7.4.1.5.2(a) from a mandatory sequence that also includes vacating the runway and stopping. Resolving this requires re-extraction or bundling with the missing subordinate obligations, which would change identity fields rather than just modality or authority metadata.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_position_uncertainty_7_4_1_5/icao4444-extracted::aerodrome_information_position_uncertainty_7_4_1_5::762d69d11cad9542.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:10:31Z"
+}

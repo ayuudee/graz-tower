@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_24_to_4_25::b88bd594d8f02569",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_24_to_4_25",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.41,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quote is present verbatim, and the claim is an atomic permissive guidance statement distinct from the accepted sibling requirements. Its modality and authorityClass are already consistent with the source wording and CAP 413\u2019s operational-guidance status.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_24_to_4_25/cap413-extracted::ch4_4_24_to_4_25::b88bd594d8f02569.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_24_to_4_25/cap413-extracted::ch4_4_24_to_4_25::b88bd594d8f02569.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:06:27Z"
+}

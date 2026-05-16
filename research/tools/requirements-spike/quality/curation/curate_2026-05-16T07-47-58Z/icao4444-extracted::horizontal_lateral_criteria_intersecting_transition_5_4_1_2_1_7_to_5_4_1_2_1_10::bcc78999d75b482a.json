@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10::bcc78999d75b482a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 42.59,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim accurately represents Note 3 as a non-operative cross-reference, with modality `note` and `background_support` authority appropriately aligned. It is not a redundant umbrella over the accepted atomic requirements, but it is not a definition.",
+    "corrections": {
+      "requirementKind": "cross_reference"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10/icao4444-extracted::horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10::bcc78999d75b482a.json",
+    "toPath": "candidates/icao4444-extracted/horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10/icao4444-extracted::horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10::bcc78999d75b482a.json",
+    "correctionsApplied": {
+      "requirementKind": "cross_reference"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:05:54Z"
+}

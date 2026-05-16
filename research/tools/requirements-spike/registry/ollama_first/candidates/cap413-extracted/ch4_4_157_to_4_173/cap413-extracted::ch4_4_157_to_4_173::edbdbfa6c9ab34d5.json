@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "cap413-extracted::ch4_4_157_to_4_173::edbdbfa6c9ab34d5",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_157_to_4_173",
+  "familyId": "cap413_ch4_4_157_to_4_173_family",
+  "claimText": "A common frequency (135.475 MHz) known as \u2018SAFETYCOM\u2019 is made available for use at aerodromes where no other frequency is allocated to enable pilots to broadcast their intentions.",
+  "rationale": "Clause 4.161 describes the availability and purpose of SAFETYCOM; it is descriptive rather than prescriptive for the pilot's action.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "A common frequency (135.475 MHz) known as \u2018SAFETYCOM\u2019 is made available for use at aerodromes where no other frequency is allocated (UK AIP GEN 3.4 refers) to enable pilots to broadcast their intentions to other aircraft that may be operating on, or in the vicinity of, the aerodrome."
+  ],
+  "sourceItemIds": [
+    "4.161"
+  ],
+  "claimSha256": "4a6511480e8d4deedce319e89cb8048d011c004632e55458f22d834b26703d12",
+  "provenance": {
+    "sourcePath": "research/txt/cap413-extracted.txt",
+    "sourceSha256": "ea7b56fe336b3bfb0b4046fa91deb2e2451816c250e333f537aa117933589b0b",
+    "startLine": 11709,
+    "endLine": 11857
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "cap413_ch4_4_157_to_4_173_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "safetycom_availability",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted sentence is verbatim and supports the claim as a descriptive definition of SAFETYCOM, and it is not redundant with the accepted sibling items. However, the source wording contains no operative modal or note label, so it should be treated as non-modal background support rather than an operational note.",
+      "corrections": {
+        "modality": "none",
+        "authorityClass": "background_support"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T07:59:00Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/cap413-extracted/ch4_4_157_to_4_173/judged_candidates.json",
+    "curatedAt": "2026-05-16T07:59:00Z"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::48e29f5c17d98900",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.78,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is directly supported by CAP 413 \u00a74.138, and it is not redundant with the accepted sibling items. However, the source uses \u201cmay include,\u201d so the candidate\u2019s modality should be corrected from note to may while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "may"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::48e29f5c17d98900.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::48e29f5c17d98900.json",
+    "correctionsApplied": {
+      "modality": "may"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:52:40Z"
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::9119fcaebf014bab",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.55,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The leaf quote is verbatim and the claim is substantively supported by the surrounding source, but the cited quote alone omits the parent condition in 15.3.3 and the IMC/IFR branch in 15.3.3 b). Resolving this would require re-extraction or adding parent-context quotes, which are identity fields and cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::9119fcaebf014bab.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:30:31Z"
+}

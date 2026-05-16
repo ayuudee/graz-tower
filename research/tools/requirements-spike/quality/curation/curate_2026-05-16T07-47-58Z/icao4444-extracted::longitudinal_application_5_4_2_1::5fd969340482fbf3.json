@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_application_5_4_2_1::5fd969340482fbf3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_application_5_4_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.15,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence exists verbatim and the claim accurately isolates the permissive speed-control clause. Because the operative wording for this candidate is 'may', its authorityClass cannot remain authoritative_requirement and should be lowered one rung to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_application_5_4_2_1/icao4444-extracted::longitudinal_application_5_4_2_1::5fd969340482fbf3.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_application_5_4_2_1/icao4444-extracted::longitudinal_application_5_4_2_1::5fd969340482fbf3.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:10:02Z"
+}

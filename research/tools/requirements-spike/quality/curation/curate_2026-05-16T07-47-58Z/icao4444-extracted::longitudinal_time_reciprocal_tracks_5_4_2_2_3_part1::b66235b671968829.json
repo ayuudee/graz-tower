@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::b66235b671968829",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.01,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The figure caption quote is present verbatim and supports the descriptive claim, and the item is not redundant with the accepted atomic requirements. However, the source wording is a caption/illustration rather than a note, so the modality should be `none` while retaining background-support authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::b66235b671968829.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1/icao4444-extracted::longitudinal_time_reciprocal_tracks_5_4_2_2_3_part1::b66235b671968829.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:18:59Z"
+}

@@ -1,0 +1,121 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_distress_call_format::caa6e9a038b908be",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_call_format",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "Solo student pilots shall prefix the aircraft callsign with STUDENT to indicate their lack of experience.",
+  "rationale": "States a rule for student pilots. Source is background training material.",
+  "modality": "shall",
+  "authorityClass": "background_support",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Student - Solo student pilots shall prefix the aircraft callsign with STUDENT to indicate their lack of experience."
+  ],
+  "sourceItemIds": [
+    "pilot_qualification_prefixes"
+  ],
+  "claimSha256": "687522109f7820eb45fde19de8a7d7d03bc04d77f823ec1ca1e28f8640250e0d",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23271,
+    "endLine": 23312
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "student_prefix_rule",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 1,
+      "hits": 0,
+      "misses": [
+        {
+          "quote": "Student - Solo student pilots shall prefix the aircraft callsign with STUDENT to indicate their lack of experience.",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted sentence appears verbatim in the source window after whitespace normalization, so the G1 miss appears to be a false negative. The claim is atomic, not redundant with accepted siblings, and its shall modality is supported by the source while the background_support authority class appropriately reflects the non-authoritative training-material context.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:49:39Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::caa6e9a038b908be.json",
+      "to": "pending/eppls-extracted/ch12_distress_call_format/eppls-extracted::ch12_distress_call_format::caa6e9a038b908be.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "unsupported_by_source",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_distress_call_format/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:49:39Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

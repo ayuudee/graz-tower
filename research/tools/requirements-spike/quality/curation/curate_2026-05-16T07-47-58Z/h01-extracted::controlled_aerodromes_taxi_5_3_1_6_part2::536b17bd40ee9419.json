@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part2::536b17bd40ee9419",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 27.42,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim/source-grounded, and the claim accurately captures the Note\u2019s conditional 'should always' guidance. It is not redundant with the accepted phraseology item because it adds the operational condition for including REPORT VACATED, while remaining correctly classified as operational guidance rather than an authoritative requirement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part2/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part2::536b17bd40ee9419.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part2/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part2::536b17bd40ee9419.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:39:06Z"
+}

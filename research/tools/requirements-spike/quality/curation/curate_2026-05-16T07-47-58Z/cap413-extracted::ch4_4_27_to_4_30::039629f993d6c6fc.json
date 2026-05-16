@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_27_to_4_30::039629f993d6c6fc",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_27_to_4_30",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.76,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence exists verbatim and the candidate is scoped to the specific phraseology instruction using \u201cis to be inserted,\u201d which supports a shall-strength rule for this item. The surrounding \u201cshould be available\u201d sentence concerns availability of instantaneous wind information, not the separate insertion of the word \u201cinstant,\u201d and the operational_guidance authority class is conservative for CAP 413.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_27_to_4_30/cap413-extracted::ch4_4_27_to_4_30::039629f993d6c6fc.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_27_to_4_30/cap413-extracted::ch4_4_27_to_4_30::039629f993d6c6fc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:07:05Z"
+}

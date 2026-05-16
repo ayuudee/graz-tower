@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::c328b9b606767c62",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.84,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology is present and the claim is supported, and it is not redundant with accepted siblings. However, the source line is a phraseology entry without an explicit shall/must marker, so the modality should be lowered from \u201cshall\u201d to \u201cnone\u201d while retaining operational_guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::c328b9b606767c62.json",
+    "toPath": "candidates/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::c328b9b606767c62.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:25:20Z"
+}

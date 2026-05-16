@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::bd1bf9d45ecf7ca2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.8,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted phrase exists verbatim, but the claim assigns it to 8.33 kHz non-exempted status while the source maps 'AFFIRM EIGHT POINT THREE THREE EXEMPTED' to exempted status. The non-exempted status phrase is the separate accepted sibling using 'NEGATIVE EIGHT POINT THREE THREE EXEMPTED', so this identity error cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::bd1bf9d45ecf7ca2.json",
+    "toPath": "rejected/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::bd1bf9d45ecf7ca2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:49:08Z"
+}

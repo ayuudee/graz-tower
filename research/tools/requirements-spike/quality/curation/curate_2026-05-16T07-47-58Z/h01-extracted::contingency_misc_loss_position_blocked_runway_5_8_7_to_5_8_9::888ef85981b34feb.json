@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::888ef85981b34feb",
+  "documentId": "h01-extracted",
+  "sectionId": "contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.8,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the quoted source note, and G1\u2013G4 all passed. It is correctly framed as a non-normative note with operational_guidance authority, and it is not redundant with the accepted sibling phraseology items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::888ef85981b34feb.json",
+    "toPath": "candidates/h01-extracted/contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9/h01-extracted::contingency_misc_loss_position_blocked_runway_5_8_7_to_5_8_9::888ef85981b34feb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:25:06Z"
+}

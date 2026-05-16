@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_33::b4adb5bca3e98d3c",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_33",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.42,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is verbatim supported, schema-valid, and correctly classified as may/operational_guidance for CAP413 advisory phraseology guidance. The accepted siblings are examples and do not make this operative parent guidance redundant.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_33/cap413-extracted::ch4_4_33::b4adb5bca3e98d3c.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_33/cap413-extracted::ch4_4_33::b4adb5bca3e98d3c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:09:32Z"
+}

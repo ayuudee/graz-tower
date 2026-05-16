@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_33::7de15c14fc65d9b8",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_33",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.5,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is supported verbatim (with line-break normalization), the schema and authority/modality pairing are valid, and the candidate is an atomic phraseology example not covered by the accepted siblings. The judge\u2019s advisory-only rationale appears to be a prompt artefact rather than a defect in this candidate.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_33/cap413-extracted::ch4_4_33::7de15c14fc65d9b8.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_33/cap413-extracted::ch4_4_33::7de15c14fc65d9b8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:09:10Z"
+}

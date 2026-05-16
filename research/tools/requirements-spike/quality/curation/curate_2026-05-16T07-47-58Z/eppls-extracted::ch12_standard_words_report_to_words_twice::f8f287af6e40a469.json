@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_report_to_words_twice::f8f287af6e40a469",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_report_to_words_twice",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.91,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The G1 failure appears to be a false negative caused by PDF layout/line breaks: both exactSourceQuotes are present verbatim in the provided source window after whitespace normalization. The item is a non-normative explanatory note with appropriate modality and authorityClass, and it is not redundant with the accepted sibling phrase-definition items.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::f8f287af6e40a469.json",
+    "toPath": "candidates/eppls-extracted/ch12_standard_words_report_to_words_twice/eppls-extracted::ch12_standard_words_report_to_words_twice::f8f287af6e40a469.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:20:41Z"
+}

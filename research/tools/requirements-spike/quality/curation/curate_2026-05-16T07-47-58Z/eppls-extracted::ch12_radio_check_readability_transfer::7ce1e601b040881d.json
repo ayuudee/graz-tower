@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_radio_check_readability_transfer::7ce1e601b040881d",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_check_readability_transfer",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.85,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the definition, and the item is atomic rather than redundant with the accepted siblings. However, the source is a descriptive readability-scale entry with no note marker or normative language, so the modality should be corrected from `note` to `none`.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::7ce1e601b040881d.json",
+    "toPath": "candidates/eppls-extracted/ch12_radio_check_readability_transfer/eppls-extracted::ch12_radio_check_readability_transfer::7ce1e601b040881d.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:04:48Z"
+}

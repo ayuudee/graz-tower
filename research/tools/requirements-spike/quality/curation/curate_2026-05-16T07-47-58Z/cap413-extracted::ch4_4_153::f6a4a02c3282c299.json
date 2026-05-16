@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_153::f6a4a02c3282c299",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_153",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted CAP 413 table supports a phraseology template/example, but the candidate claim states it as a 'shall' obligation, which is stronger than the source wording and cannot be corrected because claimText is an identity field. Modality and authorityClass are already conservative, so the remaining defect would require rewriting the claim.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_153/cap413-extracted::ch4_4_153::f6a4a02c3282c299.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_153/cap413-extracted::ch4_4_153::f6a4a02c3282c299.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:55:17Z"
+}

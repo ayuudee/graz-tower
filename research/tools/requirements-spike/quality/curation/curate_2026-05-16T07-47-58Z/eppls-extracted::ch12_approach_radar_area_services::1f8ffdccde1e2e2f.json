@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_approach_radar_area_services::1f8ffdccde1e2e2f",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_approach_radar_area_services",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.66,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The cited source text supports the claim, and the first quote is present in the source window across a line break with only whitespace variation. However, the candidate\u2019s modality is not merely a note: the quoted wording combines \u201cshould\u201d and \u201cmust,\u201d while the EPPLS source remains background/support rather than authoritative regulation.",
+    "corrections": {
+      "modality": "mixed"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::1f8ffdccde1e2e2f.json",
+    "toPath": "candidates/eppls-extracted/ch12_approach_radar_area_services/eppls-extracted::ch12_approach_radar_area_services::1f8ffdccde1e2e2f.json",
+    "correctionsApplied": {
+      "modality": "mixed"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:30:46Z"
+}

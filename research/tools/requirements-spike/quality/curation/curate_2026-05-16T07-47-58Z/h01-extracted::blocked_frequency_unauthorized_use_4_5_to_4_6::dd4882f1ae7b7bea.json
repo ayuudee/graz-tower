@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::dd4882f1ae7b7bea",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.28,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The candidate is directly supported by the quoted 4.5(c) text, the quote audit and schema/authority audits all pass, and the modality/authorityClass correctly reflect advisory 'should' language as operational guidance. It is not redundant with the accepted siblings because it captures the distinct blocked-frequency step of instructing the flight crew to stop the inadvertent transmission.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::dd4882f1ae7b7bea.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::dd4882f1ae7b7bea.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:23:12Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_distress_urgency_general_actions::59032c134844d131",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_urgency_general_actions",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 17.95,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted bullet is verbatim and is scoped by the preceding source text, \u201cUnder ICAO Annex 12, para 5.7, if you hear a distress transmission, you must:\u201d, so the item has must-strength modality rather than should. The claim is not redundant with accepted siblings, and the background_support authority class can remain unchanged for this source.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::59032c134844d131.json",
+    "toPath": "candidates/eppls-extracted/ch12_distress_urgency_general_actions/eppls-extracted::ch12_distress_urgency_general_actions::59032c134844d131.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:52:42Z"
+}

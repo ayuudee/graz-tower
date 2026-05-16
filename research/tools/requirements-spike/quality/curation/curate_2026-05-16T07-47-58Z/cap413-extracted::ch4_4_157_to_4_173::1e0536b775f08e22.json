@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_157_to_4_173::1e0536b775f08e22",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_157_to_4_173",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.81,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported, but the exactSourceQuote does not appear verbatim in the provided source window because the sentence is interrupted by page/header text between \u201cto\u201d and \u201cthe nearest metre.\u201d Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the failed verbatim-quote audit requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_157_to_4_173/cap413-extracted::ch4_4_157_to_4_173::1e0536b775f08e22.json",
+    "toPath": "rejected/cap413-extracted/ch4_4_157_to_4_173/cap413-extracted::ch4_4_157_to_4_173::1e0536b775f08e22.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:57:47Z"
+}

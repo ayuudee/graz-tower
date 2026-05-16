@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_time_5_4_2_4::850670ab7493a8d2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_time_5_4_2_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.82,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted 6-minute item is verbatim, but the claim overstates the rule by omitting necessary parent applicability conditions from 5.4.2.4.3, including the same-track/turbojet context and the required common-point/radar assurance conditions. Because fixing this would require changing the identity claim text and likely adding parent quotes, it cannot be promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::850670ab7493a8d2.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_mach_time_5_4_2_4/icao4444-extracted::longitudinal_mach_time_5_4_2_4::850670ab7493a8d2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:15:17Z"
+}

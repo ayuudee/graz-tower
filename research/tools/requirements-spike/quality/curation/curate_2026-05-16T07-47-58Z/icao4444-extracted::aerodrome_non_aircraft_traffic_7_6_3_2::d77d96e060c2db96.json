@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::d77d96e060c2db96",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_non_aircraft_traffic_7_6_3_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.65,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim in the source and the claim accurately captures the standalone 'should not' guidance in 7.6.3.1.4.4. The modality and authorityClass are already consistent, and the content is not redundant with the accepted sibling covering the separate relay-instructions sentence.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::d77d96e060c2db96.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_non_aircraft_traffic_7_6_3_2/icao4444-extracted::aerodrome_non_aircraft_traffic_7_6_3_2::d77d96e060c2db96.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:16:33Z"
+}

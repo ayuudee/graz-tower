@@ -1,0 +1,20 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_184_to_4_190::2b563b4ca18083ed",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_184_to_4_190",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.32,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted WET definition is supported and the modality/authority class are consistent, so rejection is not warranted. However, the bundle audit identifies a missing linked note defining the operative standing-water thresholds for the WET/WATER PATCHES boundary, which cannot be fixed by allowed corrections to modality, authorityClass, or requirementKind.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_184_to_4_190/cap413-extracted::ch4_4_184_to_4_190::2b563b4ca18083ed.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:02:46Z"
+}

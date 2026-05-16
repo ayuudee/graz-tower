@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::ads_c_position_reports_4_11_4_to_4_11_6::ecb1214e520ec61a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "ads_c_position_reports_4_11_4_to_4_11_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.73,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The note is quoted verbatim, schema-valid, and correctly framed as note modality with background_support authority rather than an operative requirement. It is a self-contained referential source unit and is not redundant with the accepted operative ADS-C requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/ads_c_position_reports_4_11_4_to_4_11_6/icao4444-extracted::ads_c_position_reports_4_11_4_to_4_11_6::ecb1214e520ec61a.json",
+    "toPath": "candidates/icao4444-extracted/ads_c_position_reports_4_11_4_to_4_11_6/icao4444-extracted::ads_c_position_reports_4_11_4_to_4_11_6::ecb1214e520ec61a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:06:45Z"
+}

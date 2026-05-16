@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::0b3f0bc456fcf8b4",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.08,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited source quote is the German phraseology only, while the candidate claims an English phraseology that is not present under the English subsection for 5.3.1.12.4. Because fixing this would require changing identity fields or re-extracting the item, it cannot be promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13/h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::0b3f0bc456fcf8b4.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13/h01-extracted::controlled_aerodromes_takeoff_5_3_1_12_to_5_3_1_13::0b3f0bc456fcf8b4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:37:17Z"
+}

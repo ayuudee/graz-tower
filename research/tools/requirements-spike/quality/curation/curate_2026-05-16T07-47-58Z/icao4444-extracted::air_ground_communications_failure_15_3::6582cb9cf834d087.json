@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::6582cb9cf834d087",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.12,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the listed exactSourceQuote is not verbatim because it uses ellipses and therefore fails the identity-field quote requirement. Since exactSourceQuotes cannot be edited in this curation pass, this record must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::6582cb9cf834d087.json",
+    "toPath": "rejected/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::6582cb9cf834d087.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:29:44Z"
+}

@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de",
+  "documentId": "icao9432-extracted",
+  "sectionId": "takeoff_procedures_4_5_6_to_4_5_7_en",
+  "familyId": "icao9432_aerodrome_phraseology_family",
+  "claimText": "When a conditional clearance involves a departing aircraft and an arriving aircraft, the departing aircraft must correctly identify the arriving aircraft on which the clearance is based.",
+  "rationale": "Source uses 'it is important that', indicating strong operational guidance rather than a hard 'shall' constraint.",
+  "modality": "should",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "best_practice",
+  "testability": "partially_executable",
+  "verificationMode": "property_or_family_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "it is important that the departing aircraft correctly identifies the arriving aircraft on which the conditional clearance is based."
+  ],
+  "sourceItemIds": [
+    "sec_4_5_7"
+  ],
+  "claimSha256": "cd34a8d55a6b4167cfae705a9bbe69739a945e09799dda9ea9e03d35a4757b99",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 5236,
+    "endLine": 5329
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "cond_clearance_departing_identification",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "should",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The exact quote is verbatim and supports an advisory operational-guidance item: the source says it is important that the departing aircraft correctly identifies the arriving aircraft. The candidate\u2019s modality and authority class appropriately avoid treating this as a hard shall requirement, and the accepted siblings do not redundantly cover this specific identification guidance.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T11:59:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/takeoff_procedures_4_5_6_to_4_5_7_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:59:12Z"
+  }
+}

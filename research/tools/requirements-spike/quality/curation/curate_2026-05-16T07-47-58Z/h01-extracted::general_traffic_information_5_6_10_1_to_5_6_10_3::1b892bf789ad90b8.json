@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::1b892bf789ad90b8",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.48,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuote does not appear verbatim in the provided source window because the English phrase is split/interleaved by the German text, so G1 has a real quote-identity failure. Since identity fields cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::1b892bf789ad90b8.json",
+    "toPath": "rejected/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::1b892bf789ad90b8.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:56:02Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::53d965c3f863fe23",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.19,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted list item exists verbatim and is properly supported by the parent 15.3.3 operative clause, which supplies the \u201cseparation shall be maintained\u201d obligation and the communication-failure condition. The item is not redundant with accepted siblings and the bundle gate resolves the structural concern by treating the sub-item as a self-contained procedural assumption within the parent clause.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::53d965c3f863fe23.json",
+    "toPath": "candidates/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::53d965c3f863fe23.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:29:38Z"
+}

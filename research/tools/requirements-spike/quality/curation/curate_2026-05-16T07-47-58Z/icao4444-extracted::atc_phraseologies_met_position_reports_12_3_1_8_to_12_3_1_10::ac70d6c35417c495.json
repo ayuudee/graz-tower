@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10::ac70d6c35417c495",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.17,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology appears verbatim and the candidate is an atomic item not already covered by accepted siblings. However, the specific source quote contains no shall/must/should/may wording, so the modality should be corrected from shall to none while retaining operational_guidance.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10/icao4444-extracted::atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10::ac70d6c35417c495.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10/icao4444-extracted::atc_phraseologies_met_position_reports_12_3_1_8_to_12_3_1_10::ac70d6c35417c495.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:51:18Z"
+}

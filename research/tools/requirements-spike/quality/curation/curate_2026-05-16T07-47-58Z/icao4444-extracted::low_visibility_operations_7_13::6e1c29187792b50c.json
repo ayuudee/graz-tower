@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::low_visibility_operations_7_13::6e1c29187792b50c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "low_visibility_operations_7_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.92,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text is verbatim and supports the claim, and the candidate is an atomic sibling to the other accepted 7.13.5(f) items rather than a redundant umbrella. However, the source uses \u201cshould specify,\u201d so the modality remains advisory and the authorityClass must be lowered from authoritative_requirement to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::6e1c29187792b50c.json",
+    "toPath": "candidates/icao4444-extracted/low_visibility_operations_7_13/icao4444-extracted::low_visibility_operations_7_13::6e1c29187792b50c.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:20:49Z"
+}

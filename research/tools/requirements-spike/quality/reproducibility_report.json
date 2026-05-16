@@ -1,7 +1,7 @@
 {
   "mode": "dry_run",
-  "registryRoot": "/tmp/twr2-rr21-adequacy/research/tools/requirements-spike/registry/ollama_first",
-  "totalRecordsAudited": 465,
+  "registryRoot": "/Users/andrew/dev/projects/graz-tower/research/tools/requirements-spike/registry/ollama_first",
+  "totalRecordsAudited": 3419,
   "totalUnexpectedFiles": 0,
   "totalMismatches": 0,
   "mismatches": [],

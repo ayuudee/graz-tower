@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::air_ground_communications_failure_15_3::67ed02a6c2bc3ddb",
+  "documentId": "icao4444-extracted",
+  "sectionId": "air_ground_communications_failure_15_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.53,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted list item is verbatim, but the claim overgeneralizes it by omitting the necessary parent condition in 15.3.3 b) that applies only in instrument meteorological conditions or when VMC completion is unlikely. Because correcting this would require changing identity fields rather than only metadata, the candidate cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::67ed02a6c2bc3ddb.json",
+    "toPath": "rejected/icao4444-extracted/air_ground_communications_failure_15_3/icao4444-extracted::air_ground_communications_failure_15_3::67ed02a6c2bc3ddb.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:30:03Z"
+}

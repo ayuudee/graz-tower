@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_108_to_4_118::2f7c96fa2b024252",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_108_to_4_118",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.5,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted NOTE is present verbatim in the source, and the candidate correctly frames it with note modality and operational_guidance authority. It is not redundant with the accepted sibling requirements, which cover helicopter movement authorisations rather than the meaning of 'taxi'.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": true,
+    "fromPath": "pending/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::2f7c96fa2b024252.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_108_to_4_118/cap413-extracted::ch4_4_108_to_4_118::2f7c96fa2b024252.json",
+    "judgementRowsAppended": 0
+  },
+  "curatedAt": "2026-05-16T07:46:44Z"
+}

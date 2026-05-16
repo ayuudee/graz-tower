@@ -1,0 +1,101 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_landing_clearance_12_3_4_16::a18b221c5e34c811",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_landing_clearance_12_3_4_16",
+  "familyId": "icao4444_atc_phraseology_family",
+  "claimText": "ATC shall use the phraseology 'MAKE STRAIGHT-IN (or CIRCLING APPROACH, LEFT (or RIGHT) TURN TO (location, runway, taxiway, final approach and take-off area)) [ARRIVAL (or ARRIVAL ROUTE) (number, name, or code)]. [HOLD SHORT OF (active runway, extended runway centre line, other)]. [REMAIN (direction or distance) FROM (runway, runway centre line, other helicopter or aircraft)]. [CAUTION (power lines, unlighted obstructions, wake turbulence, etc.)]. CLEARED TO LAND.' for straight-in or circling approach instructions.",
+  "rationale": "All attempts consistently identify this complex block as the standard phraseology for straight-in or circling approach instructions.",
+  "modality": "shall",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "j) MAKE STRAIGHT-IN (or CIRCLING APPROACH, LEFT (or RIGHT) TURN TO (location, runway, taxiway, final approach and take-off area)) [ARRIVAL (or ARRIVAL ROUTE) (number, name, or code)]. [HOLD SHORT OF (active runway, extended runway centre line, other)]. [REMAIN (direction or distance) FROM (runway, runway centre line, other helicopter or aircraft)]. [CAUTION (power lines, unlighted obstructions, wake turbulence, etc.)]. CLEARED TO LAND."
+  ],
+  "sourceItemIds": [
+    "item_j_make_straight_in"
+  ],
+  "claimSha256": "7bab02f78394bad9674f339706d7e422665f83b0d9bfaee48ae843cdf0e75b1f",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 15149,
+    "endLine": 15224
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_atc_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "req_make_straight_in_phraseology",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/aerodrome_phraseologies_landing_clearance_12_3_4_16/judged_candidates.json"
+  }
+}

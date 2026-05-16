@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::aa302c8fe69bee04",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.14,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the cited Note 1 text and is not redundant with the accepted siblings; it is an advisory supplementary measure rather than an authoritative requirement. The modality and authority class are already consistent, but the requirement kind should reflect the advisory-only nature of the note rather than best practice.",
+    "corrections": {
+      "requirementKind": "advisory_only"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::aa302c8fe69bee04.json",
+    "toPath": "candidates/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::aa302c8fe69bee04.json",
+    "correctionsApplied": {
+      "requirementKind": "advisory_only"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:40:20Z"
+}

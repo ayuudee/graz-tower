@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::assistance_to_vfr_flights_15_4::ee3f0ef2023db212",
+  "documentId": "icao4444-extracted",
+  "sectionId": "assistance_to_vfr_flights_15_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.86,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the sole exactSourceQuote is not verbatim because it uses an ellipsis and omits intervening list text. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the G1 miss requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::ee3f0ef2023db212.json",
+    "toPath": "rejected/icao4444-extracted/assistance_to_vfr_flights_15_4/icao4444-extracted::assistance_to_vfr_flights_15_4::ee3f0ef2023db212.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:45:58Z"
+}

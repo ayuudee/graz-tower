@@ -1,0 +1,109 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::emergency_service_11005::740fd586df0be135",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "emergency_service_11005",
+  "familyId": "sera_emergency_family",
+  "claimText": "Information pertinent to the safe conduct of the flight shall continue to be transmitted and necessary action shall be taken to expedite the conduct of all phases of the flight, especially the safe landing of the aircraft.",
+  "rationale": "All attempts identify this distinct obligation regarding continuous information and expedited flight phases. Split from prompt attendance to maintain granularity.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Information pertinent to the safe conduct of the flight shall continue to be transmitted",
+    "necessary action shall be taken to expedite the conduct of all phases of the flight"
+  ],
+  "sourceItemIds": [
+    "sera_11005_b"
+  ],
+  "claimSha256": "b53880ee5a7d4bed6130655d90e7ce7faf2fae132eadba0a5b7a59b364eed2c2",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2361,
+    "endLine": 2371
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "sera_emergency_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "sera_11005_b_safe_conduct_continuity",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 2,
+      "hits": 2,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted text is verbatim, the claim is directly supported by SERA.11005(b), and the shall/authoritative_requirement classification is consistent. Although the judge objected to fragmentation of item (b), the missing prompt-attendance obligation is already present as an accepted sibling, so this candidate completes rather than redundantly umbrellas the accepted atomic coverage.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T12:04:12Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "needs_split",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/sera-923-2012-extracted/emergency_service_11005/judged_candidates.json",
+    "curatedAt": "2026-05-16T12:04:12Z"
+  }
+}

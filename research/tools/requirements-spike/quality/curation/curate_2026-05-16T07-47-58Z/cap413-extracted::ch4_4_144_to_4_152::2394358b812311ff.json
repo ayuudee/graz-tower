@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_144_to_4_152::2394358b812311ff",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_144_to_4_152",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 18.69,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The exact quote is present and directly supports the claim, and the content is not redundant with the accepted sibling candidates. Because the quoted source uses \u201cmust,\u201d the modality should be recorded as must while retaining operational_guidance for CAP 413 material.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_144_to_4_152/cap413-extracted::ch4_4_144_to_4_152::2394358b812311ff.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_144_to_4_152/cap413-extracted::ch4_4_144_to_4_152::2394358b812311ff.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:53:51Z"
+}

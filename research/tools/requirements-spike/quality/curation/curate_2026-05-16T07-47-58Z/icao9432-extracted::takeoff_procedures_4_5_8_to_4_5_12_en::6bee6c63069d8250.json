@@ -1,0 +1,28 @@
+{
+  "canonicalId": "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6bee6c63069d8250",
+  "documentId": "icao9432-extracted",
+  "sectionId": "takeoff_procedures_4_5_8_to_4_5_12_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.93,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is directly supported by the source and is not redundant with the accepted sibling atomic items. However, the cited text is contextual and contains no Note label or modal verb, so the modality should be `none` rather than `note`.",
+    "corrections": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/takeoff_procedures_4_5_8_to_4_5_12_en/icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6bee6c63069d8250.json",
+    "toPath": "candidates/icao9432-extracted/takeoff_procedures_4_5_8_to_4_5_12_en/icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6bee6c63069d8250.json",
+    "correctionsApplied": {
+      "modality": "none",
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:59:53Z"
+}

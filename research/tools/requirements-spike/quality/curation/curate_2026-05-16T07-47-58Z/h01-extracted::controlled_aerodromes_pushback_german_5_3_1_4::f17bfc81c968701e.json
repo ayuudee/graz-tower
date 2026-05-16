@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_pushback_german_5_3_1_4::f17bfc81c968701e",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_pushback_german_5_3_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.77,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The source window contains the cited phraseology verbatim across the line break, so the G1 miss appears to be a newline/normalisation artefact rather than a real quote failure. The candidate is an atomic phraseology item not covered by accepted siblings, and its operational_guidance authority class is appropriate for H01 phraseology material.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_pushback_german_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_german_5_3_1_4::f17bfc81c968701e.json",
+    "toPath": "candidates/h01-extracted/controlled_aerodromes_pushback_german_5_3_1_4/h01-extracted::controlled_aerodromes_pushback_german_5_3_1_4::f17bfc81c968701e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:37:10Z"
+}

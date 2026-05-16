@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd::166407add80be2e6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.55,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted note exists verbatim in the source and the claim accurately captures its definitional function. It is not redundant with the accepted atomic phraseology items, and its current note modality with operational_guidance authority is appropriate for a non-normative explanatory notation.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd/icao4444-extracted::aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd::166407add80be2e6.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd/icao4444-extracted::aerodrome_phraseologies_taxi_general_vacate_expedite_12_3_4_7_q_to_dd::166407add80be2e6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:22:41Z"
+}

@@ -1,0 +1,128 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_distress_cancellation_urgency_frequencies::3082a37048916ef6",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_distress_cancellation_urgency_frequencies",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "To cancel a MAYDAY, the pilot shall state MAYDAY once, say ALL STATIONS three times, provide Aircraft ID, Station called, Time, Name of station in distress, DISTRESS TRAFFIC ENDED, Station called, and OUT.",
+  "rationale": "All attempts agree on the sequence of phraseology steps for MAYDAY cancellation. Source is training material, so authority is background_support.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "To cancel a MAYDAY:",
+    "\u2022 State MAYDAY once",
+    "\u2022 Say ALL STATIONS three times",
+    "\u2022 Aircraft ID",
+    "\u2022 Station called",
+    "\u2022 Time",
+    "\u2022 Name of station in distress",
+    "\u2022 DISTRESS TRAFFIC ENDED",
+    "\u2022 Station called",
+    "\u2022 OUT"
+  ],
+  "sourceItemIds": [
+    "mayday_step_1",
+    "mayday_step_2",
+    "mayday_step_3",
+    "mayday_step_4",
+    "mayday_step_5",
+    "mayday_step_6",
+    "mayday_step_7",
+    "mayday_step_8",
+    "mayday_step_9"
+  ],
+  "claimSha256": "ee1bdcd66222f6f7d1064bca281a8420e000501b70f85d9013be55953cbebede",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
+    "startLine": 23317,
+    "endLine": 23354
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "mayday_cancel_sequence",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 10,
+      "hits": 10,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted list is verbatim and supports the procedural sequence, but the source is pilot-training/background material and does not use or support a shall-strength obligation. The identity fields can remain as extracted, while the metadata modality should be lowered to reflect advisory/background use.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T08:50:20Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_distress_cancellation_urgency_frequencies/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:50:20Z"
+  }
+}

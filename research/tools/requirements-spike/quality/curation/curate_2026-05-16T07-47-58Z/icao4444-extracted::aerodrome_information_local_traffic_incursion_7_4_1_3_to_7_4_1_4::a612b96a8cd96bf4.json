@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::a612b96a8cd96bf4",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.49,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted source verbatim supports a mandatory atomic action: under 'appropriate action shall be taken as follows,' item c requires controllers to inform the aircraft of the incursion or obstruction and its location. The omitted list items a and b are already present as separate accepted sibling candidates, so this is not an unsupported umbrella or incomplete replacement.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::a612b96a8cd96bf4.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::a612b96a8cd96bf4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:08:27Z"
+}

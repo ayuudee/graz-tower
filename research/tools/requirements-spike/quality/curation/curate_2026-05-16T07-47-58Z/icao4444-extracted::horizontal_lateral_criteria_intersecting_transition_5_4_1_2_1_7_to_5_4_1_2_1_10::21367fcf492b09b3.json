@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10::21367fcf492b09b3",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.63,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted phrase is verbatim, but the claim states the 15-degree divergence condition as sufficient for lateral separation while the source requires it together with condition (a) and the navigation-capability proviso. Fixing this would require changing the claim text and likely adding quotes, which are identity fields and cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10/icao4444-extracted::horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10::21367fcf492b09b3.json",
+    "toPath": "rejected/icao4444-extracted/horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10/icao4444-extracted::horizontal_lateral_criteria_intersecting_transition_5_4_1_2_1_7_to_5_4_1_2_1_10::21367fcf492b09b3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:05:12Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::baf5a184286c8c9a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "area_phraseologies_route_clearance_limit_12_3_2_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.9,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and the source lists this as a phraseology under \u201cINDICATION OF ROUTE AND CLEARANCE LIMIT,\u201d so the atomic phraseology item is supported and not redundant. However, the cited wording itself does not contain an explicit mandatory verb; for this quote the safer modality is non-normative while retaining operational-guidance authority.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/area_phraseologies_route_clearance_limit_12_3_2_2/icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::baf5a184286c8c9a.json",
+    "toPath": "candidates/icao4444-extracted/area_phraseologies_route_clearance_limit_12_3_2_2/icao4444-extracted::area_phraseologies_route_clearance_limit_12_3_2_2::baf5a184286c8c9a.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:35:33Z"
+}

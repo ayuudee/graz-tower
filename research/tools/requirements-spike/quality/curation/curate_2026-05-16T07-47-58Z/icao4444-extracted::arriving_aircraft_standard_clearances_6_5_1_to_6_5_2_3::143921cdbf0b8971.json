@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::143921cdbf0b8971",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.24,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by 6.5.2.3(d), but the provided exactSourceQuote is not verbatim because it concatenates the parent sentence directly with item d while omitting intervening list items. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::143921cdbf0b8971.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::143921cdbf0b8971.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:41:03Z"
+}

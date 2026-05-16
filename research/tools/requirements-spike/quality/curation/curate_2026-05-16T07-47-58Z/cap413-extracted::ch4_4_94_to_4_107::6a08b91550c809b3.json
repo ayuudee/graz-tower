@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_94_to_4_107::6a08b91550c809b3",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_94_to_4_107",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.46,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text exists verbatim and the claim is source-grounded, but it comes from NOTE 1 and uses advisory 'expected' language rather than a 'should' formulation. This can be promoted as operational guidance if the modality is corrected to reflect the note/advisory status.",
+    "corrections": {
+      "modality": "note"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_94_to_4_107/cap413-extracted::ch4_4_94_to_4_107::6a08b91550c809b3.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_94_to_4_107/cap413-extracted::ch4_4_94_to_4_107::6a08b91550c809b3.json",
+    "correctionsApplied": {
+      "modality": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:23:58Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_129_to_4_135::1ea45a25c4ca15b5",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_129_to_4_135",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.47,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote exists verbatim in the source, all gate audits pass, and the claim is a distinct advisory clause not covered by the accepted mandatory runway-crossing siblings. Its 'should' modality and operational_guidance authorityClass correctly reflect the CAP 413 source wording.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_129_to_4_135/cap413-extracted::ch4_4_129_to_4_135::1ea45a25c4ca15b5.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_129_to_4_135/cap413-extracted::ch4_4_129_to_4_135::1ea45a25c4ca15b5.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:50:58Z"
+}

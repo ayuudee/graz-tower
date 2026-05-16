@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::establishment_rtf_ifr_initial_calls_3_3_1_1::bc519c0757095226",
+  "documentId": "h01-extracted",
+  "sectionId": "establishment_rtf_ifr_initial_calls_3_3_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 36.12,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence is present verbatim and the candidate is a standalone note not covered by the accepted siblings. Because the source labels this content as a Note in an H01 operational-guidance context, it should be framed with note modality rather than as a standalone shall-strength requirement.",
+    "corrections": {
+      "modality": "note"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/establishment_rtf_ifr_initial_calls_3_3_1_1/h01-extracted::establishment_rtf_ifr_initial_calls_3_3_1_1::bc519c0757095226.json",
+    "toPath": "candidates/h01-extracted/establishment_rtf_ifr_initial_calls_3_3_1_1/h01-extracted::establishment_rtf_ifr_initial_calls_3_3_1_1::bc519c0757095226.json",
+    "correctionsApplied": {
+      "modality": "note"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:44:21Z"
+}

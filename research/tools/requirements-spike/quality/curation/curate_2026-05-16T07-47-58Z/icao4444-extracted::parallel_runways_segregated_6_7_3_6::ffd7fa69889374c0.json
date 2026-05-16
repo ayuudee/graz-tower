@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_segregated_6_7_3_6::ffd7fa69889374c0",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_segregated_6_7_3_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.5,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and the claim is directly supported by 6.7.3.6.2. The only defect is the G3 floor mismatch: the source uses \u201cshould,\u201d so the authorityClass must be lowered from authoritative_requirement to operational_guidance rather than changing the modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_segregated_6_7_3_6/icao4444-extracted::parallel_runways_segregated_6_7_3_6::ffd7fa69889374c0.json",
+    "toPath": "candidates/icao4444-extracted/parallel_runways_segregated_6_7_3_6/icao4444-extracted::parallel_runways_segregated_6_7_3_6::ffd7fa69889374c0.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:29:15Z"
+}

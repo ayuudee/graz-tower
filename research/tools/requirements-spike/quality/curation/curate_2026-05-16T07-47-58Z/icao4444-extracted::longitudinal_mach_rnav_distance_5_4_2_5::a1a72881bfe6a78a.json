@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::a1a72881bfe6a78a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_mach_rnav_distance_5_4_2_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 32.28,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quoted Note is present in the source, and the claimText is a faithful extraction of that non-normative guidance. The candidate is already correctly framed as modality `note` with `operational_guidance` authority and is not redundant with the accepted sibling atomic requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::a1a72881bfe6a78a.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_mach_rnav_distance_5_4_2_5/icao4444-extracted::longitudinal_mach_rnav_distance_5_4_2_5::a1a72881bfe6a78a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:13:04Z"
+}

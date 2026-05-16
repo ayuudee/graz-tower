@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_85::ca1626efe2e36496",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_85",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.52,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phrase appears verbatim in the source window and the claim accurately characterizes it as a typical FISO/Pilot RTF exchange example. Its modality and authorityClass are already conservative for CAP 413 example phraseology, and no accepted sibling redundantly covers this landing-clearance example.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::ca1626efe2e36496.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::ca1626efe2e36496.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:22:38Z"
+}

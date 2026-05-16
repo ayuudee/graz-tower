@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::essential_local_traffic_6_2::7602f6c114eaa231",
+  "documentId": "icao4444-extracted",
+  "sectionId": "essential_local_traffic_6_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.15,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim, the note/definition framing is accurate, and the modality and authorityClass are consistent for non-operative background material. The accepted siblings cover the operative requirements, but they do not duplicate this definitional note.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/essential_local_traffic_6_2/icao4444-extracted::essential_local_traffic_6_2::7602f6c114eaa231.json",
+    "toPath": "candidates/icao4444-extracted/essential_local_traffic_6_2/icao4444-extracted::essential_local_traffic_6_2::7602f6c114eaa231.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:01:15Z"
+}

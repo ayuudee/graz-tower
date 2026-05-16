@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_numbers_frequency_expression::a8436e893828ddd2",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_numbers_frequency_expression",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 13.32,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is present in the source window across a line break, so the G1 miss appears to be an artefact rather than a real verbatim failure. The content is source-grounded, but this background-support source should not be treated as a formal requirement; the candidate should use non-normative modality.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::a8436e893828ddd2.json",
+    "toPath": "candidates/eppls-extracted/ch12_operating_numbers_frequency_expression/eppls-extracted::ch12_operating_numbers_frequency_expression::a8436e893828ddd2.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:02:57Z"
+}

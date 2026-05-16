@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::7678b76ffc82cdff",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.93,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact source quote is verbatim and supports the claim, and the candidate correctly preserves the source's advisory 'should' wording as operational_guidance. It is not redundant with accepted sibling candidates, which do not cover the turbojet extended-holding fuel-conservation guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::7678b76ffc82cdff.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::7678b76ffc82cdff.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:37:30Z"
+}

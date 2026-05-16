@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::c59aedb188ec30b3",
+  "documentId": "h01-extracted",
+  "sectionId": "general_warnings_df_intercept_misc_5_6_15_to_5_6_21",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.56,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 has real verbatim misses: the source window contains 'REQUEST TO DROP PARACHUTE JUMPERS' and 'CLEARED TO DROP [DESCENT APPROVED]' without the cited 'G:' prefixes. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected despite the underlying phraseology being substantively supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::c59aedb188ec30b3.json",
+    "toPath": "rejected/h01-extracted/general_warnings_df_intercept_misc_5_6_15_to_5_6_21/h01-extracted::general_warnings_df_intercept_misc_5_6_15_to_5_6_21::c59aedb188ec30b3.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:58:38Z"
+}

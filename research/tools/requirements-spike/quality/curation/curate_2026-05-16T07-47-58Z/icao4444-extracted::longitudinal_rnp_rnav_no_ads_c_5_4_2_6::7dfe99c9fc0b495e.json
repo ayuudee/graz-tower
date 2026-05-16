@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::7dfe99c9fc0b495e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_rnp_rnav_no_ads_c_5_4_2_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.29,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuotes do not exist verbatim in the source: the candidate says \u201cused as the basis,\u201d while the source says \u201cused as a basis.\u201d Because claimText and quotes are identity fields and cannot be edited in this pass, this real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::7dfe99c9fc0b495e.json",
+    "toPath": "rejected/icao4444-extracted/longitudinal_rnp_rnav_no_ads_c_5_4_2_6/icao4444-extracted::longitudinal_rnp_rnav_no_ads_c_5_4_2_6::7dfe99c9fc0b495e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:16:40Z"
+}

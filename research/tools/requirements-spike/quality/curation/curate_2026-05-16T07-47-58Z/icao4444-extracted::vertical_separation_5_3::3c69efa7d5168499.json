@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::vertical_separation_5_3::3c69efa7d5168499",
+  "documentId": "icao4444-extracted",
+  "sectionId": "vertical_separation_5_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.01,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One exactSourceQuote is not found verbatim in the source because it improperly merges the parent clause with list item (a). Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the record must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::3c69efa7d5168499.json",
+    "toPath": "rejected/icao4444-extracted/vertical_separation_5_3/icao4444-extracted::vertical_separation_5_3::3c69efa7d5168499.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:37:47Z"
+}

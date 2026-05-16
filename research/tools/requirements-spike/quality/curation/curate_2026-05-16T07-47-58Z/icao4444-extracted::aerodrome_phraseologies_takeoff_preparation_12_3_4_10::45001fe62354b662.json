@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::45001fe62354b662",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_takeoff_preparation_12_3_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.32,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phraseology '*e) READY;' is present verbatim and supports the pilot-readiness phraseology item, and it is not redundant with the accepted sibling. However, the cited quote itself contains no note text or normative verb, so the metadata modality should be corrected from 'note' to 'none' while retaining operational_guidance.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_takeoff_preparation_12_3_4_10/icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::45001fe62354b662.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_phraseologies_takeoff_preparation_12_3_4_10/icao4444-extracted::aerodrome_phraseologies_takeoff_preparation_12_3_4_10::45001fe62354b662.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:20:56Z"
+}

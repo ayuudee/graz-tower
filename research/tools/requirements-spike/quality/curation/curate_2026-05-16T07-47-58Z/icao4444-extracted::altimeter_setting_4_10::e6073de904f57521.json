@@ -1,0 +1,20 @@
+{
+  "canonicalId": "icao4444-extracted::altimeter_setting_4_10::e6073de904f57521",
+  "documentId": "icao4444-extracted",
+  "sectionId": "altimeter_setting_4_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.34,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quote is verbatim and the modality/authority are consistent, but the candidate omits the operative exception and subordinate conditions in 4.10.1.2(a)\u2013(b). Fixing this would require re-extraction or additional bundled source coverage rather than merely changing modality, authorityClass, or requirementKind.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/altimeter_setting_4_10/icao4444-extracted::altimeter_setting_4_10::e6073de904f57521.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:33:00Z"
+}

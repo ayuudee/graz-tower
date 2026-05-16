@@ -1,0 +1,108 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::b64030acf6ef4bbd",
+  "documentId": "icao9432-extracted",
+  "sectionId": "aerodrome_traffic_circuit_4_6_part2_en",
+  "familyId": "icao9432_aerodrome_phraseology_family",
+  "claimText": "Depending on traffic situation and arrival direction, a straight-in approach may be possible.",
+  "rationale": "All attempts identify this as a conditional possibility rather than a mandatory rule. Marked as advisory/definition.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "definition",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "W zale\u017cno\u015bci od sytuacji ruchowej oraz od kierunku przylotu statku powietrznego, mo\u017ce zaistnie\u0107 mo\u017cliwo\u015b\u0107 podej\u015bcia z prostej."
+  ],
+  "sourceItemIds": [
+    "sec_4.6.3"
+  ],
+  "claimSha256": "b4e1fb7f812272a9be49812731c62f245b4879fd4d3c94f69906c284593b209b",
+  "provenance": {
+    "sourcePath": "research/txt/icao9432-extracted.txt",
+    "sourceSha256": "82bbb9a20f13b08be7b85d91057487b69e2759bcbb6f8f3f93c26b50de36cd03",
+    "startLine": 5567,
+    "endLine": 5674
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao9432_aerodrome_phraseology_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "straight_in_approach_availability_4.6.3",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The claim is directly supported by the verbatim source quote, and the may/operational_guidance classification is consistent with the advisory ICAO 9432 material. It is not redundant with the accepted sibling candidates, which cover different clauses/items.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:45:09Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao9432-extracted/aerodrome_traffic_circuit_4_6_part2_en/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:45:09Z"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_129_to_4_135::331ad7cc8a10840b",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_129_to_4_135",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.38,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is a verbatim source sentence, and the source uses \u201cshould,\u201d so the candidate\u2019s modality and operational_guidance authority class are appropriate for CAP 413 advisory phraseology. It is atomic and not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_129_to_4_135/cap413-extracted::ch4_4_129_to_4_135::331ad7cc8a10840b.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_129_to_4_135/cap413-extracted::ch4_4_129_to_4_135::331ad7cc8a10840b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:51:08Z"
+}

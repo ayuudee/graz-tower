@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c",
+  "documentId": "icao9432-extracted",
+  "sectionId": "distress_urgency_intro_9_1_en",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.53,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim-supported, the claim is atomic and not redundant with accepted siblings, and the should/operational_guidance classification correctly reflects the advisory wording in ICAO 9432. All gate audits passed and no identity-field or authority-floor issue is present.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c.json",
+    "toPath": "candidates/icao9432-extracted/distress_urgency_intro_9_1_en/icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:51:57Z"
+}

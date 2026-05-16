@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::3750e991b642571e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 25.1,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the claim is directly supported by the source note. The candidate is correctly framed as non-normative operational guidance with note modality, and it is not redundant with the accepted atomic requirements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::3750e991b642571e.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4/icao4444-extracted::aerodrome_information_local_traffic_incursion_7_4_1_3_to_7_4_1_4::3750e991b642571e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:07:38Z"
+}

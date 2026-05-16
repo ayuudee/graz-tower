@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::uncontrolled_aerodromes_5_4::14b330b1d2b81c8f",
+  "documentId": "h01-extracted",
+  "sectionId": "uncontrolled_aerodromes_5_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.53,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted English sentence is not present verbatim as a contiguous source quote in the supplied window; it is interrupted by German column text, and G1 correctly failed. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::14b330b1d2b81c8f.json",
+    "toPath": "rejected/h01-extracted/uncontrolled_aerodromes_5_4/h01-extracted::uncontrolled_aerodromes_5_4::14b330b1d2b81c8f.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:00:03Z"
+}

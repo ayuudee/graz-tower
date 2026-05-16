@@ -1,0 +1,137 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::19e4edf3ff2a5aff",
+  "documentId": "h01-extracted",
+  "sectionId": "general_traffic_information_5_6_10_1_to_5_6_10_3",
+  "familyId": "h01_general_flight_handling_family",
+  "claimText": "Phraseology for position of traffic includes examples such as (A/C type) (position) FOR FULL STOP LANDING/ TOUCH AND GO/LOW APPROACH/SPOT LANDING, (A/C type) (position) OPPOSITE/CROSSING LEFT TO RIGHT/RIGHT TO LEFT/ SAME DIRECTION/OVERTAKING/CIRCLING, (A/C type) DEPARTING/LANDING ON RUNWAY (number), (A/C type) APPROACHING FROM/DEPARTING TO (direction), and (A/C type) OVER/PASSED (location) (time) AT (level).",
+  "rationale": "Supporting phraseology examples for position of traffic. Marked as support_only as they are illustrative, not strict 'shall' obligations.",
+  "modality": "example",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "phraseology_example",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "5.6.10.3. Position of traffic",
+    "G: (A/C type) (position) FOR FULL STOP LANDING/",
+    "G: (A/C type) (position) OPPOSITE/CROSSING LEFT TO RIGHT/",
+    "G: (A/C type) DEPARTING/LANDING ON RUNWAY (number)",
+    "G: (A/C type) APPROACHING FROM/DEPARTING TO (direction)",
+    "G: (A/C type) OVER/PASSED (location) (time) AT (level)"
+  ],
+  "sourceItemIds": [
+    "5.6.10.3_list"
+  ],
+  "claimSha256": "322ee5a453359727719ca51685430dceaf3b0e927a70f03fe315c454ca210e42",
+  "provenance": {
+    "sourcePath": "research/txt/h01-extracted.txt",
+    "sourceSha256": "e3908c18ee8025002cf42826fe40268e50bbd99aa655dece70523d9f5a6e53c7",
+    "startLine": 9858,
+    "endLine": 10020
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "h01_general_flight_handling_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "phraseology_position_traffic",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "fail",
+      "method": "post_curation_registry_substring_match",
+      "totalQuotes": 6,
+      "hits": 3,
+      "misses": [
+        {
+          "quote": "G: (A/C type) (position) OPPOSITE/CROSSING LEFT TO RIGHT/",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: (A/C type) DEPARTING/LANDING ON RUNWAY (number)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        },
+        {
+          "quote": "G: (A/C type) APPROACHING FROM/DEPARTING TO (direction)",
+          "reason": "not found verbatim in source after whitespace normalisation"
+        }
+      ]
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "example",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The cited phraseology is supported by the source; the G1 misses appear to be line-wrap artefacts rather than real verbatim failures. Because the item is framed as illustrative phraseology under H01 operational guidance rather than a binding rule, the requirement kind should be softened.",
+      "corrections": {
+        "requirementKind": "phraseology_example"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:55:53Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::19e4edf3ff2a5aff.json",
+      "to": "pending/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/h01-extracted::general_traffic_information_5_6_10_1_to_5_6_10_3::19e4edf3ff2a5aff.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    }
+  },
+  "gate": {
+    "overallStatus": "fail",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "pending",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/h01-extracted/general_traffic_information_5_6_10_1_to_5_6_10_3/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:55:53Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit"
+  }
+}

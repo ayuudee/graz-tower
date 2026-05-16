@@ -1,0 +1,26 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_instruction_compliance_readback_items::44776d43cd3fd0e6",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_instruction_compliance_readback_items",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 23.18,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The source window supports the atomic claim by stating that clearances must be read back and listing \u201cVDF information\u201d among the readback items; it is not redundant with accepted siblings. Because the operative source wording uses \u201cmust,\u201d the modality should be corrected from \u201cshall\u201d to \u201cmust\u201d while retaining the non-authoritative background_support classification.",
+    "corrections": {
+      "modality": "must"
+    },
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::44776d43cd3fd0e6.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_instruction_compliance_readback_items/eppls-extracted::ch12_clearance_instruction_compliance_readback_items::44776d43cd3fd0e6.json",
+    "correctionsApplied": {
+      "modality": "must"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:37:45Z"
+}

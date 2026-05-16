@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::c445f15b43421281",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.52,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by 6.5.2.3(c), but the listed exactSourceQuote is not a verbatim contiguous quote from the source because it skips intervening list items between the introductory sentence and item c. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 failure.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::c445f15b43421281.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3/icao4444-extracted::arriving_aircraft_standard_clearances_6_5_1_to_6_5_2_3::c445f15b43421281.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:42:32Z"
+}

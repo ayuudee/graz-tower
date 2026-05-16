@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::c96a8a8a03ec1dcf",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 6.93,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "Although the claim is substantively supported by the parent shall-clause and list item, the exactSourceQuotes identity field is not found verbatim in the source window due to the PDF line/list formatting. Under the curation rules, a real verbatim quote miss requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::c96a8a8a03ec1dcf.json",
+    "toPath": "rejected/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::c96a8a8a03ec1dcf.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:40:54Z"
+}

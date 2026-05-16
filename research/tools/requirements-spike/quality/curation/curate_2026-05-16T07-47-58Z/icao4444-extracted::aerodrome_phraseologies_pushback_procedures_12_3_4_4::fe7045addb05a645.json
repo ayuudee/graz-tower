@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_phraseologies_pushback_procedures_12_3_4_4::fe7045addb05a645",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_phraseologies_pushback_procedures_12_3_4_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.55,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The only cited verbatim source text is a bare phraseology list item, \u201cd) PUSHBACK AT OWN DISCRETION;\u201d, which does not itself support the claimText\u2019s mandatory wording that ATC \u201cshall use\u201d the phrase. Because the unsupported modality is embedded in the immutable claimText, this cannot be fixed by metadata corrections alone.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_phraseologies_pushback_procedures_12_3_4_4/icao4444-extracted::aerodrome_phraseologies_pushback_procedures_12_3_4_4::fe7045addb05a645.json",
+    "toPath": "rejected/icao4444-extracted/aerodrome_phraseologies_pushback_procedures_12_3_4_4/icao4444-extracted::aerodrome_phraseologies_pushback_procedures_12_3_4_4::fe7045addb05a645.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:20:04Z"
+}

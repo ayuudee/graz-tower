@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::ce277fd923d01ff0",
+  "documentId": "icao4444-extracted",
+  "sectionId": "emergency_procedures_emergency_descent_15_1_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.73,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted text is verbatim and supports the candidate's permissive 'may include' claim. The only issue is the G3 mismatch: a 'may' modality cannot be classified as an authoritative requirement under the authority floor table, so the authorityClass should be lowered to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/emergency_procedures_emergency_descent_15_1_4/icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::ce277fd923d01ff0.json",
+    "toPath": "candidates/icao4444-extracted/emergency_procedures_emergency_descent_15_1_4/icao4444-extracted::emergency_procedures_emergency_descent_15_1_4::ce277fd923d01ff0.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:58:38Z"
+}

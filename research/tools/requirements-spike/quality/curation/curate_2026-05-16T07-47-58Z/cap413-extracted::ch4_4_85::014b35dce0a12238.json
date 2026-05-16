@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_85::014b35dce0a12238",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_85",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.87,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted phrase appears verbatim in the source and supports the claim as an example of typical FISO/Pilot after-landing taxi phraseology. The candidate is already correctly framed as non-authoritative operational guidance with example modality, and it is not redundant with the accepted sibling.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::014b35dce0a12238.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_85/cap413-extracted::ch4_4_85::014b35dce0a12238.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:21:28Z"
+}

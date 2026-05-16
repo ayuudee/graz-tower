@@ -1,0 +1,112 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::runway_in_use_selection_7_2::c57ea1b28b87d8f9",
+  "documentId": "icao4444-extracted",
+  "sectionId": "runway_in_use_selection_7_2",
+  "familyId": "icao4444_aerodrome_tower_family",
+  "claimText": "Separate or multiple runways may be designated runway-in-use for arriving aircraft and departing aircraft.",
+  "rationale": "Attempts 1 and 3 correctly identify this as a Note/advisory. Attempt 2 omitted it, but it is source-grounded.",
+  "modality": "may",
+  "authorityClass": "background_support",
+  "requirementKind": "advisory_only",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Note.\u2014 Separate or multiple runways may be designated runway-in-use for arriving aircraft and departing aircraft."
+  ],
+  "sourceItemIds": [
+    "7.2.1_note"
+  ],
+  "claimSha256": "09f82d54ed3780290b649971bc16e1dcd53e8ea4a44a91f21fcc9dee10a1fc50",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 8387,
+    "endLine": 8444
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_aerodrome_tower_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "7.2.1_note_separate_runways",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted Note is verbatim in the source and the claim is directly supported, with no redundancy against accepted sibling atomic requirements. Because it is explicitly a non-normative Note, it should be framed as advisory/background rather than best-practice operational guidance.",
+      "corrections": {
+        "authorityClass": "background_support",
+        "requirementKind": "advisory_only"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:33:46Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/runway_in_use_selection_7_2/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:33:46Z"
+  }
+}

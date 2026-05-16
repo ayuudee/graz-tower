@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_136_to_4_143::fbc8b54380bfa794",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_136_to_4_143",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.68,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted text is verbatim in the source and directly supports the claim, with modality correctly captured as 'should' and authorityClass correctly set to operational_guidance for CAP 413 advisory phraseology. The sibling accepted records do not already cover this specific towing-aircraft first-call identification rule.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::fbc8b54380bfa794.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_136_to_4_143/cap413-extracted::ch4_4_136_to_4_143::fbc8b54380bfa794.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:53:21Z"
+}

@@ -1,0 +1,26 @@
+{
+  "canonicalId": "h01-extracted::distress_urgency_general_4_1_1::2b52634a4c8df274",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_urgency_general_4_1_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.72,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote exists verbatim and supports the claim as a permissive provision: \u201cshall be permissible\u201d maps to modality \u201cmay,\u201d not a mandatory \u201cshall\u201d obligation. The only defect is the G3 floor violation, so the authorityClass should be lowered from authoritative_requirement to operational_guidance rather than changing the modality.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::2b52634a4c8df274.json",
+    "toPath": "candidates/h01-extracted/distress_urgency_general_4_1_1/h01-extracted::distress_urgency_general_4_1_1::2b52634a4c8df274.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:42:59Z"
+}

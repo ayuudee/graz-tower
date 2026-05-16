@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::reduction_separation_minima_5_11::b9064cee50134050",
+  "documentId": "icao4444-extracted",
+  "sectionId": "reduction_separation_minima_5_11",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.92,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted list item is verbatim and is an atomic circumstance under the parent provision that the separation minima may be reduced. The only defect is the G3 mismatch: a 'may' modality cannot carry 'authoritative_requirement', so the authority class should be lowered one rung.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::b9064cee50134050.json",
+    "toPath": "candidates/icao4444-extracted/reduction_separation_minima_5_11/icao4444-extracted::reduction_separation_minima_5_11::b9064cee50134050.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:32:29Z"
+}

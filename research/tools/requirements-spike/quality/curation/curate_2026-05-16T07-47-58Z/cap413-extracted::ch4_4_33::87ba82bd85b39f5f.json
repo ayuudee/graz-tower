@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_33::87ba82bd85b39f5f",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_33",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.24,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted phrase exists verbatim and is an atomic CAP413 phraseology example not duplicated by the accepted siblings. Its modality and authority class are already appropriately advisory, but the requirementKind should not frame it as a binding phraseology rule.",
+    "corrections": {
+      "requirementKind": "phraseology_example"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_33/cap413-extracted::ch4_4_33::87ba82bd85b39f5f.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_33/cap413-extracted::ch4_4_33::87ba82bd85b39f5f.json",
+    "correctionsApplied": {
+      "requirementKind": "phraseology_example"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:09:20Z"
+}

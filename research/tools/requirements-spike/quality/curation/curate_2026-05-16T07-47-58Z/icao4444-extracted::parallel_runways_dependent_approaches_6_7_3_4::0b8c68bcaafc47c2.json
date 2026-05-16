@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::0b8c68bcaafc47c2",
+  "documentId": "icao4444-extracted",
+  "sectionId": "parallel_runways_dependent_approaches_6_7_3_4",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.59,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the source, but the single exactSourceQuote is not present verbatim: it concatenates separated text and uses an ellipsis. Because claimText and exactSourceQuotes are identity fields that cannot be corrected in this pass, the record must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/parallel_runways_dependent_approaches_6_7_3_4/icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::0b8c68bcaafc47c2.json",
+    "toPath": "rejected/icao4444-extracted/parallel_runways_dependent_approaches_6_7_3_4/icao4444-extracted::parallel_runways_dependent_approaches_6_7_3_4::0b8c68bcaafc47c2.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:23:11Z"
+}

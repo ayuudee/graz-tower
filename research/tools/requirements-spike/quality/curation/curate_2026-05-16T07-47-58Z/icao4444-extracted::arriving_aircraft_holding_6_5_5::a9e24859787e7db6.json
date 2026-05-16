@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_holding_6_5_5::a9e24859787e7db6",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_holding_6_5_5",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.91,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim, and the candidate correctly preserves the source\u2019s \u201cshould\u201d modality as operational guidance rather than an authoritative requirement. It is not redundant with the accepted siblings, which do not cover this alternative-procedure clearance guidance.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::a9e24859787e7db6.json",
+    "toPath": "candidates/icao4444-extracted/arriving_aircraft_holding_6_5_5/icao4444-extracted::arriving_aircraft_holding_6_5_5::a9e24859787e7db6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:37:51Z"
+}

@@ -1,0 +1,20 @@
+{
+  "canonicalId": "h01-extracted::distress_aircraft_action_4_1_2_1::70283381931a295c",
+  "documentId": "h01-extracted",
+  "sectionId": "distress_aircraft_action_4_1_2_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.71,
+  "gptResponse": {
+    "action": "keep_pending",
+    "reasoning": "The quoted parent clause is verbatim and uses shall-strength language, but its operative content depends on the subordinate list of message elements that is not included in this candidate. This cannot be fixed by changing modality, authorityClass, or requirementKind; a human curator would need to bundle or re-extract the parent with the listed elements.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "keep_pending",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/distress_aircraft_action_4_1_2_1/h01-extracted::distress_aircraft_action_4_1_2_1::70283381931a295c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:39:38Z"
+}

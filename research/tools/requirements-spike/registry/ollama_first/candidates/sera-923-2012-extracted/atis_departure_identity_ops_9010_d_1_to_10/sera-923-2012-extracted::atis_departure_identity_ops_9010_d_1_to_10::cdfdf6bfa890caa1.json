@@ -1,0 +1,121 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "sera-923-2012-extracted::atis_departure_identity_ops_9010_d_1_to_10::cdfdf6bfa890caa1",
+  "documentId": "sera-923-2012-extracted",
+  "sectionId": "atis_departure_identity_ops_9010_d_1_to_10",
+  "familyId": "sera_atis_family",
+  "claimText": "ATIS messages containing departure information only shall contain the following elements of information in the order listed: (1) name of aerodrome; (2) departure indicator; (3) contract type, if communication is via D-ATIS; (4) designator; (5) time of observation, if appropriate; (6) runway(s) to be used for take-off; status of arresting system constituting a potential hazard, if any; (7) significant surface conditions of runway(s) to be used for take-off and, if appropriate, braking action; (8) departure delay, if appropriate; (9) transition level, if applicable; (10) other essential operational information.",
+  "rationale": "All attempts agree on the core mandatory list. Attempt 1 and 3 correctly identify that splitting the list loses the 'order listed' constraint. Attempt 2's separate 'order constraint' and 'scope' candidates are redundant as they are inherent to the main claim. Attempt 2's 'conditional elements' candidate is also redundant as the conditions are explicit in the source text of the main claim.",
+  "modality": "shall",
+  "authorityClass": "authoritative_requirement",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "ATIS messages containing departure information only shall contain the following elements of information in the order listed:",
+    "(1) name of aerodrome;",
+    "(2) departure indicator;",
+    "(3) contract type, if communication is via D-ATIS;",
+    "(4) designator;",
+    "(5) time of observation, if appropriate;",
+    "(6) runway(s) to be used for take-off; status of arresting system constituting a potential hazard, if any;",
+    "(7) significant surface conditions of runway(s) to be used for take-off and, if appropriate, braking action;",
+    "(8) departure delay, if appropriate;",
+    "(9) transition level, if applicable;",
+    "(10) other essential operational information;"
+  ],
+  "sourceItemIds": [
+    "sera_atis_family_clause_d",
+    "sera_atis_family_item_1",
+    "sera_atis_family_item_2",
+    "sera_atis_family_item_3",
+    "sera_atis_family_item_4",
+    "sera_atis_family_item_5",
+    "sera_atis_family_item_6",
+    "sera_atis_family_item_7",
+    "sera_atis_family_item_8",
+    "sera_atis_family_item_9",
+    "sera_atis_family_item_10"
+  ],
+  "claimSha256": "18edf52f384bc8fa49077ebf1c96ae8a3969bb03e295faf052789871e0fc0785",
+  "provenance": {
+    "sourcePath": "research/txt/sera-923-2012-extracted.txt",
+    "sourceSha256": "ffa1e61adff73a4a1c28efcb6a12759014a7053859ca7bc68c313aa37f9ba2fc",
+    "startLine": 2297,
+    "endLine": 2309
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "sera_atis_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "sera_atis_dep_msg_elements",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 11,
+      "hits": 11,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "authoritative_requirement",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/sera-923-2012-extracted/atis_departure_identity_ops_9010_d_1_to_10/judged_candidates.json"
+  }
+}

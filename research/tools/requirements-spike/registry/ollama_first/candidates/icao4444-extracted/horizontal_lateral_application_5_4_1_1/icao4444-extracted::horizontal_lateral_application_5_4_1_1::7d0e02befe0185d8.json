@@ -1,0 +1,111 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "icao4444-extracted::horizontal_lateral_application_5_4_1_1::7d0e02befe0185d8",
+  "documentId": "icao4444-extracted",
+  "sectionId": "horizontal_lateral_application_5_4_1_1",
+  "familyId": "icao4444_horizontal_separation_family",
+  "claimText": "States may establish other minima or additional conditions for use in circumstances not prescribed, provided the level of safety inherent in Sections 5.4.1 and 5.4.2 is assured.",
+  "rationale": "Clarifies State discretion to establish minima, conditioned on safety assurance.",
+  "modality": "may",
+  "authorityClass": "operational_guidance",
+  "requirementKind": "rule",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "Nothing in the provisions detailed in Sections 5.4.1 and 5.4.2 hereunder precludes a State from establishing: a) other minima for use in circumstances not prescribed; or b) additional conditions to those prescribed for the use of a given minimum; provided that the level of safety inherent in the provisions detailed in Sections 5.4.1 and 5.4.2 hereunder is at all times assured."
+  ],
+  "sourceItemIds": [
+    "note_1"
+  ],
+  "claimSha256": "6f0f49a117479b6f20f8f5b9ba4e850453eea1dd67073a98e5abc3f655ddcb9a",
+  "provenance": {
+    "sourcePath": "research/txt/icao4444-extracted.txt",
+    "sourceSha256": "98207a644ef45f94a0abd25503db692c74e7ca1bd7d8eb85ada9fa0adad3ebc3",
+    "startLine": 4353,
+    "endLine": 4571
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "icao4444_horizontal_separation_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "state_minima_discretion",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "windowed_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "may",
+      "authorityClass": "operational_guidance",
+      "floorConsistent": true,
+      "overrideFired": false,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quote is verbatim and supports the claim as a permissive Note, but the candidate's may modality cannot be classified as an authoritative_requirement under the authority floor. This should be retained only with lowered authority rather than rejected, since it is not redundant with the accepted atomic requirements.",
+      "corrections": {
+        "authorityClass": "operational_guidance"
+      },
+      "confidence": "high",
+      "curatedAt": "2026-05-16T11:04:51Z"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "authority_too_high",
+      "overridden": false
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:40Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/icao4444-extracted/horizontal_lateral_application_5_4_1_1/judged_candidates.json",
+    "curatedAt": "2026-05-16T11:04:51Z"
+  }
+}

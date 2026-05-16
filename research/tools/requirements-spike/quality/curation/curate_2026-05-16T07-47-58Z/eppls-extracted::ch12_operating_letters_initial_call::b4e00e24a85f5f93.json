@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_operating_letters_initial_call::b4e00e24a85f5f93",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_operating_letters_initial_call",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.65,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited sentence is advisory textbook language, but the immutable claimText recasts it as a 'shall' obligation. Because claimText cannot be edited in this pass, the overstatement of normative force requires rejection rather than correction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::b4e00e24a85f5f93.json",
+    "toPath": "rejected/eppls-extracted/ch12_operating_letters_initial_call/eppls-extracted::ch12_operating_letters_initial_call::b4e00e24a85f5f93.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:00:48Z"
+}

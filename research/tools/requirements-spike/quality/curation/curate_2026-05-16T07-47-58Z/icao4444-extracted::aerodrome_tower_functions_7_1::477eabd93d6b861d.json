@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::aerodrome_tower_functions_7_1::477eabd93d6b861d",
+  "documentId": "icao4444-extracted",
+  "sectionId": "aerodrome_tower_functions_7_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.02,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted source text is verbatim and supports the candidate\u2019s claim, but it uses the permissive wording \u201cmay\u201d and \u201cnormally,\u201d not a shall-strength obligation. Under the authority floor rules, the modality should remain \u201cmay\u201d and the authority class should be lowered from authoritative_requirement to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/aerodrome_tower_functions_7_1/icao4444-extracted::aerodrome_tower_functions_7_1::477eabd93d6b861d.json",
+    "toPath": "candidates/icao4444-extracted/aerodrome_tower_functions_7_1/icao4444-extracted::aerodrome_tower_functions_7_1::477eabd93d6b861d.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:23:54Z"
+}

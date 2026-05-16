@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::a09772765183c7af",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.89,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The candidate's exactSourceQuotes field does not appear verbatim in the provided source window after whitespace normalization, apparently due to two-column text interleaving in the source extraction. Because claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, this requires rejection rather than promotion with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::a09772765183c7af.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::a09772765183c7af.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:17:48Z"
+}

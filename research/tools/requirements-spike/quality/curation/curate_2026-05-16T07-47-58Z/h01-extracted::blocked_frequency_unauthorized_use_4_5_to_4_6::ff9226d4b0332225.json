@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::ff9226d4b0332225",
+  "documentId": "h01-extracted",
+  "sectionId": "blocked_frequency_unauthorized_use_4_5_to_4_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.98,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is supported by the parent clause and item (a), the quoted text appears verbatim, and the source uses 'should' framing consistent with operational guidance. It is an atomic step not already covered by the accepted sibling candidates.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::ff9226d4b0332225.json",
+    "toPath": "candidates/h01-extracted/blocked_frequency_unauthorized_use_4_5_to_4_6/h01-extracted::blocked_frequency_unauthorized_use_4_5_to_4_6::ff9226d4b0332225.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:23:23Z"
+}

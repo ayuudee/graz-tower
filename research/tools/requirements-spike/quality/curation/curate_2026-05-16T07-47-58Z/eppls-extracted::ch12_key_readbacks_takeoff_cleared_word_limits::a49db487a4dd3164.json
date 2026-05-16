@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_key_readbacks_takeoff_cleared_word_limits",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.68,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present in the source window verbatim when the line break is normalized, so the G1 miss appears to be an audit artefact rather than a real identity failure. The source uses \u201cmust,\u201d supporting shall-strength modality, and background_support is compatible with that modality.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164.json",
+    "toPath": "candidates/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:56:24Z"
+}

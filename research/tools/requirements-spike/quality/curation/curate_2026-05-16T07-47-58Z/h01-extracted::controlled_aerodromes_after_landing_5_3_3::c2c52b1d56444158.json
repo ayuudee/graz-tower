@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_after_landing_5_3_3::c2c52b1d56444158",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_after_landing_5_3_3",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 12.06,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quoted phraseologies exist verbatim, but the claimText is not supported as written: 'REPORT RUNWAY [(number)] VACATED' / 'MELDEN SIE...' are controller instructions, not pilot reports, and the source does not establish a general 'pilots shall' obligation. Because fixing this would require changing the identity field claimText, it cannot be corrected in this pass.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::c2c52b1d56444158.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_after_landing_5_3_3/h01-extracted::controlled_aerodromes_after_landing_5_3_3::c2c52b1d56444158.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:26:52Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::be7bd00461eefff4",
+  "documentId": "icao4444-extracted",
+  "sectionId": "longitudinal_time_climb_descent_same_track_5_4_2_2_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.85,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The exact quoted source is present and contains a clear 'shall' requirement for adding a restriction when issuing the clearance through third party communication or CPDLC. The omitted subordinate timing condition defines the referenced 10-minute condition, but this candidate is an atomic requirement for the clearance restriction and is not redundant with the accepted siblings.",
+    "corrections": {},
+    "confidence": "medium"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::be7bd00461eefff4.json",
+    "toPath": "candidates/icao4444-extracted/longitudinal_time_climb_descent_same_track_5_4_2_2_2/icao4444-extracted::longitudinal_time_climb_descent_same_track_5_4_2_2_2::be7bd00461eefff4.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:17:55Z"
+}

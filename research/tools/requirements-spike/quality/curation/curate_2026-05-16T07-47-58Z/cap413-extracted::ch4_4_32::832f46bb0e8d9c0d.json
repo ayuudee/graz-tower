@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_32::832f46bb0e8d9c0d",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_32",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.8,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted immediate-takeoff phraseology examples are present in the source, and the claim accurately summarizes them as illustrative phraseology. Modality `example` and authorityClass `operational_guidance` are appropriate for CAP 413 advisory phraseology, and the accepted siblings do not already cover immediate takeoff.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_32/cap413-extracted::ch4_4_32::832f46bb0e8d9c0d.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_32/cap413-extracted::ch4_4_32::832f46bb0e8d9c0d.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:08:25Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::7df87689e6717eb7",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 4.91,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The cited quote does not appear verbatim in the source window: the source has \u201cGet in touch with....\u201d while the candidate quote uses an ellipsis character. Because exactSourceQuotes are identity fields and cannot be corrected in this pass, this is a real G1 failure.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::7df87689e6717eb7.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::7df87689e6717eb7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:17:26Z"
+}

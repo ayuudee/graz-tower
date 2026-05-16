@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_154_to_4_156_part2::400393712abc8dff",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_154_to_4_156_part2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 35.75,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The claim is supported verbatim by the source note and is not redundant with the accepted sibling items. Because the source material is explicitly a NOTE explaining terminology equivalence rather than an operative phraseology instruction, it should be treated as background support rather than operational guidance.",
+    "corrections": {
+      "authorityClass": "background_support"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_154_to_4_156_part2/cap413-extracted::ch4_4_154_to_4_156_part2::400393712abc8dff.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_154_to_4_156_part2/cap413-extracted::ch4_4_154_to_4_156_part2::400393712abc8dff.json",
+    "correctionsApplied": {
+      "authorityClass": "background_support"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T07:56:42Z"
+}

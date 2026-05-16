@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::arriving_aircraft_information_6_6::227cf820b65e3f65",
+  "documentId": "icao4444-extracted",
+  "sectionId": "arriving_aircraft_information_6_6",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 8.78,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is substantively supported by the parent clause and item 6.6.5(e), but the exactSourceQuote as provided is not present verbatim in the source window because the item label is separated from the text by intervening page/header material. Since identity fields cannot be corrected in this pass, the verbatim-quote failure requires rejection rather than promotion.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/arriving_aircraft_information_6_6/icao4444-extracted::arriving_aircraft_information_6_6::227cf820b65e3f65.json",
+    "toPath": "rejected/icao4444-extracted/arriving_aircraft_information_6_6/icao4444-extracted::arriving_aircraft_information_6_6::227cf820b65e3f65.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:38:41Z"
+}

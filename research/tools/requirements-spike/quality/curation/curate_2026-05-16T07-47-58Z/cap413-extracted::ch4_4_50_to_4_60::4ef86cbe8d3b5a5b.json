@@ -1,0 +1,26 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::4ef86cbe8d3b5a5b",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_50_to_4_60",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.82,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the advisory claim, and the content is not redundant with accepted siblings. However, the source says \u201cIt is helpful\u201d and contains no \u201cshould\u201d wording, so the modality should be lowered to a non-modal advisory framing.",
+    "corrections": {
+      "modality": "none"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::4ef86cbe8d3b5a5b.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_50_to_4_60/cap413-extracted::ch4_4_50_to_4_60::4ef86cbe8d3b5a5b.json",
+    "correctionsApplied": {
+      "modality": "none"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:13:32Z"
+}

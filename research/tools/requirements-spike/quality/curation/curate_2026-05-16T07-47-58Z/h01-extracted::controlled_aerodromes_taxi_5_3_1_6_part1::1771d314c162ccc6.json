@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::1771d314c162ccc6",
+  "documentId": "h01-extracted",
+  "sectionId": "controlled_aerodromes_taxi_5_3_1_6_part1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.73,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "One cited identity quote, \"A: EXPEDITING\", is not present verbatim in the source window, so G1 has a real miss that cannot be corrected in this pass. Because exactSourceQuotes cannot be edited, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::1771d314c162ccc6.json",
+    "toPath": "rejected/h01-extracted/controlled_aerodromes_taxi_5_3_1_6_part1/h01-extracted::controlled_aerodromes_taxi_5_3_1_6_part1::1771d314c162ccc6.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:38:20Z"
+}

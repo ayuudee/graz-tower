@@ -1,0 +1,21 @@
+{
+  "canonicalId": "icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1bba451321cd00c",
+  "documentId": "icao4444-extracted",
+  "sectionId": "atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.74,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and the candidate accurately captures a self-contained non-normative note that provides cross-reference background for the cloud phraseology. Its modality and authorityClass are already appropriately set to note/background_support, and it is not redundant with the accepted atomic phraseology item for cloud reporting.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1bba451321cd00c.json",
+    "toPath": "candidates/icao4444-extracted/atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7/icao4444-extracted::atc_phraseologies_channel_callsign_traffic_12_3_1_5_to_12_3_1_7::b1bba451321cd00c.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T10:48:46Z"
+}

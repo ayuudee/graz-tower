@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_communications_services_flight_workflow::cdab4e79d9c2dfbc",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_communications_services_flight_workflow",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.08,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 failed because the exactSourceQuote is not found verbatim in the provided source text after whitespace normalization. Since claimText and exactSourceQuotes are identity fields and cannot be corrected in this pass, the record cannot be promoted despite the descriptive content being conceptually supported.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::cdab4e79d9c2dfbc.json",
+    "toPath": "rejected/eppls-extracted/ch12_communications_services_flight_workflow/eppls-extracted::ch12_communications_services_flight_workflow::cdab4e79d9c2dfbc.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:44:47Z"
+}

@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::11ecf75ffc191e5a",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_rules_channel_5_6_8_to_5_6_9",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 10.11,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The claim is directly supported by the verbatim Note in the source, and all gate audits passed. Its modality and authorityClass already correctly frame it as non-normative operational guidance, and it is not redundant with the accepted atomic phraseology siblings.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_flight_rules_channel_5_6_8_to_5_6_9/h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::11ecf75ffc191e5a.json",
+    "toPath": "candidates/h01-extracted/general_flight_rules_channel_5_6_8_to_5_6_9/h01-extracted::general_flight_rules_channel_5_6_8_to_5_6_9::11ecf75ffc191e5a.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:49:50Z"
+}

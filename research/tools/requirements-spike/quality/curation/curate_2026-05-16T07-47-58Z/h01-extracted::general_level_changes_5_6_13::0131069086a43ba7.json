@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_level_changes_5_6_13::0131069086a43ba7",
+  "documentId": "h01-extracted",
+  "sectionId": "general_level_changes_5_6_13",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.57,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The underlying phrase appears in the source, but the exactSourceQuote includes a leading bullet that is not present verbatim for this line, and G1 correctly failed. Because quote text is an identity field and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::0131069086a43ba7.json",
+    "toPath": "rejected/h01-extracted/general_level_changes_5_6_13/h01-extracted::general_level_changes_5_6_13::0131069086a43ba7.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:50:09Z"
+}

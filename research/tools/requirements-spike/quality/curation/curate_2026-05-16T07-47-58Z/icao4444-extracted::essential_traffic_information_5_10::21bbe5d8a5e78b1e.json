@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::essential_traffic_information_5_10::21bbe5d8a5e78b1e",
+  "documentId": "icao4444-extracted",
+  "sectionId": "essential_traffic_information_5_10",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 3.94,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quoted sentence exists verbatim and is self-contained, but it is explicitly presented as a Note, so the candidate's modality of note is correct. The only issue is that authorityClass is too high for note material and should be lowered from authoritative_requirement to operational_guidance.",
+    "corrections": {
+      "authorityClass": "operational_guidance"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/essential_traffic_information_5_10/icao4444-extracted::essential_traffic_information_5_10::21bbe5d8a5e78b1e.json",
+    "toPath": "candidates/icao4444-extracted/essential_traffic_information_5_10/icao4444-extracted::essential_traffic_information_5_10::21bbe5d8a5e78b1e.json",
+    "correctionsApplied": {
+      "authorityClass": "operational_guidance"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:01:29Z"
+}

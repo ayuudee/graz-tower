@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_clearance_readback_basics::a6a6a815e001897b",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_clearance_readback_basics",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 14.39,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quoted sentence is present in the source window with only line wrapping/spacing differences, so the G1 miss appears to be an artefact rather than a real verbatim failure. The candidate\u2019s should modality and background_support authority are consistent with the advisory source, and the accepted sibling covers a distinct readback rule rather than this transmission-initiation instruction.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_clearance_readback_basics/eppls-extracted::ch12_clearance_readback_basics::a6a6a815e001897b.json",
+    "toPath": "candidates/eppls-extracted/ch12_clearance_readback_basics/eppls-extracted::ch12_clearance_readback_basics::a6a6a815e001897b.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:42:50Z"
+}

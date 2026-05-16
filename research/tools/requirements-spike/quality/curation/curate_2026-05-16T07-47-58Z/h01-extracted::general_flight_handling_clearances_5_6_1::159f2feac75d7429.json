@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_flight_handling_clearances_5_6_1::159f2feac75d7429",
+  "documentId": "h01-extracted",
+  "sectionId": "general_flight_handling_clearances_5_6_1",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 20.05,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The quote is verbatim and the note is accurately represented, but it is only a non-operative cross-reference to other chapters and does not state a requirement or usable operational procedure. No modality or authorityClass correction would make this source unit promotable as an accepted requirement without changing its identity.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_flight_handling_clearances_5_6_1/h01-extracted::general_flight_handling_clearances_5_6_1::159f2feac75d7429.json",
+    "toPath": "rejected/h01-extracted/general_flight_handling_clearances_5_6_1/h01-extracted::general_flight_handling_clearances_5_6_1::159f2feac75d7429.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:47:58Z"
+}

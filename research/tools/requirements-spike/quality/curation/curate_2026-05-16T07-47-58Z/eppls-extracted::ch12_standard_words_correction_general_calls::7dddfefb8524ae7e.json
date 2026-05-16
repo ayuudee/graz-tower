@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_standard_words_correction_general_calls::7dddfefb8524ae7e",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_standard_words_correction_general_calls",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 5.92,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The exactSourceQuotes field does not match the source verbatim: the source reads \u201cafter\u2026.\u201d while the candidate quote ends \u201cafter\u2026\u201d. Because quote text is an identity field and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::7dddfefb8524ae7e.json",
+    "toPath": "rejected/eppls-extracted/ch12_standard_words_correction_general_calls/eppls-extracted::ch12_standard_words_correction_general_calls::7dddfefb8524ae7e.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:17:21Z"
+}

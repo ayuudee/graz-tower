@@ -1,0 +1,26 @@
+{
+  "canonicalId": "icao4444-extracted::general_phraseologies_12_2::e7774faf617a984a",
+  "documentId": "icao4444-extracted",
+  "sectionId": "general_phraseologies_12_2",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 19.39,
+  "gptResponse": {
+    "action": "promote_with_corrections",
+    "reasoning": "The quote is verbatim and supports the claim, and the content is not redundant with the accepted sibling about using call signs. Because the operative source wording is \u201cshall\u201d in ICAO PANS-ATM, the judge\u2019s advisory-only rationale under-classifies the candidate; the authority class should be raised rather than treating it as best-practice guidance.",
+    "corrections": {
+      "authorityClass": "authoritative_requirement"
+    },
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote_with_corrections",
+    "dryRun": false,
+    "fromPath": "pending/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::e7774faf617a984a.json",
+    "toPath": "candidates/icao4444-extracted/general_phraseologies_12_2/icao4444-extracted::general_phraseologies_12_2::e7774faf617a984a.json",
+    "correctionsApplied": {
+      "authorityClass": "authoritative_requirement"
+    },
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T11:04:35Z"
+}

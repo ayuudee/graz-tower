@@ -1,0 +1,21 @@
+{
+  "canonicalId": "cap413-extracted::ch4_4_17_to_4_23::e4de51c5a5cc5c23",
+  "documentId": "cap413-extracted",
+  "sectionId": "ch4_4_17_to_4_23",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 11.48,
+  "gptResponse": {
+    "action": "promote",
+    "reasoning": "The quote is verbatim and supports the claim exactly: CAP 413 uses \u201cshould\u201d for the runway-designator-first ordering. The candidate is correctly framed as operational guidance rather than an authoritative requirement, and it is not redundant with the accepted sibling requiring runway instructions to include the runway designator.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "promote",
+    "dryRun": false,
+    "fromPath": "pending/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::e4de51c5a5cc5c23.json",
+    "toPath": "candidates/cap413-extracted/ch4_4_17_to_4_23/cap413-extracted::ch4_4_17_to_4_23::e4de51c5a5cc5c23.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:01:51Z"
+}

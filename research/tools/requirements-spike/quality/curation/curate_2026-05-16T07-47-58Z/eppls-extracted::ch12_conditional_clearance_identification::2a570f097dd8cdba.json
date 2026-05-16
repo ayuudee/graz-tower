@@ -1,0 +1,21 @@
+{
+  "canonicalId": "eppls-extracted::ch12_conditional_clearance_identification::2a570f097dd8cdba",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_conditional_clearance_identification",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 9.66,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "The claim is generally supported by the visible source, but the exactSourceQuote does not appear verbatim in the provided source text after the extraction/interleaving shown, and G1 failed. Because quote text is an identity field and cannot be corrected in this pass, the record cannot be promoted.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/eppls-extracted/ch12_conditional_clearance_identification/eppls-extracted::ch12_conditional_clearance_identification::2a570f097dd8cdba.json",
+    "toPath": "rejected/eppls-extracted/ch12_conditional_clearance_identification/eppls-extracted::ch12_conditional_clearance_identification::2a570f097dd8cdba.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T08:45:12Z"
+}

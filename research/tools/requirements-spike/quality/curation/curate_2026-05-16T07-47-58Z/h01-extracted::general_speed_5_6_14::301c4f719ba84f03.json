@@ -1,0 +1,21 @@
+{
+  "canonicalId": "h01-extracted::general_speed_5_6_14::301c4f719ba84f03",
+  "documentId": "h01-extracted",
+  "sectionId": "general_speed_5_6_14",
+  "model": "gpt-5.5",
+  "elapsedSeconds": 7.16,
+  "gptResponse": {
+    "action": "reject",
+    "reasoning": "G1 has a real verbatim miss: the English source phrase contains \u201cMACH (number)/KILOMETRES PER HOUR,\u201d while the candidate quote omits the slash. Because exactSourceQuotes and claimText are identity fields and cannot be edited in this pass, the record must be rejected rather than corrected.",
+    "corrections": {},
+    "confidence": "high"
+  },
+  "actionAudit": {
+    "appliedAction": "reject",
+    "dryRun": false,
+    "fromPath": "pending/h01-extracted/general_speed_5_6_14/h01-extracted::general_speed_5_6_14::301c4f719ba84f03.json",
+    "toPath": "rejected/h01-extracted/general_speed_5_6_14/h01-extracted::general_speed_5_6_14::301c4f719ba84f03.json",
+    "judgementRowsAppended": 1
+  },
+  "curatedAt": "2026-05-16T09:53:39Z"
+}
