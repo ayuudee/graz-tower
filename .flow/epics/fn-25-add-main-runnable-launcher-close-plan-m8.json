@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-25-add-main-runnable-launcher-close-plan-m8",
+  "created_at": "2026-05-16T08:13:17.659212Z",
+  "depends_on_epics": [],
+  "id": "fn-25-add-main-runnable-launcher-close-plan-m8",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-25-add-main-runnable-launcher-close-plan-m8.md",
+  "status": "open",
+  "title": "Add `main()` runnable launcher (close .plan M8)",
+  "updated_at": "2026-05-16T08:15:17.354891Z"
+}

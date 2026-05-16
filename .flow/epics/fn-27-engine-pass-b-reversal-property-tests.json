@@ -1,0 +1,15 @@
+{
+  "branch_name": "fn-27-engine-pass-b-reversal-property-tests",
+  "created_at": "2026-05-16T08:32:03.104834Z",
+  "depends_on_epics": [
+    "fn-26-engine-pass-a-step-function-property"
+  ],
+  "id": "fn-27-engine-pass-b-reversal-property-tests",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-27-engine-pass-b-reversal-property-tests.md",
+  "status": "open",
+  "title": "Engine pass B \u2014 reversal property tests (forward + reverse pair equivalence)",
+  "updated_at": "2026-05-16T08:36:14.232186Z"
+}
