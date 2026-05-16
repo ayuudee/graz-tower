@@ -276,10 +276,19 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     // `PlanRouteOutcome.Failed` branch returns `Either.Left` (no
     // PilotOutput); the suppression flag has no transmission slot to
     // affect on the error path.
+    //
+    // Refactored to the [applyCognitiveSuppression] focused seam (codex
+    // round-2 fix): the suppression logic is now a named helper, unit-
+    // tested directly. Both pilotDecide return branches call the same
+    // helper output (`effectiveCognitiveTransmissions`), guaranteeing
+    // structural code-share without requiring a "DA-decline AND Plan
+    // route both fire" test scenario (which is structurally impossible
+    // by R16 design — DA-decline gates pre-taxi, planRoute Plan branch
+    // requires airborne / Transit-cruise context).
     val suppressSameTickCognitive: Boolean =
         densityAltitudeDecline?.suppressSameTickCognitive == true
     val effectiveCognitiveTransmissions: List<PilotTransmission> =
-        if (suppressSameTickCognitive) emptyList() else cognitive.transmissions
+        applyCognitiveSuppression(cognitive.transmissions, suppressSameTickCognitive)
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
     // Plan execution: if the current task needs an airborne route the pilot
@@ -1576,6 +1585,36 @@ internal fun isEffectiveCircuitMode(mission: PilotMission, world: PilotAviationW
     return deriveNavigationMode(mission.goal, rwy, world)
         .fold({ false }, { it is NavigationMode.Circuit })
 }
+
+/**
+ * fn-28.2 (R14 / round-13 Major 1 / round-2 codex fold-in): cognitive-
+ * suppression focused seam. When [suppressSameTickCognitive] is true,
+ * returns an empty transmission list; otherwise returns the original
+ * cognitive transmissions verbatim.
+ *
+ * **Why a named helper, not inline at the call site**: codex round-2
+ * fix. The round-13 Major 1 contract requires "the filter must apply
+ * BEFORE every `PilotOutput` construction site" — both pilotDecide's
+ * `PlanRouteOutcome.Plan` and `PlanRouteOutcome.Skip` branches call
+ * this helper once (via `effectiveCognitiveTransmissions`), so the
+ * code-share is structural. Unit tests on this helper directly cover
+ * the suppression logic without requiring an end-to-end fixture that
+ * exercises Plan-path while DA-decline fires (which is structurally
+ * impossible by R16 design — DA-decline gates pre-taxi, planRoute Plan
+ * requires airborne / Transit-cruise).
+ *
+ * **Pure**: no side effects, no time dependency. Same inputs → same
+ * output, every call.
+ *
+ * **`internal` visibility**: enables direct unit-testing from
+ * `commonTest` without exposing the helper to non-test consumers of
+ * the `:pilot` module's public API.
+ */
+internal fun applyCognitiveSuppression(
+    transmissions: List<PilotTransmission>,
+    suppressSameTickCognitive: Boolean,
+): List<PilotTransmission> =
+    if (suppressSameTickCognitive) emptyList() else transmissions
 
 /**
  * Apply cognitive overrides to kinematic intent.
