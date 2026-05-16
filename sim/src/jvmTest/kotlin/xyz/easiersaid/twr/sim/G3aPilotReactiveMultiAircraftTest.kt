@@ -40,6 +40,7 @@ import xyz.easiersaid.twr.sim.testing.load
 import xyz.easiersaid.twr.sim.testing.missionStepTransitions
 import xyz.easiersaid.twr.sim.testing.positionPointTransitions
 import xyz.easiersaid.twr.sim.testing.requiredStartPoints
+import xyz.easiersaid.twr.sim.testing.TraceCursor
 import xyz.easiersaid.twr.sim.testing.responsibilityTransitions
 import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
 import xyz.easiersaid.twr.sim.testing.transitionsOf
@@ -817,28 +818,57 @@ class G3aPilotReactiveMultiAircraftTest {
                 bExtendDownwindRecords.joinToString { "${it.time.millis}ms" } +
                 ".\n$journey"
         }
-        val bExtendDownwindAfterGaMs = bExtendDownwindAfterGa.first().time.millis
 
-        // ── Layer 3 — Kinematic non-event for B during GA-active window ─────
+        // ── GA-belief lifecycle walk ────────────────────────────────────────
         //
-        // While the GA belief is active (between A's `Report(GoingAround)`
-        // and either A's recovery Downwind report or the 60s timeout), B
-        // MUST NOT enter a base-leg position-point. `ARR-TURN-BASE`'s
-        // `Not(GoAroundInProgressOnRunway)` guard prevents the TurnBase
-        // instruction from firing for B in this window. A regression that
-        // misfires the guard would let B turn base into the GA-active
-        // runway — a doctrinal violation.
+        // Walk the trace and locate (a) the first cursor where
+        // `goAroundInProgressByRunway[rwy]` is present (GA-active SET
+        // cycle) and (b) the first subsequent cursor where the entry
+        // is absent (GA-belief-clear cycle). The SET cycle is the
+        // controller cycle that processed A's `Report(GoingAround)`
+        // and folded it into BeliefState; the CLEAR cycle is the
+        // controller cycle that processed A's recovery
+        // `Report(Downwind/Final/Base)` pattern-rejoin (Scenario 3) or
+        // hit the 60s timeout. Pins below read these cycle cursors —
+        // NOT transmission timestamps — to assert the same-cycle
+        // contract (round-10 Major 2). This is the load-bearing
+        // upgrade per codex round-1 review: a previous design that
+        // upper-bounded the GA-active window at the first
+        // `ExtendDownwind(B)` would have let a regression slip a
+        // late `TurnBase(B)` through (the rule fires once-per-cycle
+        // while the belief is active; the first ExtendDownwind
+        // record sits early in that window, not at its boundary).
+        val gaBeliefSetCursor = trace.firstWhere { st ->
+            st.beliefs[tower.id]?.goAroundInProgressByRunway?.containsKey(rwy) == true
+        }
+        val gaBeliefClearCursor: TraceCursor? =
+            gaBeliefSetCursor.fold<TraceCursor?>({ null }) { setCursor ->
+                trace.firstWhere { st ->
+                    st.now.millis > setCursor.time.millis &&
+                        st.beliefs[tower.id]?.goAroundInProgressByRunway?.containsKey(rwy) != true
+                }.fold<TraceCursor?>({ null }) { it }
+            }
+
+        // ── Layer 3 — Kinematic non-event for B across the FULL GA-active window ─
         //
-        // We pin this on the radio observable instead of a position-point
-        // walk: no `TurnBase(B)` instruction emitted between
-        // `Report(GoingAround)` and either the recovery Downwind report
-        // (Scenario 3) or end-of-window (Scenarios 1+2 use the
-        // bExtendDownwindAfterGaMs cursor as a conservative inner bound —
-        // the rule fires once-per-cycle while the belief is active, so
-        // the cursor sits inside the GA window). The radio observable is
+        // While the GA belief is active (from the SET cycle through the
+        // CLEAR cycle's predecessor — or, if no clear happens within the
+        // trace, to end-of-trace), B MUST NOT receive any `TurnBase`
+        // instruction. `ARR-TURN-BASE`'s `Not(GoAroundInProgressOnRunway)`
+        // guard prevents the TurnBase emission while the belief is set.
+        // A regression that misfires the guard would let B turn base into
+        // the GA-active runway — a doctrinal violation.
+        //
+        // The radio observable
+        // (`out.dispatch.instruction is TurnBase` + `out.target == B`) is
         // the load-bearing post-state per
         // `knowledge/best-practices/test-pin-discipline-2026-05-15` (post-
         // state-vs-intent + radio-observable preference).
+        //
+        // Upper bound: the belief-clear cursor's time if the trace shows
+        // a clear, OR the trace's last-cursor time otherwise. The
+        // previous draft used the first `ExtendDownwind(B)` as the upper
+        // bound which was too narrow (codex round-1 Finding 1).
         val bTurnBaseRecords = records.filter { rec ->
             val out = (rec.utterance as? Utterance.FromController)?.output
                 as? ControllerOutput.Instruct ?: return@filter false
@@ -847,30 +877,21 @@ class G3aPilotReactiveMultiAircraftTest {
                 ?: return@filter false
             out.target == aircraftBId && instr is TurnBase
         }
-        val gaWindowUpper = if (assertBeliefClearsAndTurnBaseFires) {
-            // Scenario 3 — strictly before the recovery Downwind report
-            // (which is what clears the belief).
-            checkNotNull(windClearedAt[0]) {
-                "[$label] Scenario 3 requires windClearedAt to be set (set by recovery " +
-                    "Downwind report).\n$journey"
-            }.millis
-        } else {
-            // Scenarios 1+2 — use the ExtendDownwind(B) emission as the
-            // inner cursor; the GA belief is still active at that point
-            // (the rule's guard is `GoAroundInProgressOnRunway`).
-            bExtendDownwindAfterGaMs
-        }
+        val gaActiveUpperMs: Long = gaBeliefClearCursor?.time?.millis
+            ?: trace.steps.lastOrNull()?.time?.millis
+            ?: trace.initial.now.millis
         val bTurnBaseInWindow = bTurnBaseRecords.filter { rec ->
             val t = rec.time.millis
-            t > aGoingAroundMs && t < gaWindowUpper
+            t > aGoingAroundMs && t < gaActiveUpperMs
         }
         check(bTurnBaseInWindow.isEmpty()) {
             "[$label] Layer 3 kinematic non-event for B: expected NO TurnBase(B) " +
                 "instructions between A's Report(GoingAround) at ${aGoingAroundMs}ms and " +
-                "the GA-window upper bound at ${gaWindowUpper}ms — `ARR-TURN-BASE`'s " +
-                "`Not(GoAroundInProgressOnRunway)` guard must suppress TurnBase while the " +
-                "belief is active. Got ${bTurnBaseInWindow.size} TurnBase(B) emissions in " +
-                "the GA window at: " + bTurnBaseInWindow.joinToString { "${it.time.millis}ms" } +
+                "the GA-belief-clear cursor at ${gaActiveUpperMs}ms (or end-of-trace) — " +
+                "`ARR-TURN-BASE`'s `Not(GoAroundInProgressOnRunway)` guard must suppress " +
+                "TurnBase while the belief is active. Got ${bTurnBaseInWindow.size} " +
+                "TurnBase(B) emissions in the GA window at: " +
+                bTurnBaseInWindow.joinToString { "${it.time.millis}ms" } +
                 ".\n$journey"
         }
 
@@ -897,25 +918,79 @@ class G3aPilotReactiveMultiAircraftTest {
             )
             val aRecoveryDownwindMs = aRecoveryDownwindRecord.time.millis
 
-            // First TurnBase(B) strictly AFTER A's recovery Downwind. The
-            // controller's GA belief clears in the cycle that processes
-            // the recovery Downwind report (round-13 Major 3 — `receivedAt
+            // Same-cycle cancel-output contract (round-10 Major 2): the
+            // GA belief clears in the controller cycle that processes A's
+            // recovery `Report(Downwind)` (round-13 Major 3 — `receivedAt
             // > setAtTime` strict-inequality is satisfied by the wall-
-            // clock gap). `ARR-TURN-BASE` re-enables for B in that same
+            // clock gap). `ARR-TURN-BASE` re-enables for B in THAT SAME
             // cycle (the rule's guard set drops the GA-active block) and
             // emits `TurnBase(B)`. The existing
             // `SupersessionRelation(TurnBase, ExtendDownwind, ABANDON)`
             // row drops B's prior ExtendDownwind coordination.
-            val bTurnBaseAfterRecovery = bTurnBaseRecords.firstOrNull {
-                it.time.millis >= aRecoveryDownwindMs
-            } ?: fail(
-                "[$label] Scenario 3 (round-10 Major 2 concrete cancel-output): expected at " +
-                    "least one TurnBase(B) AT-OR-AFTER A's recovery Report(Downwind) at " +
-                    "${aRecoveryDownwindMs}ms — `ARR-TURN-BASE` should re-enable for B in the " +
-                    "same cycle the GA belief clears. All TurnBase(B) records: " +
-                    bTurnBaseRecords.joinToString { "${it.time.millis}ms" } + ".\n$journey",
+            //
+            // Codex round-1 Finding 2 fix: assert TurnBase(B) is issued
+            // FROM THE SAME controller decision cycle as the belief-
+            // clear — NOT just any later transmission. We pin this by:
+            //  1. Identifying the belief-clear cursor (the first trace
+            //     step where `goAroundInProgressByRunway[rwy]` is absent
+            //     after the SET cursor) — `gaBeliefClearCursor` above.
+            //  2. Pinning the cursor's time strictly after the recovery
+            //     Downwind transmission (the clear MUST be triggered by
+            //     the report, not by the 60s timeout in this scenario).
+            //  3. Asserting at least one `TurnBase(B)` record has
+            //     `time` within `[clearCursor.time, clearCursor.time +
+            //     CONTROLLER_CYCLE_INTERVAL)` — the controller cycle
+            //     window. `CONTROLLER_CYCLE_INTERVAL` is 500ms per
+            //     `sim/Step.kt:166`; a TurnBase emitted on the same
+            //     cycle as the clear lands within this window because
+            //     the transmission's `startedAt` is the cycle's
+            //     `time` (or marginally later if the radio is busy and
+            //     `applyControllerOutputs` serializes queued outputs).
+            //     We allow `time == clearCursor.time` as well to admit
+            //     the natural case where the clear cycle and the
+            //     TurnBase emission share the cycle's controller-side
+            //     wall clock (mirrors fn-12.3's `findEmittingCycleMs`
+            //     mint-id walk semantic — same-cycle ordering is
+            //     anchored on cycle wall clock, not transmission
+            //     start).
+            val clearCursor = gaBeliefClearCursor ?: fail(
+                "[$label] Scenario 3 (round-10 Major 2): expected the trace to show a " +
+                    "GA-belief-clear cursor (the first cycle where " +
+                    "`goAroundInProgressByRunway[$rwy]` is absent after the SET cycle). " +
+                    "None observed — either the recovery `Report(Downwind)` was never " +
+                    "processed by the controller, the fold's clear path failed, or the " +
+                    "run terminated before the clear cycle.\n$journey",
             )
-            val bTurnBaseAfterRecoveryMs = bTurnBaseAfterRecovery.time.millis
+            val clearCursorMs = clearCursor.time.millis
+            check(clearCursorMs > aRecoveryDownwindMs) {
+                "[$label] Scenario 3 (round-13 Major 3 — pattern-rejoin clear): GA-belief-" +
+                    "clear cursor at ${clearCursorMs}ms must fire AFTER A's recovery " +
+                    "Report(Downwind) at ${aRecoveryDownwindMs}ms. A clear strictly " +
+                    "before the report would indicate the 60s timeout fired instead of " +
+                    "the pattern-rejoin path — wrong clear path.\n$journey"
+            }
+            val cycleWindowEndMs = clearCursorMs +
+                CONTROLLER_CYCLE_INTERVAL.millis
+            val bTurnBaseSameCycle = bTurnBaseRecords.filter { rec ->
+                val t = rec.time.millis
+                t >= clearCursorMs && t < cycleWindowEndMs
+            }
+            check(bTurnBaseSameCycle.isNotEmpty()) {
+                "[$label] Scenario 3 (round-10 Major 2 same-cycle cancel-output): expected " +
+                    "at least one `TurnBase(B)` instruction issued WITHIN the same " +
+                    "controller cycle as the belief-clear at ${clearCursorMs}ms " +
+                    "(i.e. with `record.time.millis` in " +
+                    "[${clearCursorMs}ms, ${cycleWindowEndMs}ms) = clearCursor.time " +
+                    "+ CONTROLLER_CYCLE_INTERVAL=" +
+                    "${CONTROLLER_CYCLE_INTERVAL.millis}ms). " +
+                    "`ARR-TURN-BASE`'s `Not(GoAroundInProgressOnRunway)` guard should " +
+                    "re-enable in the same cycle the belief clears, and TurnBase(B) " +
+                    "should fire that cycle — superseding B's prior ExtendDownwind via " +
+                    "the existing SupersessionRelation(TurnBase, ExtendDownwind, ABANDON) " +
+                    "row. All TurnBase(B) records: " +
+                    bTurnBaseRecords.joinToString { "${it.time.millis}ms" } + ".\n$journey"
+            }
+            val bTurnBaseAfterRecoveryMs = bTurnBaseSameCycle.first().time.millis
 
             // No-runway-vacate precedence (round-8 Major 3): the belief-
             // clear + TurnBase(B) chain happens BEFORE any
