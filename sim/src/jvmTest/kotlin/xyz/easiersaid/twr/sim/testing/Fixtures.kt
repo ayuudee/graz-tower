@@ -88,6 +88,20 @@ import xyz.easiersaid.twr.protocol.Wind
  *    aircraft has physically re-entered the recovery pattern, not
  *    merely climbed out from the GA; closes the second pilot-reactive
  *    POH/AFH recognition axis as the fifth reactive-GA path).
+ *  - [LOWG_HIGH_DA] — fn-28.3 (G3a-react-density-altitude sim golden)
+ *    LOWG variant with a hot-day OAT (50.0°C) chosen so
+ *    `computeDensityAltitudeFeet` returns 5594 ft, comfortably above
+ *    C172's 5000 ft `maxDensityAltitudeFt` advisory (FAA AC 61-107B
+ *    §3-1). Same world/stand/controllers/flight plan as [LOWG]; the
+ *    sole distinguishing surface is the [WeatherObservation.oat] slot.
+ *    Drives [xyz.easiersaid.twr.sim.G3aPilotReactiveDensityAltitudeTest]
+ *    — apron-stay decline triggered by the static OAT (no mid-run
+ *    weather-mutation hook, unlike the crosswind/tailwind axes; DA
+ *    decline is recognised on the first pilot decision tick before the
+ *    pilot transmits `Request(RequestTaxi)`). Closes the third
+ *    pilot-reactive POH/AFH recognition axis as the sixth reactive-GA
+ *    path (after the wind axes), and the first apron-side reactive
+ *    branch — no go-around envelope, just decline.
  *  - [LOWG_TWO_AIRCRAFT] — fn-8.1 G1 foundation. Two-aircraft VFR
  *    circuit-training fixture at LOWG. Stand pair: `LOWG_STAND_1_POINT`
  *    + `LOWG_STAND_2_POINT` — adjacent GA gates authored in the LOWG
@@ -155,6 +169,99 @@ object Fixtures {
         // event distribution. Pre-Pass-11 this was a `groundResponsibilities`
         // direct-injection cheat; the strip now arrives via
         // `SimEvent.FlightPlanFiled` at sim-start.
+        flightPlans = mapOf(
+            AircraftId("OE-ABC") to FiledPlan.Vfr(
+                departureAerodrome = AerodromeId("LOWG"),
+                destinationAerodrome = null, // local circuit training
+                intent = AircraftIntent.Departing,
+            ),
+        ),
+    )
+
+    /**
+     * fn-28.3 (G3a-react-density-altitude sim golden): LOWG variant with a
+     * hot-day OAT that produces a density altitude **above** the C172's
+     * 5000 ft `maxDensityAltitudeFt` advisory (FAA AC 61-107B §3-1). Same
+     * world / stand / controllers / flight plan as [LOWG]; the **sole**
+     * distinguishing surface is the OAT slot on
+     * [WeatherObservation.oat] — every other weather field is identical
+     * to the baseline [LOWG] fixture (wind 160°@8, QNH 1013 hPa, visibility
+     * null). Keeping the surface-area diff to a single field pins the
+     * test's "the DA recognition fired because of the OAT slot" causal
+     * claim — a regression that produced DA decline off some other
+     * weather field would not satisfy any other test that uses [LOWG]
+     * (those tests run on `oat = 12.79°C` which yields DA below threshold).
+     *
+     * **Numeric provenance** (`computeDensityAltitudeFeet` reverse-derived;
+     * pinned by the fn-28.3 test's R17 numerical assertion):
+     *
+     * Field elevation per LOWG world-candidate JSON: **1120 ft**
+     * (`cad/airports/rendered/lowg/world-candidate.json:elevationFeet`).
+     * The fn-28 round-3 Major 4 narrative quoted "1115 ft" from
+     * AGENTS.md; the world-data authoritative value is 1120 ft. Both
+     * round to the same ISA(elev) ≈ 12.78°C; either value yields a DA
+     * comfortably above 5000 ft at OAT = 50°C.
+     *
+     * **OAT = 50.0°C** (concrete hot-day value chosen to comfortably
+     * exceed C172's 5000 ft advisory by ≥ 500 ft, per fn-28.3 spec
+     * "fixture's OAT is chosen so the function returns ≥ 5500 ft").
+     * Derivation (formula in [xyz.easiersaid.twr.pilot.DensityAltitudeFormula]):
+     *
+     * ```
+     * pressure_altitude_ft = 1120 + (1013.25 - 1013) * 30 = 1127.5
+     * isa_temperature_c    = 15.0 - (1120 / 1000) * 1.98 = 12.7824
+     * density_altitude_ft  = 1127.5 + 120 * (50.0 - 12.7824) = 5593.6
+     * rounded → 5594 ft (≥ 5500, ≥ 5000 + 500 ft comfort margin)
+     * ```
+     *
+     * The narrative anchor in fn-28's spec round-3 Major 4 ("47.8°C =
+     * ISA+35°C at LOWG") yields ~5330 ft — above the 5000 ft threshold
+     * but BELOW the spec's ≥5500 comfort floor. The spec explicitly
+     * permits "OR use a computed-from-fixture value" so we lift the
+     * OAT to 50°C; this is a concrete numeric (not prose) per round-3
+     * Major 4 / R17 — the fn-28.3 test asserts on `computeDensityAltitudeFeet`'s
+     * output (5594 ft), NOT on the prose ISA+35 framing.
+     *
+     * **QNH = 1013 hPa** (standard ISA QNH, same as baseline [LOWG]).
+     * `PressureSetting.QnhHpa.unsafe(1013)`; the formula collapses
+     * `(1013.25 - 1013) * 30 = 7.5 ft` so the QNH term is small but
+     * non-zero — preserves the QNH path through the formula.
+     *
+     * **Wind = 160°@8** (light SE wind aligned with runway 16C; same as
+     * baseline [LOWG]). DA decline is an apron-side decision; wind is
+     * irrelevant to the recognition predicate, but a non-trivial wind
+     * preserves the rest of the fixture's runtime behaviour (controller
+     * runway selection, ATIS path) for downstream consumers.
+     *
+     * **No mutation hook**: unlike fn-14.2 / fn-15.2's two-transition
+     * weather authorship pattern (where wind shifts in mid-run), DA
+     * decline is recognised on the FIRST pilot decision tick — before
+     * the pilot transmits `Request(RequestTaxi)`. The fixture's static
+     * OAT is the sole driver; no per-tick world-hook is required.
+     *
+     * **Sibling tests** (DA recognition surface):
+     *  - fn-28.3's `G3aPilotReactiveDensityAltitudeTest` is the **sole**
+     *    consumer at fn-28 close. Future apron-DA scenarios (post-fn-28
+     *    DA recovery flows, multi-aircraft DA cascades) reuse this
+     *    fixture and override [WeatherObservation.oat] as needed via the
+     *    same provenance shape.
+     */
+    val LOWG_HIGH_DA: Fixture = Fixture(
+        aerodromeId = AerodromeId("LOWG"),
+        candidatePath = projectRoot().resolve("cad/airports/rendered/lowg/world-candidate.json"),
+        standPointId = PointId("LOWG_STAND_1_POINT"),
+        frequency = Frequency.unsafe("118.200"),
+        weather = WeatherObservation(
+            wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
+            qnh = PressureSetting.QnhHpa.unsafe(1013),
+            visibility = null,
+            // fn-28.3: hot-day OAT chosen so `computeDensityAltitudeFeet`
+            // returns 5594 ft (> C172's 5000 ft `maxDensityAltitudeFt`
+            // advisory by ≥ 500 ft). See KDoc above for the full
+            // derivation; concrete numeric per round-3 Major 4 / R17.
+            oat = Temperature.celsius(50.0),
+        ),
+        controllerRoles = setOf(RoleName.GROUND, RoleName.TOWER),
         flightPlans = mapOf(
             AircraftId("OE-ABC") to FiledPlan.Vfr(
                 departureAerodrome = AerodromeId("LOWG"),

@@ -497,12 +497,6 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Why:** Tailwind sibling of D-PASS-g3a-react-multi-aircraft-crosswind. Multi-aircraft scenario with simultaneous tailwind GAs requires controller coordination.
 **Closes by:** future multi-aircraft scenario pass (co-files with crosswind sibling)
 
-### D-PASS-g3a-react-other-poh-triggers — Density altitude / temperature / weight POH triggers
-**Status:** narrative
-**Pinned at:** fn-14/15 epic specs; protocol/.../AircraftType.kt POH-derived shape
-**Why:** fn-14/15 typed maxCrosswindKnots + maxTailwindKnots establish the per-leaf POH-data pattern; other POH triggers (density altitude, OAT, weight limits) each become their own typed field + recognition predicate. Sibling siblings of fn-14/15 epics.
-**Closes by:** future POH-derivation pass per trigger
-
 ### D-PASS-g3a-react-personal-minimums — Pilot personal-minimums margin below POH demo value
 **Status:** narrative
 **Pinned at:** protocol/.../AircraftType.kt maxCrosswindKnots/maxTailwindKnots; pilot/.../observe/PilotEvent.kt CrosswindLimitExceeded/TailwindLimitExceeded
@@ -778,6 +772,11 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 **Status:** closed
 **Closed by:** fn-15 epic (fn-15.1 + fn-15.2 both done)
 **Enforcement:** protocol/.../AircraftType.kt maxTailwindKnots typed field; pilot/.../observe/PilotEvent.kt TailwindLimitExceeded leaf; pilot/.../Pilot.kt applyTailwindGoAround applier; sim/src/jvmTest/.../G3aPilotReactiveTailwindTest.kt as the ninth golden
+
+### D-PASS-g3a-react-other-poh-triggers — Density altitude / temperature / weight POH triggers
+**Status:** closed
+**Closed by:** fn-28 epic (fn-28.1 + fn-28.2 + fn-28.3 all done — DA-decline bundled coverage: foundation A typed projection + foundation B recognition+apply + sim golden apron-stay)
+**Enforcement:** Bundled-coverage closure for the DA leg of the original deferment: `protocol/.../AircraftType.kt maxDensityAltitudeFt: Feet?` nullable per-type advisory (C172 = 5000 ft per FAA AC 61-107B §3-1; B738 = null applicability fallthrough); `core/.../WeatherObservation.kt` adds `oat: Temperature? = null` per ICAO Annex 11 §4.3.6; `protocol/.../Temperature.kt` typed-units smart constructor; `pilot/.../DensityAltitudeInput.kt` firewall-clean record (oat + qnh + fieldElevation); `pilot/.../DensityAltitudeFormula.kt::computeDensityAltitudeFeet` named pure function with documented formula + ISA constants + integer-ft rounding (R17); `pilot/.../PilotMission.kt::MissionStep.DECLINE_DEPARTURE` + `CompletionMode.NON_COMPLETING` apron-terminal pair (R15 + R20 audits at PilotCognitive.isStepComplete / stepTransmission / skipCompletedSteps / planRoute); `pilot/.../PilotMission.kt::CompoundTask.replaceFromActivePrimitive(List<TaskNode>)` sole rewrite primitive introduced by fn-28 (R13); `pilot/.../PilotMission.kt::isDensityAltitudeDeclineEligible` named guard (R16 split, pre-taxi MissionStep enumeration); `pilot/.../observe/PilotEvent.kt::DensityAltitudeDecline` leaf + `deriveDensityAltitudeEvent` branch at R21 partial order (DA-without-clearance → DensityAltitudeDecline → tailwind → crosswind); `pilot/.../Pilot.kt::applyDensityAltitudeDecline` with at-rest intent (targetSpeedMps=0, route=None, altitudeM=0) + `suppressSameTickCognitive = true` payload (R14); `pilot/.../Pilot.kt::applyCognitiveSuppression` focused seam zeroing same-tick `Request(RequestTaxi)` across every pilotDecide return path (round-13 Major 1); `sim/src/jvmTest/.../G3aPilotReactiveDensityAltitudeTest.kt` as the **sixth reactive-GA path / first apron-side reactive recognition** (three-layer pin: numerical DA via computeDensityAltitudeFeet asserts ≥5500 ft computed against C172 5000 ft advisory + mission-tree DECLINE_DEPARTURE primitive at currentTask + ZERO Request(RequestTaxi) transmissions). The remaining "OAT / weight POH triggers" listed in the original narrative deferment are absorbed: OAT is now the **input** to the DA formula (no separate recognition axis), and weight POH triggers are out of fn-28's scope and would re-open as a new sibling deferment if/when a weight-driven decline pass is planned.
 
 ### D-AUDIT-lowg-ctr-radius — LOWG CTR radius retuning from 12 NM hardcode to per-aerodrome AIP-derived value
 **Status:** closed
