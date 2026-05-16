@@ -109,9 +109,27 @@ import xyz.easiersaid.twr.protocol.Wind
  *    speculative AIP claim — both stands are
  *    `direct_authored_geometry_with_reference_attrs` from the
  *    `NEW_Parking_Points` authoring pass). Drives G1
- *    ([xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest]). Wake category
- *    lives on `AircraftState.type` (set at aircraft construction in the
- *    test); the fixture itself only carries filed plans + start points.
+ *    ([xyz.easiersaid.twr.sim.G1TwoAircraftCircuitsTest]) and
+ *    **G3a-react-multi-aircraft**
+ *    ([xyz.easiersaid.twr.sim.G3aPilotReactiveMultiAircraftTest] —
+ *    fn-28.5 multi-aircraft pilot-reactive go-around + controller-side
+ *    `ARR-EXTEND-FOR-GA` + `ARR-TURN-BASE` sequencing of the trailing
+ *    aircraft; three scenarios — crosswind GA + extend-downwind to B,
+ *    tailwind GA + extend-downwind to B, GA-recovery via A's
+ *    `Report(Downwind)` pattern-rejoin clearing belief → `TurnBase` to
+ *    B fires same-cycle per .4's concrete cancel-output contract
+ *    (round-10 Major 2) with the existing
+ *    `SupersessionRelation(TurnBase, ExtendDownwind, ABANDON)` row
+ *    dropping B's prior `ExtendDownwind` coordination — NO runway-
+ *    vacate clause per round-8 Major 3; same fixture as G1 with the
+ *    two-transition `world.aerodromes[LOWG].weather` authorship pattern
+ *    layered over A; both aircraft C172 / Light wake category; B's
+ *    `PilotDecisionTick` delayed by 2 sim-minutes via the G1 mission-
+ *    start-offset recipe so B reaches downwind while A is on final
+ *    under landing clearance — the conflict authoring that makes the
+ *    multi-aircraft scenario reachable). Wake category lives on
+ *    `AircraftState.type` (set at aircraft construction in the test);
+ *    the fixture itself only carries filed plans + start points.
  *  - [LJMB] — single-aerodrome reference fixture (not a golden anchor;
  *    used for cross-aerodrome composition).
  *  - [LOWG_LJMB_VFR] — multi-aerodrome G2 anchor (cross-aerodrome
