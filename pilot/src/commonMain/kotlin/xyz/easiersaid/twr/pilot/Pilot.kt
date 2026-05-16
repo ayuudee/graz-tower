@@ -336,27 +336,52 @@ internal fun windForMission(
 
 /**
  * fn-28.1 (G3a-react-density-altitude foundation A): resolve the
- * [DensityAltitudeInput] relevant to this mission's aerodrome — sibling
- * of [windForMission], same goal-keyed lookup + singleton-fallback shape.
+ * [DensityAltitudeInput] relevant to this mission's aerodrome.
  *
- * **Goal treatment** (parity with [windForMission]):
- *  - `Transit.destination` → key lookup
- *  - `Departure.destination` → key lookup (DA-decline operationally
- *    fires pre-taxi at the departure aerodrome, the relevant axis for
- *    fn-28.2's apron-stay decline).
- *  - `Arrival` → null fallback (DA-decline is a departure-side decision
- *    in v1; an arrival-DA scenario is filed as a follow-up if/when a
- *    consumer lands).
- *  - `CircuitTraining` → null fallback (single-aerodrome circuits
- *    resolve via the singleton-fallback below).
+ * **NOT a mirror of [windForMission]**: codex impl-review round 1 fix
+ * (Major, 75% confidence) — DA-decline is a **departure-side, pre-taxi
+ * decision** (the pilot computes DA at the apron BEFORE requesting taxi
+ * for departure). The relevant aerodrome is the **departure aerodrome**,
+ * not the destination. [HighLevelGoal.Departure] and
+ * [HighLevelGoal.Transit] both carry `destination` (the aerodrome the
+ * pilot is going TO), not `from` (the apron the pilot is AT). Mirroring
+ * `windForMission`'s `g.destination` lookup would bake the wrong source
+ * aerodrome into the DA recognition pipeline — for a multi-aerodrome
+ * LOWG → LJMB departure it would either pick LJMB's DA inputs (the
+ * wrong aerodrome — the pilot is still at LOWG's apron, deciding
+ * whether to fly the departure at all) or fail closed if only LOWG had
+ * weather populated, masking the foundation defect.
+ *
+ * **Goal treatment** (corrected per round-1 fix):
+ *  - `Departure` / `Transit` / `Arrival` / `CircuitTraining` → null
+ *    explicit-key lookup (none of the [HighLevelGoal] variants carry a
+ *    typed *departure* aerodrome; `from` on `Arrival` is the origin of
+ *    an arrival mission shape, not the apron the pilot is at for a
+ *    decline-departure decision).
+ *  - **Singleton fallback** below covers the single-aerodrome scenario
+ *    fn-28.3's G3aPilotReactiveDensityAltitudeTest depends on (LOWG-only
+ *    fixture → the map carries exactly one entry → singleton fallback
+ *    returns it).
+ *
+ * **Multi-aerodrome DA recognition is out of fn-28.1 scope.** Once
+ * fn-28.2 lands the DA-decline branch, multi-aerodrome scenarios will
+ * need an explicit departure-aerodrome source — either:
+ *   (a) a new `Departure.departureAerodrome` field on the goal type;
+ *   (b) derive from `aircraft.positionPoint` → `worldIndex` → aerodrome
+ *       containing the point;
+ *   (c) thread from `FiledPlan.Vfr.departureAerodrome` via mission
+ *       state.
+ * The decision is deferred to fn-28.2 plan-review per the worker-time
+ * "Resolved during implementation" discipline. fn-28.1 fails closed for
+ * the multi-aerodrome case (singleton fallback fires only when the map
+ * has exactly one entry; ≥2 → null). Filed as the conventional sibling
+ * deferment `D-PASS-g3b-react-density-altitude` per fn-14.1 /
+ * `D-PASS-g3b-react-cross-aerodrome-crosswind` pattern.
  *
  * **Singleton fallback — fail-closed on multi-aerodrome ambiguity**:
- * matches [windForMission]'s shape. When the goal does not carry a
- * destination key and there are 0 or ≥2 map entries, fail-closed
- * (`null` → fn-28.2's DA recognition treats as no-event for this tick).
- * Multi-aerodrome DA recognition is filed as a downstream deferment
- * (`D-PASS-g3b-react-density-altitude` — landing pattern mirrors
- * fn-14.1's `D-PASS-g3b-react-cross-aerodrome-crosswind`).
+ * when the goal does not carry a usable key (i.e. always, post-
+ * round-1-fix), pick the singleton entry if there is exactly one,
+ * else `null`. fn-28.2's DA recognition treats `null` as no-event.
  *
  * `internal` so fn-28.2's pilot-side unit tests can pin the goal-by-
  * goal mapping independently of `pilotDecide`.
@@ -365,12 +390,23 @@ internal fun densityAltitudeInputForMission(
     mission: PilotMission,
     densityAltitudeInputsByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, DensityAltitudeInput>,
 ): DensityAltitudeInput? {
-    val targetAerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = when (val g = mission.goal) {
-        is HighLevelGoal.Transit -> g.destination
-        is HighLevelGoal.Departure -> g.destination
-        is HighLevelGoal.Arrival, is HighLevelGoal.CircuitTraining -> null
+    // Round-1 fix: NO goal-keyed lookup at fn-28.1 — none of the
+    // [HighLevelGoal] variants carries a typed departure-aerodrome,
+    // and using `g.destination` would resolve to the wrong aerodrome
+    // for departure-side DA-decline (the pilot is at the apron, not
+    // the destination). Exhaustive `when` for the sealed type pins
+    // the decision at compile time — a future variant addition forces
+    // the contributor to re-decide here.
+    val targetAerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = when (mission.goal) {
+        is HighLevelGoal.Departure,
+        is HighLevelGoal.Transit,
+        is HighLevelGoal.Arrival,
+        is HighLevelGoal.CircuitTraining -> null
     }
     if (targetAerodrome != null) return densityAltitudeInputsByAerodrome[targetAerodrome]
+    // Singleton fallback covers fn-28.3's single-aerodrome golden;
+    // ≥2 entries → null (multi-aerodrome DA is fn-28.2-or-later work,
+    // filed as `D-PASS-g3b-react-density-altitude`).
     return when (densityAltitudeInputsByAerodrome.size) {
         0 -> null
         1 -> densityAltitudeInputsByAerodrome.values.single()
