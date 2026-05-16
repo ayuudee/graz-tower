@@ -192,6 +192,71 @@ class PilotEventDensityAltitudeTest {
     }
 
     @Test
+    fun `phase guard — airborne phase with eligible mission step fails closed (codex round-1 Major)`() {
+        // CRITICAL regression-pin (codex round-1 Major): the recognition
+        // gates on aircraft.phase pre-taxi, NOT just mission step. A
+        // type-valid but desynced state (mission.currentTask=REQUEST_TAXI
+        // with aircraft.phase=Final, e.g. via a future regression that
+        // wires the mission state independently of physical phase) must
+        // NOT fire DA-decline and force an apron-terminal rewrite on an
+        // aircraft physically in flight.
+        val airborneAircraft = aircraft().copy(phase = PilotPhase.Final, altitudeM = 200.0)
+        val event = derivePilotEvent(
+            aircraft = airborneAircraft,
+            mission = missionWithStep(MissionStep.REQUEST_TAXI),
+            weather = null,
+            densityAltitudeInput = daHighLowg,
+        )
+        assertNull(
+            event,
+            "phase guard: airborne aircraft with REQUEST_TAXI mission MUST NOT fire DA-decline " +
+                "(would corrupt mission tree on an in-flight aircraft)",
+        )
+    }
+
+    @Test
+    fun `phase guard — runway-active phase with eligible mission step fails closed`() {
+        // Symmetric coverage for runway/post-rotation phases that should
+        // never produce DA decline regardless of the mission step.
+        listOf(
+            PilotPhase.LinedUp,
+            PilotPhase.TakeoffRoll,
+            PilotPhase.Climbing,
+            PilotPhase.LandingRoll,
+            PilotPhase.Vacating,
+        ).forEach { phase ->
+            val nonGroundAircraft = aircraft().copy(phase = phase)
+            val event = derivePilotEvent(
+                aircraft = nonGroundAircraft,
+                mission = missionWithStep(MissionStep.REQUEST_TAXI),
+                weather = null,
+                densityAltitudeInput = daHighLowg,
+            )
+            assertNull(
+                event,
+                "phase guard: phase=$phase MUST NOT fire DA-decline (non-pre-taxi physical phase)",
+            )
+        }
+    }
+
+    @Test
+    fun `phase guard — Taxiing phase is eligible (matches TAXI_TO_HOLDING shape)`() {
+        // Positive complement: when mission step IS TAXI_TO_HOLDING AND
+        // aircraft is physically Taxiing, recognition fires.
+        val taxiAircraft = aircraft().copy(phase = PilotPhase.Taxiing)
+        val event = derivePilotEvent(
+            aircraft = taxiAircraft,
+            mission = missionWithStep(MissionStep.TAXI_TO_HOLDING),
+            weather = null,
+            densityAltitudeInput = daHighLowg,
+        )
+        assertTrue(
+            event is PilotEvent.DensityAltitudeDecline,
+            "Taxiing + TAXI_TO_HOLDING + high DA → DA-decline fires; got $event",
+        )
+    }
+
+    @Test
     fun `does NOT fire on post-taxi pre-airborne steps — RUN_UP_CHECKS et al`() {
         // R16 split: post-taxi states fall under abort eligibility (fn-28.9),
         // not DA decline. Pin the disjoint contract.

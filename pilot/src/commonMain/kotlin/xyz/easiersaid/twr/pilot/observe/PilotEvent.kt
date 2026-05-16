@@ -527,6 +527,39 @@ private fun deriveDensityAltitudeEvent(
     mission: PilotMission,
     densityAltitudeInput: DensityAltitudeInput?,
 ): PilotEvent.DensityAltitudeDecline? {
+    // Phase guard (codex round-1 Major fix): aircraft pre-taxi physical
+    // phases only. The recognition is an apron-side decision; firing it
+    // on an aircraft mid-air or mid-landing-roll — even one whose
+    // mission tree happens to be at REQUEST_TAXI / TAXI_TO_HOLDING via
+    // a desynced state — would force an apron-terminal rewrite on an
+    // aircraft physically in flight. Pre-taxi physical phases are:
+    //  - [PilotPhase.AtStand] — at the apron with engine off / running
+    //    (the canonical REQUEST_TAXI shape).
+    //  - [PilotPhase.Parked] — at a parking position post-shutdown.
+    //  - [PilotPhase.HoldingShort] — held short of a runway (rare for
+    //    DA decline; pilot may re-compute during taxi and decline
+    //    before requesting line-up).
+    //  - [PilotPhase.Taxiing] — taxiing toward the holding point (the
+    //    canonical TAXI_TO_HOLDING shape).
+    // Every other PilotPhase (airborne / runway / vacating) fails-closed.
+    val phaseOk = when (aircraft.phase) {
+        is PilotPhase.AtStand,
+        is PilotPhase.Parked,
+        is PilotPhase.HoldingShort,
+        is PilotPhase.Taxiing -> true
+        is PilotPhase.LinedUp,
+        is PilotPhase.TakeoffRoll,
+        is PilotPhase.Climbing,
+        is PilotPhase.Crosswind,
+        is PilotPhase.Downwind,
+        is PilotPhase.Base,
+        is PilotPhase.Final,
+        is PilotPhase.LandingRoll,
+        is PilotPhase.Vacating,
+        is PilotPhase.ClearOfRunway -> false
+    }
+    if (!phaseOk) return null
+
     // Mission-shape guard: pre-taxi shapes only. Named guard for R16
     // recognition+apply agreement — `applyDensityAltitudeDecline` calls
     // the same predicate; recognition fails closed on shapes the apply

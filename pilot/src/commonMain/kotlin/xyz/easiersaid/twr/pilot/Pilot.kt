@@ -443,23 +443,43 @@ internal fun densityAltitudeInputForMission(
     mission: PilotMission,
     densityAltitudeInputsByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, DensityAltitudeInput>,
 ): DensityAltitudeInput? {
-    // Round-1 fix: NO goal-keyed lookup at fn-28.1 — none of the
-    // [HighLevelGoal] variants carries a typed departure-aerodrome,
-    // and using `g.destination` would resolve to the wrong aerodrome
-    // for departure-side DA-decline (the pilot is at the apron, not
-    // the destination). Exhaustive `when` for the sealed type pins
-    // the decision at compile time — a future variant addition forces
-    // the contributor to re-decide here.
-    val targetAerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = when (mission.goal) {
-        is HighLevelGoal.Departure,
-        is HighLevelGoal.Transit,
-        is HighLevelGoal.Arrival,
-        is HighLevelGoal.CircuitTraining -> null
+    // fn-28.2 (round-9 Major 2 / acceptance contract): aerodrome-
+    // resolution policy.
+    //
+    // **Order** (fail-closed at every step):
+    //  1. **Filed-plan departure aerodrome first**: when
+    //     `mission.filedPlan` carries a `departureAerodrome`, use it as
+    //     the lookup key. This is the doctrinally-correct source for
+    //     "the aerodrome the pilot is AT" in a pre-taxi DA-decline
+    //     decision — pilots file a plan with their departure aerodrome
+    //     before requesting taxi.
+    //  2. **Singleton fallback**: when no filed plan exists and the
+    //     map has exactly one entry, use it (the single-aerodrome
+    //     scenario fn-28.3's G3a golden depends on).
+    //  3. **Fail-closed ambiguity**: when no filed plan exists AND the
+    //     map has 2+ entries → null. Multi-aerodrome DA without filed
+    //     plan is filed as `D-PASS-g3b-react-density-altitude`.
+    //
+    // **NOT a mirror of [windForMission]** (codex round-1 memory anchor):
+    // wind GA recognition resolves via `g.destination` (the runway being
+    // approached on final); DA-decline resolves via the apron the pilot
+    // is AT. The two helpers represent opposite decision-side concerns
+    // even though they share a similar Map shape — see memory entry
+    // `bug/build-errors/ga-path-precedence-reorder-when-adding-2026-05-10`
+    // (2026-05-16 update) for the full sibling-helper-shape rationale.
+    val filedDeparture = mission.filedPlan.getOrNull()?.departureAerodrome
+    if (filedDeparture != null) {
+        // Filed plan present — fail-closed strict map lookup. If the
+        // filed departure has no entry in the projection map (PilotWiring
+        // dropped it due to null OAT/QNH or invalid elevation), DA
+        // recognition skips this mission. NOT a fallback to singleton —
+        // a filed plan that disagrees with the projection is the
+        // recognition-fail case, not a "best effort" path.
+        return densityAltitudeInputsByAerodrome[filedDeparture]
     }
-    if (targetAerodrome != null) return densityAltitudeInputsByAerodrome[targetAerodrome]
-    // Singleton fallback covers fn-28.3's single-aerodrome golden;
-    // ≥2 entries → null (multi-aerodrome DA is fn-28.2-or-later work,
-    // filed as `D-PASS-g3b-react-density-altitude`).
+    // No filed plan — fall back to singleton-only resolution. Multi-
+    // aerodrome maps with no filed plan are out-of-scope for v1 DA
+    // recognition (filed as `D-PASS-g3b-react-density-altitude`).
     return when (densityAltitudeInputsByAerodrome.size) {
         0 -> null
         1 -> densityAltitudeInputsByAerodrome.values.single()

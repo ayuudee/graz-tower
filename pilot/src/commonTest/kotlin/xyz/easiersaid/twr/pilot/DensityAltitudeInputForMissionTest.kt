@@ -2,7 +2,9 @@ package xyz.easiersaid.twr.pilot
 
 import arrow.core.Some
 import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.Feet
+import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.PressureSetting
 import xyz.easiersaid.twr.protocol.RunwayAssignment
 import xyz.easiersaid.twr.protocol.RunwayAssignmentSource
@@ -57,7 +59,10 @@ class DensityAltitudeInputForMissionTest {
         fieldElevation = Feet(876),
     )
 
-    private fun missionWith(goal: HighLevelGoal): PilotMission = PilotMission(
+    private fun missionWith(
+        goal: HighLevelGoal,
+        filedPlan: FiledPlan? = null,
+    ): PilotMission = PilotMission(
         goal = goal,
         // Minimal valid root with one primitive; the helper doesn't
         // inspect the tree.
@@ -67,6 +72,7 @@ class DensityAltitudeInputForMissionTest {
         ),
         stepEnteredAt = now0,
         activeRunway = Some(RunwayAssignment(rwy, RunwayAssignmentSource.Filing)),
+        filedPlan = filedPlan?.let { Some(it) } ?: arrow.core.None,
     )
 
     @Test
@@ -156,10 +162,10 @@ class DensityAltitudeInputForMissionTest {
     }
 
     @Test
-    fun `multi-aerodrome map always returns null regardless of goal`() {
+    fun `multi-aerodrome map always returns null regardless of goal — no filed plan`() {
         // Exhaustive: each goal variant + a 2-entry map MUST return
-        // null (no goal-keyed path resolves; singleton fallback
-        // requires exactly 1 entry).
+        // null when NO filed plan exists (no goal-keyed path resolves;
+        // singleton fallback requires exactly 1 entry).
         val departureGoal = HighLevelGoal.Departure(destination = ljmb)
         val transitGoal = HighLevelGoal.Transit(destination = ljmb)
         val arrivalGoal = HighLevelGoal.Arrival(from = lowg)
@@ -171,5 +177,99 @@ class DensityAltitudeInputForMissionTest {
         assertNull(densityAltitudeInputForMission(missionWith(transitGoal), map))
         assertNull(densityAltitudeInputForMission(missionWith(arrivalGoal), map))
         assertNull(densityAltitudeInputForMission(missionWith(circuitGoal), map))
+    }
+
+    // ── fn-28.2 (round-9 Major 2 / round-1 codex-review fold-in):
+    // filed-plan departure-aerodrome resolution.
+    //
+    // The acceptance contract requires THREE rows here:
+    //  (a) filed plan with LOWG departure + LOWG entry → returns LOWG input.
+    //  (b) no filed plan + singleton LOWG entry → returns LOWG input
+    //      (covered in `Departure single-aerodrome` / `CircuitTraining
+    //      single-aerodrome` above).
+    //  (c) no filed plan + multi-aerodrome map → returns null + recognition
+    //      skips (covered in `multi-aerodrome map always returns null`
+    //      above).
+
+    @Test
+    fun `filed plan LOWG departure + LOWG entry — resolves via filed plan`() {
+        // Round-9 Major 2 contract: filed-plan departure-aerodrome is
+        // the canonical lookup key for DA-decline. The mission has a
+        // multi-aerodrome map; without filed-plan logic this would fall
+        // through to the ambiguity null. WITH filed-plan logic, the
+        // helper returns LOWG's DA input.
+        val filedPlan = FiledPlan.Vfr(
+            departureAerodrome = lowg,
+            destinationAerodrome = ljmb,
+            intent = AircraftIntent.Departing,
+        )
+        val mission = missionWith(
+            HighLevelGoal.Departure(destination = ljmb),
+            filedPlan = filedPlan,
+        )
+        val result = densityAltitudeInputForMission(
+            mission,
+            mapOf(lowg to daLowg, ljmb to daLjmb),
+        )
+        assertEquals(
+            daLowg,
+            result,
+            "filed plan with LOWG departure: MUST resolve LOWG's DA input even with multi-aerodrome map " +
+                "(round-9 Major 2 contract — departure-aerodrome is the canonical lookup)",
+        )
+    }
+
+    @Test
+    fun `filed plan departure missing from map — fail-closed (no singleton-fallback rescue)`() {
+        // When the filed plan names a departure aerodrome that's NOT in
+        // the projection map (e.g. PilotWiring dropped LOWG due to null
+        // OAT/QNH), the helper MUST return null — NOT fall back to
+        // singleton when LJMB happens to be the only other entry. The
+        // filed plan is the source of truth; a disagreement is a
+        // recognition-fail event, not a "best effort" path.
+        val filedPlan = FiledPlan.Vfr(
+            departureAerodrome = lowg,
+            destinationAerodrome = ljmb,
+            intent = AircraftIntent.Departing,
+        )
+        val mission = missionWith(
+            HighLevelGoal.Departure(destination = ljmb),
+            filedPlan = filedPlan,
+        )
+        // Map has only LJMB — LOWG (filed departure) is missing.
+        val result = densityAltitudeInputForMission(
+            mission,
+            mapOf(ljmb to daLjmb),
+        )
+        assertNull(
+            result,
+            "filed-plan departure missing from map → null (fail-closed; NO singleton-fallback rescue)",
+        )
+    }
+
+    @Test
+    fun `filed plan LOWG departure preempts singleton even when map has one entry`() {
+        // When filed plan IS present, the helper takes the filed path
+        // unconditionally — singleton fallback only fires when no filed
+        // plan exists. Test: filed plan says LOWG, map has only LJMB.
+        // Result MUST be null (the filed plan is the source of truth;
+        // singleton would silently resolve to the wrong aerodrome's DA
+        // — exactly the round-1 sibling-helper-shape mistake this helper
+        // exists to prevent).
+        val filedPlan = FiledPlan.Vfr(
+            departureAerodrome = lowg,
+            destinationAerodrome = null,
+            intent = AircraftIntent.Departing,
+        )
+        val mission = missionWith(
+            HighLevelGoal.Departure(destination = null),
+            filedPlan = filedPlan,
+        )
+        val result = densityAltitudeInputForMission(mission, mapOf(ljmb to daLjmb))
+        assertNull(
+            result,
+            "filed plan with LOWG departure + map containing only LJMB → null; " +
+                "MUST NOT fall back to singleton (the singleton would silently resolve to the wrong aerodrome)",
+        )
     }
 }
