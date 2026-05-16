@@ -1,7 +1,6 @@
 package xyz.easiersaid.twr.sim.testing
 
 import xyz.easiersaid.twr.pilot.InstructorInput
-import xyz.easiersaid.twr.sim.AgentId
 import xyz.easiersaid.twr.sim.SimEvent
 import xyz.easiersaid.twr.sim.SimState
 
@@ -59,11 +58,14 @@ fun List<InstructorInput>.toInitialEvents(baseSeq: Long): InstructorBriefingResu
     val events = mapIndexed { index, input ->
         val seq = baseSeq + index + 1
         when (input) {
+            // `source` is fixed to AgentId.System in EngineFailure's body —
+            // not a constructor parameter (round-1 review fix: prevents
+            // callers from mis-authoring a Pilot/Controller-sourced
+            // engine-failure event).
             is InstructorInput.EngineFailureAt -> SimEvent.EngineFailure(
                 time = input.time,
                 aircraftId = input.aircraftId,
                 seq = seq,
-                source = AgentId.System,
             )
         }
     }

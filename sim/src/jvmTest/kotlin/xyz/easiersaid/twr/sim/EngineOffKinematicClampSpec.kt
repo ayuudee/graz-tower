@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.sim
 import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
@@ -173,6 +174,44 @@ class EngineOffKinematicClampSpec {
             25.0, afterTick.aircraft.getValue(aircraftId).speedMps,
             "post-failure PhysicsTick: min(target=30, current=25) = 25; accel blocked",
         )
+    }
+
+    @Test
+    fun `EngineFailure handler fails loudly on unknown aircraft (round-1 review Major 2 fix)`() {
+        // The handler errors via `error(...)` when the event names an
+        // aircraft id that is not in `state.aircraft`. A fixture-authoring
+        // typo or wrong event ordering relative to Spawn must surface
+        // here, not silently leave the engine running and produce a
+        // degenerate ground truth.
+        val ac = makeAircraft(speedMps = 0.0, targetSpeedMps = 0.0, engineRunning = true)
+        val state = stateWithAircraft(ac)
+        val unknown = AircraftId("OE-XYZ")
+        val thrown = assertFailsWith<IllegalStateException> {
+            step(state, SimEvent.EngineFailure(time = SimTime.ZERO, aircraftId = unknown))
+        }
+        assertTrue(
+            thrown.message?.contains(unknown.value) == true,
+            "loud-fail error message must name the unknown aircraft id; got: ${thrown.message}",
+        )
+    }
+
+    @Test
+    fun `EngineFailure handler is idempotent on already-failed engine (defensive)`() {
+        // Second EngineFailure for an aircraft whose engine is already off:
+        // no-op. Today the instructor channel emits at most one
+        // EngineFailureAt per aircraft, but the idempotence preserves
+        // byte-equal replay if a future fixture authoring re-issues.
+        val ac = makeAircraft(speedMps = 5.0, targetSpeedMps = 5.0, engineRunning = false)
+        val state = stateWithAircraft(ac)
+        val (next, emitted) = step(state, SimEvent.EngineFailure(
+            time = SimTime.ZERO,
+            aircraftId = aircraftId,
+        ))
+        assertEquals(
+            false, next.aircraft.getValue(aircraftId).engineRunning,
+            "engine stays off (idempotence)",
+        )
+        assertTrue(emitted.isEmpty(), "idempotent no-op emits no events")
     }
 
     @Test

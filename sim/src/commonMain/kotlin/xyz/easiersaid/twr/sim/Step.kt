@@ -908,19 +908,35 @@ private fun handleAtisIssued(
  * to pilot decision-cadence — the same coupling the firewall plan
  * deletes elsewhere.
  *
- * **Missing aircraft is a defect** (mirrors the [handlePilotTick]
- * defensive shape): if the event targets an aircraft no longer in
- * `state.aircraft` (e.g. event scheduled at fixture init time but
- * aircraft never spawned, or de-spawned mid-sim), no state change
- * fires. Today the fixture-load layer's `StartPointWithoutFlightPlan`
- * + `FlightPlanMissingStartPoint` violations catch this at fixture
- * authoring time, so the only path here is a no-op return.
+ * **Loud-fail on unknown aircraft** (round-1 review Major 2 fix):
+ * `InstructorInput.EngineFailureAt(...)` can name any [AircraftId];
+ * a fixture authoring defect (typo'd id, wrong ordering relative to
+ * Spawn) would otherwise leave the aircraft engine running silently and
+ * the test would pass against a degenerate ground truth. The handler
+ * fails loudly via `error(...)` — mirrors the [handleSpawn] shape's
+ * "duplicate aircraft id" + "positionPoint not in worldIndex" loud-fail
+ * invariants. A test driver that legitimately needs the soft-fail
+ * semantic (e.g. event scheduled past a deliberate de-spawn) must
+ * filter the event out before enqueueing — the sim core itself is
+ * strict.
+ *
+ * **Idempotent on already-failed** (defensive): a second
+ * `EngineFailure` for an aircraft whose engine is already off is a
+ * no-op. The instructor channel today emits at most one
+ * `EngineFailureAt` per aircraft (`InstructorInput.EngineFailureAt`
+ * KDoc), but the idempotence preserves byte-equal replay if a future
+ * authoring shape re-issues the event.
  */
 private fun handleEngineFailure(
     state: SimState,
     event: SimEvent.EngineFailure,
 ): Pair<SimState, List<SimEvent>> {
-    val ac = state.aircraft[event.aircraftId] ?: return state to emptyList()
+    val ac = state.aircraft[event.aircraftId]
+        ?: error(
+            "handleEngineFailure: no aircraft ${event.aircraftId} in state.aircraft. " +
+                "Instructor-channel fixture authored an engine-failure event for an unknown " +
+                "aircraft id (typo, or event ordering relative to Spawn is wrong).",
+        )
     if (!ac.engineRunning) return state to emptyList()
     val updated = ac.copy(engineRunning = false)
     val aircraft = LinkedHashMap(state.aircraft).apply { put(event.aircraftId, updated) }

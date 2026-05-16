@@ -240,8 +240,18 @@ sealed interface SimEvent {
         override val time: SimTime,
         val aircraftId: AircraftId,
         override val seq: Long = 0,
-        override val source: AgentId = AgentId.System,
-    ) : SimEvent
+    ) : SimEvent {
+        // Body declaration (NOT a constructor parameter) so callers cannot
+        // override [source]: emergency events are System-sourced by
+        // architectural decision (round-2: no `AgentId.Instructor` variant
+        // introduced). The instructor channel is test scaffolding; the
+        // resulting sim event sorts with other system-emitted events.
+        // Mirrors the same shape used by [PhysicsTick], [Spawn],
+        // [TransmissionEnd], [MissedHandoffDetected], [FlightPlanFiled],
+        // [AtisIssued] (all fixed-System events have `source` in the body,
+        // not in the constructor).
+        override val source: AgentId = AgentId.System
+    }
 }
 
 private fun SpeakerRef.toAgentId(): AgentId = when (this) {
