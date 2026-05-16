@@ -7,8 +7,8 @@ survivor_count: "15"
 rejected_count: "10"
 rejection_rate: "0.4"
 artifact_id: post-fn-15-16-17-18-next-moves-refactor-2026-05-13
-promoted_ideas: [1, 2, 4]
-promoted_to: {"1": [fn-19-fix-d-world2-pre-existing], "2": [fn-21-refresh-strategymd-5-days-stale-4-epics], "4": [fn-22-promote-6-session-memory-captures-into]}
+promoted_ideas: [1, 2, 4, 6]
+promoted_to: {"1": [fn-19-fix-d-world2-pre-existing], "2": [fn-21-refresh-strategymd-5-days-stale-4-epics], "4": [fn-22-promote-6-session-memory-captures-into], "6": [fn-24-land-pilotpilotaviationworld-projection]}
 status: active
 ---
 
