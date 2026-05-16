@@ -348,6 +348,13 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     // REPORTED completion mode by mistake — the explicit `false` arm keeps
     // the report channel from completing the terminal primitive.
     MissionStep.DECLINE_DEPARTURE -> false
+    // fn-28.8 (R15): ABORTED is NON_COMPLETING — same shape as
+    // DECLINE_DEPARTURE (mirrors the audit pattern documented in
+    // CompletionMode.NON_COMPLETING + MissionStep.ABORTED KDocs).
+    // Explicit `false` keeps the report channel from completing the
+    // abort-terminal primitive in case a future caller mis-wires the
+    // step with a REPORTED completion mode.
+    MissionStep.ABORTED -> false
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -434,6 +441,11 @@ private fun isPhysicallyComplete(
         // mode by mistake — the explicit `false` keeps the physics
         // channel from completing the terminal primitive.
         MissionStep.DECLINE_DEPARTURE -> false
+        // fn-28.8 (R15): ABORTED is NON_COMPLETING — same audit shape as
+        // DECLINE_DEPARTURE. Explicit `false` keeps the physics channel
+        // from completing the abort-terminal primitive in case a future
+        // caller mis-wires the step with a PHYSICAL completion mode.
+        MissionStep.ABORTED -> false
     }
 }
 
@@ -655,6 +667,14 @@ private fun stepTransmission(
     // that no per-step transmission is wired here either. Future fn-28
     // tasks (.8 ABORTED) extend the same pattern.
     MissionStep.DECLINE_DEPARTURE -> null
+    // fn-28.8 (R15): ABORTED is a NON_COMPLETING terminal step. v1 emits
+    // **no** transmission — the abort is a pilot-internal decision in this
+    // task's scope; phraseology (e.g. CAP 413 §4.x abort-takeoff calls)
+    // lands in the fn-28.9 sim golden's pilot-branch implementation, NOT
+    // in this audit-site arm. Mirrors DECLINE_DEPARTURE's silent-v1
+    // convention; the cognitive-suppression seam from fn-28.2 also covers
+    // the same-tick transmission floor.
+    MissionStep.ABORTED -> null
 }
 }
 

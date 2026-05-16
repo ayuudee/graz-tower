@@ -53,6 +53,15 @@ class FirewallAircraftStateTest {
             route = PilotRoute.None,
             type = xyz.easiersaid.twr.protocol.AircraftType.C172,
             pilotMission = null,
+            // fn-28.8 (G0 abort-takeoff foundation R12): ground-truth engine
+            // state. Default `true` matches every spawn's "engine on" reality;
+            // sim's `handleEngineFailure` is the unique writer that flips it
+            // to false when an instructor-channel engine-failure event fires.
+            // Read only by `advanceKinematics`'s engine-off clamp (decel
+            // allowed; accel blocked). Pilot cognition does NOT read this
+            // field — the failure is observed via a cockpit-side typed
+            // event in fn-28.9.
+            engineRunning = true,
         )
         @Suppress("UNUSED_VARIABLE")
         val _check = canonical.id

@@ -222,6 +222,13 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         // (no letter-rotation invariant — real ATIS rotation has
         // wraps/skips).
         is SimEvent.AtisIssued -> handleAtisIssued(atTime, event)
+        // fn-28.8 (R12 engine-failure foundation): flip the aircraft's
+        // ground-truth `engineRunning` field to false. NO synthetic
+        // wake event (round-2 Major 4): the pilot's regular tick cadence
+        // picks the event up on its next scheduled PilotDecisionTick;
+        // synthetic wake-ups would couple sim event-production to pilot
+        // decision-cadence — the firewall plan deletes that coupling.
+        is SimEvent.EngineFailure -> handleEngineFailure(atTime, event)
     }
     // Pass 7 (D-AUDIT.5 + Impact-O.1 / FP-M.3): cross-controller `Owned`
     // invariant. After every step, no two controllers may simultaneously
@@ -880,6 +887,44 @@ private fun handleAtisIssued(
     if (existing == event.atis) return state to emptyList()
     val next = state.atisByAerodrome + (event.aerodrome to event.atis)
     return state.copy(atisByAerodrome = next) to emptyList()
+}
+
+/**
+ * fn-28.8 (G0 abort-takeoff foundation R12): engine-failure handler.
+ *
+ * Flips `AircraftState.engineRunning` to `false` for the targeted aircraft.
+ * The next [SimEvent.PhysicsTick] applies the engine-off clamp in
+ * `advanceKinematics`: when `engineRunning == false`, the integrator's
+ * working speed is bounded by `min(targetSpeedMps, currentSpeedMps)` —
+ * deceleration is allowed (pilot can command brakes / aero drag stops the
+ * roll), acceleration is blocked (no engine thrust to accelerate).
+ *
+ * **No synthetic wake event** (round-2 Major 4 decision): the handler
+ * emits an empty event list. The pilot's existing per-aircraft
+ * [SimEvent.PilotDecisionTick] cadence picks the engine-failure
+ * observation up on the next scheduled tick (via the cockpit-side
+ * instructor-channel observation seam landing in fn-28.9). Emitting a
+ * synthetic `PilotDecisionTick` here would couple sim event-production
+ * to pilot decision-cadence — the same coupling the firewall plan
+ * deletes elsewhere.
+ *
+ * **Missing aircraft is a defect** (mirrors the [handlePilotTick]
+ * defensive shape): if the event targets an aircraft no longer in
+ * `state.aircraft` (e.g. event scheduled at fixture init time but
+ * aircraft never spawned, or de-spawned mid-sim), no state change
+ * fires. Today the fixture-load layer's `StartPointWithoutFlightPlan`
+ * + `FlightPlanMissingStartPoint` violations catch this at fixture
+ * authoring time, so the only path here is a no-op return.
+ */
+private fun handleEngineFailure(
+    state: SimState,
+    event: SimEvent.EngineFailure,
+): Pair<SimState, List<SimEvent>> {
+    val ac = state.aircraft[event.aircraftId] ?: return state to emptyList()
+    if (!ac.engineRunning) return state to emptyList()
+    val updated = ac.copy(engineRunning = false)
+    val aircraft = LinkedHashMap(state.aircraft).apply { put(event.aircraftId, updated) }
+    return state.copy(aircraft = aircraft) to emptyList()
 }
 
 private fun handleSpawn(
@@ -1802,7 +1847,24 @@ private fun advanceKinematics(
     worldIndex: WorldIndex,
     dtSeconds: Double,
 ): AircraftState {
-    val speed = ac.targetSpeedMps
+    // fn-28.8 (R12 engine-off instant-speed clamp / round-3 Major 2 contract):
+    // when `engineRunning == false`, the integrator's working speed is bounded
+    // by `min(targetSpeedMps, currentSpeedMps)`. Deceleration is allowed (pilot
+    // can command brakes / aero drag stops the roll: target < current); accel
+    // is blocked (no engine thrust to accelerate beyond current: target > current
+    // is clamped). When engine is running the working speed is `targetSpeedMps`
+    // verbatim — pre-fn-28.8 behaviour preserved for the on-engine path.
+    //
+    // **Instant-speed model** (not a per-tick decel rate): v1 of the abort
+    // model accepts that engine-off transitions snap to the clamped speed in
+    // a single tick. A future fn-28 task may refine to per-tick decel via
+    // `AircraftType.abortDecelMs2` — explicitly excluded from fn-28.8's scope
+    // (the task spec's NOT-in-scope list lists `abortDecelMs2`).
+    val speed = if (ac.engineRunning) {
+        ac.targetSpeedMps
+    } else {
+        minOf(ac.targetSpeedMps, ac.speedMps)
+    }
     val headPoint = when (val r = ac.route) {
         is PilotRoute.Ground -> r.waypoints.head
         is PilotRoute.Airborne -> r.waypoints.head

@@ -198,6 +198,50 @@ sealed interface SimEvent {
     ) : SimEvent {
         override val source: AgentId = AgentId.System
     }
+
+    /**
+     * fn-28.8 (G0 abort-takeoff foundation R12): the engine on [aircraftId]
+     * has failed. Handler in `Step.kt::handleEngineFailure` sets
+     * `AircraftState.engineRunning = false`; the next [PhysicsTick] applies
+     * the engine-off clamp in `advanceKinematics` so the aircraft can decel
+     * (target ≤ current) but cannot accel (target > current is blocked).
+     *
+     * **Instructor-channel causation** (memory:
+     * `knowledge/decisions/instructor-channel-causation-for-sim-2026-05-16`):
+     * test fixtures author engine-failure scenarios via the typed instructor
+     * input `InstructorInput.EngineFailureAt(aircraftId, time)`, translated
+     * to a pre-stamped `SimEvent.EngineFailure` via the fixture helper
+     * `toInitialEvents(baseSeq)`. The instructor channel keeps the pilot
+     * firewall clean: the failure observation enters the pilot's
+     * decision branch (fn-28.9) as a cockpit input, NOT a world hook.
+     *
+     * [source] is fixed to [AgentId.System] (round-2: no
+     * `AgentId.Instructor` variant introduced; emergency events sort with
+     * other system-emitted events).
+     *
+     * **No synthetic wake event** (round-2 Major 4): the handler does NOT
+     * emit a `PilotDecisionTick` of its own. The pilot's regular tick
+     * cadence picks the engine-failure event up on the next scheduled
+     * pilot tick (via the instructor-channel observation seam in fn-28.9);
+     * a synthetic wake-up would couple sim event-production to pilot
+     * decision-cadence — the same coupling the firewall plan deletes
+     * elsewhere.
+     *
+     * **No severity enum, no `Emergency<T>` supertype** (round scope —
+     * out of scope for fn-28.8): the v1 model is "engine has failed";
+     * future ICING / FUEL_EXHAUSTION events land as sibling SimEvent
+     * subtypes the same way, not via a parametric supertype.
+     *
+     * **Doctrine**: POH §3.3 (engine-failure-on-takeoff procedure) —
+     * referenced for pilot-side branch reasoning in fn-28.9, not
+     * modelled via RegDB at this task.
+     */
+    data class EngineFailure(
+        override val time: SimTime,
+        val aircraftId: AircraftId,
+        override val seq: Long = 0,
+        override val source: AgentId = AgentId.System,
+    ) : SimEvent
 }
 
 private fun SpeakerRef.toAgentId(): AgentId = when (this) {
@@ -220,4 +264,9 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
     is SimEvent.FlightPlanFiled -> copy(seq = s)
     is SimEvent.AtisIssued -> copy(seq = s)
+    // fn-28.8 (R12): engine-failure events get the standard seq stamp.
+    // Authored via the instructor channel (`InstructorInput.EngineFailureAt`
+    // → fixture helper `toInitialEvents`) or, in future, by an in-sim
+    // failure model — both go through `emit`, which calls `withSeq` here.
+    is SimEvent.EngineFailure -> copy(seq = s)
 }

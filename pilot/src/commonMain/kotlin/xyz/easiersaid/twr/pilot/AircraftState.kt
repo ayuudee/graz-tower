@@ -68,4 +68,40 @@ data class AircraftState(
      * any AI-vs-human discriminator field fails to compile.
      */
     val pilotMission: PilotMission? = null,
+    /**
+     * fn-28.8 (G0 abort-takeoff foundation R12): ground-truth engine state.
+     *
+     * `true` for a normally-operating aircraft (the default for every spawn,
+     * matching real-world fixture authoring: aircraft enter the sim with the
+     * engine running). Flipped to `false` by the sim's
+     * `handleEngineFailure(SimEvent.EngineFailure)` handler when the
+     * instructor channel fires an engine-failure event (typed input
+     * `InstructorInput.EngineFailureAt` in test fixtures).
+     *
+     * **Read by physics, not by cognition** (R12 round-3 Major 2 contract):
+     * the `advanceKinematics` engine-off clamp reads this field directly —
+     * when `engineRunning == false`, the new speed is bounded by
+     * `min(targetSpeedMps, currentSpeedMps)` (decel allowed; accel blocked).
+     * The pilot's cognitive layer does NOT read `aircraft.engineRunning`;
+     * the engine-failure event is delivered to the pilot via a cockpit-side
+     * observation in fn-28.9 (the abort recognition branch reads
+     * `PilotEvent.EngineFailure` from `derivePilotEvent`, NOT this
+     * ground-truth field). This is the same firewall shape as wind: ground
+     * truth lives on the entity (`Aerodrome.weather`), cognition reads only
+     * the typed observation projection (`WindReport`).
+     *
+     * **No synthetic wake event** (round-2 Major 4 decision): the sim does
+     * NOT emit a `PilotDecisionTick` synthesised by `handleEngineFailure`.
+     * The pilot's regular per-aircraft `PilotDecisionTick` cadence picks up
+     * the engine-failure event from the queue (via the instructor channel
+     * in fn-28.9) on the next scheduled tick. A synthetic wake-up would
+     * couple the sim's event production to the pilot's decision cadence —
+     * the same coupling the firewall plan deletes elsewhere.
+     *
+     * **Doctrine**: ground-truth physics fact (engine spinning or not);
+     * authored by the sim, not by the pilot. Cf. POH §3.3 (engine-failure
+     * procedure) — referenced in KDoc only; not modelled via RegDB
+     * (excluded per task scope).
+     */
+    val engineRunning: Boolean = true,
 )

@@ -602,6 +602,16 @@ internal fun planRoute(
         MissionStep.REPORT_DOWNWIND, MissionStep.REPORT_BASE, MissionStep.REPORT_FINAL,
         MissionStep.AWAIT_SEQUENCING, MissionStep.AWAIT_LANDING_CLEARANCE,
         MissionStep.LAND,
+        // fn-28.2 (R15): `DECLINE_DEPARTURE` is DELIBERATELY ABSENT — DA
+        // decline is an apron-terminal state with no airborne route. The
+        // `step !in airborneSteps` guard returns `PlanRouteOutcome.Skip`
+        // → no planning fires.
+        // fn-28.8 (R15): `ABORTED` is DELIBERATELY ABSENT — abort-takeoff
+        // is a runway-terminal state with no airborne route. The
+        // `step !in airborneSteps` guard returns `PlanRouteOutcome.Skip`
+        // → no planning fires. Combined with the fn-28.9 abort apply's
+        // `targetSpeedMps = 0` Tick A intent, the aircraft remains
+        // at-rest on the runway.
     )
     if (step !in airborneSteps) return PlanRouteOutcome.Skip
 

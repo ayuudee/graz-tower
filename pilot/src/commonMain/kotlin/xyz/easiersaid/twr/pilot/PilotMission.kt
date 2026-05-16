@@ -716,6 +716,57 @@ enum class MissionStep {
      * standalone phraseology is mandated for DA decline.
      */
     DECLINE_DEPARTURE,
+
+    /**
+     * fn-28.8 (G0 abort-takeoff foundation R15 / abort terminal step):
+     * the pilot has rejected the takeoff (engine failure on the runway
+     * roll; foreign-object debris; loss of directional control). This is
+     * a **terminal step** — paired with [CompletionMode.NON_COMPLETING],
+     * no completion event ever flips its status. Constructed by the
+     * fn-28.9 abort-apply branch via [CompoundTask.replaceFromActivePrimitive]
+     * which rewrites the active compound's suffix to
+     * `[PrimitiveTask(ABORTED, NON_COMPLETING)]`.
+     *
+     * **NOT `ABORT_ROLL`** (round scope — out of scope for fn-28.8): a
+     * separate `ABORT_ROLL` MissionStep modelling the deceleration phase is
+     * NOT introduced. `ABORTED` is the single abort-terminal step; the
+     * decel phase before the aircraft comes to rest is modelled by the
+     * physics layer's engine-off clamp (R12 — `advanceKinematics` decel
+     * allowed, accel blocked) + the pilot's at-rest intent
+     * (`targetSpeedMps = 0`), not by a separate MissionStep.
+     *
+     * **4-consumer audit** (R15) — same pattern as fn-28.2's
+     * `DECLINE_DEPARTURE`:
+     *  1. `PilotCognitive.isPhysicallyComplete` — falls into the default
+     *     `false` branch (no airborne / runway completion for an
+     *     abort-terminal step). The default-arm enumerates `ABORTED`
+     *     explicitly to surface a regression if a future caller invokes
+     *     it with a wrong CompletionMode.
+     *  2. `PilotCognitive.isReportComplete` — falls into the default
+     *     `false` branch; the step has REPORTED-completion semantics by
+     *     no caller's design (it is NON_COMPLETING).
+     *  3. `PilotCognitive.stepTransmission` — falls into the no-transmission
+     *     default branch. v1 emits **no** transmission on abort: the
+     *     pilot-side response is mission-tree rewrite + at-rest intent;
+     *     a future fn-28 task may add a CAP 413 courtesy-phrase
+     *     transmission. The audit site is enumerated to surface it.
+     *  4. `Pilot.planRoute` — the airborne-step guard
+     *     `step !in airborneSteps` rejects `ABORTED` →
+     *     `PlanRouteOutcome.Skip` → no planning. Combined with the
+     *     abort apply's `targetSpeedMps = 0` Tick A intent (lands in
+     *     fn-28.9), the aircraft remains at-rest on the runway.
+     *
+     * `skipCompletedSteps` is the 5th site touched by completion-walks
+     * but the audit log calls out the same 4 surfaces as `DECLINE_DEPARTURE`
+     * — `skipCompletedSteps` only ever marks completed-by-phase steps and
+     * does NOT mark `ABORTED` (it has no phase-based pre-completion entry).
+     *
+     * **Doctrine**: POH §3.3 (engine-failure-on-takeoff procedure) and
+     * ICAO Annex 6 Part I §4.3.7 (PIC's reject-takeoff authority).
+     * Referenced for branching-logic reasoning in fn-28.9; not modelled
+     * via RegDB at this task (per task scope).
+     */
+    ABORTED,
 }
 
 // ── Task tree construction ───────────────────────────────────────────
@@ -1121,6 +1172,14 @@ private fun skipCompletedSteps(root: CompoundTask, startPhase: PilotPhase): Comp
         MissionStep.FLY_FINAL_TO_SHORT_FINAL, MissionStep.GOING_AROUND,
     )
 
+    // fn-28.2 (R15) / fn-28.8 (R15): NON_COMPLETING terminal steps
+    // (`DECLINE_DEPARTURE`, `ABORTED`) are deliberately absent from every
+    // `preXxx` set. Both are constructed exclusively via
+    // `replaceFromActivePrimitive` at runtime (fn-28.2's
+    // `applyDensityAltitudeDecline`; fn-28.9's abort apply) — they never
+    // appear in a `createMission`-time tree, so `skipCompletedSteps`
+    // cannot mark them complete. The audit-site comment in
+    // `MissionStep.ABORTED` KDoc cross-references this skip-set.
     val stepsToSkip = when (startPhase) {
         is PilotPhase.AtStand, is PilotPhase.Parked -> emptySet()
         is PilotPhase.Taxiing -> preTaxi
