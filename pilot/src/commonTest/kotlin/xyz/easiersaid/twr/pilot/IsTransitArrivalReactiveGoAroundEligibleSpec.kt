@@ -230,6 +230,57 @@ class IsTransitArrivalReactiveGoAroundEligibleSpec {
     }
 
     @Test
+    fun `goal=Transit + root name != Transit is NOT eligible — codex round-1 fix`() {
+        // The goal/root invariant is type-system-permitted but planner-
+        // broken: a `PilotMission(goal = Transit, root = CompoundTask(
+        // TaskName.Arrive, ...))` is malformed. Pre-codex-round-1 the
+        // guard checked only `goal is Transit` + `activeCompound() == null`
+        // — a malformed mission would PASS, and the Transit GA dispatch
+        // fork would run a Transit-shape rewrite on an Arrive tree.
+        // Codex round-1 caught this Major / 100% confidence; the fix
+        // adds an explicit root-name gate. This row pins the fix so a
+        // regression that drops the root-name check fails here.
+        val malformedMission = PilotMission(
+            goal = HighLevelGoal.Transit(destination = ljmb),
+            root = CompoundTask(
+                name = TaskName.Arrive, // wrong root name for Transit goal
+                children = listOf(PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL)),
+            ),
+            stepEnteredAt = now0,
+            activeRunway = Some(RunwayAssignment(runway27, RunwayAssignmentSource.Filing)),
+        )
+        assertFalse(
+            isTransitArrivalReactiveGoAroundEligible(aircraftOnFinal(), malformedMission),
+            "goal=Transit + root=Arrive is malformed; guard refuses — codex round-1 fix",
+        )
+
+        // Also pin the same row with other non-Transit root names — the
+        // gate is on TaskName.Transit specifically, not "anything except
+        // Arrive."
+        listOf(
+            TaskName.Depart,
+            TaskName.Circuit,
+            TaskName.CircuitTraining,
+            TaskName.CircuitAfterGoAround,
+            TaskName.TouchAndGo,
+        ).forEach { rootName ->
+            val mission = PilotMission(
+                goal = HighLevelGoal.Transit(destination = ljmb),
+                root = CompoundTask(
+                    name = rootName,
+                    children = listOf(PrimitiveTask(MissionStep.FLY_FINAL, CompletionMode.PHYSICAL)),
+                ),
+                stepEnteredAt = now0,
+                activeRunway = Some(RunwayAssignment(runway27, RunwayAssignmentSource.Filing)),
+            )
+            assertFalse(
+                isTransitArrivalReactiveGoAroundEligible(aircraftOnFinal(), mission),
+                "goal=Transit + root=$rootName must NOT pass the Transit-arrival guard",
+            )
+        }
+    }
+
+    @Test
     fun `null currentTask returns false — fail-closed on no active primitive`() {
         val completedMission = PilotMission(
             goal = HighLevelGoal.Transit(destination = ljmb),

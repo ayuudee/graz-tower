@@ -1010,12 +1010,22 @@ internal data class GoAroundResult(
  * failure mode — pinned by the memory entry
  * `bug/build-errors/recognitionapply-pipelines-need-mission-2026-05-11`.
  *
- * **Predicate parts** (round-11 Major 1 — data-honest with available fields):
+ * **Predicate parts** (round-11 Major 1 — data-honest with available fields;
+ * codex round-1 fix adds (1a) root-name gate):
  *  1. `mission.goal is HighLevelGoal.Transit` — mission-shape carries the
  *     Transit-arrival arrival-pattern continuation. (`HighLevelGoal.Arrival`
  *     missions also have arrival primitives, but they wrap them in a
  *     `Circuit` subtree via `planMission` — the existing
  *     `isReactiveGoAroundEligible` covers that path.)
+ *  1a. `mission.root.name is TaskName.Transit` — root compound name pin.
+ *     The goal/root invariant is type-system-permitted but planner-broken
+ *     when violated; a well-typed `PilotMission(goal = Transit,
+ *     root = CompoundTask(TaskName.Arrive, ...))` is malformed but
+ *     would otherwise pass (1). This part explicitly refuses that shape
+ *     so the apply doesn't run a Transit-shape rewrite on a non-Transit
+ *     tree. NOT a structural redundancy — the goal type vs the
+ *     planner-produced tree-name carry independent invariants. Codex
+ *     round-1 review caught this as a Major / 100% confidence finding.
  *  2. **Active arrival primitive** in the wind-reactive eligible step set
  *     (`FLY_FINAL` / `REPORT_FINAL` / `AWAIT_LANDING_CLEARANCE` / `LAND`)
  *     AND that primitive is a direct child of the `Transit` compound (not
@@ -1053,6 +1063,19 @@ internal fun isTransitArrivalReactiveGoAroundEligible(
 ): Boolean {
     // (1) Mission-shape: Transit goal.
     if (mission.goal !is HighLevelGoal.Transit) return false
+    // (1a) Root compound is the Transit task tree (codex round-1 fix):
+    // a well-typed `PilotMission(goal = Transit, root = CompoundTask(
+    // TaskName.Arrive, ...))` is malformed but type-system-permitted —
+    // gate on the root name too so a malformed mission doesn't bypass the
+    // intended Transit-arrival shape contract. Pre-fn-28.6 Transit
+    // missions from `planMission(Transit)` always have
+    // `root.name == TaskName.Transit`; post-suffix-replace shapes keep
+    // the outer name (the rewrite only replaces children). NOT a
+    // structural redundancy with the Transit-goal check — the two carry
+    // independent invariants (the goal type vs the planner-produced
+    // tree-name), and a mismatch is a separate bug class worth refusing
+    // explicitly.
+    if (mission.root.name !is TaskName.Transit) return false
     // (4) Aircraft on final approach.
     if (aircraft.phase !is PilotPhase.Final) return false
     // (3) Active-runway resolved.
