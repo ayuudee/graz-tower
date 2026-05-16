@@ -135,6 +135,16 @@ import xyz.easiersaid.twr.protocol.Wind
  *  - [LOWG_LJMB_VFR] — multi-aerodrome G2 anchor (cross-aerodrome
  *    transit). Drives G2
  *    ([xyz.easiersaid.twr.sim.G2CrossAerodromeVfrTest]).
+ *  - [LOWG_LJMB_VFR_REACTIVE] — fn-28.7 G3b sim-golden variant of
+ *    [LOWG_LJMB_VFR] with concrete OAT + QNH at BOTH aerodromes so the
+ *    Transit-arrival reactive-GA recognition path can read LJMB weather
+ *    without `mapNotNull`-projection drops. Wind initialised to a pure-
+ *    headwind on LJMB runway 14 (140°M @ 10 kt) so the two-transition
+ *    `world.aerodromes[LJMB].weather` mutation pattern is the sole
+ *    driver of the LJMB-side recognition. Drives the seventh reactive-
+ *    GA path (the first **cross-aerodrome** reactive-GA path; closes
+ *    `D-PASS-g3b-react-cross-aerodrome-{crosswind,tailwind}`) via
+ *    [xyz.easiersaid.twr.sim.G3bCrossAerodromeReactiveTest].
  */
 object Fixtures {
 
@@ -428,6 +438,135 @@ object Fixtures {
                 wind = WindReport.Available(Wind.unsafe(directionDegrees = 140, speedKnots = 6)),
                 qnh = null,
                 visibility = null,
+            ),
+        ),
+        flightPlans = mapOf(
+            AircraftId("OE-XYZ") to FiledPlan.Vfr(
+                departureAerodrome = AerodromeId("LOWG"),
+                destinationAerodrome = AerodromeId("LJMB"),
+                destinationRunway = xyz.easiersaid.twr.protocol.RunwayId("14"),
+                intent = AircraftIntent.Transit,
+            ),
+        ),
+    )
+
+    /**
+     * fn-28.7 (G3b sim golden — Transit-arrival reactive-GA): cross-
+     * aerodrome variant of [LOWG_LJMB_VFR] with **concrete OAT + QNH**
+     * at both LOWG and LJMB so the pilot's Transit-arrival reactive-GA
+     * recognition path can read **LJMB**'s weather on the next
+     * `PilotDecisionTick` without the `PilotWiring.buildPilotInput`
+     * `mapNotNull` projection silently dropping the entry (fail-closed
+     * on missing `wind`). LJMB's initial wind is a pure-headwind on
+     * runway 14 (140°M @ 10 kt) so the two-transition
+     * `world.aerodromes[LJMB].weather` mutation pattern is the sole
+     * driver of the LJMB-side recognition.
+     *
+     * **Distinguishing surface vs [LOWG_LJMB_VFR]** (mirrors the
+     * [LOWG_HIGH_DA] / [LOWG] discipline — keep the diff surface to the
+     * single field that matters for the recognition under test):
+     *  - **LJMB initial wind is `140°@10`** (pure headwind on runway 14),
+     *    NOT `140°@6` — the test's two-transition hook authors a
+     *    crosswind or tailwind shift past the C172 limits and then
+     *    resets to this initial headwind once the post-GA recovery
+     *    `Report(Downwind)` is on the wire. The 10 kt headwind value
+     *    matches the G3a-react LOWG fixture's initial wind so the
+     *    recovery-pattern arithmetic is identical across the G3a/G3b
+     *    cousin tests (10 kt headwind = 0 kt crosswind component and
+     *    AT the C172 10 kt tailwind advisory boundary — strict `>`
+     *    recognition does not fire).
+     *  - **LJMB QNH = 1013 hPa, LJMB OAT = ISA(elev) ≈ 13.27 °C** —
+     *    same numerical-provenance discipline as [LOWG] (fn-28.1 round-3
+     *    Major 4). LJMB elevation per world-candidate JSON is 876 ft;
+     *    `ISA(876 ft) = 15.0 - 0.876 * 1.98 = 13.2655 °C`, rounded to
+     *    13.27 °C for the fixture literal. ISA value so this fixture is
+     *    NOT spuriously DA-tripped during the LJMB approach. The
+     *    `PilotWiring` projection requires non-null `wind` AND non-null
+     *    `qnh` for the DA-input projection to surface a non-null
+     *    `DensityAltitudeInput` entry (fn-28.1's
+     *    `densityAltitudeInputForMission` then narrows by mission
+     *    destination); for fn-28.7 G3b we don't exercise the DA-decline
+     *    recognition at LJMB but we keep the projection non-null so a
+     *    future cross-aerodrome DA scenario could reuse this fixture
+     *    without re-authoring weather.
+     *  - **LOWG weather identical to [LOWG]** — the LOWG side of this
+     *    fixture is the canonical [LOWG] weather (`160°@8`, QNH 1013,
+     *    OAT 12.79). The G3b test does NOT exercise any LOWG-side
+     *    wind-reactive recognition (the departure half is a normal
+     *    Transit cruise); copying [LOWG]'s shape keeps the LOWG half of
+     *    the cross-aerodrome run behaviourally identical to G2.
+     *  - **`AircraftId("OE-XYZ")`** is reused (same as [LOWG_LJMB_VFR])
+     *    so the routing recipients + `standPointId` shapes survive the
+     *    fixture-load path unchanged.
+     *
+     * **Sibling tests** (Transit-arrival reactive-GA surface):
+     *  - fn-28.7's `G3bCrossAerodromeReactiveTest` is the SOLE consumer
+     *    at fn-28 close. Two `@Test` methods — crosswind axis (pure
+     *    crosswind on LJMB runway 14, 20 kt > C172's 15 kt POH
+     *    crosswind limit) + tailwind axis (pure tailwind on LJMB runway
+     *    14, 15 kt > C172's 10 kt AFH-advisory). Both reuse this
+     *    fixture; the recognition axis lives in the per-test hook, not
+     *    the fixture.
+     *  - The fn-28.6 unit-level `PilotTransitArrivalReactiveGoAroundTest`
+     *    is the pilot-side composition pin; this sim fixture is the
+     *    end-to-end sibling.
+     */
+    val LOWG_LJMB_VFR_REACTIVE: MultiAerodromeFixture = MultiAerodromeFixture(
+        staffing = nonEmptyListOf(
+            AerodromeStaffing(
+                aerodromeId = AerodromeId("LOWG"),
+                candidatePath = projectRoot().resolve("cad/airports/rendered/lowg/world-candidate.json"),
+                frequencyByRole = mapOf(
+                    RoleName.GROUND to Frequency.unsafe("118.200"),
+                    RoleName.TOWER to Frequency.unsafe("118.200"),
+                    RoleName.APPROACH to Frequency.unsafe("119.300"),
+                ),
+                // LOWG side — copy of [LOWG] (fn-28.1 round-3 Major 4
+                // concrete OAT + QNH). G3b does not exercise any LOWG-
+                // side wind-reactive recognition; this slot exists so
+                // multi-aerodrome `staffing` is well-formed.
+                weather = WeatherObservation(
+                    wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
+                    qnh = PressureSetting.QnhHpa.unsafe(1013),
+                    visibility = null,
+                    oat = Temperature.celsius(12.79),
+                ),
+            ),
+            AerodromeStaffing(
+                aerodromeId = AerodromeId("LJMB"),
+                candidatePath = projectRoot().resolve("cad/airports/rendered/ljmb/world-candidate.json"),
+                frequencyByRole = mapOf(
+                    RoleName.TOWER to Frequency.unsafe("119.205"),
+                ),
+                // LJMB side — pure-headwind on runway 14 (140°M) at 10 kt.
+                // 0 kt crosswind + 0 kt tailwind initially; the two-
+                // transition hook is the sole driver of the LJMB-side
+                // recognition. QNH = 1013 hPa (standard ISA). OAT =
+                // ISA(876 ft elev) = 15.0 - 0.876 * 1.98 = 13.2655 °C →
+                // 13.27 °C; ISA value so DA decline is NOT spuriously
+                // tripped on LJMB approach.
+                weather = WeatherObservation(
+                    wind = WindReport.Available(Wind.unsafe(directionDegrees = 140, speedKnots = 10)),
+                    qnh = PressureSetting.QnhHpa.unsafe(1013),
+                    visibility = null,
+                    oat = Temperature.celsius(13.27),
+                ),
+            ),
+        ),
+        standPointId = PointId("LOWG_STAND_1_POINT"),
+        destinationStandPointId = PointId("LJMB_TWY_A_17_02"),
+        weatherByAerodrome = mapOf(
+            AerodromeId("LOWG") to WeatherObservation(
+                wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
+                qnh = PressureSetting.QnhHpa.unsafe(1013),
+                visibility = null,
+                oat = Temperature.celsius(12.79),
+            ),
+            AerodromeId("LJMB") to WeatherObservation(
+                wind = WindReport.Available(Wind.unsafe(directionDegrees = 140, speedKnots = 10)),
+                qnh = PressureSetting.QnhHpa.unsafe(1013),
+                visibility = null,
+                oat = Temperature.celsius(13.27),
             ),
         ),
         flightPlans = mapOf(

@@ -13,6 +13,17 @@ This file is the canonical backlog. It is maintained by both human and AI contri
 
 ## Active items
 
+**FN20-CUR-1 — FN20 registry has 203 residual pending records after curation**
+The final FN20 all-source ingest, promotion, and GPT curation pass completed with
+zero ready-to-ingest windows remaining. Final QA demoted 110 accepted records
+whose quotes could not be verified as contiguous verbatim source text, leaving
+203 pending records in `registry/ollama_first/pending/`: 93 explicit
+`keep_pending` curation outcomes plus 110 post-quote-audit demotions. These are
+not accepted source units until source-text repair or human re-extraction
+resolves them. Evidence:
+`research/tools/requirements-spike/quality/curation/curate_2026-05-16T07-47-58Z/FINAL_CURATION_CLOSE_OUT.md`.
+Impact: M | Effort: H
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)
@@ -470,6 +481,23 @@ segment with no modelled controller, TMA/CTR entry corridors per Jepp 19-2.
 The `MultiAerodromeWorldTest.kt` scaffold (real LOWG + LJMB merge, two
 controllers, no flying) is retained as a thin smoke layer for if/when this
 returns.
+
+**REVIVAL (2026-05-16, fn-28.7):** the abandoned cross-aerodrome G1 surface
+is partially revived as the **G3b sim golden**
+(`sim/src/jvmTest/.../G3bCrossAerodromeReactiveTest.kt`). G3b composes G2's
+single-direction LOWG → LJMB cross-aerodrome transit with a Transit-arrival
+reactive-GA branch at LJMB (both crosswind and tailwind axes); the full
+round-trip + FIS-segment + TMA-corridor surface remains deferred. The
+revival lands the **first cross-aerodrome reactive-GA** path (seventh
+reactive-GA path overall) — fn-28.6 widened `deriveCrosswindEvent` /
+`deriveTailwindEvent` to a disjunctive eligibility (circuit OR Transit-
+arrival) + extended `applyCrosswindGoAround` / `applyTailwindGoAround` with
+a Transit dispatch fork via the shared `applyTransitArrivalReactiveGoAround`
+helper using `replaceFromActivePrimitive([goAroundTask(), circuitTask(),
+groundArrivalTask()])`. fn-28.7 closes
+`D-PASS-g3b-react-cross-aerodrome-{crosswind,tailwind}` as the seventh +
+eighth reactive-GA paths. The remaining round-trip / FIS / TMA work stays
+deferred behind concrete coverage evidence.
 
 Impact: H | Effort: H
 
