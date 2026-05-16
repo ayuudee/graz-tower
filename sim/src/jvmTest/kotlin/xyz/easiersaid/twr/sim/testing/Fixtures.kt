@@ -300,6 +300,66 @@ object Fixtures {
     )
 
     /**
+     * fn-28.9 (G0 abort-takeoff sim golden — positive scenario,
+     * pre-rotation): aliases [LOWG] verbatim (base scenario data ONLY).
+     *
+     * **Fixture surface** vs. [LOWG]:
+     *  - **Identical** — same world / stand / controllers / flight plan /
+     *    weather / runway selection. No `EngineFailureAt` is authored at
+     *    fixture-build time (round-7 Minor 3 / round-11 Major 3): the
+     *    `EngineFailureAt(t)` event is INJECTED DYNAMICALLY during the
+     *    test's setup phase. The test observes the trace until
+     *    `ClearedForTakeoff` is processed, then injects
+     *    `EngineFailureAt(t = ClearedForTakeoff_time + 1ms)` via the
+     *    `runUntilWithStateTraceAndInjection` post-step hook (which
+     *    routes through `SimState.emit` for monotonic seq stamping; see
+     *    `RunUntil.kt`'s [EventInjection] KDoc). Fixture is static-data-
+     *    only; test setup is the dynamic-trace-observer.
+     *
+     * **Named for grep-ability** (vs. raw [LOWG] reuse): the two
+     * abort-takeoff fixture aliases (`PRE_VR` + `POST_VR`) name the
+     * SCENARIO INTENT, not a data difference. A future scenario that
+     * needs a distinct world (e.g. different runway / aerodrome / weather
+     * for abort) extends one of these aliases with the per-scenario
+     * override field; today the aliases collapse to [LOWG] because the
+     * scenario distinguisher lives in TEST METHOD setup (injected
+     * `EngineFailureAt` timing), not in fixture data.
+     *
+     * **Sibling tests** (G0 abort-takeoff surface):
+     *  - fn-28.9's `G0AbortTakeoffEngineFailureTest`'s POSITIVE method
+     *    (pre-rotation engine failure → abort recognition fires →
+     *    instant-stop on the runway) is the SOLE consumer at fn-28
+     *    close. Three-layer pin: instant-stop same tick; never airborne;
+     *    zero cognitive transmissions same tick.
+     */
+    val LOWG_ABORT_TAKEOFF_PRE_VR: Fixture = LOWG
+
+    /**
+     * fn-28.9 (G0 abort-takeoff sim golden — negative scenario,
+     * post-rotation): aliases [LOWG] verbatim (base scenario data ONLY).
+     *
+     * **Fixture surface** vs. [LOWG] / [LOWG_ABORT_TAKEOFF_PRE_VR]:
+     *  - **Identical** — same as the `PRE_VR` alias above. The
+     *    distinguishing surface is the test method's injection timing:
+     *    the negative scenario authors `EngineFailureAt(t)` AFTER the
+     *    physics tick that crosses rotation speed, so the 4-check gate
+     *    fails on the speed predicate (`speedMps >= rotationSpeedMps`)
+     *    and abort recognition does NOT fire.
+     *
+     * **Negative scenario contract** (round-2 Major 7): the test ENDS
+     * after asserting the abort gate did NOT fire — no further ticks
+     * required, no recovery flow modelled. The fixture supports both
+     * positive and negative scenarios because the scenario divergence
+     * lives in the test method, not the fixture.
+     *
+     * **Sibling tests**:
+     *  - fn-28.9's `G0AbortTakeoffEngineFailureTest`'s NEGATIVE method
+     *    (post-rotation engine failure → abort recognition does NOT
+     *    fire → test ends after gate-assertion).
+     */
+    val LOWG_ABORT_TAKEOFF_POST_VR: Fixture = LOWG
+
+    /**
      * fn-8.1 (G1 foundation): two-aircraft VFR circuit-training fixture at LOWG.
      *
      * Both aircraft are local circuit traffic (VFR LOWG → LOWG) at adjacent GA

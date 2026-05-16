@@ -132,12 +132,14 @@ Follow the principles in `docs/test-standards.md`. In particular:
 - Use the type system to eliminate tests: if the compiler prevents it, don't test it.
 - If you can't articulate the business value of a test, don't write it.
 
-## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach, G3a-react, G3a-react-tailwind)
+## Golden tests (G0, G1, G1 minimal, G2, G3a, G3a-obstruction, G3a-obstruction-continue-approach, G3a-react, G3a-react-tailwind, G3a-react-density-altitude, G3a-react-multi-aircraft, G3b, G0-abort-takeoff)
 
-Nine integration tests serve as the runtime golden anchors for end-to-end
-ATC flow. All follow the same shape: a single `@Test` method, a fixture-
-driven load, a deterministic event run, the run is the test, the assertions
-are what the run produced.
+Thirteen integration tests serve as the runtime golden anchors for end-to-end
+ATC flow. All follow the same shape: a single `@Test` method (or two
+`@Test` methods covering positive + negative scenarios where the
+distinguishing surface is per-method, not per-fixture), a fixture-driven
+load, a deterministic event run, the run is the test, the assertions are
+what the run produced.
 
 - **G0 — `LowgGoldenTest` (`sim/jvmTest`)**: single-aerodrome circuit
   training. C172 OE-ABC files at LOWG, taxis to RWY 16C, takes off,
@@ -466,7 +468,176 @@ are what the run produced.
   ICAO Doc 4444 §12.3.4.18 (PIC-initiated GA authority +
   phraseology). Closes the fn-15 epic.
 
-All nine tests follow the no-corners-cut rule: a failing golden test is
+- **G3a-react-density-altitude — `G3aPilotReactiveDensityAltitudeTest`
+  (`sim/jvmTest`)**: single-aerodrome, single-aircraft VFR
+  **pilot-reactive apron-side decline-departure** triggered by a
+  world-authored hot-day OAT whose computed density-altitude (via the
+  R17 named pure function `computeDensityAltitudeFeet`) exceeds the
+  aircraft type's `maxDensityAltitudeFt`. Closes the **sixth**
+  reactive-GA-class path and the **first apron-side reactive
+  recognition** — distinct from the on-final GA paths because the
+  pilot's decision is to **NOT taxi** rather than to abort an approach.
+  C172 OE-ABC at LOWG with `Fixtures.LOWG_HIGH_DA` (50.0°C OAT chosen
+  so `computeDensityAltitudeFeet` returns 5594 ft, comfortably above
+  C172's 5000 ft FAA AC 61-107B §3-1 advisory by ≥500 ft); pilot's
+  `derivePilotEvent` DA-decline branch (R21 branch position 2) fires
+  `PilotEvent.DensityAltitudeDecline` on the first decision tick;
+  `applyDensityAltitudeDecline` rewrites the mission tree via the R13
+  sole-rewrite primitive `mission.root.replaceFromActivePrimitive(
+  listOf(PrimitiveTask(MissionStep.DECLINE_DEPARTURE,
+  CompletionMode.NON_COMPLETING)))` (R20 — the new NON_COMPLETING
+  completion mode with 4-consumer audit at `PilotCognitive
+  .isStepComplete` / `isReportComplete` / `stepTransmission` /
+  `Pilot.planRoute`) + at-rest intent (`targetSpeedMps = 0`,
+  `phase = AtStand`, `route = None`, `altitudeM = 0`) +
+  `suppressSameTickCognitive = true` payload (R14 round-13 Major 1
+  contract — covers ALL pilotDecide return paths via the shared
+  `applyCognitiveSuppression` focused seam, zeroing same-tick
+  `Request(RequestTaxi)`). Pins **three-layer**: numerical DA pin via
+  `computeDensityAltitudeFeet`'s output (5594 ft > 5000 ft threshold —
+  asserts against the function output, not prose); sticky-witness
+  regression on the mission-tree shape (`currentTask.step ==
+  DECLINE_DEPARTURE`, primitive carries NON_COMPLETING); kinematic
+  non-event (`positionPoint` never transitions, `altitudeM == 0`,
+  zero `Request(RequestTaxi)` transmissions). World-only test trigger
+  per `feedback_world_only_test_triggers.md` — the fixture's static
+  OAT is the sole driver; no per-tick world hook needed. Doctrinally
+  faithful to FAA AC 61-107B §3-1 (high-DA operating considerations);
+  ICAO Annex 6 Part II §2.4 (PIC final authority); FAA-H-8083-25C Ch 4
+  (atmosphere). Per-type doctrinal severity asymmetry: C172 = 5000 ft
+  advisory; B738 = `null` applicability fallthrough (DA decline is a
+  light-GA concept; jets have flat-rated thrust + high-altitude design).
+
+- **G3a-react-multi-aircraft — `G3aPilotReactiveMultiAircraftTest`
+  (`sim/jvmTest`)**: single-aerodrome, **two-aircraft** VFR
+  pilot-reactive go-around triggered by a world-authored wind shift,
+  with controller-side sequencing of the trailing aircraft. Closes the
+  **seventh** reactive-GA-class path and the first **multi-aircraft**
+  reactive-GA path — the first sim coverage where the controller's
+  per-cycle decision logic distinguishes "aircraft A is going around
+  on this runway" from "aircraft B is clear to turn base" via a typed
+  belief slice. C172 pair (OE-ABC + OE-DEF) at LOWG; A on final, B on
+  downwind. Three scenarios pinned (one `@Test` method each, sharing
+  fixture + per-scenario one-shot wind hooks): **crosswind GA on A** →
+  `Report(GoingAround)` reception sets the controller's
+  `BeliefState.goAroundInProgressByRunway[runway] = GoAroundInProgress(
+  aircraftId = A.id, setAtTime = now)` (R23 — persistent belief slice on
+  BeliefState, NOT ControllerView; round-7 Major 3); `ARR-EXTEND-FOR-GA`
+  fires on B's `AwaitApproach` stage emitting
+  `ExtendDownwind`; `ARR-TURN-BASE` is gated `Not(
+  GoAroundInProgressOnRunway)` so B holds downwind through the
+  GA-active window; **tailwind GA on A** mirrors with the same
+  axis-agnostic controller-side machinery (the same `ARR-EXTEND-FOR-GA`
+  rule fires on any `Report(GoingAround)` reception, regardless of
+  whether A's recognition was crosswind- or tailwind-triggered);
+  **GA-recovery via A's `Report(Downwind)` pattern-rejoin** clears
+  the belief (CLEAR-on-pattern-rejoin per R23's round-13 Major 3
+  `receivedAt > setAtTime` strict-inequality contract) → `TurnBase(B)`
+  fires same-cycle per .4's concrete cancel-output contract
+  (round-10 Major 2) with the existing `SupersessionRelation(TurnBase,
+  ExtendDownwind, ABANDON)` row at `controller/.../bdi/Supersession.kt:69`
+  dropping B's prior `ExtendDownwind` coordination — NO new
+  supersession row needed; NO runway-vacate clause per round-8 Major 3
+  (runway-vacate is unsafe as a belief-clear trigger because the
+  positionPoint vacate event may fire AFTER pattern-rejoin in some
+  trace shapes); determinism pin compares two runs from the same seed
+  to surface any non-deterministic EVENT_ORDER fold ordering per
+  round-8 Minor 1.
+
+- **G3b — `G3bCrossAerodromeReactiveTest` (`sim/jvmTest`)**:
+  **cross-aerodrome** single-aircraft VFR Transit-arrival
+  **pilot-reactive** go-around triggered by a world-authored wind
+  shift at the destination aerodrome. Closes the **first
+  cross-aerodrome reactive-GA path** (and the eighth reactive-GA-class
+  path) — the first sim coverage where the pilot's recognition fires
+  on weather at an aerodrome the pilot is FLYING TO rather than
+  ORIGINATED FROM. C172 OE-XYZ files VFR LOWG → LJMB and on final at
+  LJMB; the test's per-tick world hook authors a wind shift on
+  LJMB's runway 14 (crosswind axis: 20 kt > C172's 15 kt POH limit;
+  tailwind axis: 15 kt > C172's 10 kt AFH-advisory; two `@Test`
+  methods, one per axis). Both axes share the **same machinery**: the
+  recognition lives in `deriveCrosswindEvent` /
+  `deriveTailwindEvent`'s widened disjunctive eligibility
+  `isReactiveGoAroundEligible(mission) ||
+  isTransitArrivalReactiveGoAroundEligible(aircraft, mission)`
+  (round-12 Major 1; round-16 Major 1 — recognition is in `derive*Event`
+  NOT inside appliers). The apply path dispatches through the
+  existing `applyCrosswindGoAround` / `applyTailwindGoAround`'s
+  Transit-shape fork to the shared `applyTransitArrivalReactiveGoAround`
+  helper using `mission.root.replaceFromActivePrimitive(listOf(
+  goAroundTask(), circuitTask(), groundArrivalTask()))` (R13 + R22 —
+  existing GA TaskNodes, NO destination-GA placeholder enum/string
+  per round-5 Critical 2) + `mission.resetForGoAround(now).copy(
+  root = rewrittenRoot)` pre-rewrite reset placement (round-16
+  Major 2) + R19 Tick A intent `climbSpeedMps + Final + None +
+  patternAltitude`. Pins three-layer: exactly one `Report(GoingAround)`
+  between LJMB wind-shift and wind-recovery cycles; LJMB_TWR
+  commitment-stage regression `{LandingClearanceIssued |
+  AwaitLandedObserved} → AwaitDownwind` post-GA-radio-delivery; and
+  within-window kinematic non-event ("aircraft never lands at LJMB
+  within the bounded test window"; recovery landing is OUT-OF-WINDOW
+  per round-10 Minor 3 bounded-window discipline — preserves R22's
+  "full continuation including recovery groundArrivalTask" contract
+  without time-bounding the test arbitrarily). The fixture
+  `Fixtures.LOWG_LJMB_VFR_REACTIVE` extends `LOWG_LJMB_VFR` with
+  concrete LJMB OAT 13.27°C + QNH 1013 hPa so the
+  `PilotWiring.buildPilotInput` `mapNotNull` projection surfaces LJMB
+  weather (the recognition reads `weather[LJMB]`, not `weather[LOWG]`).
+
+- **G0-abort-takeoff — `G0AbortTakeoffEngineFailureTest`
+  (`sim/jvmTest`)**: single-aerodrome, single-aircraft VFR
+  **pilot-reactive abort-takeoff** triggered by an
+  **instructor-channel engine-failure** event fired during the
+  takeoff roll BEFORE rotation speed. Closes the **first
+  emergency-event anchor** in the sim suite (the first event class
+  authored via the instructor channel rather than via world-state
+  mutation) and the eighth reactive-GA-class path. C172 OE-ABC at
+  LOWG with `Fixtures.LOWG_ABORT_TAKEOFF_PRE_VR` (aliases the
+  canonical LOWG fixture; base scenario data only — round-7 Minor 3
+  / round-11 Major 3: the `EngineFailureAt(t)` event is INJECTED
+  DYNAMICALLY at test setup time, NOT at fixture-build time). Two
+  `@Test` methods: **positive (pre-rotation)** — the test observes
+  the trace until `ClearedForTakeoff` is processed for the aircraft,
+  then injects `SimEvent.EngineFailure(time = t_CTO + 1ms)` via the
+  `runUntilWithStateTraceAndInjection`'s `EventInjection` post-step
+  hook (the canonical translator pair from fn-28.8 —
+  `InstructorInput.EngineFailureAt` → `toInitialEvents(baseSeq)` —
+  fixes `source = AgentId.System` in the helper body, mapping the
+  cockpit briefing to the sim-side event); the `+1ms` ensures the
+  engine flips BEFORE the next PhysicsTick advances speedMps past
+  rotationSpeedMps. **Three-layer pin** (positive): kinematic
+  instant-stop via R12 engine-off clamp + `targetSpeedMps = 0`
+  produces `speedMps ≈ 0` on the same physics tick the abort apply
+  runs; mission-tree rewrite to `MissionStep.ABORTED` NON_COMPLETING
+  via R13 `replaceFromActivePrimitive([PrimitiveTask(ABORTED,
+  NON_COMPLETING)])` (R15 + R20 4-consumer audit at `PilotCognitive
+  .isStepComplete` / `isReportComplete` / `stepTransmission` /
+  `Pilot.planRoute` — the ABORTED arms mirror DECLINE_DEPARTURE's
+  audit shape, sharing the `CompletionMode.NON_COMPLETING` dispatch
+  site); never-airborne (`altitudeM == 0`, `phase == TakeoffRoll`
+  preserved per v1 — the mission tree's NON_COMPLETING terminal is
+  the load-bearing signal, not the phase). **Negative
+  (post-rotation)**: the hook observes the aircraft having crossed
+  rotation speed in a SimState snapshot (guaranteed post-rotation),
+  injects EngineFailure 1ms after that observation. The pilot's
+  abort gate fails on the speed predicate (`speedMps <
+  rotationSpeedMps` strict); recognition does NOT fire. Test ENDS
+  after asserting the gate did not fire — no further ticks, no
+  recovery flow modelled at fn-28 (round-2 Major 7 — engine-out climb
+  / forced landing is a different emergency class out of scope).
+  Doctrinally faithful to FAA AIM §5-2 (rejected-takeoff decision is
+  a runway-side decision made before rotation); POH §3.3
+  (engine-failure-on-takeoff); ICAO Annex 6 Part II §2.4 (PIC final
+  authority). **R21 final branch order locked**:
+  `DecisionAltitudeWithoutClearance → DensityAltitudeDecline →
+  AbortTakeoff → TailwindLimitExceeded → CrosswindLimitExceeded`.
+  The R14 cognitive-suppression contract covers ALL pilotDecide
+  return paths via the shared `applyCognitiveSuppression` focused
+  seam (round-15 Major 2 — mirrors fn-28.2's DA-decline R14
+  contract); abort apply returns `suppressSameTickCognitive = true`
+  which ORs into the suppression flag alongside DA-decline.
+
+All thirteen tests follow the no-corners-cut rule: a failing golden test is
 documented in its KDoc with the specific blocker and stays loudly
 failing. No `@Disabled`, skip-list, or exclusion set.
 

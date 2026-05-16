@@ -203,6 +203,17 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     // (gated inside `deriveDensityAltitudeEvent`).
     var densityAltitudeDecline: DensityAltitudeDeclineResult? = null
 
+    // fn-28.9: separate slot for the abort-takeoff result (runway-side
+    // reactive recognition, distinct from the go-around triplet and from
+    // DA-decline above). The branch fires only when no GA path already
+    // fired AND the mission is takeoff-roll-eligible per
+    // `isAbortTakeoffEligible` AND the engine has failed AND speed is
+    // pre-rotation AND phase is `TakeoffRoll` (gated inside
+    // `deriveAbortTakeoffEvent`'s 4-check gate). Disjoint from DA-decline
+    // by mission shape (takeoff-roll vs pre-taxi); disjoint from
+    // tailwind/crosswind by phase (TakeoffRoll vs Final).
+    var abortTakeoff: AbortTakeoffResult? = null
+
     val goAround: GoAroundResult? = if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
         val weather = windForMission(cognitive.updatedMission, input.weatherByAerodrome)
         // fn-28.1: resolve the typed DA input for this mission's aerodrome
@@ -236,6 +247,18 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
                 )
                 null
             }
+            // fn-28.9: AbortTakeoff is dispatched to its own apply path
+            // (NOT a GoAroundResult — abort is a runway-terminal decision,
+            // not a go-around). The abort result is stashed in the
+            // `abortTakeoff` slot above; this arm returns null in the GA
+            // channel so the GA-precedence fold-down below treats abort
+            // as a non-GA path.
+            is xyz.easiersaid.twr.pilot.observe.PilotEvent.AbortTakeoff -> {
+                abortTakeoff = applyAbortTakeoff(
+                    pilotEvent, cognitive.updatedMission, aircraft,
+                )
+                null
+            }
             // AtcGoAroundOnFinal is constructed only at the recognition site
             // in `recognizeAtcInitiatedGoAround` (axis 2 — post-cognitive
             // flag-driven). `derivePilotEvent` (axis 1 — pure derivation)
@@ -256,10 +279,20 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     // pre-taxi terminal decision; if the cognitive layer were to advance
     // past REQUEST_TAXI in the same tick the decline fired, the rewritten
     // tree (DECLINE_DEPARTURE NON_COMPLETING leaf) takes precedence.
+    //
+    // fn-28.9: AbortTakeoff slots BETWEEN DA-decline and self-init in
+    // the mission-precedence chain. Abort is a takeoff-roll terminal
+    // decision (mission shape disjoint from DA-decline's pre-taxi shapes
+    // by construction; co-occurrence is structurally impossible — but
+    // the chain is enumerated for reader clarity + future symmetry).
+    // The rewritten tree (ABORTED NON_COMPLETING leaf) takes precedence
+    // over the cognitive-baseline mission for the same reasoning as
+    // DA-decline.
     val effectiveMission = (
         plannedGoAround?.mission
             ?: (atcGoAroundOutcome?.mission?.takeIf { atcGoAroundOutcome.intent != null })
             ?: densityAltitudeDecline?.mission
+            ?: abortTakeoff?.mission
             ?: goAround?.mission
             ?: atcGoAroundOutcome?.mission  // discriminator-fail path: flag-cleared mission
             ?: cognitive.updatedMission
@@ -285,8 +318,22 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     // route both fire" test scenario (which is structurally impossible
     // by R16 design — DA-decline gates pre-taxi, planRoute Plan branch
     // requires airborne / Transit-cruise context).
+    //
+    // fn-28.9 (R14 round-15 Major 2 contract): abort-takeoff's
+    // `suppressSameTickCognitive = true` ORs into the suppression flag
+    // alongside DA-decline. Same structural code-share via the shared
+    // [applyCognitiveSuppression] helper — the helper runs once and the
+    // resulting `effectiveCognitiveTransmissions` flows into BOTH the
+    // `PlanRouteOutcome.Plan` and `PlanRouteOutcome.Skip` branches. The
+    // contract: abort apply's flag must filter `cognitive.transmissions`
+    // BEFORE every `PilotOutput` construction site, including any
+    // error/fallback paths. The `Failed` branch returns `Either.Left`
+    // (no PilotOutput); the flag has no transmission slot to affect on
+    // the error path, but the structural code-share covers the Plan +
+    // Skip return-path universe.
     val suppressSameTickCognitive: Boolean =
-        densityAltitudeDecline?.suppressSameTickCognitive == true
+        densityAltitudeDecline?.suppressSameTickCognitive == true ||
+            abortTakeoff?.suppressSameTickCognitive == true
     val effectiveCognitiveTransmissions: List<PilotTransmission> =
         applyCognitiveSuppression(cognitive.transmissions, suppressSameTickCognitive)
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
@@ -312,9 +359,19 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
             // and the at-rest intent must win over any planner output (which
             // is moot for pre-taxi shapes today, but the explicit precedence
             // documents the contract for future planner extensions).
-            intent = densityAltitudeDecline?.intent ?: planOutcome.intent,
+            // fn-28.9: AbortTakeoff intent also takes precedence — the
+            // pilot has decided NOT to continue the takeoff. Listed AFTER
+            // DA-decline in the elvis chain because abort and DA-decline
+            // are co-occurrence-impossible by mission shape; the order
+            // documents the precedence-chain shape without affecting
+            // dispatch behaviour.
+            intent = densityAltitudeDecline?.intent
+                ?: abortTakeoff?.intent
+                ?: planOutcome.intent,
             transmissions = effectiveCognitiveTransmissions + goAroundTransmissions,
-            updatedMission = densityAltitudeDecline?.mission ?: planOutcome.mission,
+            updatedMission = densityAltitudeDecline?.mission
+                ?: abortTakeoff?.mission
+                ?: planOutcome.mission,
         ).right()
         // GA-path intent precedence (mirrors the recognition order above):
         //  1. Trained-GA (fn-11.1) — `plannedGoAround.intent` clears the
@@ -337,6 +394,7 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
             intent = plannedGoAround?.intent
                 ?: atcGoAroundOutcome?.intent
                 ?: densityAltitudeDecline?.intent
+                ?: abortTakeoff?.intent
                 ?: goAround?.intent
                 ?: applyCognitiveOverrides(kinematicIntent, effectiveMission),
             transmissions = effectiveCognitiveTransmissions + goAroundTransmissions,
@@ -1633,6 +1691,138 @@ internal fun applyDensityAltitudeDecline(
         intent = PilotIntent(
             targetSpeedMps = 0.0,
             phase = PilotPhase.AtStand,
+            route = PilotRoute.None,
+            targetAltitudeM = 0.0,
+        ),
+        mission = mission.copy(root = rewrittenRoot),
+        suppressSameTickCognitive = true,
+    )
+}
+
+/**
+ * fn-28.9 (G0 abort-takeoff R14 + R20): result of the pilot's reactive
+ * abort-takeoff. Distinct from [GoAroundResult] / [PlannedGoAroundResult]
+ * / [AtcGoAroundResult] / [DensityAltitudeDeclineResult] — abort is a
+ * runway-side terminal decision (engine failed pre-rotation; aircraft
+ * stays on the runway), NOT a go-around. The mission tree is rewritten
+ * to a NON_COMPLETING `ABORTED` primitive via
+ * [CompoundTask.replaceFromActivePrimitive], and physics is at-rest
+ * (`targetSpeedMps = 0`).
+ *
+ * **Cognitive-suppression** (R14): the [suppressSameTickCognitive] flag
+ * tells `pilotDecide` to zero any same-tick cognitive transmissions
+ * (e.g. the per-step `Report(LinedUp)`-style emission that would
+ * otherwise fire if the mission was at `AWAIT_TAKEOFF_CLEARANCE` /
+ * `FLY_DEPARTURE`). The abort preempts whatever the cognitive layer was
+ * about to transmit — the pilot has decided NOT to continue the takeoff.
+ * Mirrors fn-28.2's DA-decline R14 contract; round-15 Major 2 contract
+ * requires the suppression filter to apply BEFORE every `PilotOutput`
+ * construction site, covered structurally by the shared
+ * [applyCognitiveSuppression] helper.
+ *
+ * **No `transmissions` field**: v1 emits no transmission on abort. The
+ * mission-tree rewrite + at-rest intent + cognitive-suppression are the
+ * complete pilot-side response. Future fn-28 work may add an emergency
+ * declaration (`Mayday` / `PanPan` per CAP 413 §8 / ICAO Doc 4444 §15);
+ * the result type adds the field at that point.
+ */
+internal data class AbortTakeoffResult(
+    val intent: PilotIntent,
+    val mission: PilotMission,
+    val suppressSameTickCognitive: Boolean = true,
+)
+
+/**
+ * fn-28.9 (G0 abort-takeoff R13 + R14 + R20): apply the pilot's reactive
+ * abort-takeoff. Recognition fires from
+ * `derivePilotEvent`'s `deriveAbortTakeoffEvent` branch; this function
+ * applies the already-recognised event.
+ *
+ * **Recognition+apply agreement** (R16): the function calls
+ * [isAbortTakeoffEligible] internally — the same guard the derivation
+ * site uses. If for any reason the apply is invoked with a mission no
+ * longer in the eligible shape (e.g. cognitive layer advanced past
+ * `FLY_DEPARTURE` between derive and apply somehow), the apply fails
+ * closed (returns the input mission unchanged + an at-rest intent).
+ * This is the "recognition+apply pipelines need mission-shape agreement"
+ * pattern pinned in the memory entry
+ * `bug/build-errors/recognitionapply-pipelines-need-mission-2026-05-11`,
+ * mirroring fn-28.2's [applyDensityAltitudeDecline].
+ *
+ * **Mission delta** (R13 sole rewrite primitive):
+ * `mission.root.replaceFromActivePrimitive(listOf(
+ *     PrimitiveTask(MissionStep.ABORTED, CompletionMode.NON_COMPLETING)
+ * ))` — the suffix from the active primitive (`AWAIT_TAKEOFF_CLEARANCE`
+ * or `FLY_DEPARTURE`) is replaced with the terminal NON_COMPLETING
+ * ABORTED primitive. No `resetForGoAround` — abort is not a go-around;
+ * the aircraft never gets airborne so circuit / approach-phase mutations
+ * (joinLeg, altitudeRestrictionM) were never set.
+ *
+ * **Tick A intent**:
+ *  - `targetSpeedMps = 0.0` — at-rest on the runway. The kinematic
+ *    layer's engine-off clamp (`advanceKinematics` per R12, in fn-28.8)
+ *    already bounds the working speed by `min(targetSpeedMps,
+ *    currentSpeedMps)` when `engineRunning == false`; the pilot intent
+ *    pins the floor at 0, so the aircraft decelerates each PhysicsTick
+ *    until it comes to rest. Combined with the clamp, the same-tick
+ *    visible behaviour is "instant stop" (no integrator advancement
+ *    past `min(0, currentSpeed)` once the apply runs).
+ *  - `phase = aircraft.phase` — preserve the current phase (TakeoffRoll
+ *    in the eligible scenarios). The phase will transition naturally as
+ *    physics decelerates. v1 doesn't introduce a "Stopped" phase; the
+ *    mission tree's NON_COMPLETING ABORTED is the load-bearing signal,
+ *    not the phase.
+ *  - `route = PilotRoute.None` — no airborne / ground route. The
+ *    aircraft stays on the runway.
+ *  - `targetAltitudeM = 0.0` — surface elevation; no climb intent.
+ *
+ * **Cognitive-suppression** (R14 / round-3 fix carried): returns
+ * `suppressSameTickCognitive = true`. `pilotDecide` zeroes any same-tick
+ * cognitive transmissions when the flag is set — preventing the per-step
+ * cognitive emission from firing on the tick the mission tree is being
+ * rewritten to ABORTED. Round-15 Major 2: the cognitive-suppression
+ * filter applies BEFORE every PilotOutput construction site (both
+ * `PlanRouteOutcome.Plan` and `PlanRouteOutcome.Skip` branches) — covered
+ * structurally via the shared [applyCognitiveSuppression] helper which
+ * `pilotDecide` already calls.
+ *
+ * **Doctrine**: FAA AIM §5-2 (rejected-takeoff decision); POH §3.3
+ * (engine-failure-on-takeoff); ICAO Annex 6 Part II §2.4 (PIC final
+ * authority).
+ */
+@Suppress("UnusedParameter") // event field names available to future leaves; keeps the typed shape explicit.
+internal fun applyAbortTakeoff(
+    event: xyz.easiersaid.twr.pilot.observe.PilotEvent.AbortTakeoff,
+    mission: PilotMission,
+    aircraft: AircraftState,
+): AbortTakeoffResult {
+    // Recognition+apply agreement (R16). Fails closed to an at-rest
+    // intent + unchanged mission. The event is from `derivePilotEvent`
+    // which already gated on the same predicate, so this is defensive
+    // against future regressions where derive and apply diverge.
+    if (!isAbortTakeoffEligible(mission)) {
+        return AbortTakeoffResult(
+            intent = PilotIntent(
+                targetSpeedMps = 0.0,
+                phase = aircraft.phase,
+                route = PilotRoute.None,
+                targetAltitudeM = aircraft.altitudeM,
+            ),
+            mission = mission,
+            suppressSameTickCognitive = true,
+        )
+    }
+
+    val rewrittenRoot = mission.root.replaceFromActivePrimitive(
+        listOf(
+            PrimitiveTask(MissionStep.ABORTED, CompletionMode.NON_COMPLETING),
+        ),
+    )
+
+    return AbortTakeoffResult(
+        intent = PilotIntent(
+            targetSpeedMps = 0.0,
+            phase = aircraft.phase,
             route = PilotRoute.None,
             targetAltitudeM = 0.0,
         ),

@@ -210,25 +210,43 @@ class DeferredContractsSpec {
     }
 
     /**
-     * **D-AUDIT.9.III-FOLLOWUP** — abort takeoff on engine failure.
+     * **D-AUDIT.9.III-FOLLOWUP** — abort takeoff on engine failure
+     * **CLOSED by fn-28 epic** (fn-28.8 abort foundation + fn-28.9
+     * abort pilot branch + sim golden). Pinned via:
+     *  - `pilot/.../AircraftState.kt::engineRunning: Boolean` — scalar
+     *    Boolean ground-truth (round-2 Major 4 — the simpler shape
+     *    carries the load-bearing abort-recognition predicate
+     *    `engineRunning == false`; future engine-state granularity —
+     *    `LowPower(rpm)` / partial-failure — extends the field as a
+     *    sibling decision).
+     *  - `pilot/.../observe/PilotEvent.kt::AbortTakeoff` leaf +
+     *    `deriveAbortTakeoffEvent` 4-check gate (R21 branch position 3:
+     *    DecisionAltitudeWithoutClearance → DensityAltitudeDecline →
+     *    AbortTakeoff → TailwindLimitExceeded →
+     *    CrosswindLimitExceeded).
+     *  - `pilot/.../Pilot.kt::applyAbortTakeoff` — R13
+     *    `replaceFromActivePrimitive([PrimitiveTask(ABORTED,
+     *    NON_COMPLETING)])` + at-rest intent + R14 cognitive
+     *    suppression.
+     *  - `sim/src/jvmTest/.../G0AbortTakeoffEngineFailureTest.kt` — the
+     *    eighth reactive-GA-class path / first emergency-event anchor.
      *
-     * When implemented:
-     *  - `AircraftState.engineState: EngineState` (sealed
-     *    `Normal | LowPower(rpm) | Failed(at)`) field.
-     *  - `derivePilotEvent` emits `AbortedTakeoff(reason)` when
-     *    `engineState != Normal` during takeoff-roll phase.
-     *  - V1/Vr decision gates on `engineState`.
-     *
-     * Bucket 2 — `AircraftState.engineState` doesn't exist.
+     * The original spec mentioned `EngineState` sealed-type (Normal /
+     * LowPower / Failed); fn-28 landed the simpler `engineRunning:
+     * Boolean` shape that carries the abort-recognition predicate. The
+     * `EngineState` sealed type can land later as a sibling decision if
+     * partial-failure modelling is needed (LowPower(rpm), etc.).
      */
     @Ignore
     @Test
     fun `AUDIT9-III aborted takeoff on engine failure during takeoff roll`() {
-        // Bucket 2: needs `AircraftState.engineState` (sealed type).
-        // TODO when D-AUDIT.9.III-FOLLOWUP lands:
-        //   val state = aircraftState.copy(engineState = EngineState.Failed(at = SimTime.zero))
-        //   val event = derivePilotEvent(state, takeoffRollMission)
-        //   assertIs<PilotEvent.AbortedTakeoff>(event)
+        // CLOSED (fn-28.8 + fn-28.9). This sentinel test stays @Ignore for
+        // historical parity with sibling FOLLOWUP entries; the actual
+        // coverage lives in:
+        //   - pilot/src/commonTest/.../IsAbortTakeoffEligibleSpec.kt
+        //   - pilot/src/commonTest/.../observe/PilotEventAbortTakeoffTest.kt
+        //   - pilot/src/commonTest/.../PilotAbortTakeoffTest.kt
+        //   - sim/src/jvmTest/.../G0AbortTakeoffEngineFailureTest.kt
     }
 
     /**

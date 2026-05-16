@@ -1071,6 +1071,62 @@ fun isDensityAltitudeDeclineEligible(mission: PilotMission): Boolean {
     return step == MissionStep.REQUEST_TAXI || step == MissionStep.TAXI_TO_HOLDING
 }
 
+/**
+ * fn-28.9 (G0 abort-takeoff R16): abort-takeoff eligibility guard.
+ *
+ * **Takeoff-roll shapes only**: abort is a runway-side decision made AFTER
+ * the takeoff roll has begun and BEFORE the aircraft has rotated. The
+ * eligible mission shapes are exactly those whose active primitive's step
+ * is one of the takeoff-roll steps:
+ *  - [MissionStep.AWAIT_TAKEOFF_CLEARANCE] — pilot is at the holding point
+ *    with the engine running, waiting for `ClearedForTakeoff`. An engine
+ *    failure here is still aborted-on-runway (the pilot was COMMITTED to
+ *    departure; the abort terminal state captures the decision).
+ *  - [MissionStep.FLY_DEPARTURE] — post-clearance the cognitive layer
+ *    advances `AWAIT_TAKEOFF_CLEARANCE → FLY_DEPARTURE` on `ClearedForTakeoff`
+ *    receipt. The takeoff roll itself plays out on this step until the
+ *    physics layer crosses rotation speed (after which `aircraft.phase`
+ *    transitions away from `TakeoffRoll`).
+ *
+ * **NOT** [MissionStep.REQUEST_TAXI] / [MissionStep.TAXI_TO_HOLDING] —
+ * pre-runway taxi states; an engine failure there is closer to a
+ * surface-side stoppage, not an aborted takeoff. The DA-decline guard
+ * [isDensityAltitudeDeclineEligible] covers those pre-taxi shapes; abort
+ * gates on POST-taxi, on-or-near-runway shapes.
+ *
+ * **NOT** [MissionStep.FLY_DOWNWIND] / [MissionStep.FLY_FINAL] / etc. —
+ * airborne shapes; an engine failure mid-flight is a different emergency
+ * class (engine-out forced landing — out of scope at fn-28). The phase
+ * guard inside `deriveAbortTakeoffEvent` (`aircraft.phase == TakeoffRoll`)
+ * is the v1 on-runway proxy that combines with this mission-shape guard
+ * to keep airborne engine-failure scenarios out of the abort path.
+ *
+ * **NOT a shared guard with DA-decline** (R16 / round-4 Major 3): DA
+ * decline gates on pre-taxi shapes; abort gates on takeoff-roll shapes.
+ * Semantically incompatible mission positions. Two distinct named
+ * guards, each shipped with its respective task. NOT a shared
+ * `isReactiveTerminalEligible` helper — the two decisions are about
+ * fundamentally different mission positions.
+ *
+ * Mirrors fn-14.1's `isReactiveGoAroundEligible` named-guard pattern and
+ * fn-28.2's `isDensityAltitudeDeclineEligible` sibling guard (shape:
+ * named predicate on `mission` returning Boolean, used by recognition +
+ * apply in agreement).
+ *
+ * Unit-tested in `pilot/src/commonTest/.../IsAbortTakeoffEligibleSpec.kt`
+ * over the full MissionStep enumeration; recognition+apply agreement
+ * pin lives in the `deriveAbortTakeoffEvent` + `applyAbortTakeoff` test
+ * suites.
+ *
+ * **Doctrine**: FAA AIM §5-2 / POH §3.3 (rejected-takeoff decision is
+ * a runway-side decision made before rotation); ICAO Annex 6 Part II
+ * §2.4 (PIC final authority).
+ */
+fun isAbortTakeoffEligible(mission: PilotMission): Boolean {
+    val step = mission.currentTask?.step ?: return false
+    return step == MissionStep.AWAIT_TAKEOFF_CLEARANCE || step == MissionStep.FLY_DEPARTURE
+}
+
 /** Find the active (leftmost incomplete) compound task at the top level. */
 fun CompoundTask.activeCompound(): CompoundTask? {
     for (child in children) {

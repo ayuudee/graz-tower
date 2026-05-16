@@ -8,6 +8,7 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.activeCompound
 import xyz.easiersaid.twr.pilot.computeDensityAltitudeFeet
 import xyz.easiersaid.twr.pilot.isCircuitLike
+import xyz.easiersaid.twr.pilot.isAbortTakeoffEligible
 import xyz.easiersaid.twr.pilot.isDensityAltitudeDeclineEligible
 import xyz.easiersaid.twr.pilot.isTransitArrivalReactiveGoAroundEligible
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -322,6 +323,84 @@ sealed interface PilotEvent {
         val limitFeet: Int,
         val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = null,
     ) : PilotEvent
+
+    /**
+     * fn-28.9 (G0 abort-takeoff): pilot recognises engine failure on the
+     * takeoff roll BEFORE rotation speed and decides to abort. Constructed
+     * by [derivePilotEvent]'s `deriveAbortTakeoffEvent` branch, slotted
+     * BETWEEN [DensityAltitudeDecline] (apron pre-taxi) and
+     * [TailwindLimitExceeded] (on-final wind-axis) per R21 branch order:
+     *
+     *     DecisionAltitudeWithoutClearance → DensityAltitudeDecline →
+     *     AbortTakeoff → TailwindLimitExceeded → CrosswindLimitExceeded
+     *
+     * **Pure derivation** (axis 1 — self-initiated, ground-truth driven):
+     * the event is constructed from `(aircraft, mission)`. The trigger
+     * predicate reads `aircraft.engineRunning == false` directly — the
+     * only PilotEvent leaf that consumes that ground-truth field. The
+     * cockpit observation seam is the instructor channel
+     * ([xyz.easiersaid.twr.pilot.InstructorInput.EngineFailureAt] →
+     * `SimEvent.EngineFailure` → `Step.handleEngineFailure` flips the
+     * field); recognition reads the field on the next
+     * [xyz.easiersaid.twr.sim.SimEvent.PilotDecisionTick].
+     *
+     * **Trigger predicate** (4-check gate; see `deriveAbortTakeoffEvent`
+     * for the full enumeration):
+     *  1. `aircraft.engineRunning == false` — ground-truth engine state.
+     *     Per `AircraftState.engineRunning` KDoc: read-by-physics +
+     *     read-by-this-recognition-only; the rest of cognition stays off
+     *     the field.
+     *  2. `aircraft.speedMps < aircraft.type.kinematics.rotationSpeedMps`
+     *     — pre-rotation only. A failure AFTER rotation crosses into
+     *     "engine-out climb" territory (different emergency class — out
+     *     of scope at fn-28; would route to a separate engine-out
+     *     forced-landing decision).
+     *  3. `aircraft.phase == PilotPhase.TakeoffRoll` — v1 on-runway
+     *     proxy (round-4 Major 5). A `WorldIndex` lookup that gates on
+     *     "is `aircraft.positionPoint` ON the active runway" is out of
+     *     scope; the phase guard is the conservative proxy.
+     *  4. [isAbortTakeoffEligible] — mission-shape guard (takeoff-roll
+     *     shapes: `AWAIT_TAKEOFF_CLEARANCE`, `FLY_DEPARTURE`). Recognition
+     *     + apply agreement (R16): the apply path calls the same predicate
+     *     and fails closed if drift occurs between derive and apply.
+     *
+     * **No `time` field** (round-15 Major 1 + round-16 Major 4): adding a
+     * `time` field would require [derivePilotEvent] to accept `now: SimTime`
+     * — a signature change. Sibling PilotEvent leaves don't carry `time`
+     * either (the derivation is observation-to-event with no time
+     * dependency). The cause-time of an abort is reconstructable from the
+     * trace: the prior `SimEvent.EngineFailure` event-time anchors the
+     * "when did engineRunning flip" question; this event marks "when did
+     * the pilot RECOGNISE the failure" (one [SimEvent.PilotDecisionTick]
+     * later). Splitting cause-time from recognition-time is the right
+     * trace-coherence shape — the event leaf is the recognition fact, not
+     * the cause fact.
+     *
+     * **Cognitive-suppression** (R14): the response stage
+     * [xyz.easiersaid.twr.pilot.applyAbortTakeoff] returns an
+     * [xyz.easiersaid.twr.pilot.AbortTakeoffResult] with
+     * `suppressSameTickCognitive = true`. Mirrors [DensityAltitudeDecline]'s
+     * R14 contract. `pilotDecide` filters cognitive transmissions BEFORE
+     * every `PilotOutput` construction site via the
+     * [xyz.easiersaid.twr.pilot.applyCognitiveSuppression] focused seam.
+     *
+     * **Carries** [aircraft] (the observed AircraftId, from
+     * `derivePilotEvent`'s argument) + [speedAtFailure] (the
+     * `aircraft.speedMps` value at the recognition tick; pinned for trace
+     * coherence — distinguishes "aborted at low speed near runway start"
+     * vs "aborted near rotation"). The response stage `applyAbortTakeoff`
+     * does not consume [speedAtFailure]; the field is load-bearing for
+     * trace readability and future test assertions (telemetry distinguishing
+     * the recognition speed from the runtime physics state).
+     *
+     * **Doctrine**: FAA AIM §5-2 (rejected-takeoff decision); POH §3.3
+     * (engine-failure-on-takeoff); ICAO Annex 6 Part II §2.4 (PIC final
+     * authority).
+     */
+    data class AbortTakeoff(
+        override val aircraft: AircraftId,
+        val speedAtFailure: Double,
+    ) : PilotEvent
 }
 
 /** Decision altitude threshold — at or below this without clearance triggers go-around. */
@@ -392,10 +471,20 @@ private val WIND_REACTIVE_ELIGIBLE_STEPS: Set<MissionStep> = setOf(
  *     performance per AC 23-8B (judgement-zone). When only crosswind
  *     holds, crosswind fires.
  *
- * **Reserved insertion point** (R21 / fn-28.9 work): the `AbortTakeoff`
- * branch will slot BETWEEN DA-decline and tailwind, at branch position 3
- * post-fn-28.9 — pre-rotation engine-failure recognition (takeoff-roll
- * shape), distinct from the on-final wind-axis branches.
+ * **fn-28.9 (R21) — finalised branch order** with [AbortTakeoff] inserted
+ * at branch position 3:
+ *
+ *     DecisionAltitudeWithoutClearance (1) → DensityAltitudeDecline (2)
+ *     → AbortTakeoff (3) → TailwindLimitExceeded (4)
+ *     → CrosswindLimitExceeded (5)
+ *
+ * Each branch's mission-shape guard is disjoint from its neighbours so
+ * co-occurrence is impossible by construction: DA-without-clearance gates
+ * on-approach + no-clearance; DA-decline gates pre-taxi; AbortTakeoff
+ * gates takeoff-roll + engine-off; tailwind/crosswind gate on-final.
+ * Branch ordering is logical (terminal-decision severity: hard-stop →
+ * apron-decline → runway-abort → on-final-wind), not motivated by
+ * tie-breaking.
  *
  * The signature stays `derivePilotEvent(aircraft, mission, weather: WindReport?)`
  * — same as fn-14.1; the tailwind branch reuses the same `WindReport`
@@ -474,36 +563,42 @@ fun derivePilotEvent(
      *
      * Per R21 (round-6 branch order): the DA-decline branch slots
      * BETWEEN `DecisionAltitudeWithoutClearance` (existing) and the
-     * fn-28.4-or-later `AbortTakeoff` branch (not present today).
-     * That branch is intentionally NOT wired here — landing a no-op
-     * branch with no recognition predicate would create a
-     * compile-clean dead arm. The placeholder is the parameter
-     * threading only.
+     * fn-28.9 `AbortTakeoff` branch.
      */
     densityAltitudeInput: DensityAltitudeInput? = null,
 ): PilotEvent? {
-    // fn-28.2 (R21): branch order — DA-without-clearance → DA-decline →
-    // (reserved insertion point for AbortTakeoff in fn-28.9) → tailwind
-    // → crosswind. The DA-decline branch slots BETWEEN the lowest-
-    // altitude trigger (DA-without-clearance, kinematic on final) and
-    // the wind-axis triggers (on final, weather-driven). fn-28.9 closes
-    // R21 by inserting `AbortTakeoff` between DA-decline and tailwind.
-    // KDoc on this function (see above) documents the partial order +
-    // the reserved insertion point.
+    // fn-28.9 (R21 final order): branch order is locked.
+    //   1. DA-without-clearance (lowest-altitude / hardest-stop, on-final +
+    //      uncleared)
+    //   2. DA-decline (apron pre-taxi terminal decision)
+    //   3. AbortTakeoff (runway pre-rotation terminal decision, fn-28.9)
+    //   4. Tailwind (on-final wind axis, physically stronger constraint
+    //      than crosswind per fn-15 Decision #5)
+    //   5. Crosswind (on-final wind axis, control-authority constraint
+    //      per AC 23-8B)
+    //
+    // Each branch's mission-shape gate is disjoint from its siblings so
+    // co-occurrence is impossible by construction. Branch ordering is
+    // logical (terminal severity), not motivated by tie-breaking.
     return deriveDecisionAltitudeEvent(aircraft, mission)
-        // ── Branch 2 (fn-28.2 new): density-altitude decline. Pre-taxi
+        // ── Branch 2 (fn-28.2): density-altitude decline. Pre-taxi
         // recognition; gates on the typed `densityAltitudeInput` from
         // fn-28.1's projection + the per-type `maxDensityAltitudeFt`
         // threshold (nullable — jet-class falls through).
         ?: deriveDensityAltitudeEvent(aircraft, mission, densityAltitudeInput)
-        // ── Branch 3: tailwind exceedance (fn-15.1 — physically stronger
+        // ── Branch 3 (fn-28.9 new): abort takeoff. Pre-rotation
+        // recognition; gates on `engineRunning == false` + speed <
+        // rotationSpeedMps + phase == TakeoffRoll + mission shape
+        // (takeoff-roll). Disjoint from DA-decline's pre-taxi shapes by
+        // construction (mission shape) AND from tailwind/crosswind by
+        // construction (the wind branches require `phase = Final`).
+        ?: deriveAbortTakeoffEvent(aircraft, mission)
+        // ── Branch 4: tailwind exceedance (fn-15.1 — physically stronger
         // constraint among the wind axes, fires before crosswind when both
-        // apply per fn-15 Decision #5). Demoted one position by fn-28.2's
-        // DA-decline branch but order RELATIVE TO crosswind is preserved.
+        // apply per fn-15 Decision #5).
         ?: deriveTailwindEvent(aircraft, mission, weather)
-        // ── Branch 4: crosswind exceedance (fn-14.1, control-authority
-        // constraint; demoted one position by each successive wind-axis or
-        // pre-flight reactive recognition that landed in this function).
+        // ── Branch 5: crosswind exceedance (fn-14.1, control-authority
+        // constraint).
         ?: deriveCrosswindEvent(aircraft, mission, weather)
 }
 
@@ -609,6 +704,103 @@ private fun deriveDensityAltitudeEvent(
         aircraft = aircraft.id,
         computedDaFeet = da.value,
         limitFeet = limit.value,
+    )
+}
+
+/**
+ * fn-28.9 (G0 abort-takeoff R16 + R21): abort-takeoff branch — pre-rotation
+ * engine-failure recognition. Mirrors the structural shape of
+ * [deriveDensityAltitudeEvent] (guard-clause early returns enumerate
+ * fail-closed modes), but the gate set is specific to the takeoff-roll
+ * shape and engine-off ground-truth:
+ *
+ *  1. **Engine ground-truth guard**: `aircraft.engineRunning == false`.
+ *     This is the ONLY [PilotEvent] derivation site that reads
+ *     `aircraft.engineRunning` directly — per the field's KDoc, physics
+ *     reads it and this recognition reads it; the rest of cognition stays
+ *     off the field. A `true` value short-circuits this branch (engine is
+ *     fine — no abort recognition fires).
+ *  2. **Pre-rotation speed guard**: `aircraft.speedMps <
+ *     aircraft.type.kinematics.rotationSpeedMps` (strict). At or above
+ *     rotation speed the aircraft has committed to flight; an engine
+ *     failure becomes an engine-out climb scenario (different emergency
+ *     class — out of scope at fn-28). Strict `<` mirrors the
+ *     wind-axis branches' strict-inequality discipline.
+ *  3. **Phase guard (v1 on-runway proxy)**: `aircraft.phase ==
+ *     PilotPhase.TakeoffRoll`. Round-4 Major 5 decision — a `WorldIndex`
+ *     lookup that checks "is `aircraft.positionPoint` ON the active
+ *     runway" is out of scope for fn-28. The phase guard is the
+ *     conservative proxy: physics transitions phase to `TakeoffRoll` when
+ *     the takeoff roll begins, and away from it after rotation. An engine
+ *     failure on `AtStand` / `HoldingShort` / `LinedUp` (engine-on-ground
+ *     pre-roll states) does NOT abort under this guard — the pilot's
+ *     mission shape may eventually advance to abort-eligible, but the
+ *     phase must catch up first. An engine failure airborne
+ *     (`Climbing` / `Crosswind` / etc.) also does NOT abort — different
+ *     emergency.
+ *  4. **Mission-shape guard**: [isAbortTakeoffEligible] — takeoff-roll
+ *     shapes (`AWAIT_TAKEOFF_CLEARANCE`, `FLY_DEPARTURE`). Named guard for
+ *     R16 recognition+apply agreement — [xyz.easiersaid.twr.pilot.applyAbortTakeoff]
+ *     calls the same predicate; recognition fails closed on shapes the
+ *     apply cannot operate on.
+ *
+ * No weather guard, no clearance guard, no runway guard — abort is a
+ * ground-truth-driven decision (engine state) on a specific runway shape.
+ *
+ * **Co-occurrence by construction**:
+ *  - vs. DA-decline (pre-taxi): mission shapes are disjoint
+ *    (`REQUEST_TAXI`/`TAXI_TO_HOLDING` vs.
+ *    `AWAIT_TAKEOFF_CLEARANCE`/`FLY_DEPARTURE`). Engine-off pre-taxi
+ *    falls through this branch (no abort) — DA-decline already gates on
+ *    its own predicate independently.
+ *  - vs. tailwind/crosswind (on-final): phase is disjoint (TakeoffRoll
+ *    vs. Final). An engine failure on final has no abort path.
+ *
+ * **No `time` field on the constructed event** (round-15 Major 1 + round-16
+ * Major 4): adding `time` would force [derivePilotEvent] to accept
+ * `now: SimTime` — a signature change. Sibling derivations don't carry
+ * `time` either. Recognition time is implicit (the `PilotDecisionTick`
+ * tick that processed this derivation); cause time (`engineRunning`
+ * flipped at `SimEvent.EngineFailure.time`) is reconstructable from the
+ * trace.
+ *
+ * **Doctrine**: FAA AIM §5-2 (rejected-takeoff decision is a runway-side
+ * decision made before rotation); POH §3.3 (engine-failure-on-takeoff);
+ * ICAO Annex 6 Part II §2.4 (PIC final authority).
+ */
+@Suppress("ReturnCount") // guard-clause early returns enumerate fail-closed modes
+private fun deriveAbortTakeoffEvent(
+    aircraft: AircraftState,
+    mission: PilotMission,
+): PilotEvent.AbortTakeoff? {
+    // Gate 1 — engine ground-truth. The only PilotEvent derivation that
+    // reads `aircraft.engineRunning` directly. Per the field's KDoc
+    // (R12 round-3 Major 2 contract): physics reads it; this recognition
+    // reads it; rest of cognition stays off.
+    if (aircraft.engineRunning) return null
+
+    // Gate 2 — pre-rotation speed (strict). At or above rotation speed
+    // the aircraft has committed to flight; engine-out at rotation is a
+    // different emergency class (engine-out climb / forced landing —
+    // out of scope at fn-28). Strict `<` mirrors the wind-axis branches.
+    val rotationSpeed = aircraft.type.kinematics.rotationSpeedMps
+    if (aircraft.speedMps >= rotationSpeed) return null
+
+    // Gate 3 — phase (v1 on-runway proxy per round-4 Major 5). Engine
+    // failure on any phase other than `TakeoffRoll` does not fire the
+    // abort branch. Mid-flight engine failure is a sibling decision
+    // class deferred out of fn-28 scope.
+    if (aircraft.phase !is PilotPhase.TakeoffRoll) return null
+
+    // Gate 4 — mission-shape (R16 recognition+apply agreement). The
+    // apply path calls the same predicate; recognition fails closed on
+    // shapes the apply cannot operate on (e.g. a stale mission state
+    // already advanced past `FLY_DEPARTURE` somehow).
+    if (!isAbortTakeoffEligible(mission)) return null
+
+    return PilotEvent.AbortTakeoff(
+        aircraft = aircraft.id,
+        speedAtFailure = aircraft.speedMps,
     )
 }
 

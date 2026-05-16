@@ -121,6 +121,66 @@ fun runUntilWithStateTrace(
     initialEvents: List<SimEvent>,
     untilTime: SimTime,
     onAfterEvent: (SimEvent, SimState) -> SimState = { _, st -> st },
+): StateTraceResult = runUntilWithStateTraceAndInjection(
+    initialState = initialState,
+    initialEvents = initialEvents,
+    untilTime = untilTime,
+    onAfterEvent = { ev, st -> EventInjection(state = onAfterEvent(ev, st), inject = emptyList()) },
+)
+
+/**
+ * fn-28.9 (G0 abort-takeoff sim golden): result of a per-event hook that
+ * may both transform the [SimState] AND inject additional [SimEvent]s
+ * into the running queue at the post-step boundary.
+ *
+ * The injected events are stamped via `SimState.emit` (seq monotonic; sort
+ * by canonical `(time, source, seq)`) and enqueued before the next dequeue,
+ * so the runner sees them in the same total order any sim-internal
+ * emission would have produced.
+ */
+data class EventInjection(
+    val state: SimState,
+    val inject: List<SimEvent>,
+)
+
+/**
+ * fn-28.9 (G0 abort-takeoff sim golden): driver variant that supports
+ * **dynamic event injection** from the post-step hook. Used by the
+ * G0 abort-takeoff sim golden's positive scenario to inject
+ * `SimEvent.EngineFailure` once `ClearedForTakeoff` has been observed in
+ * the trace — see the test's KDoc for the brief-time computation rationale.
+ *
+ * The hook is called after each step (identically to
+ * [runUntilWithStateTrace]'s `onAfterEvent`) and returns an
+ * [EventInjection] carrying:
+ *  - `state`: the (possibly transformed) [SimState] to persist in the trace.
+ *  - `inject`: a list of [SimEvent]s to enqueue at the post-step boundary.
+ *    Events are stamped via `SimState.emit` (monotonic seq) and sorted
+ *    canonically against existing queue entries.
+ *
+ * **Firewall discipline** (carried from [runUntilWithStateTrace]'s
+ * `onAfterEvent` KDoc): the hook MAY author world-state mutations AND/OR
+ * inject sim-events (e.g. [xyz.easiersaid.twr.sim.SimEvent.EngineFailure]
+ * to model an instructor-channel briefing fired at a dynamically-observed
+ * sim time). The hook MUST NOT inject `ControllerEvent`s or mutate
+ * `BeliefState` directly — the sim's per-cycle world-diff producer
+ * handles event derivation from world state, preserving the firewall
+ * contract.
+ *
+ * **Determinism**: injected events go through `state.emit` for seq
+ * stamping, then `HeapEventQueue.enqueue` for canonical-ordering. As long
+ * as the hook is deterministic with respect to the observed trace
+ * (one-shot guards / single-aircraft injection), the run is deterministic.
+ *
+ * **Idempotence**: hook implementations should use one-shot guards to
+ * avoid re-injecting the same event on every subsequent step. The runner
+ * does NOT deduplicate.
+ */
+fun runUntilWithStateTraceAndInjection(
+    initialState: SimState,
+    initialEvents: List<SimEvent>,
+    untilTime: SimTime,
+    onAfterEvent: (SimEvent, SimState) -> EventInjection,
 ): StateTraceResult {
     var state = initialState
     val (stamped, stampedEvents) = state.emit(initialEvents)
@@ -133,7 +193,13 @@ fun runUntilWithStateTrace(
     while (nextEvent != null && nextEvent.time <= untilTime) {
         eventTrace += nextEvent
         val (next, emitted) = step(state, nextEvent)
-        val postHook = onAfterEvent(nextEvent, next)
+        val hookResult = onAfterEvent(nextEvent, next)
+        var postHook = hookResult.state
+        if (hookResult.inject.isNotEmpty()) {
+            val (stampedHook, stampedInject) = postHook.emit(hookResult.inject)
+            postHook = stampedHook
+            stampedInject.forEach(queue::enqueue)
+        }
         statesAfterEvent.add(nextEvent to postHook)
         state = postHook
         emitted.forEach(queue::enqueue)
