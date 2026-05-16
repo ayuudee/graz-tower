@@ -55,6 +55,16 @@ class FirewallFixtureNoDirectResponsibilitiesTest {
         // construct ResponsibilityState shapes hand to validate state
         // transitions, not as a fixture cheat.
         "KnownStripsHandoffTransitionSpec.kt",
+        // fn-26.1 (R6): `StepPropertyTest` builds a `ControllerView` to
+        // satisfy the `CertificationContext` shape required by
+        // `KotlinRunwayKernel.evaluate(...)`. The named-arg
+        // `responsibilities = controllerSpec.responsibilities.keys`
+        // projects the controller's already-existing responsibility set
+        // into the view — it is not pre-populating responsibilities at
+        // fixture-load time. The actual fixture (`Fixtures.LOWG`) files
+        // its plan via `Fixture.flightPlans` per Pass 11 (see
+        // `EngineGenerators.kt`).
+        "StepPropertyTest.kt",
     )
 
     @Test
