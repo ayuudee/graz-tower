@@ -264,9 +264,24 @@ Post-done state-sync sweep (per fn-22 R6 lesson): confirm `## Done summary` carr
 - Codex sandbox workaround for Gradle: clone `$HOME/.gradle/{caches,native,wrapper}` to `$TMPDIR/gradle-user-home`, run with `GRADLE_USER_HOME=$TMPDIR/gradle-user-home _JAVA_OPTIONS=-Djava.io.tmpdir=$TMPDIR ./gradlew --offline --no-daemon ...`, JAVA_HOME=`/nix/store/fh73gfg7fp1mhyxw6cf8bkv14v2xbzbb-zulu-ca-jdk-21.0.8`.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close — see Step 10)_
-
+fn-24.1 shipped: PilotAviationWorld + PilotAerodrome + PilotRunway parallel projection landed in :pilot/world/; AviationWorld.toPilotView() extension fn wires the boundary via exhaustive named-argument constructor wiring; PilotInput.world type changed; PilotWiring.buildPilotInput projects via toPilotView() at the firewall seam; pilot-side call sites adapted across Pilot.kt (7 signatures), PilotRoutePlanner.kt (14 signatures + findRunwayAndCircuit return type), and 8 pilot test fixtures (PilotAgentTypeSpec, FirewallPilotInputTest, PilotCrosswindTickATickBTest, PilotTailwindTickATickBTest, PilotAtcInitiatedGoAroundSpec, PlannedGoAroundSpec, PerTypeCircuitSpec, TransitRoutePlanningSpec); sim/Step.kt buildDepartureRoute projects locally. FirewallPilotAviationWorldTest (jvmTest) reflection-asserts seven properties: omissions of weather/obstruction, property-set parity for both projection types (the bidirectional future-field gate per plan-review round 1), value-type substitution for aerodromes/runways, and top-level AviationWorld property-set parity (per plan-review round 2). FirewallPilotInputTest adapted. D-PASS-pilot-world-strip-dynamic-state archive-flipped per CONVENTION §8. Reading world.aerodromes[id].weather or world.aerodromes[id].runways[id].obstruction from pilot code now fails to compile. Codex impl-review: round-1 NEEDS_WORK (1 Minor — KDoc/archive wording inaccuracy re: named-arg wiring vs core-field additions); round-2 SHIP. R14-Passed: non-migration suite green (nine sim goldens, detekt unchanged); :migration:allTests green (stays green post-fn-19). Implementation commit 63cdafd22d50443ca0dcae571da5f769257a6749; base commit 3580ad76249d549ca020a512d71320ae38b69305.
 ## Evidence
 
-_(filled by `flowctl done` at task close — see Step 10)_
+- **Base commit:** `3580ad76249d549ca020a512d71320ae38b69305`
+- **Implementation commit:** `63cdafd22d50443ca0dcae571da5f769257a6749`
+- **Commits:**
+  - `251ea89` feat(pilot): land PilotAviationWorld projection — close D-PASS-pilot-world-strip-dynamic-state
+  - `63cdafd` fn-24.1: codex round-1 — correct named-arg-wiring claim wording
+- **Files created (2):**
+  - `pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot/world/PilotAviationWorld.kt`
+  - `pilot/src/jvmTest/kotlin/xyz/easiersaid/twr/pilot/FirewallPilotAviationWorldTest.kt`
+- **Files modified (14):** `docs/deferments.md`; `pilot/src/commonMain/.../Pilot.kt`, `PilotInput.kt`, `PilotRoutePlanner.kt`; `pilot/src/commonTest/.../FirewallPilotInputTest.kt`, `PerTypeCircuitSpec.kt`, `PilotAgentTypeSpec.kt`, `PilotAtcInitiatedGoAroundSpec.kt`, `PilotCrosswindTickATickBTest.kt`, `PilotTailwindTickATickBTest.kt`, `PlannedGoAroundSpec.kt`, `TransitRoutePlanningSpec.kt`; `sim/src/commonMain/.../PilotWiring.kt`, `Step.kt`.
+- **Diff scope:** 16 files / 595 LOC (R12 budget ≤20 / ≤600 — met).
+- **Verify outcome:**
+  - Non-migration suite (`:pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt`): BUILD SUCCESSFUL — nine sim goldens GREEN, detekt baseline unchanged.
+  - `:migration:allTests`: BUILD SUCCESSFUL (stays green post-fn-19).
+- **Review log (codex, 2 rounds):**
+  - Round 1: NEEDS_WORK — 1 Minor finding (KDoc/archive wording inaccuracy re: named-arg-wiring's scope vs core-field additions).
+  - Round 2: SHIP — 0 findings.
+- **Memory capture:** `.flow/memory/knowledge/conventions/compile-time-enforcement-kdoc-2026-05-16.md` (related_to `knowledge/conventions/rich-world-domain-2026-05-15`).
+- **Deferment archive flip:** D-PASS-pilot-world-strip-dynamic-state moved from `## D-PASS` active body to `## Archive` (three-field schema per CONVENTION §8).
