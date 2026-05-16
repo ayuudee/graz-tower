@@ -18,6 +18,7 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.PilotRoute
 import xyz.easiersaid.twr.pilot.RoutingError
 import xyz.easiersaid.twr.pilot.buildVisualDepartureRoute
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.pilot.pilotDecide
 import xyz.easiersaid.twr.pilot.processInstruction
 import xyz.easiersaid.twr.pilot.updateAfterTransmission
@@ -1430,7 +1431,12 @@ internal fun buildDepartureRoute(
     world: xyz.easiersaid.twr.core.world.AviationWorld,
     runwayId: RunwayId,
     aircraftType: xyz.easiersaid.twr.protocol.AircraftType,
-): PilotRoute.Airborne? = buildVisualDepartureRoute(runwayId, world, aircraftType).getOrNull()
+): PilotRoute.Airborne? =
+    // fn-24: project to PilotAviationWorld at the call site —
+    // `buildVisualDepartureRoute` migrated to the pilot-firewall
+    // typed projection (R7). The sim retains its `AviationWorld`
+    // signature; the projection is local to this helper's caller path.
+    buildVisualDepartureRoute(runwayId, world.toPilotView(), aircraftType).getOrNull()
 
 /**
  * "Cleared for takeoff" at the threshold: switch to a departure route and

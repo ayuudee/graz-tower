@@ -7,15 +7,15 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import arrow.core.NonEmptyList
-import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.CircuitProcedure
 import xyz.easiersaid.twr.core.world.LegName
-import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.InstrumentApproach
 import xyz.easiersaid.twr.core.world.Sid
 import xyz.easiersaid.twr.core.world.Star
 import xyz.easiersaid.twr.core.world.PublishedPointReference
 import xyz.easiersaid.twr.core.world.PublishedVfrProcedureKind
+import xyz.easiersaid.twr.pilot.world.PilotAviationWorld
+import xyz.easiersaid.twr.pilot.world.PilotRunway
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.CircuitProcedureId
@@ -164,7 +164,7 @@ sealed interface RoutingError {
 fun buildAirborneRoute(
     mode: NavigationMode,
     taskName: TaskName,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> = when (mode) {
     is NavigationMode.Circuit -> buildCircuitModeRoute(mode, taskName, world, aircraftType)
@@ -178,7 +178,7 @@ fun buildAirborneRoute(
 private fun buildCircuitModeRoute(
     mode: NavigationMode.Circuit,
     taskName: TaskName,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // Circuit pattern: full loop dep end → upwind → ... → threshold.
@@ -216,7 +216,7 @@ private fun buildCircuitModeRoute(
 internal fun buildVisualModeRoute(
     mode: NavigationMode.Visual,
     taskName: TaskName,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
     joinLeg: Option<LegName> = None,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
@@ -260,7 +260,7 @@ internal fun buildVisualModeRoute(
 private fun buildInstrumentModeRoute(
     mode: NavigationMode.Instrument,
     taskName: TaskName,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> = when (taskName) {
     // SID departure: follow published SID waypoints with constraints.
@@ -320,7 +320,7 @@ private fun buildEmergencyModeRoute(
  */
 internal fun buildCircuitPatternRoute(
     runwayId: RunwayId,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
     lookup: CircuitLookup = CircuitLookup.ByRunway(runwayId),
 ): Either<RoutingError, PilotRoute.Airborne> {
@@ -361,7 +361,7 @@ internal fun buildCircuitPatternRoute(
  */
 fun buildVisualDepartureRoute(
     runwayId: RunwayId,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
@@ -403,7 +403,7 @@ fun buildVisualDepartureRoute(
 internal fun buildCircuitFromLeg(
     runwayId: RunwayId,
     startLeg: LegName,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val (runway, circuit) = findRunwayAndCircuit(world, CircuitLookup.ByRunway(runwayId))
@@ -454,7 +454,7 @@ internal fun buildCircuitFromLeg(
  */
 internal fun buildGoAroundRoute(
     runwayId: RunwayId,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
     lookup: CircuitLookup = CircuitLookup.ByRunway(runwayId),
 ): Either<RoutingError, PilotRoute.Airborne> {
@@ -499,7 +499,7 @@ internal fun buildGoAroundRoute(
 // each named failure is more diagnostic than a folded single-expression alternative.
 internal fun buildSidDepartureRoute(
     fpl: FlightPlan,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance
@@ -580,7 +580,7 @@ internal fun buildSidDepartureRoute(
  */
 internal fun buildStarApproachRoute(
     fpl: FlightPlan,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance as? ClearanceState.ApproachClearance
@@ -645,7 +645,7 @@ internal fun buildStarApproachRoute(
  */
 internal fun buildArrivalJoinRoute(
     fpl: FlightPlan,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance
@@ -696,7 +696,7 @@ internal fun buildArrivalJoinRoute(
  */
 internal fun buildMissedApproachRoute(
     fpl: FlightPlan,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     aircraftType: AircraftType,
 ): Either<RoutingError, PilotRoute.Airborne> {
     val clearance = fpl.clearance as? ClearanceState.ApproachClearance
@@ -760,7 +760,7 @@ private fun resolveConstraintAltitude(constraint: xyz.easiersaid.twr.core.world.
 fun deriveNavigationMode(
     goal: HighLevelGoal,
     runway: RunwayId,
-    world: AviationWorld,
+    world: PilotAviationWorld,
 ): Either<RoutingError, NavigationMode> = when (goal) {
     is HighLevelGoal.CircuitTraining -> {
         val procedureId = world.aerodromes.values
@@ -790,9 +790,9 @@ private val CIRCUIT_LEG_ORDER = listOf(LegName.UPWIND, LegName.CROSSWIND, LegNam
  *   Used from visual mode where no procedure ID is known.
  */
 private fun findRunwayAndCircuit(
-    world: AviationWorld,
+    world: PilotAviationWorld,
     lookup: CircuitLookup,
-): Either<RoutingError, Pair<Runway, CircuitProcedure>> = when (lookup) {
+): Either<RoutingError, Pair<PilotRunway, CircuitProcedure>> = when (lookup) {
     is CircuitLookup.ById -> {
         val aerodrome = world.aerodromes.values
             .firstOrNull { it.circuits.containsKey(lookup.id) }
@@ -856,7 +856,7 @@ private fun legPoints(
  *    resolvable REP across publishedSequence or mapLabels.
  */
 internal fun resolveTransitContactRep(
-    world: AviationWorld,
+    world: PilotAviationWorld,
     destination: AerodromeId,
 ): Either<RoutingError, PointId> {
     val aerodrome = world.aerodromes[destination]

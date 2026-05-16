@@ -4,6 +4,7 @@ import arrow.core.NonEmptyList
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.Callsign
@@ -54,7 +55,7 @@ class PilotAgentTypeSpec {
             ),
         )
         val intent = DefaultPilot.decide(
-            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld(), now = SimTime.ZERO),
+            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld().toPilotView(), now = SimTime.ZERO),
         ).fold({ fail("pilotDecide failed: $it") }, { it })
         assertEquals(40.0, intent.targetSpeedMps, "C172 climb speed = POH Vy = 40 m/s")
     }
@@ -74,7 +75,7 @@ class PilotAgentTypeSpec {
             ),
         )
         val intent = DefaultPilot.decide(
-            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld(), now = SimTime.ZERO),
+            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld().toPilotView(), now = SimTime.ZERO),
         ).fold({ fail("pilotDecide failed: $it") }, { it })
         assertEquals(
             130.0,
@@ -101,7 +102,7 @@ class PilotAgentTypeSpec {
             ),
         )
         val intent = DefaultPilot.decide(
-            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld(), now = SimTime.ZERO),
+            PilotInput(aircraft = ac, worldIndex = WorldIndex(), world = AviationWorld().toPilotView(), now = SimTime.ZERO),
         ).fold({ fail("pilotDecide failed: $it") }, { it })
         assertEquals(
             10.0,

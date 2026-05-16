@@ -17,6 +17,7 @@ import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.core.world.buildWorldIndex
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Callsign
@@ -333,7 +334,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = afterInstruction,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // Tick A intent invariants — same shape as fn-11.1 trained-GA.
@@ -388,7 +389,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = afterInstruction,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         assertEquals(PilotPhase.Final, output.intent.phase)
@@ -441,7 +442,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         assertEquals(
@@ -501,7 +502,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = afterInstruction,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // Discriminator MUST pass via deriveNavigationMode — Tick A fires.
@@ -546,7 +547,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = afterInstruction,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // Tick A did NOT fire: the intent should NOT be the Tick A route=None
@@ -593,7 +594,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         val newMission = output.updatedMission ?: fail("updatedMission must be non-null")
@@ -625,7 +626,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
         // Nothing about the route should change to None — flag was None.
         // The intent.route should still be the airborne final (or whatever
@@ -677,7 +678,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // ATC-reactive Tick A intent shape: phase=Final + route=None.
@@ -757,7 +758,7 @@ class PilotAtcInitiatedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // Trained-GA Tick A intent shape (same shape as ATC-reactive).
@@ -825,7 +826,7 @@ class PilotAtcInitiatedGoAroundSpec {
             altitudeM = 50.0,
             mission = mission,
         )
-        val recognized = recognizeAtcInitiatedGoAround(aircraft, mission, world)
+        val recognized = recognizeAtcInitiatedGoAround(aircraft, mission, world.toPilotView())
             ?: fail("recognize must return non-null when flag is Some")
 
         // Discriminator MUST reject Visual mode — intent stays null even
@@ -863,7 +864,7 @@ class PilotAtcInitiatedGoAroundSpec {
         )
         val world = syntheticWorld()
         val aircraft = aircraftAt(phase = PilotPhase.Final, altitudeM = 50.0, mission = mission)
-        val recognized = recognizeAtcInitiatedGoAround(aircraft, mission, world)
+        val recognized = recognizeAtcInitiatedGoAround(aircraft, mission, world.toPilotView())
             ?: fail("recognize must return non-null when flag is Some")
 
         // Discriminator passed — Tick A apply fired.

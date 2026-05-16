@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.pilot
 
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.PointId
@@ -43,7 +44,7 @@ class FirewallPilotInputTest {
                 positionPoint = PointId("P"),
             ),
             worldIndex = WorldIndex(),
-            world = AviationWorld(),
+            world = AviationWorld().toPilotView(),
             now = SimTime.ZERO,
             // Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS — a real-world
             // cockpit input (the pilot tunes the ATIS frequency before first

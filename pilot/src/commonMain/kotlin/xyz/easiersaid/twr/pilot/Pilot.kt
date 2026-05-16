@@ -9,9 +9,9 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import arrow.core.toOption
-import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.LegName
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.pilot.world.PilotAviationWorld
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Report
@@ -353,7 +353,7 @@ internal fun planRoute(
     mission: PilotMission,
     aircraft: AircraftState,
     kinematicRoute: PilotRoute,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     worldIndex: WorldIndex,
 ): PlanRouteOutcome {
     val step = mission.currentTask?.step ?: return PlanRouteOutcome.Skip
@@ -483,7 +483,7 @@ private fun planTransitCruise(
     mission: PilotMission,
     goal: HighLevelGoal.Transit,
     aircraft: AircraftState,
-    world: AviationWorld,
+    world: PilotAviationWorld,
 ): PlanRouteOutcome {
     val destination = goal.destination ?: return PlanRouteOutcome.Skip
     val cachedRep = mission.transitContactRep.getOrNull()
@@ -550,7 +550,7 @@ private fun planCircuitTrainedGoAround(
     mode: NavigationMode.Circuit,
     mission: PilotMission,
     aircraft: AircraftState,
-    world: AviationWorld,
+    world: PilotAviationWorld,
 ): PlanRouteOutcome = buildGoAroundRoute(mode.runway, world, aircraft.type, CircuitLookup.ById(mode.procedure)).fold(
     ifLeft = { PlanRouteOutcome.Failed(it) },
     ifRight = { gaRoute ->
@@ -597,7 +597,7 @@ private fun planVisualRoute(
     mission: PilotMission,
     aircraft: AircraftState,
     kinematicRoute: PilotRoute,
-    world: AviationWorld,
+    world: PilotAviationWorld,
     worldIndex: WorldIndex,
 ): PlanRouteOutcome {
     val step = mission.currentTask?.step
@@ -740,7 +740,7 @@ private fun planCircuitDeparture(
     mission: PilotMission,
     aircraft: AircraftState,
     mode: NavigationMode.Circuit,
-    world: AviationWorld,
+    world: PilotAviationWorld,
 ): PlanRouteOutcome {
     when (aircraft.phase) {
         is PilotPhase.LandingRoll -> Unit
@@ -1220,7 +1220,7 @@ internal fun applyAtcInitiatedGoAround(
 internal fun recognizeAtcInitiatedGoAround(
     aircraft: AircraftState,
     mission: PilotMission,
-    world: AviationWorld,
+    world: PilotAviationWorld,
 ): RecognizedAtcGoAround? {
     val flag = mission.pendingAtcGoAroundFrom.getOrNull() ?: return null
     val flagValid = flag in setOf(
@@ -1293,7 +1293,7 @@ internal data class RecognizedAtcGoAround(
  *
  * Signature includes `world` because [deriveNavigationMode] needs it.
  */
-internal fun isEffectiveCircuitMode(mission: PilotMission, world: AviationWorld): Boolean {
+internal fun isEffectiveCircuitMode(mission: PilotMission, world: PilotAviationWorld): Boolean {
     mission.navigationMode.getOrNull()?.let { return it is NavigationMode.Circuit }
     val rwy = mission.activeRunway.getOrNull()?.runway ?: return false
     return deriveNavigationMode(mission.goal, rwy, world)

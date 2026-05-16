@@ -1,7 +1,7 @@
 package xyz.easiersaid.twr.pilot
 
-import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.pilot.world.PilotAviationWorld
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.SimTime
 
@@ -35,7 +35,20 @@ import xyz.easiersaid.twr.protocol.SimTime
 data class PilotInput(
     val aircraft: AircraftState,
     val worldIndex: WorldIndex,
-    val world: AviationWorld,
+    /**
+     * fn-24 (closes `D-PASS-pilot-world-strip-dynamic-state`): the
+     * pilot reads the chart-equivalent world via the typed
+     * [xyz.easiersaid.twr.pilot.world.PilotAviationWorld] projection.
+     * The projection omits entity-level dynamic state
+     * ([xyz.easiersaid.twr.core.world.Aerodrome.weather] and
+     * [xyz.easiersaid.twr.core.world.Runway.obstruction]) so reading
+     * those fields from pilot code fails to compile. Structural
+     * enforcement replaces the prior convention-via-KDoc discipline.
+     * `:sim` projects via
+     * [xyz.easiersaid.twr.pilot.world.toPilotView] at the firewall
+     * boundary ([xyz.easiersaid.twr.sim.PilotWiring.buildPilotInput]).
+     */
+    val world: PilotAviationWorld,
     val now: SimTime,
     /**
      * Pass 15 (D-AUDIT.8 closure): per-aerodrome ATIS broadcast as

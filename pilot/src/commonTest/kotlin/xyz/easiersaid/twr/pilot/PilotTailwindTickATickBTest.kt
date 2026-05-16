@@ -15,6 +15,7 @@ import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.core.world.buildWorldIndex
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftType
@@ -212,7 +213,7 @@ class PilotTailwindTickATickBTest {
             PilotInput(
                 aircraft = aircraft,
                 worldIndex = worldIndex,
-                world = world,
+                world = world.toPilotView(),
                 now = now0,
                 weatherByAerodrome = weatherAt15ktTailwindAgainstRwy09(),
             ),
@@ -261,7 +262,7 @@ class PilotTailwindTickATickBTest {
                 aircraft = aircraftAt(
                     phase = PilotPhase.Final, route = airborneFinal, mission = initialMission,
                 ),
-                worldIndex = worldIndex, world = world, now = now0,
+                worldIndex = worldIndex, world = world.toPilotView(), now = now0,
                 weatherByAerodrome = weather,
             ),
         ).getOrElse { fail("Tick A pilotDecide failed: $it") }
@@ -293,7 +294,7 @@ class PilotTailwindTickATickBTest {
             PilotInput(
                 aircraft = tickBAircraft,
                 worldIndex = worldIndex,
-                world = world,
+                world = world.toPilotView(),
                 now = now0,
                 weatherByAerodrome = weather, // wind still over limit — confirms hysteresis on the planner side
             ),

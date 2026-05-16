@@ -3,6 +3,8 @@ package xyz.easiersaid.twr.pilot
 import xyz.easiersaid.twr.core.world.Aerodrome
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.CircuitLeg
+import xyz.easiersaid.twr.pilot.world.PilotAviationWorld
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.core.world.CircuitProcedure
 import xyz.easiersaid.twr.core.world.Degrees
 import xyz.easiersaid.twr.core.world.Feet
@@ -85,7 +87,7 @@ class PerTypeCircuitSpec {
         private val DOWNWIND_END = PointId("DE")
         private val BASE_TURN = PointId("BT")
 
-        private fun synthetic1RunwayWorld(): AviationWorld {
+        private fun synthetic1RunwayWorld(): PilotAviationWorld {
             val runway = Runway(
                 id = RWY_ID,
                 path = Path(listOf(THRESHOLD, DEP_END)),
@@ -113,7 +115,7 @@ class PerTypeCircuitSpec {
                 runways = mapOf(RWY_ID to runway),
                 circuits = mapOf(CKT_ID to circuit),
             )
-            return AviationWorld(aerodromes = mapOf(ADRM_ID to aerodrome))
+            return AviationWorld(aerodromes = mapOf(ADRM_ID to aerodrome)).toPilotView()
         }
     }
 }

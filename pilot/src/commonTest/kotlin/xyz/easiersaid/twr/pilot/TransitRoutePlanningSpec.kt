@@ -19,6 +19,8 @@ import xyz.easiersaid.twr.core.world.PublishedMapLabel
 import xyz.easiersaid.twr.core.world.PublishedPointReference
 import xyz.easiersaid.twr.core.world.PublishedVfrProcedure
 import xyz.easiersaid.twr.core.world.PublishedVfrProcedureKind
+import xyz.easiersaid.twr.pilot.world.PilotAviationWorld
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AirspaceVolumeId
 import xyz.easiersaid.twr.protocol.FirId
@@ -62,8 +64,8 @@ class TransitRoutePlanningSpec {
             aip = AerodromeAip(publishedVfrProcedures = procedures),
         )
 
-    private fun world(procedures: Map<PublishedVfrProcedureId, PublishedVfrProcedure>): AviationWorld =
-        AviationWorld(aerodromes = mapOf(DESTINATION to aerodrome(procedures)))
+    private fun world(procedures: Map<PublishedVfrProcedureId, PublishedVfrProcedure>): PilotAviationWorld =
+        AviationWorld(aerodromes = mapOf(DESTINATION to aerodrome(procedures))).toPilotView()
 
     private fun procedure(
         id: String,
@@ -165,7 +167,7 @@ class TransitRoutePlanningSpec {
 
     @Test
     fun `aerodrome absent from world returns AerodromeNotInWorld`() {
-        val w = AviationWorld() // no aerodromes
+        val w = AviationWorld().toPilotView() // no aerodromes
         val result = resolveTransitContactRep(w, DESTINATION)
         assertEquals(Either.Left(RoutingError.AerodromeNotInWorld(DESTINATION)), result)
     }
@@ -234,10 +236,10 @@ class TransitRoutePlanningSpec {
                 name = "Ljubljana FIR",
                 volumes = setOf(volumeId),
             )),
-        )
+        ).toPilotView()
         val emptyAirspace = AviationWorld(
             aerodromes = mapOf(DESTINATION to aerodrome(procedures)),
-        )
+        ).toPilotView()
         assertEquals(
             resolveTransitContactRep(withAirspaceAndFirs, DESTINATION),
             resolveTransitContactRep(emptyAirspace, DESTINATION),

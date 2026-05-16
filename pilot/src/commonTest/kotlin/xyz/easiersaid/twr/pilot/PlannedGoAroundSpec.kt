@@ -16,6 +16,7 @@ import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.Runway
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.core.world.buildWorldIndex
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftType
@@ -227,7 +228,7 @@ class PlannedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // Tick A intent invariants — phase MUST be Final (NOT Climbing) so
@@ -333,7 +334,7 @@ class PlannedGoAroundSpec {
             mission = mission,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         assertEquals(
@@ -401,7 +402,7 @@ class PlannedGoAroundSpec {
             route = PilotRoute.None,
         )
         val output = pilotDecide(
-            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world, now = now0),
+            PilotInput(aircraft = aircraft, worldIndex = worldIndex, world = world.toPilotView(), now = now0),
         ).getOrElse { fail("pilotDecide failed: $it") }
 
         // Discriminator pin: ordinary FLY_DEPARTURE on TakeoffRoll must NOT

@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.pilot.PilotInput
+import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AircraftId
 
 /**
@@ -26,7 +27,13 @@ internal fun buildPilotInput(state: SimState, aircraftId: AircraftId): PilotInpu
     return PilotInput(
         aircraft = aircraft,
         worldIndex = state.worldIndex,
-        world = state.world,
+        // fn-24: project `AviationWorld` into the typed
+        // `PilotAviationWorld` view at the firewall boundary. The
+        // projection omits dynamic entity fields
+        // (`Aerodrome.weather`, `Runway.obstruction`) so pilot code
+        // cannot reach them by chart-read — closes
+        // `D-PASS-pilot-world-strip-dynamic-state`.
+        world = state.world.toPilotView(),
         now = state.now,
         // Pass 15 (D-AUDIT.8 closure): the pilot reads ATIS at the
         // moment of first contact (lazy). The full per-aerodrome ATIS
