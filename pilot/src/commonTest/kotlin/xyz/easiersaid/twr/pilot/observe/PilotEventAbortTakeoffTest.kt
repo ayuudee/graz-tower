@@ -216,19 +216,26 @@ class PilotEventAbortTakeoffTest {
     }
 
     @Test
-    fun `does NOT fire when mission shape is not abort-eligible — gate 4 fails closed`() {
-        // Mission-shape guard fails closed on non-takeoff-roll steps.
-        // Pre-taxi (REQUEST_TAXI / TAXI_TO_HOLDING) is DA-decline territory;
-        // airborne / arrival is out of scope.
-        listOf(
-            MissionStep.REQUEST_TAXI,
-            MissionStep.TAXI_TO_HOLDING,
-            MissionStep.RUN_UP_CHECKS,
-            MissionStep.AWAIT_LINE_UP,
-            MissionStep.FLY_DOWNWIND,
-            MissionStep.FLY_FINAL,
-            MissionStep.LAND,
-        ).forEach { step ->
+    fun `does NOT fire when mission shape is not abort-eligible — exhaustive gate 4 enumeration`() {
+        // Codex round-2 finding 1 fix: exhaustive enumeration over
+        // `MissionStep.entries` instead of a hand-maintained negative
+        // list (the prior hand-maintained list was missing
+        // `FLY_FINAL_TO_SHORT_FINAL`, `FLY_STAR`, `AWAITING_ATC_INSTRUCTION`,
+        // and several others). The single source of truth for the
+        // eligible set is `isAbortTakeoffEligible` in PilotMission.kt;
+        // this test enumerates every MissionStep value and asserts that
+        // exactly the eligible set fires and every other step does not.
+        //
+        // The eligible-step rows (AWAIT_TAKEOFF_CLEARANCE +
+        // FLY_DEPARTURE) are covered by the positive-row tests above
+        // (`fires on C172 + ...` + `fires on AWAIT_TAKEOFF_CLEARANCE
+        // ...`). This row covers all the negative-space rows in one pass.
+        val eligible = setOf(
+            MissionStep.AWAIT_TAKEOFF_CLEARANCE,
+            MissionStep.FLY_DEPARTURE,
+        )
+        for (step in MissionStep.entries) {
+            if (step in eligible) continue  // positive rows above cover these
             val event = derivePilotEvent(
                 aircraft = aircraft(
                     engineRunning = false,
@@ -240,7 +247,10 @@ class PilotEventAbortTakeoffTest {
             )
             assertNull(
                 event,
-                "mission step=$step → abort gate 4 fails closed; got $event",
+                "MissionStep.$step is not in the abort-eligible set " +
+                    "$eligible → abort gate 4 must fail closed; got $event. " +
+                    "If a future broadening of `isAbortTakeoffEligible` adds " +
+                    "$step, update the `eligible` set here to match.",
             )
         }
     }
