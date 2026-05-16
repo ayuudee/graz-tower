@@ -1,7 +1,7 @@
 {
   "branch_name": "fn-24-land-pilotpilotaviationworld-projection",
-  "completion_review_status": "unknown",
-  "completion_reviewed_at": null,
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-16T08:13:17.410345Z",
   "created_at": "2026-05-16T07:38:49.722806Z",
   "default_impl": null,
   "default_review": null,
@@ -12,7 +12,7 @@
   "plan_review_status": "ship",
   "plan_reviewed_at": "2026-05-16T07:47:43.736775Z",
   "spec_path": ".flow/specs/fn-24-land-pilotpilotaviationworld-projection.md",
-  "status": "open",
+  "status": "done",
   "title": "Land `:pilot/PilotAviationWorld` projection (close D-PASS-pilot-world-strip-dynamic-state)",
-  "updated_at": "2026-05-16T07:47:43.736878Z"
+  "updated_at": "2026-05-16T08:13:17.520616Z"
 }
