@@ -114,6 +114,6 @@ Before SHIP on a mirrored sim test:
 ## Cross-references
 
 - Test-pin discipline (post-state-vs-intent generalization):
-  `knowledge/best-practices/test-pin-discipline.md`
+  `knowledge/best-practices/test-pin-discipline-2026-05-15.md`
 - Source capture (kept as authoritative event record):
   `.flow/memory/bug/test-failures/inherited-sim-test-gate-semantics-may-2026-05-11.md`

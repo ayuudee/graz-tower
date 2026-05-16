@@ -69,7 +69,7 @@ When **adding** new time-varying state to the world model:
      (e.g. `PilotInput.weatherByAerodrome`).
    - Explicitly forbid direct reads from `input.world.aerodromes[id].<field>`
      or analogous paths through the entity.
-   - Cite the convention's anchor in `.flow/memory/knowledge/conventions/rich-world-domain.md`.
+   - Cite the convention's anchor in `.flow/memory/knowledge/conventions/rich-world-domain-2026-05-15.md`.
 
 3. **File a structural-enforcement deferment** at migration time, not
    later. The long-term fix for the reachability concern is a typed

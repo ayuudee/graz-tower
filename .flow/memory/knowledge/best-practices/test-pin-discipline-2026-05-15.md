@@ -163,7 +163,7 @@ Before SHIP on a test pin:
 
 ## Cross-references
 
-- Inherited gate semantics: `knowledge/best-practices/inherited-gate-semantics.md`
+- Inherited gate semantics: `knowledge/best-practices/inherited-gate-semantics-2026-05-15.md`
   (sibling discipline: copy-pasted gates need semantic re-validation per
   axis, not just syntactic transfer)
 - Source captures (kept as authoritative event records):
