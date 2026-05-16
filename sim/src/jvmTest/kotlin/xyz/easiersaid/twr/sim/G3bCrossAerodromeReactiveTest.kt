@@ -125,14 +125,15 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  *    guard. Single-applier dispatch fork; the existing
  *    pilot-decision pipeline is unchanged.
  *  - **R22 suffix-replace via existing GA TaskNodes — NO
- *    `GA_AT_DEST` placeholder** (round-5 Critical 2): the
- *    suffix-replacement at the active arrival primitive uses
+ *    destination-GA placeholder enum/string** (round-5 Critical 2):
+ *    the suffix-replacement at the active arrival primitive uses
  *    `replaceFromActivePrimitive(listOf(goAroundTask(),
  *    circuitTask(), groundArrivalTask()))` — the same existing
  *    TaskNode helpers used by every other GA path. No new
- *    `MissionStep.GA_AT_DEST` enum value or placeholder string
- *    appears anywhere in this test/spec. The mission-tree shape pin
- *    references the resolved-by-.6 TaskNode types directly.
+ *    destination-GA placeholder `MissionStep` value or placeholder
+ *    string is introduced anywhere in this test or its spec. The
+ *    mission-tree shape pin references the resolved-by-.6 TaskNode
+ *    types directly.
  *  - **R19 Transit GA Tick A intent**: `climbSpeedMps + Final +
  *    None + patternAltitude` — NOT zero-target (DA/abort regime),
  *    NOT `Climbing` phase (self-initiated DA regime). Aligns with
@@ -843,9 +844,10 @@ class G3bCrossAerodromeReactiveTest {
         // specifically that a `GOING_AROUND` step is visited (the
         // `goAroundTask()`'s first primitive) before the recovery
         // circuit's `FLY_DEPARTURE` (the `circuitTask()`'s first
-        // primitive). NO `GA_AT_DEST` enum value or placeholder string
-        // appears in this assertion (round-5 Critical 2) — the assertion
-        // references the resolved-by-.6 TaskNode types directly.
+        // primitive). NO destination-GA placeholder enum value or
+        // placeholder string appears in this assertion (round-5
+        // Critical 2) — the assertion references the resolved-by-.6
+        // TaskNode types directly.
         val missionStepTrans = trace.missionStepTransitions(aircraftId)
         val postShiftSteps = missionStepTrans
             .filter { it.after.time.millis > weatherShiftMs }
