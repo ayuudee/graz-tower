@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-16T10:53:11.686422Z",
+  "depends_on": [],
+  "epic": "fn-28-engine-pass-c-2-3-new-goldens-that",
+  "id": "fn-28-engine-pass-c-2-3-new-goldens-that.6",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-28-engine-pass-c-2-3-new-goldens-that.6.md",
+  "status": "todo",
+  "title": "Cross-aerodrome foundation: away-weather projection FIX-OR-AUDIT (no new deferment)",
+  "updated_at": "2026-05-16T11:41:09.630264Z"
+}

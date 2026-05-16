@@ -1,13 +1,18 @@
 {
   "branch_name": "fn-26-engine-pass-a-step-function-property",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
   "created_at": "2026-05-16T08:32:03.008472Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
   "depends_on_epics": [],
   "id": "fn-26-engine-pass-a-step-function-property",
   "next_task": 1,
-  "plan_review_status": "unknown",
-  "plan_reviewed_at": null,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-16T08:45:57.092862Z",
   "spec_path": ".flow/specs/fn-26-engine-pass-a-step-function-property.md",
   "status": "open",
   "title": "Engine pass A \u2014 step-function property tests (totality, monotonicity, invariant preservation)",
-  "updated_at": "2026-05-16T08:33:19.639762Z"
+  "updated_at": "2026-05-16T08:45:57.092989Z"
 }

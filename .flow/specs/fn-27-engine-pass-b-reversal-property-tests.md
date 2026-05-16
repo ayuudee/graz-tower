@@ -1,57 +1,31 @@
-# fn-27 — Engine pass B: reversal property tests
+# fn-27 — Engine pass B: reversal property tests **[PARKED 2026-05-16 — planning defect]**
 
-## Overview
+## PARKED — premise does not hold against the codebase
 
-Per `STRATEGY.md`: "every state transition has its reversal tested before its forward path ships." Today reversal coverage is per-golden (e.g. fn-12's runway-obstruction sets `obstruction \!= null`, then sets it back; fn-15's tailwind shift authors a 2-transition world). A property-test layer makes the reversal claim **structural across event classes**, not just per-scenario.
+This epic was scoped to introduce **per-event reversal property tests** — for each `SimEvent` family, exercise the forward path and assert the inverse event undoes the state mutation. The plan-review phase (2026-05-16) caught the fundamental defect:
 
-For event classes that have documented reversals (per fn-12 / fn-15 / fn-16 / fn-17 era), generate forward + reverse pairs and assert state equivalence (modulo `now`, `seq`, audit fields). Documented pairs include:
+**The listed reversal pairs (`WeatherShift` ↔ inverse, `RunwayObstructed` / `RunwayCleared`, `LandingClearanceIssued` / `LandingClearanceCancelled`, etc.) do not exist as `SimEvent` subtypes.**
 
-- `RunwayObstructed` ↔ `RunwayObstructionCleared`
-- `WeatherShift(to_X)` ↔ `WeatherShift(back_to_baseline)`
-- `ClearedTo<X>` ↔ `ClearedTo<Cancel>` (when cancellation is a real protocol act, NOT silent revocation)
-- `LandingClearanceIssued` ↔ `LandingClearanceCancelled` (per fn-13 G3a-obstruction continue-approach flow — clearance is cancelled by the GA-on-obstruction interrupt)
-- `TakeoffClearanceIssued` ↔ `TakeoffClearanceCancelled` (when modeled — verify against `protocol/.../Instruction.kt`)
-- `FlightPlanFiled` ↔ `FlightPlanCancelled` (if modeled — verify)
+`SimEvent` declarations (`sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/SimEvent.kt`) enumerate: `PhysicsTick`, `PilotDecisionTick`, `ControllerCycle`, `Spawn`, `TransmissionStart`, `TransmissionEnd`, `PilotProcessingComplete`, `MissedHandoffDetected`, `FlightPlanFiled`, `AtisIssued`. **None are symmetric pairs.** The cancel/clear-style reversibility this epic envisioned is not modeled at the event layer — it's satisfied at the *trace* layer per existing golden tests (fn-12 obstruction-clears-in-time, fn-15 tailwind recovery, etc.).
 
-This epic uses the same Kotest-property infrastructure fn-26 establishes (epic dependency).
+## Redirect — intent absorbed into fn-29
 
-## Boundaries / non-goals
+The reversal-symmetry intent is **not lost**:
 
-- **Out: introducing new reversal events.** Only test classes that already have documented reversal semantics in the protocol. If a class needs a reversal it doesn't have today (e.g. `Backtrack` doesn't have a `BacktrackCancelled`), that's a separate epic.
-- **Out: structural-vs-narrative invariants.** Reversal is reduced to: "state-after-forward-then-reverse == state-before-forward, modulo `now`/`seq`/audit." If full structural equivalence isn't reachable for a class (e.g. some commitments leave traces), document it as a class-specific exception with the rationale.
-- **Out: full timeline reversibility.** Single-forward + single-reverse pair only. Multi-step reversibility (e.g. takeoff cleared → backtrack → cancel both) is a future epic.
+- **fn-29 (Engine pass D — invariant pumping over state trace)** already extends `runUntilWithStateTrace` with per-event-boundary invariants. The reversibility intuition lives there as a *trace invariant* (e.g., "state.weatherByAerodrome at tick N matches state.weatherByAerodrome at tick M for any (N, M) where no `AtisIssued`/weather-shift event occurred between them").
+- **fn-26 (Engine pass A — step-function property)** already includes `step(s, e) == step(s, e)` (determinism) and `step(s, e).newState.now >= state.now` (monotonicity). The forward-direction symmetric properties are covered.
 
-## Strategy Alignment
+Per-event reversal as a *separate* test type would require adding inverse `SimEvent` subtypes that don't exist (and shouldn't be added speculatively for testing alone — that's reshape-engine-to-fit-test, which AGENTS.md forbids).
 
-- **Runtime simulator** — directly cashes the strategy's "reversal tested before forward" claim at the engine level.
+## Decision
 
-## Acceptance
+**Park fn-27.** No tasks were authored; no code was written. The slot in the engine-pass-B-C-D sequence is retired. fn-26 + fn-28 + fn-29 carry the engine-solidity pass.
 
-- **R1:** New file `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/ReversalPropertyTest.kt` — Kotest spec with one property test per reversal-pair class identified at task start.
-- **R2:** Inventory step: at task start, enumerate the documented reversal pairs (read `protocol/.../Instruction.kt` + the relevant goldens' KDoc — fn-12, fn-13, fn-15, fn-17). Record the count + identities in evidence; the property test count matches.
-- **R3:** Each property: generate a `(state, forwardEvent)` pair; apply forward; apply reverse; assert state equivalence modulo `(now, seq, audit_history_fields)`. Use the same EngineGenerators from fn-26.
-- **R4:** Class-specific exceptions documented inline (e.g. "WeatherShift reversal leaves trace in `state.weatherTransitionsLog` — comparison excludes that field"). No silent equivalence-weakening.
-- **R5:** If any reversal property fails for a class that SHOULD reverse cleanly, surface as evidence + file a follow-up epic; don't paper over.
-- **R6:** Bounded runtime: ≤500 iterations per property; total reversal-test execution ≤45 seconds.
-- **R7:** Full verify GREEN; nine sim goldens GREEN; detekt unchanged.
-- **R8:** Diff scope: 1 new test file + 0 production-code changes. Total ≤2 files, ≤300 LOC.
-
-## Dependencies
-
-This epic depends on **fn-26-engine-pass-a-step-function-property** for Kotest setup + EngineGenerators. Sequence: fn-26 → fn-27.
-
-## Review considerations
-
-- **FP / type safety**: reversal equivalence requires `SimState` to have structural equality. Verify at task start. **Reviewer focus**: confirm comparison excludes the right fields (now/seq/audit) and doesn't accidentally compare reference identity.
-- **Test architecture**: same Kotest spec pattern as fn-26. **Reviewer focus**: confirm reversal-pair inventory is accurate and exhaustive within the in-scope event classes.
-- **Impact**: scoped to :sim/jvmTest.
-- **Operational ATC correctness / applicability**: directly tests an ATC-correctness claim (reversible state transitions). **Reviewer focus**: confirm the "audit field exclusion list" doesn't accidentally hide a real reversal defect.
+If a future scenario genuinely needs symmetric event pairs (e.g., a real ATC operational pattern like `ClearanceIssued` / `ClearanceCancelled` becomes load-bearing for some controller test), file a fresh epic with a real codebase grounding — don't unpark this one.
 
 ## References
 
-- `protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instruction.kt` — instruction + reversal sealed types
-- fn-12 spec (`Runway.obstruction` migration; documented obstruction-set + clear reversal)
-- fn-15 spec (G3a-react tailwind; documented 2-transition wind shift)
-- fn-13 spec (G3a continue-approach; documented landing-clearance cancel)
-- `.flow/memory/knowledge/conventions/rich-world-domain-2026-05-15.md` — rich-world-domain entity-field principle
-- `STRATEGY.md` — "every state transition has its reversal tested before its forward path ships"
+- fn-26 spec — step-function property (determinism + monotonicity covers forward symmetric)
+- fn-29 spec — invariant pumping over state trace (trace-layer reversibility lives here)
+- `sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/SimEvent.kt` — authoritative SimEvent enumeration (no symmetric pairs)
+- AGENTS.md — "don't reshape engine to fit test"

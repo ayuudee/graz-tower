@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-16T08:15:17.452875Z",
+  "depends_on": [],
+  "epic": "fn-25-add-main-runnable-launcher-close-plan-m8",
+  "id": "fn-25-add-main-runnable-launcher-close-plan-m8.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-25-add-main-runnable-launcher-close-plan-m8.1.md",
+  "status": "todo",
+  "title": "Add Launcher.kt + LauncherFixture + LauncherSmokeTest + close .plan M8",
+  "updated_at": "2026-05-16T08:16:41.948520Z"
+}

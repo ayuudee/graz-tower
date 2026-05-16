@@ -108,9 +108,8 @@ EOF2
 - Pre-existing dirty state (research/tools/requirements-spike/) MUST NOT be staged.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close — see Step 5)_
-
+fn-21.1 shipped: STRATEGY.md `last_updated` bumped 2026-05-08 → 2026-05-15. Five epics shipped this session (fn-15/16/17/18/19); four require new prose here (fn-15's G3a-react-tailwind is already credited in the existing track text). Runtime simulator track body refreshed to mention fn-16 (Aerodrome.weather migration), fn-17 (CAP 413 Ed 24 reconciliation, `CAP_413_EDITION` constant in `RegulationDatabase`), fn-19 (LJMB SID test reconciliation, build green). Reviewer / agent infrastructure track body refreshed to mention fn-18 (four-bucket deferment register reorganization, docs/deferments.md canonical, 98 active + 37 archive entries). Other sections (FM/Lean, Requirements registry, target_problem, approach, name) unchanged. `flowctl strategy status` and `flowctl strategy read` parse cleanly post-edit; diff = 30 lines (within ≤30 R6 scope-creep guard). Codex impl-review path: triage-skip fast-path verdict SHIP (docs-only diff).
 ## Evidence
-
-_(filled by `flowctl done` at task close — see Step 5)_
+- Commits: 8eb54662e02b08a8f78ece39d611bf69e44e6369
+- Tests: flowctl strategy status --json, flowctl strategy read --json, git diff STRATEGY.md | wc -l
+- PRs:

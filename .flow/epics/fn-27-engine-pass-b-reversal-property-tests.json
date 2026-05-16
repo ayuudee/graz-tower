@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-27-engine-pass-b-reversal-property-tests.md",
-  "status": "open",
+  "status": "done",
   "title": "Engine pass B \u2014 reversal property tests (forward + reverse pair equivalence)",
-  "updated_at": "2026-05-16T08:36:14.232186Z"
+  "updated_at": "2026-05-16T10:45:50.889454Z"
 }

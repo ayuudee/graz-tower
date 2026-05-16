@@ -11,7 +11,8 @@ Add Kotest property tests for the sim engine's `step()` function. Single task. 4
 **Files**:
 - **CREATE**:
   - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/StepPropertyTest.kt` — Kotest spec with 4+ property tests
-  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EngineGenerators.kt` — `Arb<SimState>`, `Arb<SimEvent>` builders seeded from LOWG
+  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EngineGenerators.kt` — `Arb<SimState>`, `Arb<SimEvent>`, `arbPostFilingState`, `arbPostFilingStatePlusEvent` builders seeded from LOWG
+  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/RunwayKernelAdapter.kt` (OPTIONAL — may live inline in StepPropertyTest.kt; per plan-review round 3 — extract if helper grows >30 LOC): `buildRunwayKernelInput(state, instruction)` helper that constructs `RunwayKernelInput` from post-state runway/duty/observation/aircraft-phase + the emitted controller instruction
 - **MODIFY**:
   - `sim/build.gradle.kts` — add kotest engine + runner + property + assertions to jvmTest deps; register Kotest JUnit5 runner
 - **READ ONLY**:
@@ -46,9 +47,7 @@ jvmTest {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()  // Kotest 5.x runs on JUnit5
-}
+tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach { useJUnitPlatform() }  // Kotest 5.x runs on JUnit5
 ```
 
 Verify `tasks.withType<Test> { useJUnitPlatform() }` doesn't already exist (it should — JUnit5 is already used). If `useJUnitPlatform()` is present, Kotest auto-discovers.
@@ -61,19 +60,33 @@ Seed-from-LOWG strategy:
 // SHAPE ONLY — verify against Fixtures.kt + SimState API at impl time:
 object EngineGenerators {
     // Load LOWG once; reuse the loaded state as a seed.
+    // ACTUAL API (verified per plan-review round 1): Fixtures.<NAME>.load().getOrElse { ... } returns a LoadedFixture
+    // with world, worldIndex, standPointId, weatherByAerodrome, initialEvents. Mirror G2CrossAerodromeVfrTest.kt:193 pattern.
     private val baseLoaded by lazy {
-        Fixtures.LOWG.loadFor(/* default G0-style fixture */)
+        Fixtures.LOWG_LJMB_VFR.load().getOrElse { error("LOWG fixture load failed: $it") }
+        // OR use the G0-style fixture: Fixtures.LOWG_TWO_AIRCRAFT (the G1 anchor; G1B4ClosurePinSpec.kt:72 pattern)
+        // Pick whichever is simplest; document the choice in evidence.
     }
 
     fun arbBaseState(): Arb<SimState> = arbitrary { rs ->
-        val base = baseLoaded.toBaseSimState(seed = rs.random.nextLong())
-        // Vary the seed; keep world/worldIndex/controllers fixed
-        base
+        // Construct SimState via SimState.initial(seed, world, worldIndex, aircraft, controllers, weatherByAerodrome).getOrElse { error(...) }
+        // Vary the SEED across iterations; keep world/worldIndex/controllers/aircraft fixed.
+        SimState.initial(
+            seed = rs.random.nextLong(),
+            world = baseLoaded.world,
+            worldIndex = baseLoaded.worldIndex,
+            aircraft = /* listOf(...) from baseLoaded fixture pattern */,
+            controllers = /* listOf(ground, tower) from baseLoaded fixture pattern */,
+            weatherByAerodrome = baseLoaded.weatherByAerodrome,
+        ).getOrElse { error("SimState.initial rejected: $it") }
     }
 
     fun arbEvent(state: SimState): Arb<SimEvent> = Arb.choice(
-        // Each SimEvent subclass gets an Arb. Start with the easy ones:
-        arbPilotDecisionTick(state),
+        // Each SimEvent subclass gets an Arb. CRITICAL: every event's time MUST satisfy event.time >= state.now
+        // (step() has a `require(event.time >= state.now)` boundary at Step.kt:197). Use:
+        //   Arb.long(0L..MAX_DELTA_MS).map { state.now + SimDuration.ofMillis(it) }
+        // to generate future-only event times.
+        arbPilotDecisionTick(state),  // time = state.now + Arb.long(0..30_000).map { SimDuration.ofMillis(it) }
         arbPhysicsTick(state),
         arbControllerCycle(state),
         // Defer harder events (FlightPlanFiled, ProcessInstructionForAircraft, etc.) until property tests reveal value.
@@ -81,6 +94,20 @@ object EngineGenerators {
 
     fun arbStatePlusEvent(): Arb<Pair<SimState, SimEvent>> =
         arbBaseState().flatMap { state -> arbEvent(state).map { ev -> state to ev } }
+
+    // R6 needs a post-filing state so ControllerCycle events emit runway instructions (per plan-review round 2)
+    fun arbPostFilingState(): Arb<SimState> = arbitrary { rs ->
+        val initial = /* arbBaseState().sample(rs).value */
+        // Drive through fixture's initialEvents (which include FlightPlanFiled):
+        runUntil(
+            initial = initial,
+            initialEvents = baseLoaded.initialEvents + /* a few ControllerCycle ticks per fixture pattern */,
+            until = initial.now + SimDuration.ofMillis(60_000L),  // 60s sim = enough for controllers to load strips
+        )
+    }
+
+    fun arbPostFilingStatePlusEvent(): Arb<Pair<SimState, SimEvent>> =
+        arbPostFilingState().flatMap { state -> arbEvent(state).map { ev -> state to ev } }
 }
 ```
 
@@ -114,19 +141,51 @@ class StepPropertyTest : FunSpec({
         }
     }
 
-    test("R6 runway certifier preservation (post-event)") {
-        checkAll(EngineGenerators.arbStatePlusEvent()) { (state, event) ->
-            val (newState, _) = step(state, event)
-            // Use Kotlin-side runway kernel shim to assert runway invariants hold:
-            val runwayDecision = RunwayKernel.certify(newState.toRunwayKernelEnv(), newState.toRunwayState(), newState.toRunwayProposal())
-            // Pass = runway state still valid. Adapt to the actual RunwayKernel shim's API at impl time.
-            runwayDecision.shouldBeApproved()
+    test("R6 conditional runway-kernel preservation (non-vacuous)") {
+        // Reshaped per plan-review rounds 1+2+3 — uses arbPostFilingStatePlusEvent so controller runway-instruction
+        // emissions are actually reachable (per round-2 vacuity finding). Counts kernel-call branch hits and fails
+        // if <5% — non-vacuity is a load-bearing assertion, not just reporting.
+        var totalCases = 0
+        var kernelCaseHits = 0  // per-case counter (renamed per round-4 nitpick — was kernelCases incremented per instruction)
+        checkAll(EngineGenerators.arbPostFilingStatePlusEvent()) { (state, event) ->
+            totalCases++
+            val (newState, emitted) = step(state, event)
+            // Real extraction chain (per plan-review round 2):
+            val runwayInstructions = emitted.filterIsInstance<SimEvent.TransmissionStart>()
+                .mapNotNull { ts ->
+                    val utterance = ts.transmission.utterance
+                    if (utterance \!is Utterance.FromController) return@mapNotNull null
+                    val output = utterance.output as? ControllerOutput.Instruct ?: return@mapNotNull null
+                    val instruction = (output.dispatch as? Dispatch.Direct)?.instruction ?: return@mapNotNull null
+                    when (instruction) {
+                        is LineUpAndWait, is ClearedForTakeoff, is ClearedToLand -> instruction
+                        else -> null
+                    }
+                }
+            if (runwayInstructions.isEmpty()) {
+                // no runway operation proposed — kernel preservation N/A
+                return@checkAll
+            }
+            if (runwayInstructions.isNotEmpty()) {
+                kernelCaseHits++   // count cases (not instructions) — per plan-review round 4 nitpick
+            }
+            for (instr in runwayInstructions) {
+                val input = buildRunwayKernelInput(newState, instr)  // see RunwayKernelAdapter (sibling fn in this file or new RunwayKernelAdapter.kt)
+                val decision = KotlinRunwayKernel.evaluate(input)
+                decision.shouldBeInstanceOf<RunwayKernelDecision.Accepted>()
+            }
+        }
+        // Non-vacuity hard gate (per plan-review rounds 2+4 — explicit per-case counter, not per-instruction):
+        check(kernelCaseHits >= totalCases / 20) {
+            "R6 vacuous: only $kernelCaseHits of $totalCases generated cases reached the runway-kernel branch " +
+                "(<5% threshold). The post-filing seed isn't producing runway-instruction-emitting cases. " +
+                "Surface as planning defect; do not relax the threshold."
         }
     }
 })
 ```
 
-Mirror `RunwayKernelBoundarySpec.kt`'s assertion style. If `RunwayKernel.kt`'s API doesn't expose a state-validation entry, fall back to asserting the simpler engine invariants (R3-R5); R6 may need a Kotlin-shim widening as a separate epic — record that case as a follow-up deferment, don't block R3-R5 on it.
+Mirror `RunwayKernelBoundarySpec.kt`'s assertion style. Per plan-review round 2/3: `KotlinRunwayKernel.evaluate(RunwayKernelInput)` IS proposal-based; build `RunwayKernelInput` from emitted controller instructions. No fallback to a state-validation API exists; if the input-build path doesn't compile, the task needs work, not a documented skip.
 
 ### Step 4 — Tune R7 (bounded runtime)
 
@@ -137,13 +196,13 @@ val propConfig = PropTestConfig(iterations = 500)
 test("...", propConfig) { ... }
 ```
 
-Override via system property for nightly runs:
+Override via project-specific system property (avoids conflict with Kotest's own `kotest.framework.*` keys):
 
 ```kotlin
-val iterations = System.getProperty("kotest.property.iterations")?.toIntOrNull() ?: 500
+val iterations = System.getProperty("twr.stepPropertyIterations")?.toIntOrNull() ?: 500
 ```
 
-Verify default-config test execution stays under 30 seconds (R7) by running once with timing.
+Verify default-config test execution stays under 60 seconds (R7 raised per plan-review round 2 — fixture-backed + post-filing-drive properties add real load) by running once with timing.
 
 ### Step 5 — Verify (R9)
 
@@ -158,7 +217,7 @@ GRADLE_USER_HOME="$TMPDIR/gradle-user-home" _JAVA_OPTIONS="-Djava.io.tmpdir=$TMP
     --offline --no-daemon
 ```
 
-Both BUILD SUCCESSFUL. If a property test fails on default seed, that's a real bug — surface in evidence; file as a follow-up epic; don't paper over.
+Both BUILD SUCCESSFUL. If a property test fails on default seed, that's a real bug — fix in scope OR prove the input was invalid + constrain the generator. Per epic ship policy (round 2): no `@Disabled`, no follow-up epics for default-seed failures; the bug is a blocker.
 
 ### Step 6 — `flowctl done` (with bash interpolation per fn-22 R6)
 
@@ -175,16 +234,16 @@ implementation_sha="$(git rev-parse HEAD)"
 - [ ] **R3** — Totality: step() never throws
 - [ ] **R4** — Monotonicity: now and seq advance
 - [ ] **R5** — Determinism: same input → same output
-- [ ] **R6** — Runway certifier shim asserts post-event runway state is valid (or documented follow-up if shim doesn't expose state-validation)
-- [ ] **R7** — Bounded runtime: 500 iterations default, ≤30s; system-property override for nightly
+- [ ] **R6** — Conditional runway-kernel preservation: when `step()` emits a TransmissionStart → Utterance.FromController → ControllerOutput.Instruct with a runway instruction (LineUpAndWait / ClearedForTakeoff / ClearedToLand), build a RunwayKernelInput and assert KotlinRunwayKernel.evaluate(...) returns RunwayKernelDecision.Accepted. Non-vacuity: ≥5% of generated cases must reach the kernel-call branch (explicit counter assertion — see Step 3; classify() alone would only report, not enforce).
+- [ ] **R7** — Bounded runtime: 500 iterations default, ≤60s (raised per plan-review round 2 — fixture-backed + post-filing-drive add real load); `twr.stepPropertyIterations` system-property override for nightly
 - [ ] **R8** — kotest deps + JUnit5 runner in :sim jvmTest
-- [ ] **R9** — Full verify green; new property tests pass with default seed (or seeds-found bugs filed as follow-up epics, not blockers)
-- [ ] **R10** — Diff ≤5 files / ≤400 LOC
+- [ ] **R9** — Full verify green; new property tests pass with default seed. Default-seed failures are blockers (per epic ship policy round 2): fix in scope OR prove input was invalid + constrain generator.
+- [ ] **R10** — Diff ≤5 files / ≤600 LOC (per plan-review round 1)
 
 ## Key context
 
 - **Generators seed from world candidates** — not from-scratch. LOWG is the default seed; the LJMB candidate (fn-19 fixed) is also available for multi-aerodrome testing if needed.
-- **R6 may need shim work** — if the Kotlin-side `RunwayKernel.kt` doesn't expose a state-validation entry point, file a follow-up "extend certifier shim to allow state-validation queries" deferment rather than fabricating a shim.
+- **R6 is proposal-based** — `KotlinRunwayKernel.evaluate(RunwayKernelInput)` evaluates a specific proposal (runway instruction). The property extracts emitted controller runway-instruction outputs from `TransmissionStart → Utterance.FromController → ControllerOutput.Instruct → Dispatch.Direct.instruction`. No state-validation fallback exists.
 - **kotest-property is already a declared dependency** in `libs.versions.toml`; this epic activates it.
 - **Pre-existing dirty state** (research/tools/requirements-spike/, fn-20+23 untracked, research/pdf+txt) MUST NOT be staged.
 

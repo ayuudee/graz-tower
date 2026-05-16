@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-05-16T07:38:03.661269Z",
+  "depends_on": [],
+  "epic": "fn-23-fn20-pending-registry-curation",
+  "id": "fn-23-fn20-pending-registry-curation.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-23-fn20-pending-registry-curation.1.md",
+  "status": "todo",
+  "title": "Preflight curation credentials and pending queue",
+  "updated_at": "2026-05-16T07:45:40.583494Z"
+}

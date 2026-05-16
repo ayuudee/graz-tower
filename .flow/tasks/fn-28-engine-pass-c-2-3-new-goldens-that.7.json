@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-16T10:53:11.787965Z",
+  "depends_on": [
+    "fn-28-engine-pass-c-2-3-new-goldens-that.6"
+  ],
+  "epic": "fn-28-engine-pass-c-2-3-new-goldens-that",
+  "id": "fn-28-engine-pass-c-2-3-new-goldens-that.7",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-28-engine-pass-c-2-3-new-goldens-that.7.md",
+  "status": "todo",
+  "title": "G3b sim golden: G3bCrossAerodromeReactiveTest + fixture (arrival circuit geometry, both axes) + 2 archive flips",
+  "updated_at": "2026-05-16T11:45:09.918415Z"
+}

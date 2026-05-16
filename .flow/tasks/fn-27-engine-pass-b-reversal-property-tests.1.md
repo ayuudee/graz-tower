@@ -32,9 +32,8 @@ Reversal property tests. Depends on fn-26 (Kotest + EngineGenerators).
 - Pre-existing dirty state MUST NOT be staged.
 
 ## Done summary
-
-_(filled by flowctl done)_
-
+PARKED 2026-05-16: planning defect (listed reversal-pair SimEvents do not exist). Intent absorbed by fn-29 trace-invariant pumping + fn-26 step-property forward symmetry. No code written; no tests authored.
 ## Evidence
-
-_(filled by flowctl done)_
+- Commits:
+- Tests:
+- PRs:

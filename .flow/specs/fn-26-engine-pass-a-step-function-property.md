@@ -27,6 +27,16 @@ Active tracks served by this plan:
 - **Runtime simulator** — fills a known gap: the engine has no property tests. Per the strategy's "every state transition has its reversal tested before its forward path ships" claim, this epic plus fn-27 (reversal properties) makes the claim structural rather than per-golden.
 - **FM / Lean proof program** — the FM stream is closed at Contract v1 per `research/fm/PROJECT_STATUS.md`. The 4 certifiers are now CONSUMED by Kotlin-side property tests, which is exactly the contract's "future safety work should move upward into the controller, which can use the certified kernels and delivered theorem registry as guardrails."
 
+## Generator design (added per plan-review round 2 — codex finding "R6 vacuous against initial-only generator state")
+
+The Step.kt event handlers only emit controller-side `Instruct` outputs after the controller has been driven through `FlightPlanFiled` events that populate its commitment ledger (known strips, responsibility state). Generating arbitrary `(state, event)` pairs from an unfiltered initial SimState produces almost no runway-instruction cases — R6 is vacuous.
+
+**Two-stage generator strategy**:
+1. **`arbInitialState`** — seeded from a loaded fixture's initial SimState. Used by R3/R4/R5 (totality/monotonicity/determinism) where any valid state is fine.
+2. **`arbPostFilingState`** — driven from `arbInitialState` through the fixture's `initialEvents` (which include `FlightPlanFiled`) plus a few `ControllerCycle` ticks via `runUntil(...)`. The resulting state has populated controller ledgers; `ControllerCycle` events generated against it actually emit runway instructions. R6 uses this generator.
+
+**Non-vacuity gate**: R6 includes a `recordSample { /* count runway-instruction extractions */ }` assertion via Kotest's `PropertyContext.classify(...)` — after the property run, at least 5% of generated cases must have produced a runway-instruction extraction. If <5%, R6 is vacuous and the post-filing seed isn't reaching runway-instruction-emitting cases; surface as a planning defect.
+
 ## Decision context
 
 **Why Kotest-property over alternatives**: `kotest-property` is already a declared dependency (`libs.versions.toml` 5.9.1; not yet activated in any test). Adding a new framework just for this would be wasteful. Kotest-property provides arbs (generators), shrinking, and JUnit5 integration. Sibling tests in `controller/.../certify/RunwayKernelBoundarySpec.kt` already exist as the "boundary spec" pattern; property tests follow that shape.
@@ -39,18 +49,22 @@ Active tracks served by this plan:
 
 - **R1:** New file `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/StepPropertyTest.kt` — Kotest spec class with 4+ property tests covering totality, monotonicity, determinism, and per-event-class invariant preservation (where the affected certifier surface has a Kotlin shim).
 - **R2:** Generators (`Arb<SimState>`, `Arb<SimEvent>`, `Arb<Pair<SimState, SimEvent>>`) seeded from the existing LOWG world candidate. Generators are deterministic given a Kotest seed.
-- **R3:** Totality property: `step(state, event)` never throws for any generated `(state, event)`. Failing pairs surface with the (seed, generated input) for reproducibility.
+- **R3** (hardened per plan-review round 1 — codex finding "event.time >= state.now is a require() boundary"): Totality property: `step(state, event)` never throws for any **valid** generated `(state, event)`. Generators MUST guarantee `event.time >= state.now` (use `Arb.long(0..MAX_DELTA_MS).map { state.now + SimDuration.ofMillis(it) }` for event times). Past events are NOT a totality violation — they're a generator bug; constrain the generator. Failing pairs surface with the (seed, generated input) for reproducibility.
 - **R4:** Monotonicity property: after `step()`, `newState.now >= state.now` AND `newState.seq > state.seq` (when emitted events is non-empty) OR `newState.seq == state.seq` (no-op event).
 - **R5:** Determinism property: `step(s, e) == step(s, e)` — same inputs produce equal outputs (relies on `SimState` and `SimEvent` having structural equality).
-- **R6:** Certifier-preservation property: for each event class that affects a certifier surface (runway / surface / air / separation), assert that the new state still passes the relevant Kotlin-side certifier shim (currently `RunwayKernel.kt`; expand as more shims land). At minimum: runway certifier invariants hold post-event.
-- **R7:** Test runs are bounded — ≤500 generated inputs per property by default; can crank to 10k via system property for nightly runs. Test execution stays under 30 seconds for the default count.
-- **R8:** `build.gradle.kts` for `:sim` adds `kotest` (engine + runner + property + assertions) to `jvmTest` dependencies. Kotest JUnit5 runner registered.
-- **R9:** Full verify GREEN: `./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests :migration:allTests detekt --offline --no-daemon` exits 0. Nine sim goldens GREEN. Detekt baseline unchanged. New property tests pass with default seed (or document any seed-sensitive failures as in-scope bugs).
-- **R10:** Diff scope: ~2-3 new files (`StepPropertyTest.kt` + possibly `EngineGenerators.kt` extracted helper) + 1 modified `sim/build.gradle.kts`. Total ≤5 files, ≤400 LOC.
+- **R6** (reshaped per plan-review round 1, controller-output extraction chain corrected per plan-review round 2 — codex finding "SimEvent.ProcessControllerOutput doesn't exist; controller outputs flow through TransmissionStart → Utterance.FromController → ControllerOutput.Instruct"): Conditional runway-kernel preservation. The runway kernel (`KotlinRunwayKernel.evaluate(RunwayKernelInput)`) decides on a *specific proposed runway operation*, not on overall state validity. The property fires conditionally: when `step()` emits a `SimEvent.TransmissionStart` whose `transmission.utterance` is `Utterance.FromController(output)` where `output` is `ControllerOutput.Instruct(dispatch = Dispatch.Direct(instruction = ...))` AND the instruction is one of `LineUpAndWait` / `ClearedForTakeoff` / `ClearedToLand`, build a `RunwayKernelInput` from the post-state runway/duty/observation/aircraft-phase + the proposed instruction, call `KotlinRunwayKernel.evaluate`, and assert the decision is `RunwayKernelDecision.Accepted` (the controller gated on its own version of this check before issuing; a Rejected here means controller ↔ kernel disagree — real defect). Events that don't emit a runway-instruction skip with `// no runway operation proposed — kernel preservation N/A`.
+- **R7** (hardened per plan-review rounds 1+2 — runtime budget unified): Test runs are bounded — ≤500 generated inputs per property by default; can crank to 10k via system property `twr.stepPropertyIterations` for nightly runs (project-specific namespace, not conflicting with Kotest's own `kotest.framework.*` keys). Test execution stays **under 60 seconds for the default count** (raised from 30s in plan-review round 2 — fixture-backed properties + post-filing-state generation add real load; LOWG loads once via `lazy` but the post-filing drive runs per iteration's seed).
+- **R8** (hardened per plan-review round 1 — fully qualified Test type to avoid imports): `build.gradle.kts` for `:sim` adds `kotest` (engine + runner + property + assertions) to `jvmTest` dependencies. Kotest JUnit5 runner registered via `tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach { useJUnitPlatform() }` (fully qualified to avoid needing a Test-type import in the build file).
+- **R9** (synced to ship policy per plan-review round 4): Full verify GREEN: `./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests :migration:allTests detekt --offline --no-daemon` exits 0. Nine sim goldens GREEN. Detekt baseline unchanged. New property tests pass with default seed. Default-seed failures follow the Early Proof Point ship policy: fix in scope OR prove input was invalid + constrain generator. No `@Disabled`, no follow-up-epic deferment of valid-input failures.
+- **R10** (relaxed per plan-review round 1 — fixture-backed generators + runway-kernel adapter may push past 400): Diff scope: ~2-3 new files (`StepPropertyTest.kt` + `EngineGenerators.kt` extracted helper, possibly `RunwayKernelAdapter.kt` for the R6 conditional build) + 1 modified `sim/build.gradle.kts`. Total ≤5 files, **≤600 LOC** (relaxed from 400).
 
 ## Early proof point
 
-If R3 (totality) or R6 (certifier preservation) fails on a default seed run, that's a real latent bug in the engine — surface immediately. Per the strategy's "AI-generated code is locally correct and globally blind", property tests exist exactly to find these. Bugs caught at this stage become their own follow-up epics; they don't block fn-26's SHIP.
+If R3 (totality) or R6 (certifier preservation) fails on a default seed run, that's a real latent bug in the engine. **Ship policy** (hardened per plan-review round 2 — codex finding "hard-park option violates AGENTS no-`@Disabled` commandment"): Resolve in ONE of two ways before SHIP, **never via `@Disabled`, skip lists, or narrowing a valid property to mask a real bug**:
+1. **Fix the bug in scope** — if the bug is small (<2 days work) and clearly contained, land the fix in this epic. fn-26 ships with the property passing.
+2. **Prove the input was invalid + constrain the generator** — if the failing input is INVALID (the generator produced something the engine never sees in practice — e.g. an event class that real flows never construct, a state field combination that no smart constructor would emit), constrain the generator. Evidence MUST document why the input was invalid; ad-hoc generator narrowing without justification is forbidden.
+
+There is no third option. If a real default-seed bug is too large to fix in scope AND the input is genuinely valid, fn-26 is **blocked** until the bug is addressed (file a separate epic and complete it before this one). Per `feedback_no_corners.md` + AGENTS commandments: no `@Disabled`, no skip lists, no silent acceptance of known failures.
 
 ## Quick commands
 
@@ -84,15 +98,15 @@ GRADLE_USER_HOME="$TMPDIR/gradle-user-home" _JAVA_OPTIONS="-Djava.io.tmpdir=$TMP
 | R4  | Monotonicity | fn-26-engine-pass-a-step-function-property.1 |
 | R5  | Determinism | fn-26-engine-pass-a-step-function-property.1 |
 | R6  | Certifier preservation (runway shim at minimum) | fn-26-engine-pass-a-step-function-property.1 |
-| R7  | Bounded test runtime (≤500 inputs / ≤30s default) | fn-26-engine-pass-a-step-function-property.1 |
+| R7  | Bounded test runtime (≤500 inputs / ≤60s default per round 2) | fn-26-engine-pass-a-step-function-property.1 |
 | R8  | Kotest dependencies in :sim build.gradle.kts | fn-26-engine-pass-a-step-function-property.1 |
 | R9  | Full verify green | fn-26-engine-pass-a-step-function-property.1 |
-| R10 | Diff ≤5 files / ≤400 LOC | fn-26-engine-pass-a-step-function-property.1 |
+| R10 | Diff ≤5 files / ≤600 LOC (per round 1) | fn-26-engine-pass-a-step-function-property.1 |
 
 ## Review considerations
 
 - **FP / type safety**: property tests must respect the existing engine type signatures. No `\!\!`, no `@Suppress`. Generators that produce invalid states (e.g. `SimState` with broken invariants) defeat the test purpose; constrain generators to states the engine should accept. **Reviewer focus**: confirm `Arb<SimState>` doesn't generate malformed instances that mask real engine bugs as "property test invalid input."
-- **Test architecture**: Kotest spec-style with `StringSpec` or `FunSpec`. JUnit5 runner. Properties exercise the engine in isolation from goldens. **Reviewer focus**: confirm test runtime stays bounded per R7; if a property test runs 30s+ at 500 inputs, generator complexity is too high.
+- **Test architecture**: Kotest spec-style with `StringSpec` or `FunSpec`. JUnit5 runner. Properties exercise the engine in isolation from goldens. **Reviewer focus**: confirm test runtime stays bounded per R7; if a property test runs 60s+ at 500 inputs, generator complexity is too high.
 - **Impact**: scoped to `:sim/jvmTest`. No production code change. **Reviewer focus**: confirm `:sim/commonMain` untouched.
 - **Operational ATC correctness / applicability**: not directly — invariant assertions are engine-level. The certifier-preservation property does check ATC-relevant invariants (runway invariants), but doesn't claim controller-decision correctness. **Reviewer focus**: confirm R6 assertions match the certifier shim's actual claims (don't fabricate stronger invariants than the kernel proves).
 

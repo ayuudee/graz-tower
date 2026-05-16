@@ -212,9 +212,8 @@ EOF2
 - Pre-existing dirty state (research/tools/requirements-spike/, fn-20 untracked files, research/pdf+txt) MUST NOT be staged.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close — see Step 10)_
-
+fn-22.1 shipped: 6 durable knowledge entries promoted from 9 session bug/* captures into .flow/memory/knowledge/{best-practices,conventions,workflow}/. MEMORY.md index seeded with one-line summaries per entry. 17 bug/* captures (baseline 17) kept symptom-only and untouched. flowctl memory search verified each new entry surfaces in the top-3 hits for its theme tokens (mint-id, rich-world-domain, inherited gate, renumbering grep, pre-existing test failure, flowctl done state sync). Impl-review fast-pathed via deterministic triage-skip (docs-only, 7 files). Implementation commit: 4abcf5d86ae56cfbf3ed21dcf3ebd4881dbd1f5b.
 ## Evidence
-
-_(filled by `flowctl done` at task close — see Step 10)_
+- Commits:
+- Tests:
+- PRs:
