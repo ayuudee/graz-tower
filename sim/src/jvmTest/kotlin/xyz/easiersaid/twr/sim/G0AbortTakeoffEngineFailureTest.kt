@@ -3,8 +3,6 @@ package xyz.easiersaid.twr.sim
 import arrow.core.getOrElse
 import kotlin.test.Test
 import kotlin.test.fail
-import xyz.easiersaid.twr.controller.ControllerOutput
-import xyz.easiersaid.twr.controller.bdi.Dispatch
 import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.CompletionMode
@@ -21,7 +19,6 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.Atis
 import xyz.easiersaid.twr.protocol.Callsign
-import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayConfiguration
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -63,31 +60,49 @@ import xyz.easiersaid.twr.sim.testing.toInitialEvents
  * hook of `runUntilWithStateTraceAndInjection`.
  *
  * ## Brief-time computation (round-5 Minor 1 / round-6 Minor 3 /
- * ## round-11 Major 3)
+ * ## round-11 Major 3 / codex round-1 finding 1)
  *
  * The instructor briefing's event time `EngineFailureAt(t)` is computed
  * at TEST-SETUP TIME (not fixture-build time). The test setup:
  *
- *  1. Drives the sim normally until `ClearedForTakeoff` is observed in
- *     the trace as a controller-side `TransmissionStart`. The
- *     observation moment is `t_CTO = TransmissionStart.time`.
- *  2. At the same `onAfterEvent` step, injects a
- *     `SimEvent.EngineFailure(aircraftId, time = t_CTO + 1ms,
+ *  1. Drives the sim normally and observes the POST-STEP SimState
+ *     after each event. Gates on the abort recognition's externally-
+ *     observable preconditions:
+ *      - `aircraft.phase == PilotPhase.TakeoffRoll`, AND
+ *      - `mission.currentTask.step == MissionStep.FLY_DEPARTURE`, AND
+ *      - `aircraft.speedMps < rotationSpeedMps` (pre-rotation).
+ *  2. At the first post-step state where all 3 hold, injects a
+ *     `SimEvent.EngineFailure(aircraftId, time = st.now + 1ms,
  *     source = AgentId.System)` into the running event queue. The
  *     instructor-channel helper from .8 (`toInitialEvents(baseSeq)`) is
  *     used as the canonical translator from `InstructorInput.EngineFailureAt`
  *     to `SimEvent.EngineFailure` (`source = AgentId.System` is fixed in
  *     the helper body; the injection enqueues a single such event).
- *  3. Because the brief time is `t_CTO + 1ms`, the engine flips off
+ *  3. Because the brief time is `st.now + 1ms`, the engine flips off
  *     BEFORE the next `PhysicsTick` advances `speedMps >= rotationSpeedMps`
- *     — this is the **precondition** the positive scenario depends on.
+ *     (PhysicsTick cadence is coarser than 1ms in the canonical sim
+ *     configuration) — this is the **precondition** the positive
+ *     scenario depends on.
+ *
+ * **Why not gate on `ClearedForTakeoff` TransmissionStart** (codex
+ * round-1 finding 1): the pilot does NOT process the clearance at
+ * `TransmissionStart` time. Delivery happens only after
+ * `TransmissionEnd` → `PILOT_COGNITIVE_DELAY` →
+ * `handlePilotProcessingComplete` applies the instruction (per
+ * `Step.kt:1025` / `Step.kt:1133` / `Step.kt:1161` /
+ * `PilotCognitive.kt:726`). Gating on the radio observable would
+ * inject the engine failure BEFORE the pilot is in `TakeoffRoll`, and
+ * the abort gate's phase predicate would fail closed — the test would
+ * pass against a scenario that does NOT model "engine failure during
+ * takeoff roll". Gating on the post-step state instead pins the
+ * scenario to the documented contract.
  *
  * **Why not pre-stamp at fixture-build time**: the exact sim time at
- * which `ClearedForTakeoff` is broadcast depends on the controller's
- * decision cadence, the ATIS / readback ladder, taxi timing, etc. — none
- * of which the fixture knows. Pinning the brief time relative to the
- * observed event keeps the test scenario insulated against unrelated
- * controller-cadence changes.
+ * which the post-clearance takeoff roll begins depends on the
+ * controller's decision cadence, the ATIS / readback ladder, taxi
+ * timing, etc. — none of which the fixture knows. Pinning the brief
+ * time relative to the post-step state keeps the test scenario
+ * insulated against unrelated controller-cadence changes.
  *
  * **Three-layer pin** (positive scenario):
  *
@@ -241,58 +256,81 @@ class G0AbortTakeoffEngineFailureTest {
             SimEvent.ControllerCycle(time = now, controllerId = tower.id),
         )
 
-        // ── Dynamic injection hook (round-5 Minor 1 / round-11 Major 3) ─────
+        // ── Dynamic injection hook — POST-CLEARANCE-PROCESSING gate ─────────
         //
-        // The hook observes the trace for the controller's
-        // `ClearedForTakeoff` transmission; on the first observation
-        // (one-shot), it injects a `SimEvent.EngineFailure(t_CTO + 1ms)`.
-        // The `+1ms` ensures the engine flips BEFORE the next PhysicsTick
-        // would advance speedMps past rotationSpeedMps. The injection
-        // routes through `InstructorInput.EngineFailureAt` →
-        // `toInitialEvents(baseSeq)` so the seq-stamping and `source =
+        // **Codex round-1 finding 1 fix**: the round-5 Minor 1 brief-time
+        // story (`EngineFailureAt(t_CTO + 1ms)`) was insufficient — the
+        // pilot does NOT process `ClearedForTakeoff` at the moment of
+        // `TransmissionStart`. Delivery happens only after
+        // `TransmissionEnd` → `PILOT_COGNITIVE_DELAY` →
+        // `handlePilotProcessingComplete` applies the instruction (per
+        // `Step.kt:1025` / `Step.kt:1133` / `Step.kt:1161` /
+        // `PilotCognitive.kt:726`). Gating on the radio observable would
+        // inject the engine failure BEFORE the pilot is in `TakeoffRoll`,
+        // and the abort gate's phase predicate would fail closed — the
+        // test would pass against a scenario that does NOT model "engine
+        // failure during takeoff roll".
+        //
+        // The correct gate is the POST-PROCESSING STATE: the hook fires
+        // ONLY when the SimState snapshot post-step shows the aircraft
+        // has actually entered the takeoff-roll regime per the abort
+        // gate's preconditions:
+        //   - aircraft.phase == PilotPhase.TakeoffRoll, AND
+        //   - mission.currentTask.step == MissionStep.FLY_DEPARTURE, AND
+        //   - aircraft.speedMps < rotationSpeedMps (pre-rotation).
+        //
+        // The +1ms brief offset still pins the failure to the NEXT
+        // `PhysicsTick` boundary (PhysicsTick cadence is coarser than
+        // 1ms), so the engine flips before the integrator runs again.
+        //
+        // The injection routes through `InstructorInput.EngineFailureAt`
+        // → `toInitialEvents(baseSeq)` so seq-stamping + `source =
         // AgentId.System` plumbing matches fn-28.8's contract.
+        val rotationSpeedMps = AircraftType.C172.kinematics.rotationSpeedMps
         val engineFailureInjectedAt = arrayOf<SimTime?>(null)
         val engineFailureInjected = arrayOf(false)
-        val onAfterEvent: (SimEvent, SimState) -> EventInjection = hook@{ ev, st ->
+        val preconditionAtInjection = arrayOf<String?>(null)
+        val onAfterEvent: (SimEvent, SimState) -> EventInjection = hook@{ _, st ->
             if (engineFailureInjected[0]) {
                 return@hook EventInjection(state = st, inject = emptyList())
             }
-            // Detect `ClearedForTakeoff` as a controller-side transmission
-            // targeting our aircraft. Per the codebase's transmission
-            // shape: `SimEvent.TransmissionStart` carries an `utterance`
-            // of `Utterance.FromController(output: ControllerOutput)`;
-            // `ControllerOutput.Instruct.dispatch` is the typed instruction
-            // carrier (Direct / Conditional).
-            if (ev !is SimEvent.TransmissionStart) {
-                return@hook EventInjection(state = st, inject = emptyList())
-            }
-            val output = (ev.transmission.utterance as? Utterance.FromController)?.output
-                as? ControllerOutput.Instruct
-                ?: return@hook EventInjection(state = st, inject = emptyList())
-            val instruction = (output.dispatch as? Dispatch.Direct)?.instruction
-                ?: return@hook EventInjection(state = st, inject = emptyList())
-            if (output.target != aircraftId || instruction !is ClearedForTakeoff) {
+            // Read post-step SimState — the pilot's instruction processing
+            // has updated `phase` + `pilotMission.currentTask.step` if a
+            // `PilotProcessingComplete` event for `ClearedForTakeoff`
+            // landed earlier in this step pipeline. The pilot transitions
+            // to `TakeoffRoll` and the mission advances to `FLY_DEPARTURE`
+            // via `processClearedForTakeoff` in PilotAgent.kt:155.
+            val ac = st.aircraft[aircraftId] ?: return@hook EventInjection(state = st, inject = emptyList())
+            val activeStep = ac.pilotMission?.currentTask?.step
+            val phaseOk = ac.phase == PilotPhase.TakeoffRoll
+            val stepOk = activeStep == MissionStep.FLY_DEPARTURE
+            val speedOk = ac.speedMps < rotationSpeedMps
+            if (!(phaseOk && stepOk && speedOk)) {
                 return@hook EventInjection(state = st, inject = emptyList())
             }
 
-            // ClearedForTakeoff observed for our aircraft. Compute the
-            // brief time relative to the transmission's start time +
-            // 1ms (round-5 Minor 1). The +1ms is the minimum SimDuration
-            // resolution; it sits BEFORE the next PhysicsTick that
-            // would advance speedMps past rotationSpeedMps because
-            // PhysicsTick cadence is coarser than 1ms.
-            val tCto = ev.time
-            val tBrief = tCto + SimDuration.ofMillis(1L)
+            // All 3 of the abort-recognition gate's externally-observable
+            // preconditions hold in the post-step state. Schedule the
+            // engine failure at `st.now + 1ms` — the +1ms sits before
+            // the next `PhysicsTick` cadence (PhysicsTick advances are
+            // ≥10ms apart in the canonical sim configuration) and after
+            // the current event's post-hook moment, so the EngineFailure
+            // event arrives in the queue before integrator advancement.
+            val tBrief = st.now + SimDuration.ofMillis(1L)
             engineFailureInjectedAt[0] = tBrief
             engineFailureInjected[0] = true
+            preconditionAtInjection[0] =
+                "phase=${ac.phase}, step=$activeStep, speedMps=${ac.speedMps}, " +
+                    "rotationSpeedMps=$rotationSpeedMps, engineRunning=${ac.engineRunning}, " +
+                    "now=${st.now.millis}ms"
 
             // Use the `InstructorInput.EngineFailureAt` → `toInitialEvents`
             // helper from .8 — the canonical translator. The helper
             // pre-stamps seq monotonically from `baseSeq`; we use
             // `st.seq` as the base so the injected event sorts after
             // every event emitted up to this step (the runner's emit()
-            // call below will re-stamp via SimState.emit, advancing seq
-            // again — that's fine: the helper's seq stamping is for
+            // call will re-stamp via SimState.emit, advancing seq again
+            // — that's fine: the helper's seq stamping is for
             // ORDERING-WITHIN-INJECTED-LIST coherence; the runner's
             // emit handles the global counter).
             val briefing = listOf(
@@ -321,6 +359,7 @@ class G0AbortTakeoffEngineFailureTest {
         println("─── G0 abort-takeoff (pre-rotation) per-aircraft trace summary ───")
         println("EngineFailure brief time:   ${engineFailureInjectedAt[0]?.millis ?: "<NEVER>"}ms")
         println("EngineFailure injected:     ${engineFailureInjected[0]}")
+        println("Preconditions at injection: ${preconditionAtInjection[0] ?: "<NEVER>"}")
         println("Mission step transitions:")
         for (t in trace.missionStepTransitions(aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it.name })
@@ -331,16 +370,50 @@ class G0AbortTakeoffEngineFailureTest {
         println()
 
         // ── Precondition pin: EngineFailure WAS injected ────────────────────
-        // The hook only injects once, gated on observing `ClearedForTakeoff`.
-        // If the controller never issues the clearance (a regression in the
-        // controller / pilot pipeline), the hook never fires and the
-        // downstream assertions would mask the upstream defect.
+        // The hook only injects when the post-step SimState shows the
+        // aircraft is genuinely in the takeoff-roll regime (phase ==
+        // TakeoffRoll AND step == FLY_DEPARTURE AND speedMps <
+        // rotationSpeedMps). If those preconditions are never observed
+        // during the run window (a regression in the controller / pilot
+        // pipeline that blocks takeoff clearance, instruction processing,
+        // or phase advancement), the hook never fires and the downstream
+        // assertions would mask the upstream defect.
         check(engineFailureInjected[0]) {
             "Precondition: EngineFailure event WAS injected during the run. The hook " +
-                "gates on observing ClearedForTakeoff for $aircraftId; if the controller " +
-                "did not issue the clearance during the ${until.millis}ms window, the " +
-                "abort scenario never set up. Check the controller / pilot pipeline for " +
-                "a regression that blocked the takeoff clearance.\n$journey"
+                "gates on observing (phase=TakeoffRoll AND step=FLY_DEPARTURE AND " +
+                "speedMps<$rotationSpeedMps) for $aircraftId in a post-step SimState; " +
+                "if those preconditions were never observed during the ${until.millis}ms " +
+                "window, the abort scenario never set up. Check the controller / pilot " +
+                "pipeline for a regression that blocked the takeoff clearance, the " +
+                "instruction-processing pipeline (TransmissionEnd → " +
+                "PilotProcessingComplete → handlePilotProcessingComplete), or the " +
+                "phase advance to TakeoffRoll.\n$journey"
+        }
+        // Codex round-1 finding 1 fix: pin the actual preconditions
+        // observed AT injection time, not just "injection happened".
+        // The hook records the post-step state it saw; this assertion
+        // proves the engine failure modelled the documented scenario
+        // (engine failure during takeoff roll, pre-rotation, on
+        // FLY_DEPARTURE) rather than firing at some earlier-state proxy.
+        val precondition = preconditionAtInjection[0]
+            ?: fail(
+                "Precondition snapshot was not captured — engineFailureInjected[0] is " +
+                    "true but preconditionAtInjection[0] is null. This is a test-helper " +
+                    "regression (hook captured the flag without the diagnostic).\n$journey",
+            )
+        check("phase=TakeoffRoll" in precondition) {
+            "Precondition at injection MUST be 'phase=TakeoffRoll' (the abort gate's v1 " +
+                "on-runway proxy). Got: $precondition. A pre-roll phase (LinedUp, " +
+                "HoldingShort, etc.) means the hook fired before the pilot's " +
+                "ClearedForTakeoff processing completed — the scenario does NOT model " +
+                "the 'engine failure during takeoff roll' contract.\n$journey"
+        }
+        check("step=FLY_DEPARTURE" in precondition) {
+            "Precondition at injection MUST be 'step=FLY_DEPARTURE' (mission tree post-" +
+                "clearance processing). Got: $precondition. A different step (e.g. " +
+                "AWAIT_TAKEOFF_CLEARANCE) means the pilot's cognitive layer has not " +
+                "advanced past clearance receipt yet — the abort gate's mission-shape " +
+                "predicate would not hold at that moment.\n$journey"
         }
 
         // ── Layer 1 — Kinematic instant-stop (R12 + abort intent) ───────────
@@ -548,6 +621,7 @@ class G0AbortTakeoffEngineFailureTest {
         val rotationSpeedMps = AircraftType.C172.kinematics.rotationSpeedMps
         val engineFailureInjectedAt = arrayOf<SimTime?>(null)
         val engineFailureInjected = arrayOf(false)
+        val preconditionAtInjection = arrayOf<String?>(null)
         val onAfterEvent: (SimEvent, SimState) -> EventInjection = hook@{ _, st ->
             if (engineFailureInjected[0]) {
                 return@hook EventInjection(state = st, inject = emptyList())
@@ -560,6 +634,10 @@ class G0AbortTakeoffEngineFailureTest {
             val tBrief = st.now + SimDuration.ofMillis(1L)
             engineFailureInjectedAt[0] = tBrief
             engineFailureInjected[0] = true
+            preconditionAtInjection[0] =
+                "phase=${ac.phase}, step=${ac.pilotMission?.currentTask?.step}, " +
+                    "speedMps=${ac.speedMps}, rotationSpeedMps=$rotationSpeedMps, " +
+                    "engineRunning=${ac.engineRunning}, now=${st.now.millis}ms"
             val briefing = listOf(
                 InstructorInput.EngineFailureAt(
                     aircraftId = aircraftId,
@@ -589,6 +667,7 @@ class G0AbortTakeoffEngineFailureTest {
         println("─── G0 abort-takeoff (post-rotation NEGATIVE) per-aircraft trace summary ───")
         println("EngineFailure brief time:   ${engineFailureInjectedAt[0]?.millis ?: "<NEVER>"}ms")
         println("EngineFailure injected:     ${engineFailureInjected[0]}")
+        println("Preconditions at injection: ${preconditionAtInjection[0] ?: "<NEVER>"}")
         println("Mission step transitions:")
         for (t in trace.missionStepTransitions(aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it.name })
@@ -606,6 +685,23 @@ class G0AbortTakeoffEngineFailureTest {
                 "rotation speed in the ${until.millis}ms window, the negative scenario " +
                 "never set up. Check the controller / pilot / physics pipeline for a " +
                 "regression that blocked the takeoff roll past rotation.\n$journey"
+        }
+        // Codex round-1 finding 1 fix (negative-scenario parity): pin the
+        // actual preconditions observed AT injection time. The negative
+        // scenario must inject at speedMps >= rotationSpeedMps (post-VR);
+        // a regression that fires the hook before rotation would silently
+        // turn the negative scenario into a positive-scenario duplicate
+        // that happens to assert "abort did not fire" against the wrong
+        // setup.
+        val precondition = preconditionAtInjection[0]
+            ?: fail(
+                "Precondition snapshot was not captured — engineFailureInjected[0] is " +
+                    "true but preconditionAtInjection[0] is null. This is a test-helper " +
+                    "regression (hook captured the flag without the diagnostic).\n$journey",
+            )
+        check("speedMps=" in precondition) {
+            "Precondition snapshot must include 'speedMps=' for diagnostic readability " +
+                "(used by reviewers + Ralph to verify the scenario): $precondition\n$journey"
         }
 
         // ── Assertion: abort gate did NOT fire (round-2 Major 7) ────────────

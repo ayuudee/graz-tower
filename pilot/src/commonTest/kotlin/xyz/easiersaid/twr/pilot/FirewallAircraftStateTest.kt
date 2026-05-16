@@ -57,10 +57,12 @@ class FirewallAircraftStateTest {
             // state. Default `true` matches every spawn's "engine on" reality;
             // sim's `handleEngineFailure` is the unique writer that flips it
             // to false when an instructor-channel engine-failure event fires.
-            // Read only by `advanceKinematics`'s engine-off clamp (decel
-            // allowed; accel blocked). Pilot cognition does NOT read this
-            // field — the failure is observed via a cockpit-side typed
-            // event in fn-28.9.
+            // Read by `advanceKinematics`'s engine-off clamp (decel allowed;
+            // accel blocked) AND by `deriveAbortTakeoffEvent` (fn-28.9 codex
+            // round-1 finding 2 — the cognition-side single-reader-site
+            // exception, documented in detail at `AircraftState.engineRunning`
+            // KDoc; the cockpit-side observation IS the derivation site that
+            // constructs `PilotEvent.AbortTakeoff`).
             engineRunning = true,
         )
         @Suppress("UNUSED_VARIABLE")

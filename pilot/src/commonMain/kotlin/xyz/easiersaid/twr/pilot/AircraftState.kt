@@ -78,17 +78,32 @@ data class AircraftState(
      * instructor channel fires an engine-failure event (typed input
      * `InstructorInput.EngineFailureAt` in test fixtures).
      *
-     * **Read by physics, not by cognition** (R12 round-3 Major 2 contract):
-     * the `advanceKinematics` engine-off clamp reads this field directly —
-     * when `engineRunning == false`, the new speed is bounded by
+     * **Read by physics + the abort-recognition branch only** (R12 round-3
+     * Major 2 contract, refined at fn-28.9 codex round-1 — finding 2): the
+     * `advanceKinematics` engine-off clamp reads this field directly — when
+     * `engineRunning == false`, the new speed is bounded by
      * `min(targetSpeedMps, currentSpeedMps)` (decel allowed; accel blocked).
-     * The pilot's cognitive layer does NOT read `aircraft.engineRunning`;
-     * the engine-failure event is delivered to the pilot via a cockpit-side
-     * observation in fn-28.9 (the abort recognition branch reads
-     * `PilotEvent.EngineFailure` from `derivePilotEvent`, NOT this
-     * ground-truth field). This is the same firewall shape as wind: ground
-     * truth lives on the entity (`Aerodrome.weather`), cognition reads only
-     * the typed observation projection (`WindReport`).
+     * The pilot's cognitive layer reads it from EXACTLY ONE site —
+     * `deriveAbortTakeoffEvent` in `pilot/.../observe/PilotEvent.kt` —
+     * which constructs `PilotEvent.AbortTakeoff` when the 4-check gate
+     * (`engineRunning == false` + `speedMps < rotationSpeedMps` strict +
+     * `phase == TakeoffRoll` v1 on-runway proxy + `isAbortTakeoffEligible
+     * (mission)`) holds. **No other cognition-side site reads
+     * `engineRunning`** — the field stays off `pilotDecide` /
+     * `pilotCognitiveDecide` / `processInstruction` / `applyXxx` / planner
+     * paths. The single-reader-site exception is documented here as part
+     * of the firewall contract: any future cognition-side read MUST be
+     * enumerated in this KDoc (and pinned via a sibling firewall test on
+     * the read-site allowlist) before it lands. The original "no cognition
+     * reads this field, only `PilotEvent.EngineFailure` does" framing
+     * (pre-fn-28.9 spec text) was provisional — `PilotEvent.EngineFailure`
+     * was the placeholder for the typed pilot-side leaf that became
+     * `PilotEvent.AbortTakeoff`, and the leaf's construction site
+     * inevitably has to read the field to gate on it. This is the same
+     * firewall shape as wind: ground truth lives on the entity
+     * (`Aerodrome.weather`), cognition reads only the typed observation
+     * projection (`WindReport`) — **except** at the single derivation
+     * site that constructs the typed projection itself.
      *
      * **No synthetic wake event** (round-2 Major 4 decision): the sim does
      * NOT emit a `PilotDecisionTick` synthesised by `handleEngineFailure`.
