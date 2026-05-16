@@ -74,6 +74,18 @@ data class RegulationRef(
          */
         const val CAP_413_EDITION = "Edition 24 (effective 1 July 2026)"
 
+        /**
+         * fn-28.2 (R2-DA, R5): FAA Advisory Circular AC 61-107B —
+         * "Aircraft Operations at Altitudes Above 25,000 Feet Mean Sea
+         * Level or Mach Numbers Greater Than .75". §3-1 covers high
+         * density-altitude operating considerations (the modelling
+         * anchor for `AircraftType.maxDensityAltitudeFt`). The 5000 ft
+         * DA threshold used for light-GA training types (C172) is the
+         * AC's named "high density altitude" floor — light, non-turbo-
+         * charged piston aircraft operating considerations.
+         */
+        const val FAA_AC_61_107B_EDITION = "AC 61-107B Chg 1 (effective 31 March 2015)"
+
         private val AUTHORITY_NAMES = mapOf(
             "SERA" to "SERA",
             "ICAO_ANNEX_2" to "ICAO Annex 2",
@@ -88,6 +100,9 @@ data class RegulationRef(
             "FAA_AFH" to "FAA Airplane Flying Handbook",
             "FAA_FAR_23" to "14 CFR Part 23",
             "FAA_AIM" to "FAA AIM",
+            // fn-28.2 (R2-DA): FAA AC citation needed for the density-
+            // altitude reactive-decline anchor.
+            "FAA_AC" to "FAA Advisory Circular",
         )
     }
 }

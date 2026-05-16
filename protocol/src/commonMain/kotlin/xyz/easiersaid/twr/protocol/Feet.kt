@@ -26,4 +26,16 @@ data class Feet(val value: Int) {
     init {
         require(value >= 0) { "Feet must be >= 0" }
     }
+
+    companion object {
+        /**
+         * Trusted-call-site variant — for test fixtures and compile-time-
+         * literal call sites (e.g. fn-28.2's `AircraftType.C172
+         * .maxDensityAltitudeFt = Feet.unsafe(5000)` per FAA AC 61-107B §3-1).
+         * Throws on the same invariant the public constructor enforces.
+         * Pattern mirrors sibling typed units [Knots] / [Temperature] /
+         * [PressureSetting.QnhHpa].
+         */
+        fun unsafe(value: Int): Feet = Feet(value)
+    }
 }

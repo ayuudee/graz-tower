@@ -196,13 +196,22 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     //    the documented branch order. Functionally the dispatch is
     //    order-independent — only one event surfaces per call — but the
     //    visual alignment aids reader clarity.
+    // fn-28.2: separate slot for the DA-decline result (apron-side
+    // reactive recognition, distinct from the go-around triplet above).
+    // The branch fires only when no GA path already fired AND the
+    // mission is pre-taxi-eligible per `isDensityAltitudeDeclineEligible`
+    // (gated inside `deriveDensityAltitudeEvent`).
+    var densityAltitudeDecline: DensityAltitudeDeclineResult? = null
+
     val goAround: GoAroundResult? = if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
         val weather = windForMission(cognitive.updatedMission, input.weatherByAerodrome)
         // fn-28.1: resolve the typed DA input for this mission's aerodrome
-        // using the same goal-keyed lookup shape as `windForMission`. The
-        // value is threaded through `derivePilotEvent` as the new
-        // signature parameter; fn-28.1 lands the threading only — the
-        // DA-decline branch in `derivePilotEvent` is fn-28.2.
+        // using the per-aerodrome map projected at the firewall boundary
+        // by `PilotWiring.buildPilotInput`. fn-28.1's
+        // `densityAltitudeInputForMission` resolves to null fail-closed
+        // for multi-aerodrome ambiguity (filed as
+        // `D-PASS-g3b-react-density-altitude`); fn-28.2's DA branch in
+        // `derivePilotEvent` treats null as no-event.
         val densityAltitudeInput = densityAltitudeInputForMission(
             cognitive.updatedMission, input.densityAltitudeInputsByAerodrome,
         )
@@ -215,6 +224,18 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
                 applyTailwindGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
             is xyz.easiersaid.twr.pilot.observe.PilotEvent.CrosswindLimitExceeded ->
                 applyCrosswindGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
+            // fn-28.2: DA-decline is dispatched to its own apply path
+            // (NOT a GoAroundResult — DA decline is an apron-terminal
+            // decision, not a go-around). The decline result is stashed
+            // in the `densityAltitudeDecline` slot above; this arm
+            // returns null in the GA channel so the GA-precedence
+            // fold-down below treats DA-decline as a non-GA path.
+            is xyz.easiersaid.twr.pilot.observe.PilotEvent.DensityAltitudeDecline -> {
+                densityAltitudeDecline = applyDensityAltitudeDecline(
+                    pilotEvent, cognitive.updatedMission, aircraft,
+                )
+                null
+            }
             // AtcGoAroundOnFinal is constructed only at the recognition site
             // in `recognizeAtcInitiatedGoAround` (axis 2 — post-cognitive
             // flag-driven). `derivePilotEvent` (axis 1 — pure derivation)
@@ -226,16 +247,39 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     } else null
 
     // Effective mission: trained-GA → ATC-reactive (only when it fired
-    // intent) → self-init → cognitive baseline. The post-fold flag re-clear
-    // below restores the single-cycle invariant for whichever path won.
+    // intent) → DA-decline → self-init → cognitive baseline. The post-fold
+    // flag re-clear below restores the single-cycle invariant for whichever
+    // path won.
+    //
+    // fn-28.2 (R13 / R14): DA-decline slots BETWEEN ATC-reactive and
+    // self-init paths in the mission-precedence chain. DA-decline is a
+    // pre-taxi terminal decision; if the cognitive layer were to advance
+    // past REQUEST_TAXI in the same tick the decline fired, the rewritten
+    // tree (DECLINE_DEPARTURE NON_COMPLETING leaf) takes precedence.
     val effectiveMission = (
         plannedGoAround?.mission
             ?: (atcGoAroundOutcome?.mission?.takeIf { atcGoAroundOutcome.intent != null })
+            ?: densityAltitudeDecline?.mission
             ?: goAround?.mission
             ?: atcGoAroundOutcome?.mission  // discriminator-fail path: flag-cleared mission
             ?: cognitive.updatedMission
         )
         .copy(pendingAtcGoAroundFrom = None)  // single-cycle invariant: flag NEVER persists
+
+    // fn-28.2 (R14 / round-13 Major 1): cognitive-suppression mechanism.
+    // When DA-decline fires with `suppressSameTickCognitive = true`, the
+    // per-step cognitive transmission (`Request(RequestTaxi)` etc.) that
+    // would otherwise fire on the same tick is zeroed. The suppression
+    // applies BEFORE every PilotOutput construction site (both
+    // `PlanRouteOutcome.Plan` and `PlanRouteOutcome.Skip`) — covers ALL
+    // pilotDecide return paths, NOT only the Skip path. The
+    // `PlanRouteOutcome.Failed` branch returns `Either.Left` (no
+    // PilotOutput); the suppression flag has no transmission slot to
+    // affect on the error path.
+    val suppressSameTickCognitive: Boolean =
+        densityAltitudeDecline?.suppressSameTickCognitive == true
+    val effectiveCognitiveTransmissions: List<PilotTransmission> =
+        if (suppressSameTickCognitive) emptyList() else cognitive.transmissions
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
     // Plan execution: if the current task needs an airborne route the pilot
@@ -254,9 +298,14 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     return when (planOutcome) {
         is PlanRouteOutcome.Failed -> planOutcome.error.left()
         is PlanRouteOutcome.Plan -> PilotOutput(
-            intent = planOutcome.intent,
-            transmissions = cognitive.transmissions + goAroundTransmissions,
-            updatedMission = planOutcome.mission,
+            // fn-28.2: DA-decline intent takes precedence over the planner's
+            // route intent on the apron — the pilot has decided NOT to taxi,
+            // and the at-rest intent must win over any planner output (which
+            // is moot for pre-taxi shapes today, but the explicit precedence
+            // documents the contract for future planner extensions).
+            intent = densityAltitudeDecline?.intent ?: planOutcome.intent,
+            transmissions = effectiveCognitiveTransmissions + goAroundTransmissions,
+            updatedMission = densityAltitudeDecline?.mission ?: planOutcome.mission,
         ).right()
         // GA-path intent precedence (mirrors the recognition order above):
         //  1. Trained-GA (fn-11.1) — `plannedGoAround.intent` clears the
@@ -267,17 +316,21 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
         //     same `isCircuitTrainedGoAroundTickB` predicate fires and
         //     `planCircuitTrainedGoAround` builds the GA route via the
         //     reused planner. Zero new route-planning code.
-        //  3. Self-initiated (Pass 16) — `goAround?.intent` is the
+        //  3. fn-28.2 — DA-decline `densityAltitudeDecline?.intent` is the
+        //     apron-terminal at-rest intent; positioned between ATC-reactive
+        //     and self-init mirroring the mission-precedence chain.
+        //  4. Self-initiated (Pass 16) — `goAround?.intent` is the
         //     reactive sensor-event response, identical trigger tick +
         //     emission contract as before fn-12.2 (only invoked when
-        //     trained-GA and ATC-reactive both did not fire).
-        //  4. Fallthrough — kinematic + cognitive overrides.
+        //     trained-GA, ATC-reactive, and DA-decline all did not fire).
+        //  5. Fallthrough — kinematic + cognitive overrides.
         is PlanRouteOutcome.Skip -> PilotOutput(
             intent = plannedGoAround?.intent
                 ?: atcGoAroundOutcome?.intent
+                ?: densityAltitudeDecline?.intent
                 ?: goAround?.intent
                 ?: applyCognitiveOverrides(kinematicIntent, effectiveMission),
-            transmissions = cognitive.transmissions + goAroundTransmissions,
+            transmissions = effectiveCognitiveTransmissions + goAroundTransmissions,
             updatedMission = effectiveMission,
         ).right()
     }
@@ -1144,6 +1197,122 @@ internal fun applyTailwindGoAround(
         ),
         mission = updatedMission,
         transmissions = listOf(Report(listOf(ReportEvent.GoingAround))),
+    )
+}
+
+/**
+ * fn-28.2 (G3a-react-density-altitude R14 / R20): result of the pilot's
+ * reactive DA-decline. Distinct from [GoAroundResult] / [PlannedGoAroundResult]
+ * / [AtcGoAroundResult] — DA decline is an apron-side terminal decision,
+ * NOT a go-around. The mission tree is rewritten to a NON_COMPLETING
+ * `DECLINE_DEPARTURE` primitive via [CompoundTask.replaceFromActivePrimitive],
+ * and physics is at-rest (`targetSpeedMps = 0`).
+ *
+ * **Cognitive-suppression** (R14): the [suppressSameTickCognitive] flag
+ * tells `pilotDecide` to zero any same-tick cognitive transmissions
+ * (e.g. the per-step `Request(RequestTaxi)` that would otherwise fire on
+ * REQUEST_TAXI's first tick). The DA decline preempts the request — the
+ * pilot has decided NOT to taxi. Round-13 Major 1: the suppression must
+ * apply BEFORE every `PilotOutput` construction site (`PlanRouteOutcome
+ * .Plan` AND `Skip` AND any error/fallback branch). The flag is the typed
+ * signal; the application loop in `pilotDecide` is the consumer.
+ *
+ * **No `transmissions` field**: v1 emits no transmission on DA decline.
+ * The mission-tree rewrite + at-rest intent + cognitive-suppression are
+ * the complete pilot-side response. Future fn-28 work may add a CAP 413
+ * courtesy-phrase slot; the result type adds the field at that point.
+ */
+internal data class DensityAltitudeDeclineResult(
+    val intent: PilotIntent,
+    val mission: PilotMission,
+    val suppressSameTickCognitive: Boolean = true,
+)
+
+/**
+ * fn-28.2 (G3a-react-density-altitude R13 + R14 + R20): apply the pilot's
+ * reactive DA-decline. Recognition fires from
+ * `derivePilotEvent`'s `deriveDensityAltitudeEvent` branch; this function
+ * applies the already-recognised event.
+ *
+ * **Recognition+apply agreement** (R16): the function calls
+ * [isDensityAltitudeDeclineEligible] internally — the same guard the
+ * derivation site uses. If for any reason the apply is invoked with a
+ * mission no longer in the eligible shape (cognitive layer advanced past
+ * REQUEST_TAXI between derive and apply, etc.), the apply fails closed
+ * (returns the input mission unchanged + an at-rest intent). This is the
+ * "recognition+apply pipelines need mission-shape agreement" pattern
+ * pinned in the memory entry
+ * `bug/build-errors/recognitionapply-pipelines-need-mission-2026-05-11`.
+ *
+ * **Mission delta** (R13 sole rewrite primitive):
+ * `mission.root.replaceFromActivePrimitive(listOf(
+ *     PrimitiveTask(MissionStep.DECLINE_DEPARTURE, CompletionMode.NON_COMPLETING)
+ * ))` — the suffix from the active primitive (REQUEST_TAXI or
+ * TAXI_TO_HOLDING) is replaced with the terminal NON_COMPLETING
+ * DECLINE_DEPARTURE primitive. No `resetForGoAround` — DA decline is not
+ * a go-around; phase-local state (joinLeg, altitudeRestrictionM) is
+ * irrelevant on the apron.
+ *
+ * **Tick A intent**:
+ *  - `targetSpeedMps = 0` — at-rest on the apron. The kinematic layer
+ *    must not advance taxiing speed.
+ *  - `phase = AtStand` — the pilot is at-rest; the phase reflects the
+ *    apron-static reality. (If the aircraft was mid-taxi when DA decline
+ *    fired, the pilot decides to stop — `aircraft.phase` at the moment
+ *    of decline could be `Taxiing`; the intent overrides to `AtStand` to
+ *    signal stopped. Future fn-28 work may add a `Stopped` phase or
+ *    refine the semantic; v1 reuses `AtStand`.)
+ *  - `route = PilotRoute.None` — no airborne / ground route.
+ *  - `targetAltitudeM = 0.0` — surface elevation; no climb intent.
+ *
+ * **Cognitive-suppression** (R14 / round-3 fix): returns
+ * `suppressSameTickCognitive = true`. `pilotDecide` zeroes any same-tick
+ * cognitive transmissions when the flag is set — preventing the
+ * REQUEST_TAXI's per-step transmission from firing on the tick the
+ * mission tree is being rewritten to DECLINE_DEPARTURE.
+ *
+ * **Doctrine**: FAA AC 61-107B §3-1; ICAO Annex 6 Part II §2.4 (PIC
+ * authority); FAA AFH Ch 11 (high-DA decline as a pilot decision).
+ */
+@Suppress("UnusedParameter") // event field names available to future leaves; keeps the typed shape explicit.
+internal fun applyDensityAltitudeDecline(
+    event: xyz.easiersaid.twr.pilot.observe.PilotEvent.DensityAltitudeDecline,
+    mission: PilotMission,
+    aircraft: AircraftState,
+): DensityAltitudeDeclineResult {
+    // Recognition+apply agreement: guard against mission shape mismatch.
+    // Fails closed to an at-rest intent + unchanged mission; the event
+    // is from `derivePilotEvent` which already gated on the same predicate,
+    // so this is defensive against future regressions where derive and
+    // apply diverge.
+    if (!isDensityAltitudeDeclineEligible(mission)) {
+        return DensityAltitudeDeclineResult(
+            intent = PilotIntent(
+                targetSpeedMps = 0.0,
+                phase = aircraft.phase,
+                route = PilotRoute.None,
+                targetAltitudeM = aircraft.altitudeM,
+            ),
+            mission = mission,
+            suppressSameTickCognitive = true,
+        )
+    }
+
+    val rewrittenRoot = mission.root.replaceFromActivePrimitive(
+        listOf(
+            PrimitiveTask(MissionStep.DECLINE_DEPARTURE, CompletionMode.NON_COMPLETING),
+        ),
+    )
+
+    return DensityAltitudeDeclineResult(
+        intent = PilotIntent(
+            targetSpeedMps = 0.0,
+            phase = PilotPhase.AtStand,
+            route = PilotRoute.None,
+            targetAltitudeM = 0.0,
+        ),
+        mission = mission.copy(root = rewrittenRoot),
+        suppressSameTickCognitive = true,
     )
 }
 

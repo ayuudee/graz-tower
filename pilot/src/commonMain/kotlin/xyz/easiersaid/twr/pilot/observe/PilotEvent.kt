@@ -6,7 +6,9 @@ import xyz.easiersaid.twr.pilot.MissionStep
 import xyz.easiersaid.twr.pilot.PilotMission
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.activeCompound
+import xyz.easiersaid.twr.pilot.computeDensityAltitudeFeet
 import xyz.easiersaid.twr.pilot.isCircuitLike
+import xyz.easiersaid.twr.pilot.isDensityAltitudeDeclineEligible
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.WindReport
@@ -22,7 +24,7 @@ import xyz.easiersaid.twr.protocol.headingDegreesMagnetic
  * fourth leaf — the second pilot-side reactive recognition axis driven by
  * world weather.
  *
- * **Current leaf set (4 leaves)**:
+ * **Current leaf set (5 leaves — fn-28.2 added [DensityAltitudeDecline])**:
  *  - [DecisionAltitudeWithoutClearance] — pilot has descended to or below
  *    decision altitude without a landing clearance (self-initiated GA
  *    trigger).
@@ -256,6 +258,69 @@ sealed interface PilotEvent {
         val limitKnots: Int,
         val runway: RunwayId,
     ) : PilotEvent
+
+    /**
+     * fn-28.2 (G3a-react-density-altitude): the pilot's reactive
+     * recognition that density altitude computed from the per-aerodrome
+     * typed [xyz.easiersaid.twr.pilot.DensityAltitudeInput] (OAT + QNH +
+     * field elevation) exceeds the aircraft type's
+     * [xyz.easiersaid.twr.protocol.AircraftType.maxDensityAltitudeFt]
+     * **while the pilot is on the apron pre-taxi**. Constructed by
+     * [derivePilotEvent]'s `deriveDensityAltitudeEvent` branch, slotted
+     * between [DecisionAltitudeWithoutClearance] (lowest-altitude
+     * trigger) and [TailwindLimitExceeded] (wind-axis post-takeoff
+     * triggers) per R21 branch order.
+     *
+     * **Pure derivation** (axis 1 — self-initiated): the event is
+     * constructed from `(aircraft, mission, densityAltitudeInput)`. No
+     * mission flag, no asynchronous arrival channel — same axis as
+     * [DecisionAltitudeWithoutClearance] / [CrosswindLimitExceeded] /
+     * [TailwindLimitExceeded].
+     *
+     * **Trigger predicate** (see `deriveDensityAltitudeEvent` for the
+     * full gate list):
+     *  - mission's active primitive's step is one of
+     *    `{REQUEST_TAXI, TAXI_TO_HOLDING}` (pre-line-up shapes —
+     *    [isDensityAltitudeDeclineEligible] guard).
+     *  - `densityAltitudeInput != null` (per-aerodrome typed projection
+     *    resolved by fn-28.1's `densityAltitudeInputForMission`).
+     *  - `aircraft.type.maxDensityAltitudeFt != null` (jet-class types
+     *    fall through — DA decline is a light-GA concept). Recognition
+     *    uses the nullable-elvis pattern
+     *    `aircraft.type.maxDensityAltitudeFt?.let { da > it } ?: false`
+     *    — null threshold means trigger never fires.
+     *  - `computeDensityAltitudeFeet(input).value > threshold.value` —
+     *    strict inequality, mirrors crosswind/tailwind branches.
+     *
+     * **Cognitive-suppression** (R14 / round-3 fix carried): the
+     * response stage [xyz.easiersaid.twr.pilot.applyDensityAltitudeDecline]
+     * returns a [xyz.easiersaid.twr.pilot.DensityAltitudeDeclineResult]
+     * with `suppressSameTickCognitive = true`; `pilotDecide` zeroes any
+     * same-tick cognitive transmissions when the flag is set. Prevents
+     * the per-step transmission (REQUEST_TAXI request, etc.) from firing
+     * on the same tick the DA decline rewrites the mission tree.
+     *
+     * Carries [computedDaFeet] (Int — DA value from
+     * `computeDensityAltitudeFeet`) + [limitFeet] (Int — type's
+     * `maxDensityAltitudeFt.value`) + [aerodrome] for trace readability.
+     * The response stage `applyDensityAltitudeDecline` does not consume
+     * these fields; the intent is unconditional. They are load-bearing
+     * for trace coherence and future test assertions (telemetry
+     * distinguishing DA decline from other reactive paths).
+     *
+     * **Doctrine**: FAA AC 61-107B §3-1 (high-DA operating
+     * considerations — the modelling anchor); ICAO Annex 6 Part II §2.4
+     * (PIC final authority); FAA-H-8083-25C Ch 4 (atmosphere). Per-type
+     * threshold severity asymmetry lives in
+     * [xyz.easiersaid.twr.protocol.AircraftType.maxDensityAltitudeFt]
+     * KDoc.
+     */
+    data class DensityAltitudeDecline(
+        override val aircraft: AircraftId,
+        val computedDaFeet: Int,
+        val limitFeet: Int,
+        val aerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = null,
+    ) : PilotEvent
 }
 
 /** Decision altitude threshold — at or below this without clearance triggers go-around. */
@@ -295,29 +360,41 @@ private val WIND_REACTIVE_ELIGIBLE_STEPS: Set<MissionStep> = setOf(
  * tick. Returns at most one event — when multiple branches would fire
  * simultaneously, the ordering below pins which surfaces.
  *
- * **fn-15.1 three-branch shape** (post fn-14.1 split): three independent
- * branches, no shared early returns. The DA branch keeps its CAP 413
- * §4.55 gates; the tailwind branch (fn-15.1 G3a-react-tailwind) and
- * the crosswind branch (fn-14.1 G3a-react) are wind-axis predicates
- * with their own gates — notably **NOT clearance-gated** (FAA AFH Ch 9:
- * pilot has authority for wind-reactive GA regardless of clearance
- * state).
+ * **fn-28.2 four-branch shape** (post fn-15.1 three-branch + fn-28.2 DA-decline):
+ * four independent branches, no shared early returns. The DA-without-
+ * clearance branch keeps its CAP 413 §4.55 gates; the DA-decline branch
+ * (fn-28.2 G3a-react-density-altitude) is a pre-taxi recognition with its
+ * own gates (mission-shape, density-altitude input, per-type threshold);
+ * the tailwind branch (fn-15.1 G3a-react-tailwind) and the crosswind
+ * branch (fn-14.1 G3a-react) are on-final wind-axis predicates — notably
+ * **NOT clearance-gated** (FAA AFH Ch 9: pilot has authority for
+ * wind-reactive GA regardless of clearance state).
  *
- * **Branch ordering** (doctrinally motivated per fn-15 Decision #5;
- * pinned by ordering tests):
+ * **Branch ordering** (R21 partial order; pinned by ordering tests):
  *
- *  1. **DA (lowest-altitude / hardest-stop trigger)** — CAP 413 §4.55
- *     decision-altitude discipline. When all three predicates
- *     simultaneously hold (low + on-final + uncleared + tailwind exceeded
- *     + crosswind exceeded), DA wins.
- *  2. **Tailwind (physically stronger constraint)** — tailwind affects
+ *  1. **DA-without-clearance (lowest-altitude / hardest-stop trigger)** —
+ *     CAP 413 §4.55 decision-altitude discipline.
+ *  2. **DA-decline (pre-taxi, apron-side trigger)** — FAA AC 61-107B §3-1
+ *     high-DA operating considerations. The DA-decline mission-shape gate
+ *     (pre-taxi: REQUEST_TAXI / TAXI_TO_HOLDING) is disjoint from the
+ *     on-final gates of the other three branches, so co-occurrence with
+ *     DA-without-clearance / tailwind / crosswind is impossible by
+ *     construction. The branch position is logical (terminal mission
+ *     decisions: hard-stop, then apron-decline, then on-final go-arounds),
+ *     not motivated by tie-breaking.
+ *  3. **Tailwind (physically stronger constraint)** — tailwind affects
  *     touchdown energy, runway remaining, and go-around margin; on
  *     jet-class types like B738 it is doctrinally a hard limitation per
  *     FCOM Limitations §1. When only tailwind + crosswind hold (on-final
  *     + cleared + both winds exceeded), tailwind wins.
- *  3. **Crosswind (control-authority constraint)** — demonstrated
+ *  4. **Crosswind (control-authority constraint)** — demonstrated
  *     performance per AC 23-8B (judgement-zone). When only crosswind
  *     holds, crosswind fires.
+ *
+ * **Reserved insertion point** (R21 / fn-28.9 work): the `AbortTakeoff`
+ * branch will slot BETWEEN DA-decline and tailwind, at branch position 3
+ * post-fn-28.9 — pre-rotation engine-failure recognition (takeoff-roll
+ * shape), distinct from the on-final wind-axis branches.
  *
  * The signature stays `derivePilotEvent(aircraft, mission, weather: WindReport?)`
  * — same as fn-14.1; the tailwind branch reuses the same `WindReport`
@@ -392,31 +469,101 @@ fun derivePilotEvent(
      */
     densityAltitudeInput: DensityAltitudeInput? = null,
 ): PilotEvent? {
-    // fn-28.1: `densityAltitudeInput` is signature-threaded but
-    // intentionally unread in this version of the function body — wiring
-    // a no-op branch with no recognition predicate would create a
-    // compile-clean dead arm. fn-28.2 lands the
-    // `deriveDensityAltitudeDeclineEvent(aircraft, mission, densityAltitudeInput)`
-    // branch and slots it between the DA-without-clearance and tailwind
-    // branches per R21's branch order:
-    //   DecisionAltitudeWithoutClearance → DensityAltitudeDecline →
-    //   AbortTakeoff → TailwindLimitExceeded → CrosswindLimitExceeded.
-    // The parameter's default `null` preserves every pre-fn-28.1 call
-    // site; the firewall-clean type ([DensityAltitudeInput]) records the
-    // typed contract at the public API. The `_pinTypeContract` reference
-    // below is structural — it pins the type at the recognition site so
-    // a future regression that loses the parameter (e.g. an accidental
-    // signature revert) surfaces as a compile error, not a silent drop.
-    @Suppress("UNUSED_VARIABLE")
-    val _pinTypeContract: DensityAltitudeInput? = densityAltitudeInput
-
+    // fn-28.2 (R21): branch order — DA-without-clearance → DA-decline →
+    // (reserved insertion point for AbortTakeoff in fn-28.9) → tailwind
+    // → crosswind. The DA-decline branch slots BETWEEN the lowest-
+    // altitude trigger (DA-without-clearance, kinematic on final) and
+    // the wind-axis triggers (on final, weather-driven). fn-28.9 closes
+    // R21 by inserting `AbortTakeoff` between DA-decline and tailwind.
+    // KDoc on this function (see above) documents the partial order +
+    // the reserved insertion point.
     return deriveDecisionAltitudeEvent(aircraft, mission)
-        // ── Branch 2: tailwind exceedance (fn-15.1 new — physically stronger
-        // constraint, fires before crosswind when both apply per Decision #5)
+        // ── Branch 2 (fn-28.2 new): density-altitude decline. Pre-taxi
+        // recognition; gates on the typed `densityAltitudeInput` from
+        // fn-28.1's projection + the per-type `maxDensityAltitudeFt`
+        // threshold (nullable — jet-class falls through).
+        ?: deriveDensityAltitudeEvent(aircraft, mission, densityAltitudeInput)
+        // ── Branch 3: tailwind exceedance (fn-15.1 — physically stronger
+        // constraint among the wind axes, fires before crosswind when both
+        // apply per fn-15 Decision #5). Demoted one position by fn-28.2's
+        // DA-decline branch but order RELATIVE TO crosswind is preserved.
         ?: deriveTailwindEvent(aircraft, mission, weather)
-        // ── Branch 3: crosswind exceedance (fn-14.1, control-authority
-        // constraint; demoted one position by fn-15.1's tailwind branch)
+        // ── Branch 4: crosswind exceedance (fn-14.1, control-authority
+        // constraint; demoted one position by each successive wind-axis or
+        // pre-flight reactive recognition that landed in this function).
         ?: deriveCrosswindEvent(aircraft, mission, weather)
+}
+
+/**
+ * fn-28.2 (G3a-react-density-altitude): DA-decline branch — pre-taxi
+ * recognition. Mirrors the structural shape of [deriveCrosswindEvent] /
+ * [deriveTailwindEvent] (guard-clause early returns enumerate fail-closed
+ * modes), but the gate set is fundamentally different:
+ *  - **Mission-shape guard**: pre-taxi shapes only — see
+ *    [isDensityAltitudeDeclineEligible]. NOT shared with the wind-axis
+ *    [isReactiveGoAroundEligible] guard (round-4 Major 3 / R16 split).
+ *  - **Input**: typed [DensityAltitudeInput] (OAT + QNH + field elevation
+ *    from fn-28.1's projection); fail-closed on null (no per-aerodrome
+ *    projection resolved by [xyz.easiersaid.twr.pilot.densityAltitudeInputForMission]).
+ *  - **Threshold**: aircraft-type-specific
+ *    [xyz.easiersaid.twr.protocol.AircraftType.maxDensityAltitudeFt]
+ *    (nullable — jet-class types fall through). Nullable-elvis pattern
+ *    `?.let { da > it } ?: false` means null threshold → trigger never
+ *    fires.
+ *  - **Computation**: [computeDensityAltitudeFeet] is the named pure
+ *    function that performs the DA formula; the recognition gates on
+ *    its output, not on a hand-computed prose value. R17 anchor.
+ *
+ * No phase guard, no clearance guard, no weather guard, no runway guard
+ * — DA decline is an apron-side decision, distinct semantic from the
+ * on-final wind-axis branches.
+ *
+ * **Doctrine**: FAA AC 61-107B §3-1; ICAO Annex 6 Part II §2.4 (PIC
+ * authority).
+ */
+@Suppress("ReturnCount") // guard-clause early returns enumerate fail-closed modes
+private fun deriveDensityAltitudeEvent(
+    aircraft: AircraftState,
+    mission: PilotMission,
+    densityAltitudeInput: DensityAltitudeInput?,
+): PilotEvent.DensityAltitudeDecline? {
+    // Mission-shape guard: pre-taxi shapes only. Named guard for R16
+    // recognition+apply agreement — `applyDensityAltitudeDecline` calls
+    // the same predicate; recognition fails closed on shapes the apply
+    // cannot operate on.
+    if (!isDensityAltitudeDeclineEligible(mission)) return null
+
+    // Input guard: fail-closed on null projection. fn-28.1's
+    // `densityAltitudeInputForMission` returns null when:
+    //  - the per-aerodrome map has no entry for the resolved aerodrome,
+    //  - the multi-aerodrome map fails the singleton-fallback ambiguity gate
+    //    (filed as `D-PASS-g3b-react-density-altitude`),
+    //  - OAT or QNH is null on the aerodrome's weather observation
+    //    (`PilotWiring.buildPilotInput` omits the entry).
+    val input = densityAltitudeInput ?: return null
+
+    // Threshold guard: per-type, nullable. Jet-class types
+    // (B738.maxDensityAltitudeFt = null) fall through here — recognition
+    // never fires for them. The elvis-default returns null (not the
+    // operator-arm), which the elvis below re-converts to a fail-closed
+    // null return.
+    val limit = aircraft.type.maxDensityAltitudeFt ?: return null
+
+    // Compute DA via the named pure function (R17 anchor — the sim-golden
+    // and unit tests assert against this function's output, not against
+    // hand-computed prose).
+    val da = computeDensityAltitudeFeet(input)
+
+    // Strict inequality mirrors crosswind/tailwind branches. A DA value
+    // exactly equal to the threshold does not fire — the threshold is
+    // the upper bound of the "still operationally acceptable" range.
+    if (da.value <= limit.value) return null
+
+    return PilotEvent.DensityAltitudeDecline(
+        aircraft = aircraft.id,
+        computedDaFeet = da.value,
+        limitFeet = limit.value,
+    )
 }
 
 /**

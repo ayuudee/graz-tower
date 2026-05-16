@@ -311,6 +311,15 @@ private fun isStepComplete(
     CompletionMode.INSTRUCTION_GATED -> false // only completed by processInstruction
     CompletionMode.REPORTED -> isReportComplete(mission, task.step)
     CompletionMode.PHYSICAL -> isPhysicallyComplete(aircraft, mission, task.step, worldIndex)
+    // fn-28.2 (R20): NON_COMPLETING terminal primitives never advance.
+    // No completion event flips their status — the mission stays here
+    // indefinitely. Returning `false` (NOT `true`!) keeps the primitive
+    // active forever; the corresponding `applyXxx` (DA-decline: fn-28.2;
+    // abort: fn-28.8/.9) constructs the primitive via
+    // `replaceFromActivePrimitive` and pairs the rewrite with a
+    // physics-side at-rest intent (targetSpeedMps = 0). See
+    // [CompletionMode.NON_COMPLETING] KDoc for the full R20 audit anchor.
+    CompletionMode.NON_COMPLETING -> false
 }
 
 private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean = when (step) {
@@ -331,7 +340,14 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     MissionStep.TAXI_TO_STAND, MissionStep.SHUTDOWN, MissionStep.AWAIT_JOINING_INSTRUCTIONS,
     MissionStep.AWAITING_ATC_INSTRUCTION,
     MissionStep.FLY_SID, MissionStep.FLY_EN_ROUTE, MissionStep.FLY_STAR,
-    MissionStep.FLY_APPROACH, MissionStep.FLY_MISSED_APPROACH -> false
+    MissionStep.FLY_APPROACH, MissionStep.FLY_MISSED_APPROACH,
+    // fn-28.2 (R15): DECLINE_DEPARTURE is NON_COMPLETING — never reaches
+    // here via `isStepComplete`'s CompletionMode dispatch (NON_COMPLETING
+    // short-circuits before sub-helpers run). Enumerated to surface a
+    // regression if a future caller wires DECLINE_DEPARTURE with a
+    // REPORTED completion mode by mistake — the explicit `false` arm keeps
+    // the report channel from completing the terminal primitive.
+    MissionStep.DECLINE_DEPARTURE -> false
 }
 
 @Suppress("CyclomaticComplexMethod")
@@ -409,7 +425,15 @@ private fun isPhysicallyComplete(
         MissionStep.CALL_INBOUND,
         MissionStep.AWAIT_JOINING_INSTRUCTIONS,
         MissionStep.GOING_AROUND,
-        MissionStep.AWAITING_ATC_INSTRUCTION -> false
+        MissionStep.AWAITING_ATC_INSTRUCTION,
+        // fn-28.2 (R15): DECLINE_DEPARTURE never reaches here via
+        // `isStepComplete`'s CompletionMode dispatch (paired with
+        // NON_COMPLETING — short-circuits before isPhysicallyComplete is
+        // called). Enumerated explicitly to surface a regression if a
+        // future caller wires DECLINE_DEPARTURE with PHYSICAL completion
+        // mode by mistake — the explicit `false` keeps the physics
+        // channel from completing the terminal primitive.
+        MissionStep.DECLINE_DEPARTURE -> false
     }
 }
 
@@ -619,7 +643,18 @@ private fun stepTransmission(
     MissionStep.FLY_EN_ROUTE,
     MissionStep.FLY_STAR,
     MissionStep.FLY_APPROACH,
-    MissionStep.FLY_MISSED_APPROACH -> null
+    MissionStep.FLY_MISSED_APPROACH,
+    // fn-28.2 (R15): DECLINE_DEPARTURE is a NON_COMPLETING terminal step.
+    // v1 emits **no** transmission — the decline is a pilot-internal
+    // decision; no `Report(DeclineDeparture)` is mandated by CAP 413 §4.66
+    // / ICAO Doc 4444 §12.3.4.18 (those cover go-around phraseology
+    // specifically, not on-apron decline). Cognitive-suppression at the
+    // `applyDensityAltitudeDecline` boundary (the `suppressSameTickCognitive`
+    // flag — see `Pilot.kt:pilotDecide`) also zeroes any same-tick
+    // cognitive transmissions; this audit arm is the structural guarantee
+    // that no per-step transmission is wired here either. Future fn-28
+    // tasks (.8 ABORTED) extend the same pattern.
+    MissionStep.DECLINE_DEPARTURE -> null
 }
 }
 

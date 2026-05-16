@@ -1,10 +1,12 @@
 package xyz.easiersaid.twr.pilot
 
 import xyz.easiersaid.twr.protocol.AircraftType
+import xyz.easiersaid.twr.protocol.Feet
 import xyz.easiersaid.twr.protocol.IcaoTypeDesignator
 import xyz.easiersaid.twr.protocol.Knots
 import xyz.easiersaid.twr.protocol.UnknownDesignator
 import xyz.easiersaid.twr.protocol.WakeCategory
+import kotlin.test.assertNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -77,6 +79,13 @@ class AircraftTypeSpec {
             t.maxTailwindKnots.value > 0,
             "maxTailwindKnots must be positive (Knots positive-only)",
         )
+        // fn-28.2 (R2-DA): light-GA training type — concrete DA threshold
+        // applies. FAA AC 61-107B §3-1 high-DA operating considerations floor.
+        assertEquals(
+            Feet.unsafe(5000),
+            t.maxDensityAltitudeFt,
+            "FAA AC 61-107B §3-1 — C172 high-DA threshold 5000 ft",
+        )
     }
 
     @Test
@@ -119,6 +128,15 @@ class AircraftTypeSpec {
             Knots.unsafe(15),
             t.maxTailwindKnots,
             "FCOM Limitations §1 — B738 15 kt steady tailwind (hard operational limitation)",
+        )
+        // fn-28.2 (R2-DA): jet-class types do NOT carry a DA-decline threshold.
+        // Nullable applicability semantic — DA decline is a light-GA concept;
+        // flat-rated thrust + performance margin make a "decline on DA alone"
+        // decision out-of-scope for v1 jet operations. Recognition gate
+        // `da > limit` evaluates `false` via the elvis-default on null.
+        assertNull(
+            t.maxDensityAltitudeFt,
+            "B738 has null maxDensityAltitudeFt (jet-class applicability fallthrough)",
         )
     }
 

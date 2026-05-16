@@ -722,4 +722,50 @@ object RegulationDatabase {
             "peer doctrinal anchor (separation scope, distinct from POH performance)",
         category = RegulationCategory.GUIDANCE,
     )
+
+    // ── fn-28.2 (G3a-react-density-altitude R2-DA): DA-decline doctrinal anchor ──
+
+    /**
+     * fn-28.2 (R2-DA, R5): FAA Advisory Circular AC 61-107B §3-1 —
+     * "High Density Altitude Operating Considerations". Light, non-turbo-
+     * charged piston aircraft suffer significant performance degradation
+     * above the AC's 5000 ft DA "high density altitude" floor (reduced
+     * takeoff acceleration, reduced climb gradient, reduced go-around
+     * margin). The AC is the modelling anchor for
+     * [xyz.easiersaid.twr.protocol.AircraftType.maxDensityAltitudeFt] —
+     * the typed-units threshold consumed by the pilot's reactive
+     * density-altitude decline branch in `derivePilotEvent`'s
+     * `deriveDensityAltitudeEvent`.
+     *
+     * **Per-type doctrinal severity asymmetry** (load-bearing for KDoc;
+     * recognition predicate is uniform when the threshold is non-null):
+     *  - [xyz.easiersaid.twr.protocol.AircraftType.C172] (light-GA training):
+     *    5000 ft DA threshold per this AC's §3-1.
+     *  - [xyz.easiersaid.twr.protocol.AircraftType.B738] (jet-class):
+     *    null threshold — DA decline is out-of-scope for jets at v1 (flat-
+     *    rated thrust + substantial performance margin). The fall-through
+     *    (`null` → no event) is the operational semantic.
+     *
+     * Pairs with [ICAO_ANNEX_6_PII_2_4_PIC] (PIC final authority to make the
+     * decline decision) and CAP 413 §4.66 / ICAO Doc 4444 §12.3.4.18 for the
+     * post-decline phraseology side (no ATC permission needed for the
+     * `Report(DeclineDeparture)` transmission slot in v1's typed
+     * MissionStep.DECLINE_DEPARTURE).
+     *
+     * **Modelling note**: AC 61-107B is non-regulatory FAA guidance
+     * (category [RegulationCategory.GUIDANCE]) — it does not impose a
+     * legal limit, but a competent VFR pilot treats the §3-1 advisory as
+     * the trigger for declining departure on the apron. Same rationale
+     * as fn-14.1's crosswind framing (AC 23-8B "demonstrated value is
+     * performance information, not a limitation" — a competent pilot
+     * still goes around when exceeded).
+     */
+    val FAA_AC_61_107B_3_1 = RegulationRef(
+        document = "FAA_AC", edition = RegulationRef.FAA_AC_61_107B_EDITION, section = "§3-1",
+        title = "High density altitude operating considerations",
+        principle = "Light, non-turbo-charged piston aircraft suffer significant performance " +
+            "degradation above ~5000 ft density altitude; pilots are advised to compute " +
+            "DA pre-flight and to decline operations exceeding type performance margin",
+        category = RegulationCategory.GUIDANCE,
+    )
 }

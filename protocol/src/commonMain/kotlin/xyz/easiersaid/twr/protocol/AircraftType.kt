@@ -131,6 +131,43 @@ sealed class AircraftType(
      */
     val maxTailwindKnots: Knots,
     /**
+     * fn-28.2 (G3a-react-density-altitude R2): per-type maximum density
+     * altitude beyond which the pilot declines departure on the apron.
+     *
+     * **Nullable by design** (round-5 Major 2 / applicability semantic):
+     *  - Light-GA training types (e.g. [C172]) carry a concrete threshold —
+     *    `Feet.unsafe(5000)` per FAA AC 61-107B §3-1, the FAA's "high
+     *    density altitude operating considerations" advisory floor for
+     *    light, non-turbo-charged piston aircraft.
+     *  - Jet-class / turbine types (e.g. [B738]) carry **null** — DA
+     *    decline is a light-GA concept. Jet engines are flat-rated for
+     *    thrust over their certification envelope, and jet-class aircraft
+     *    have substantially more performance margin at common DA values;
+     *    a "decline departure on DA alone" decision is not part of jet
+     *    operational doctrine at v1 scope. Future heavy-turbine
+     *    performance modelling (takeoff-distance correction tables, V-speed
+     *    adjustments) lives in a sibling field — out of scope here.
+     *
+     * **Recognition site** (fn-28.2): `derivePilotEvent`'s
+     * `deriveDensityAltitudeEvent` branch gates on
+     * `aircraft.type.maxDensityAltitudeFt?.let { da > it } ?: false`
+     * — a null threshold means the trigger never fires (fall-through),
+     * NOT that it fires unconditionally. Unit-tested for B738 explicitly.
+     *
+     * **Reuses** [Feet] (positive-int smart constructor in `:protocol` per
+     * R24 / fn-28.1 residency lift) — every DA threshold is ≥ 1 ft by
+     * construction. The smart-type rules out negative or zero thresholds
+     * (operationally nonsensical).
+     *
+     * **Doctrine**: FAA AC 61-107B §3-1 ("Aircraft Operations at Altitudes
+     * Above 25,000 Feet Mean Sea Level or Mach Numbers Greater Than .75")
+     * §3-1 — high-DA operating considerations for light, non-turbo-charged
+     * piston aircraft. The 5000 ft DA threshold is the AC's named
+     * "high density altitude" floor. See also
+     * [xyz.easiersaid.twr.protocol.RegulationDatabase.FAA_AC_61_107B_3_1].
+     */
+    val maxDensityAltitudeFt: Feet?,
+    /**
      * Engineering-tuning cruise-altitude default for IFR route-planner
      * fallback. Pass 17 (D-PASS-13.2 closure): when an IFR procedure
      * has no published altitude (e.g., a SID with no last-waypoint
@@ -172,6 +209,19 @@ sealed class AircraftType(
         require(cruiseAltitudeM < 5500.0) {
             "cruiseAltitudeM ($cruiseAltitudeM) must be < 5500m (FL180 floor); " +
                 "FL180+ cruise needs typed FlightLevel — out of scope"
+        }
+        // fn-28.2 (R2-DA): nullable DA threshold — null is the "DA decline
+        // is out-of-scope for this type" semantic (jet-class), NOT a default
+        // for missing data. When non-null, the value must be strictly
+        // positive — a 0 ft threshold would fire DA decline at every
+        // sea-level airport, which is operationally nonsensical. [Feet]'s
+        // smart constructor already enforces `>= 0`; this require tightens
+        // to `> 0` for the threshold semantic. Skips on null per the
+        // applicability semantic (jet-class types fall through).
+        maxDensityAltitudeFt?.let { da ->
+            require(da.value > 0) {
+                "maxDensityAltitudeFt must be > 0 ft when non-null, got ${da.value}"
+            }
         }
     }
 
@@ -305,6 +355,10 @@ sealed class AircraftType(
         // fn-15.1: FAA AFH Ch 9 industry-standard advisory for light singles
         // (POH §2 does NOT publish a hard tailwind limitation — see C172 KDoc above).
         maxTailwindKnots = Knots.unsafe(10),
+        // fn-28.2 (R2-DA): FAA AC 61-107B §3-1 high-DA operating threshold
+        // for light, non-turbo-charged piston aircraft (the 5000 ft DA floor).
+        // Light-GA training type — concrete threshold applies.
+        maxDensityAltitudeFt = Feet.unsafe(5000),
         runUpDurationMs = 60_000L,
     )
 
@@ -353,6 +407,14 @@ sealed class AircraftType(
         // fn-15.1: Boeing 737-800 FCOM Limitations §1 — 15 kt steady tailwind
         // (dry runway). Hard operational limitation; see B738 KDoc above.
         maxTailwindKnots = Knots.unsafe(15),
+        // fn-28.2 (R2-DA): jet-class types do not carry a DA-decline threshold —
+        // DA decline is a light-GA concept (flat-rated thrust + substantial
+        // performance margin make a "decline on DA alone" decision out-of-scope
+        // for v1 jet operations). Recognition gate `da > limit` evaluates `false`
+        // via the elvis-default on null, so the DA branch never fires for B738.
+        // Future heavy-turbine performance modelling (takeoff distance, V-speed
+        // corrections) lives in a sibling field — see KDoc above.
+        maxDensityAltitudeFt = null,
         runUpDurationMs = 600_000L,
     )
 

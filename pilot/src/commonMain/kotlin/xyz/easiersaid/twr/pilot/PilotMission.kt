@@ -418,6 +418,98 @@ data class CompoundTask(
         })
     }
 
+    /**
+     * fn-28.2 (G3a-react-density-altitude R13): replace the suffix of the
+     * tree from the **active primitive** (the leftmost incomplete leaf,
+     * per [currentPrimitive]) onward with [newSuffix]. The sole task-tree
+     * rewrite primitive introduced by fn-28: DA-decline (.2), Transit GA
+     * suffix (.6/.7), abort (.8/.9) all dispatch through this single
+     * primitive. Existing GA appliers' [replaceChild] branches are
+     * UNCHANGED (R13 explicitly exempts them — no retroactive migration).
+     *
+     * **Semantics**: the rewrite happens at the **compound containing the
+     * active primitive** — outer parents stay intact, the active
+     * primitive's containing compound has its children truncated up to
+     * (and including) the active primitive's position, then [newSuffix]
+     * is appended. For a flat compound (active primitive is a direct
+     * child of `this`), the suffix is the active primitive's tail. For a
+     * nested compound (active primitive is inside a nested
+     * [CompoundTask]), the rewrite happens at that inner compound's
+     * level — outer compounds are rebuilt via `copy(children = ...)` to
+     * thread the rewritten inner compound back up.
+     *
+     * **Contract**: callers construct [PrimitiveTask] (with the required
+     * [CompletionMode]) for any terminal primitives in [newSuffix]; any
+     * nested [CompoundTask] in [newSuffix] is also valid. The
+     * [TaskNode] sealed-parent type permits both.
+     *
+     * **Idempotence at active position**: if there is no active primitive
+     * (entire tree is complete), this returns the receiver unchanged —
+     * `currentPrimitive()` returns `null`, no rewrite happens.
+     *
+     * **fn-28 call sites** (R13 contract — exhaustive at fn-28 close):
+     *  - fn-28.2: `applyDensityAltitudeDecline` →
+     *    `[PrimitiveTask(DECLINE_DEPARTURE, NON_COMPLETING)]`.
+     *  - fn-28.6/.7: Transit-arrival GA dispatch via extended appliers →
+     *    `[goAroundTask(), circuitTask(), groundArrivalTask()]` (R22 suffix).
+     *  - fn-28.8/.9: `applyAbortTakeoff` →
+     *    `[PrimitiveTask(ABORTED, NON_COMPLETING)]`.
+     *
+     * Direct unit tests cover the nested + flat shapes; integration
+     * coverage lands per call site as those tasks ship.
+     */
+    fun replaceFromActivePrimitive(newSuffix: List<TaskNode>): CompoundTask {
+        // Walk children left-to-right. Find the first incomplete child —
+        // it determines the rewrite anchor:
+        //  - If it's a PrimitiveTask: the active primitive is AT THIS
+        //    LEVEL. The receiver is the "containing compound" for the
+        //    active primitive. Drop the active primitive AND every
+        //    subsequent same-level sibling (the suffix-from-active is
+        //    replaced); preserve the completed leading siblings; append
+        //    `newSuffix`.
+        //  - If it's a CompoundTask: the active primitive is INSIDE that
+        //    subtree. Recurse into it (the rewrite happens at the inner
+        //    compound's level, per the "leave outer parents intact" R13
+        //    contract). The outer compound at THIS level rebuilds children
+        //    with the rewritten inner compound threaded back; EARLIER
+        //    siblings (completed leading) AND LATER siblings (future work
+        //    on the outer compound, e.g. groundArrivalTask after the
+        //    active circuit) are preserved positionally.
+        //  - If no incomplete child exists: receiver returned unchanged.
+        val activeIndex = children.indexOfFirst { !it.isComplete }
+        if (activeIndex < 0) return this  // tree fully complete; nothing to rewrite
+
+        val activeChild = children[activeIndex]
+        return when (activeChild) {
+            is PrimitiveTask -> {
+                // Active primitive is at THIS level — the receiver is the
+                // containing compound. Drop from activeIndex onward; append
+                // newSuffix. Guard against producing an empty children list
+                // (CompoundTask init invariant: children.isNotEmpty()) —
+                // if newSuffix is empty AND no completed leading siblings
+                // exist, the rewrite would violate the invariant.
+                val leadingCompletedSiblings = children.subList(0, activeIndex)
+                require(leadingCompletedSiblings.isNotEmpty() || newSuffix.isNotEmpty()) {
+                    "replaceFromActivePrimitive: rewrite would produce empty children for '$name'; " +
+                        "active primitive at index $activeIndex AND newSuffix is empty"
+                }
+                copy(children = leadingCompletedSiblings + newSuffix)
+            }
+            is CompoundTask -> {
+                // Active primitive is inside the nested compound — recurse.
+                // Outer siblings (before AND after the active inner compound)
+                // are preserved positionally; the inner compound is rewritten
+                // in place at activeIndex.
+                val rewrittenInner = activeChild.replaceFromActivePrimitive(newSuffix)
+                copy(
+                    children = children.subList(0, activeIndex) +
+                        rewrittenInner +
+                        children.subList(activeIndex + 1, children.size),
+                )
+            }
+        }
+    }
+
     /** Mark the current primitive as complete and return the updated tree. */
     fun advanceCurrent(): CompoundTask {
         val current = currentPrimitive() ?: return this
@@ -479,6 +571,54 @@ enum class CompletionMode {
     TIMED,
     /** Completes immediately — structural marker. */
     INSTANT,
+    /**
+     * fn-28.2 (G3a-react-density-altitude R20 / NON_COMPLETING terminal-
+     * primitive completion mode): the primitive is the **terminal state of
+     * the mission** — no completion event ever flips its status. Once the
+     * pilot enters a `NON_COMPLETING` primitive, the mission stays there
+     * indefinitely; physics is at-rest (DA decline: aircraft remains on
+     * the apron; abort, landing in fn-28.8: aircraft remains at-rest on
+     * the runway with engine off).
+     *
+     * **Consumer audit** — every site that dispatches on `CompletionMode`
+     * or pattern-matches on a NON_COMPLETING-bearing `MissionStep` MUST
+     * be enumerated here as an R20-audit anchor (round-6 Major 3 / round-7
+     * Major 1 corrected sites):
+     *
+     *  1. **`PilotCognitive.isStepComplete`** — the actual `CompletionMode`
+     *     dispatch site (NOT `isPhysicallyComplete`, which consumes
+     *     `MissionStep`). The `NON_COMPLETING -> false` arm pins the
+     *     "no completion event ever flips its status" semantic. Returning
+     *     `false` (not `true`!) keeps the primitive active forever.
+     *  2. **`PilotCognitive.stepTransmission`** — MissionStep dispatch site.
+     *     The fn-28.2 `MissionStep.DECLINE_DEPARTURE` arm emits nothing
+     *     (no transmission line); fn-28.8 extends with `ABORTED`. This is
+     *     MissionStep-driven, not CompletionMode-driven; documented here
+     *     as a coupled R15 audit site.
+     *  3. **`PilotCognitive.skipCompletedSteps` (`markStepsComplete` /
+     *     `skipCompletedSteps`)** — does NOT skip past a NON_COMPLETING
+     *     primitive (the primitive must never be marked complete).
+     *     `markComplete` walks the tree and flips `completed = true` only
+     *     when the primitive's step matches; a NON_COMPLETING primitive
+     *     whose step is targeted by `markComplete` would flip too, but
+     *     the design contract is that no caller invokes `markComplete`
+     *     with a NON_COMPLETING primitive's step.
+     *  4. **`Pilot.planRoute`** — at-rest / no-op for the
+     *     `DECLINE_DEPARTURE` MissionStep (default `Skip` branch via the
+     *     "step not in airborneSteps" guard; documented here for
+     *     completeness — DA decline has no airborne route).
+     *
+     * `applyDensityAltitudeDecline` is the unique constructor of a
+     * `PrimitiveTask(DECLINE_DEPARTURE, NON_COMPLETING)`; fn-28.8 lands
+     * the symmetric `ABORTED` MissionStep + its consumer arms (the
+     * `CompletionMode.NON_COMPLETING` dispatch is shared; the
+     * `MissionStep`-specific arms split per task).
+     *
+     * **Doctrine** (R20 anchor): FAA AC 61-107B §3-1 (DA decline as a
+     * terminal pilot decision on the apron); FAA AIM §7-1-12 (PIC final
+     * authority to decline operation).
+     */
+    NON_COMPLETING,
 }
 
 /** An ATC instruction that modifies pilot behaviour without changing the mission plan. */
@@ -533,6 +673,49 @@ enum class MissionStep {
     CALL_INBOUND, AWAIT_JOINING_INSTRUCTIONS,
     // Special states
     GOING_AROUND, AWAITING_ATC_INSTRUCTION,
+
+    /**
+     * fn-28.2 (G3a-react-density-altitude R15 / DA-decline terminal step):
+     * the pilot has computed density-altitude exceedance pre-taxi and
+     * declined departure on the apron. This is a **terminal step** —
+     * paired with [CompletionMode.NON_COMPLETING], no completion event
+     * ever flips its status. Constructed by
+     * [xyz.easiersaid.twr.pilot.applyDensityAltitudeDecline] via
+     * [CompoundTask.replaceFromActivePrimitive] which rewrites the active
+     * compound's suffix to `[PrimitiveTask(DECLINE_DEPARTURE, NON_COMPLETING)]`.
+     *
+     * **4-consumer audit** (R15) — every site that pattern-matches on
+     * MissionStep enumerated here:
+     *  1. `PilotCognitive.isPhysicallyComplete` — falls into the default
+     *     `false` branch (no airborne / runway completion for an apron-
+     *     terminal step). The default-arm enumerates DECLINE_DEPARTURE
+     *     explicitly to surface a regression if a future caller invokes
+     *     it with a wrong CompletionMode.
+     *  2. `PilotCognitive.stepTransmission` — falls into the no-transmission
+     *     default branch. v1 emits no `Report(DeclineDeparture)`; the
+     *     decline is a pilot-internal decision (no controller-side
+     *     reaction in v1). Future fn-28.2-or-later may add a CAP 413
+     *     courtesy-phrase transmission; the audit site is enumerated to
+     *     surface it.
+     *  3. `PilotCognitive.isReportComplete` — falls into the default
+     *     `false` branch; the step has REPORTED-completion semantics by
+     *     no caller's design (it is NON_COMPLETING).
+     *  4. `Pilot.planRoute` — the airborne-step guard `step !in
+     *     airborneSteps` rejects DECLINE_DEPARTURE → `PlanRouteOutcome.Skip`
+     *     → no planning. Combined with `applyDensityAltitudeDecline`'s
+     *     `targetSpeedMps = 0` Tick A intent, the aircraft remains at-rest
+     *     on the apron forever (physics + cognitive + planner all agree).
+     *
+     * The `MissionStep.ABORTED` value lands in fn-28.8 with its own
+     * 4-consumer audit (mirrors this enumeration); the
+     * `CompletionMode.NON_COMPLETING` dispatch site is shared.
+     *
+     * **Doctrine**: FAA AC 61-107B §3-1 (the modelling anchor); ICAO
+     * Annex 6 Part II §2.4 (PIC final authority to decline). The
+     * transmission-side is silent in v1 — no CAP 413 §4.66-style
+     * standalone phraseology is mandated for DA decline.
+     */
+    DECLINE_DEPARTURE,
 }
 
 // ── Task tree construction ───────────────────────────────────────────
@@ -796,6 +979,45 @@ fun TaskName.isCircuitLike(): Boolean = when (this) {
     is TaskName.GroundDeparture, is TaskName.GroundArrival,
     is TaskName.CircuitTraining, is TaskName.ArrivalJoin,
     is TaskName.GoAround -> false
+}
+
+/**
+ * fn-28.2 (G3a-react-density-altitude R16): DA-decline eligibility guard.
+ *
+ * **Pre-taxi shapes only**: DA decline is an apron-side, pre-taxi decision —
+ * the pilot computes DA on the apron BEFORE requesting taxi for departure.
+ * The eligible mission shapes are exactly those whose active primitive's
+ * step is one of the ground-departure pre-line-up steps:
+ *  - [MissionStep.REQUEST_TAXI] — pilot has not yet requested taxi.
+ *  - [MissionStep.TAXI_TO_HOLDING] — pilot is taxiing but has not reached
+ *    the holding point yet (DA can still be a decline-trigger if the
+ *    pilot re-computes during taxi).
+ *
+ * **NOT** [MissionStep.RUN_UP_CHECKS] / [MissionStep.REPORT_READY] /
+ * [MissionStep.AWAIT_LINE_UP] / [MissionStep.AWAIT_TAKEOFF_CLEARANCE] —
+ * post-taxi states; the pilot is committed to the runway at that point
+ * and a DA-driven abort would use a different mechanism (fn-28.8/.9's
+ * abort path).
+ *
+ * **NOT a shared guard with abort** (R16 / round-4 Major 3): abort
+ * eligibility (fn-28.9's `isAbortTakeoffEligible`) gates on takeoff-roll
+ * shapes — semantically incompatible with DA decline's pre-taxi shapes.
+ * Two distinct named guards, each shipped with its respective task. NOT
+ * a shared `isReactiveTerminalEligible` helper — the two decisions are
+ * about fundamentally different mission positions.
+ *
+ * Mirrors fn-14.1's `isReactiveGoAroundEligible` named-guard pattern
+ * (shape: named predicate on `mission` returning Boolean, used by
+ * recognition + apply in agreement).
+ *
+ * Unit-tested in `pilot/src/commonTest/.../IsDensityAltitudeDeclineEligibleSpec.kt`
+ * over the full MissionStep enumeration; recognition+apply agreement
+ * pin lives in the `deriveDensityAltitudeEvent` + `applyDensityAltitudeDecline`
+ * test suites.
+ */
+fun isDensityAltitudeDeclineEligible(mission: PilotMission): Boolean {
+    val step = mission.currentTask?.step ?: return false
+    return step == MissionStep.REQUEST_TAXI || step == MissionStep.TAXI_TO_HOLDING
 }
 
 /** Find the active (leftmost incomplete) compound task at the top level. */
