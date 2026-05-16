@@ -17,6 +17,7 @@ import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.Atis
 import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
@@ -28,6 +29,10 @@ import xyz.easiersaid.twr.protocol.Wind
 import xyz.easiersaid.twr.protocol.WindReport
 import xyz.easiersaid.twr.protocol.headingDegreesMagnetic
 import xyz.easiersaid.twr.sim.testing.Fixtures
+import xyz.easiersaid.twr.sim.testing.LoadedFixture
+import xyz.easiersaid.twr.sim.testing.SimTrace
+import xyz.easiersaid.twr.sim.testing.Transition
+import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 import xyz.easiersaid.twr.sim.testing.commitmentStageTransitions
 import xyz.easiersaid.twr.sim.testing.controllerAt
 import xyz.easiersaid.twr.sim.testing.firstWhere
@@ -220,6 +225,28 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  * shape-identical to G3a-react-tailwind preserves the cross-test
  * regression signal.
  *
+ * **Implementation shape — focused helpers (no detekt suppressions
+ * on `runCrossAerodromeReactiveScenario`):** the per-scenario body
+ * is decomposed into single-purpose helpers each well below detekt's
+ * `LongMethod` threshold (95):
+ *   - [ScenarioContext] / [ScenarioHookState] — typed bundles for the
+ *     scenario's fixture-derived constants + per-run mutable observers
+ *   - [setupScenarioContext] — fixture load + heading derivation
+ *   - [buildScenarioInitialEvents] — ATIS + initial-tick events
+ *   - [makeScenarioHook] — the two-transition world-state authorship
+ *     closure, axis-dispatched
+ *   - [printScenarioDiagnostics] — println block (trace summary)
+ *   - [assertNamedWitnessFired] — defensive pre-condition pins
+ *   - [assertWeatherTransitions] — exactly-two pin + value defense
+ *   - [assertCausalGoingAroundOrdering] — Layer 1 single-GoingAround pin
+ *   - [assertCommitmentRegressionAndStickyWitnesses] — Layer 2 +
+ *     post-regression sticky-witness resets
+ *   - [assertKinematicNonEventInWindow] — Layer 3 bounded-window
+ *     no-touchdown pin
+ *   - [assertR22SuffixShape] — R22 mission-tree shape pin (both
+ *     `GOING_AROUND` and the recovery `FLY_DEPARTURE` are REQUIRED
+ *     post-shift, in order)
+ *
  * @see G2CrossAerodromeVfrTest the no-GA cross-aerodrome anchor
  * @see G3aPilotReactiveCrosswindTest the same-aerodrome crosswind
  *      sibling
@@ -248,9 +275,7 @@ class G3bCrossAerodromeReactiveTest {
      */
     @Test
     fun `world-authored crosswind exceedance at LJMB triggers Transit-arrival reactive GA in cross-aerodrome flight`() {
-        runCrossAerodromeReactiveScenario(
-            scenario = ReactiveScenario.CROSSWIND,
-        )
+        runCrossAerodromeReactiveScenario(scenario = ReactiveScenario.CROSSWIND)
     }
 
     /**
@@ -274,38 +299,146 @@ class G3bCrossAerodromeReactiveTest {
      */
     @Test
     fun `world-authored tailwind exceedance at LJMB triggers Transit-arrival reactive GA in cross-aerodrome flight`() {
-        runCrossAerodromeReactiveScenario(
-            scenario = ReactiveScenario.TAILWIND,
-        )
+        runCrossAerodromeReactiveScenario(scenario = ReactiveScenario.TAILWIND)
     }
 
     /** Recognition axis exercised by [runCrossAerodromeReactiveScenario]. */
     private enum class ReactiveScenario { CROSSWIND, TAILWIND }
 
     /**
+     * Per-scenario fixture-derived constants. Computed once via
+     * [setupScenarioContext]; threaded through every helper so each
+     * helper stays well below detekt's `LongMethod` threshold (95).
+     *
+     * Holds **only** values that are computed once and read many times
+     * downstream — the mutable per-run observer state lives in
+     * [ScenarioHookState] instead.
+     */
+    private data class ScenarioContext(
+        val scenario: ReactiveScenario,
+        val loaded: LoadedFixture,
+        val aircraftId: AircraftId,
+        val lowg: AerodromeId,
+        val ljmb: AerodromeId,
+        val ljmbRwy: RunwayId,
+        val ljmbTowerId: ControllerId,
+        val runwayHeading: Int,
+        val pureCrosswindDirection: Int,
+        val pureTailwindDirection: Int,
+        val ljmbInitialWeather: WeatherObservation,
+        val until: SimTime,
+    )
+
+    /**
+     * Per-run mutable observer state for the world-state authorship
+     * hook. Single instance is constructed in
+     * [runCrossAerodromeReactiveScenario] and threaded through
+     * [makeScenarioHook] and the assertion helpers that need to read
+     * back the captured timestamps (e.g. for diagnostic prints).
+     *
+     * **Mutable on purpose**: the hook closure must observe progress
+     * across event ticks. Each transition is one-shot guarded by the
+     * `var ...Authored` / `var ...ClearedToLimit` booleans;
+     * defense-in-depth against multi-fire.
+     */
+    private class ScenarioHookState {
+        var windAuthored: Boolean = false
+        var windClearedToLimit: Boolean = false
+        var windAuthoredAt: SimTime? = null
+        var windClearedAt: SimTime? = null
+        var goingAroundTransmitted: Boolean = false
+        var goingAroundTransmittedAt: SimTime? = null
+        var recoveryDownwindReported: Boolean = false
+    }
+
+    /**
      * Shared body of the crosswind + tailwind `@Test` methods. The
      * recognition axis is the **only** difference between the two
      * scenarios — same fixture, same routing, same hook-predicate
-     * shapes, same three-layer pin layout. The axis chooses (a) the
-     * wind direction the hook authors at transition-1 (pure-crosswind
-     * vs pure-tailwind on runway 14), (b) the wind speed (20 kt
-     * crosswind = 5 kt above the 15 kt POH limit; 15 kt tailwind = 5
-     * kt above the 10 kt AFH advisory — both with the same 5 kt
-     * margin above the limit), and (c) the transition-2 gate
-     * (the crosswind scenario uses "aircraft off final" — the
-     * G3a-react-crosswind sibling's shape; the tailwind scenario
-     * uses the post-GA recovery `Report(Downwind)` transmission —
-     * the G3a-react-tailwind sibling's codex round-2 strengthening).
+     * shapes, same three-layer pin layout.
+     *
+     * Decomposed into focused helpers (each below the
+     * `LongMethod` threshold) so no detekt suppression is required;
+     * the orchestration here is just sequencing.
      */
-    @Suppress("LongMethod") // intentional single-method-per-scenario shape; mirrors G2/G3a sibling discipline
     private fun runCrossAerodromeReactiveScenario(scenario: ReactiveScenario) {
-        // ── World + 4 controllers via the cross-aerodrome reactive fixture ───
-        // Mirrors G2's `Fixtures.LOWG_LJMB_VFR.load()` pattern; the only
-        // distinguishing surface is the fn-28.7 fixture variant with
-        // concrete OAT + QNH at both aerodromes (required for the
-        // PilotWiring projection to surface LJMB weather to the pilot's
-        // `windForMission` resolver — see KDoc on
-        // `Fixtures.LOWG_LJMB_VFR_REACTIVE`).
+        val ctx = setupScenarioContext(scenario)
+        val filings = ctx.loaded.initialEvents.filterIsInstance<SimEvent.FlightPlanFiled>()
+        check(filings.size == 2) {
+            "G3b routing-cardinality regression: expected exactly 2 FlightPlanFiled " +
+                "events for the cross-aerodrome reactive fixture, got ${filings.size}: " +
+                "${filings.map { it.recipient }}"
+        }
+
+        val initialState = buildScenarioInitialState(ctx)
+        val initialEvents = buildScenarioInitialEvents(ctx)
+        val hookState = ScenarioHookState()
+        val onAfterEvent = makeScenarioHook(ctx, hookState)
+
+        val (finalState, records, trace) = runUntilWithStateTrace(
+            initialState = initialState,
+            initialEvents = initialEvents,
+            untilTime = ctx.until,
+            onAfterEvent = onAfterEvent,
+        )
+
+        val journey = finalState.formatJourney(ctx.aircraftId, records)
+        printScenarioDiagnostics(ctx, hookState, trace, journey)
+
+        assertNamedWitnessFired(ctx, hookState, journey)
+
+        val weatherTrans = trace.weatherTransitions(ctx.ljmb)
+        assertWeatherTransitions(ctx, weatherTrans, journey)
+        val weatherShiftMs = weatherTrans[0].after.time.millis
+        val weatherClearMs = weatherTrans[1].after.time.millis
+
+        val goingAroundMs = assertCausalGoingAroundOrdering(
+            ctx, records, weatherShiftMs, weatherClearMs, journey,
+        )
+        assertCommitmentRegressionAndStickyWitnesses(
+            ctx, trace, goingAroundMs, journey,
+        )
+        assertKinematicNonEventInWindow(
+            ctx, trace, weatherShiftMs, weatherClearMs, journey,
+        )
+        assertR22SuffixShape(ctx, trace, weatherShiftMs, journey)
+
+        check(weatherClearMs < ctx.until.millis) {
+            "Bounded-window upper-bound pin: the wind-recovery cycle at ${weatherClearMs}ms " +
+                "must fire strictly before the run's 120-min wall (${ctx.until.millis}ms). " +
+                "Hitting the wall before transition-2 fires means the recovery gate (axis " +
+                "${ctx.scenario}) never satisfied — the GA may have fired but the recovery " +
+                "circuit did not re-enter downwind (tailwind axis) / leave final (crosswind " +
+                "axis).\n$journey"
+        }
+
+        assertFilingDistribution(ctx, filings, journey)
+
+        // Sanity: mission did not crash before the GA fired. We do NOT pin
+        // `finalMission.isComplete` because the test's bounded window is the
+        // named-witness stop condition (transition-2 wind-recovery cycle);
+        // the recovery landing is out-of-window per the task spec.
+        val finalAircraft = finalState.aircraft.getValue(ctx.aircraftId)
+        checkNotNull(finalAircraft.pilotMission) {
+            "Aircraft ${ctx.aircraftId} lost its mission during the run — engine regression." +
+                "\n$journey"
+        }
+        trace.firstWhere { st -> st.aircraft[ctx.aircraftId]?.pilotMission != null }
+            .getOrElse {
+                fail("Mission never constructed in trace.\n$journey")
+            }
+    }
+
+    // ── Fixture-derived setup ───────────────────────────────────────────────
+
+    /**
+     * Load the cross-aerodrome reactive fixture, resolve controllers,
+     * compute runway-derived wind directions, and bundle into a typed
+     * [ScenarioContext]. Encapsulates the prologue so the main
+     * scenario body stays under the `LongMethod` threshold without
+     * needing a detekt suppression.
+     */
+    private fun setupScenarioContext(scenario: ReactiveScenario): ScenarioContext {
         val fixture = Fixtures.LOWG_LJMB_VFR_REACTIVE
         val loaded = fixture.load().getOrElse {
             fail("LOWG_LJMB_VFR_REACTIVE fixture failed to load: $it")
@@ -313,13 +446,16 @@ class G3bCrossAerodromeReactiveTest {
         val lowg = AerodromeId("LOWG")
         val ljmb = AerodromeId("LJMB")
         val ljmbRwy = RunwayId("14")
-        val lowgGround = checkNotNull(loaded.controllerAt(lowg, RoleName.GROUND)) {
+
+        // Resolve controllers; absence is a wiring defect for the test
+        // (the fixture's MultiAerodromeFixture staffing slot pins all four).
+        checkNotNull(loaded.controllerAt(lowg, RoleName.GROUND)) {
             "LOWG_GROUND missing from fixture"
         }
-        val lowgTower = checkNotNull(loaded.controllerAt(lowg, RoleName.TOWER)) {
+        checkNotNull(loaded.controllerAt(lowg, RoleName.TOWER)) {
             "LOWG_TOWER missing from fixture"
         }
-        val lowgApproach = checkNotNull(loaded.controllerAt(lowg, RoleName.APPROACH)) {
+        checkNotNull(loaded.controllerAt(lowg, RoleName.APPROACH)) {
             "LOWG_APPROACH missing from fixture"
         }
         val ljmbTower = checkNotNull(loaded.controllerAt(ljmb, RoleName.TOWER)) {
@@ -330,11 +466,11 @@ class G3bCrossAerodromeReactiveTest {
         // `RunwayId("14").headingDegreesMagnetic() == 140`. Computing the
         // pure-crosswind / pure-tailwind directions arithmetically (rather
         // than hardcoding 230 / 320) lets a future re-designation of LJMB
-        // runway 14 (e.g. magnetic-variation update) propagate through this
-        // test. `% 360` prevents overflow when (heading + offset) >= 360;
-        // map `0` back to `360` per the `Wind` smart constructor's `0..360`
-        // domain (the constructor accepts both endpoints; we use 360 to
-        // preserve the aviation-display "360 = North" convention).
+        // runway 14 propagate through this test. `% 360` prevents overflow
+        // when (heading + offset) >= 360; map `0` back to `360` per the
+        // `Wind` smart constructor's `0..360` domain (the constructor
+        // accepts both endpoints; we use 360 to preserve the aviation-
+        // display "360 = North" convention).
         val runwayHeading = checkNotNull(ljmbRwy.headingDegreesMagnetic()) {
             "Runway $ljmbRwy did not parse to a magnetic heading — fixture/test mismatch"
         }
@@ -343,59 +479,10 @@ class G3bCrossAerodromeReactiveTest {
         val pureTailwindDirection: Int = (((runwayHeading + 180) % 360))
             .let { if (it == 0) 360 else it }
 
-        // ── Filing-cardinality pin (R4) — same as G2 ─────────────────────────
-        // The fixture's single FiledPlan(LOWG → LJMB) distributes via Pass 14
-        // AftnRouting.routeFiledPlan to LOWG_GROUND (Owned) + LJMB_TOWER
-        // (knownStrips). A regression that emitted 1 or 3 events would
-        // surface here without needing to walk the full ~60-minute run.
-        val filings = loaded.initialEvents.filterIsInstance<SimEvent.FlightPlanFiled>()
-        check(filings.size == 2) {
-            "G3b routing-cardinality regression: expected exactly 2 FlightPlanFiled " +
-                "events for the cross-aerodrome reactive fixture, got ${filings.size}: " +
-                "${filings.map { it.recipient }}"
-        }
-
-        // ── One AI aircraft at LOWG stand, mission = Transit to LJMB ────────
-        // VFR; no SID. Mission shape identical to G2 — the recognition axis
-        // doesn't affect mission construction; the fn-28.6 widened
-        // `derive*Event` eligibility + applier dispatch fork is what
-        // surfaces the Transit-arrival GA path on this mission shape when
-        // wind conditions at LJMB exceed limits AND the aircraft is on
-        // `phase=Final` (with runway assigned).
-        val aircraftId = AircraftId("OE-XYZ")
-        val now = SimTime.ZERO
-        val filedPlan = FiledPlan.Vfr(
-            departureAerodrome = lowg,
-            destinationAerodrome = ljmb,
-            destinationRunway = ljmbRwy,
-            intent = AircraftIntent.Transit,
-        )
-        val mission = createMission(
-            goal = HighLevelGoal.Transit(destination = ljmb),
-            startPhase = PilotPhase.AtStand,
-            time = now,
-            filedPlan = filedPlan,
-        )
-        val standPointId = Fixtures.LOWG_LJMB_VFR_REACTIVE.standPointId
-        val aircraft = AircraftState(
-            id = aircraftId,
-            callsign = Callsign("OEXYZ"),
-            position = loaded.world.geometry.points.getValue(standPointId),
-            positionPoint = standPointId,
-            phase = PilotPhase.AtStand,
-            type = AircraftType.C172,
-            pilotMission = mission,
-        )
-
-        // ── Initial per-aerodrome weather (matches fixture; pinned here) ────
-        // The fixture sets both, but we pin the LJMB-side initial wind
-        // explicitly here so the recovery-wind authorship can compare
-        // against this exact `WeatherObservation` after transition-2 fires.
         // Pure-headwind on LJMB runway 14 (140°M @ 10 kt) — zero crosswind
-        // component AND boundary-value tailwind (10 kt = C172's
-        // AFH-advisory; strict-`>` recognition is non-firing per fn-15.1
-        // boundary semantics). The LJMB OAT + QNH are carried via the
-        // fixture; we don't re-pin them here.
+        // component AND boundary-value tailwind (10 kt = C172's AFH-
+        // advisory; strict-`>` recognition is non-firing per fn-15.1
+        // boundary semantics). LJMB OAT + QNH inherit from the fixture.
         val ljmbInitialWeather = WeatherObservation(
             wind = WindReport.Available(
                 Wind.unsafe(directionDegrees = runwayHeading, speedKnots = 10),
@@ -405,26 +492,87 @@ class G3bCrossAerodromeReactiveTest {
             oat = fixture.weatherByAerodrome[ljmb]?.oat,
         )
 
-        // ── Build SimState through the smart constructor ────────────────────
-        val initialState = SimState.initial(
-            seed = 42L,
-            world = loaded.world,
-            worldIndex = loaded.worldIndex,
-            aircraft = listOf(aircraft),
-            controllers = listOf(lowgGround, lowgTower, lowgApproach, ljmbTower),
-            weatherByAerodrome = Fixtures.LOWG_LJMB_VFR_REACTIVE.weatherByAerodrome,
-        ).getOrElse { error("SimState.initial rejected the LOWG_LJMB_VFR_REACTIVE fixture: $it") }
-
-        // ── ATIS + drive ────────────────────────────────────────────────────
         // 120 sim minutes wall — block-time budget is ~50-75 min for the
         // G2-shape cross-aerodrome cruise + a single reactive-GA detour +
         // recovery circuit at LJMB (~10-15 min additional per G3a-react
         // sibling shape). Combined nominal: 60-90 min. Hitting the 120-min
         // wall means the run wedged.
         val until = SimTime.ZERO + SimDuration.ofMillis(120 * 60 * 1000L)
+
+        return ScenarioContext(
+            scenario = scenario,
+            loaded = loaded,
+            aircraftId = AircraftId("OE-XYZ"),
+            lowg = lowg,
+            ljmb = ljmb,
+            ljmbRwy = ljmbRwy,
+            ljmbTowerId = ljmbTower.id,
+            runwayHeading = runwayHeading,
+            pureCrosswindDirection = pureCrosswindDirection,
+            pureTailwindDirection = pureTailwindDirection,
+            ljmbInitialWeather = ljmbInitialWeather,
+            until = until,
+        )
+    }
+
+    /**
+     * Build the initial [SimState] for the scenario via the smart
+     * constructor. The aircraft starts at the LOWG stand with a
+     * Transit-to-LJMB mission; the four controllers (LOWG_GROUND,
+     * LOWG_TOWER, LOWG_APPROACH, LJMB_TOWER) are staffed per the
+     * fixture.
+     */
+    private fun buildScenarioInitialState(ctx: ScenarioContext): SimState {
+        val now = SimTime.ZERO
+        val filedPlan = FiledPlan.Vfr(
+            departureAerodrome = ctx.lowg,
+            destinationAerodrome = ctx.ljmb,
+            destinationRunway = ctx.ljmbRwy,
+            intent = AircraftIntent.Transit,
+        )
+        val mission = createMission(
+            goal = HighLevelGoal.Transit(destination = ctx.ljmb),
+            startPhase = PilotPhase.AtStand,
+            time = now,
+            filedPlan = filedPlan,
+        )
+        val standPointId = Fixtures.LOWG_LJMB_VFR_REACTIVE.standPointId
+        val aircraft = AircraftState(
+            id = ctx.aircraftId,
+            callsign = Callsign("OEXYZ"),
+            position = ctx.loaded.world.geometry.points.getValue(standPointId),
+            positionPoint = standPointId,
+            phase = PilotPhase.AtStand,
+            type = AircraftType.C172,
+            pilotMission = mission,
+        )
+        val controllers = listOfNotNull(
+            ctx.loaded.controllerAt(ctx.lowg, RoleName.GROUND),
+            ctx.loaded.controllerAt(ctx.lowg, RoleName.TOWER),
+            ctx.loaded.controllerAt(ctx.lowg, RoleName.APPROACH),
+            ctx.loaded.controllerAt(ctx.ljmb, RoleName.TOWER),
+        )
+        return SimState.initial(
+            seed = 42L,
+            world = ctx.loaded.world,
+            worldIndex = ctx.loaded.worldIndex,
+            aircraft = listOf(aircraft),
+            controllers = controllers,
+            weatherByAerodrome = Fixtures.LOWG_LJMB_VFR_REACTIVE.weatherByAerodrome,
+        ).getOrElse { error("SimState.initial rejected the LOWG_LJMB_VFR_REACTIVE fixture: $it") }
+    }
+
+    /**
+     * Build the initial event list — fixture's `initialEvents` (filings)
+     * plus ATIS (per-aerodrome letters A / B mirror G2's discipline) and
+     * the first PilotDecisionTick / PhysicsTick / four ControllerCycle
+     * ticks.
+     */
+    private fun buildScenarioInitialEvents(ctx: ScenarioContext): List<SimEvent> {
+        val now = SimTime.ZERO
         val lowgAtis = Atis(
             letter = 'A',
-            aerodrome = lowg,
+            aerodrome = ctx.lowg,
             configuration = RunwayConfiguration(
                 arrivals = listOf(RunwayId("16C")),
                 departures = listOf(RunwayId("16C")),
@@ -436,172 +584,177 @@ class G3bCrossAerodromeReactiveTest {
         )
         val ljmbAtis = Atis(
             letter = 'B',
-            aerodrome = ljmb,
+            aerodrome = ctx.ljmb,
             configuration = RunwayConfiguration(
-                arrivals = listOf(ljmbRwy),
-                departures = listOf(ljmbRwy),
+                arrivals = listOf(ctx.ljmbRwy),
+                departures = listOf(ctx.ljmbRwy),
             ),
-            wind = Wind.unsafe(runwayHeading, 10),
+            wind = Wind.unsafe(ctx.runwayHeading, 10),
             qnh = null,
             visibility = null,
             generatedAt = now,
         )
-        val initialEvents = loaded.initialEvents + listOf(
-            SimEvent.AtisIssued(time = now, aerodrome = lowg, atis = lowgAtis),
-            SimEvent.AtisIssued(time = now, aerodrome = ljmb, atis = ljmbAtis),
-            SimEvent.PilotDecisionTick(time = now, aircraftId = aircraftId),
+        val controllerCycleEvents = listOf(
+            RoleName.GROUND, RoleName.TOWER, RoleName.APPROACH,
+        ).mapNotNull { role ->
+            ctx.loaded.controllerAt(ctx.lowg, role)?.id?.let {
+                SimEvent.ControllerCycle(time = now, controllerId = it)
+            }
+        } + listOfNotNull(
+            ctx.loaded.controllerAt(ctx.ljmb, RoleName.TOWER)?.id?.let {
+                SimEvent.ControllerCycle(time = now, controllerId = it)
+            },
+        )
+        return ctx.loaded.initialEvents + listOf(
+            SimEvent.AtisIssued(time = now, aerodrome = ctx.lowg, atis = lowgAtis),
+            SimEvent.AtisIssued(time = now, aerodrome = ctx.ljmb, atis = ljmbAtis),
+            SimEvent.PilotDecisionTick(time = now, aircraftId = ctx.aircraftId),
             SimEvent.PhysicsTick(time = now),
-            SimEvent.ControllerCycle(time = now, controllerId = lowgGround.id),
-            SimEvent.ControllerCycle(time = now, controllerId = lowgTower.id),
-            SimEvent.ControllerCycle(time = now, controllerId = lowgApproach.id),
-            SimEvent.ControllerCycle(time = now, controllerId = ljmbTower.id),
-        )
+        ) + controllerCycleEvents
+    }
 
-        // ── Two-transition LJMB-weather authorship via `onAfterEvent` ───────
-        //
-        // Transition 1 — wind crosses past C172's limit at LJMB. Fires when
-        // the aircraft is on `phase=Final` AND LJMB_TWR's commitment for
-        // the aircraft sits in a post-clearance stage (`LandingClearanceIssued`
-        // or `AwaitLandedObserved`). Same shape as G3a-react-{crosswind,
-        // tailwind}'s hook predicate — the controller-side `GA-POST-CLEAR`
-        // interrupt is trigger-agnostic and home/away-agnostic; the
-        // commitment lifecycle does NOT vary across aerodromes (the
-        // inherited-gate-semantics audit). The wind direction + speed at
-        // transition-1 depends on the recognition axis (see [scenario]).
-        //
-        // Transition 2 — wind returns within limits. Two gate shapes by axis:
-        //  - CROSSWIND: `aircraftIsOffFinal` (G3a-react-crosswind sibling's
-        //    shape). The Transit-arrival GA path retains the
-        //    `phase=Final + route=None` Tick A intent (R19) and Tick B's
-        //    planRoute special case will rebuild the GA route on the next
-        //    tick; the aircraft then transitions out of Final as it
-        //    climbs into the GA pattern, and the off-final gate fires.
-        //  - TAILWIND: the post-GA recovery `Report(events=[Downwind(...)])`
-        //    transmission (G3a-react-tailwind sibling's codex round-2
-        //    strengthening). The pilot transmits the downwind position only
-        //    when physically re-entering downwind on the recovery circuit;
-        //    pure radio observable, no peek into pilot state. Strictly
-        //    tighter than off-final since the recovery-pattern circuit is
-        //    NOT on final the moment the GA fires.
-        //
-        // Each transition is one-shot guarded; defense-in-depth against
-        // multi-fire which would either retrigger recognition (transition
-        // 1) or thrash the wind (transition 2).
-        var windAuthored = false
-        var windClearedToLimit = false
-        val windAuthoredAt = arrayOf<SimTime?>(null)
-        val windClearedAt = arrayOf<SimTime?>(null)
-        val goingAroundTransmittedFlag = arrayOf(false)
-        val recoveryDownwindReportedFlag = arrayOf(false)
-        val goingAroundTransmittedAt = arrayOf<SimTime?>(null)
-        val onAfterEvent: (SimEvent, SimState) -> SimState = { ev, st ->
-            // Track `Report(GoingAround)` emission via the event stream so
-            // the recovery-wind transition's gate is consistent with the
-            // sim's actual radio surface (not an indirect mission-step
-            // proxy). The named witness for the test's bounded window is
-            // the `goAroundTask()` primitive's emitted transmission —
-            // `SpeakerRef.Pilot.aircraftId == aircraftId` AND the
-            // transmission's utterance carries `ReportEvent.GoingAround`.
-            if (ev is SimEvent.TransmissionStart) {
-                val tx = ev.transmission
-                val speakerAc = (tx.speaker as? SpeakerRef.Pilot)?.aircraftId
-                val pilotTransmission =
-                    (tx.utterance as? Utterance.FromPilot)?.transmission
-                val report = pilotTransmission as? xyz.easiersaid.twr.protocol.Report
-                if (speakerAc == aircraftId && report != null) {
-                    if (!goingAroundTransmittedFlag[0] &&
-                        report.events.any { it is ReportEvent.GoingAround }
-                    ) {
-                        goingAroundTransmittedFlag[0] = true
-                        goingAroundTransmittedAt[0] = st.now
-                    }
-                    // Tailwind-axis post-GA Downwind tracker (codex round-2
-                    // strengthening inherited from G3a-react-tailwind). The
-                    // pre-GA `Report(Downwind)` from the original arrival is
-                    // BEFORE the GA transmission; the `goingAroundTransmittedFlag`
-                    // gate prevents this tracker from latching on the wrong
-                    // Downwind. The load-bearing observable is the **second**
-                    // (recovery-circuit) Downwind transmission.
-                    if (goingAroundTransmittedFlag[0] &&
-                        !recoveryDownwindReportedFlag[0] &&
-                        report.events.any { it is ReportEvent.Downwind }
-                    ) {
-                        recoveryDownwindReportedFlag[0] = true
-                    }
-                }
-            }
+    // ── Two-transition world-state authorship hook ──────────────────────────
 
-            when {
-                // Transition 2 — wind returns within limit (one-shot).
-                // Axis-dependent gate (see [scenario] handling).
-                !windClearedToLimit &&
-                    transition2GateFires(scenario, st, aircraftId,
-                        goingAroundTransmittedFlag[0],
-                        recoveryDownwindReportedFlag[0],
-                    ) -> {
-                    windClearedToLimit = true
-                    windClearedAt[0] = st.now
-                    authorWeather(st, ljmb, ljmbInitialWeather)
-                }
-                // Transition 1 — wind crosses past limit at LJMB (one-shot).
-                // Gated on the LJMB-tower commitment + aircraft-final
-                // post-clearance window per the inherited G3a-react gate
-                // semantics (audit comment block at the top of this hook).
-                !windAuthored &&
-                    aircraftIsOnFinalWithLandingClearance(st, aircraftId, ljmbTower.id) -> {
-                    windAuthored = true
-                    windAuthoredAt[0] = st.now
-                    val shiftedWeather = weatherForAxis(
-                        scenario = scenario,
-                        crosswindDirection = pureCrosswindDirection,
-                        tailwindDirection = pureTailwindDirection,
-                        baseline = ljmbInitialWeather,
-                    )
-                    authorWeather(st, ljmb, shiftedWeather)
-                }
-                else -> st
+    /**
+     * Two-transition LJMB-weather authorship hook (axis-dispatched).
+     *
+     * **Transition 1** — wind crosses past C172's limit at LJMB. Fires
+     * when the aircraft is on `phase=Final` AND LJMB_TWR's commitment
+     * for the aircraft sits in a post-clearance stage
+     * (`LandingClearanceIssued` or `AwaitLandedObserved`). Same shape
+     * as G3a-react-{crosswind,tailwind}'s hook predicate — the
+     * controller-side `GA-POST-CLEAR` interrupt is trigger-agnostic
+     * and home/away-agnostic; the commitment lifecycle does NOT vary
+     * across aerodromes (the inherited-gate-semantics audit). The
+     * wind direction + speed at transition-1 depends on the
+     * recognition axis (see [ScenarioContext.scenario]).
+     *
+     * **Transition 2** — wind returns within limits. Two gate shapes
+     * by axis:
+     *  - CROSSWIND: `aircraftIsOffFinal` (G3a-react-crosswind sibling's
+     *    shape). The Transit-arrival GA path retains the
+     *    `phase=Final + route=None` Tick A intent (R19) and Tick B's
+     *    planRoute special case will rebuild the GA route on the
+     *    next tick; the aircraft then transitions out of Final as
+     *    it climbs into the GA pattern, and the off-final gate fires.
+     *  - TAILWIND: the post-GA recovery
+     *    `Report(events=[Downwind(...)])` transmission (G3a-react-
+     *    tailwind sibling's codex round-2 strengthening). Pure radio
+     *    observable, no peek into pilot state.
+     *
+     * Each transition is one-shot guarded; defense-in-depth against
+     * multi-fire which would either retrigger recognition (transition
+     * 1) or thrash the wind (transition 2).
+     */
+    private fun makeScenarioHook(
+        ctx: ScenarioContext,
+        st: ScenarioHookState,
+    ): (SimEvent, SimState) -> SimState = { ev, simSt ->
+        observeRadioForHook(ctx, st, ev, simSt)
+        when {
+            !st.windClearedToLimit && transition2GateFires(ctx.scenario, simSt, ctx.aircraftId,
+                st.goingAroundTransmitted, st.recoveryDownwindReported) -> {
+                st.windClearedToLimit = true
+                st.windClearedAt = simSt.now
+                authorWeather(simSt, ctx.ljmb, ctx.ljmbInitialWeather)
             }
+            !st.windAuthored &&
+                aircraftIsOnFinalWithLandingClearance(simSt, ctx.aircraftId, ctx.ljmbTowerId) -> {
+                st.windAuthored = true
+                st.windAuthoredAt = simSt.now
+                val shiftedWeather = weatherForAxis(
+                    scenario = ctx.scenario,
+                    crosswindDirection = ctx.pureCrosswindDirection,
+                    tailwindDirection = ctx.pureTailwindDirection,
+                    baseline = ctx.ljmbInitialWeather,
+                )
+                authorWeather(simSt, ctx.ljmb, shiftedWeather)
+            }
+            else -> simSt
         }
+    }
 
-        val (finalState, records, trace) = runUntilWithStateTrace(
-            initialState = initialState,
-            initialEvents = initialEvents,
-            untilTime = until,
-            onAfterEvent = onAfterEvent,
-        )
+    /**
+     * Side-effect-only radio observer for the world-state authorship
+     * hook. Updates the per-run [ScenarioHookState] flags when the
+     * pilot transmits `Report(GoingAround)` (the named witness) or
+     * the post-GA recovery `Report(Downwind)` (tailwind axis
+     * transition-2 gate per codex round-2 strengthening inherited
+     * from G3a-react-tailwind).
+     *
+     * The pre-GA `Report(Downwind)` from the original arrival is
+     * BEFORE the GA transmission; the `goingAroundTransmitted` gate
+     * prevents this tracker from latching on the wrong Downwind. The
+     * load-bearing observable is the **second** (recovery-circuit)
+     * Downwind transmission.
+     */
+    private fun observeRadioForHook(
+        ctx: ScenarioContext,
+        st: ScenarioHookState,
+        ev: SimEvent,
+        simSt: SimState,
+    ) {
+        if (ev !is SimEvent.TransmissionStart) return
+        val tx = ev.transmission
+        val speakerAc = (tx.speaker as? SpeakerRef.Pilot)?.aircraftId
+        val pilotTransmission = (tx.utterance as? Utterance.FromPilot)?.transmission
+        val report = pilotTransmission as? xyz.easiersaid.twr.protocol.Report
+        if (speakerAc != ctx.aircraftId || report == null) return
+        if (!st.goingAroundTransmitted && report.events.any { it is ReportEvent.GoingAround }) {
+            st.goingAroundTransmitted = true
+            st.goingAroundTransmittedAt = simSt.now
+        }
+        if (st.goingAroundTransmitted &&
+            !st.recoveryDownwindReported &&
+            report.events.any { it is ReportEvent.Downwind }
+        ) {
+            st.recoveryDownwindReported = true
+        }
+    }
 
-        // ── Diagnostic preamble ─────────────────────────────────────────────
-        val journey = finalState.formatJourney(aircraftId, records)
+    // ── Diagnostic preamble ────────────────────────────────────────────────
+
+    /**
+     * Per-aircraft trace summary block. Side-effect-only (println).
+     * Emits responsibility / mission-step / commitment-stage / weather
+     * / positionPoint / phase transitions for the run's aircraft, so
+     * a failing assertion's `\n$journey` tail gives at-a-glance context.
+     */
+    private fun printScenarioDiagnostics(
+        ctx: ScenarioContext,
+        st: ScenarioHookState,
+        trace: SimTrace,
+        journey: String,
+    ) {
         println(journey)
-
         println()
-        println("─── G3b cross-aerodrome reactive ($scenario) per-aircraft trace summary ───")
-        println("LJMB runway heading (14):   ${runwayHeading}°M")
-        println("Pure-crosswind direction:   ${pureCrosswindDirection}°M")
-        println("Pure-tailwind direction:    ${pureTailwindDirection}°M")
-        println("Wind authored at:           ${windAuthoredAt[0]?.millis ?: "<NEVER>"}ms")
-        println("Wind cleared at:            ${windClearedAt[0]?.millis ?: "<NEVER>"}ms")
-        println("Report(GoingAround) at:     ${goingAroundTransmittedAt[0]?.millis ?: "<NEVER>"}ms")
+        println("─── G3b cross-aerodrome reactive (${ctx.scenario}) per-aircraft trace summary ───")
+        println("LJMB runway heading (${ctx.ljmbRwy.value}): ${ctx.runwayHeading}°M")
+        println("Pure-crosswind direction:   ${ctx.pureCrosswindDirection}°M")
+        println("Pure-tailwind direction:    ${ctx.pureTailwindDirection}°M")
+        println("Wind authored at:           ${st.windAuthoredAt?.millis ?: "<NEVER>"}ms")
+        println("Wind cleared at:            ${st.windClearedAt?.millis ?: "<NEVER>"}ms")
+        println("Report(GoingAround) at:     ${st.goingAroundTransmittedAt?.millis ?: "<NEVER>"}ms")
         println("Responsibility transitions:")
-        for (t in trace.responsibilityTransitions(aircraftId)) {
+        for (t in trace.responsibilityTransitions(ctx.aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it::class.simpleName ?: "?" })
             val toStr = t.to.fold({ "absent" }, { it::class.simpleName ?: "?" })
             println("  [${t.after.time.millis}ms] ${t.controller}: $fromStr → $toStr")
         }
         println("Mission step transitions:")
-        for (t in trace.missionStepTransitions(aircraftId)) {
+        for (t in trace.missionStepTransitions(ctx.aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it.name })
             val toStr = t.to.fold({ "absent" }, { it.name })
             println("  [${t.after.time.millis}ms] $fromStr → $toStr")
         }
         println("Commitment stage transitions (LJMB tower):")
-        for (t in trace.commitmentStageTransitions(aircraftId, ljmbTower.id)) {
+        for (t in trace.commitmentStageTransitions(ctx.aircraftId, ctx.ljmbTowerId)) {
             val fromStr = t.from.fold({ "absent" }, { it.name })
             val toStr = t.to.fold({ "absent" }, { it.name })
             println("  [${t.after.time.millis}ms] $fromStr → $toStr")
         }
         println("Weather (LJMB) transitions:")
-        for (t in trace.weatherTransitions(ljmb)) {
+        for (t in trace.weatherTransitions(ctx.ljmb)) {
             val fmt: (arrow.core.Option<WeatherObservation>) -> String = { opt ->
                 opt.fold({ "absent" }) { obs ->
                     when (val w = obs.wind) {
@@ -614,61 +767,81 @@ class G3bCrossAerodromeReactiveTest {
             println("  [${t.after.time.millis}ms] ${fmt(t.from)} → ${fmt(t.to)}")
         }
         println("positionPoint transitions:")
-        for (t in trace.positionPointTransitions(aircraftId)) {
+        for (t in trace.positionPointTransitions(ctx.aircraftId)) {
             val fromStr = t.from.fold({ "absent" }, { it.value })
             val toStr = t.to.fold({ "absent" }, { it.value })
             println("  [${t.after.time.millis}ms] $fromStr → $toStr")
         }
         println("Phase transitions:")
-        for (t in trace.transitionsOf { st -> st.aircraft[aircraftId]?.phase }) {
+        for (t in trace.transitionsOf { st1 -> st1.aircraft[ctx.aircraftId]?.phase }) {
             println("  [${t.after.time.millis}ms] ${t.from} → ${t.to}")
         }
-        println("─── end G3b cross-aerodrome reactive ($scenario) per-aircraft trace summary ───")
+        println("─── end G3b cross-aerodrome reactive (${ctx.scenario}) per-aircraft trace summary ───")
         println()
+    }
 
-        // ── Named-witness pin (bounded window) ──────────────────────────────
-        //
-        // The test's bounded time window is anchored on the GA's named
-        // witness: the `Report(GoingAround)` transmission. Per the task
-        // spec's round-10 Minor 3, the within-window kinematic non-event
-        // "aircraft never lands at LJMB" stands; the recovery landing is
-        // out-of-window. The defensive pin ensures the named witness was
-        // emitted (otherwise the rest of the assertions are vacuously
-        // true / spuriously false).
-        check(windAuthored) {
+    // ── Pin layers ─────────────────────────────────────────────────────────
+
+    /**
+     * Defensive named-witness pre-condition pins. The test's bounded
+     * time window is anchored on the GA's named witness: the
+     * `Report(GoingAround)` transmission. Per the task spec's
+     * round-10 Minor 3, the within-window kinematic non-event
+     * "aircraft never lands at LJMB" stands; the recovery landing is
+     * out-of-window. These pins ensure the named witness was emitted
+     * (otherwise the rest of the assertions are vacuously true /
+     * spuriously false).
+     */
+    private fun assertNamedWitnessFired(
+        ctx: ScenarioContext,
+        st: ScenarioHookState,
+        journey: String,
+    ) {
+        check(st.windAuthored) {
             "World-authorship hook never fired transition 1 — " +
                 "`aircraftIsOnFinalWithLandingClearance` (LJMB_TWR) never returned true. " +
-                "Either the aircraft never reached phase=Final at LJMB, or ClearedToLand was " +
-                "never issued by LJMB_TWR. Pre-condition for the named-witness pin and the " +
-                "rest of the assertions.\n$journey"
+                "Either the aircraft never reached phase=Final at LJMB, or ClearedToLand " +
+                "was never issued by LJMB_TWR. Pre-condition for the named-witness pin and " +
+                "the rest of the assertions.\n$journey"
         }
-        check(goingAroundTransmittedFlag[0]) {
+        val axisName = ctx.scenario.name.lowercase().replaceFirstChar { it.uppercase() }
+        check(st.goingAroundTransmitted) {
             "Named witness never fired: `Report(GoingAround)` was never transmitted by " +
-                "$aircraftId. The widened `derive${scenario.name.lowercase().replaceFirstChar { it.uppercase() }}Event` " +
-                "did not fire on the Transit-arrival mission shape, OR `applyCrosswindGoAround` " +
-                "/ `applyTailwindGoAround`'s Transit-dispatch fork did not route through " +
-                "`applyTransitArrivalReactiveGoAround`, OR the cognitive layer did not emit " +
-                "the goAroundTask() primitive's REPORTED transmission. fn-28.6 R18 dispatch " +
-                "regression.\n$journey"
+                "${ctx.aircraftId}. The widened `derive${axisName}Event` did not fire on " +
+                "the Transit-arrival mission shape, OR `applyCrosswindGoAround` / " +
+                "`applyTailwindGoAround`'s Transit-dispatch fork did not route through " +
+                "`applyTransitArrivalReactiveGoAround`, OR the cognitive layer did not " +
+                "emit the goAroundTask() primitive's REPORTED transmission. fn-28.6 R18 " +
+                "dispatch regression.\n$journey"
         }
-        check(windClearedToLimit) {
-            "World-authorship hook never fired transition 2 — the recovery gate (axis-specific) " +
-                "never satisfied: scenario=$scenario, goingAroundTransmitted=${goingAroundTransmittedFlag[0]}, " +
-                "recoveryDownwindReported=${recoveryDownwindReportedFlag[0]}. The bounded-window " +
-                "pin needs both endpoints; without transition 2 the wind-clear timestamp " +
-                "(window upper bound) is undefined.\n$journey"
+        check(st.windClearedToLimit) {
+            "World-authorship hook never fired transition 2 — the recovery gate (axis- " +
+                "specific) never satisfied: scenario=${ctx.scenario}, " +
+                "goingAroundTransmitted=${st.goingAroundTransmitted}, " +
+                "recoveryDownwindReported=${st.recoveryDownwindReported}. The bounded- " +
+                "window pin needs both endpoints; without transition 2 the wind-clear " +
+                "timestamp (window upper bound) is undefined.\n$journey"
         }
+    }
 
-        // ── World-weather transition pin (exactly two LJMB transitions) ─────
-        //
-        // The aerodrome-keyed `world.aerodromes[LJMB].weather` slice
-        // transitions exactly twice during the run: (1) initial 140°@10 →
-        // axis-dependent shift (crosswind/tailwind authored), (2) shifted
-        // → 140°@10 (cleared). NO controller-belief slice expansion —
-        // weather is world-state per [weatherTransitions]'s KDoc.
-        val weatherTrans = trace.weatherTransitions(ljmb)
+    /**
+     * World-weather transition pin (exactly two LJMB transitions). The
+     * aerodrome-keyed `world.aerodromes[LJMB].weather` slice transitions
+     * exactly twice during the run: (1) initial 140°@10 → axis-dependent
+     * shift (crosswind/tailwind authored), (2) shifted → 140°@10 (cleared).
+     * NO controller-belief slice expansion — weather is world-state.
+     *
+     * Defense-in-depth: confirms the shift is the high-{crosswind,tailwind}
+     * state and the clear is the headwind state — pins the wind values
+     * against the authorship parameters in [makeScenarioHook].
+     */
+    private fun assertWeatherTransitions(
+        ctx: ScenarioContext,
+        weatherTrans: List<Transition<arrow.core.Option<WeatherObservation>>>,
+        journey: String,
+    ) {
         check(weatherTrans.size == 2) {
-            "Expected exactly two transitions in world.aerodromes[$ljmb].weather " +
+            "Expected exactly two transitions in world.aerodromes[${ctx.ljmb}].weather " +
                 "(authored + cleared), observed ${weatherTrans.size}. More than two would " +
                 "indicate the one-shot guards regressed; fewer than two indicates either " +
                 "the authorship hook didn't fire (covered by the defensive pins above) or " +
@@ -678,25 +851,21 @@ class G3bCrossAerodromeReactiveTest {
         val weatherShiftMs = weatherTrans[0].after.time.millis
         val weatherClearMs = weatherTrans[1].after.time.millis
         check(weatherShiftMs < weatherClearMs) {
-            "Weather-transition ordering pin: shift ($weatherShiftMs ms) must precede clear " +
-                "($weatherClearMs ms). Equal/reversed indicates the one-shot guards fired in " +
-                "the wrong order.\n$journey"
+            "Weather-transition ordering pin: shift ($weatherShiftMs ms) must precede " +
+                "clear ($weatherClearMs ms). Equal/reversed indicates the one-shot guards " +
+                "fired in the wrong order.\n$journey"
         }
-
-        // Defense-in-depth: confirm the shift is the high-{crosswind,tailwind}
-        // state and the clear is the headwind state — pins the wind values
-        // against the authorship parameters above.
         val shiftedWind = (weatherTrans[0].to.getOrElse {
             fail("Weather-shift transition has absent `to` — invariant violation.\n$journey")
         }.wind as? WindReport.Available)?.wind
             ?: fail("Weather-shift transition `to.wind` is not WindReport.Available.\n$journey")
-        val expectedShift = when (scenario) {
-            ReactiveScenario.CROSSWIND -> pureCrosswindDirection to 20
-            ReactiveScenario.TAILWIND -> pureTailwindDirection to 15
+        val expectedShift = when (ctx.scenario) {
+            ReactiveScenario.CROSSWIND -> ctx.pureCrosswindDirection to 20
+            ReactiveScenario.TAILWIND -> ctx.pureTailwindDirection to 15
         }
         check(shiftedWind.directionDegrees == expectedShift.first &&
             shiftedWind.speedKnots == expectedShift.second) {
-            "Weather-shift wind mismatch ($scenario): got " +
+            "Weather-shift wind mismatch (${ctx.scenario}): got " +
                 "${shiftedWind.directionDegrees}°@${shiftedWind.speedKnots} expected " +
                 "${expectedShift.first}°@${expectedShift.second}.\n$journey"
         }
@@ -704,55 +873,76 @@ class G3bCrossAerodromeReactiveTest {
             fail("Weather-clear transition has absent `to` — invariant violation.\n$journey")
         }.wind as? WindReport.Available)?.wind
             ?: fail("Weather-clear transition `to.wind` is not WindReport.Available.\n$journey")
-        check(clearedWind.directionDegrees == runwayHeading && clearedWind.speedKnots == 10) {
-            "Weather-clear wind mismatch: got ${clearedWind.directionDegrees}°@${clearedWind.speedKnots} " +
-                "expected ${runwayHeading}°@10.\n$journey"
+        check(clearedWind.directionDegrees == ctx.runwayHeading && clearedWind.speedKnots == 10) {
+            "Weather-clear wind mismatch: got " +
+                "${clearedWind.directionDegrees}°@${clearedWind.speedKnots} expected " +
+                "${ctx.runwayHeading}°@10.\n$journey"
         }
+    }
 
-        // ── Layer 1 — Causal partial-order pin (exactly one GoingAround) ────
-        //
-        // Same shape as G3a-react-{crosswind,tailwind}: exactly ONE
-        // `Report(GoingAround)` between the wind-shift and wind-recovery
-        // cycles. More than one would indicate hysteresis regression
-        // (recognition re-fired — would mean
-        // `isTransitArrivalReactiveGoAroundEligible`'s no-refire invariant
-        // — `activeCompound() != null` after suffix-replace — failed);
-        // zero would indicate the widened recognition didn't fire on the
-        // Transit-arrival shape (R18 dispatch regression).
+    /**
+     * Layer 1 — Causal partial-order pin. Exactly ONE
+     * `Report(GoingAround)` between the wind-shift and wind-recovery
+     * cycles. More than one would indicate hysteresis regression
+     * (recognition re-fired — would mean
+     * `isTransitArrivalReactiveGoAroundEligible`'s no-refire
+     * invariant — `activeCompound() != null` after suffix-replace —
+     * failed); zero would indicate the widened recognition didn't
+     * fire on the Transit-arrival shape (R18 dispatch regression).
+     *
+     * Returns the GoingAround transmission's `time.millis` for
+     * downstream pins.
+     */
+    private fun assertCausalGoingAroundOrdering(
+        ctx: ScenarioContext,
+        records: List<TransmissionRecord>,
+        weatherShiftMs: Long,
+        weatherClearMs: Long,
+        journey: String,
+    ): Long {
         val goingAroundRecords = records.filter { rec ->
             val speakerAc = (rec.speaker as? SpeakerRef.Pilot)?.aircraftId
-            if (speakerAc != aircraftId) return@filter false
+            if (speakerAc != ctx.aircraftId) return@filter false
             val pilotTransmission = (rec.utterance as? Utterance.FromPilot)?.transmission
             val report = pilotTransmission as? xyz.easiersaid.twr.protocol.Report
                 ?: return@filter false
             report.events.any { it is ReportEvent.GoingAround }
         }
         check(goingAroundRecords.size == 1) {
-            "Expected exactly one Report(GoingAround) for $aircraftId between the LJMB " +
-                "wind-shift (${weatherShiftMs}ms) and wind-recovery (${weatherClearMs}ms) " +
+            "Expected exactly one Report(GoingAround) for ${ctx.aircraftId} between the " +
+                "LJMB wind-shift (${weatherShiftMs}ms) and wind-recovery (${weatherClearMs}ms) " +
                 "cycles, observed ${goingAroundRecords.size}. More than one indicates the " +
                 "fn-28.6 no-refire invariant regressed (post-suffix-replace " +
                 "`activeCompound() != null` check failed); zero indicates the widened " +
                 "`derive*Event` did not fire on the Transit-arrival mission shape.\n$journey"
         }
-        val goingAroundRecord = goingAroundRecords.single()
-        val goingAroundMs = goingAroundRecord.time.millis
+        val goingAroundMs = goingAroundRecords.single().time.millis
         check(goingAroundMs in weatherShiftMs..weatherClearMs) {
-            "Report(GoingAround) (${goingAroundMs}ms) must occur between the LJMB wind-shift " +
-                "(${weatherShiftMs}ms) and wind-recovery (${weatherClearMs}ms) cycles.\n$journey"
+            "Report(GoingAround) (${goingAroundMs}ms) must occur between the LJMB " +
+                "wind-shift (${weatherShiftMs}ms) and wind-recovery (${weatherClearMs}ms) " +
+                "cycles.\n$journey"
         }
+        return goingAroundMs
+    }
 
-        // ── Layer 2 — Sticky-witness regression pin (LJMB_TWR commitment) ──
-        //
-        // Same shape as G3a-react-{crosswind,tailwind}: the pilot's
-        // `Report(GoingAround)` is received by **LJMB_TWR** (the
-        // home-aerodrome-agnostic `GA-POST-CLEAR` interrupt), and the
-        // tower's commitment regresses from `{LandingClearanceIssued,
-        // AwaitLandedObserved}` to `AwaitDownwind`. Distinct from
-        // G3a-react only in WHICH controller's commitment we read
-        // (LJMB_TWR, not LOWG_TWR); the gate semantics are inherited
-        // unchanged (the controller-side machinery is home/away-agnostic).
-        val stageTransitions = trace.commitmentStageTransitions(aircraftId, ljmbTower.id)
+    /**
+     * Layer 2 — Sticky-witness regression pin (LJMB_TWR commitment).
+     * Same shape as G3a-react-{crosswind,tailwind}: the pilot's
+     * `Report(GoingAround)` is received by LJMB_TWR (the home-
+     * aerodrome-agnostic `GA-POST-CLEAR` interrupt), and the tower's
+     * commitment regresses from `{LandingClearanceIssued,
+     * AwaitLandedObserved}` to `AwaitDownwind`. Distinct from
+     * G3a-react only in WHICH controller's commitment we read
+     * (LJMB_TWR, not LOWG_TWR); the gate semantics are inherited
+     * unchanged (the controller-side machinery is home/away-agnostic).
+     */
+    private fun assertCommitmentRegressionAndStickyWitnesses(
+        ctx: ScenarioContext,
+        trace: SimTrace,
+        goingAroundMs: Long,
+        journey: String,
+    ) {
+        val stageTransitions = trace.commitmentStageTransitions(ctx.aircraftId, ctx.ljmbTowerId)
         val postClearStages = setOf<TowerArrivalStage>(
             TowerArrivalStage.LandingClearanceIssued,
             TowerArrivalStage.AwaitLandedObserved,
@@ -763,29 +953,27 @@ class G3bCrossAerodromeReactiveTest {
             from in postClearStages && to == TowerArrivalStage.AwaitDownwind
         }
         check(regressions.size == 1) {
-            "Expected exactly one LJMB_TWR stage regression {LandingClearanceIssued | " +
-                "AwaitLandedObserved} → AwaitDownwind on the Transit-arrival reactive GA, " +
-                "observed ${regressions.size}. Same inherited gate semantics as the G3a-react " +
-                "siblings — controller-side `GA-POST-CLEAR` is home/away-agnostic; a deviation " +
-                "would indicate that the cross-aerodrome `Report(GoingAround)` reception path " +
-                "diverges from the home-aerodrome path (it must NOT).\n$journey"
+            "Expected exactly one LJMB_TWR stage regression " +
+                "{LandingClearanceIssued | AwaitLandedObserved} → AwaitDownwind on the " +
+                "Transit-arrival reactive GA, observed ${regressions.size}. Same inherited " +
+                "gate semantics as the G3a-react siblings — controller-side " +
+                "`GA-POST-CLEAR` is home/away-agnostic.\n$journey"
         }
         val regression = regressions.single()
         check(regression.after.time.millis > goingAroundMs) {
             "Radio-delivery prerequisite: LJMB_TWR stage regression at " +
-                "${regression.after.time.millis}ms must fire strictly AFTER Report(GoingAround) " +
-                "at ${goingAroundMs}ms. `GA-POST-CLEAR` gates on `GoAroundEvent` delivered " +
-                "from the radio; a regression AT-OR-BEFORE the GoingAround transmission would " +
-                "indicate the regression fired off some other channel.\n$journey"
+                "${regression.after.time.millis}ms must fire strictly AFTER " +
+                "Report(GoingAround) at ${goingAroundMs}ms. `GA-POST-CLEAR` gates on " +
+                "`GoAroundEvent` delivered from the radio; a regression AT-OR-BEFORE the " +
+                "GoingAround transmission would indicate the regression fired off some " +
+                "other channel.\n$journey"
         }
-
-        // Post-regression sticky witnesses are reset (fn-8.3 R7-style).
-        val commitmentAfter = regression.after.state.beliefs[ljmbTower.id]
-            ?.commitments?.get(aircraftId)
+        val commitmentAfter = regression.after.state.beliefs[ctx.ljmbTowerId]
+            ?.commitments?.get(ctx.aircraftId)
             ?: fail(
-                "LJMB_TWR commitment for $aircraftId missing AT regression cursor — the " +
-                    "regression should preserve the commitment (stage drops, commitment lives), " +
-                    "not delete it.\n$journey"
+                "LJMB_TWR commitment for ${ctx.aircraftId} missing AT regression cursor — " +
+                    "the regression should preserve the commitment (stage drops, " +
+                    "commitment lives), not delete it.\n$journey"
             )
         check(!commitmentAfter.touchedDownDuringCommitment) {
             "touchedDownDuringCommitment must be reset post-regression; got " +
@@ -800,24 +988,34 @@ class G3bCrossAerodromeReactiveTest {
                 "${commitmentAfter.observedReportsDuringCommitment.size} entries: " +
                 "${commitmentAfter.observedReportsDuringCommitment}.\n$journey"
         }
+    }
 
-        // ── Layer 3 — Kinematic non-event pin (BOUNDED WINDOW) ──────────────
-        //
-        // **Bounded-window pin** (round-10 Minor 3): the within-window
-        // kinematic non-event "aircraft never lands at LJMB" is pinned
-        // BETWEEN the wind-shift and wind-recovery cycles. Downstream
-        // recovery landing is OUT-OF-WINDOW — in production R22 has the
-        // `groundArrivalTask()` after the recovery circuit so the
-        // aircraft eventually lands; the test's window stops at the named
-        // witness (per the task spec). NOT a contradiction with R22's
-        // full continuation. A LandingRoll/Vacating phase entry inside
-        // the window would indicate either (i) the widened recognition
-        // fired too late, (ii) the suffix-replace via R13 primitive
-        // failed to invalidate the original arrival's threshold-bound
-        // route, or (iii) the LJMB_TWR's interrupt didn't fire and the
-        // aircraft landed on the runway 14 in the exceedance condition.
+    /**
+     * Layer 3 — Kinematic non-event pin (BOUNDED WINDOW). Per round-10
+     * Minor 3: the within-window kinematic non-event "aircraft never
+     * lands at LJMB" is pinned BETWEEN the wind-shift and wind-
+     * recovery cycles. Downstream recovery landing is OUT-OF-WINDOW —
+     * in production R22 has the `groundArrivalTask()` after the
+     * recovery circuit so the aircraft eventually lands; the test's
+     * window stops at the named witness (per the task spec). NOT a
+     * contradiction with R22's full continuation.
+     *
+     * A LandingRoll/Vacating phase entry inside the window would
+     * indicate either (i) the widened recognition fired too late, (ii)
+     * the suffix-replace via R13 primitive failed to invalidate the
+     * original arrival's threshold-bound route, or (iii) the LJMB_TWR's
+     * interrupt didn't fire and the aircraft landed on runway 14 in
+     * the exceedance condition.
+     */
+    private fun assertKinematicNonEventInWindow(
+        ctx: ScenarioContext,
+        trace: SimTrace,
+        weatherShiftMs: Long,
+        weatherClearMs: Long,
+        journey: String,
+    ) {
         val phaseTransitions = trace.transitionsOf { st ->
-            st.aircraft[aircraftId]?.phase
+            st.aircraft[ctx.aircraftId]?.phase
         }
         val touchdownInWindow = phaseTransitions.any { t ->
             val landed = t.to == PilotPhase.LandingRoll || t.to == PilotPhase.Vacating
@@ -826,134 +1024,115 @@ class G3bCrossAerodromeReactiveTest {
         }
         check(!touchdownInWindow) {
             "Aircraft entered LandingRoll or Vacating between the LJMB wind-shift " +
-                "(${weatherShiftMs}ms) and wind-recovery (${weatherClearMs}ms) cycles — the " +
-                "Transit-arrival reactive GA must fire in time to prevent landing at LJMB " +
-                "in the exceedance window.\nPhase transitions: " +
+                "(${weatherShiftMs}ms) and wind-recovery (${weatherClearMs}ms) cycles — " +
+                "the Transit-arrival reactive GA must fire in time to prevent landing at " +
+                "LJMB in the exceedance window.\nPhase transitions: " +
                 phaseTransitions.joinToString { "${it.to}@${it.after.time.millis}ms" } +
                 "\n$journey"
         }
+    }
 
-        // ── Mission-tree shape pin (R13 + R22 — TaskNode type assertion) ────
-        //
-        // After the suffix-replace, the active leaf is inside the
-        // `goAroundTask()` compound; the immediate ancestor in the
-        // mission tree's flat task-list view at the active position is
-        // the same `GoAround` TaskName the existing GA flows use. We
-        // pin the **post-GA mission step set** appearing in the
-        // mission-step transitions after the wind-shift cycle —
-        // specifically that a `GOING_AROUND` step is visited (the
-        // `goAroundTask()`'s first primitive) before the recovery
-        // circuit's `FLY_DEPARTURE` (the `circuitTask()`'s first
-        // primitive). NO destination-GA placeholder enum value or
-        // placeholder string appears in this assertion (round-5
-        // Critical 2) — the assertion references the resolved-by-.6
-        // TaskNode types directly.
-        val missionStepTrans = trace.missionStepTransitions(aircraftId)
+    /**
+     * Mission-tree shape pin (R13 + R22). After the suffix-replace,
+     * the active leaf is inside the `goAroundTask()` compound; the
+     * immediate ancestor in the mission tree's flat task-list view
+     * at the active position is the same `GoAround` TaskName the
+     * existing GA flows use.
+     *
+     * We pin the **post-GA mission step set** appearing in the
+     * mission-step transitions after the wind-shift cycle:
+     *  - `GOING_AROUND` (the `goAroundTask()`'s first primitive)
+     *    MUST appear, AND
+     *  - the recovery circuit's `FLY_DEPARTURE` (the
+     *    `circuitTask()`'s first primitive) MUST appear AFTER
+     *    `GOING_AROUND` in the post-shift sequence.
+     *
+     * Both pins are MANDATORY (codex round-2 strengthening — the
+     * earlier conditional `if (flyDepartureIdx >= 0)` form let a
+     * suffix that omitted `circuitTask()` slip past). The contract
+     * is the R22 suffix `[goAroundTask(), circuitTask(),
+     * groundArrivalTask()]`; both axes (crosswind and tailwind) must
+     * exercise the recovery-circuit primitive within the run's
+     * bounded window.
+     *
+     * NO destination-GA placeholder enum value or placeholder string
+     * appears in this assertion (round-5 Critical 2) — the assertion
+     * references the resolved-by-.6 TaskNode types directly.
+     */
+    private fun assertR22SuffixShape(
+        ctx: ScenarioContext,
+        trace: SimTrace,
+        weatherShiftMs: Long,
+        journey: String,
+    ) {
+        val missionStepTrans = trace.missionStepTransitions(ctx.aircraftId)
         val postShiftSteps = missionStepTrans
             .filter { it.after.time.millis > weatherShiftMs }
             .mapNotNull { t -> t.to.fold({ null }, { it }) }
         val postShiftStepNames = postShiftSteps.map { it.name }
-        check(postShiftStepNames.contains("GOING_AROUND")) {
-            "R22 suffix-replace shape pin: after the LJMB wind-shift, the mission step " +
-                "sequence must visit `GOING_AROUND` (the `goAroundTask()`'s first primitive). " +
-                "Observed post-shift step sequence: $postShiftStepNames. A missing " +
-                "GOING_AROUND would indicate the apply path did NOT route through " +
-                "`applyTransitArrivalReactiveGoAround` (R18 dispatch fork regression) or the " +
-                "`replaceFromActivePrimitive(listOf(goAroundTask(), ...))` rewrite did not " +
-                "land the goAroundTask() compound at the active position.\n$journey"
-        }
-        // The recovery circuit's `FLY_DEPARTURE` (first primitive of
-        // `circuitTask()`) must appear AFTER the `GOING_AROUND` step in
-        // the post-shift sequence — this pins the R22 contract's
-        // suffix order `[goAroundTask(), circuitTask(), groundArrivalTask()]`.
         val goingAroundIdx = postShiftStepNames.indexOf("GOING_AROUND")
+        check(goingAroundIdx >= 0) {
+            "R22 suffix-replace shape pin: after the LJMB wind-shift, the mission step " +
+                "sequence must visit `GOING_AROUND` (the `goAroundTask()`'s first " +
+                "primitive). Observed post-shift step sequence: $postShiftStepNames. A " +
+                "missing GOING_AROUND would indicate the apply path did NOT route through " +
+                "`applyTransitArrivalReactiveGoAround` (R18 dispatch fork regression) or " +
+                "the `replaceFromActivePrimitive(listOf(goAroundTask(), ...))` rewrite " +
+                "did not land the goAroundTask() compound at the active position.\n$journey"
+        }
         val flyDepartureIdx = postShiftStepNames.indexOf("FLY_DEPARTURE")
-        if (flyDepartureIdx >= 0) {
-            check(goingAroundIdx < flyDepartureIdx) {
-                "R22 suffix-order pin: `GOING_AROUND` (index $goingAroundIdx) must precede " +
-                    "the recovery `FLY_DEPARTURE` (index $flyDepartureIdx, first primitive of " +
-                    "`circuitTask()`) in the post-shift step sequence. A reversed order would " +
-                    "indicate the R22 contract `[goAroundTask(), circuitTask(), " +
-                    "groundArrivalTask()]` was authored with the GA after the recovery " +
-                    "circuit.\n$journey"
-            }
+        check(flyDepartureIdx >= 0) {
+            "R22 suffix-order pin: after the LJMB wind-shift, the mission step sequence " +
+                "must reach the recovery `FLY_DEPARTURE` (the `circuitTask()`'s first " +
+                "primitive) within the run's bounded window. Observed post-shift step " +
+                "sequence: $postShiftStepNames. A missing FLY_DEPARTURE indicates the " +
+                "R22 suffix `[goAroundTask(), circuitTask(), groundArrivalTask()]` was " +
+                "authored without `circuitTask()` — the recovery circuit primitive is " +
+                "load-bearing for the R22 contract.\n$journey"
         }
-
-        // ── Recovery + bounded-window stop-condition compliance pin ─────────
-        //
-        // The named witness for the test's bounded window is the
-        // `Report(GoingAround)` transmission (per task spec). The window
-        // close is the wind-recovery (transition-2) cursor. Downstream
-        // recovery landing is **out-of-window** by design — the test
-        // does NOT pin recovery-touchdown / vacate-coordination /
-        // run-up dwell / final-stand parking. Those pins live in G2
-        // (same cross-aerodrome shape, no GA) and in the G3a-react
-        // siblings (same recovery-circuit shape, home aerodrome). G3b's
-        // unique surface is "the Transit-arrival GA recognised + applied
-        // correctly in a cross-aerodrome flight"; recovery semantics
-        // are inherited.
-        //
-        // The defensive lower-bound on the named witness's window
-        // ordering: the GoingAround transmission must fall strictly
-        // BETWEEN wind-shift and wind-recovery cycles (already pinned
-        // above on Layer 1's `goingAroundMs in weatherShiftMs..
-        // weatherClearMs`). The defensive upper-bound: the run wall
-        // (120 sim minutes) must not be hit — i.e. the wind-recovery
-        // cycle fires strictly before the wall.
-        check(weatherClearMs < until.millis) {
-            "Bounded-window upper-bound pin: the wind-recovery cycle at ${weatherClearMs}ms " +
-                "must fire strictly before the run's 120-min wall (${until.millis}ms). " +
-                "Hitting the wall before transition-2 fires means the recovery gate (axis " +
-                "$scenario) never satisfied — the GA may have fired but the recovery circuit " +
-                "did not re-enter downwind (tailwind axis) / leave final (crosswind axis).\n" +
-                "$journey"
+        check(goingAroundIdx < flyDepartureIdx) {
+            "R22 suffix-order pin: `GOING_AROUND` (index $goingAroundIdx) must precede " +
+                "the recovery `FLY_DEPARTURE` (index $flyDepartureIdx, first primitive " +
+                "of `circuitTask()`) in the post-shift step sequence. A reversed order " +
+                "indicates the R22 contract was authored with the GA after the recovery " +
+                "circuit.\n$journey"
         }
+    }
 
-        // ── G2-shape filing-distribution pin (R4 inherited from G2) ─────────
-        //
-        // The fixture's flightPlans payload is one VFR plan with
-        // destinationAerodrome=LJMB, intent=Transit. AftnRouting
-        // .routeFiledPlan produces 2 events (LOWG_GROUND first, LJMB_TOWER
-        // second). Filing-cardinality already pinned at the top; this row
-        // pins the recipient identities and ordering survive routing.
+    /**
+     * G2-shape filing-distribution pin (R4 inherited from G2). The
+     * fixture's flightPlans payload is one VFR plan with
+     * destinationAerodrome=LJMB, intent=Transit.
+     * AftnRouting.routeFiledPlan produces 2 events (LOWG_GROUND first,
+     * LJMB_TOWER second). Filing-cardinality already pinned at the top;
+     * this row pins the recipient identities and ordering survive
+     * routing.
+     */
+    private fun assertFilingDistribution(
+        ctx: ScenarioContext,
+        filings: List<SimEvent.FlightPlanFiled>,
+        journey: String,
+    ) {
         val recipients = filings.map { it.recipient }
         check(recipients == listOf(
-            AftnAddress(lowg, RoleName.GROUND),
-            AftnAddress(ljmb, RoleName.TOWER),
+            AftnAddress(ctx.lowg, RoleName.GROUND),
+            AftnAddress(ctx.ljmb, RoleName.TOWER),
         )) {
             "G3b filing-distribution: expected [LOWG/GROUND, LJMB/TOWER] in order; got " +
                 "$recipients.\n$journey"
         }
-
-        // ── Sanity: mission did not crash before the GA fired ───────────────
-        //
-        // We do NOT pin `finalMission.isComplete` because the test's bounded
-        // window is the named-witness stop condition (transition-2
-        // wind-recovery cycle); the recovery landing is out-of-window per
-        // the task spec. We DO check that the mission still has a
-        // non-null pilotMission and the aircraft has not entered a
-        // crashed state — defensive only, to surface engine-side
-        // regressions that would cascade into the assertions above.
-        val finalAircraft = finalState.aircraft.getValue(aircraftId)
-        checkNotNull(finalAircraft.pilotMission) {
-            "Aircraft $aircraftId lost its mission during the run — engine regression.\n$journey"
-        }
-
-        // Trace exists in final state — guards against the no-trace path
-        // (which would also fail above on `trace.firstWhere` calls).
-        trace.firstWhere { st -> st.aircraft[aircraftId]?.pilotMission != null }
-            .getOrElse {
-                fail("Mission never constructed in trace.\n$journey")
-            }
     }
+
+    // ── Hook predicates (small, inherited unchanged from G3a-react siblings) ──
 
     /**
      * Axis-dispatched recovery-gate predicate for transition-2 of the
-     * world-weather authorship hook. Same shape as the G3a-react sibling
-     * helpers; the crosswind scenario uses `aircraftIsOffFinal` (the
-     * G3a-react-crosswind sibling's gate), the tailwind scenario uses
-     * the post-GA recovery `Report(Downwind)` transmission flag (the
-     * G3a-react-tailwind sibling's codex round-2 strengthening).
+     * world-weather authorship hook. Same shape as the G3a-react
+     * sibling helpers; the crosswind scenario uses
+     * `aircraftIsOffFinal` (the G3a-react-crosswind sibling's gate),
+     * the tailwind scenario uses the post-GA recovery
+     * `Report(Downwind)` transmission flag (the G3a-react-tailwind
+     * sibling's codex round-2 strengthening).
      */
     private fun transition2GateFires(
         scenario: ReactiveScenario,
@@ -970,13 +1149,14 @@ class G3bCrossAerodromeReactiveTest {
 
     /**
      * Compute the LJMB-side `WeatherObservation` for the axis-specific
-     * exceedance shift (transition-1). Crosswind scenario: pure-crosswind
-     * direction at 20 kt (5 kt above C172's 15 kt POH crosswind limit).
-     * Tailwind scenario: pure-tailwind direction at 15 kt (5 kt above
-     * C172's 10 kt AFH-advisory tailwind value).
+     * exceedance shift (transition-1). Crosswind scenario: pure-
+     * crosswind direction at 20 kt (5 kt above C172's 15 kt POH
+     * crosswind limit). Tailwind scenario: pure-tailwind direction at
+     * 15 kt (5 kt above C172's 10 kt AFH-advisory tailwind value).
      *
-     * QNH + OAT are inherited from the [baseline] (the fixture's LJMB
-     * initial weather) — only the wind slot varies across transition-1.
+     * QNH + OAT are inherited from the [baseline] (the fixture's
+     * LJMB initial weather) — only the wind slot varies across
+     * transition-1.
      */
     private fun weatherForAxis(
         scenario: ReactiveScenario,
@@ -997,18 +1177,19 @@ class G3bCrossAerodromeReactiveTest {
     }
 
     /**
-     * Predicate for transition-1 authorship at LJMB: the aircraft is on
-     * `phase=Final` AND **LJMB_TWR**'s commitment for the aircraft sits
-     * in a **post-clearance** stage (`LandingClearanceIssued` or
-     * `AwaitLandedObserved`). Same shape as the G3a-react sibling hooks;
-     * the only difference is the controller-id parameter (LJMB_TWR here,
-     * LOWG_TWR in the same-aerodrome siblings) — the gate semantics are
-     * home/away-agnostic (inherited-gate-semantics audit).
+     * Predicate for transition-1 authorship at LJMB: the aircraft is
+     * on `phase=Final` AND **LJMB_TWR**'s commitment for the aircraft
+     * sits in a **post-clearance** stage (`LandingClearanceIssued` or
+     * `AwaitLandedObserved`). Same shape as the G3a-react sibling
+     * hooks; the only difference is the controller-id parameter
+     * (LJMB_TWR here, LOWG_TWR in the same-aerodrome siblings) — the
+     * gate semantics are home/away-agnostic (inherited-gate-semantics
+     * audit).
      */
     private fun aircraftIsOnFinalWithLandingClearance(
         st: SimState,
         aircraft: AircraftId,
-        towerId: xyz.easiersaid.twr.protocol.ControllerId,
+        towerId: ControllerId,
     ): Boolean {
         val ac = st.aircraft[aircraft] ?: return false
         if (ac.phase != PilotPhase.Final) return false
@@ -1022,8 +1203,8 @@ class G3bCrossAerodromeReactiveTest {
      * Predicate for transition-2 authorship (crosswind axis): the
      * aircraft is NOT on final (has climbed out / re-entered the
      * pattern). Used together with the `goingAroundTransmitted` gate
-     * to fire the wind-recovery transition only after the GA path has
-     * actually started executing. Inherited unchanged from
+     * to fire the wind-recovery transition only after the GA path
+     * has actually started executing. Inherited unchanged from
      * G3a-react-crosswind.
      */
     private fun aircraftIsOffFinal(st: SimState, aircraft: AircraftId): Boolean {
@@ -1033,8 +1214,8 @@ class G3bCrossAerodromeReactiveTest {
 
     /**
      * Pure world-state mutation: replace
-     * `state.world.aerodromes[aerodromeId].weather` with [weather]. Per
-     * fn-14.2 R12 the world-only test trigger discipline writes
+     * `state.world.aerodromes[aerodromeId].weather` with [weather].
+     * Per fn-14.2 R12 the world-only test trigger discipline writes
      * directly to the world-state entity (NOT to controller beliefs
      * and NOT to `PilotInput`); the sim's per-cycle `buildPilotInput`
      * projection picks up the new wind on the next pilot decision
