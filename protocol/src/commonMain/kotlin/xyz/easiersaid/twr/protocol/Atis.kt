@@ -35,6 +35,30 @@ data class Atis(
     val qnh: PressureSetting?,
     val visibility: Int?,
     val generatedAt: SimTime,
+    /**
+     * fn-28.1 (R2-DA, R5): outside air temperature carried by the ATIS
+     * broadcast per ICAO Annex 11 §4.3.6.h (ATIS content list — surface
+     * wind, visibility, air temperature, dew point, QNH, etc.). Default
+     * `null` preserves every existing `Atis(...)` constructor call site
+     * — the new field appears AFTER [generatedAt] so positional
+     * arguments are unaffected; named-arg call sites (the dominant
+     * pattern across `:sim`/`:controller`/`:pilot` tests) simply opt in
+     * by name where needed.
+     *
+     * **Audit note** (fn-28.1 ATIS audit slot): pre-fn-28.1, `Atis`
+     * surfaces `wind`, `qnh`, and `visibility` but not OAT or dew
+     * point. fn-28.1 lands OAT (the DA-relevant slot — consumed
+     * downstream by `:sim`'s `PilotWiring.buildPilotInput` projection
+     * into `DensityAltitudeInput`). Dew point and present-weather /
+     * cloud / runway-condition slots remain unimplemented; they are
+     * not load-bearing for any current rule and are deferred to a
+     * dedicated weather-content epic if a future consumer lands.
+     *
+     * **Doctrine**: ICAO Annex 11 §4.3.6.h
+     * ([xyz.easiersaid.twr.protocol.RegulationDatabase.ICAO_ANNEX_11_4_3_6])
+     * + ICAO Doc 4444 §4.5.5.h (equivalent OAT slot).
+     */
+    val oat: Temperature? = null,
 ) {
     init {
         require(letter in 'A'..'Z') { "ATIS letter must be A..Z, got '$letter'" }

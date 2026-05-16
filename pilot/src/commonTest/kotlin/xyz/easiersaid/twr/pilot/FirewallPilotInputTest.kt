@@ -56,6 +56,13 @@ class FirewallPilotInputTest {
             // consumes only the WindReport projection from each
             // WeatherObservation; QNH/visibility stay controller-side.
             weatherByAerodrome = emptyMap(),
+            // fn-28.1 (G3a-react-density-altitude foundation A): per-aerodrome
+            // typed DA inputs (OAT + QNH + field elevation) — a real-world
+            // cockpit input (ATIS-read OAT/QNH + published chart elevation).
+            // `DensityAltitudeInput` is structurally constrained to
+            // typed-units + scalars; no entity reference reachable. Adding
+            // non-cockpit data via this map is a firewall regression.
+            densityAltitudeInputsByAerodrome = emptyMap(),
         )
         @Suppress("UNUSED_VARIABLE")
         val _check = canonical.aircraft
@@ -86,6 +93,12 @@ class FirewallPilotInputTest {
             "now",
             "atisByAerodrome",
             "weatherByAerodrome",
+            // fn-28.1: per-aerodrome typed DensityAltitudeInput projection
+            // (ATIS-read OAT/QNH + published chart elevation). Firewall-clean
+            // by construction — `DensityAltitudeInput` carries only
+            // typed-units (Temperature, PressureSetting, Feet) and no
+            // entity references.
+            "densityAltitudeInputsByAerodrome",
         )
         val actualFields = PilotInput::class.memberProperties.map { it.name }.toSet()
         assertEquals(

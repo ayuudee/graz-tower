@@ -198,8 +198,16 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     //    visual alignment aids reader clarity.
     val goAround: GoAroundResult? = if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
         val weather = windForMission(cognitive.updatedMission, input.weatherByAerodrome)
+        // fn-28.1: resolve the typed DA input for this mission's aerodrome
+        // using the same goal-keyed lookup shape as `windForMission`. The
+        // value is threaded through `derivePilotEvent` as the new
+        // signature parameter; fn-28.1 lands the threading only — the
+        // DA-decline branch in `derivePilotEvent` is fn-28.2.
+        val densityAltitudeInput = densityAltitudeInputForMission(
+            cognitive.updatedMission, input.densityAltitudeInputsByAerodrome,
+        )
         when (val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(
-            aircraft, cognitive.updatedMission, weather,
+            aircraft, cognitive.updatedMission, weather, densityAltitudeInput,
         )) {
             is xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance ->
                 applySelfInitiatedGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
@@ -323,6 +331,50 @@ internal fun windForMission(
         0 -> null
         1 -> weatherByAerodrome.values.single()
         else -> null // fail-closed on multi-aerodrome ambiguity (G3b-react deferment).
+    }
+}
+
+/**
+ * fn-28.1 (G3a-react-density-altitude foundation A): resolve the
+ * [DensityAltitudeInput] relevant to this mission's aerodrome — sibling
+ * of [windForMission], same goal-keyed lookup + singleton-fallback shape.
+ *
+ * **Goal treatment** (parity with [windForMission]):
+ *  - `Transit.destination` → key lookup
+ *  - `Departure.destination` → key lookup (DA-decline operationally
+ *    fires pre-taxi at the departure aerodrome, the relevant axis for
+ *    fn-28.2's apron-stay decline).
+ *  - `Arrival` → null fallback (DA-decline is a departure-side decision
+ *    in v1; an arrival-DA scenario is filed as a follow-up if/when a
+ *    consumer lands).
+ *  - `CircuitTraining` → null fallback (single-aerodrome circuits
+ *    resolve via the singleton-fallback below).
+ *
+ * **Singleton fallback — fail-closed on multi-aerodrome ambiguity**:
+ * matches [windForMission]'s shape. When the goal does not carry a
+ * destination key and there are 0 or ≥2 map entries, fail-closed
+ * (`null` → fn-28.2's DA recognition treats as no-event for this tick).
+ * Multi-aerodrome DA recognition is filed as a downstream deferment
+ * (`D-PASS-g3b-react-density-altitude` — landing pattern mirrors
+ * fn-14.1's `D-PASS-g3b-react-cross-aerodrome-crosswind`).
+ *
+ * `internal` so fn-28.2's pilot-side unit tests can pin the goal-by-
+ * goal mapping independently of `pilotDecide`.
+ */
+internal fun densityAltitudeInputForMission(
+    mission: PilotMission,
+    densityAltitudeInputsByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, DensityAltitudeInput>,
+): DensityAltitudeInput? {
+    val targetAerodrome: xyz.easiersaid.twr.protocol.AerodromeId? = when (val g = mission.goal) {
+        is HighLevelGoal.Transit -> g.destination
+        is HighLevelGoal.Departure -> g.destination
+        is HighLevelGoal.Arrival, is HighLevelGoal.CircuitTraining -> null
+    }
+    if (targetAerodrome != null) return densityAltitudeInputsByAerodrome[targetAerodrome]
+    return when (densityAltitudeInputsByAerodrome.size) {
+        0 -> null
+        1 -> densityAltitudeInputsByAerodrome.values.single()
+        else -> null // fail-closed on multi-aerodrome ambiguity (G3b-DA deferment).
     }
 }
 

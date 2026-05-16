@@ -1,5 +1,6 @@
 package xyz.easiersaid.twr.sim
 
+import xyz.easiersaid.twr.pilot.DensityAltitudeInput
 import xyz.easiersaid.twr.pilot.PilotInput
 import xyz.easiersaid.twr.pilot.world.toPilotView
 import xyz.easiersaid.twr.protocol.AircraftId
@@ -59,6 +60,44 @@ internal fun buildPilotInput(state: SimState, aircraftId: AircraftId): PilotInpu
         // for unweathered aerodromes.
         weatherByAerodrome = state.world.aerodromes
             .mapNotNull { (id, a) -> a.weather?.wind?.let { id to it } }
+            .toMap(),
+        // fn-28.1 (G3a-react-density-altitude foundation A): project
+        // the typed `DensityAltitudeInput` for every aerodrome whose
+        // weather has BOTH oat AND qnh non-null. Aerodrome elevation
+        // (`Aerodrome.elevation: Feet`) is non-null today by core schema;
+        // the projection STILL gates the elevation read (future schema
+        // changes that admit a nullable or wider type must preserve this
+        // fail-closed shape — see `DensityAltitudeInput` KDoc + the
+        // fn-28.1 projection-fail-closed test in
+        // `ProjectionDensityAltitudeInputSpec`).
+        //
+        // **Fail-closed**: any aerodrome missing oat OR qnh produces NO
+        // map entry (no `null`-valued map entry; no synthesised
+        // placeholder). Downstream DA recognition in fn-28.2 reads the
+        // map via `densityAltitudeInputForMission` and treats a missing
+        // entry as no-event. Same `mapNotNull` shape as `weatherByAerodrome`
+        // above — chosen for the identical "absent-key vs explicit-null"
+        // semantic the pre-migration fixture sites used.
+        densityAltitudeInputsByAerodrome = state.world.aerodromes
+            .mapNotNull { (id, a) ->
+                val weather = a.weather ?: return@mapNotNull null
+                val oat = weather.oat ?: return@mapNotNull null
+                val qnh = weather.qnh ?: return@mapNotNull null
+                // Field-elevation sourcing (round-14 Minor 1 acceptance):
+                // `Aerodrome.elevation: Feet` is non-null today, so the
+                // explicit binding below is mechanically a passthrough.
+                // The fail-closed shape is documented in
+                // `DensityAltitudeInput` KDoc — a future schema regression
+                // that admits a nullable or wider type MUST update this
+                // construction site to preserve the fail-closed contract
+                // (omit the entry rather than synthesise a default).
+                val elevation = a.elevation
+                id to DensityAltitudeInput(
+                    oat = oat,
+                    qnh = qnh,
+                    fieldElevation = elevation,
+                )
+            }
             .toMap(),
     )
 }

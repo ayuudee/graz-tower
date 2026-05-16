@@ -78,6 +78,29 @@ object RegulationDatabase {
         category = RegulationCategory.PROCEDURE,
     )
 
+    /**
+     * fn-28.1 (R2-DA, R5): ATIS broadcast content list — the published
+     * elements the ATIS letter encapsulates. Includes surface wind, QNH,
+     * **air temperature**, dew point, visibility, runway in use, and
+     * cloud information.
+     *
+     * Cited as the doctrinal anchor for both
+     * [xyz.easiersaid.twr.core.world.WeatherObservation.oat] (fn-28.1)
+     * and [Atis.qnh] / [Atis.visibility] / [Atis.wind] (Pass 15 prior
+     * art). The §4.3 entry above frames ATIS as a service; this entry
+     * pins the broadcast-content list itself, which is the basis for
+     * the typed-fields the runtime ATIS / WeatherObservation surface
+     * carries.
+     */
+    val ICAO_ANNEX_11_4_3_6 = RegulationRef(
+        document = "ICAO_ANNEX_11", edition = "14th ed. (2018)", section = "§4.3.6",
+        title = "ATIS broadcast content",
+        principle = "ATIS broadcast shall include surface wind, visibility, present weather, " +
+            "cloud, air temperature, dew point, QNH, runway in use, and significant " +
+            "aerodrome information",
+        category = RegulationCategory.PROCEDURE,
+    )
+
     // ── ICAO Doc 4444 ────────────────────────────────────────────────
 
     val ICAO4444_4_5 = RegulationRef(

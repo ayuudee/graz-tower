@@ -1,6 +1,7 @@
 package xyz.easiersaid.twr.pilot.observe
 
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.DensityAltitudeInput
 import xyz.easiersaid.twr.pilot.MissionStep
 import xyz.easiersaid.twr.pilot.PilotMission
 import xyz.easiersaid.twr.pilot.PilotPhase
@@ -369,15 +370,54 @@ fun derivePilotEvent(
     aircraft: AircraftState,
     mission: PilotMission,
     weather: WindReport?,
-): PilotEvent? =
-    // ── Branch 1: DA-without-clearance (pre-fn-14 behavior, unchanged) ───
-    deriveDecisionAltitudeEvent(aircraft, mission)
+    /**
+     * fn-28.1 (G3a-react-density-altitude foundation A): typed
+     * density-altitude input for the aerodrome the pilot's mission
+     * concerns. **Signature-only at fn-28.1** — the DA-decline branch
+     * lands in fn-28.2 (along with
+     * `AircraftType.maxDensityAltitudeFt`, the recognition gate, and
+     * the `replaceFromActivePrimitive([PrimitiveTask(DECLINE_DEPARTURE,
+     * NON_COMPLETING)])` apply path). Default `null` preserves all
+     * existing call sites; fn-28.1's `pilotDecide` call-site update
+     * passes the projected entry via `mission.goal` → aerodrome
+     * resolution (see Pilot.kt).
+     *
+     * Per R21 (round-6 branch order): the DA-decline branch slots
+     * BETWEEN `DecisionAltitudeWithoutClearance` (existing) and the
+     * fn-28.4-or-later `AbortTakeoff` branch (not present today).
+     * That branch is intentionally NOT wired here — landing a no-op
+     * branch with no recognition predicate would create a
+     * compile-clean dead arm. The placeholder is the parameter
+     * threading only.
+     */
+    densityAltitudeInput: DensityAltitudeInput? = null,
+): PilotEvent? {
+    // fn-28.1: `densityAltitudeInput` is signature-threaded but
+    // intentionally unread in this version of the function body — wiring
+    // a no-op branch with no recognition predicate would create a
+    // compile-clean dead arm. fn-28.2 lands the
+    // `deriveDensityAltitudeDeclineEvent(aircraft, mission, densityAltitudeInput)`
+    // branch and slots it between the DA-without-clearance and tailwind
+    // branches per R21's branch order:
+    //   DecisionAltitudeWithoutClearance → DensityAltitudeDecline →
+    //   AbortTakeoff → TailwindLimitExceeded → CrosswindLimitExceeded.
+    // The parameter's default `null` preserves every pre-fn-28.1 call
+    // site; the firewall-clean type ([DensityAltitudeInput]) records the
+    // typed contract at the public API. The `_pinTypeContract` reference
+    // below is structural — it pins the type at the recognition site so
+    // a future regression that loses the parameter (e.g. an accidental
+    // signature revert) surfaces as a compile error, not a silent drop.
+    @Suppress("UNUSED_VARIABLE")
+    val _pinTypeContract: DensityAltitudeInput? = densityAltitudeInput
+
+    return deriveDecisionAltitudeEvent(aircraft, mission)
         // ── Branch 2: tailwind exceedance (fn-15.1 new — physically stronger
         // constraint, fires before crosswind when both apply per Decision #5)
         ?: deriveTailwindEvent(aircraft, mission, weather)
         // ── Branch 3: crosswind exceedance (fn-14.1, control-authority
         // constraint; demoted one position by fn-15.1's tailwind branch)
         ?: deriveCrosswindEvent(aircraft, mission, weather)
+}
 
 /**
  * fn-14.1: DA branch extracted intact from the pre-fn-14.1 body. Pure;

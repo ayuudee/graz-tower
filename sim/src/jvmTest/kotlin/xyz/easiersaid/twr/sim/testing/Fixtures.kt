@@ -12,7 +12,9 @@ import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PressureSetting
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.Temperature
 import xyz.easiersaid.twr.protocol.Wind
 
 /**
@@ -109,10 +111,42 @@ object Fixtures {
         candidatePath = projectRoot().resolve("cad/airports/rendered/lowg/world-candidate.json"),
         standPointId = PointId("LOWG_STAND_1_POINT"),
         frequency = Frequency.unsafe("118.200"),
+        // fn-28.1 (G3a-react-density-altitude foundation A, round-3 Major 4):
+        // populate LOWG with concrete OAT + QNH so DA-touching scenarios
+        // (fn-28.3's G3aPilotReactiveDensityAltitudeTest, future apron-DA
+        // sim coverage) produce a non-null `DensityAltitudeInput` entry
+        // through the `PilotWiring.buildPilotInput` projection. Pre-
+        // fn-28.1 the fixture set `qnh = null` (no consumer needed it);
+        // a `null` qnh causes the projection to OMIT the LOWG entry
+        // (fail-closed), and downstream DA recognition fails to fire with
+        // an unhelpful "no map entry" trace — making DA-touching sim
+        // failures obscure. Concrete values surface DA recognition
+        // failures with diagnostic-friendly inputs in the trace.
+        //
+        // Numeric provenance:
+        //  - OAT = ISA(LOWG_elev) ≈ 12.79 °C
+        //    LOWG elevation per AGENTS.md / world data ≈ 1115 ft;
+        //    ISA(h_ft) = 15.0 - (h_ft / 1000) * 1.98 = 15.0 - 1.115 * 1.98
+        //              = 12.7923 °C; rounded to 12.79 °C for the fixture
+        //    literal. ISA value (not a "hot day") so circuit-training
+        //    tests (G0 / G3a-trained / G3a-obstruction / G3a-react-
+        //    crosswind / G3a-react-tailwind) running on this fixture are
+        //    NOT spuriously DA-tripped. fn-28.3's hot-DA scenario will
+        //    author ISA+35 °C ≈ 47.79 °C via the world-mutation hook
+        //    pattern (mirrors fn-14.2's crosswind wind-shift authoring).
+        //  - QNH = 1013 hPa (standard ISA QNH). Smart constructor
+        //    `PressureSetting.QnhHpa.unsafe(1013)` is the Int-typed
+        //    canonical hPa surface. fn-28's spec text mentions
+        //    `PressureSetting.hPa(1013.25)` — the codebase's
+        //    `QnhHpa(Int)` smart-constructor pins the 1013 hPa integer
+        //    literal (the spec's `.25` decimal is below the smart-
+        //    constructor's resolution; floor-rounded as the
+        //    standard-pressure convention).
         weather = WeatherObservation(
             wind = WindReport.Available(Wind.unsafe(directionDegrees = 160, speedKnots = 8)),
-            qnh = null,
+            qnh = PressureSetting.QnhHpa.unsafe(1013),
             visibility = null,
+            oat = Temperature.celsius(12.79),
         ),
         // LOWG (per manifest): tower handles ground duties on the same RT;
         // we model the operational reality with both roles on the same freq.

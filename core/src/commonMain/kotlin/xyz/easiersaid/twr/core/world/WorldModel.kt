@@ -25,6 +25,19 @@ import xyz.easiersaid.twr.protocol.StarId
 import xyz.easiersaid.twr.protocol.TaxiwayId
 import xyz.easiersaid.twr.protocol.VfrRouteId
 
+/**
+ * fn-28.1 (R24): [Feet] relocated to `:protocol`
+ * ([xyz.easiersaid.twr.protocol.Feet]) so both `:protocol`-resident
+ * consumers (e.g. fn-28.2's `AircraftType.maxDensityAltitudeFt`) and
+ * `:pilot`-resident consumers (e.g. fn-28.1's
+ * `DensityAltitudeInput.fieldElevation`) can depend on the typed
+ * datum without forcing `:protocol` to depend on `:core`. The
+ * `typealias` below preserves existing
+ * `import xyz.easiersaid.twr.core.world.Feet` references — no
+ * downstream import churn at fn-28.1.
+ */
+typealias Feet = xyz.easiersaid.twr.protocol.Feet
+
 data class Meters(val value: Double) {
     init {
         require(value >= 0.0) { "Meters must be >= 0" }
@@ -37,12 +50,6 @@ data class Meters(val value: Double) {
          * `Meters.fromNauticalMiles(12)` (= 22 224 m) at the call site.
          */
         fun fromNauticalMiles(nm: Int): Meters = Meters(nm * 1852.0)
-    }
-}
-
-data class Feet(val value: Int) {
-    init {
-        require(value >= 0) { "Feet must be >= 0" }
     }
 }
 

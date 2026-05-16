@@ -96,6 +96,39 @@ data class PilotInput(
      */
     val weatherByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, xyz.easiersaid.twr.protocol.WindReport> =
         emptyMap(),
+    /**
+     * fn-28.1 (G3a-react-density-altitude foundation A): per-aerodrome
+     * typed density-altitude inputs (OAT + QNH + field elevation) as
+     * projected at the firewall boundary by
+     * [xyz.easiersaid.twr.sim.PilotWiring.buildPilotInput].
+     *
+     * The pilot's real-world DA sensing channel is the ATIS broadcast
+     * (`Aerodrome.weather.oat` + `Aerodrome.weather.qnh` per ICAO Annex
+     * 11 §4.3.6.h) crossed with the published field elevation
+     * (`Aerodrome.elevation`, a chart datum). The projection materialises
+     * the three typed values into a [DensityAltitudeInput] only when ALL
+     * three preconditions hold — fail-closed when OAT or QNH is null on
+     * the aerodrome's weather (no entry produced; downstream DA
+     * recognition in fn-28.2 skips that aerodrome).
+     *
+     * Read by the pilot's density-altitude reactive-GA recognition
+     * branch landing in fn-28.2 (`derivePilotEvent`'s DA branch). The
+     * signature lands at fn-28.1 with a placeholder body — the branch
+     * itself, and the `AircraftType.maxDensityAltitudeFt` gate, are
+     * fn-28.2 work.
+     *
+     * **Firewall**: a real-world cockpit input (ATIS-read OAT/QNH +
+     * published chart elevation). `FirewallPilotInputTest` enumerates
+     * the allowlist (canonical-constructor entry + reflection-based
+     * property scan). Adding a non-cockpit field via this map is
+     * forbidden — [DensityAltitudeInput] is structurally constrained
+     * to typed-units + scalars (no entity reference reachable).
+     *
+     * Default `emptyMap()` preserves all existing `PilotInput`
+     * construction sites (additive widening).
+     */
+    val densityAltitudeInputsByAerodrome: Map<xyz.easiersaid.twr.protocol.AerodromeId, DensityAltitudeInput> =
+        emptyMap(),
 )
 
 /**
