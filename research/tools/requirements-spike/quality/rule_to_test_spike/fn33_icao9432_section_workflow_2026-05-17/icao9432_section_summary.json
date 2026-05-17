@@ -1,0 +1,674 @@
+[
+  {
+    "section_id": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+    "source_units": 10,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 5
+      },
+      {
+        "key": "sim_executable",
+        "count": 5
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "phraseology_rule",
+        "count": 8
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_traffic_circuit_4_6_part1_en",
+    "source_units": 4,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 3
+      },
+      {
+        "key": "review_only",
+        "count": 1
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "advisory_only",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 2
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_traffic_circuit_4_6_part2_en",
+    "source_units": 5,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 3
+      },
+      {
+        "key": "review_only",
+        "count": 2
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "advisory_only",
+        "count": 1
+      },
+      {
+        "key": "definition",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 1
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_vehicles_crossing_towing_5_3_to_5_4_en",
+    "source_units": 6,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 3
+      },
+      {
+        "key": "sim_executable",
+        "count": 3
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 2
+      },
+      {
+        "key": "rule",
+        "count": 3
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_vehicles_intro_movement_5_1_to_5_2_en",
+    "source_units": 6,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 1
+      },
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 4
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 3
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "after_landing_4_9_en",
+    "source_units": 5,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 5
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 2
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "communications_2_8_1_en",
+    "source_units": 5,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 5
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 3
+      },
+      {
+        "key": "rule",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "communications_failure_9_5_en",
+    "source_units": 14,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 13
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "definition",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 3
+      },
+      {
+        "key": "rule",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "section_id": "distress_messages_9_2_en",
+    "source_units": 8,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 8
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "advisory_only",
+        "count": 2
+      },
+      {
+        "key": "advisory_procedure",
+        "count": 1
+      },
+      {
+        "key": "best_practice",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 2
+      },
+      {
+        "key": "rule",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "distress_urgency_intro_9_1_en",
+    "source_units": 18,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 5
+      },
+      {
+        "key": "review_only",
+        "count": 4
+      },
+      {
+        "key": "sim_executable",
+        "count": 9
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 4
+      },
+      {
+        "key": "cross_reference",
+        "count": 1
+      },
+      {
+        "key": "definition",
+        "count": 2
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 2
+      },
+      {
+        "key": "rule",
+        "count": 8
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "essential_aerodrome_information_4_10_en",
+    "source_units": 12,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 2
+      },
+      {
+        "key": "review_only",
+        "count": 10
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "definition",
+        "count": 9
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 1
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "final_approach_landing_4_7_en",
+    "source_units": 14,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 2
+      },
+      {
+        "key": "sim_executable",
+        "count": 12
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "phraseology_rule",
+        "count": 11
+      },
+      {
+        "key": "rule",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "go_around_4_8_en",
+    "source_units": 3,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 2
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "pushback_powerback_4_3_en",
+    "source_units": 5,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 2
+      },
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 2
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "definition",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 2
+      },
+      {
+        "key": "rule",
+        "count": 1
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "readback_2_8_3_en",
+    "source_units": 8,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 2
+      },
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 5
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 2
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 2
+      },
+      {
+        "key": "rule",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "section_id": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+    "source_units": 4,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 2
+      },
+      {
+        "key": "sim_executable",
+        "count": 2
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "definition",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "takeoff_procedures_4_5_1_to_4_5_5_en",
+    "source_units": 7,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 7
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 4
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "takeoff_procedures_4_5_6_to_4_5_7_en",
+    "source_units": 5,
+    "testability": [
+      {
+        "key": "deterministic_test",
+        "count": 2
+      },
+      {
+        "key": "partially_executable",
+        "count": 3
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 2
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "takeoff_procedures_4_5_8_to_4_5_12_en",
+    "source_units": 7,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 5
+      },
+      {
+        "key": "review_only",
+        "count": 2
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "phraseology_rule",
+        "count": 2
+      },
+      {
+        "key": "rule",
+        "count": 3
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "taxi_4_4_en",
+    "source_units": 6,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 4
+      },
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 1
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "best_practice",
+        "count": 1
+      },
+      {
+        "key": "definition",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 3
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "test_procedures_2_8_4_en",
+    "source_units": 5,
+    "testability": [
+      {
+        "key": "review_only",
+        "count": 1
+      },
+      {
+        "key": "sim_executable",
+        "count": 4
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "definition",
+        "count": 1
+      },
+      {
+        "key": "phraseology_rule",
+        "count": 3
+      },
+      {
+        "key": "rule",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "transfer_communications_2_8_2_en",
+    "source_units": 3,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 2
+      },
+      {
+        "key": "review_only",
+        "count": 1
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "phraseology_rule",
+        "count": 1
+      },
+      {
+        "key": "rule",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "urgency_emergency_descent_9_3_to_9_4_en",
+    "source_units": 6,
+    "testability": [
+      {
+        "key": "partially_executable",
+        "count": 1
+      },
+      {
+        "key": "review_only",
+        "count": 5
+      }
+    ],
+    "requirement_kind": [
+      {
+        "key": "advisory_only",
+        "count": 1
+      },
+      {
+        "key": "best_practice",
+        "count": 3
+      },
+      {
+        "key": "rule",
+        "count": 1
+      },
+      {
+        "key": "workflow_constraint",
+        "count": 1
+      }
+    ]
+  }
+]
