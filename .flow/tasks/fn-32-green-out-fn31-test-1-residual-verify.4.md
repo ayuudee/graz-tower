@@ -79,18 +79,18 @@ Close-out task: full verify suite GREEN, commit + push the engine-pass branch, u
 
 ## Resolved during implementation
 
-- **Branch pushed**: `main`. `git rev-parse --abbrev-ref HEAD` confirmed `main`; `git remote -v` confirmed `origin` URL; `git log --oneline @{u}..HEAD` previewed 54 commits to push.
+- **Branch pushed**: `main`. `git rev-parse --abbrev-ref HEAD` confirmed `main`; `git remote -v` confirmed `origin git@github.com:ayuudee/graz-tower.git`; `git log --oneline @{u}..HEAD` previewed 56 commits to push (54 pre-existing + the close-out commit + the round-1 review-fix commit + the round-2 review-fix commit).
 - **Targeted smoke verifies**: both green offline-sandbox.
   - `gradle :controller:jvmTest --tests "*GoAroundSequencingSpec*" --offline --no-daemon` → BUILD SUCCESSFUL 3s.
   - `gradle :pilot:jvmTest --tests "*PilotEvent*Test*" --offline --no-daemon` → BUILD SUCCESSFUL 3s.
 - **Full verify wall-clock**: 4s for the green subset (`:pilot:jvmTest :controller:jvmTest :protocol:allTests :core:allTests detekt`), 9s for `:migration:allTests`. Caches were warm from the smoke verifies so most tasks were UP-TO-DATE.
-- **Surprise finding — `:sim:jvmTest` runtime-classpath gap (escalated to user)**: the original `:sim:jvmTest` invocation in the spec's R4 command fails offline-sandbox with three transitive runtime-only deps missing from `~/.gradle/caches/modules-2/files-2.1/`:
+- **Surprise finding — `:sim:jvmTest` runtime-classpath gap (escalated to user; tracked as FN31-TEST-1-FOLLOWUP in `.plan`)**: the original `:sim:jvmTest` invocation in the spec's R4 command fails offline-sandbox with three transitive runtime-only deps missing from `~/.gradle/caches/modules-2/files-2.1/`:
   - `org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.8.0`
   - `org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.8.0`
   - `io.github.java-diff-utils:java-diff-utils:4.12`
 
-  Root cause: fn-32.1 ran `./gradlew :sim:compileTestKotlinJvm` to populate the kotest 5.9.1 deps, but `compileTestKotlinJvm` only resolves the compile-time classpath; the three deps above are needed only at test *runtime*. They land in the cache when `:sim:jvmTest` itself is invoked online. `:sim:compileTestKotlinJvm` is still green offline-sandbox, and all other modules (`:pilot:jvmTest :controller:jvmTest :protocol:allTests :core:allTests :migration:allTests detekt`) pass clean. The push proceeded with this scope; the user must run `./gradlew :sim:jvmTest` once online to hydrate those three deps (and confirm 13 sim goldens GREEN) on their normal terminal. Documented for fn-32.1 follow-up: future "kotest cache populate" tasks should drive `:sim:jvmTest` (or `--write-locks --refresh-dependencies` against the runtime classpath), not just `:sim:compileTestKotlinJvm`.
-- **Push outcome**: see Done summary; no force-push, no branch-protection / pre-receive surprises.
+  Root cause: fn-32.1 ran `./gradlew :sim:compileTestKotlinJvm` to populate the kotest 5.9.1 deps, but `compileTestKotlinJvm` only resolves the compile-time classpath; the three deps above are needed only at test *runtime*. They land in the cache when `:sim:jvmTest` itself is invoked online. `:sim:compileTestKotlinJvm` is still green offline-sandbox, and all other modules (`:pilot:jvmTest :controller:jvmTest :protocol:allTests :core:allTests :migration:allTests detekt`) pass clean. The push proceeded with this scope because: (a) the gap is a *cache hydration* concern, not a real test failure (no `:sim` content was touched by fn-32, so regression is highly unlikely); (b) recovery is a single user-side online command; (c) FN31-TEST-1 stays PARTIAL in `.plan` until the user runs the hydration command and confirms 13 sim goldens GREEN. Documented in `.plan` as FN31-TEST-1-FOLLOWUP — single user-side `./gradlew :sim:jvmTest` command flips FN31-TEST-1 to fully DONE.
+- **Push outcome**: `git push origin main` succeeded. Output: `f695bd9..11ed1d4  main -> main`. Only warnings (GH LFS recommendation for the 69 MB `research/pdf/EPPLS.pdf` — pre-existing, not introduced by fn-32); no errors, no branch-protection / pre-receive surprises, no force-push.
 
 ## Done summary
 
