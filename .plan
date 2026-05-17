@@ -13,18 +13,23 @@ This file is the canonical backlog. It is maintained by both human and AI contri
 
 ## Active items
 
-**FN31-TEST-1 — Go-around sequencing targeted verification is red during rule-to-test spike** — DONE (2026-05-17)
-fn-32 epic greened all three FN31-TEST-1 sub-issues end-to-end. Full
-`:pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt`
-plus `:migration:allTests` runs offline-clean from the sandbox via the nix-shell
-formula; 13 sim goldens + every unit/property suite green; detekt clean.
+**FN31-TEST-1 — Go-around sequencing targeted verification is red during rule-to-test spike** — DONE (2026-05-17, with FN31-TEST-1-FOLLOWUP for sim runtime classpath)
+fn-32 epic greened the three originally-failing sub-issues (3
+GoAroundSequencingSpec cases + 2 pilot negative-case tests). Offline-sandbox
+full verify across
+`:pilot:jvmTest :controller:jvmTest :protocol:allTests :core:allTests detekt`
+plus `:migration:allTests` is green; the sandbox-offline `:sim:jvmTest`
+run was blocked by a transitive runtime-only dep gap that fn-32.1 did not
+cover — surfaced as **FN31-TEST-1-FOLLOWUP** below (low-effort cache top-up
+on the user's terminal).
 - ✅ **3 `GoAroundSequencingSpec` failures** (fn-32.2, commit `3bdabc3`) —
   fixture refactored to opt-in 2-aircraft leader/follower geometry with a
   further-out `PT_LONG_DOWNWIND` (≈10 NM) point, so AC_A at PT_FINAL +
   AC_B at PT_LONG_DOWNWIND produces a COMFORTABLE `SeparationAssessment` and
   unblocks `Not(SeparationConcernAbove(INTERVENTION))`. No controller
   production code change; leader/follower semantics preserved. All 17
-  GoAroundSequencingSpec tests green.
+  GoAroundSequencingSpec tests green offline-sandbox via
+  `gradle :controller:jvmTest --tests "*GoAroundSequencingSpec*"`.
 - ✅ **2 pilot negative-case failures** (fn-32.3, commit `7cf8920`) —
   Step-1 evidence confirmed plan-review R1's prediction: both failing rows
   returned `DecisionAltitudeWithoutClearance` (FLY_FINAL / FLY_BASE) from the
@@ -34,19 +39,49 @@ formula; 13 sim goldens + every unit/property suite green; detekt clean.
   earlier branch while leaving the gates under test (DA-decline mission-shape
   guard + AbortTakeoff gate-4) intact. KDocs pin the cross-branch dependency.
   No production-code change; codex SHIP first pass.
-- ✅ **kotest 5.9.1 cache hydration** (fn-32.1) — user-side online
+- ⚠️ **kotest 5.9.1 cache hydration** (fn-32.1, partial) — user-side online
   `./gradlew :sim:compileTestKotlinJvm` populated kotest-framework-engine /
-  -assertions-core / -property / -runner-junit5 into
-  `~/.gradle/caches/modules-2/files-2.1/io.kotest/`. Sandbox-offline
-  `:sim:jvmTest` now resolves via `GRADLE_RO_DEP_CACHE`.
+  -assertions-core / -property / -runner-junit5 + transitive *compile-time*
+  deps. `:sim:compileTestKotlinJvm` is offline-clean. But three transitive
+  *runtime-only* deps still missing from `~/.gradle/caches/modules-2/`:
+  `org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.8.0`,
+  `org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.8.0`,
+  `io.github.java-diff-utils:java-diff-utils:4.12`. See follow-up below.
 - ✅ **`EngineOffKinematicClampSpec.kt:151`** backtick `;` → ` — ` (em-dash);
   compiles. Landed in commit `b72a1d5` (verify-pass cleanup).
 - ✅ **`ARR-EXTEND-FOR-GA` + `ARR-TURN-BASE`** moved from `AwaitApproach` to
   `AwaitDownwind` block in `TowerArrival.kt` (commit `d32b8b8`); was 1/4
   immediately, with the deeper fixture root cause resolved per the bullet
   above.
+**Not yet re-verified post-fn-32 changes**: the 13 sim goldens (and any other
+`:sim:jvmTest` content). The fn-32 work touched controller + pilot tests, not
+`:sim` content, so a regression is highly unlikely — but the contractual
+"13 sim goldens GREEN" assertion stays pending until FN31-TEST-1-FOLLOWUP lands.
 Evidence trail: epic `fn-32-green-out-fn31-test-1-residual-verify`, tasks .1–.4.
 Impact: H | Effort: M
+
+**FN31-TEST-1-FOLLOWUP — `:sim:jvmTest` offline-sandbox runtime-classpath gap**
+Surfaced in fn-32.4's full verify (2026-05-17). `:sim:jvmTest` fails offline
+under the nix-shell sandbox formula because three transitive runtime-only deps
+are missing from `~/.gradle/caches/modules-2/files-2.1/`:
+`org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.8.0`,
+`org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.8.0`,
+`io.github.java-diff-utils:java-diff-utils:4.12`. Root cause: fn-32.1 ran
+`./gradlew :sim:compileTestKotlinJvm` — which resolves the *compile*
+classpath only. The three deps above land in the cache when `:sim:jvmTest`
+itself is invoked online. Fix: single user-side command in normal terminal
+(network egress required):
+```
+./gradlew :sim:jvmTest --no-daemon
+```
+After that, the standard sandbox-offline formula resolves the full sim
+runtime classpath. Once green, confirms 13 sim goldens unaffected by fn-32
+controller/pilot test changes and converts FN31-TEST-1 from
+"DONE-with-followup" to fully DONE. Documented for the next
+"kotest cache populate" task to drive `:sim:jvmTest` (or
+`--write-locks --refresh-dependencies` against the runtime classpath), not
+just `:sim:compileTestKotlinJvm`.
+Impact: M | Effort: L
 
 **FN20-CUR-1 — FN20 registry has 106 residual pending records after curation**
 The final FN20 all-source ingest, promotion, GPT curation pass, and EPPLS
