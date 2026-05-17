@@ -21,9 +21,34 @@ failed three `GoAroundSequencingSpec` cases: same-cycle `ARR-EXTEND-FOR-GA`,
 pattern-rejoin clear-cycle `ARR-TURN-BASE`, and timeout clear-cycle
 `ARR-TURN-BASE`. The same command also attempted `:sim:jvmTest`, but that task
 could not compile because `EngineOffKinematicClampSpec.kt` has a backtick test
-name containing `;`, which Kotlin rejects. The FN31 research artifacts record
-these as blocked verification evidence; this item tracks making the targeted
-go-around verification green again.
+name containing `;`, which Kotlin rejects.
+
+**2026-05-17 verify-pass progress** (fn-28 close-out):
+- ✅ `EngineOffKinematicClampSpec.kt:151` backtick `;` → ` — ` (em-dash); compiles.
+- ✅ `ARR-EXTEND-FOR-GA` + `ARR-TURN-BASE` moved from `AwaitApproach` to
+  `AwaitDownwind` block in `TowerArrival.kt`. They were unreachable in
+  `AwaitApproach` because `reconcileAwaitApproach` regresses downwind aircraft
+  to `AwaitDownwind` before rule evaluation. Got 1/4 failing tests green.
+- ⚠️ **Remaining 3 `GoAroundSequencingSpec` failures share a deeper root cause**:
+  `SeparationConcernAbove(INTERVENTION)` is fail-conservative — returns `true`
+  when `separationAssessments` is empty. The fixtures track only AC_B; with
+  fewer than 2 arrivals in `arrivalSequence.slots`, `assessSeparation` returns
+  empty; `Not(SeparationConcernAbove(...))` then blocks `ARR-TURN-BASE`. Fix:
+  add AC_A (the GA-going aircraft) as a second tracked aircraft in the test
+  view + commitments + arrival sequence so `assessSeparation` generates a real
+  COMFORTABLE-severity assessment.
+- ⚠️ Verify pass also surfaced **2 pilot test failures** in fn-28.2/.9
+  recognition branches: `PilotEventAbortTakeoffTest.kt:248` and
+  `PilotEventDensityAltitudeTest.kt:187 "does NOT fire on airborne steps —
+  mission-shape guard rejects"`. Both are negative-case assertion failures
+  (recognition should NOT fire but is firing). Investigation needed; tracked
+  here for cohesion with the GA sequencing work.
+- ⚠️ kotest 5.9.1 (added by fn-26.1) is **not in `~/.gradle/caches/modules-2`**
+  because the worker that landed fn-26.1 fetched the deps via `curl` into a
+  sandbox-local Maven layout that isn't persisted to the user's real cache.
+  Single `./gradlew :sim:compileTestKotlinJvm` run outside `--offline` mode
+  populates the cache. Until then `:sim:jvmTest` is blocked even with the
+  backtick fix.
 Impact: H | Effort: M
 
 **FN20-CUR-1 — FN20 registry has 106 residual pending records after curation**

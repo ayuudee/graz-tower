@@ -148,7 +148,7 @@ class EngineOffKinematicClampSpec {
     }
 
     @Test
-    fun `EngineFailure handler flips engineRunning to false; subsequent tick applies the clamp`() {
+    fun `EngineFailure handler flips engineRunning to false — subsequent tick applies the clamp`() {
         // End-to-end pin: EngineFailure event → engineRunning=false → next
         // PhysicsTick applies the clamp.
         val ac = makeAircraft(speedMps = 25.0, targetSpeedMps = 30.0, engineRunning = true)
