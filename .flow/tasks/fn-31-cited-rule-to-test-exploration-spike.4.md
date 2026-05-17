@@ -13,8 +13,7 @@ Prefer one operational family that can support a later vertical slice, plus a fe
 - [ ] The task recommends the best family for the vertical slice task.
 
 ## Done summary
-TBD
-
+Selected a 16-record cited source-unit slice focused on circuit/final/go-around behavior with readback and conditional-clearance contrast rows. Added a fail-loud coverage-matrix builder and emitted JSON/CSV/Markdown artifacts. Recommended circuit_go_around_after_landing_clearance as the vertical-slice family for the next task.
 ## Evidence
 - Commits:
 - Tests:

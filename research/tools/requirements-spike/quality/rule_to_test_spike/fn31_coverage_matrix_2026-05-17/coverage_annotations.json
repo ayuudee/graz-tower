@@ -1,0 +1,288 @@
+{
+  "schema": "fn31_rule_to_test_coverage_annotations",
+  "version": "2026-05-17-v1",
+  "registryRoot": "research/tools/requirements-spike/registry/ollama_first",
+  "selectionRationale": "Primary slice is aerodrome circuit, final approach, landing-clearance, and go-around behavior because it has accepted ICAO/CAP source units and existing simulator coverage in G1/G3/controller tests. Contrast rows cover readback, conditional clearance, and review-only operational guidance so the spike does not overfit to executable examples.",
+  "recommendedVerticalSlice": {
+    "family": "circuit_go_around_after_landing_clearance",
+    "reason": "This family has multiple high-confidence accepted source units, maps onto existing TowerArrival and G3a tests, and includes executable, partially executable, and review-only boundaries. It is therefore a good first vertical slice for source-unit-to-test exploration."
+  },
+  "records": [
+    {
+      "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::36206ebf73ce35e5",
+      "operationalFamily": "final_approach_landing_clearance",
+      "normalizedRuleClaim": "CONTINUE is not a landing clearance; the pilot must either receive landing clearance or initiate a missed approach.",
+      "simulatorConcept": "ContinueApproach versus ClearedToLand/ClearedTouchAndGo distinction",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Action.kt"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt",
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/ObstructionContinueApproachSpec.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Strong vertical-slice candidate: behavior is already represented by distinct instructions and post-clearance/pre-clearance regulation split tests."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::3e867581f0f695b2",
+      "operationalFamily": "final_approach_landing_clearance",
+      "normalizedRuleClaim": "If the runway is obstructed at the final report but expected to be available in good time, the controller delays landing clearance.",
+      "simulatorConcept": "Obstruction-driven continue-approach before landing clearance",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Guard.kt"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt",
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/ObstructionContinueApproachSpec.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Good test oracle: obstruction present before landing clearance should produce continue-approach companion handling, not landing clearance."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::ed3edf669048bfab",
+      "operationalFamily": "go_around_obstruction",
+      "normalizedRuleClaim": "When runway occupation drives go-around circumstances, the pilot is informed of aircraft or vehicles on the runway.",
+      "simulatorConcept": "GoAround instruction with traffic/obstruction reason",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Action.kt"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionTest.kt",
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/ObstructionGoAroundSpec.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Existing tests assert obstruction-driven go-around behavior; vertical slice can check whether emitted reason/trace evidence is sufficiently source-unit-grounded."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::452877f6b21af73b",
+      "operationalFamily": "pilot_initiated_go_around",
+      "normalizedRuleClaim": "When the pilot initiates a missed approach, the phrase 'going around' is used.",
+      "simulatorConcept": "ReportEvent.GoingAround / pilot go-around transmission",
+      "codePaths": [
+        "protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Transmission.kt",
+        "pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/observe"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotTrainedGoAroundTest.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveCrosswindTest.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveTailwindTest.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Good source-unit anchor for the named radio witness already used by G3 tests."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::2adeb25694ea02ff",
+      "operationalFamily": "post_go_around_recovery",
+      "normalizedRuleClaim": "A VFR aircraft continues into the normal traffic circuit unless instructed otherwise.",
+      "simulatorConcept": "Post-go-around recovery to circuit / AwaitDownwind",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt",
+        "pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotTrainedGoAroundTest.kt",
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/GoAroundSequencingSpec.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Existing tests check recovery Downwind and commitment regression; vertical slice can make the source-unit evidence explicit."
+    },
+    {
+      "canonicalId": "icao9432-extracted::go_around_4_8_en::c3581d40a48406bb",
+      "operationalFamily": "post_go_around_recovery",
+      "normalizedRuleClaim": "Unless instructed otherwise, a VFR aircraft going around continues in the normal traffic circuit.",
+      "simulatorConcept": "Post-go-around VFR circuit continuation",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt",
+        "pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotTrainedGoAroundTest.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotReactiveTailwindTest.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Duplicates the CAP413 VFR recovery idea from ICAO9432; useful for citation redundancy and source-priority comparison."
+    },
+    {
+      "canonicalId": "icao9432-extracted::go_around_4_8_en::43c33a8e74b02873",
+      "operationalFamily": "instrument_missed_approach",
+      "normalizedRuleClaim": "Unless instructed otherwise, an aircraft on an instrument approach carries out the missed approach procedure.",
+      "simulatorConcept": "IFR missed approach procedure",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt"
+      ],
+      "existingTests": [],
+      "coverageClass": "design_blocked",
+      "confidence": "high",
+      "recommendedForVerticalSlice": false,
+      "notes": "Accepted and testable in principle, but current golden surface is VFR-heavy; this should probably wait for IFR/missed-approach procedure modeling."
+    },
+    {
+      "canonicalId": "icao4444-extracted::aerodrome_phraseologies_circuit_approach_12_3_4_13_to_12_3_4_15::0029194ff378f5da",
+      "operationalFamily": "circuit_position_reporting",
+      "normalizedRuleClaim": "When in the circuit, the pilot transmits the circuit position, such as DOWNWIND or FINAL.",
+      "simulatorConcept": "ReportEvent.Downwind / ReportEvent.Final",
+      "codePaths": [
+        "protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Transmission.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/EventDerivation.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt"
+      ],
+      "existingTests": [
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/EventDerivationSpec.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G1TwoAircraftCircuitsTest.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "Good bridge from source unit to protocol event and golden trace."
+    },
+    {
+      "canonicalId": "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044",
+      "operationalFamily": "final_position_reporting",
+      "normalizedRuleClaim": "A FINAL report is made when turning final within 7 km/4 NM, or at that distance if no clearance was received at LONG FINAL.",
+      "simulatorConcept": "Final report timing and landing-clearance readiness",
+      "codePaths": [
+        "pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G1TwoAircraftCircuitsTest.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt"
+      ],
+      "coverageClass": "manual_translatable",
+      "confidence": "medium",
+      "recommendedForVerticalSlice": false,
+      "notes": "Current tests observe FINAL/landing behavior but do not appear to assert the 4 NM timing threshold directly."
+    },
+    {
+      "canonicalId": "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4",
+      "operationalFamily": "final_position_reporting",
+      "normalizedRuleClaim": "A LONG FINAL report is made when turning final more than 7 km/4 NM from touchdown.",
+      "simulatorConcept": "Long-final report timing",
+      "codePaths": [
+        "pilot/src/commonMain/kotlin/xyz/easiersaid/twr/pilot",
+        "protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Transmission.kt"
+      ],
+      "existingTests": [],
+      "coverageClass": "manual_translatable",
+      "confidence": "medium",
+      "recommendedForVerticalSlice": false,
+      "notes": "Likely needs trace-query support for distance-at-report before becoming a clean executable test."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_50_to_4_60::c7d312fab4599611",
+      "operationalFamily": "landing_clearance_phraseology",
+      "normalizedRuleClaim": "Landing, touch-and-go, and low-approach clearances include the runway designation.",
+      "simulatorConcept": "Runway field on ClearedToLand/ClearedTouchAndGo/ClearedLowApproach",
+      "codePaths": [
+        "protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instructions.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Action.kt"
+      ],
+      "existingTests": [
+        "core/src/commonTest/kotlin/xyz/easiersaid/twr/core/clearance/DeliveredMetadataParityTest.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G1TwoAircraftCircuitsTest.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": true,
+      "notes": "May already be structurally enforced by instruction constructors; useful as a boundary case where a new test may add little value."
+    },
+    {
+      "canonicalId": "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
+      "operationalFamily": "touch_and_go_training",
+      "normalizedRuleClaim": "ATC may clear an aircraft for TOUCH AND GO using the phrase CLEARED TOUCH AND GO.",
+      "simulatorConcept": "ClearedTouchAndGo and circuit-training outcome",
+      "codePaths": [
+        "protocol/src/commonMain/kotlin/xyz/easiersaid/twr/protocol/Instructions.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/bdi/Action.kt"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G1TwoAircraftCircuitsTest.kt",
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/ObstructionGoAroundSpec.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "medium",
+      "recommendedForVerticalSlice": false,
+      "notes": "Executable, but less central than go-around recovery for the next task."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::a28976f537ec29ab",
+      "operationalFamily": "go_around_radio_discipline",
+      "normalizedRuleClaim": "Transmissions to aircraft going around should be brief and kept to a minimum.",
+      "simulatorConcept": "Radio phrase brevity / transmission-content policy",
+      "codePaths": [
+        "sim/src/commonMain/kotlin/xyz/easiersaid/twr/sim/Comms.kt"
+      ],
+      "existingTests": [],
+      "coverageClass": "review_only",
+      "confidence": "high",
+      "recommendedForVerticalSlice": false,
+      "notes": "Important operational guidance but not a clean deterministic sim test without a phrase-length/content policy."
+    },
+    {
+      "canonicalId": "cap413-extracted::ch4_4_61_to_4_69::e8d9a53dcab101bf",
+      "operationalFamily": "after_landing_taxi_timing",
+      "normalizedRuleClaim": "Unless absolutely necessary, controllers do not give taxi instructions until the landing roll is complete.",
+      "simulatorConcept": "After-landing taxi instruction timing",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerArrival.kt"
+      ],
+      "existingTests": [
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G0LowgGoldenTest.kt",
+        "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G1TwoAircraftCircuitsTest.kt"
+      ],
+      "coverageClass": "manual_translatable",
+      "confidence": "medium",
+      "recommendedForVerticalSlice": false,
+      "notes": "Goldens cover after-landing taxi flow, but a specific no-early-taxi invariant would need trace timing assertions."
+    },
+    {
+      "canonicalId": "icao4444-extracted::readback_4_5_7_5::eb9186d5355d8914",
+      "operationalFamily": "runway_instruction_readback",
+      "normalizedRuleClaim": "Clearances and instructions to enter, land on, take off from, hold short of, cross, taxi, or backtrack on a runway are always read back.",
+      "simulatorConcept": "Coordination expectedReadback for runway instructions",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/observe/Coordination.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/Controller.kt"
+      ],
+      "existingTests": [
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/CoordinationLifecycleSpec.kt",
+        "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/CoordinationsCleanupSpec.kt"
+      ],
+      "coverageClass": "executable_existing",
+      "confidence": "high",
+      "recommendedForVerticalSlice": false,
+      "notes": "Excellent later family, but cross-cutting enough that it should not be the first vertical slice."
+    },
+    {
+      "canonicalId": "eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164",
+      "operationalFamily": "conditional_clearance_readback",
+      "normalizedRuleClaim": "A conditional-clearance readback is in full and in the same sequence as given, with the condition first.",
+      "simulatorConcept": "Conditional clearance readback ordering",
+      "codePaths": [
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/procedure/TowerDeparture.kt",
+        "controller/src/commonMain/kotlin/xyz/easiersaid/twr/controller/observe/Coordination.kt"
+      ],
+      "existingTests": [],
+      "coverageClass": "design_blocked",
+      "confidence": "medium",
+      "recommendedForVerticalSlice": false,
+      "notes": "Useful contrast: source unit is precise, but the sim likely needs richer phrase/readback sequence representation before a meaningful test."
+    }
+  ]
+}
