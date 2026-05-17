@@ -6,6 +6,7 @@ import xyz.easiersaid.twr.controller.bdi.TowerArrivalStage
 import xyz.easiersaid.twr.controller.observe.BeliefState
 import xyz.easiersaid.twr.controller.observe.ControllerEvent
 import xyz.easiersaid.twr.controller.observe.GoAroundInProgress
+import xyz.easiersaid.twr.controller.observe.SeparationConcern
 import xyz.easiersaid.twr.controller.observe.GoAroundRunwayResolutionFailure
 import xyz.easiersaid.twr.controller.observe.resolveGoAroundRunway
 import xyz.easiersaid.twr.controller.observe.withGoAroundInProgress
@@ -339,7 +340,15 @@ class GoAroundSequencingSpec {
                     onGround = false,
                 ),
                 AC_B to AircraftObservation.fromTestPoint(
-                    point = PT_DOWNWIND, worldIndex = TEST_INDEX, id = AC_B,
+                    // fn-32.2: PT_LONG_DOWNWIND (18_520 m / 10 NM from
+                    // threshold) so the AC_A-leader / AC_B-follower pair
+                    // produces a COMFORTABLE separation assessment. The
+                    // previous PT_DOWNWIND (1_000 m / 0.54 NM) gave
+                    // VIOLATION-level concern → action certifier rejected
+                    // ARR-EXTEND-FOR-GA via `certifySeparation` and the
+                    // REACTIVE-SEPARATION net emitted BreakOff instead.
+                    // OnCircuitLeg(DOWNWIND) preserved via TEST_INDEX entry.
+                    point = PT_LONG_DOWNWIND, worldIndex = TEST_INDEX, id = AC_B,
                     callsign = Callsign("OEBBB"), altitude = Level.AltitudeFeet.unsafe(1500),
                     onGround = false,
                 ),
@@ -376,6 +385,17 @@ class GoAroundSequencingSpec {
         }
         check(entry.setAtTime == view.time) {
             "Expected setAtTime=${view.time}; got ${entry.setAtTime}"
+        }
+        // fn-32.2 (R1 acceptance — positive precondition for the rule
+        // chain): the AC_A-leader / AC_B-follower geometry must produce
+        // a COMFORTABLE assessment concerning AC_B, otherwise the
+        // certifier rejects ARR-EXTEND-FOR-GA's instruction via the
+        // VIOLATION-level guard in `certifySeparation`.
+        check(result.updatedBeliefs.separationAssessments.any {
+            it.other == AC_B && it.concern == SeparationConcern.Severity.COMFORTABLE
+        }) {
+            "Expected COMFORTABLE separation assessment for AC_B; " +
+                "got ${result.updatedBeliefs.separationAssessments}"
         }
         // ARR-EXTEND-FOR-GA fires on AC_B in the SAME cycle.
         val ext = result.outputs.filterIsInstance<ControllerOutput.Instruct>()
@@ -419,14 +439,23 @@ class GoAroundSequencingSpec {
         // aircraft on downwind. This cycle: view.time = 30_000ms,
         // AC_A transmits Report(Downwind) — pattern-rejoin clears the
         // belief.
-        val previous = baseBeliefs(trailingAircraft = AC_B).copy(
+        //
+        // fn-32.2: opt-in 2-aircraft fixture (AC_A leader at PT_FINAL,
+        // AC_B follower at PT_LONG_DOWNWIND). Without AC_A the
+        // arrivalSequence has < 2 slots, SeparationEngine returns empty
+        // assessments, and `SeparationConcernAbove`'s fail-conservative
+        // empty-set branch reads as INTERVENTION — blocking ARR-TURN-BASE
+        // via `Not(SeparationConcernAbove(INTERVENTION))`. The
+        // PT_LONG_DOWNWIND geometry (10 NM trailing gap to AC_A at the
+        // threshold) yields a COMFORTABLE assessment.
+        val previous = baseBeliefs(trailingAircraft = AC_B, leaderAircraft = AC_A).copy(
             goAroundInProgressByRunway = mapOf(
                 RWY to GoAroundInProgress(AC_A, SimTime.ofMillis(5_000)),
             ),
         )
         val view = baseView(
             trailingAircraft = AC_B,
-            point = PT_DOWNWIND,
+            point = PT_LONG_DOWNWIND,
             time = SimTime.ofMillis(30_000),
             receivedMessages = listOf(
                 ReceivedMessage.Clear(
@@ -434,12 +463,23 @@ class GoAroundSequencingSpec {
                     transmission = Report(events = listOf(ReportEvent.Downwind(null))),
                 ),
             ),
+            leaderAircraft = AC_A,
         )
         val result = controllerDecide(view, previous, worldWithRunway())
 
         // GA belief cleared.
         check(RWY !in result.updatedBeliefs.goAroundInProgressByRunway) {
             "Expected GA belief cleared on pattern-rejoin; got ${result.updatedBeliefs.goAroundInProgressByRunway}"
+        }
+        // fn-32.2 (R1 acceptance — positive precondition): assert that
+        // ARR-TURN-BASE's `Not(SeparationConcernAbove(INTERVENTION))` is
+        // satisfied via a COMFORTABLE assessment concerning AC_B (not via
+        // the fail-conservative empty-set quirk).
+        check(result.updatedBeliefs.separationAssessments.any {
+            it.other == AC_B && it.concern == SeparationConcern.Severity.COMFORTABLE
+        }) {
+            "Expected COMFORTABLE separation assessment for AC_B; " +
+                "got ${result.updatedBeliefs.separationAssessments}"
         }
         // TurnBase fires on AC_B in the SAME cycle.
         val turnBase = result.outputs.filterIsInstance<ControllerOutput.Instruct>()
@@ -455,7 +495,12 @@ class GoAroundSequencingSpec {
         // Same concrete-cancel-output contract as pattern-rejoin path but
         // via the 60s timeout — bounded recovery if the GA-aircraft's
         // pattern-rejoin transmission is lost / radio failure.
-        val previous = baseBeliefs(trailingAircraft = AC_B).copy(
+        //
+        // fn-32.2: same 2-aircraft fixture rationale as the pattern-rejoin
+        // test above — without AC_A the arrivalSequence has only one slot,
+        // SeparationConcernAbove fails closed, and ARR-TURN-BASE never
+        // fires. PT_LONG_DOWNWIND gives the COMFORTABLE margin needed.
+        val previous = baseBeliefs(trailingAircraft = AC_B, leaderAircraft = AC_A).copy(
             goAroundInProgressByRunway = mapOf(
                 // setAt = 1ms; view.time below is >= 60_000ms → timeout fires.
                 RWY to GoAroundInProgress(AC_A, SimTime.ofMillis(1)),
@@ -463,13 +508,21 @@ class GoAroundSequencingSpec {
         )
         val view = baseView(
             trailingAircraft = AC_B,
-            point = PT_DOWNWIND,
+            point = PT_LONG_DOWNWIND,
             time = SimTime.ofMillis(60_001),
+            leaderAircraft = AC_A,
         )
         val result = controllerDecide(view, previous, worldWithRunway())
 
         check(RWY !in result.updatedBeliefs.goAroundInProgressByRunway) {
             "Expected GA belief timed out; got ${result.updatedBeliefs.goAroundInProgressByRunway}"
+        }
+        // fn-32.2 (R1 acceptance — positive precondition).
+        check(result.updatedBeliefs.separationAssessments.any {
+            it.other == AC_B && it.concern == SeparationConcern.Severity.COMFORTABLE
+        }) {
+            "Expected COMFORTABLE separation assessment for AC_B; " +
+                "got ${result.updatedBeliefs.separationAssessments}"
         }
         val turnBase = result.outputs.filterIsInstance<ControllerOutput.Instruct>()
             .firstOrNull { it.instruction is TurnBase && it.target == AC_B }
@@ -497,11 +550,21 @@ class GoAroundSequencingSpec {
     private fun baseBeliefs(
         trailingAircraft: AircraftId,
         stage: TowerArrivalStage = TowerArrivalStage.AwaitApproach,
+        leaderAircraft: AircraftId? = null,
     ): BeliefState = BeliefState.EMPTY.copy(
         activeRunway = RWY,
-        commitments = mapOf(
-            trailingAircraft to commitment(trailingAircraft, runway = RWY, stage = stage),
-        ),
+        commitments = buildMap {
+            put(trailingAircraft, commitment(trailingAircraft, runway = RWY, stage = stage))
+            // fn-32.2: opt-in 2-aircraft fixture. When `leaderAircraft` is
+            // non-null, seed its TOWER_ARRIVAL commitment so the controller's
+            // updateArrivalSequence builds a 2-slot arrivalSequence — required
+            // for SeparationEngine to emit a non-empty assessment (n < 2 returns
+            // empty, which fail-conservative `SeparationConcernAbove` then reads
+            // as INTERVENTION-level concern, blocking ARR-TURN-BASE's guard).
+            if (leaderAircraft != null) {
+                put(leaderAircraft, commitment(leaderAircraft, runway = RWY, stage = TowerArrivalStage.AwaitApproach))
+            }
+        },
     )
 
     private fun baseView(
@@ -509,6 +572,8 @@ class GoAroundSequencingSpec {
         point: PointId = PT_DOWNWIND,
         time: SimTime = SimTime.ofMillis(10_000),
         receivedMessages: List<ReceivedMessage> = emptyList(),
+        leaderAircraft: AircraftId? = null,
+        leaderPoint: PointId = PT_FINAL,
     ): ControllerView {
         val obs = AircraftObservation.fromTestPoint(
             point = point,
@@ -518,13 +583,35 @@ class GoAroundSequencingSpec {
             altitude = Level.AltitudeFeet.unsafe(1500),
             onGround = false,
         )
+        // fn-32.2: leader-aircraft observation paired with the trailing
+        // observation. Sits at PT_FINAL by default (the GA-going aircraft,
+        // closest to threshold = leader per arrivalSequence's distance-
+        // ascending sort). NEVER moved further out than the trailing
+        // aircraft — flipping the leader/follower roles is meaningless
+        // for the "trailing aircraft sequenced behind GA" scenarios.
+        val leaderObs = leaderAircraft?.let {
+            AircraftObservation.fromTestPoint(
+                point = leaderPoint,
+                worldIndex = TEST_INDEX,
+                id = it,
+                callsign = Callsign("OEAAA"),
+                altitude = Level.AltitudeFeet.unsafe(800),
+                onGround = false,
+            )
+        }
         return ControllerView(
             time = time,
             controllerId = ControllerId("LOWG_TWR"),
             role = RoleName.TOWER,
             aerodromeId = ADRM,
-            responsibilities = setOf(trailingAircraft),
-            aircraft = mapOf(trailingAircraft to obs),
+            responsibilities = buildSet {
+                add(trailingAircraft)
+                if (leaderAircraft != null) add(leaderAircraft)
+            },
+            aircraft = buildMap {
+                put(trailingAircraft, obs)
+                if (leaderAircraft != null && leaderObs != null) put(leaderAircraft, leaderObs)
+            },
             runways = mapOf(
                 RWY to RunwayObservation(
                     id = RWY,
@@ -536,7 +623,10 @@ class GoAroundSequencingSpec {
             receivedMessages = receivedMessages,
             weather = null,
             worldIndex = TEST_INDEX,
-            flightStripIntents = mapOf(trailingAircraft to AircraftIntent.Arriving),
+            flightStripIntents = buildMap {
+                put(trailingAircraft, AircraftIntent.Arriving)
+                if (leaderAircraft != null) put(leaderAircraft, AircraftIntent.Arriving)
+            },
         )
     }
 
@@ -547,6 +637,16 @@ class GoAroundSequencingSpec {
         private val RWY = RunwayId("16C")
         private val RWY_OTHER = RunwayId("28")
         private val PT_DOWNWIND = PointId("DOWNWIND")
+        // fn-32.2: further-out downwind point so a 2-aircraft fixture
+        // (AC_A leader at FINAL, AC_B follower here) produces a
+        // COMFORTABLE separation assessment instead of VIOLATION. At
+        // 18_520 m (10 NM) the follower-to-threshold distance escapes
+        // SeparationEngine's positional tightening range (4 NM) AND the
+        // gap (10 NM minus AC_A's 0 NM) clears COMFORTABLE_THRESHOLD = 2 NM
+        // even after the unknown-wake H/H 4 NM required minimum.
+        // OnCircuitLeg(DOWNWIND) is preserved via circuitLegsByPoint so
+        // ARR-TURN-BASE / ARR-EXTEND-FOR-GA guards still pass.
+        private val PT_LONG_DOWNWIND = PointId("LONG_DOWNWIND")
         private val PT_FINAL = PointId("FINAL")
         private val PT_THR = PointId("THR")
 
@@ -554,11 +654,13 @@ class GoAroundSequencingSpec {
             positions = mapOf(
                 PT_FINAL to Position(xMeters = 0.0, yMeters = 0.0),
                 PT_DOWNWIND to Position(xMeters = 1000.0, yMeters = 0.0),
+                PT_LONG_DOWNWIND to Position(xMeters = 18_520.0, yMeters = 0.0),
                 PT_THR to Position(xMeters = 0.0, yMeters = 0.0),
             ),
             circuitLegsByPoint = mapOf(
                 PT_FINAL to setOf(LegName.FINAL),
                 PT_DOWNWIND to setOf(LegName.DOWNWIND),
+                PT_LONG_DOWNWIND to setOf(LegName.DOWNWIND),
             ),
             thresholdByRunway = mapOf(RWY to PT_THR),
         )

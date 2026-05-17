@@ -72,6 +72,44 @@ Failing tests:
 - **Impact**: scoped to one test file
 - **Operational ATC correctness**: N/A — fixture refinement, not behavior change. Doctrine of `SeparationConcernAbove` empty = conservative is preserved.
 
+## Resolved during implementation
+
+**Step 1 diagnosis (per failing test, after adding ad-hoc debug output to the existing `error(...)` messages and re-running `:controller:jvmTest --tests "*GoAroundSequencingSpec*"`):**
+
+### `ARR-EXTEND-FOR-GA fires from same-cycle GoAroundDetected fold (round-trip)` (L383 of pre-fix file)
+
+- **arrivalSequence**: 2 slots — `OE-AAA@0.0m` (leader), `OE-BBB@1000.0m` (follower).
+- **separationAssessments** (1 entry):
+  - `currentSeparationNm = 0.5399…` (~0.54 NM gap)
+  - `requiredSeparationNm = 4.0` (Heavy/Heavy fallback via `requiredWakeSeparation` — both `AircraftObservation.fromTestPoint` cases have no published `WakeCategory`, so the engine defaults to `H` per the doctrinal worst-case-conservative rule in `WakeSeparation.kt:53-61`)
+  - `concern = VIOLATION`
+  - `wakeRule = UnknownCategory`
+- **Which guard failed**: ARR-EXTEND-FOR-GA actually FIRED (rule guards passed), but the action `certifier.certifySeparation` REJECTED the dispatch with `Target OE-BBB has unresolved violation-level separation concern` (see `Certification.kt:270-287`). The arbitrator's REACTIVE-SEPARATION net then emitted `BreakOff` on AC_B instead.
+- **Fixture seed that fixed it**: extended `TEST_INDEX` with `PT_LONG_DOWNWIND` at 18 520 m (10 NM) on `LegName.DOWNWIND` and moved AC_B to that point in the hand-crafted view. New geometry: leader 0 NM, follower 10 NM → margin 6 NM > `COMFORTABLE_THRESHOLD (= 2.0) × positional_factor (= 1.0 since follower > 4 NM tightening range)` → `COMFORTABLE`. Certifier accepts. Added a precondition assertion: `separationAssessments.any { other == AC_B && concern == COMFORTABLE }` (per acceptance).
+
+### `ARR-TURN-BASE fires once GA belief clears via pattern-rejoin (concrete cancel-output)` (L447)
+
+- **arrivalSequence**: 1 slot — `OE-BBB@1000.0m` only. The fixture's `baseBeliefs` and `baseView` seeded ONLY AC_B; the inbound `Report(Downwind)` from AC_A in `receivedMessages` was a transmission-only event with no paired `AircraftObservation` for AC_A, so `updateArrivalSequence`'s filter (`commitments` ∩ `trackedAircraft` ∩ `!onGround`) yielded only AC_B.
+- **separationAssessments**: empty (n < 2 → `assessSeparation` returns empty per `SeparationEngine.kt:30`).
+- **Which guard failed**: ARR-TURN-BASE's `Not(SeparationConcernAbove(INTERVENTION))`. With empty assessments, `SeparationConcernAbove.evaluate` returns `true` (`Guard.kt:927-934`, fail-conservative "no assessments = assume concern") → `Not(...)` returns false → ARR-TURN-BASE skipped. Reported as `ARR-TURN-BASE: passed=false [Not]` in `skippedActions`. (Note: ARR-EXTEND-FOR-GA also failed, with `[No go-around in progress on this commitment's runway]` — the fold cleared the GA belief this cycle via AC_A's `Report(Downwind)`, which is the intended pattern-rejoin path; ARR-TURN-BASE is the rule that should fire post-clear, not ARR-EXTEND-FOR-GA.)
+- **Fixture seed that fixed it**: opted into the new `baseBeliefs(leaderAircraft = AC_A)` + `baseView(leaderAircraft = AC_A, point = PT_LONG_DOWNWIND)` parameters. AC_A's commitment + observation now seed the arrivalSequence with 2 slots; geometry (0 NM vs 10 NM) → COMFORTABLE → `Not(SeparationConcernAbove(INTERVENTION))` passes → ARR-TURN-BASE fires.
+
+### `ARR-TURN-BASE fires once GA belief clears via 60s timeout` (L476)
+
+- Same diagnosis as the pattern-rejoin test above: 1-slot arrivalSequence → empty assessments → fail-conservative INTERVENTION → ARR-TURN-BASE blocked on `[Not]`. The only difference from the pattern-rejoin case is that the GA-belief clear comes from the 60s timeout path inside `withGoAroundInProgress` (no AC_A transmission needed) instead of a pattern-rejoin report.
+- **Fixture seed that fixed it**: same `leaderAircraft = AC_A` + `point = PT_LONG_DOWNWIND` opt-in.
+
+**Cross-cutting design choices**:
+
+1. **`baseBeliefs` / `baseView` opt-in (`leaderAircraft: AircraftId? = null`)** instead of always seeding both aircraft. The currently-green `ARR-EXTEND-FOR-GA fires when trailing aircraft on downwind …` (L269 of pre-fix file) and `ARR-EXTEND-FOR-GA does NOT fire … (negative case)` (L295) tests do NOT need a leader (they test ARR-EXTEND-FOR-GA which doesn't gate on separation), and the negative `ARR-TURN-BASE blocked while GA active` (L388) test STILL passes because `Not(GoAroundInProgressOnRunway)` is the dominant blocker regardless of separation. Opt-in keeps the existing 14 green tests' surface area unchanged.
+2. **Why `PT_LONG_DOWNWIND` at exactly 18 520 m (10 NM)**: needs to clear `POSITIONAL_TIGHTENING_RANGE_NM = 4.0` (so the comfort threshold is the full 2 NM, not halved), and needs ≥ `COMFORTABLE_THRESHOLD + RADAR_MINIMUM_NM` = 2 + 4 = 6 NM total gap from leader. 10 NM gives 4 NM headroom — enough that small changes elsewhere (closure-rate adjustments, wake-table updates) don't silently regress the assertion.
+3. **No production code touched**: confirmed via `git diff --stat` after the change — only `GoAroundSequencingSpec.kt` modified.
+
+**Verification**:
+- `gradle :controller:jvmTest --tests "*GoAroundSequencingSpec*" --offline --no-daemon` → 17/17 PASS.
+- `gradle :controller:jvmTest --offline --no-daemon` (full module) → BUILD SUCCESSFUL, no regression in any sibling controller test.
+- `gradle detekt --offline --no-daemon` → BUILD SUCCESSFUL.
+
 ## Done summary
 
 _(filled by `flowctl done` at task close)_
