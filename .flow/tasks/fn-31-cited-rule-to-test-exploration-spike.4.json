@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-17T14:03:00.244306Z",
+  "depends_on": [],
+  "epic": "fn-31-cited-rule-to-test-exploration-spike",
+  "id": "fn-31-cited-rule-to-test-exploration-spike.4",
+  "priority": 1,
+  "spec_path": ".flow/tasks/fn-31-cited-rule-to-test-exploration-spike.4.md",
+  "status": "todo",
+  "title": "Select cited rule slice and build coverage matrix",
+  "updated_at": "2026-05-17T14:03:29.372495Z"
+}

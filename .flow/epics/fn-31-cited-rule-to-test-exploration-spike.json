@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-31-cited-rule-to-test-exploration-spike",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-17T14:01:58.041876Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-31-cited-rule-to-test-exploration-spike",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-17T14:04:11.676021Z",
+  "spec_path": ".flow/specs/fn-31-cited-rule-to-test-exploration-spike.md",
+  "status": "open",
+  "title": "Cited rule-to-test exploration spike",
+  "updated_at": "2026-05-17T14:04:11.676151Z"
+}
