@@ -29,17 +29,21 @@ Three independent surfaces, no shared dependencies between them:
 - `ARR-TURN-BASE fires once GA belief clears via pattern-rejoin (concrete cancel-output)`
 - `ARR-TURN-BASE fires once GA belief clears via 60s timeout`
 
-Root cause (verified via debug-println in this session, see `.plan` FN31-TEST-1): `Guard.SeparationConcernAbove(INTERVENTION)` is fail-conservative — returns `true` when `ctx.beliefs.separationAssessments` is empty (commented "no assessments = assume concern, be conservative"). The test fixtures populate only AC_B; `assessSeparation` at `controller/.../assess/SeparationEngine.kt:30` returns empty for `arrivals.size < 2`. `Not(SeparationConcernAbove(INTERVENTION))` then evaluates `Not(true) = false` and `ARR-TURN-BASE`'s guard fails — even though there is no actual separation concern (only one aircraft tracked).
+Initial hypothesis (verified via debug-println in this session, see `.plan` FN31-TEST-1): `Guard.SeparationConcernAbove(INTERVENTION)` is fail-conservative — returns `true` when `ctx.beliefs.separationAssessments` is empty (commented "no assessments = assume concern, be conservative"). `assessSeparation` at `controller/.../assess/SeparationEngine.kt:30` returns empty for `arrivals.size < 2`.
 
-Fix shape: add AC_A (the GA-going aircraft, already referenced in the fixture's `goAroundInProgressByRunway` entry) as a second tracked aircraft in `baseView`'s `aircraft` map + a sibling `commitment(AC_A, runway=RWY)` in `baseBeliefs.commitments`. AC_A's `point` should be PT_FINAL or a sibling point so the pair separates cleanly on the leg. `assessSeparation` then generates a real `COMFORTABLE`-severity assessment; `SeparationConcernAbove(INTERVENTION)` returns false; the `Not(...)` passes; `ARR-TURN-BASE` fires.
+**Plan-review R1 surfaced two refinements**: (a) the round-trip test (L383) ALREADY has both AC_A + AC_B; "add AC_A" doesn't fix that test — investigate why arrivalSequence has < 2 slots, OR what guard component fails. (b) PT_FINAL ↔ PT_DOWNWIND is ~1000m ≈ 0.54 NM — likely NOT `COMFORTABLE` per the SeparationEngine's comfort threshold. Even with 2 aircraft, the assessment may be `INTERVENTION`+, still blocking `ARR-TURN-BASE`.
+
+**Fix shape (per task .2 Step 1)**: diagnose actual state per failing test before refining the fixture. For each failing test, capture `separationAssessments` + `arrivalSequence.slots` + the per-guard `ruleTraces` post `controllerDecide`. Then refine geometry while preserving leader/follower semantics — **AC_A is leader at PT_FINAL** (the GA-going aircraft, closer to threshold); **AC_B is follower** on a downwind point. To produce a `COMFORTABLE` margin without inverting: extend `TEST_INDEX` with a further-out downwind point (e.g., `PT_LONG_DOWNWIND` ~3000-5000m from threshold) and move AC_B there. Never move AC_A further out than AC_B. Assert positive precondition: `result.updatedBeliefs.separationAssessments.any { concerns AC_B && concern == COMFORTABLE }` BEFORE asserting rule output.
 
 ### (2) Pilot negative-case test failures (pilot commonTest)
 
 Two assertions:
-- `PilotEventAbortTakeoffTest.kt:248` — assertion-failed error; specific assertion not yet investigated.
-- `PilotEventDensityAltitudeTest.kt:187` — test name `"does NOT fire on airborne steps — mission-shape guard rejects"`; the recognition is FIRING when it should not (mission-shape guard is supposed to reject airborne steps but isn't).
+- `PilotEventAbortTakeoffTest.kt:248` — assertion-failed error.
+- `PilotEventDensityAltitudeTest.kt:187` — test name `"does NOT fire on airborne steps — mission-shape guard rejects"`; the top-level `derivePilotEvent` returns non-null when the test expects null.
 
-Fix path TBD: either tighten the recognition gate (so the negative-case correctly does not fire) or update the test if a deliberate contract change is the right answer. The fn-28.2 / fn-28.9 work introduced these branches; the most likely root cause is a missing phase / step gate in `deriveDensityAltitudeEvent` / `deriveAbortTakeoffEvent`.
+**Plan-review R1 corrected the diagnosis**: `isDensityAltitudeDeclineEligible` ALREADY rejects FLY_DEPARTURE / FLY_DOWNWIND / FLY_FINAL / AWAIT_LANDING_CLEARANCE. The recognition firing is NOT DA-decline — it's the **earlier `deriveDecisionAltitudeEvent` branch** in `derivePilotEvent`, which fires for on-approach steps (AWAIT_LANDING_CLEARANCE / FLY_FINAL / FLY_BASE / REPORT_FINAL / REPORT_BASE) with low altitude + no clearance. The test uses `aircraft = aircraft()` (default ground-phase / altitudeM=0 / no clearance), so the earlier DA-without-clearance branch fires for the on-approach airborne steps.
+
+**Fix path (per task .3 Step 1)**: identify the actual `PilotEvent` returned. If `DecisionAltitudeWithoutClearance`, refine the test fixture (raise altitude > DECISION_ALTITUDE_M, OR set `mission.hasClearance`, OR split the test into mission-shape rows that exclude the on-approach set). Production gate fix ONLY if Step 1 evidence shows a real `DensityAltitudeDecline` / `AbortTakeoff` event firing on a non-eligible MissionStep.
 
 ### (3) kotest 5.9.1 not in user's `~/.gradle/caches`
 
@@ -49,22 +53,26 @@ Fix: one-time `./gradlew :sim:compileTestKotlinJvm` outside `--offline` populate
 
 ## Edge Cases & Constraints [inferred]
 
-- The 14 currently-green tests in `GoAroundSequencingSpec` (including the negative-case `ARR-TURN-BASE blocked while GA active` which passes via the same fail-conservative quirk that breaks the positive cases) must remain green after the fixture refactor. The fixture change must add AC_A WITHOUT disturbing the AC_B-only test paths.
+- The 14 currently-green tests in `GoAroundSequencingSpec` (including the negative-case `ARR-TURN-BASE blocked while GA active` which passes via the same fail-conservative quirk that breaks the positive cases) must remain green after the fixture refactor. Any fixture change must not disturb the AC_B-only test paths; where AC_A is already present (the round-trip test), diagnose `arrivalSequence` / geometry state rather than adding another aircraft.
 - Both pilot tests assert NEGATIVE cases. Investigation could conclude the test is wrong (deliberate contract change) — in that case, update the test rather than the gate. Document either way.
 - The kotest fetch needs network egress; agent sandbox blocks it but the user's normal terminal has internet. Single command, no automation needed.
 
 ## Acceptance Criteria
 
-- **R1** [user / paraphrase]: All 17 `GoAroundSequencingSpec` tests green via test-fixture refactor — add AC_A (the GA-going aircraft, with sibling commitment + position) so `assessSeparation` produces a real `COMFORTABLE` assessment instead of empty. NO change to controller production code (`TowerArrival.kt`, `Guard.kt`, `Observe.kt`, `Controller.kt`). The 2 already-fixed bugs (rule placement moved AwaitApproach → AwaitDownwind; detekt regression on `pilotDecide`) stay in their committed state.
+- **R1** [user / paraphrase, revised per plan-review R1]: All 17 `GoAroundSequencingSpec` tests green via diagnosis-first test-fixture refinement (task .2 Step 1) — capture actual `separationAssessments` + `arrivalSequence` + `ruleTraces` per failing test, then refine fixture (extend `TEST_INDEX` with further-out point if geometry too tight, seed `arrivalSequence` directly if slots empty, OR adjust per observed state). Each fixed test asserts the positive precondition (`separationAssessments` shows COMFORTABLE for AC_B) BEFORE asserting rule output. NO change to controller production code. The 2 already-fixed bugs (rule placement moved AwaitApproach → AwaitDownwind; detekt regression on `pilotDecide`) stay in their committed state.
 
-- **R2** [paraphrase]: Both pilot tests resolved with documented root cause:
-  - `PilotEventAbortTakeoffTest.kt:248` — investigate assertion, identify gate / contract drift, fix.
-  - `PilotEventDensityAltitudeTest.kt:187` ("does NOT fire on airborne steps — mission-shape guard rejects") — recognition is firing on airborne steps when it should not; tighten phase / step gate in `deriveDensityAltitudeEvent` OR update test if contract change deliberate.
-  - Both green.
+- **R2** [paraphrase, revised per plan-review R1]: Both pilot tests resolved with documented root cause (task .3 Step 1 evidence-first):
+  - First identify the actual `PilotEvent` returned by each failing row's `derivePilotEvent` call. Reviewer's prediction: `DecisionAltitudeWithoutClearance` (the earlier branch leaks for on-approach steps with low altitude + no clearance — `isDensityAltitudeDeclineEligible` already correctly rejects the airborne steps the L187 test iterates).
+  - Test-fixture fix (preferred): neutralize the earlier branch (raise altitudeM > DECISION_ALTITUDE_M, set `hasClearance`, OR exclude on-approach mission shapes from the negative-row enumeration).
+  - Gate fix (only if Step 1 evidence proves a real `DensityAltitudeDecline` / `AbortTakeoff` event firing on a non-eligible step): tighten the corresponding eligibility predicate. The test KDocs document the cross-branch dependency either way.
+  - Both `PilotEventAbortTakeoffTest.kt:248` + `PilotEventDensityAltitudeTest.kt:187` green.
 
 - **R3** [user]: User runs `./gradlew :sim:compileTestKotlinJvm` ONCE outside `--offline` (in their normal terminal, not the agent sandbox) to populate kotest 5.9.1 in `~/.gradle/caches/modules-2`. Thereafter the offline gradle formula from `d32b8b8` works for `:sim:jvmTest` too.
 
-- **R4** [paraphrase]: Full verify GREEN — `./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt --offline --no-daemon` + `./gradlew :migration:allTests --offline --no-daemon`. 13 sim goldens + all property tests + all unit tests pass; detekt clean.
+- **R4** [paraphrase, command-form clarified per plan-review R1 Minor]: Full verify GREEN. Two valid invocations:
+  - **User's normal terminal** (project wrapper, post-kotest fetch): `./gradlew :pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt --offline --no-daemon` + `./gradlew :migration:allTests --offline --no-daemon`.
+  - **Agent sandbox** (Nix-provided gradle — `./gradlew` can't extract wrapper under sandbox-restricted `~/.gradle/wrapper/dists/`): use the formula at task .4's Approach Step 5 (`GRADLE_USER_HOME=$HOME/.cache/gradle GRADLE_RO_DEP_CACHE=$HOME/.gradle/caches TMPDIR=$TMPDIR _JAVA_OPTIONS=… nix … develop -c gradle …`).
+  - Both invocations resolve to gradle 8.14.4. 13 sim goldens + all property tests + all unit tests pass; detekt clean.
 
 - **R5** [paraphrase]: 45+ commits ahead of `origin/main` pushed once R1–R4 green. Branch ready for PR / further work.
 
@@ -114,6 +122,25 @@ The agent investigation in this session is the load-bearing evidence — `.plan`
   ```
 - `fn-31-cited-rule-to-test-exploration-spike` — sibling research epic (open; this work is verify follow-up, NOT an extension of fn-31)
 
+## Review considerations [added during plan-review R1 per reviewer Major 5]
+
+- **FP / type safety**: no sealed-hierarchy / Arrow `Either` changes expected; the conditional gate-fix path in .3 (if invoked) would add a `MissionStep` arm to an existing predicate — type-safe by construction.
+- **Test architecture**: the work flips two existing test fixtures from "blind assertion" to "assert observed state THEN assert rule output". Pattern: pre-assert the actual `separationAssessments` / returned `PilotEvent` before asserting the consequent behavior. Surfaces branch-precedence + guard-chain dependencies that the original test design hid.
+- **Impact**: scoped to 2 test files (`GoAroundSequencingSpec.kt` + the 2 pilot tests). Conditional production-code touch in .3 only if reviewer's diagnosis flips at impl-time (gate fix instead of fixture fix). No expected source change to `Guard.kt`, `SeparationEngine.kt`, `Controller.kt`, `Observe.kt`, `TowerArrival.kt`, or any `:sim` golden test.
+- **Operational ATC correctness**: doctrine preserved either way — `SeparationConcernAbove` fail-conservative stays; `derivePilotEvent` branch-precedence order stays; `MissionStep` eligibility predicates stay (unless Step 3 fix path in .3 is taken, which would tighten a gate with a documented contract change). The fix-path priority (test fixture first, gate change only on evidence) keeps the production-code surface minimal.
+- **Reviewer focus** when impl-review lands: any production-code edit needs justification via Step 1 evidence in `## Resolved during implementation`. Pure test-side fixes get a lighter touch.
+
+## Requirement coverage
+
+| Req | Description | Task | Gap justification |
+|-----|-------------|------|-------------------|
+| R1  | 17 `GoAroundSequencingSpec` tests green via 2-aircraft fixture + assessment assertion | fn-32...2 | — |
+| R2  | 2 pilot negative-case tests resolved with documented root cause | fn-32...3 | — |
+| R3  | `:sim:jvmTest` runs offline after one-time online kotest fetch | fn-32...1 | — |
+| R4  | Full verify GREEN (13 sim goldens + all units + detekt + migration) | fn-32...4 | — |
+| R5  | 45+ commits pushed | fn-32...4 | — |
+| R6  | `.plan` FN31-TEST-1 marked complete | fn-32...4 | — |
+
 ## Suggested next step
 
-Run `/flow-next:plan fn-32-green-out-fn31-test-1-residual-verify` to add per-R-ID tasks (likely 3 — one per fix surface: controller fixture, pilot tests, kotest fetch + final-verify), or `/flow-next:interview fn-32-green-out-fn31-test-1-residual-verify` to refine acceptance + edge cases before planning.
+After plan-review SHIP, run `/flow-next:work fn-32-green-out-fn31-test-1-residual-verify` to execute the 4 tasks in dependency order (.1 + .2 + .3 in parallel — no inter-deps — then .4 close-out).

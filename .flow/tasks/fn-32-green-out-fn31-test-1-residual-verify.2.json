@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-17T16:15:37.846989Z",
+  "depends_on": [],
+  "epic": "fn-32-green-out-fn31-test-1-residual-verify",
+  "id": "fn-32-green-out-fn31-test-1-residual-verify.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-32-green-out-fn31-test-1-residual-verify.2.md",
+  "status": "todo",
+  "title": "GoAroundSequencingSpec 2-aircraft fixture refactor (R1) \u2014 reuse L329-367 pattern; 3 failing tests green",
+  "updated_at": "2026-05-17T16:22:21.290667Z"
+}

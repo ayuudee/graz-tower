@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-32-green-out-fn31-test-1-residual-verify",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "019e36ba-d350-73c3-85c8-65027d491570",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-05-17T16:30:24.034750Z",
+  "review": "**Issues**\n\nNo blocking issues found. The previous leader/follower geometry problem is now corrected in both the epic and task .2: AC_A remains the leader near threshold, AC_B moves farther out on a DOWNWIND point, and the plan explicitly forbids inverting that ordering.\n\nThe epic and task specs are now aligned on:\n- diagnosis-first controller fixture work\n- pilot branch-order fixture fixes\n- user-side kotest cache population\n- explicit commits in .2/.3/.4\n- `.plan` update before push\n- correct wrapper vs Nix-provided Gradle command split\n\n<verdict>SHIP</verdict>\n"
+}
