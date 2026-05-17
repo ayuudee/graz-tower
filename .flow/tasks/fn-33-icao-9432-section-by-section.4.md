@@ -8,8 +8,7 @@ Close the spike by synthesizing what the single-source workflow taught us. The r
 - [ ] Findings cover scenario builder value, source-unit evidence modeling, code-only fixture ergonomics, and expected scale.
 - [ ] Flow task evidence links to inventory, ledger, tests, verification, and report artifacts.
 ## Done summary
-TBD
-
+Synthesized the FN33 ICAO 9432 workflow. Recommendation: continue source-by-source, but use the ledger as triage/traceability rather than a blind test queue; add direct source-unit trace evidence before scaling; next useful simulator slice is taxi/runway or takeoff, and a separate phraseology-rendering/linting spike is needed for wording rules. Chose egast-vfr-extracted as the contrasting second source.
 ## Evidence
 - Commits:
 - Tests:

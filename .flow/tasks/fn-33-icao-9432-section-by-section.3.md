@@ -8,8 +8,7 @@ Classify the remaining ICAO 9432 sections and records against the ledger. This t
 - [ ] Existing tests/goldens are referenced where they already cover the behavior.
 - [ ] Blockers and non-scope decisions are explained, not hidden.
 ## Done summary
-TBD
-
+Classified all remaining ICAO 9432 accepted source units. No records remain pending_classification. The final ledger counts are covered=4, duplicate_support=1, new_case_needed=43, blocked_by_existing_red=3, blocked_by_model_gap=41, needs_domain_review=59, not_sim_scope=15. Added a classification report describing section outcomes and existing-test overlap without overstating coverage.
 ## Evidence
 - Commits:
 - Tests:

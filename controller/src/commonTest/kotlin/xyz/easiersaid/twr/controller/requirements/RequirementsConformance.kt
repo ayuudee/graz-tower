@@ -30,6 +30,37 @@ data class RequirementsConformanceCase(
     }
 }
 
+data class SourceBackedBehaviorCase(
+    val id: String,
+    val family: String,
+    val sourceUnits: Set<SourceUnitRef>,
+    val assertBehavior: () -> Unit,
+) {
+    init {
+        require(id.isNotBlank()) { "case id must not be blank" }
+        require(family.isNotBlank()) { "case family must not be blank" }
+        require(sourceUnits.isNotEmpty()) { "case must cite at least one source unit" }
+    }
+}
+
+fun SourceBackedBehaviorCase.assertSatisfied() {
+    try {
+        assertBehavior()
+    } catch (failure: AssertionError) {
+        fail(
+            buildString {
+                appendLine("Source-backed behavior case '$id' failed.")
+                appendLine("Family: $family")
+                appendLine("Source units:")
+                sourceUnits.forEach { sourceUnit ->
+                    appendLine("  - ${sourceUnit.canonicalId}")
+                }
+                appendLine(failure.message.orEmpty())
+            },
+        )
+    }
+}
+
 fun RequirementsConformanceCase.assertSatisfiedBy(trace: DecisionTrace) {
     val missing = expectations.filterNot { expectation ->
         trace.regulations.toSet().containsAll(expectation.acceptedProxyRegulations)
@@ -49,4 +80,3 @@ fun RequirementsConformanceCase.assertSatisfiedBy(trace: DecisionTrace) {
         )
     }
 }
-

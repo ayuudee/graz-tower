@@ -98,6 +98,19 @@ re-extraction resolves them. Evidence:
 `research/tools/requirements-spike/quality/curation/curate_2026-05-16T07-47-58Z/FINAL_CURATION_CLOSE_OUT.md`.
 Impact: M | Effort: H
 
+**FN33-MODEL-1 — Source-unit conformance exposes phraseology/timing model gaps**
+The FN33 ICAO 9432 readback slice classified three accepted source units as
+`blocked_by_model_gap`: route-clearance timing before start-up
+(`icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726`), communication
+delivery/workload constraints during complicated taxiing or line-up
+(`...::ac9111d240cfd2c2`), and literal phraseology linting for `TAKE OFF` vs
+`DEPARTURE` / `AIRBORNE` (`...::f06dfa1cefd2d649`). Current typed protocol
+tests can pin readback atoms, but cannot yet express timing/workload policy or
+rendered phraseology constraints. This should become a scoped phraseology /
+communication-policy layer if FN33 synthesis recommends continuing source-unit
+conformance beyond typed instruction behavior.
+Impact: M | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)

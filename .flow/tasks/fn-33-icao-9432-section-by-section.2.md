@@ -9,8 +9,7 @@ Choose the first representative ICAO 9432 section slice after the ledger exists,
 - [ ] Any source-unit evidence modeling gap is made explicit in the report or `.plan`.
 - [ ] Focused verification is run and its result is recorded.
 ## Done summary
-Blocked:
-Paused at the user-requested plan-review checkpoint. No section-slice implementation has been completed yet; reset this task to todo when resuming implementation.
+Implemented the first ICAO 9432 executable section slice against readback_2_8_3_en. Added source-unit-backed behavior cases for structural readback atoms, updated the FN33 ledger for all 8 readback records, documented three model gaps, and added .plan item FN33-MODEL-1 for deferred phraseology/timing/workload modeling.
 ## Evidence
 - Commits:
 - Tests:

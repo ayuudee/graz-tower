@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-34-eppls-chapter-12-contrasting-source",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-17T20:54:26.227553Z",
+  "created_at": "2026-05-17T20:52:47.152336Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-34-eppls-chapter-12-contrasting-source",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-17T20:53:11.511304Z",
+  "spec_path": ".flow/specs/fn-34-eppls-chapter-12-contrasting-source.md",
+  "status": "done",
+  "title": "EPPLS Chapter 12 contrasting source-unit workflow pass",
+  "updated_at": "2026-05-17T20:54:26.348107Z"
+}

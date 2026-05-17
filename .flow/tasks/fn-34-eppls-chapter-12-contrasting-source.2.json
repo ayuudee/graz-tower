@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-17T20:53:10.996929Z",
+  "depends_on": [
+    "fn-34-eppls-chapter-12-contrasting-source.1"
+  ],
+  "epic": "fn-34-eppls-chapter-12-contrasting-source",
+  "id": "fn-34-eppls-chapter-12-contrasting-source.2",
+  "priority": 2,
+  "spec_path": ".flow/tasks/fn-34-eppls-chapter-12-contrasting-source.2.md",
+  "status": "todo",
+  "title": "Synthesize EPPLS contrast findings",
+  "updated_at": "2026-05-17T20:53:11.293110Z"
+}

@@ -1,0 +1,266 @@
+[
+  {
+    "section_id": "ch12_aeronautical_stations_position_reports",
+    "total": 3,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_approach_radar_area_services",
+    "total": 15,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 15
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_callsign_abbreviation_invitation_to_proceed",
+    "total": 3,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_clearance_instruction_compliance_readback_items",
+    "total": 13,
+    "statuses": [
+      {
+        "status": "duplicate_support",
+        "count": 10
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_clearance_readback_basics",
+    "total": 2,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_communications_services_flight_workflow",
+    "total": 7,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_conditional_clearance_identification",
+    "total": 1,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_conditional_clearance_sequence_radio_check_format",
+    "total": 2,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_distress_call_format",
+    "total": 16,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 16
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_distress_cancellation_urgency_frequencies",
+    "total": 7,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_distress_urgency_general_actions",
+    "total": 14,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 14
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_key_readbacks_takeoff_cleared_word_limits",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "duplicate_support",
+        "count": 4
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_operating_frequency_readback",
+    "total": 8,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 2
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_operating_letters_initial_call",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_operating_numbers_frequency_expression",
+    "total": 7,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_radio_check_readability_transfer",
+    "total": 7,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_radio_discipline_frequency_basics",
+    "total": 12,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 7
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_radio_failure",
+    "total": 14,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 13
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_relay_ground_tower_circuit",
+    "total": 9,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 9
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_route_clearance_readback_example",
+    "total": 2,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_standard_words_acknowledge_to_recleared",
+    "total": 4,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_standard_words_correction_general_calls",
+    "total": 11,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 1
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_standard_words_report_to_words_twice",
+    "total": 9,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 9
+      }
+    ]
+  },
+  {
+    "section_id": "ch12_time_expression",
+    "total": 2,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      }
+    ]
+  }
+]

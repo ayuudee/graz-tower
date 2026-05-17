@@ -1,0 +1,296 @@
+[
+  {
+    "section_id": "aerodrome_ch4_intro_start_4_1_to_4_2_en",
+    "total": 10,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_traffic_circuit_4_6_part1_en",
+    "total": 4,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      },
+      {
+        "status": "new_case_needed",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_traffic_circuit_4_6_part2_en",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      },
+      {
+        "status": "new_case_needed",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_vehicles_crossing_towing_5_3_to_5_4_en",
+    "total": 6,
+    "statuses": [
+      {
+        "status": "not_sim_scope",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "section_id": "aerodrome_vehicles_intro_movement_5_1_to_5_2_en",
+    "total": 6,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      },
+      {
+        "status": "not_sim_scope",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "after_landing_4_9_en",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "communications_2_8_1_en",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "communications_failure_9_5_en",
+    "total": 14,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 13
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "distress_messages_9_2_en",
+    "total": 8,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 8
+      }
+    ]
+  },
+  {
+    "section_id": "distress_urgency_intro_9_1_en",
+    "total": 18,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 14
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "section_id": "essential_aerodrome_information_4_10_en",
+    "total": 12,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 10
+      },
+      {
+        "status": "new_case_needed",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "final_approach_landing_4_7_en",
+    "total": 14,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      },
+      {
+        "status": "new_case_needed",
+        "count": 12
+      }
+    ]
+  },
+  {
+    "section_id": "go_around_4_8_en",
+    "total": 3,
+    "statuses": [
+      {
+        "status": "blocked_by_existing_red",
+        "count": 3
+      }
+    ]
+  },
+  {
+    "section_id": "pushback_powerback_4_3_en",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      },
+      {
+        "status": "new_case_needed",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "section_id": "readback_2_8_3_en",
+    "total": 8,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 3
+      },
+      {
+        "status": "covered",
+        "count": 4
+      },
+      {
+        "status": "duplicate_support",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "section_id": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+    "total": 4,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      },
+      {
+        "status": "new_case_needed",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "takeoff_procedures_4_5_1_to_4_5_5_en",
+    "total": 7,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 7
+      }
+    ]
+  },
+  {
+    "section_id": "takeoff_procedures_4_5_6_to_4_5_7_en",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "new_case_needed",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "takeoff_procedures_4_5_8_to_4_5_12_en",
+    "total": 7,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 2
+      },
+      {
+        "status": "new_case_needed",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "taxi_4_4_en",
+    "total": 6,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      },
+      {
+        "status": "new_case_needed",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "section_id": "test_procedures_2_8_4_en",
+    "total": 5,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      },
+      {
+        "status": "not_sim_scope",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "section_id": "transfer_communications_2_8_2_en",
+    "total": 3,
+    "statuses": [
+      {
+        "status": "needs_domain_review",
+        "count": 1
+      },
+      {
+        "status": "new_case_needed",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "section_id": "urgency_emergency_descent_9_3_to_9_4_en",
+    "total": 6,
+    "statuses": [
+      {
+        "status": "blocked_by_model_gap",
+        "count": 1
+      },
+      {
+        "status": "needs_domain_review",
+        "count": 5
+      }
+    ]
+  }
+]
