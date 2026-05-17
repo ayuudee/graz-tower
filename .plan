@@ -13,7 +13,7 @@ This file is the canonical backlog. It is maintained by both human and AI contri
 
 ## Active items
 
-**FN31-TEST-1 — Go-around sequencing targeted verification is red during rule-to-test spike** — DONE (2026-05-17, with FN31-TEST-1-FOLLOWUP for sim runtime classpath)
+**FN31-TEST-1 — Go-around sequencing targeted verification is red during rule-to-test spike** — PARTIAL (2026-05-17; blocked on FN31-TEST-1-FOLLOWUP for sim runtime classpath)
 fn-32 epic greened the three originally-failing sub-issues (3
 GoAroundSequencingSpec cases + 2 pilot negative-case tests). Offline-sandbox
 full verify across
@@ -21,7 +21,9 @@ full verify across
 plus `:migration:allTests` is green; the sandbox-offline `:sim:jvmTest`
 run was blocked by a transitive runtime-only dep gap that fn-32.1 did not
 cover — surfaced as **FN31-TEST-1-FOLLOWUP** below (low-effort cache top-up
-on the user's terminal).
+on the user's terminal). FN31-TEST-1 stays PARTIAL until that follow-up
+runs `:sim:jvmTest` once online and confirms the 13 sim goldens stay green;
+then this item flips to DONE.
 - ✅ **3 `GoAroundSequencingSpec` failures** (fn-32.2, commit `3bdabc3`) —
   fixture refactored to opt-in 2-aircraft leader/follower geometry with a
   further-out `PT_LONG_DOWNWIND` (≈10 NM) point, so AC_A at PT_FINAL +
