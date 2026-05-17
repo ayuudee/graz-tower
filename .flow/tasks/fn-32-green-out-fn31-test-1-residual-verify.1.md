@@ -46,9 +46,8 @@ Gradle resolves kotest 5.9.1 + transitive deps from Maven Central and persists t
 - **Operational ATC correctness**: N/A
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+kotest 5.9.1 cache populated via user-side online `./gradlew :sim:compileTestKotlinJvm` (one-time fetch). BUILD SUCCESSFUL. Sandbox-offline gradle now resolves kotest-framework-engine + kotest-assertions-core + kotest-property + kotest-runner-junit5 via GRADLE_RO_DEP_CACHE → ~/.gradle/caches/modules-2/.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits:
+- Tests:
+- PRs:

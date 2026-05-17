@@ -111,9 +111,8 @@ Failing tests:
 - `gradle detekt --offline --no-daemon` → BUILD SUCCESSFUL.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Refactored GoAroundSequencingSpec.kt to add an opt-in 2-aircraft leader/follower fixture (`leaderAircraft = AC_A` parameter) plus a further-out `PT_LONG_DOWNWIND` (18 520 m / 10 NM) point so the AC_A-at-PT_FINAL / AC_B-at-PT_LONG_DOWNWIND geometry produces a COMFORTABLE separation assessment — greening the 3 failing tests (round-trip ARR-EXTEND-FOR-GA, pattern-rejoin ARR-TURN-BASE, 60s-timeout ARR-TURN-BASE) without touching any controller production code, while preserving leader/follower semantics (AC_A=GA-going aircraft closer to threshold). All 17 GoAroundSequencingSpec tests green; full :controller:jvmTest green; detekt clean.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 3bdabc316e56fe5e45f7590de79e4dc388b5886e
+- Tests: gradle :controller:jvmTest --tests "*GoAroundSequencingSpec*" --offline --no-daemon, gradle :controller:jvmTest --offline --no-daemon, gradle detekt --offline --no-daemon
+- PRs:

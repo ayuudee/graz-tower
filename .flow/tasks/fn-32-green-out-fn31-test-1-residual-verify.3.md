@@ -73,9 +73,8 @@ Failing tests:
 - **Operational ATC correctness**: doctrine preserved either way — the branch-precedence chain in `derivePilotEvent` is unchanged
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Fixed 2 pilot negative-case tests (PilotEventDensityAltitudeTest:187 + PilotEventAbortTakeoffTest:248) via test-fixture cross-branch neutralisation. Step 1 evidence confirmed plan-review R1's prediction: both failing rows returned `DecisionAltitudeWithoutClearance` (FLY_FINAL / FLY_BASE) — the EARLIER `deriveDecisionAltitudeEvent` branch was leaking, not a DA-decline/abort gate hole. Fix raises iterated aircraft `altitudeM` to 200.0 (> `DECISION_ALTITUDE_M = 100.0`) which neutralises the earlier branch while leaving the gates under test (DA-decline mission-shape + AbortTakeoff gate-4) intact. Both KDocs pin the cross-branch dependency for future contract-drift visibility. No production-code change; codex SHIP first pass.
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: 7cf8920d0e62042d94ce134ef4a227852d82ec32
+- Tests: gradle :pilot:jvmTest --tests *PilotEventDensityAltitudeTest* --tests *PilotEventAbortTakeoffTest* --offline --no-daemon, gradle :pilot:jvmTest --offline --no-daemon, gradle detekt --offline --no-daemon
+- PRs:
