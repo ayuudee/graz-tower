@@ -1,0 +1,32 @@
+{
+  "schema": "fn31_vertical_slice_report",
+  "version": "2026-05-17-v1",
+  "selectedFamily": "circuit_go_around_after_landing_clearance",
+  "sourceUnits": [
+    "cap413-extracted::ch4_4_50_to_4_60::36206ebf73ce35e5",
+    "cap413-extracted::ch4_4_50_to_4_60::3e867581f0f695b2",
+    "cap413-extracted::ch4_4_61_to_4_69::ed3edf669048bfab",
+    "cap413-extracted::ch4_4_61_to_4_69::452877f6b21af73b",
+    "cap413-extracted::ch4_4_61_to_4_69::2adeb25694ea02ff",
+    "icao9432-extracted::go_around_4_8_en::c3581d40a48406bb"
+  ],
+  "evidenceTests": [
+    "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aRunwayObstructionContinueApproachTest.kt",
+    "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/ObstructionContinueApproachSpec.kt",
+    "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/ObstructionGoAroundSpec.kt",
+    "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/G3aPilotTrainedGoAroundTest.kt",
+    "controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/GoAroundSequencingSpec.kt"
+  ],
+  "verification": {
+    "command": "nix --extra-experimental-features 'nix-command flakes' develop -c ./gradlew :sim:jvmTest --tests 'xyz.easiersaid.twr.sim.G3aPilotTrainedGoAroundTest' --tests 'xyz.easiersaid.twr.sim.G3aRunwayObstructionContinueApproachTest' --tests 'xyz.easiersaid.twr.sim.G3aRunwayObstructionTest' :controller:jvmTest --tests 'xyz.easiersaid.twr.controller.ObstructionGoAroundSpec' --tests 'xyz.easiersaid.twr.controller.GoAroundSequencingSpec'",
+    "status": "blocked_red",
+    "controllerFailures": [
+      "GoAroundSequencingSpec: ARR-EXTEND-FOR-GA fires from same-cycle GoAroundDetected fold (round-trip)",
+      "GoAroundSequencingSpec: ARR-TURN-BASE fires once GA belief clears via pattern-rejoin (concrete cancel-output)",
+      "GoAroundSequencingSpec: ARR-TURN-BASE fires once GA belief clears via 60s timeout"
+    ],
+    "simCompileFailure": "EngineOffKinematicClampSpec.kt has a backtick test name containing ';', which Kotlin rejects."
+  },
+  "planItem": "FN31-TEST-1",
+  "recommendation": "Keep this family as the first vertical slice, but resolve FN31-TEST-1 before scaling to generated tests or adversarial scenarios."
+}

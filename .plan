@@ -13,6 +13,19 @@ This file is the canonical backlog. It is maintained by both human and AI contri
 
 ## Active items
 
+**FN31-TEST-1 — Go-around sequencing targeted verification is red during rule-to-test spike**
+While attempting FN31's cited go-around vertical slice on 2026-05-17, the
+targeted Nix Gradle command
+`:controller:jvmTest --tests GoAroundSequencingSpec --tests ObstructionGoAroundSpec`
+failed three `GoAroundSequencingSpec` cases: same-cycle `ARR-EXTEND-FOR-GA`,
+pattern-rejoin clear-cycle `ARR-TURN-BASE`, and timeout clear-cycle
+`ARR-TURN-BASE`. The same command also attempted `:sim:jvmTest`, but that task
+could not compile because `EngineOffKinematicClampSpec.kt` has a backtick test
+name containing `;`, which Kotlin rejects. The FN31 research artifacts record
+these as blocked verification evidence; this item tracks making the targeted
+go-around verification green again.
+Impact: H | Effort: M
+
 **FN20-CUR-1 — FN20 registry has 106 residual pending records after curation**
 The final FN20 all-source ingest, promotion, GPT curation pass, and EPPLS
 Chapter 12 extraction repair completed with zero ready-to-ingest windows

@@ -14,8 +14,7 @@ For each selected rule claim, preserve source-unit identity and citation/provena
 - [ ] The report states whether this vertical-slice approach should be scaled, modified, or abandoned.
 
 ## Done summary
-TBD
-
+Attempted the cited circuit/go-around vertical slice using six accepted source units from the coverage-matrix recommendation. Mapped the claims to existing G3/controller tests and ran the targeted Nix Gradle command. Verification is blocked/red: three GoAroundSequencingSpec cases fail and :sim:compileTestKotlinJvm is blocked by an EngineOffKinematicClampSpec test-name compile error. Recorded the result in vertical_slice_report.{md,json} and added .plan item FN31-TEST-1.
 ## Evidence
 - Commits:
 - Tests:
