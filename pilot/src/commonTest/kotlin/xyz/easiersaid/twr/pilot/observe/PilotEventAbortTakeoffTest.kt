@@ -230,10 +230,25 @@ class PilotEventAbortTakeoffTest {
         // FLY_DEPARTURE) are covered by the positive-row tests above
         // (`fires on C172 + ...` + `fires on AWAIT_TAKEOFF_CLEARANCE
         // ...`). This row covers all the negative-space rows in one pass.
+        //
+        // **Cross-branch dependency** (fn-32.3 / plan-review R2): the
+        // top-level `derivePilotEvent` chains DA-without-clearance →
+        // DA-decline → AbortTakeoff. The earlier DA-without-clearance
+        // branch fires for on-approach steps (FLY_FINAL / FLY_BASE /
+        // REPORT_FINAL / REPORT_BASE / AWAIT_LANDING_CLEARANCE) when
+        // `altitudeM <= DECISION_ALTITUDE_M = 100.0` and no clearance is
+        // set. To isolate gate 4 of the abort branch under test, we lift
+        // the negative-row aircraft above the decision altitude
+        // (`altitudeM = 200.0` > 100.0) — abort gates don't read
+        // altitudeM, so this leaves all 4 abort gates intact while
+        // neutralising the earlier branch. Any future contract drift in
+        // either branch's altitude/clearance/mission-step gates will
+        // surface here as a fresh failure.
         val eligible = setOf(
             MissionStep.AWAIT_TAKEOFF_CLEARANCE,
             MissionStep.FLY_DEPARTURE,
         )
+        val aboveDecisionAlt = 200.0
         for (step in MissionStep.entries) {
             if (step in eligible) continue  // positive rows above cover these
             val event = derivePilotEvent(
@@ -241,7 +256,7 @@ class PilotEventAbortTakeoffTest {
                     engineRunning = false,
                     speedMps = belowRotationSpeed,
                     phase = PilotPhase.TakeoffRoll,
-                ),
+                ).copy(altitudeM = aboveDecisionAlt),
                 mission = missionWithStep(step),
                 weather = null,
             )

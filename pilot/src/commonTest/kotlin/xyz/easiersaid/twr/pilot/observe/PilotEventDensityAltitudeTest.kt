@@ -172,6 +172,22 @@ class PilotEventDensityAltitudeTest {
 
     @Test
     fun `does NOT fire on airborne steps — mission-shape guard rejects`() {
+        // **Cross-branch dependency** (fn-32.3 / plan-review R2): the
+        // negative-row assertion below targets the DA-decline branch's
+        // `isDensityAltitudeDeclineEligible` mission-shape gate — but
+        // `derivePilotEvent`'s **EARLIER** `deriveDecisionAltitudeEvent`
+        // branch leaks for on-approach airborne steps (FLY_FINAL,
+        // AWAIT_LANDING_CLEARANCE) when the aircraft is at low altitude
+        // and the mission has no landing clearance. To isolate the
+        // DA-decline gate under test, the airborne fixture sets
+        // `altitudeM = 200.0` (> `DECISION_ALTITUDE_M = 100.0`), which
+        // neutralises the earlier branch's altitude predicate while
+        // matching the test's semantic intent (the rows describe
+        // *airborne* mission steps — `altitudeM = 0.0` would have been
+        // a desynced shape that triggers the earlier branch). Any future
+        // contract drift in either branch's altitude/clearance gates
+        // will surface here as a fresh failure.
+        val airborneAlt = 200.0
         listOf(
             MissionStep.FLY_DEPARTURE,
             MissionStep.FLY_DOWNWIND,
@@ -179,7 +195,7 @@ class PilotEventDensityAltitudeTest {
             MissionStep.AWAIT_LANDING_CLEARANCE,
         ).forEach { step ->
             val event = derivePilotEvent(
-                aircraft = aircraft(),
+                aircraft = aircraft().copy(altitudeM = airborneAlt),
                 mission = missionWithStep(step),
                 weather = null,
                 densityAltitudeInput = daHighLowg,
