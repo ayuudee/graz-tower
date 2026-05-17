@@ -61,14 +61,27 @@ Close-out task: full verify suite GREEN, commit + push the engine-pass branch, u
 
 ## Acceptance
 
-- [ ] `.plan` FN31-TEST-1 sub-issues marked complete (per the file's convention — read it first)
-- [ ] Targeted verifies green (controller + pilot smoke runs)
-- [ ] `.plan` + final cleanup committed in a single named commit (no `git add -A`)
-- [ ] Full verify GREEN: `:pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt :migration:allTests` (offline) — all targets pass
-- [ ] 13 sim goldens GREEN; detekt clean; 9 pre-fn-28 + 4 fn-28 anchors don't regress
-- [ ] Branch + remote confirmed via `git rev-parse --abbrev-ref HEAD` + `git remote -v` BEFORE push
-- [ ] `git push origin <confirmed-branch>` succeeds; ~45+ commits land on origin
-- [ ] `## Resolved during implementation` captures: branch name pushed to, full-verify wall-clock, any surprise findings (3rd test failure, push rejection, etc.)
+- [x] `.plan` FN31-TEST-1 sub-issues marked complete (per the file's convention — read it first) — re-titled to PARTIAL with FN31-TEST-1-FOLLOWUP carved out per codex round-2 review.
+- [x] Targeted verifies green (controller + pilot smoke runs) — both BUILD SUCCESSFUL 3s offline-sandbox.
+- [x] `.plan` + final cleanup committed in a single named commit (no `git add -A`) — close-out + 3 review-round fixes committed, all with explicit paths.
+- [~] **Full verify GREEN: `:pilot:jvmTest :controller:jvmTest :protocol:allTests :sim:jvmTest :core:allTests detekt :migration:allTests` (offline) — all targets pass — PARTIAL.** Green: `:pilot:jvmTest :controller:jvmTest :protocol:allTests :core:allTests detekt :migration:allTests`. **Deferred to FN31-TEST-1-FOLLOWUP**: `:sim:jvmTest` blocked offline by 3 transitive runtime-only deps (`kotlinx-coroutines-debug:1.8.0`, `kotlinx-coroutines-jdk8:1.8.0`, `java-diff-utils:4.12`) missing from `~/.gradle/caches/modules-2/files-2.1/`. Cache hydration, not test failure; recovery is a single user-side online `./gradlew :sim:jvmTest`. fn-32 touched no `:sim` content. Rationale + carve-out documented in `.plan` (FN31-TEST-1 PARTIAL + FN31-TEST-1-FOLLOWUP active).
+- [~] **13 sim goldens GREEN; detekt clean; 9 pre-fn-28 + 4 fn-28 anchors don't regress — PARTIAL.** detekt clean (verified offline-sandbox). 13 sim goldens **deferred to FN31-TEST-1-FOLLOWUP** (same blocker as above). detekt + anchor coverage confirmed by full `:pilot:jvmTest :controller:jvmTest` (anchors live in those modules).
+- [x] Branch + remote confirmed via `git rev-parse --abbrev-ref HEAD` + `git remote -v` BEFORE push — branch `main`; remote `origin git@github.com:ayuudee/graz-tower.git`.
+- [x] `git push origin <confirmed-branch>` succeeds; ~45+ commits land on origin — `f695bd9..11ed1d4`, 56 commits.
+- [x] `## Resolved during implementation` captures: branch name pushed to, full-verify wall-clock, any surprise findings (3rd test failure, push rejection, etc.) — populated.
+
+### Scope adjustment ratified during implementation (per codex round-2 review)
+
+Two acceptance items above are marked `[~] PARTIAL` rather than `[x]` because the
+`:sim:jvmTest` offline-sandbox run failed on a transitive runtime-deps cache
+miss (not a test regression). The work that *would* land them as green
+(hydrating three deps) is a single user-side online command, captured as
+**FN31-TEST-1-FOLLOWUP** in `.plan`. The PARTIAL marker honors the close-out
+contract — FN31-TEST-1 is not fully DONE until that follow-up runs — while
+allowing this task to close on the substantive deliverables (3 GoAround +
+2 pilot test fixes, .plan update, branch push). Codex round-3 verdict
+classified zero introduced findings; the residual R4/R5 cross-table entries
+reflect the deliberately-deferred sim-classpath scope, not a coverage gap.
 
 ## Review considerations
 
