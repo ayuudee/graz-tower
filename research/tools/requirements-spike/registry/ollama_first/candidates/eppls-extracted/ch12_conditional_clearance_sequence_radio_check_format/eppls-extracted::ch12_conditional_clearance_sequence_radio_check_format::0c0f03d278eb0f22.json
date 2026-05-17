@@ -28,9 +28,9 @@
   "claimSha256": "dada646020d66aeb0072f5bbf1f123c0db216a8b1445516c6f832f1a2d6ae540",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 23125,
-    "endLine": 23138
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1380,
+    "endLine": 1416
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -55,7 +55,7 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "pass",
-      "method": "windowed_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 4,
       "hits": 4,
       "misses": []
@@ -80,7 +80,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "promote_with_corrections",
-      "reasoning": "The quoted source text verbatim supports the conditional-clearance sequence and uses \u201cmust,\u201d while the candidate is already limited to background_support rather than authoritative_requirement. The only needed correction is to align the stored modality with the source wording.",
+      "reasoning": "The quoted source text verbatim supports the conditional-clearance sequence and uses “must,” while the candidate is already limited to background_support rather than authoritative_requirement. The only needed correction is to align the stored modality with the source wording.",
       "corrections": {
         "modality": "must"
       },

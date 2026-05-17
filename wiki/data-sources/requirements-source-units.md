@@ -28,20 +28,25 @@ The FN20 pending-registry curation pass completed on 2026-05-16:
 - Curation log: `/Users/andrew/requirements-source-units-fn10-2026-05-16-curation.log`
 - Raw GPT actions: `425` promote, `478` promote with corrections, `357`
   reject, `93` keep pending.
-- Final accepted registry records: `2824`
-- Final pending records: `203`
+- EPPLS Chapter 12 extraction repair:
+  `research/tools/requirements-spike/quality/curation/curate_2026-05-16T07-47-58Z/eppls_ch12_extraction_repair.json`
+- Final accepted registry records: `2921`
+- Final pending records: `106`
 - Final rejected records: `392`
 - Registry reproducibility: `pass` (`3419` records audited, `0` mismatches)
-- Quote audit: `pass` (`3373` quotes, `0` misses)
-- Source processing queue: `0` ready-to-ingest windows, `203` pending
+- Quote audit: `pass` (`3482` quotes, `0` misses)
+- Source processing queue: `0` ready-to-ingest windows, `106` pending
   curation records.
 
-Final QA demoted `110` accepted records back to pending because their exact
-quotes could not be verified as contiguous verbatim substrings of the extracted
-source text. Most were EPPLS records affected by two-column PDF extraction
-interleaving (`101` EPPLS records); `9` H01 records were also demoted. These
-records remain explicitly pending until source-text repair or human
-re-extraction resolves the quote contract.
+Final QA originally demoted `110` accepted records back to pending because their
+exact quotes could not be verified as contiguous verbatim substrings of the
+extracted source text. EPPLS was then repaired by replacing the whole-book,
+layout-preserving text dump with a Chapter 12-only Poppler plain-text
+extraction (`research/tools/requirements-spike/extract_eppls_ch12_text.py`,
+`research/txt/eppls-extracted.txt`). That repair promoted `97` EPPLS records
+whose quotes became mechanically verifiable. The residual EPPLS pending set is
+`16` records: `12` explicit `keep_pending` outcomes and `4` remaining
+post-quote-audit demotions. H01 still has `9` post-quote-audit demotions.
 
 EPPLS Chapter 12 is now present and ingested as background-support material
 (`research/pdf/EPPLS.pdf`, `research/txt/eppls-extracted.txt`,

@@ -5,7 +5,7 @@
   "documentId": "eppls-extracted",
   "sectionId": "ch12_time_expression",
   "familyId": "eppls_ch12_operating_procedures_background_family",
-  "claimText": "Once satisfactory communication has been established, and there will be no confusion, you are allowed to abbreviate a ground station\u2019s callsign.",
+  "claimText": "Once satisfactory communication has been established, and there will be no confusion, you are allowed to abbreviate a ground station’s callsign.",
   "rationale": "All attempts agree on this permission. It is advisory guidance for ground station callsign abbreviation.",
   "modality": "may",
   "authorityClass": "background_support",
@@ -14,7 +14,7 @@
   "verificationMode": "review_only",
   "promotionHint": "advisory_only",
   "exactSourceQuotes": [
-    "Once satisfactory communication has been established, and there will be no confusion, you are allowed to abbreviate a ground station\u2019s callsign"
+    "Once satisfactory communication has been established, and there will be no confusion, you are allowed to abbreviate a ground station’s callsign"
   ],
   "sourceItemIds": [
     "ground_station_abbrev_rule"
@@ -22,9 +22,9 @@
   "claimSha256": "7137199d60a3ca182f13c54bae9c02981e5fab1882914fc50eb894ff007da76a",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22845,
-    "endLine": 22852
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 950,
+    "endLine": 958
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -48,16 +48,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
-      "hits": 0,
-      "misses": [
-        {
-          "quote": "Once satisfactory communication has been established, and there will be no confusion, you are allowed to abbreviate a ground station\u2019s callsign",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 1,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",

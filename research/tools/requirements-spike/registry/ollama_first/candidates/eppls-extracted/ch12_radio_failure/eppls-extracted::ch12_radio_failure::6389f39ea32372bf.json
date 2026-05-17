@@ -1,0 +1,127 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_radio_failure::6389f39ea32372bf",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "ATC may send a shepherd aircraft to formate on you and bring you down if they recognize the problem.",
+  "rationale": "Potential ATC response to radio failure, serving as background information.",
+  "modality": "none",
+  "authorityClass": "background_support",
+  "requirementKind": "best_practice",
+  "testability": "review_only",
+  "verificationMode": "review_only",
+  "promotionHint": "support_only",
+  "exactSourceQuotes": [
+    "If ATC recognise your problem, they will send up a shepherd aircraft to formate on you and bring you down"
+  ],
+  "sourceItemIds": [
+    "item_radar_pattern_note"
+  ],
+  "claimSha256": "881ddba0c4e02307957816cdc82c83d6cc8bb9a3116d0a081eff929c7e155fc7",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1475,
+    "endLine": 1528
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "shepherd_aircraft_context",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "none",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote_with_corrections",
+      "reasoning": "The quoted text is supported by the source window as a contiguous passage after line-break normalization, so the G1 miss appears to be an artefact rather than a real verbatim failure. However, the source says ATC “will send up” a shepherd aircraft descriptively rather than using a permissive “may,” so the candidate should remain background support but with modality lowered to none.",
+      "corrections": {
+        "modality": "none"
+      },
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:11:12Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6389f39ea32372bf.json",
+      "to": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6389f39ea32372bf.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    },
+    "epplsCh12ExtractionRepair": {
+      "repairedAt": "2026-05-17T11:05:59Z",
+      "action": "promoted_after_chapter_12_plain_text_reextract",
+      "from": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6389f39ea32372bf.json",
+      "to": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::6389f39ea32372bf.json",
+      "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_radio_failure/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:11:12Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit",
+    "epplsCh12ExtractionRepairedAt": "2026-05-17T11:05:59Z"
+  }
+}

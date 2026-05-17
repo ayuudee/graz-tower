@@ -1,13 +1,13 @@
 # Source Processing Queue
 
-Generated: 2026-05-16T12:06:25Z
+Generated: 2026-05-17T11:06:20Z
 
 ## Counts
 
 - Manifest windows: `313`
-- Landed manifest windows: `310`
+- Landed manifest windows: `313`
 - Manifest windows ready for Ollama ingestion: `0`
-- Pending curation records: `203`
+- Pending curation records: `106`
 - High-priority ledger rows needing exact source-window hardening: `0`
 
 ## Ready To Ingest By Document

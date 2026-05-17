@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-30-eppls-chapter-12-extraction-repair",
+  "created_at": "2026-05-17T11:07:33.396723Z",
+  "depends_on_epics": [],
+  "id": "fn-30-eppls-chapter-12-extraction-repair",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-30-eppls-chapter-12-extraction-repair.md",
+  "status": "done",
+  "title": "EPPLS Chapter 12 extraction repair",
+  "updated_at": "2026-05-17T11:07:33.967617Z"
+}

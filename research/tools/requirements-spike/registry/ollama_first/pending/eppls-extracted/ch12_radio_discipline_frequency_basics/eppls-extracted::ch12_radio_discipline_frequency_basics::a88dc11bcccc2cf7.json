@@ -23,9 +23,9 @@
   "claimSha256": "ac33a75d6750b47a12ad4eb7570f63fcfa1723a0e9e084f09e46981c1ee67a5b",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22390,
-    "endLine": 22530
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1,
+    "endLine": 183
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -50,14 +50,10 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "fail",
-      "method": "post_curation_registry_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 2,
-      "hits": 0,
+      "hits": 1,
       "misses": [
-        {
-          "quote": "Under CAP 413, all six figures shall be used when identifying frequencies irrespective of whether they are 25 kHz or 8.33 kHz spaced.",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        },
         {
           "quote": "Exceptionally, when the final two digits of the frequency are both zero, only the first four digits need be given.",
           "reason": "not found verbatim in source after whitespace normalisation"

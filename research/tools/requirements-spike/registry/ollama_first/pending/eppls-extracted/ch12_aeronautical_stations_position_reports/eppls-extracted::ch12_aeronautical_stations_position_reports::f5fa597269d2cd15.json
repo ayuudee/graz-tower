@@ -22,9 +22,9 @@
   "claimSha256": "643d88160a692b8907c9fb8e44b2b4a7c78e59fe8b860195d59756f59d64dd2f",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22868,
-    "endLine": 22899
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 991,
+    "endLine": 1075
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -48,16 +48,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
-      "hits": 0,
-      "misses": [
-        {
-          "quote": "You should report leaving your present level once you have departed from it and are maintaining a positive rate of climb or descent",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 1,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",

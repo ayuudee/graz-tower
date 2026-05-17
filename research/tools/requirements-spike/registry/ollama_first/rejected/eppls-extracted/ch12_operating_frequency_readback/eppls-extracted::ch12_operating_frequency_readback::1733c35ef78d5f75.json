@@ -22,9 +22,9 @@
   "claimSha256": "9206c963af5e65306d6857115a6d925027ef176cc9a51e5b5c6c8e97f3e7f1fc",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22763,
-    "endLine": 22775
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 737,
+    "endLine": 831
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -48,16 +48,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
-      "hits": 0,
-      "misses": [
-        {
-          "quote": "The way to transmit and read back a frequency is to use all six figures",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 1,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",
@@ -79,7 +74,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "reject",
-      "reasoning": "The sole exactSourceQuote is not present verbatim in the provided source window after normalization; the text is interrupted by adjacent table-column content between \u201call\u201d and \u201csix figures.\u201d Because quote/claim identity fields cannot be corrected in this pass, this fails G1 and must be rejected rather than promoted with corrections.",
+      "reasoning": "The sole exactSourceQuote is not present verbatim in the provided source window after normalization; the text is interrupted by adjacent table-column content between “all” and “six figures.” Because quote/claim identity fields cannot be corrected in this pass, this fails G1 and must be rejected rather than promoted with corrections.",
       "confidence": "high",
       "curatedAt": "2026-05-16T08:57:54Z"
     }

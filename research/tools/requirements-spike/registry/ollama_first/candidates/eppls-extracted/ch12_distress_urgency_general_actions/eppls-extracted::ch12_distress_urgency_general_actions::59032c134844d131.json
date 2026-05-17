@@ -22,9 +22,9 @@
   "claimSha256": "7f2b765bc17ea1c66eab714f76571415fcd7f33a509cdf7ba65e56c99eed5840",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 23227,
-    "endLine": 23266
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1540,
+    "endLine": 1597
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -49,7 +49,7 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "pass",
-      "method": "windowed_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
       "hits": 1,
       "misses": []
@@ -74,7 +74,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "promote_with_corrections",
-      "reasoning": "The quoted bullet is verbatim and is scoped by the preceding source text, \u201cUnder ICAO Annex 12, para 5.7, if you hear a distress transmission, you must:\u201d, so the item has must-strength modality rather than should. The claim is not redundant with accepted siblings, and the background_support authority class can remain unchanged for this source.",
+      "reasoning": "The quoted bullet is verbatim and is scoped by the preceding source text, “Under ICAO Annex 12, para 5.7, if you hear a distress transmission, you must:”, so the item has must-strength modality rather than should. The claim is not redundant with accepted siblings, and the background_support authority class can remain unchanged for this source.",
       "corrections": {
         "modality": "must"
       },

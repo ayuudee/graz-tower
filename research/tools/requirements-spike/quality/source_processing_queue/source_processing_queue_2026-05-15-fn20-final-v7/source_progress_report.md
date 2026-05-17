@@ -1,15 +1,15 @@
 # Source Progress Report
 
-Generated: `2026-05-16T12:06:25Z`
+Generated: `2026-05-17T11:06:20Z`
 
 ## Overall Counts
 
 - Included current-frame sources: `9`
 - Excluded future sources: `2`
 - Manifest windows: `313`
-- Landed manifest windows: `310`
+- Landed manifest windows: `313`
 - Ready-to-ingest manifest windows: `0`
-- Pending curation records: `203`
+- Pending curation records: `106`
 - Failed-window retry candidates: `0`
 - High-priority rows needing source-window hardening: `0`
 
@@ -19,7 +19,7 @@ Generated: `2026-05-16T12:06:25Z`
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | cap413-extracted | manifest_complete | 58/58 | 547 | 13 | 42 | 0 | eligible for H01/source-specific review and closure review |
 | egast-vfr-extracted | manifest_complete | 1/1 | 17 | 0 | 0 | 0 | eligible for H01/source-specific review and closure review |
-| eppls-extracted | needs_curation | 21/24 | 81 | 113 | 37 | 0 | curate pending-only manifest windows |
+| eppls-extracted | manifest_complete | 24/24 | 178 | 16 | 37 | 0 | eligible for H01/source-specific review and closure review |
 | h01-extracted | manifest_complete | 52/52 | 494 | 27 | 115 | 0 | eligible for H01/source-specific review and closure review |
 | icao4444-extracted | manifest_complete | 127/127 | 1326 | 47 | 166 | 0 | eligible for H01/source-specific review and closure review |
 | icao9432-extracted | manifest_complete | 23/23 | 166 | 2 | 21 | 0 | eligible for H01/source-specific review and closure review |
@@ -96,30 +96,30 @@ Generated: `2026-05-16T12:06:25Z`
 | cap413-extracted | emergency_message_specials_8_13_to_8_20 | landed | 18 | 0 | 4 | 16430-16597 |
 | cap413-extracted | emergency_practice_relay_silence_fuel_8_21_to_8_34 | landed | 15 | 0 | 10 | 16598-16841 |
 | egast-vfr-extracted | readback_advisory | landed | 17 | 0 | 0 | 539-608 |
-| eppls-extracted | ch12_radio_discipline_frequency_basics | landed | 5 | 8 | 0 | 22390-22530 |
-| eppls-extracted | ch12_operating_numbers_frequency_expression | landed | 1 | 7 | 2 | 22609-22650 |
-| eppls-extracted | ch12_operating_letters_initial_call | pending_only | 0 | 5 | 7 | 22661-22752 |
-| eppls-extracted | ch12_operating_frequency_readback | landed | 6 | 2 | 2 | 22763-22775 |
-| eppls-extracted | ch12_standard_words_correction_general_calls | landed | 10 | 1 | 5 | 22776-22795 |
-| eppls-extracted | ch12_standard_words_acknowledge_to_recleared | landed | 4 | 0 | 0 | 22796-22803 |
-| eppls-extracted | ch12_standard_words_report_to_words_twice | landed | 8 | 2 | 2 | 22808-22842 |
-| eppls-extracted | ch12_time_expression | pending_only | 0 | 3 | 2 | 22845-22852 |
-| eppls-extracted | ch12_callsign_abbreviation_invitation_to_proceed | landed | 1 | 2 | 0 | 22863-22867 |
-| eppls-extracted | ch12_aeronautical_stations_position_reports | landed | 2 | 2 | 1 | 22868-22899 |
-| eppls-extracted | ch12_communications_services_flight_workflow | landed | 2 | 6 | 4 | 22910-22940 |
-| eppls-extracted | ch12_relay_ground_tower_circuit | landed | 1 | 9 | 0 | 22946-22990 |
-| eppls-extracted | ch12_approach_radar_area_services | landed | 1 | 14 | 2 | 22995-23049 |
-| eppls-extracted | ch12_clearance_readback_basics | pending_only | 0 | 3 | 0 | 23050-23060 |
-| eppls-extracted | ch12_clearance_instruction_compliance_readback_items | landed | 7 | 7 | 3 | 23061-23082 |
-| eppls-extracted | ch12_route_clearance_readback_example | landed | 2 | 0 | 1 | 23083-23090 |
-| eppls-extracted | ch12_key_readbacks_takeoff_cleared_word_limits | landed | 1 | 6 | 0 | 23101-23114 |
-| eppls-extracted | ch12_conditional_clearance_identification | landed | 1 | 1 | 1 | 23115-23124 |
-| eppls-extracted | ch12_conditional_clearance_sequence_radio_check_format | landed | 2 | 0 | 1 | 23125-23138 |
-| eppls-extracted | ch12_radio_check_readability_transfer | landed | 7 | 0 | 1 | 23149-23179 |
-| eppls-extracted | ch12_radio_failure | landed | 3 | 12 | 2 | 23184-23222 |
-| eppls-extracted | ch12_distress_urgency_general_actions | landed | 3 | 14 | 0 | 23227-23266 |
-| eppls-extracted | ch12_distress_call_format | landed | 9 | 7 | 0 | 23271-23312 |
-| eppls-extracted | ch12_distress_cancellation_urgency_frequencies | landed | 5 | 2 | 1 | 23317-23354 |
+| eppls-extracted | ch12_radio_discipline_frequency_basics | landed | 12 | 1 | 0 | 1-183 |
+| eppls-extracted | ch12_operating_numbers_frequency_expression | landed | 7 | 1 | 2 | 295-420 |
+| eppls-extracted | ch12_operating_letters_initial_call | landed | 5 | 0 | 7 | 421-723 |
+| eppls-extracted | ch12_operating_frequency_readback | landed | 8 | 0 | 2 | 737-831 |
+| eppls-extracted | ch12_standard_words_correction_general_calls | landed | 11 | 0 | 5 | 777-838 |
+| eppls-extracted | ch12_standard_words_acknowledge_to_recleared | landed | 4 | 0 | 0 | 839-867 |
+| eppls-extracted | ch12_standard_words_report_to_words_twice | landed | 9 | 1 | 2 | 882-948 |
+| eppls-extracted | ch12_time_expression | landed | 2 | 1 | 2 | 950-958 |
+| eppls-extracted | ch12_callsign_abbreviation_invitation_to_proceed | landed | 3 | 0 | 0 | 959-989 |
+| eppls-extracted | ch12_aeronautical_stations_position_reports | landed | 3 | 1 | 1 | 991-1075 |
+| eppls-extracted | ch12_communications_services_flight_workflow | landed | 7 | 1 | 4 | 1089-1139 |
+| eppls-extracted | ch12_relay_ground_tower_circuit | landed | 9 | 1 | 0 | 1152-1207 |
+| eppls-extracted | ch12_approach_radar_area_services | landed | 15 | 0 | 2 | 1221-1280 |
+| eppls-extracted | ch12_clearance_readback_basics | landed | 2 | 1 | 0 | 1294-1302 |
+| eppls-extracted | ch12_clearance_instruction_compliance_readback_items | landed | 13 | 1 | 3 | 1303-1343 |
+| eppls-extracted | ch12_route_clearance_readback_example | landed | 2 | 0 | 1 | 1344-1346 |
+| eppls-extracted | ch12_key_readbacks_takeoff_cleared_word_limits | landed | 5 | 2 | 0 | 1360-1370 |
+| eppls-extracted | ch12_conditional_clearance_identification | landed | 1 | 1 | 1 | 1374-1395 |
+| eppls-extracted | ch12_conditional_clearance_sequence_radio_check_format | landed | 2 | 0 | 1 | 1380-1416 |
+| eppls-extracted | ch12_radio_check_readability_transfer | landed | 7 | 0 | 1 | 1430-1463 |
+| eppls-extracted | ch12_radio_failure | landed | 14 | 1 | 2 | 1475-1528 |
+| eppls-extracted | ch12_distress_urgency_general_actions | landed | 14 | 3 | 0 | 1540-1597 |
+| eppls-extracted | ch12_distress_call_format | landed | 16 | 0 | 0 | 1616-1659 |
+| eppls-extracted | ch12_distress_cancellation_urgency_frequencies | landed | 7 | 0 | 1 | 1672-1719 |
 | h01-extracted | establishment_rtf_intro_3_3_to_3_3_1 | landed | 14 | 0 | 2 | 3494-3688 |
 | h01-extracted | establishment_rtf_ifr_initial_calls_3_3_1_1 | landed | 6 | 0 | 1 | 3689-3779 |
 | h01-extracted | establishment_rtf_vfr_initial_calls_3_3_1_2 | landed | 4 | 3 | 0 | 3780-3915 |
@@ -355,7 +355,7 @@ Generated: `2026-05-16T12:06:25Z`
 
 - Ready-to-ingest windows: `0`
 - Failed-window retry candidates: `0`
-- Pending curation sections: `76`
+- Pending curation sections: `69`
 - Source-window hardening rows: `0`
 - Blocked ambiguous sources: `0`
 

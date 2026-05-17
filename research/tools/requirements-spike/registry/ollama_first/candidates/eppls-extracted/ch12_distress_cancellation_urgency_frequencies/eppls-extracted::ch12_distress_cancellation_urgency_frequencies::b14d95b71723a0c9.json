@@ -14,7 +14,7 @@
   "verificationMode": "review_only",
   "promotionHint": "advisory_only",
   "exactSourceQuotes": [
-    "Tip: If you don\u2019t have time to change the squawk, keep pressing the Ident."
+    "Tip: If you don’t have time to change the squawk, keep pressing the Ident."
   ],
   "sourceItemIds": [
     "ident_tip"
@@ -22,9 +22,9 @@
   "claimSha256": "481518557dcf4b85c838e306551c2e7754c8aba83096bcc391b2721722b23c52",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 23317,
-    "endLine": 23354
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1672,
+    "endLine": 1719
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -49,7 +49,7 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "pass",
-      "method": "windowed_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
       "hits": 1,
       "misses": []
@@ -74,7 +74,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "promote_with_corrections",
-      "reasoning": "The quote exists and supports the substantive Ident tip, and it is not redundant with accepted siblings. However, the source labels it as a \u201cTip\u201d and does not use should-strength wording, so the modality should be lowered to non-normative note while retaining background_support authority.",
+      "reasoning": "The quote exists and supports the substantive Ident tip, and it is not redundant with accepted siblings. However, the source labels it as a “Tip” and does not use should-strength wording, so the modality should be lowered to non-normative note while retaining background_support authority.",
       "corrections": {
         "modality": "note"
       },

@@ -3,9 +3,9 @@
   "sectionId": "ch12_standard_words_correction_general_calls",
   "familyId": "eppls_ch12_operating_procedures_background_family",
   "sourcePath": "research/txt/eppls-extracted.txt",
-  "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-  "startLine": 22776,
-  "endLine": 22795,
+  "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+  "startLine": 777,
+  "endLine": 838,
   "lastPromotedRunId": "promote_2026-05-16T06-47-39Z_b460",
   "lastPromotedAt": "2026-05-16T06:47:39Z"
 }

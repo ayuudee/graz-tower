@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-17T11:07:33.598844Z",
+  "depends_on": [],
+  "epic": "fn-30-eppls-chapter-12-extraction-repair",
+  "id": "fn-30-eppls-chapter-12-extraction-repair.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-30-eppls-chapter-12-extraction-repair.1.md",
+  "status": "todo",
+  "title": "Repair EPPLS Chapter 12 extraction and salvage verifiable records",
+  "updated_at": "2026-05-17T11:07:33.598944Z"
+}

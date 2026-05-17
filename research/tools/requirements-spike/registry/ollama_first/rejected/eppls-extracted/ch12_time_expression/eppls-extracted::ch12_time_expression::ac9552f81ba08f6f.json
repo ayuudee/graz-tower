@@ -22,9 +22,9 @@
   "claimSha256": "75a9315160b7678bbb65076082a89014a04b95b1d4db67b8daae463a037c82f9",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22845,
-    "endLine": 22852
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 950,
+    "endLine": 958
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -49,7 +49,7 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "fail",
-      "method": "windowed_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
       "hits": 0,
       "misses": [
@@ -79,7 +79,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "reject",
-      "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote does not appear verbatim because the source line-wraps the term as \u201c24-\u201d followed by \u201chour.\u201d Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
+      "reasoning": "The claim is substantively supported by the source, but the exactSourceQuote does not appear verbatim because the source line-wraps the term as “24-” followed by “hour.” Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the real G1 verbatim miss requires rejection.",
       "confidence": "high",
       "curatedAt": "2026-05-16T09:21:57Z"
     }

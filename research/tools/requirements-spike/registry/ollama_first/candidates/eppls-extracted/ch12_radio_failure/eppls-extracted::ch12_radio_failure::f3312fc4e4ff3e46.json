@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_radio_failure",
+  "familyId": "eppls_ch12_contingency_background_family",
+  "claimText": "Comply with the last clearance, which hopefully included permission to land, or clear the area.",
+  "rationale": "Primary contingency rule when troubleshooting fails.",
+  "modality": "shall",
+  "authorityClass": "background_support",
+  "requirementKind": "rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "advisory_only",
+  "exactSourceQuotes": [
+    "If all that fails, essentially, you must comply with the last clearance, which hopefully included permission to land, or clear the area."
+  ],
+  "sourceItemIds": [
+    "item_last_clearance"
+  ],
+  "claimSha256": "2d13596022187560129849b98562c225bff61475b0c207b3ff15306b1d2b1415",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1475,
+    "endLine": 1528
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_contingency_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "comply_with_last_clearance",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted sentence is present in the supplied source window after normal whitespace normalization, and the claim is directly supported. The source uses “must comply,” which supports shall-strength modality, while the background_support authority class is consistent with the non-regulatory source.",
+      "confidence": "medium",
+      "curatedAt": "2026-05-16T09:12:48Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46.json",
+      "to": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    },
+    "epplsCh12ExtractionRepair": {
+      "repairedAt": "2026-05-17T11:05:59Z",
+      "action": "promoted_after_chapter_12_plain_text_reextract",
+      "from": "pending/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46.json",
+      "to": "candidates/eppls-extracted/ch12_radio_failure/eppls-extracted::ch12_radio_failure::f3312fc4e4ff3e46.json",
+      "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "advisory_only",
+      "confidence": "high"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": false
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_radio_failure/judged_candidates.json",
+    "curatedAt": "2026-05-16T09:12:48Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit",
+    "epplsCh12ExtractionRepairedAt": "2026-05-17T11:05:59Z"
+  }
+}

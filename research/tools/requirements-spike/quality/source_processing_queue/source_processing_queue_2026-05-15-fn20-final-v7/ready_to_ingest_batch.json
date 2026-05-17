@@ -1,7 +1,7 @@
 {
   "schemaName": "ollama_section_batch",
   "formatVersion": "2026-05-01-v1",
-  "generatedAt": "2026-05-16T12:06:25Z",
+  "generatedAt": "2026-05-17T11:06:20Z",
   "sourceQueue": "research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-15-fn20-final-v7/source_processing_queue.json",
   "sections": []
 }

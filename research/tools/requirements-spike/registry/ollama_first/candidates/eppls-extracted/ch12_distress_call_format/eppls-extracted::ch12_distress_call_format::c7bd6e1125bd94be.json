@@ -24,9 +24,9 @@
   "claimSha256": "1d159a9be492214369d745701f38c72ab1a0cdfb92ddfb2d80e78c2559859d11",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 23271,
-    "endLine": 23312
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1616,
+    "endLine": 1659
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -51,7 +51,7 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "pass",
-      "method": "windowed_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 2,
       "hits": 2,
       "misses": []
@@ -76,7 +76,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "promote",
-      "reasoning": "The claim is directly supported by the cited list item and footnote: pilot qualifications are listed, and the footnote states there is no ICAO requirement but that the information should be included whenever possible in UK emergency messages/contexts. G1\u2013G4 pass, the modality and background-support authority class are conservative and consistent, and the accepted siblings do not already cover this specific pilot-qualification point.",
+      "reasoning": "The claim is directly supported by the cited list item and footnote: pilot qualifications are listed, and the footnote states there is no ICAO requirement but that the information should be included whenever possible in UK emergency messages/contexts. G1–G4 pass, the modality and background-support authority class are conservative and consistent, and the accepted siblings do not already cover this specific pilot-qualification point.",
       "confidence": "high",
       "curatedAt": "2026-05-16T08:49:10Z"
     }

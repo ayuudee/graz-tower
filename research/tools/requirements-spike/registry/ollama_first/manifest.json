@@ -2,15 +2,15 @@
   "schemaName": "ollama_first_registry_manifest",
   "formatVersion": "2026-04-28-v1",
   "createdAt": "2026-04-25T00:00:00Z",
-  "updatedAt": "2026-05-16T12:06:10Z",
+  "updatedAt": "2026-05-17T11:06:06Z",
   "counts": {
-    "candidates": 2824,
-    "pending": 203,
+    "candidates": 2921,
+    "pending": 106,
     "rejected": 392,
     "byDocument": {
       "cap413-extracted": 547,
       "egast-vfr-extracted": 17,
-      "eppls-extracted": 81,
+      "eppls-extracted": 178,
       "h01-extracted": 494,
       "icao4444-extracted": 1326,
       "icao9432-extracted": 166,
@@ -20,19 +20,19 @@
     },
     "byAuthorityClass": {
       "authoritative_requirement": 1057,
-      "background_support": 210,
+      "background_support": 307,
       "best_practice": 55,
       "operational_guidance": 1502
     },
     "byModality": {
       "example": 64,
-      "may": 230,
-      "mixed": 7,
-      "must": 46,
-      "none": 155,
-      "note": 227,
-      "shall": 1811,
-      "should": 284
+      "may": 241,
+      "mixed": 12,
+      "must": 54,
+      "none": 202,
+      "note": 235,
+      "shall": 1819,
+      "should": 294
     }
   },
   "documents": [

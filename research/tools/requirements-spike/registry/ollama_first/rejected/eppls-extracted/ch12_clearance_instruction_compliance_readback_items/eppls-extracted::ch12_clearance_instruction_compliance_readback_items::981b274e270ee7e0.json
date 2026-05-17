@@ -23,9 +23,9 @@
   "claimSha256": "ee6860f4da264aa7cad8bebd2ce2a8c824dd13d024af4eb7b865b6dc2f65b441",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 23061,
-    "endLine": 23082
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1303,
+    "endLine": 1343
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -49,16 +49,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 2,
-      "hits": 1,
-      "misses": [
-        {
-          "quote": "You must comply with any clearances received and acknowledged.",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 2,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",
@@ -80,7 +75,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "reject",
-      "reasoning": "One of the candidate\u2019s identity quotes does not appear verbatim in the provided source window after normalization, and identity fields cannot be corrected in this pass. Although the underlying claim is substantively supported by the surrounding text, the failed verbatim quote audit prevents promotion.",
+      "reasoning": "One of the candidate’s identity quotes does not appear verbatim in the provided source window after normalization, and identity fields cannot be corrected in this pass. Although the underlying claim is substantively supported by the surrounding text, the failed verbatim quote audit prevents promotion.",
       "confidence": "high",
       "curatedAt": "2026-05-16T08:39:08Z"
     }

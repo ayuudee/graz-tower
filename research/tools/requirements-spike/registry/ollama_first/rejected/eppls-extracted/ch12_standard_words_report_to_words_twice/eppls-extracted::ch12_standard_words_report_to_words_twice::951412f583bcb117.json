@@ -22,9 +22,9 @@
   "claimSha256": "1e5048a90050576961503ef4514f130cfae72d97195338c08e0ef9ae8839ede3",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22808,
-    "endLine": 22842
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 882,
+    "endLine": 948
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -48,16 +48,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
-      "hits": 0,
-      "misses": [
-        {
-          "quote": "Standby Wait to be called (and do not assume a clearance)",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 1,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",
@@ -79,7 +74,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "reject",
-      "reasoning": "The definition is visually supported by the table, but the candidate\u2019s exactSourceQuote does not appear verbatim in the provided source text after whitespace normalization because the extracted text separates \u201cStandby\u201d from its meaning. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
+      "reasoning": "The definition is visually supported by the table, but the candidate’s exactSourceQuote does not appear verbatim in the provided source text after whitespace normalization because the extracted text separates “Standby” from its meaning. Since exactSourceQuotes are identity fields and cannot be corrected in this pass, the candidate must be rejected rather than promoted with corrections.",
       "confidence": "high",
       "curatedAt": "2026-05-16T09:19:33Z"
     }

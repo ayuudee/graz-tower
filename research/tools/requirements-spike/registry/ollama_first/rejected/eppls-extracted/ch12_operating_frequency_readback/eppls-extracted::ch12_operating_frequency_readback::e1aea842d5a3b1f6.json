@@ -22,9 +22,9 @@
   "claimSha256": "0ac233f561855d1c4c88b7e7aaafa3571ae2e16c6f1257e799c28384bc4c101b",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22763,
-    "endLine": 22775
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 737,
+    "endLine": 831
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -48,16 +48,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
-      "hits": 0,
-      "misses": [
-        {
-          "quote": "except where the last 2 are zero, when you can use the first four.",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 1,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",

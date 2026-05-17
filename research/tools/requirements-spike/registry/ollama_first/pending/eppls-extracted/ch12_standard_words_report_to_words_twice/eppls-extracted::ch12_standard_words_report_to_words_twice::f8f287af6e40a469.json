@@ -23,9 +23,9 @@
   "claimSha256": "449407b9c86fc58e141e6d6bf16dd6be4eb35f9233134aae3fa549255f3b8695",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22808,
-    "endLine": 22842
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 882,
+    "endLine": 948
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -50,16 +50,12 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "fail",
-      "method": "post_curation_registry_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 2,
-      "hits": 0,
+      "hits": 1,
       "misses": [
         {
           "quote": "If you see a timegroup: 220345Z It means a quarter to four GMT on the 22nd of the month.",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        },
-        {
-          "quote": "Time is normally given to the nearest minute, except that control towers may state the time to the nearest half minute when issuing a taxi clearance to a departing aircraft.",
           "reason": "not found verbatim in source after whitespace normalisation"
         }
       ]

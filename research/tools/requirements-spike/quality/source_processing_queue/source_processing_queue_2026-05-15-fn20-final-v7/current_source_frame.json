@@ -1,7 +1,7 @@
 {
   "schemaName": "requirements_current_source_frame",
   "formatVersion": "2026-05-09-v1",
-  "generatedAt": "2026-05-16T12:06:25Z",
+  "generatedAt": "2026-05-17T11:06:20Z",
   "controlRule": "include all requirements-spike document manifests plus any live registry document not represented by those manifests; defer Nolan/EPPLS unless present in that control set",
   "includedSources": [
     {
@@ -53,13 +53,13 @@
       "sourcePath": "research/txt/eppls-extracted.txt",
       "manifestSections": 24,
       "registryRecords": {
-        "candidates": 81,
-        "pending": 113,
+        "candidates": 178,
+        "pending": 16,
         "rejected": 37
       },
       "manifestWindowState": {
-        "landed": 21,
-        "pendingOnly": 3,
+        "landed": 24,
+        "pendingOnly": 0,
         "readyToIngest": 0
       },
       "highPriorityRowsNeedingSourceWindowHardening": 0

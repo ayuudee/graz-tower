@@ -22,9 +22,9 @@
   "claimSha256": "e9546ef12828dfd6dd9cb77ab4bced1de519e5926894388d6f3d283bf3aecde7",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 23271,
-    "endLine": 23312
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1616,
+    "endLine": 1659
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -49,7 +49,7 @@
   "audit": {
     "verbatimQuoteCheck": {
       "status": "pass",
-      "method": "windowed_substring_match",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
       "hits": 1,
       "misses": []
@@ -74,7 +74,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "promote_with_corrections",
-      "reasoning": "The quote is verbatim and supports the claim as background/advisory support, but the cited wording is an example list introduced by \u201ce.g.\u201d rather than a true \u201cmay\u201d permission. The authorityClass is already appropriately non-authoritative, so only the modality should be corrected.",
+      "reasoning": "The quote is verbatim and supports the claim as background/advisory support, but the cited wording is an example list introduced by “e.g.” rather than a true “may” permission. The authorityClass is already appropriately non-authoritative, so only the modality should be corrected.",
       "corrections": {
         "modality": "example"
       },

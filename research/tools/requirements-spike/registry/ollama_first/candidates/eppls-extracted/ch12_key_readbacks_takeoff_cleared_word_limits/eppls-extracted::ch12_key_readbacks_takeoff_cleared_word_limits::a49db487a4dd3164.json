@@ -1,0 +1,124 @@
+{
+  "schemaName": "ollama_first_candidate",
+  "formatVersion": "2026-04-28-v1",
+  "canonicalId": "eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164",
+  "documentId": "eppls-extracted",
+  "sectionId": "ch12_key_readbacks_takeoff_cleared_word_limits",
+  "familyId": "eppls_ch12_readback_transfer_background_family",
+  "claimText": "Readback must be in full and in the same sequence as given, with the condition first.",
+  "rationale": "Strong consensus across all attempts on the mandatory nature of the readback sequence.",
+  "modality": "shall",
+  "authorityClass": "background_support",
+  "requirementKind": "phraseology_rule",
+  "testability": "sim_executable",
+  "verificationMode": "deterministic_test",
+  "promotionHint": "promote",
+  "exactSourceQuotes": [
+    "Readback must be in full and in the same sequence as given, with the condition first."
+  ],
+  "sourceItemIds": [
+    "item_readback_sequence"
+  ],
+  "claimSha256": "8ccf62df2011d18e4885fac7f54b71ef3b9d544bea60fb72303c0cd50213d776",
+  "provenance": {
+    "sourcePath": "research/txt/eppls-extracted.txt",
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 1360,
+    "endLine": 1370
+  },
+  "ingestionRun": {
+    "runId": "promote_2026-05-16T06-47-39Z_b460",
+    "caseId": "eppls_ch12_readback_transfer_background_family",
+    "models": {
+      "structure": "qwen3.6:35b-a3b",
+      "structureReconcile": "qwen3.6:35b-a3b",
+      "extraction": "qwen3.6:35b-a3b",
+      "reconcile": "qwen3.6:35b-a3b",
+      "challenge": "qwen2.5-coder:32b",
+      "defense": "qwen3.6:35b-a3b",
+      "bundleGate": "qwen3.6:35b-a3b",
+      "judge": "qwen3.6:35b-a3b"
+    },
+    "promptVersion": "ollama-first-2026-04-28",
+    "promptVersionSha": "e42b8a20e9779bbf748dd0e39b9b86625fe07ba0a42d69d4345111b0906648f9",
+    "originalCandidateId": "readback_sequence_rule",
+    "numCtx": 24576,
+    "structureAttempts": 3,
+    "extractionAttempts": 3
+  },
+  "audit": {
+    "verbatimQuoteCheck": {
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
+      "totalQuotes": 1,
+      "hits": 1,
+      "misses": []
+    },
+    "schemaCheck": {
+      "status": "pass",
+      "reasons": []
+    },
+    "authorityModalityCheck": {
+      "status": "pass",
+      "modality": "shall",
+      "authorityClass": "background_support",
+      "floorConsistent": true,
+      "overrideFired": true,
+      "invariantViolated": false,
+      "reason": null
+    },
+    "overrideAuditTrailCheck": {
+      "status": "pass",
+      "misses": []
+    },
+    "rationaleNonEmpty": true,
+    "curationApplied": {
+      "action": "promote",
+      "reasoning": "The quoted sentence is present in the source window verbatim when the line break is normalized, so the G1 miss appears to be an audit artefact rather than a real identity failure. The source uses “must,” supporting shall-strength modality, and background_support is compatible with that modality.",
+      "confidence": "high",
+      "curatedAt": "2026-05-16T08:56:24Z"
+    },
+    "postCurationDemotion": {
+      "demotedAt": "2026-05-16T12:06:04Z",
+      "from": "candidates/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164.json",
+      "to": "pending/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164.json",
+      "reason": "accepted record failed registry-wide verbatim quote audit after curation; kept pending for human re-extraction or source-text repair"
+    },
+    "epplsCh12ExtractionRepair": {
+      "repairedAt": "2026-05-17T11:05:59Z",
+      "action": "promoted_after_chapter_12_plain_text_reextract",
+      "from": "pending/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164.json",
+      "to": "candidates/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/eppls-extracted::ch12_key_readbacks_takeoff_cleared_word_limits::a49db487a4dd3164.json",
+      "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2"
+    }
+  },
+  "gate": {
+    "overallStatus": "pass",
+    "judge": {
+      "decision": "accepted",
+      "confidence": "medium"
+    },
+    "challenger": {
+      "verdict": "supported",
+      "overridden": true
+    },
+    "bundleGate": {
+      "scopeComplete": true
+    },
+    "siblingResolution": {
+      "fired": false
+    },
+    "judgeOverride": {
+      "fired": true
+    }
+  },
+  "lifecycle": {
+    "state": "accepted",
+    "promotedAt": "2026-05-16T06:47:39Z",
+    "promotedFrom": "/Users/andrew/requirements-source-units-fn10-2026-05-11-v6/eppls-extracted/ch12_key_readbacks_takeoff_cleared_word_limits/judged_candidates.json",
+    "curatedAt": "2026-05-16T08:56:24Z",
+    "postCurationDemotedAt": "2026-05-16T12:06:04Z",
+    "postCurationDemotionReason": "failed_registry_wide_verbatim_quote_audit",
+    "epplsCh12ExtractionRepairedAt": "2026-05-17T11:05:59Z"
+  }
+}

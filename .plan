@@ -13,14 +13,16 @@ This file is the canonical backlog. It is maintained by both human and AI contri
 
 ## Active items
 
-**FN20-CUR-1 — FN20 registry has 203 residual pending records after curation**
-The final FN20 all-source ingest, promotion, and GPT curation pass completed with
-zero ready-to-ingest windows remaining. Final QA demoted 110 accepted records
-whose quotes could not be verified as contiguous verbatim source text, leaving
-203 pending records in `registry/ollama_first/pending/`: 93 explicit
-`keep_pending` curation outcomes plus 110 post-quote-audit demotions. These are
-not accepted source units until source-text repair or human re-extraction
-resolves them. Evidence:
+**FN20-CUR-1 — FN20 registry has 106 residual pending records after curation**
+The final FN20 all-source ingest, promotion, GPT curation pass, and EPPLS
+Chapter 12 extraction repair completed with zero ready-to-ingest windows
+remaining. The EPPLS repair promoted 97 previously demoted records whose quotes
+became mechanically verifiable against the chapter-only Poppler extraction.
+There are 106 pending records left in `registry/ollama_first/pending/`: 93
+explicit `keep_pending` curation outcomes, 9 H01 post-quote-audit demotions, and
+4 EPPLS post-quote-audit demotions that still fail exact quote verification.
+These are not accepted source units until source-text repair or human
+re-extraction resolves them. Evidence:
 `research/tools/requirements-spike/quality/curation/curate_2026-05-16T07-47-58Z/FINAL_CURATION_CLOSE_OUT.md`.
 Impact: M | Effort: H
 

@@ -22,9 +22,9 @@
   "claimSha256": "055d3fb431d884a7468d07ba0786b285b420e46bb0442d92298a77e65f0884bb",
   "provenance": {
     "sourcePath": "research/txt/eppls-extracted.txt",
-    "sourceSha256": "8fd2e335bd124cbb003010f275101d456bad05301603af9f1d67886805753869",
-    "startLine": 22868,
-    "endLine": 22899
+    "sourceSha256": "be3a51ff19cd9c7f746b12a5d177fb482d47f751814dbcc818e7c39f1b405dc2",
+    "startLine": 991,
+    "endLine": 1075
   },
   "ingestionRun": {
     "runId": "promote_2026-05-16T06-47-39Z_b460",
@@ -48,16 +48,11 @@
   },
   "audit": {
     "verbatimQuoteCheck": {
-      "status": "fail",
-      "method": "windowed_substring_match",
+      "status": "pass",
+      "method": "eppls_ch12_plain_poppler_substring_match",
       "totalQuotes": 1,
-      "hits": 0,
-      "misses": [
-        {
-          "quote": "ATS units are identified by the name of the location, then the service available:",
-          "reason": "not found verbatim in source after whitespace normalisation"
-        }
-      ]
+      "hits": 1,
+      "misses": []
     },
     "schemaCheck": {
       "status": "pass",
@@ -79,7 +74,7 @@
     "rationaleNonEmpty": true,
     "curationApplied": {
       "action": "reject",
-      "reasoning": "The cited exactSourceQuote is not present verbatim in the provided source window; the text is interrupted by adjacent-column content between \u201cthen\u201d and \u201cthe service available.\u201d Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this requires rejection rather than correction.",
+      "reasoning": "The cited exactSourceQuote is not present verbatim in the provided source window; the text is interrupted by adjacent-column content between “then” and “the service available.” Because claimText and exactSourceQuotes are identity fields and cannot be edited in this pass, this requires rejection rather than correction.",
       "confidence": "high",
       "curatedAt": "2026-05-16T08:29:22Z"
     }
