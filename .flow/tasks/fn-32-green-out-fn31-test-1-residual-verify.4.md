@@ -106,9 +106,8 @@ reflect the deliberately-deferred sim-classpath scope, not a coverage gap.
 - **Push outcome**: `git push origin main` succeeded. Output: `f695bd9..11ed1d4  main -> main`. Only warnings (GH LFS recommendation for the 69 MB `research/pdf/EPPLS.pdf` — pre-existing, not introduced by fn-32); no errors, no branch-protection / pre-receive surprises, no force-push.
 
 ## Done summary
-
-_(filled by `flowctl done` at task close)_
-
+Closed out the fn-32 epic close-out task: updated `.plan` to mark FN31-TEST-1 PARTIAL with FN31-TEST-1-FOLLOWUP carved out for the `:sim:jvmTest` runtime-classpath gap; pushed 56 commits to `origin/main` (f695bd9..05d4c7b); codex impl-review SHIP after 4 NEEDS_WORK rounds hardening close-out honesty (no asserting GREEN on test suites not actually run). Non-sim verifies green offline-sandbox (controller, pilot, protocol, core, migration, detekt); 3 GoAround + 2 pilot negative-case tests confirmed green via smoke runs; `:sim:jvmTest` deferred to follow-up (transitive runtime deps not in cache — single user-side `./gradlew :sim:jvmTest` to hydrate).
 ## Evidence
-
-_(filled by `flowctl done` at task close)_
+- Commits: b096c82, fba91fb, 11ed1d4, 6317c63, 05d4c7b
+- Tests: gradle :controller:jvmTest --tests "*GoAroundSequencingSpec*" --offline --no-daemon, gradle :pilot:jvmTest --tests "*PilotEvent*Test*" --offline --no-daemon, gradle :pilot:jvmTest :controller:jvmTest :protocol:allTests :core:allTests detekt --offline --no-daemon, gradle :migration:allTests --offline --no-daemon
+- PRs:
