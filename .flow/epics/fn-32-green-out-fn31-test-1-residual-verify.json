@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-32-green-out-fn31-test-1-residual-verify",
+  "created_at": "2026-05-17T16:03:12.948938Z",
+  "depends_on_epics": [],
+  "id": "fn-32-green-out-fn31-test-1-residual-verify",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-32-green-out-fn31-test-1-residual-verify.md",
+  "status": "open",
+  "title": "Green out FN31-TEST-1 residual verify-pass failures",
+  "updated_at": "2026-05-17T16:04:31.754909Z"
+}
