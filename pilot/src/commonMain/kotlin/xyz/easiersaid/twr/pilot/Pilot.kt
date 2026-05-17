@@ -196,78 +196,21 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     //    the documented branch order. Functionally the dispatch is
     //    order-independent — only one event surfaces per call — but the
     //    visual alignment aids reader clarity.
-    // fn-28.2: separate slot for the DA-decline result (apron-side
-    // reactive recognition, distinct from the go-around triplet above).
-    // The branch fires only when no GA path already fired AND the
-    // mission is pre-taxi-eligible per `isDensityAltitudeDeclineEligible`
-    // (gated inside `deriveDensityAltitudeEvent`).
-    var densityAltitudeDecline: DensityAltitudeDeclineResult? = null
-
-    // fn-28.9: separate slot for the abort-takeoff result (runway-side
-    // reactive recognition, distinct from the go-around triplet and from
-    // DA-decline above). The branch fires only when no GA path already
-    // fired AND the mission is takeoff-roll-eligible per
-    // `isAbortTakeoffEligible` AND the engine has failed AND speed is
-    // pre-rotation AND phase is `TakeoffRoll` (gated inside
-    // `deriveAbortTakeoffEvent`'s 4-check gate). Disjoint from DA-decline
-    // by mission shape (takeoff-roll vs pre-taxi); disjoint from
-    // tailwind/crosswind by phase (TakeoffRoll vs Final).
-    var abortTakeoff: AbortTakeoffResult? = null
-
-    val goAround: GoAroundResult? = if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
-        val weather = windForMission(cognitive.updatedMission, input.weatherByAerodrome)
-        // fn-28.1: resolve the typed DA input for this mission's aerodrome
-        // using the per-aerodrome map projected at the firewall boundary
-        // by `PilotWiring.buildPilotInput`. fn-28.1's
-        // `densityAltitudeInputForMission` resolves to null fail-closed
-        // for multi-aerodrome ambiguity (filed as
-        // `D-PASS-g3b-react-density-altitude`); fn-28.2's DA branch in
-        // `derivePilotEvent` treats null as no-event.
-        val densityAltitudeInput = densityAltitudeInputForMission(
-            cognitive.updatedMission, input.densityAltitudeInputsByAerodrome,
-        )
-        when (val pilotEvent = xyz.easiersaid.twr.pilot.observe.derivePilotEvent(
-            aircraft, cognitive.updatedMission, weather, densityAltitudeInput,
-        )) {
-            is xyz.easiersaid.twr.pilot.observe.PilotEvent.DecisionAltitudeWithoutClearance ->
-                applySelfInitiatedGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
-            is xyz.easiersaid.twr.pilot.observe.PilotEvent.TailwindLimitExceeded ->
-                applyTailwindGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
-            is xyz.easiersaid.twr.pilot.observe.PilotEvent.CrosswindLimitExceeded ->
-                applyCrosswindGoAround(pilotEvent, cognitive.updatedMission, aircraft, input.now)
-            // fn-28.2: DA-decline is dispatched to its own apply path
-            // (NOT a GoAroundResult — DA decline is an apron-terminal
-            // decision, not a go-around). The decline result is stashed
-            // in the `densityAltitudeDecline` slot above; this arm
-            // returns null in the GA channel so the GA-precedence
-            // fold-down below treats DA-decline as a non-GA path.
-            is xyz.easiersaid.twr.pilot.observe.PilotEvent.DensityAltitudeDecline -> {
-                densityAltitudeDecline = applyDensityAltitudeDecline(
-                    pilotEvent, cognitive.updatedMission, aircraft,
-                )
-                null
-            }
-            // fn-28.9: AbortTakeoff is dispatched to its own apply path
-            // (NOT a GoAroundResult — abort is a runway-terminal decision,
-            // not a go-around). The abort result is stashed in the
-            // `abortTakeoff` slot above; this arm returns null in the GA
-            // channel so the GA-precedence fold-down below treats abort
-            // as a non-GA path.
-            is xyz.easiersaid.twr.pilot.observe.PilotEvent.AbortTakeoff -> {
-                abortTakeoff = applyAbortTakeoff(
-                    pilotEvent, cognitive.updatedMission, aircraft,
-                )
-                null
-            }
-            // AtcGoAroundOnFinal is constructed only at the recognition site
-            // in `recognizeAtcInitiatedGoAround` (axis 2 — post-cognitive
-            // flag-driven). `derivePilotEvent` (axis 1 — pure derivation)
-            // never produces it. Explicit no-op arm pins the contract; a
-            // future regression that surfaces it from derive would land
-            // here and require a deliberate review.
-            is xyz.easiersaid.twr.pilot.observe.PilotEvent.AtcGoAroundOnFinal, null -> null
+    // fn-28 round-detekt: self-init dispatch extracted to
+    // [dispatchSelfInitiatedEvent] to keep `pilotDecide` under the LongMethod
+    // + CyclomaticComplexity thresholds. The helper returns a typed bundle
+    // carrying the three possible apply-path outcomes; co-occurrence is
+    // structurally impossible (PilotEvent leaves are disjoint) but the
+    // bundle shape mirrors the elvis-chain precedence below.
+    val selfInit: SelfInitiatedDispatchResult =
+        if (plannedGoAround == null && atcGoAroundOutcome?.intent == null) {
+            dispatchSelfInitiatedEvent(aircraft, cognitive.updatedMission, input)
+        } else {
+            SelfInitiatedDispatchResult(goAround = null, densityAltitudeDecline = null, abortTakeoff = null)
         }
-    } else null
+    val goAround: GoAroundResult? = selfInit.goAround
+    val densityAltitudeDecline: DensityAltitudeDeclineResult? = selfInit.densityAltitudeDecline
+    val abortTakeoff: AbortTakeoffResult? = selfInit.abortTakeoff
 
     // Effective mission: trained-GA → ATC-reactive (only when it fired
     // intent) → DA-decline → self-init → cognitive baseline. The post-fold
@@ -351,57 +294,22 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     val planOutcome = planRoute(
         effectiveMission, aircraft, kinematicIntent.route, input.world, input.worldIndex,
     )
-    return when (planOutcome) {
-        is PlanRouteOutcome.Failed -> planOutcome.error.left()
-        is PlanRouteOutcome.Plan -> PilotOutput(
-            // fn-28.2: DA-decline intent takes precedence over the planner's
-            // route intent on the apron — the pilot has decided NOT to taxi,
-            // and the at-rest intent must win over any planner output (which
-            // is moot for pre-taxi shapes today, but the explicit precedence
-            // documents the contract for future planner extensions).
-            // fn-28.9: AbortTakeoff intent also takes precedence — the
-            // pilot has decided NOT to continue the takeoff. Listed AFTER
-            // DA-decline in the elvis chain because abort and DA-decline
-            // are co-occurrence-impossible by mission shape; the order
-            // documents the precedence-chain shape without affecting
-            // dispatch behaviour.
-            intent = densityAltitudeDecline?.intent
-                ?: abortTakeoff?.intent
-                ?: planOutcome.intent,
-            transmissions = effectiveCognitiveTransmissions + goAroundTransmissions,
-            updatedMission = densityAltitudeDecline?.mission
-                ?: abortTakeoff?.mission
-                ?: planOutcome.mission,
-        ).right()
-        // GA-path intent precedence (mirrors the recognition order above):
-        //  1. Trained-GA (fn-11.1) — `plannedGoAround.intent` clears the
-        //     route + pins phase=Final so Tick B's Circuit-mode special-
-        //     case fires.
-        //  2. ATC-reactive (fn-12.2) — `atcGoAroundOutcome.intent` mirrors
-        //     trained-GA's shape (route=None, phase=Final), so Tick B's
-        //     same `isCircuitTrainedGoAroundTickB` predicate fires and
-        //     `planCircuitTrainedGoAround` builds the GA route via the
-        //     reused planner. Zero new route-planning code.
-        //  3. fn-28.2 — DA-decline `densityAltitudeDecline?.intent` is the
-        //     apron-terminal at-rest intent; positioned between ATC-reactive
-        //     and self-init mirroring the mission-precedence chain.
-        //  4. Self-initiated (Pass 16) — `goAround?.intent` is the
-        //     reactive sensor-event response, identical trigger tick +
-        //     emission contract as before fn-12.2 (only invoked when
-        //     trained-GA, ATC-reactive, and DA-decline all did not fire).
-        //  5. Fallthrough — kinematic + cognitive overrides.
-        is PlanRouteOutcome.Skip -> PilotOutput(
-            intent = plannedGoAround?.intent
-                ?: atcGoAroundOutcome?.intent
-                ?: densityAltitudeDecline?.intent
-                ?: abortTakeoff?.intent
-                ?: goAround?.intent
-                ?: applyCognitiveOverrides(kinematicIntent, effectiveMission),
-            transmissions = effectiveCognitiveTransmissions + goAroundTransmissions,
-            updatedMission = effectiveMission,
-        ).right()
-    }
+    return buildPilotOutput(
+        planOutcome = planOutcome,
+        kinematicIntent = kinematicIntent,
+        effectiveMission = effectiveMission,
+        plannedGoAround = plannedGoAround,
+        atcGoAroundOutcome = atcGoAroundOutcome,
+        densityAltitudeDecline = densityAltitudeDecline,
+        abortTakeoff = abortTakeoff,
+        goAround = goAround,
+        effectiveCognitiveTransmissions = effectiveCognitiveTransmissions,
+        goAroundTransmissions = goAroundTransmissions,
+    )
 }
+
+// dispatchSelfInitiatedEvent + buildPilotOutput moved to PilotDispatch.kt
+// (round-detekt: keeps Pilot.kt under the TooManyFunctions threshold).
 
 /**
  * fn-14.1 (G3a-react): resolve the [xyz.easiersaid.twr.protocol.WindReport]
@@ -2108,7 +2016,7 @@ internal fun applyCognitiveSuppression(
  * The cognitive layer IS the pilot. When the mission state conflicts with
  * what the kinematics want to do, the cognitive decision wins.
  */
-private fun applyCognitiveOverrides(
+internal fun applyCognitiveOverrides(
     kinematic: PilotIntent,
     mission: PilotMission,
 ): PilotIntent {

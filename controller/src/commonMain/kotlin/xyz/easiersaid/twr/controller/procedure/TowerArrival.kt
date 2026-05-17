@@ -495,6 +495,47 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 nextStage = TowerArrivalStage.AwaitApproach,
                 advancementPolicy = AdvancementPolicy.Immediate,
             ),
+            // fn-28.4 (R23) — MOVED to AwaitDownwind during verify pass:
+            // AwaitApproach + OnDownwind reconciles to AwaitDownwind (per
+            // `reconcileAwaitApproach`), so a trailing aircraft on downwind
+            // is always seen at AwaitDownwind by the rule pipeline. The
+            // GA-extend rule must live HERE (not at AwaitApproach) to be
+            // reachable. See doctrine note at original placement (below
+            // the moved block) for the full rationale.
+            AtcRule(
+                id = "ARR-EXTEND-FOR-GA",
+                description = "Extend downwind — go-around in progress on this runway",
+                regulations = listOf(ICAO4444_7_10, ICAO9432_EXTEND_DOWNWIND, ICAO4444_12_3_4),
+                guard = AllOf(listOf(
+                    OnCircuitLeg(LegName.DOWNWIND),
+                    GoAroundInProgressOnRunway,
+                    NoPendingReadback(instructionOfType<ExtendDownwind>()),
+                )),
+                action = ExtendDownwindAction,
+                urgency = Urgency.TIME_SENSITIVE,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
+            // fn-28.4 (R23) — MOVED to AwaitDownwind during verify pass:
+            // ARR-TURN-BASE must be reachable from AwaitDownwind so that
+            // when a trailing aircraft's GA belief clears, the TurnBase
+            // emission fires the SAME cycle. (Reconcile keeps downwind
+            // aircraft at AwaitDownwind.) See doctrine note at original
+            // placement (below) for the full rationale.
+            AtcRule(
+                id = "ARR-TURN-BASE",
+                description = "Turn base when spacing adequate and runway clear",
+                regulations = listOf(ICAO4444_7_10),
+                guard = AllOf(listOf(
+                    OnCircuitLeg(LegName.DOWNWIND),
+                    Not(SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION)),
+                    RunwayPhysicallyClear,
+                    Not(GoAroundInProgressOnRunway),
+                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TurnBase>()),
+                )),
+                action = TurnBaseAction,
+                urgency = Urgency.PROGRESSION,
+                advancementPolicy = AdvancementPolicy.Immediate,
+            ),
         ),
         // ── AwaitApproach: sequence, delay, or clear to land ─────────
         TowerArrivalStage.AwaitApproach to listOf(
@@ -571,19 +612,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // Retransmit cadence: same NoPendingReadback coordination
             // lifecycle as the existing ARR-EXTEND — Issued → Querying →
             // Reissued via the standard escalation flow.
-            AtcRule(
-                id = "ARR-EXTEND-FOR-GA",
-                description = "Extend downwind — go-around in progress on this runway",
-                regulations = listOf(ICAO4444_7_10, ICAO9432_EXTEND_DOWNWIND, ICAO4444_12_3_4),
-                guard = AllOf(listOf(
-                    OnCircuitLeg(LegName.DOWNWIND),
-                    GoAroundInProgressOnRunway,
-                    NoPendingReadback(instructionOfType<ExtendDownwind>()),
-                )),
-                action = ExtendDownwindAction,
-                urgency = Urgency.TIME_SENSITIVE,
-                advancementPolicy = AdvancementPolicy.Immediate,
-            ),
+            // ARR-EXTEND-FOR-GA moved to AwaitDownwind block during fn-28.4
+            // verify pass (see note there). The rule never fires from here
+            // for downwind aircraft because `reconcileAwaitApproach` regresses
+            // them to AwaitDownwind before the rule pipeline runs.
             // Extend downwind for spacing when no runway access yet
             AtcRule(
                 id = "ARR-EXTEND",
@@ -616,36 +648,10 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // Guard fires only from DOWNWIND — once established on base, the sequencing
             // decision has already been made and re-issuing TurnBase would be non-standard
             // (CAP 413 §4.49 / ICAO Doc 9432 Ch.4: TurnBase is a downwind sequencing tool).
-            AtcRule(
-                id = "ARR-TURN-BASE",
-                description = "Turn base when spacing adequate and runway clear",
-                regulations = listOf(ICAO4444_7_10),
-                guard = AllOf(listOf(
-                    OnCircuitLeg(LegName.DOWNWIND),
-                    Not(SeparationConcernAbove(xyz.easiersaid.twr.controller.observe.SeparationConcern.Severity.INTERVENTION)),
-                    RunwayPhysicallyClear,
-                    // fn-28.4 (R23): don't turn a downwind aircraft into a
-                    // GA-active runway. While the runway-scoped GA belief
-                    // entry is live (set by Observe.withGoAroundInProgress
-                    // from Report(GoingAround), cleared on pattern-rejoin
-                    // or 60s timeout), trailing-aircraft sequencing is
-                    // handled by the ARR-EXTEND-FOR-GA rule above. The
-                    // moment the belief clears (next cycle after the
-                    // pattern-rejoin transmission, OR in the same cycle
-                    // the GA-aircraft transmits Downwind/Final/Base with
-                    // receivedAt > setAtTime), this guard returns true
-                    // again and TurnBase fires — superseding any extant
-                    // ExtendDownwind coordination via the existing
-                    // SupersessionRelation(TurnBase, ExtendDownwind,
-                    // ABANDON) row (concrete cancel-output contract
-                    // per R23 round-10 Major 2).
-                    Not(GoAroundInProgressOnRunway),
-                    NoPendingReadback(instructionOfType<xyz.easiersaid.twr.protocol.TurnBase>()),
-                )),
-                action = TurnBaseAction,
-                urgency = Urgency.PROGRESSION,
-                advancementPolicy = AdvancementPolicy.Immediate,
-            ),
+            // ARR-TURN-BASE moved to AwaitDownwind block during fn-28.4
+            // verify pass (see note there). The rule never fires from here
+            // for downwind aircraft because `reconcileAwaitApproach` regresses
+            // them to AwaitDownwind before the rule pipeline runs.
             // Request final position report when aircraft is on base.
             // Issued on base so the pilot has notice to call when they turn; the final call
             // is then used to time the landing clearance and release departing traffic.

@@ -230,6 +230,20 @@ headings use `##` depth; empty-body placeholders use one-line prose.
 
 ## D-PASS
 
+### D-PASS-fn28-verify-pass-residual-failures — fn-28 gradle-verify residual test failures (2026-05-17)
+**Status:** planned
+**Pinned at:** controller/src/commonTest/.../GoAroundSequencingSpec.kt (lines 380, 446, 475); pilot/src/commonTest/.../observe/PilotEventAbortTakeoffTest.kt:248; pilot/src/commonTest/.../observe/PilotEventDensityAltitudeTest.kt:187
+**Why:** The 2026-05-17 gradle verify pass surfaced 5 categories of issues codex impl-review missed. 2 were fixed inline (detekt `pilotDecide` refactor + rule-placement bug in TowerArrival.kt — ARR-EXTEND-FOR-GA / ARR-TURN-BASE moved from AwaitApproach to AwaitDownwind). 3 categories remain:
+
+1. **3 GoAroundSequencingSpec tests fail** (`ARR-EXTEND-FOR-GA round-trip`, `ARR-TURN-BASE clears via pattern-rejoin`, `ARR-TURN-BASE clears via 60s timeout`): `SeparationConcernAbove(INTERVENTION)` is fail-conservative — returns `true` when `separationAssessments` is empty. The test fixtures track only AC_B (one aircraft); `assessSeparation` produces empty list for n<2 arrivals; guard then blocks `Not(SeparationConcernAbove(...))` in `ARR-TURN-BASE`. Fix: add AC_A (the GA-going aircraft) as a second tracked aircraft in the test view + commitments + arrival sequence, so `assessSeparation` generates a real COMFORTABLE-severity assessment.
+
+2. **2 pilot tests fail** (`PilotEventAbortTakeoffTest.kt:248`, `PilotEventDensityAltitudeTest.kt:187 "does NOT fire on airborne steps — mission-shape guard rejects"`): assertion failures in fn-28.2/.9-introduced recognition branches. Specific root cause not yet investigated — both tests assert NEGATIVE cases (recognition should NOT fire). Investigation needed.
+
+3. **`:sim:compileTestKotlinJvm` fails offline**: kotest 5.9.1 (added by fn-26.1) is not present in `~/.gradle/caches/modules-2`. fn-26.1 worker downloaded the deps via curl into a sandbox-local Maven layout (`$TMPDIR/local-maven`) that is not persisted. Run `./gradlew :sim:compileTestKotlinJvm` ONCE outside `--offline` to populate the cache; thereafter `--offline` works.
+
+**Closes by:** follow-up controller-fixture epic (item 1) + fn-28.2/.9 test-regression investigation (item 2) + one-time online kotest fetch (item 3).
+**Enforcement:** the 5 tests above stay red until each item's fix lands. `:protocol:allTests`, `:core:allTests`, the other 14 controller tests, and the unaffected pilot tests are all green per the verify run.
+
 ### D-PASS-map-tooling-automation — Tooling automation over deferments map
 **Status:** narrative
 **Pinned at:** narrative only
