@@ -1,4 +1,4 @@
-# fn-37-source-unit-conformance-harness-strategy.1 Build disposable source-unit law harness skeleton
+# fn-37-source-unit-conformance-harness-strategy.1 Build disposable source-unit spec harness skeleton
 
 ## Description
 TBD
@@ -7,8 +7,7 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Built the disposable SourceUnitSpec harness skeleton with source ids, typed-ish domain dimensions, witness/partition/fuzz probes, non-vacuity counters, model-gap reporting, and formatted reports.
 ## Evidence
 - Commits:
 - Tests:

@@ -111,6 +111,18 @@ communication-policy layer if FN33 synthesis recommends continuing source-unit
 conformance beyond typed instruction behavior.
 Impact: M | Effort: M
 
+**FN37-SPEC-1 — Source-unit spec harness needs black-box target and typed generated domains**
+FN37 proved that `SourceUnitSpec` is a better vocabulary than one-off
+source-backed scenarios: five disparate cases fit source id + domain +
+witness/partition/fuzz probes + non-vacuity counters + report. The disposable
+API is intentionally not the final harness. The clean rebuild needs (1) a
+black-box `TowerConformanceTarget` so spec authors do not construct `SimState`
+directly, (2) typed generated-domain values instead of string parameter maps,
+and (3) trace projections for essential aerodrome information and
+safety-necessity classification. Evidence:
+`research/tools/requirements-spike/quality/source_unit_spec_spike/fn37_source_unit_spec_spike_2026-05-18/review.md`.
+Impact: M | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)

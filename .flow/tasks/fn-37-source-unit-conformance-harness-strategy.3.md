@@ -7,8 +7,7 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Added essential-aerodrome-information and critical-phase-radio-silence SourceUnitSpec trials as explicit model-gap specs, including fuzzed phase/altitude/transmission-class parameters for the critical-phase case.
 ## Evidence
 - Commits:
 - Tests:

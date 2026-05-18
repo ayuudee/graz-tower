@@ -8,12 +8,12 @@ The current evidence says that source-unit citations are useful, but one-off sou
 External research anchors this direction: property-based testing feeds many generated values into the same invariant rather than relying on hand-picked examples, and Kotest already supports that model in Kotlin. QuickCheck-style state-machine testing adds preconditions, postconditions, and an abstract model for stateful APIs. Model-based testing treats tests as derived from an abstract model and explicitly calls out the mapping problem from abstract tests to executable system calls; that is exactly the problem here.
 
 ## Proposed Shape
-Introduce a disposable `SourceUnitLaw` test harness in `sim/jvmTest` or a sibling test-support module. It should be code-first and strongly typed, but declarative enough that source-unit test authors do not need to know controller internals.
+Introduce a disposable `SourceUnitSpec` test harness in `sim/jvmTest` or a sibling test-support module. It should be code-first and strongly typed, but declarative enough that source-unit test authors do not need to know controller internals.
 
 Conceptually:
 
 ```kotlin
-sourceUnitLaw("icao9432-extracted::taxi_4_4_en::417f64324f7495bf") {
+sourceUnitSpec("icao9432-extracted::taxi_4_4_en::417f64324f7495bf") {
     title("Taxi clearance limit is a runway holding point before runway use")
     source("ICAO 9432 4.4")
 
@@ -64,11 +64,11 @@ interface TowerConformanceTarget {
 
 `ScenarioInput` is the public language for a test author: aerodrome fixture, aircraft, mission intent, weather, runway configuration, injected world events, optional pilot/controller communication events, and time budget.
 
-`ScenarioTrace` is the public oracle language: ordered transmissions, typed instructions, typed pilot reports, aircraft phase timeline, runway/traffic state observations, and optional decision evidence. It can be backed by today’s `SimTrace` and transmission records, but the law author should not depend on `SimState`, `BeliefState`, controller rules, or internal BDI objects.
+`ScenarioTrace` is the public oracle language: ordered transmissions, typed instructions, typed pilot reports, aircraft phase timeline, runway/traffic state observations, and optional decision evidence. It can be backed by today’s `SimTrace` and transmission records, but the spec author should not depend on `SimState`, `BeliefState`, controller rules, or internal BDI objects.
 
-### 2. Source-unit law model
+### 2. Source-unit spec model
 
-A `SourceUnitLaw` should contain:
+A `SourceUnitSpec` should contain:
 
 - `sourceUnit`: canonical id.
 - `claim`: short human text copied or paraphrased from the accepted source unit.
@@ -102,10 +102,10 @@ Use three tiers:
 
 ### 4. Adequacy and progress
 
-The harness should produce a `SourceUnitLawReport` artifact:
+The harness should produce a `SourceUnitSpecReport` artifact:
 
 - source unit id;
-- law id;
+- spec id;
 - generated domain dimensions;
 - cells covered;
 - cells intentionally out of scope;
@@ -133,7 +133,7 @@ Oracle: required readback atoms contain exactly the operational atoms named by t
 
 Adequacy: every readback instruction family has at least one generated example; family counters are non-zero.
 
-Expected learning: whether one source-unit law can contain multiple generated instruction families without becoming unreadable.
+Expected learning: whether one source-unit spec can contain multiple generated instruction families without becoming unreadable.
 
 ### Case 2: Taxi clearance and runway-use boundary
 
@@ -185,7 +185,7 @@ Purpose: pressure the framework with a temporal prohibition and an exception con
 
 Domain: aircraft phases takeoff roll, initial climb, last part of final, landing roll; candidate transmissions safety-critical vs non-safety; normal and abnormal world events.
 
-Oracle: non-safety transmissions are absent during critical windows; safety transmissions are allowed and traceable to a safety event. If the current simulator lacks communication workload/necessity classification, this law should compile/run as an explicit model-gap probe, not pass silently.
+Oracle: non-safety transmissions are absent during critical windows; safety transmissions are allowed and traceable to a safety event. If the current simulator lacks communication workload/necessity classification, this spec should compile/run as an explicit model-gap probe, not pass silently.
 
 Adequacy: every critical phase window is exercised; both allowed and forbidden message classes are generated. Non-vacuity gates require at least one attempted non-safety transmission candidate in each critical phase partition.
 
@@ -193,22 +193,22 @@ Expected learning: whether fuzzing the domain language can expose missing model 
 
 ## Workflow
 
-1. Build a tiny harness skeleton around `TowerConformanceTarget`, `ScenarioInput`, `ScenarioTrace`, `SourceUnitLaw`, and `LawReport`.
+1. Build a tiny harness skeleton around `TowerConformanceTarget`, `ScenarioInput`, `ScenarioTrace`, `SourceUnitSpec`, and `SpecReport`.
 2. Port the existing readback cases into Case 1 using generated instruction families.
 3. Port the taxi and touch-and-go scenarios into Cases 2 and 3 using the black-box target.
 4. Add Case 4 as a mixed pass/gap trial for essential aerodrome information.
-5. Add Case 5 as a deliberate red-team law for communication timing. It may not pass; success is a loud and useful model-gap report.
-6. Generate a single summary artifact showing five source-unit laws, their domains, partitions, vacuity counters, pass/fail/gap state, and counterexample seeds where applicable.
+5. Add Case 5 as a deliberate red-team spec for communication timing. It may not pass; success is a loud and useful model-gap report.
+6. Generate a single summary artifact showing five source-unit specs, their domains, partitions, vacuity counters, pass/fail/gap state, and counterexample seeds where applicable.
 7. Decide whether the harness feels good enough to rebuild cleanly or whether to discard it and keep only lessons.
 
 ## Acceptance Criteria
 
-- [ ] Five source-unit law suites exist across the cases above.
+- [ ] Five source-unit spec suites exist across the cases above.
 - [ ] At least three run as passing executable tests against the current system.
 - [ ] At least one uses generated/property input over a named domain rather than a single example.
 - [ ] At least one intentionally reports a model gap without passing silently.
-- [ ] Every law emits or can emit a `LawReport` with source unit, domain dimensions, coverage cells, non-vacuity counters, and seed/counterexample data.
-- [ ] A test author can read a law without needing to know controller BDI/rule internals.
+- [ ] Every spec emits or can emit a `SpecReport` with source unit, domain dimensions, coverage cells, non-vacuity counters, and seed/counterexample data.
+- [ ] A test author can read a spec without needing to know controller BDI/rule internals.
 - [ ] A review document records what felt good, what was awkward, what was impossible, and what should be thrown away.
 
 ## Boundaries
@@ -223,13 +223,13 @@ This combines three testing styles already relevant to the repo:
 - property-based testing: generated inputs over invariants and seeds for counterexamples;
 - model-based testing: abstract scenario/test requirements mapped to black-box executable traces.
 
-The important bet is that the source-unit law layer becomes the shared language between a regulatory/test team and the implementation team. The test team writes source-unit laws against `TowerConformanceTarget`; the implementation team makes any tower engine satisfy that interface.
+The important bet is that the source-unit spec layer becomes the shared language between a regulatory/test team and the implementation team. The test team writes source-unit specs against `TowerConformanceTarget`; the implementation team makes any tower engine satisfy that interface.
 
 ## Plan Review
 
 ### FP / type safety
 
-The domain language must be typed. Invalid scenarios should be unrepresentable where practical: e.g. active runway ids come from the fixture, mission outcomes from sealed `CircuitOutcome`, phase windows from explicit domain values. Where validity depends on fixture data, generators return typed errors or shrink away through explicit preconditions with non-vacuity counters. Avoid `else` catch-alls in oracle dispatch; each source-unit law kind should be handled explicitly.
+The domain language must be typed. Invalid scenarios should be unrepresentable where practical: e.g. active runway ids come from the fixture, mission outcomes from sealed `CircuitOutcome`, phase windows from explicit domain values. Where validity depends on fixture data, generators return typed errors or shrink away through explicit preconditions with non-vacuity counters. Avoid `else` catch-alls in oracle dispatch; each source-unit spec kind should be handled explicitly.
 
 ### Test architecture
 
@@ -237,11 +237,11 @@ This respects the project standard of high-level/integration tests first. The pu
 
 ### Impact
 
-The main coupling risk is creating a second simulator DSL. Keep the first harness intentionally thin: a black-box input, a black-box trace, source law metadata, and reports. Do not expose controller beliefs or BDI structures. If the trace vocabulary is insufficient, that is a useful finding and should drive a trace projection, not law authors reaching into internals.
+The main coupling risk is creating a second simulator DSL. Keep the first harness intentionally thin: a black-box input, a black-box trace, source spec metadata, and reports. Do not expose controller beliefs or BDI structures. If the trace vocabulary is insufficient, that is a useful finding and should drive a trace projection, not spec authors reaching into internals.
 
 ### Operational correctness
 
-Every law must cite source units and keep the source claim visible. `may` and `should` claims are not treated as unconditional obligations. Phraseology-only claims cannot be fully covered by typed instruction traces. Emergency/critical-phase laws must cite the relevant source unit and classify missing safety-necessity semantics as model gaps.
+Every spec must cite source units and keep the source claim visible. `may` and `should` claims are not treated as unconditional obligations. Phraseology-only claims cannot be fully covered by typed instruction traces. Emergency/critical-phase specs must cite the relevant source unit and classify missing safety-necessity semantics as model gaps.
 
 ## Red Team
 
@@ -249,19 +249,19 @@ Every law must cite source units and keep the source claim visible. `may` and `s
 
 Risk: authors attach source ids to broad goldens and call them covered.
 
-Countermeasure: each law must list its domain dimensions, oracle predicates, and non-vacuity counters. The report should fail if a cited source unit has no assertion that mentions its law id or predicate.
+Countermeasure: each spec must list its domain dimensions, oracle predicates, and non-vacuity counters. The report should fail if a cited source unit has no assertion that mentions its spec id or predicate.
 
 ### Attack: Fuzzing produces aviation nonsense
 
 Risk: random generation creates impossible starts, invalid runway use, or incoherent traffic, then failures are noise.
 
-Countermeasure: fuzz only through typed domain generators seeded from validated fixtures. No arbitrary event streams for source laws. Use partitions first, randomization second.
+Countermeasure: fuzz only through typed domain generators seeded from validated fixtures. No arbitrary event streams for source specs. Use partitions first, randomization second.
 
 ### Attack: Tests require implementation knowledge anyway
 
 Risk: to make assertions pass, authors inspect BDI/rules and encode implementation assumptions.
 
-Countermeasure: source-law code may depend only on `TowerConformanceTarget`, `ScenarioInput`, `ScenarioTrace`, and protocol types. Ban imports from controller internals in the law package with a test or detekt rule if this becomes permanent.
+Countermeasure: source-spec code may depend only on `TowerConformanceTarget`, `ScenarioInput`, `ScenarioTrace`, and protocol types. Ban imports from controller internals in the spec package with a test or detekt rule if this becomes permanent.
 
 ### Attack: Property tests become slow/flaky
 
@@ -273,7 +273,7 @@ Countermeasure: two tiers. CI uses witness plus small partition sweeps. Nightly/
 
 Risk: extracted source units mix examples, permissions, definitions, and operational obligations.
 
-Countermeasure: law `kind` controls semantics. Definitions can support domains; permissions become capability laws under explicit requested preconditions; obligations/prohibitions become stronger oracles; examples remain support unless phraseology rendering exists.
+Countermeasure: spec `kind` controls semantics. Definitions can support domains; permissions become capability specs under explicit requested preconditions; obligations/prohibitions become stronger oracles; examples remain support unless phraseology rendering exists.
 
 ### Attack: Five cases are still too close to current goldens
 
@@ -283,10 +283,10 @@ Countermeasure: include Case 4 and Case 5 specifically because they likely expos
 
 ## Revised Recommendation After Review
 
-Proceed with a short spike, but do not start by generalising the FN35/FN36 helper. Start with the law/report vocabulary and implement five thin vertical slices. The success criterion is not coverage count; it is whether the law authoring experience feels like writing regulatory behavior against a black-box tower.
+Proceed with a short spike, but do not start by generalising the FN35/FN36 helper. Start with the spec/report vocabulary and implement five thin vertical slices. The success criterion is not coverage count; it is whether the spec authoring experience feels like writing regulatory behavior against a black-box tower.
 
 The strongest final shape is:
 
-`SourceUnitLaw = source id + typed domain + witness + generated partitions + trace oracle + adequacy report`.
+`SourceUnitSpec = source id + typed domain + witness + generated partitions + trace oracle + adequacy report`.
 
 That is the language worth trying next.

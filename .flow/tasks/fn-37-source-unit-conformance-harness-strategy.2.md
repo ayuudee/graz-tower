@@ -7,8 +7,7 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Ported the existing readback, taxi, and touch-and-go source-backed work onto SourceUnitSpec. Readback now uses generated protocol parameters; taxi and touch-and-go use witness specs with explicit domains and non-vacuity counters.
 ## Evidence
 - Commits:
 - Tests:

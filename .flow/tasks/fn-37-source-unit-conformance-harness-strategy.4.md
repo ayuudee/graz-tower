@@ -7,8 +7,7 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Wrote the FN37 spike review artifact covering what worked, what did not, red-team concerns, and the recommendation to rebuild around a black-box target plus typed generated-domain values.
 ## Evidence
 - Commits:
 - Tests:
