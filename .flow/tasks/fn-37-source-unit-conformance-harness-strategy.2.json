@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-18T20:23:00.896786Z",
+  "depends_on": [
+    "fn-37-source-unit-conformance-harness-strategy.1"
+  ],
+  "epic": "fn-37-source-unit-conformance-harness-strategy",
+  "id": "fn-37-source-unit-conformance-harness-strategy.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-37-source-unit-conformance-harness-strategy.2.md",
+  "status": "todo",
+  "title": "Port readback taxi and touch-and-go laws",
+  "updated_at": "2026-05-18T20:23:00.896891Z"
+}
