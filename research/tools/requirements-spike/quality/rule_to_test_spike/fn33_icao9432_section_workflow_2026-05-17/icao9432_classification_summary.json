@@ -138,12 +138,20 @@
     "total": 14,
     "statuses": [
       {
+        "status": "covered",
+        "count": 1
+      },
+      {
         "status": "needs_domain_review",
         "count": 2
       },
       {
         "status": "new_case_needed",
-        "count": 12
+        "count": 10
+      },
+      {
+        "status": "partially_covered",
+        "count": 1
       }
     ]
   },

@@ -22,8 +22,9 @@ readback" when only some source units are actually bound to evidence.
   would be concrete and local.
 - The workflow naturally separated executable behavior from domain review,
   model gaps, and out-of-scope records.
-- The section ledger made scale visible: after one honest slice, only 4/166
-  records were `covered`.
+- The section ledger made scale visible: after the readback slice plus two
+  high-level scenario slices, only 5/166 records were `covered` and 3 more were
+  `partially_covered`.
 
 ## What did not work yet
 
@@ -63,9 +64,10 @@ should fail if expected source evidence is absent.
 1. Add first-class `SourceUnitRef` evidence to runtime traces or a parallel
    test-only evidence projection. Do this before scaling beyond code-local
    protocol assertions.
-2. Build one world-backed scenario slice for taxi/runway operations from
-   `taxi_4_4_en` or takeoff procedures. This proves whether the workflow works
-   beyond pure protocol functions.
+2. Build one additional world-backed scenario slice for takeoff, handoff, or
+   emergency communications. Taxi and touch-and-go now prove the workflow works
+   beyond pure protocol functions, but not yet across abnormal or
+   cross-frequency behavior.
 3. Build a phraseology-rendering/linting spike for the `TAKE OFF` wording rule.
    This is a distinct facet and should not be forced into state-only tests.
 4. Keep using the ledger status vocabulary. It is a good forcing function for

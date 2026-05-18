@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-18T13:03:35.151503Z",
+  "depends_on": [
+    "fn-36-second-high-level-source-backed.1"
+  ],
+  "epic": "fn-36-second-high-level-source-backed",
+  "id": "fn-36-second-high-level-source-backed.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-36-second-high-level-source-backed.2.md",
+  "status": "todo",
+  "title": "Add touch-and-go source-backed scenario and ledger updates",
+  "updated_at": "2026-05-18T13:03:35.151609Z"
+}

@@ -11,10 +11,10 @@ spike bound the source unit to an explicit test or evidence target.
 
 | Status | Count |
 | --- | ---: |
-| `covered` | 4 |
-| `partially_covered` | 2 |
+| `covered` | 5 |
+| `partially_covered` | 3 |
 | `duplicate_support` | 1 |
-| `new_case_needed` | 41 |
+| `new_case_needed` | 39 |
 | `blocked_by_existing_red` | 3 |
 | `blocked_by_model_gap` | 41 |
 | `needs_domain_review` | 59 |
@@ -35,9 +35,14 @@ No source units remain `pending_classification`.
 - `taxi_4_4_en`: first high-level scenario slice. One source unit is covered by
   the LOWG taxi-to-holding-point scenario and one is partially covered by the
   same scenario's clearance-limit / later runway-use ordering assertion.
+- `final_approach_landing_4_7_en`: second high-level scenario slice. One
+  touch-and-go training source unit is covered by the LOWG
+  touch-and-go-then-full-stop scenario, and the matching `CLEARED TOUCH AND GO`
+  phraseology source unit is partially covered by the typed
+  `ClearedTouchAndGo` trace but still lacks literal RT phrase rendering.
 - `takeoff_*`, `after_landing_4_9_en`, `aerodrome_traffic_circuit_*`,
-  `final_approach_landing_4_7_en`, and `essential_aerodrome_information_4_10_en`:
-  high simulator relevance; these should become future source-backed slices.
+  and `essential_aerodrome_information_4_10_en`: high simulator relevance;
+  these should become future source-backed slices.
 - `communications_*` and `transfer_communications_2_8_2_en`: relevant to
   handoff/contact-frequency behavior, but most individual accepted records are
   examples or review-only records that need domain review before executable
@@ -81,7 +86,8 @@ Result: the totals shown above.
 ## Finding
 
 The ledger is useful because it prevents vague progress claims. After one
-source-backed slice, only 4 of 166 records are genuinely executable-and-bound.
-The next useful slices are not "more extraction"; they are targeted behavior
-families: taxi/runway, final/landing, handoff communications, and emergency
+readback slice and two high-level scenario slices, only 5 of 166 records are
+fully executable-and-bound, with 3 more partially covered. The next useful
+slices are not "more extraction"; they are targeted behavior families:
+taxi/runway, final/landing, handoff communications, and emergency
 communications.
