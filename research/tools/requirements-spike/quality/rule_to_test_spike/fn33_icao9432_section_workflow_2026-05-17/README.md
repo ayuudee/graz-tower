@@ -42,6 +42,7 @@ Each `icao9432_ledger.jsonl` row records:
 The intended classification statuses after the initial inventory are:
 
 - `covered`
+- `partially_covered`
 - `new_case_needed`
 - `blocked_by_existing_red`
 - `blocked_by_model_gap`

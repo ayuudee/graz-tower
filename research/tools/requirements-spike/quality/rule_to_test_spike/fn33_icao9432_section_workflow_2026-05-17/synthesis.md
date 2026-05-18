@@ -73,17 +73,12 @@ should fail if expected source evidence is absent.
 
 ## Second-source choice
 
-Use `egast-vfr-extracted` as the second source. It has only 17 accepted records,
-so it is small enough to process overnight, and it proves a different facet:
-pilot-facing VFR safety/operational guidance rather than ATC phraseology/manual
-procedure. That contrast should show whether the workflow is specific to
-ICAO-style phraseology or can also classify source units that are valuable but
-less directly executable in the simulator.
-
-Avoid EPPLS as the second source for this overnight pass: EPPLS Chapter 12 has
-already had special extraction repair work and is closer to general policy /
-pilot performance law. `egast-vfr-extracted` is smaller and gives a cleaner
-contrast.
+Superseded by FN34: the initial recommendation was `egast-vfr-extracted`, but
+inspection showed that EGAST, Slovenia VFR, and SafetySense mostly repeated the
+readback facet already probed here. The actual second-source pass used EPPLS
+Chapter 12 because it better tested the contrasting case: training/textbook
+material that is mostly review-heavy, phraseology-oriented, or model-gap
+oriented rather than immediately executable.
 
 ## Review considerations
 

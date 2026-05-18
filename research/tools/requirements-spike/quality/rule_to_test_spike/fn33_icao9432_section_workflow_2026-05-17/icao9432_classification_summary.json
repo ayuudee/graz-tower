@@ -181,10 +181,14 @@
       },
       {
         "status": "covered",
-        "count": 4
+        "count": 3
       },
       {
         "status": "duplicate_support",
+        "count": 1
+      },
+      {
+        "status": "partially_covered",
         "count": 1
       }
     ]
@@ -242,12 +246,20 @@
     "total": 6,
     "statuses": [
       {
+        "status": "covered",
+        "count": 1
+      },
+      {
         "status": "needs_domain_review",
         "count": 1
       },
       {
         "status": "new_case_needed",
-        "count": 5
+        "count": 3
+      },
+      {
+        "status": "partially_covered",
+        "count": 1
       }
     ]
   },

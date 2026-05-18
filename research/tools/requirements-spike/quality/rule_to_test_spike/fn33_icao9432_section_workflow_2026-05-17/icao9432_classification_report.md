@@ -12,8 +12,9 @@ spike bound the source unit to an explicit test or evidence target.
 | Status | Count |
 | --- | ---: |
 | `covered` | 4 |
+| `partially_covered` | 2 |
 | `duplicate_support` | 1 |
-| `new_case_needed` | 43 |
+| `new_case_needed` | 41 |
 | `blocked_by_existing_red` | 3 |
 | `blocked_by_model_gap` | 41 |
 | `needs_domain_review` | 59 |
@@ -23,16 +24,20 @@ No source units remain `pending_classification`.
 
 ## Section outcomes
 
-- `readback_2_8_3_en`: first executable slice. Four source units are covered
-  by source-backed behavior tests, one is type-enforced supporting evidence,
-  and three expose model gaps.
+- `readback_2_8_3_en`: first executable slice. Three source units are fully
+  covered by source-backed behavior tests, one is partially covered by a taxi
+  readback assertion but still needs broader conditional/other-clearance
+  coverage, one is type-enforced supporting evidence, and three expose model
+  gaps.
 - `go_around_4_8_en`: blocked by existing red/fragile go-around verification
   history from FN31/FN32. Do not use this as the next slice until that baseline
   is unquestionably green.
-- `taxi_4_4_en`, `takeoff_*`, `after_landing_4_9_en`,
-  `aerodrome_traffic_circuit_*`, `final_approach_landing_4_7_en`, and
-  `essential_aerodrome_information_4_10_en`: high simulator relevance; these
-  should become future source-backed slices.
+- `taxi_4_4_en`: first high-level scenario slice. One source unit is covered by
+  the LOWG taxi-to-holding-point scenario and one is partially covered by the
+  same scenario's clearance-limit / later runway-use ordering assertion.
+- `takeoff_*`, `after_landing_4_9_en`, `aerodrome_traffic_circuit_*`,
+  `final_approach_landing_4_7_en`, and `essential_aerodrome_information_4_10_en`:
+  high simulator relevance; these should become future source-backed slices.
 - `communications_*` and `transfer_communications_2_8_2_en`: relevant to
   handoff/contact-frequency behavior, but most individual accepted records are
   examples or review-only records that need domain review before executable
