@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AtomicReadback
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.Atis
 import xyz.easiersaid.twr.protocol.Callsign
@@ -23,6 +24,7 @@ import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Wind
+import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 import xyz.easiersaid.twr.sim.testing.Fixtures
 import xyz.easiersaid.twr.sim.testing.controllerByRole
 import xyz.easiersaid.twr.sim.testing.formatJourney
@@ -180,6 +182,16 @@ object LowgObservationPort {
 }
 
 object SyntheticObservationPort {
+    fun protocolScenario(scenarioId: String): SimObservation =
+        SimObservation(
+            scenarioId = scenarioId,
+            instructions = emptyList(),
+            pilotReports = emptyList(),
+            pilotTransmissions = emptyList(),
+            aircraft = emptyMap(),
+            diagnostic = "Synthetic protocol observation",
+        )
+
     fun protocolInstruction(
         scenarioId: String,
         aircraftId: AircraftId,
@@ -379,6 +391,24 @@ class EvidenceScenarioBuilder internal constructor(
         cases += builder.apply(build).toCase()
     }
 
+    fun regressionCase(
+        id: String,
+        issue: String,
+        build: EvidenceCaseBuilder.() -> Unit,
+    ) {
+        val builder = EvidenceCaseBuilder(id = id, basis = EvidenceBasis.Regression(issue))
+        cases += builder.apply(build).toCase()
+    }
+
+    fun invariantCase(
+        id: String,
+        name: String,
+        build: EvidenceCaseBuilder.() -> Unit,
+    ) {
+        val builder = EvidenceCaseBuilder(id = id, basis = EvidenceBasis.Invariant(name))
+        cases += builder.apply(build).toCase()
+    }
+
     fun report(): EvidenceMappedReport {
         val observed = checkNotNull(observation) { "evidence scenario '$id' did not declare observe { ... }" }
         return evidenceMappedReport(observation = observed, cases = cases)
@@ -431,6 +461,40 @@ class EvidenceDslContext internal constructor(
 
     fun expectedGap(planId: String, reason: String): EvidenceOutcome.ExpectedGap =
         EvidenceOutcome.ExpectedGap(planId = planId, reason = reason)
+
+    fun readback(instruction: AtcInstruction): RequiredReadbackSubject =
+        RequiredReadbackSubject(instruction)
+}
+
+data class RequiredReadbackSubject(
+    private val instruction: AtcInstruction,
+) {
+    fun requires(vararg atoms: AtomicReadback): EvidenceOutcome {
+        val expected = atoms.toSet()
+        val actual = requiredReadbackAtoms(instruction)
+        return if (actual == expected) {
+            EvidenceOutcome.Pass(
+                listOf("${instruction::class.simpleName} requires ${actual.joinToString()}"),
+            )
+        } else {
+            EvidenceOutcome.Fail(
+                reason = "${instruction::class.simpleName} readback atoms differ",
+                evidence = listOf("expected=$expected", "actual=$actual"),
+            )
+        }
+    }
+
+    fun requiresNoAtoms(): EvidenceOutcome {
+        val actual = requiredReadbackAtoms(instruction)
+        return if (actual.isEmpty()) {
+            EvidenceOutcome.Pass(listOf("${instruction::class.simpleName} has no required structural readback atom"))
+        } else {
+            EvidenceOutcome.Fail(
+                reason = "${instruction::class.simpleName} unexpectedly requires readback atoms",
+                evidence = listOf("actual=$actual"),
+            )
+        }
+    }
 }
 
 sealed interface EvidencePoint {

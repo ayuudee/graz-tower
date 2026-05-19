@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T13:50:02.563012Z",
+  "depends_on": [],
+  "epic": "fn-41-spike-twenty-evidence-mapped-cases",
+  "id": "fn-41-spike-twenty-evidence-mapped-cases.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-41-spike-twenty-evidence-mapped-cases.2.md",
+  "status": "todo",
+  "title": "Implement twenty-case evidence-mapped suite",
+  "updated_at": "2026-05-19T13:50:02.563113Z"
+}

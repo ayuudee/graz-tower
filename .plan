@@ -146,6 +146,15 @@ a later refactoring if repeated evidence selectors prove it. Evidence:
 `research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn40_evidence_mapped_test_harness_2026-05-19/review.md`.
 Impact: H | Effort: M
 
+**FN41-EVID-2 — Permanent-facing evidence DSL needs source catalog and split protocol/sim entry points**
+FN41 scaled the evidence-mapped facade to 20 cases and found the direction
+still works if domain helpers absorb complexity. The next iteration should
+promote `readbackCase`-style helpers into the harness, split
+`protocolEvidence` from `simEvidence`, and replace long string source-unit ids
+at call sites with a typed/generated source catalog. Evidence:
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn41_twenty_case_spike_2026-05-19/review.md`.
+Impact: H | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)
