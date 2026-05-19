@@ -174,6 +174,26 @@ domains for fuzzing. Evidence:
 `research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn42_initiative_review_2026-05-19/03_synthesis.md`.
 Impact: H | Effort: H
 
+**FN43-GAP-1 — Evidence facts need aerodrome-information receipt projection**
+The permanent evidence DSL can cite ICAO 9432 essential-aerodrome-information
+timing, but the observation port does not yet expose typed facts showing when
+essential aerodrome information was passed to, or received by, the aircraft
+before taxi or final approach. Expected-gap ids may reference this backlog item
+only while they also name the affected source ref and the missing projection
+concept. Close when the evidence fact adapter emits aerodrome-information
+receipt facts suitable for source-backed activation and adequacy reporting.
+Impact: M | Effort: M
+
+**FN43-GAP-2 — Evidence facts need critical-phase radio-silence projection**
+The permanent evidence DSL can cite ICAO 9432 critical-phase radio-silence
+guidance, but the observation port does not yet expose typed critical-phase
+windows, attempted transmissions inside those windows, or safety-necessity
+classification facts. Expected-gap ids may reference this backlog item only
+while they also name the affected source ref and the missing projection concept.
+Close when the evidence fact adapter emits phase-window and safety-necessity
+facts suitable for source-backed activation and adequacy reporting.
+Impact: M | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)

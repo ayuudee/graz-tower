@@ -27,9 +27,8 @@ Do not broaden the catalog beyond the current suite.
 - [ ] No generated or hand-authored catalog entry claims phraseology compliance.
 
 ## Done summary
-TBD
-
+Implemented the typed evidence source catalog for the FN41 source refs, replacing the two spike-only gap ids with governed typed gap ids backed by real ICAO 9432 source refs. Added exact registry validation against accepted candidate JSON records, a raw-string citation API guard, phraseology-overclaim guard, and specific .plan backlog entries for the two projection gaps.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:
