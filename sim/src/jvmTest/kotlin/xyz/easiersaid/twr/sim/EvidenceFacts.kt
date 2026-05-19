@@ -105,6 +105,45 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.AircraftSummary
     }
 
+    data class AerodromeInformation(
+        val aircraftId: AircraftId,
+        val timingContext: AerodromeInformationTimingContext,
+        val status: AerodromeInformationStatus,
+        val detail: AerodromeInformationDetail,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.AerodromeInformation
+    }
+
+    data class CriticalPhaseWindow(
+        val aircraftId: AircraftId,
+        val phase: CriticalPhaseKind,
+        val start: EvidenceSequence,
+        val end: EvidenceSequence,
+    ) : EvidenceFactPayload {
+        init {
+            require(start <= end) { "critical phase window start must not be after end" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.CriticalPhaseWindow
+    }
+
+    data class CriticalPhaseTransmission(
+        val aircraftId: AircraftId,
+        val phase: CriticalPhaseKind,
+        val transmissionId: TransmissionId,
+        val necessity: TransmissionNecessity,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.CriticalPhaseTransmission
+    }
+
+    data class FrequencyTransfer(
+        val aircraftId: AircraftId,
+        val mode: FrequencyTransferMode,
+        val target: FrequencyTransferTarget,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.FrequencyTransfer
+    }
+
     data class SampleFact(
         val name: String,
         val displayValue: String,
@@ -124,7 +163,68 @@ enum class EvidenceFactKind {
     PilotReport,
     PilotTransmission,
     AircraftSummary,
+    AerodromeInformation,
+    CriticalPhaseWindow,
+    CriticalPhaseTransmission,
+    FrequencyTransfer,
     Sample,
+}
+
+enum class AerodromeInformationTimingContext {
+    BeforeTaxi,
+    BeforeFinalApproach,
+}
+
+enum class AerodromeInformationStatus {
+    PassedByController,
+    KnownReceivedElsewhere,
+}
+
+data class AerodromeInformationDetail(
+    val value: String,
+) {
+    init {
+        require(value.isNotBlank()) { "aerodrome information detail must not be blank" }
+    }
+}
+
+enum class CriticalPhaseKind {
+    Takeoff,
+    InitialClimb,
+    LateFinal,
+    LandingRoll,
+}
+
+enum class TransmissionNecessity {
+    Routine,
+    SafetyNecessary,
+}
+
+enum class FrequencyTransferMode {
+    ControllerAdvised,
+    PilotNotifiedAbsentAdvice,
+}
+
+sealed interface FrequencyTransferTarget {
+    val unitName: String
+
+    data class UnitOnly(
+        override val unitName: String,
+    ) : FrequencyTransferTarget {
+        init {
+            require(unitName.isNotBlank()) { "frequency-transfer target unit must not be blank" }
+        }
+    }
+
+    data class UnitAndFrequency(
+        override val unitName: String,
+        val frequency: String,
+    ) : FrequencyTransferTarget {
+        init {
+            require(unitName.isNotBlank()) { "frequency-transfer target unit must not be blank" }
+            require(frequency.isNotBlank()) { "frequency-transfer target frequency must not be blank" }
+        }
+    }
 }
 
 data class EvidenceFactSet(
@@ -227,6 +327,29 @@ object EvidenceFactAdapters {
         return EvidenceFactSet(
             scenarioId = scenarioId,
             facts = transmissionFacts + aircraftFacts,
+            diagnostic = diagnostic,
+        )
+    }
+
+    fun fromProjectedPayloads(
+        scenarioId: String,
+        payloads: List<EvidenceFactPayload>,
+        diagnostic: String = "Projected evidence facts",
+    ): EvidenceFactSet {
+        val facts = payloads.mapIndexed { index, payload ->
+            fact(
+                scenarioId = scenarioId,
+                origin = EvidenceFactOrigin.SimRun,
+                sequence = EvidenceSequence(index),
+                simTime = null,
+                sourceTransmissionId = null,
+                extractionPath = EvidenceExtractionPath("projection[$index].${payload.kind}"),
+                payload = payload,
+            )
+        }
+        return EvidenceFactSet(
+            scenarioId = scenarioId,
+            facts = facts,
             diagnostic = diagnostic,
         )
     }

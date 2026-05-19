@@ -132,6 +132,23 @@ object ICAO9432 {
             setOf(TouchAndGoRequest, ClearedTouchAndGoPhrase)
     }
 
+    object TransferCommunications {
+        val ControllerAdvisedFrequencyChange: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
+            title = "Aircraft shall be advised before frequency change",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val PilotNotifiesAbsentAdvice: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
+            title = "Aircraft shall notify before frequency change absent advice",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RequiredProcedures: Set<EvidenceSourceRef> =
+            setOf(ControllerAdvisedFrequencyChange, PilotNotifiesAbsentAdvice)
+    }
+
     object GapSources {
         val EssentialAerodromeInformationTiming: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc",
@@ -177,6 +194,7 @@ object EvidenceSourceCatalog {
         ICAO9432.Readback.RequiredItems +
             ICAO9432.Taxi.HoldingPointLimit +
             ICAO9432.FinalApproachLanding.TouchAndGo +
+            ICAO9432.TransferCommunications.RequiredProcedures +
             setOf(
                 ICAO9432.GapSources.EssentialAerodromeInformationTiming,
                 ICAO9432.GapSources.CriticalPhaseRadioSilence,

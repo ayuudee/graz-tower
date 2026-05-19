@@ -18,6 +18,8 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e",
                 "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e",
                 "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
+                "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
+                "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
                 "icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc",
                 "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
             ),

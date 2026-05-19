@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.sim
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -97,6 +98,65 @@ class EvidenceFactsTest {
         })
         assertTrue(facts.facts.all { fact -> fact.provenance.scenarioId == "lowg-facts" })
         assertTrue(facts.facts.any { fact -> fact.provenance.sourceTransmissionId != null })
+    }
+
+    @Test
+    fun `projection facts express aerodrome information critical windows and transfers`() {
+        val aircraft = AircraftId("OE-ABC")
+
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "projection-vocabulary",
+            payloads = listOf(
+                EvidenceFactPayload.AerodromeInformation(
+                    aircraftId = aircraft,
+                    timingContext = AerodromeInformationTimingContext.BeforeTaxi,
+                    status = AerodromeInformationStatus.PassedByController,
+                    detail = AerodromeInformationDetail("birds north of runway"),
+                ),
+                EvidenceFactPayload.CriticalPhaseWindow(
+                    aircraftId = aircraft,
+                    phase = CriticalPhaseKind.LateFinal,
+                    start = EvidenceSequence(10),
+                    end = EvidenceSequence(20),
+                ),
+                EvidenceFactPayload.CriticalPhaseTransmission(
+                    aircraftId = aircraft,
+                    phase = CriticalPhaseKind.LateFinal,
+                    transmissionId = TransmissionId(200),
+                    necessity = TransmissionNecessity.SafetyNecessary,
+                ),
+                EvidenceFactPayload.FrequencyTransfer(
+                    aircraftId = aircraft,
+                    mode = FrequencyTransferMode.ControllerAdvised,
+                    target = FrequencyTransferTarget.UnitAndFrequency(
+                        unitName = "ALEXANDER CONTROL",
+                        frequency = "129.1",
+                    ),
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf(
+                EvidenceFactKind.AerodromeInformation,
+                EvidenceFactKind.CriticalPhaseWindow,
+                EvidenceFactKind.CriticalPhaseTransmission,
+                EvidenceFactKind.FrequencyTransfer,
+            ),
+            facts.orderedFacts().map { fact -> fact.payload.kind },
+        )
+    }
+
+    @Test
+    fun `critical phase window rejects reversed bounds`() {
+        assertFailsWith<IllegalArgumentException> {
+            EvidenceFactPayload.CriticalPhaseWindow(
+                aircraftId = AircraftId("OE-ABC"),
+                phase = CriticalPhaseKind.Takeoff,
+                start = EvidenceSequence(20),
+                end = EvidenceSequence(10),
+            )
+        }
     }
 
     private fun reportRecord(
