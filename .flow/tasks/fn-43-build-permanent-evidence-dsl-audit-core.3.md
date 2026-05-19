@@ -25,9 +25,8 @@ Call-site simplicity is the primary design artifact.
 - [ ] A failing/missing `observe` block fails loudly.
 
 ## Done summary
-TBD
-
+Implemented the first public protocolEvidence/simEvidence DSL shell. Added typed audit reports, claim-kind metadata, typed-source citation only, structuralReadback with structural-only wording, source/golden/regression/invariant case forms, a loud missing-observe failure, and a small order expectation surface sufficient to prove one LOWG source case without exposing fact ids/provenance/report plumbing at the call site.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidenceDslTest" --tests "*.EvidenceFactsTest" --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:
