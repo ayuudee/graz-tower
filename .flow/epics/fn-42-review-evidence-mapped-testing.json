@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-42-review-evidence-mapped-testing",
+  "created_at": "2026-05-19T13:55:51.959040Z",
+  "depends_on_epics": [],
+  "id": "fn-42-review-evidence-mapped-testing",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-42-review-evidence-mapped-testing.md",
+  "status": "done",
+  "title": "Review evidence-mapped testing initiative",
+  "updated_at": "2026-05-19T14:00:39.515909Z"
+}

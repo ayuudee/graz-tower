@@ -131,8 +131,11 @@ and expected gaps; pure monitors emit durable pass/fail/vacuous/expected-gap/
 unexpected-gap reports. The next implementation spike should build the minimal
 trace, monitor runner, report output, and five-case probe covering readback,
 taxi, landing intent, essential aerodrome information, and critical-phase radio
-silence. Evidence:
-`research/tools/requirements-spike/quality/source_unit_conformance_evaluation/fn39_source_unit_conformance_evaluation_2026-05-19/06_final_proposal.md`.
+silence. FN42 reconciles this with the evidence-mapped facade: keep the
+audit/reporting core, but hide monitor vocabulary behind the public DSL.
+Evidence:
+`research/tools/requirements-spike/quality/source_unit_conformance_evaluation/fn39_source_unit_conformance_evaluation_2026-05-19/06_final_proposal.md`;
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn42_initiative_review_2026-05-19/03_synthesis.md`.
 Impact: H | Effort: H
 
 **FN40-EVID-1 — Build evidence-mapped test facade over SimObservation port**
@@ -142,8 +145,11 @@ terse public DSL over a narrow `SimObservation` anti-corruption port: tests
 declare source/golden/regression/invariant basis, typed samples, expected
 evidence, expected gaps, and reportable outcomes while hiding harness
 constructors, provenance, and report plumbing. Monitor extraction should remain
-a later refactoring if repeated evidence selectors prove it. Evidence:
-`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn40_evidence_mapped_test_harness_2026-05-19/review.md`.
+a later refactoring if repeated evidence selectors prove it. FN42 narrows this:
+`SimObservation` alone is too thin for source-backed conformance; the facade
+must compile to provenance-bearing audit/report records. Evidence:
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn40_evidence_mapped_test_harness_2026-05-19/review.md`;
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn42_initiative_review_2026-05-19/03_synthesis.md`.
 Impact: H | Effort: M
 
 **FN41-EVID-2 — Permanent-facing evidence DSL needs source catalog and split protocol/sim entry points**
@@ -152,8 +158,21 @@ still works if domain helpers absorb complexity. The next iteration should
 promote `readbackCase`-style helpers into the harness, split
 `protocolEvidence` from `simEvidence`, and replace long string source-unit ids
 at call sites with a typed/generated source catalog. Evidence:
-`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn41_twenty_case_spike_2026-05-19/review.md`.
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn41_twenty_case_spike_2026-05-19/review.md`;
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn42_initiative_review_2026-05-19/03_synthesis.md`.
 Impact: H | Effort: M
+
+**FN42-EVID-3 — Build terse evidence DSL over provenance-bearing audit core**
+FN42's isolated deep review and red-team review reconciled FN39-FN41: continue
+with evidence-mapped tests as the public authoring model, but do not treat the
+current `SimObservation` spike as the conformance architecture. The next build
+should implement `protocolEvidence` / `simEvidence`, a typed/generated source
+catalog, provenance-bearing observation facts with stable ids, typed gap ids,
+durable Markdown/JSON report records, a small selector algebra
+(`first`/`nth`/`exactly`/`none`/`between`), and deterministic typed sample
+domains for fuzzing. Evidence:
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn42_initiative_review_2026-05-19/03_synthesis.md`.
+Impact: H | Effort: H
 
 ### Research review findings (2026-04-30)
 
