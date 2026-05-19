@@ -7,8 +7,7 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Completed the senior-level review of the FN38 monitor candidate, identifying it as the stronger long-term architecture if constrained by a strict ConformanceTrace projection charter and mandatory adequacy/vacuity reporting.
 ## Evidence
 - Commits:
 - Tests:

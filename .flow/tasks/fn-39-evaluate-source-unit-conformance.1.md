@@ -7,8 +7,7 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Built the FN39 evidence pack and comparison matrix for SourceUnitSpec versus conformance monitors across the five representative source-unit cases.
 ## Evidence
 - Commits:
 - Tests:

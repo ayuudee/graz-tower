@@ -114,14 +114,26 @@ Impact: M | Effort: M
 **FN37-SPEC-1 — Source-unit spec harness needs black-box target and typed generated domains**
 FN37 proved that `SourceUnitSpec` is a better vocabulary than one-off
 source-backed scenarios: five disparate cases fit source id + domain +
-witness/partition/fuzz probes + non-vacuity counters + report. The disposable
-API is intentionally not the final harness. The clean rebuild needs (1) a
-black-box `TowerConformanceTarget` so spec authors do not construct `SimState`
-directly, (2) typed generated-domain values instead of string parameter maps,
-and (3) trace projections for essential aerodrome information and
-safety-necessity classification. Evidence:
-`research/tools/requirements-spike/quality/source_unit_spec_spike/fn37_source_unit_spec_spike_2026-05-18/review.md`.
+witness/partition/fuzz probes + non-vacuity counters + report. FN39 superseded
+the direct `SourceUnitSpec` runner path with a source-backed monitor
+architecture; the clean rebuild should carry forward FN37's source-unit
+identity, typed domain, witness, fuzz-tier, non-vacuity, and gap-reporting
+lessons without reusing the helper as the primary runner. Evidence:
+`research/tools/requirements-spike/quality/source_unit_spec_spike/fn37_source_unit_spec_spike_2026-05-18/review.md`;
+`research/tools/requirements-spike/quality/source_unit_conformance_evaluation/fn39_source_unit_conformance_evaluation_2026-05-19/06_final_proposal.md`.
 Impact: M | Effort: M
+
+**FN39-CONF-1 — Implement source-backed conformance monitor architecture**
+FN39 selected a monitor-first source-unit conformance strategy: high-level
+scenarios and synthetic protocol fixtures produce typed `ConformanceTrace`
+facts; source-unit contracts bind citations, applicability, domains, adequacy,
+and expected gaps; pure monitors emit durable pass/fail/vacuous/expected-gap/
+unexpected-gap reports. The next implementation spike should build the minimal
+trace, monitor runner, report output, and five-case probe covering readback,
+taxi, landing intent, essential aerodrome information, and critical-phase radio
+silence. Evidence:
+`research/tools/requirements-spike/quality/source_unit_conformance_evaluation/fn39_source_unit_conformance_evaluation_2026-05-19/06_final_proposal.md`.
+Impact: H | Effort: H
 
 ### Research review findings (2026-04-30)
 
