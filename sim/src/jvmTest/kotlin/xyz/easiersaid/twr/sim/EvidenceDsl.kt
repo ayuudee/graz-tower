@@ -352,6 +352,13 @@ class EvidenceExpectContext internal constructor(
             },
             activate = { factId -> activated += factId },
         )
+
+    fun aerodromeInformation(aircraftId: AircraftId): AuditAerodromeInformationSubject =
+        AuditAerodromeInformationSubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
 }
 
 class AuditAircraftSubject internal constructor(
@@ -414,6 +421,62 @@ class EvidenceSelector @PublishedApi internal constructor(
 
     fun none(): EvidenceAuditOutcome =
         exactly(0)
+}
+
+class AuditAerodromeInformationSubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun beforeTaxi(): AuditAerodromeInformationContext =
+        context(AerodromeInformationTimingContext.BeforeTaxi)
+
+    fun beforeFinalApproach(): AuditAerodromeInformationContext =
+        context(AerodromeInformationTimingContext.BeforeFinalApproach)
+
+    private fun context(timingContext: AerodromeInformationTimingContext): AuditAerodromeInformationContext =
+        AuditAerodromeInformationContext(
+            aircraftId = aircraftId,
+            timingContext = timingContext,
+            facts = facts.filter { fact ->
+                val information = fact.payload as? EvidenceFactPayload.AerodromeInformation
+                    ?: return@filter false
+                information.aircraftId == aircraftId && information.timingContext == timingContext
+            },
+            activate = activate,
+        )
+}
+
+class AuditAerodromeInformationContext internal constructor(
+    private val aircraftId: AircraftId,
+    private val timingContext: AerodromeInformationTimingContext,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun wasPassedOrKnownReceived(): EvidenceAuditOutcome {
+        val supportingFacts = facts.filter { fact ->
+            val information = fact.payload as? EvidenceFactPayload.AerodromeInformation ?: return@filter false
+            when (information.status) {
+                AerodromeInformationStatus.KnownReceivedElsewhere,
+                AerodromeInformationStatus.PassedByController,
+                -> true
+            }
+        }
+        return if (supportingFacts.isEmpty()) {
+            EvidenceAuditOutcome.Fail(
+                reason = "Missing aerodrome-information evidence for ${aircraftId.value} $timingContext",
+                evidence = emptyList(),
+            )
+        } else {
+            supportingFacts.forEach { fact -> activate(fact.id) }
+            EvidenceAuditOutcome.Pass(
+                supportingFacts.map { fact ->
+                    val information = fact.payload as EvidenceFactPayload.AerodromeInformation
+                    "${information.status}:${information.detail.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
 }
 
 sealed interface AuditEvidencePoint {

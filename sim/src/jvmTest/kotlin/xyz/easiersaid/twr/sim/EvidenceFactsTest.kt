@@ -12,9 +12,11 @@ import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
@@ -157,6 +159,34 @@ class EvidenceFactsTest {
                 end = EvidenceSequence(10),
             )
         }
+    }
+
+    @Test
+    fun `initial contact with ATIS code projects known aerodrome information receipt`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "atis-known-receipt",
+            records = listOf(
+                TransmissionRecord(
+                    transmissionId = TransmissionId(300),
+                    time = SimTime.ZERO,
+                    speaker = SpeakerRef.Pilot(aircraft),
+                    receiver = ReceiverRef.Controller(ControllerId("LOWG_GND")),
+                    utterance = Utterance.FromPilot(
+                        InitialContact(
+                            stationCalled = RoleName.GROUND,
+                            atisCode = 'A',
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        val information = facts.facts.mapNotNull { fact ->
+            fact.payload as? EvidenceFactPayload.AerodromeInformation
+        }.single()
+        assertEquals(AerodromeInformationTimingContext.BeforeTaxi, information.timingContext)
+        assertEquals(AerodromeInformationStatus.KnownReceivedElsewhere, information.status)
     }
 
     private fun reportRecord(

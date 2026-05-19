@@ -6,9 +6,11 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
@@ -447,12 +449,18 @@ object EvidenceFactAdapters {
                 transmission = transmission,
             ),
         )
+        val aerodromeInformationFact = aerodromeInformationFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            pilot = pilot,
+            transmission = transmission,
+        )
         val report = transmission as? Report
-        return if (report == null) {
-            listOf(transmissionFact)
+        val reportFacts = if (report == null) {
+            emptyList()
         } else {
             listOf(
-                transmissionFact,
                 fact(
                     scenarioId = scenarioId,
                     origin = EvidenceFactOrigin.SimRun,
@@ -467,6 +475,46 @@ object EvidenceFactAdapters {
                 ),
             )
         }
+        return listOf(transmissionFact) + reportFacts + listOfNotNull(aerodromeInformationFact)
+    }
+
+    private fun aerodromeInformationFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        pilot: SpeakerRef.Pilot,
+        transmission: PilotTransmission,
+    ): EvidenceFact? {
+        val initialContact = transmission as? InitialContact ?: return null
+        val atisCode = initialContact.atisCode ?: return null
+        val context = when (initialContact.stationCalled) {
+            RoleName.CLEARANCE_DELIVERY,
+            RoleName.GROUND,
+            -> AerodromeInformationTimingContext.BeforeTaxi
+
+            RoleName.AFIS,
+            RoleName.APPROACH,
+            RoleName.TOWER,
+            -> AerodromeInformationTimingContext.BeforeFinalApproach
+
+            RoleName.AREA_CONTROL,
+            RoleName.DEPARTURE,
+            -> return null
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 2),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath("sim.records[$recordIndex].pilot.initialContact.atisCode"),
+            payload = EvidenceFactPayload.AerodromeInformation(
+                aircraftId = pilot.aircraftId,
+                timingContext = context,
+                status = AerodromeInformationStatus.KnownReceivedElsewhere,
+                detail = AerodromeInformationDetail("pilot reported information $atisCode on initial contact"),
+            ),
+        )
     }
 
     private fun fact(

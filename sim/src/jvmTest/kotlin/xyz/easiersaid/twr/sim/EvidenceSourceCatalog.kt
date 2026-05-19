@@ -149,18 +149,28 @@ object ICAO9432 {
             setOf(ControllerAdvisedFrequencyChange, PilotNotifiesAbsentAdvice)
     }
 
-    object GapSources {
+    object AerodromeInformation {
         val EssentialAerodromeInformationTiming: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc",
             title = "Essential aerodrome information timing",
-            claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
+    }
 
+    object CriticalPhase {
         val CriticalPhaseRadioSilence: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
             title = "Controller transmissions during critical phases",
-            claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
+    }
+
+    object GapSources {
+        val EssentialAerodromeInformationTiming: EvidenceSourceRef =
+            AerodromeInformation.EssentialAerodromeInformationTiming
+
+        val CriticalPhaseRadioSilence: EvidenceSourceRef =
+            CriticalPhase.CriticalPhaseRadioSilence
     }
 }
 
@@ -196,8 +206,8 @@ object EvidenceSourceCatalog {
             ICAO9432.FinalApproachLanding.TouchAndGo +
             ICAO9432.TransferCommunications.RequiredProcedures +
             setOf(
-                ICAO9432.GapSources.EssentialAerodromeInformationTiming,
-                ICAO9432.GapSources.CriticalPhaseRadioSilence,
+                ICAO9432.AerodromeInformation.EssentialAerodromeInformationTiming,
+                ICAO9432.CriticalPhase.CriticalPhaseRadioSilence,
             )
 
     fun validateAgainstRegistry(
