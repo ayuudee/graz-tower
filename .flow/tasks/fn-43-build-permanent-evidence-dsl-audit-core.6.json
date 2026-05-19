@@ -1,0 +1,20 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T14:27:28.010861Z",
+  "depends_on": [
+    "fn-43-build-permanent-evidence-dsl-audit-core.1",
+    "fn-43-build-permanent-evidence-dsl-audit-core.2",
+    "fn-43-build-permanent-evidence-dsl-audit-core.5",
+    "fn-43-build-permanent-evidence-dsl-audit-core.3",
+    "fn-43-build-permanent-evidence-dsl-audit-core.4"
+  ],
+  "epic": "fn-43-build-permanent-evidence-dsl-audit-core",
+  "id": "fn-43-build-permanent-evidence-dsl-audit-core.6",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-43-build-permanent-evidence-dsl-audit-core.6.md",
+  "status": "todo",
+  "title": "Emit durable Markdown and JSON evidence reports",
+  "updated_at": "2026-05-19T14:32:23.024683Z"
+}

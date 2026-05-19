@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T14:27:27.811048Z",
+  "depends_on": [
+    "fn-43-build-permanent-evidence-dsl-audit-core.2",
+    "fn-43-build-permanent-evidence-dsl-audit-core.3"
+  ],
+  "epic": "fn-43-build-permanent-evidence-dsl-audit-core",
+  "id": "fn-43-build-permanent-evidence-dsl-audit-core.4",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-43-build-permanent-evidence-dsl-audit-core.4.md",
+  "status": "todo",
+  "title": "Implement selector algebra over evidence facts",
+  "updated_at": "2026-05-19T14:27:47.693607Z"
+}

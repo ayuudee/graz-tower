@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-43-build-permanent-evidence-dsl-audit-core",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-19T14:26:17.808886Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-43-build-permanent-evidence-dsl-audit-core",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-05-19T14:37:28.410424Z",
+  "spec_path": ".flow/specs/fn-43-build-permanent-evidence-dsl-audit-core.md",
+  "status": "open",
+  "title": "Build permanent evidence DSL audit core",
+  "updated_at": "2026-05-19T14:37:28.410574Z"
+}

@@ -1,0 +1,18 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T14:27:28.111735Z",
+  "depends_on": [
+    "fn-43-build-permanent-evidence-dsl-audit-core.4",
+    "fn-43-build-permanent-evidence-dsl-audit-core.5",
+    "fn-43-build-permanent-evidence-dsl-audit-core.6"
+  ],
+  "epic": "fn-43-build-permanent-evidence-dsl-audit-core",
+  "id": "fn-43-build-permanent-evidence-dsl-audit-core.7",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-43-build-permanent-evidence-dsl-audit-core.7.md",
+  "status": "todo",
+  "title": "Re-port FN41 twenty-case suite",
+  "updated_at": "2026-05-19T14:27:48.386606Z"
+}
