@@ -19,9 +19,8 @@ Do not expand to new source areas in this task.
 - [ ] Focused tests assert both behaviour and report content.
 
 ## Done summary
-TBD
-
+Re-ported the FN41 twenty-case suite through the permanent evidence facade: 12 structural protocol/readback cases, four LOWG source-ordering cases, one golden, one invariant, and two typed expected gaps. Added an aircraft-summary DSL helper for the golden case. The suite uses typed catalog refs only, asserts activation/gap discipline, writes a durable report, and verifies typed gap metadata includes affected refs and FN43-GAP tracking.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidencePermanentTwentyCaseTest" --tests "*.EvidenceReportWriterTest" --tests "*.EvidenceDomainsTest" --tests "*.EvidenceSelectorTest" --tests "*.EvidenceDslTest" --tests "*.EvidenceFactsTest" --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:

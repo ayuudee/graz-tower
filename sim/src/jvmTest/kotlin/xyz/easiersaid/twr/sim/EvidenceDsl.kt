@@ -6,6 +6,7 @@ import xyz.easiersaid.twr.protocol.AtomicReadback
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
+import xyz.easiersaid.twr.pilot.PilotPhase
 
 enum class EvidenceClaimKind {
     StructuralProtocolRequirement,
@@ -341,6 +342,42 @@ class EvidenceExpectContext internal constructor(
             },
             activate = { factId -> activated += factId },
         )
+
+    fun aircraft(aircraftId: AircraftId): AuditAircraftSubject =
+        AuditAircraftSubject(
+            aircraftId = aircraftId,
+            summaryFact = facts.orderedFacts().firstOrNull { fact ->
+                val summary = fact.payload as? EvidenceFactPayload.AircraftSummary ?: return@firstOrNull false
+                summary.aircraftId == aircraftId
+            },
+            activate = { factId -> activated += factId },
+        )
+}
+
+class AuditAircraftSubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val summaryFact: EvidenceFact?,
+    private val activate: (FactId) -> Unit,
+) {
+    fun isParkedAndComplete(): EvidenceAuditOutcome {
+        val fact = summaryFact ?: return EvidenceAuditOutcome.Fail(
+            reason = "Missing final aircraft summary for ${aircraftId.value}",
+            evidence = emptyList(),
+        )
+        activate(fact.id)
+        val summary = fact.payload as? EvidenceFactPayload.AircraftSummary ?: return EvidenceAuditOutcome.Fail(
+            reason = "Aircraft summary fact had unexpected payload for ${aircraftId.value}",
+            evidence = listOf(fact.id.value),
+        )
+        return if (summary.phase == PilotPhase.Parked && summary.missionComplete) {
+            EvidenceAuditOutcome.Pass(listOf("phase=${summary.phase}", "missionComplete=${summary.missionComplete}"))
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Aircraft ${aircraftId.value} did not finish parked and complete",
+                evidence = listOf("phase=${summary.phase}", "missionComplete=${summary.missionComplete}"),
+            )
+        }
+    }
 }
 
 class EvidenceSelector(
