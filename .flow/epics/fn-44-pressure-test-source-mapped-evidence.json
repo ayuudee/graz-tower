@@ -1,7 +1,7 @@
 {
   "branch_name": "fn-44-pressure-test-source-mapped-evidence",
-  "completion_review_status": "unknown",
-  "completion_reviewed_at": null,
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-19T15:48:59.338528Z",
   "created_at": "2026-05-19T15:29:55.602110Z",
   "default_impl": null,
   "default_review": null,
@@ -12,7 +12,7 @@
   "plan_review_status": "ship",
   "plan_reviewed_at": "2026-05-19T15:33:18.540822Z",
   "spec_path": ".flow/specs/fn-44-pressure-test-source-mapped-evidence.md",
-  "status": "open",
+  "status": "done",
   "title": "Pressure-test source-mapped evidence projections",
-  "updated_at": "2026-05-19T15:33:18.541069Z"
+  "updated_at": "2026-05-19T15:48:59.503392Z"
 }
