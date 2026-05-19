@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T15:31:32.842047Z",
+  "depends_on": [
+    "fn-44-pressure-test-source-mapped-evidence.1"
+  ],
+  "epic": "fn-44-pressure-test-source-mapped-evidence",
+  "id": "fn-44-pressure-test-source-mapped-evidence.2",
+  "priority": 2,
+  "spec_path": ".flow/tasks/fn-44-pressure-test-source-mapped-evidence.2.md",
+  "status": "todo",
+  "title": "Add source catalog refs and projection fact vocabulary",
+  "updated_at": "2026-05-19T15:32:04.563121Z"
+}

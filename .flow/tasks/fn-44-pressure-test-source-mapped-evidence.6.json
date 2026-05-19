@@ -1,0 +1,18 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T15:31:33.239159Z",
+  "depends_on": [
+    "fn-44-pressure-test-source-mapped-evidence.3",
+    "fn-44-pressure-test-source-mapped-evidence.4",
+    "fn-44-pressure-test-source-mapped-evidence.5"
+  ],
+  "epic": "fn-44-pressure-test-source-mapped-evidence",
+  "id": "fn-44-pressure-test-source-mapped-evidence.6",
+  "priority": 6,
+  "spec_path": ".flow/tasks/fn-44-pressure-test-source-mapped-evidence.6.md",
+  "status": "todo",
+  "title": "Review source-mapped projection design and close epic",
+  "updated_at": "2026-05-19T15:32:04.963267Z"
+}
