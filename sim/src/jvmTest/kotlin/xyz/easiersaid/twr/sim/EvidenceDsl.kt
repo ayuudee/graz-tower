@@ -380,7 +380,7 @@ class AuditAircraftSubject internal constructor(
     }
 }
 
-class EvidenceSelector(
+class EvidenceSelector @PublishedApi internal constructor(
     private val label: String,
     private val facts: List<EvidenceFact>,
     private val activate: (FactId) -> Unit,

@@ -194,6 +194,18 @@ Close when the evidence fact adapter emits phase-window and safety-necessity
 facts suitable for source-backed activation and adequacy reporting.
 Impact: M | Effort: M
 
+**SIM-RED-1 — Broad sim JVM suite is red in reactive/emergency goldens**
+During FN43 completion review, the focused evidence DSL suites and detekt were
+green, but broad `:sim:jvmTest` failed in pre-existing reactive/emergency
+goldens: `G0AbortTakeoffEngineFailureTest`,
+`G3aPilotReactiveMultiAircraftTest`, and `G3bCrossAerodromeReactiveTest`.
+The failures are aircraft phase/report-count/stage-regression assertions in
+existing behaviour paths, not evidence DSL report assertions. Close by
+reproducing the full `:sim:jvmTest` failure set and either repairing the
+reactive/emergency behaviour or splitting any intentionally obsolete golden
+expectation into an explicit design decision.
+Impact: H | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)
